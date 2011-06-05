@@ -19,7 +19,7 @@ function Js2Doc(doc){
 
 function VkLoadScripts(doc){
      Js2Doc(doc, 
-	     "vklang.js",
+    "vklang.js",
 	"vk_lib.js", 
 	"vk_settings.js",
 	"vk_users.js",
