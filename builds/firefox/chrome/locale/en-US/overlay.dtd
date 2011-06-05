@@ -1,0 +1,8 @@
+<!ENTITY VkOptExtension.label "Your localized menuitem">
+<!ENTITY VkOptExtensionContext.label "Your Menuitem">
+<!ENTITY VkOptExtensionContext.accesskey "Y">
+<!ENTITY VkOptExtensionToolbarButton.label "Your Toolbar Button">
+<!ENTITY VkOptExtensionToolbarButton.tooltip "This is your toolbar button!">
+<!ENTITY VkOptExtensionSidebar.label "Your Sidebar">
+<!ENTITY VkOptExtensionToolbar.name  "example">
+<!ENTITY VkOptExtensionToolbar.label "This is an example toolbar. You can hide it under View &gt; toolbars &gt; &VkOptExtensionToolbar.name;">

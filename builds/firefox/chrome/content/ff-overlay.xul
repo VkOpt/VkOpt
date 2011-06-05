@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="chrome://VkOptExtension/skin/overlay.css" type="text/css"?>
+<!DOCTYPE overlay SYSTEM "chrome://VkOptExtension/locale/overlay.dtd">
+<overlay id="VkOptExtension-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <script src="vkldr.js"/>
+  
+  <stringbundleset id="stringbundleset">
+    <stringbundle id="VkOptExtension-strings" src="chrome://VkOptExtension/locale/overlay.properties"/>
+  </stringbundleset>
+
+
+
+
+</overlay>

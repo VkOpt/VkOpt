@@ -1,0 +1,18 @@
+﻿{
+"content_scripts": [
+{
+  "js": ["vkinit.js"],
+  "run_at": "document_start",
+  "matches": ["http://vk.com/*","http://*.vk.com/*","http://vkontakte.ru/*","http://*.vkontakte.ru/*","http://durov.ru/*"],
+  "all_frames": true
+}
+],
+  "name": "VkOpt",
+  "version": "2.0.0",
+  "description": "Добавление множества функций, упрощающих жизнь ВКонтакте.ру. Official site and support: http://vkopt.net/",
+  "icons": { "32":"img/bk_n_32.png",
+             "48": "img/bk_n_48.png",
+             "128": "img/bk_n_128.png" },
+  "update_url_":"http://vkopt.net/upd/updates.xml",
+  "permissions": ["http://*.vk.com/*","http://vk.com/*", "http://*.vkontakte.ru/*","http://vkontakte.ru/*","http://durov.ru/*"]
+}

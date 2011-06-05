@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Author</key>
+	<string>KiberПсих</string>
+	<key>CFBundleDisplayName</key>
+	<string>VkOpt</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.kiberinfinity.vkopt</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleShortVersionString</key>
+	<string>2.0.0</string>
+	<key>CFBundleVersion</key>
+	<string>2.0.0</string>
+	<key>Chrome</key>
+	<dict/>
+	<key>Content</key>
+	<dict>
+		<key>Scripts</key>
+		<dict>
+			<key>Start</key>
+			<array>
+				<string>vkinit.js</string>
+				<string>scripts/vk_skinman.js</string>
+			</array>
+		</dict>
+	</dict>
+	<key>Description</key>
+	<string>Расшиение функциональности сайта vkontakte.ru (vk.com)</string>
+	<key>ExtensionInfoDictionaryVersion</key>
+	<string>1.0</string>
+	<key>Permissions</key>
+	<dict>
+		<key>Website Access</key>
+		<dict>
+			<key>Allowed Domains</key>
+			<array>
+				<string>vkontakte.ru</string>
+				<string>*.vkontakte.ru</string>
+				<string>vk.com</string>
+				<string>*.vk.com</string>
+			</array>
+			<key>Level</key>
+			<string>Some</string>
+		</dict>
+	</dict>
+	<key>Update Manifest URL</key>
+	<string>http://vkopt.net/safari_upd.xml</string>
+	<key>Website</key>
+	<string>http://vkopt.net/</string>
+</dict>
+</plist>
