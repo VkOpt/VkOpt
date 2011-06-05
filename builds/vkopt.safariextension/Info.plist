@@ -23,7 +23,7 @@
 			<key>Start</key>
 			<array>
 				<string>vkinit.js</string>
-				<string>scripts/vk_skinman.js</string>
+				<string>includes/vk_skinman.js</string>
 			</array>
 		</dict>
 	</dict>
