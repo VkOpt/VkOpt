@@ -9,6 +9,7 @@
     <em:creator>KiberПсих</em:creator>
     <em:contributor></em:contributor>
 	<em:iconURL>chrome://VkOptExtension/skin/icon.png</em:iconURL>
+	<em:homepageURL>http://vkopt.net/</em:homepageURL>
 	<em:updateURL>http://vkopt.net/upd/update.rdf</em:updateURL>
     <em:description>Добавление множества функций для сайта ВКонтакте.ру</em:description>
     <em:targetApplication>

@@ -261,6 +261,21 @@ function vkStyles(){
 	var RemoveAd=getSet(21);
 	var main_css='';
 	if (getSet(28)=='y') main_css+=GetUnReadColorCss();
+	//compact fave
+	if (CompactFave=='y'){
+		/*vkaddcss('\r\n\
+			#users_content .fave_user_div{height: 110px !important; width: 67px !important;}\r\n \
+			#users_content .fave_user_image{height: 50px !important;}\r\n \
+			#users_content .fave_user_div a img{width:50px !important;}\r\n\
+			#users_content .fave_user_div div[style]{width: 65px !important;}\r\n \
+		');*/
+		vkaddcss('\
+		.fave_user_div{height: 110px !important; width: 67px !important;}\
+		.fave_user_div *{width:67px !important;} .fave_user_div a img{width:50px !important;}\
+		.fave_user_image{height: 50px !important;}\
+		');
+		//if (window.Fave) Fave.init();
+	}
 	//getSet(38)=='y' 
 	main_css+='.vk_my_friend{color:'+getFrColor()+';}';
 	main_css+='\
@@ -387,16 +402,7 @@ function vkStyles(){
 	.vk_popupmenu ul li a:hover{background:#E1E7ED; text-decoration:none;}\
 	"+(RemoveAd=='y'?".ad_box,.ad_box_new,.ad_help_link, .ad_help_link_new, #ad_help_link_new, #left_ads {display: none !important;}\#groups .clearFix {display: block !important;} #sideBar a[href*=\"help.php\"] {display: none !important;} #groups .clearFix {height: 100% !important;}":'')+"\
 	";
-	//compact fave
-	if (CompactFave=='y'){
-		main_css+='\
-			.fave_user_div{height: 110px !important; width: 67px !important;} \
-			.fave_user_div div[style]{width: 65px !important;} \
-			.fave_user_image{height: 50px !important;} \
-			.fave_user_div a img{width:50px !important;}\
-		';
-		//if (window.Fave) Fave.init();
-	}
+
 	//compact audio
 	if (CompactAu=='y')	main_css+="\
 		.audio .playline { padding-top: 0px !important;}\
@@ -422,6 +428,7 @@ function vkStyles(){
 		.audios_row .actions { padding-left: 0px !important; }\
 		.audios_row .actions a{padding-right:2px !important; padding-left:2px !important;}\
 		.audios_row .audio_title_wrap{ width: auto !important; max-width: 295px; }\
+		.post_media .audio_title_wrap { width: 250px !important;}\
 	';
 	  //extend switch color in viewer
 	if (MoreDarkPV=='y') main_css+="\
@@ -709,6 +716,7 @@ function vkNotifier(){
 } 
 /* PAGES.JS */
 function vkPage(){
+	if (!window.wall) return;
 	Inj.Before('wall.receive','var current','vkProcessNode(n);');
 	Inj.End('wall._repliesLoaded','vkProcessNode(r);');
 }
