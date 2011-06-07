@@ -204,7 +204,77 @@ function vkCheckSettLength(){
 
 // for color select //
 var pickers = [];
-function init_colorpicker(target, onselect){
+function init_colorpicker(target, onselect, inhcolor){
+// http://plugins.jquery.com/files/jquery.jqcolor.js.txt /
+    function RGBToHSB(rgb) {
+        var hsb = {h:0, s:0, b:0};
+        hsb.b = Math.max(Math.max(rgb.r,rgb.g),rgb.b);
+        hsb.s = (hsb.b <= 0) ? 0 : Math.round(100*(hsb.b - Math.min(Math.min(rgb.r,rgb.g),rgb.b))/hsb.b);
+        hsb.b = Math.round((hsb.b /255)*100);
+        if((rgb.r==rgb.g) && (rgb.g==rgb.b)) hsb.h = 0;
+        else if(rgb.r>=rgb.g && rgb.g>=rgb.b) hsb.h = 60*(rgb.g-rgb.b)/(rgb.r-rgb.b);
+        else if(rgb.g>=rgb.r && rgb.r>=rgb.b) hsb.h = 60  + 60*(rgb.g-rgb.r)/(rgb.g-rgb.b);
+        else if(rgb.g>=rgb.b && rgb.b>=rgb.r) hsb.h = 120 + 60*(rgb.b-rgb.r)/(rgb.g-rgb.r);
+        else if(rgb.b>=rgb.g && rgb.g>=rgb.r) hsb.h = 180 + 60*(rgb.b-rgb.g)/(rgb.b-rgb.r);
+        else if(rgb.b>=rgb.r && rgb.r>=rgb.g) hsb.h = 240 + 60*(rgb.r-rgb.g)/(rgb.b-rgb.g);
+        else if(rgb.r>=rgb.b && rgb.b>=rgb.g) hsb.h = 300 + 60*(rgb.r-rgb.b)/(rgb.r-rgb.g);
+        else hsb.h = 0;
+        hsb.h = Math.round(hsb.h);
+        return hsb;
+    }
+    function HSBToRGB(hsb) {
+        var rgb = {};
+        var h = Math.round(hsb.h);
+        var s = Math.round(hsb.s*255/100);
+        var v = Math.round(hsb.b*255/100);
+        if(s == 0) {
+            rgb.r = rgb.g = rgb.b = v;
+        } else {
+            var t1 = v;
+            var t2 = (255-s)*v/255;
+            var t3 = (t1-t2)*(h%60)/60;
+            if(h==360) h = 0;
+            if(h<60) {rgb.r=t1; rgb.b=t2; rgb.g=t2+t3;}
+            else if(h<120) {rgb.g=t1; rgb.b=t2; rgb.r=t1-t3;}
+            else if(h<180) {rgb.g=t1; rgb.r=t2; rgb.b=t2+t3;}
+            else if(h<240) {rgb.b=t1; rgb.r=t2; rgb.g=t1-t3;}
+            else if(h<300) {rgb.b=t1; rgb.g=t2; rgb.r=t2+t3;}
+            else if(h<360) {rgb.r=t1; rgb.g=t2; rgb.b=t1-t3;}
+            else {rgb.r=0; rgb.g=0; rgb.b=0;}
+        }
+        return {r:Math.round(rgb.r), g:Math.round(rgb.g), b:Math.round(rgb.b)};
+    }
+    function RGBToHex(rgb) {
+        var hex = [
+            rgb.r.toString(16),
+            rgb.g.toString(16),
+            rgb.b.toString(16)
+        ];
+        hex = hex.map(function (val) {
+            if (val.length == 1) {
+                val = '0' + val;
+            }
+            return val;
+        });
+        return hex.join('');
+    };
+
+    function HexToRGB(hex) {
+        var hex = parseInt(((hex.indexOf('#') > -1) ? hex.substring(1) : hex), 16);
+        return {r: hex >> 16, g: (hex & 0x00FF00) >> 8, b: (hex & 0x0000FF)};
+    };
+//end /
+    if (typeof(inhcolor) != "string") {
+        inhcolor = "ff0000";
+    }
+    if (inhcolor.substr(0, 1) == "#") {
+        inhcolor = inhcolor.substr(1, 6);
+    }
+    var 
+        incolor = HexToRGB(inhcolor);
+        hsb = RGBToHSB(incolor),
+        bhsb = {h: hsb.h, s: 100, b: 100};
+
 	for(var i = pickers.length; p = pickers[--i];){
         if(p == target){
             return;
@@ -214,7 +284,7 @@ function init_colorpicker(target, onselect){
     var p_imgs = {
         boverlay: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAKxSURBVHja7NoxCoRAFAXBcfD+ZzYxEkxEDXqqYC9g0Dy/OwawrO38AQuaHgGsa7cAwAIALADAAgAsAMACACwAQAAArwCABQBYAIAFAAgA4BUAsAAAAQC8AgAWACAAgAAAbgCABQAIACAAgBsAYAEAAgAIACAAwDOOgGABAAIACAAgAIAAAAIA5PgMCBYAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAcBeA6TGABQAIACAAgAAAAgAIACAAQCYA/gcAFgAgAIAAAAIACAAgAEAuAD4DggUACAAgAIAAAPEAOAKCBQAIACAAgAAA8QA4AoIFAAgAIACAAADxADgCggUACAAgAIAAAPEAOAKCBQAIACAAgBsAYAEAAgAIAOAGAFgAgAAAAgC4AQAWACAAgAAAbgCABQAIACAAgBsAYAEAAgAIACAAwAcBcAQECwAQAEAAADcAwAIABAAQAMANALAAAAEABABwAwAsAEAAAAEA3AAACwAQAEAAAAEAfg6AIyBYAIAAAAIACAAQD4AjIFgAgAAAAgAIABAPgCMgWACAAAACAAgAEA+AIyBYAIAAAAIACAAgAIAAALkA+AwIFgAgAIAAAAIACAAgAIAAAJ0A+B8AWACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIADA1fQIwAIABAAQAEAAAAEABACo8RkQLABAAAABAAQAiHMEBAsAEABAAAA3AMACAAQAEADADQCwAAABALwCABYAIACAVwDAAgAsAMACAAQA8AoAWACABQBYAIAFAFgAgAUAvOkQYABehQTISkChWgAAAABJRU5ErkJggg==",
         woverlay: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAKSSURBVHja7NQ7DoAgEEDB1fufef20GgWC0DiTEAUTC5S3bIeIOEcUrqW1633N/Gmt5tnMkR3Pc/Ba73zEO3PCPnzxbWaO1v+85SzVntHbdQ3gtwQABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEAAbAFIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgC82QUYAJKU6/4c8sBCAAAAAElFTkSuQmCC",
-        slider: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAEACAIAAADeB9oaAAAABGdBTUEAAK/INwWK6QAAAAlwSFlzAAAASAAAAEgARslrPgAAAAl2cEFnAAAAEwAAAQAAkVKnCwAAAIBJREFUaN7t28EJwDAQA0EdmPRfb3BwetDXc/8BPxeB56S8lTwkSZIkSZJkc3PylXKn7Lf1do4kSZIkSZKc1A3WBiNJkiRJkuT1crLLBpuc3b42ZTOSJEmSJEneLqcd0LLaYCRJkiRJkrxeTjugZdoBLasNRpIkSZIkyevl1L84fwRHjsI0XIO/AAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDEwLTEyLTE2VDA1OjIyOjM3KzAyOjAwHwrr1gAAACV0RVh0ZGF0ZTptb2RpZnkAMjAxMC0xMi0xNlQwNToyMjozNyswMjowMG5XU2oAAAAZdEVYdFNvZnR3YXJlAEFkb2JlIEltYWdlUmVhZHlxyWU8AAAAAElFTkSuQmCC",
+        slider: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAEACAIAAADeB9oaAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sGBwgFNhpkuzEAAACCSURBVGje7dtBCsQwEANBDZj9/3cTvDh/0NU197o3Mp6T8lZ+JEmSJEmSZHVzdit3m2/rDUmSJEmSJNk1WOoGS5uMJEmSJEmSt8tJO6FN2gltpU1GkiRJkiTJ2+WkndBW++RKkiRJkiR5vZzdNtic/NtizFPLlyRJkiRJ8mY59S/OD9P5jsGMLFCrAAAAAElFTkSuQmCC",
         arrows: "data:image/gif;base64,R0lGODlhKQAJAJECAP///25tbwAAAAAAACH5BAEAAAIALAAAAAApAAkAAAIvVC6py+18ggFUvotVoODwnoXNxnmfJYZkuZZp1lYx+l5zS9f2ueb6XjEgfqmIoAAAOw==",
         cursor: "data:image/gif;base64,R0lGODlhDAAMAJECAOzp2AAAAP///wAAACH5BAEAAAIALAAAAAAMAAwAAAIhlINpG+AfGFgLxEapxdns2QlfKCJgN4aWwGnR8UBZohgFADs="
     };
@@ -223,13 +293,13 @@ function init_colorpicker(target, onselect){
 	var picker = $c("div", {"class":'picker_box'});
     var slider, palette, cursor, arrows, col, offsetcol, apply, cancel, val;
     picker.appendChild($c("div", {"class":'picker_panel', kids: [
-        col = $c("div", {"class":'picker_color'}),
-        val = $c("input", {type: "input", value: "#ff0000", "class":'picker_value'}),
+        col = $c("div", {"class":'picker_color', style: "background-color: #" + inhcolor}),
+        val = $c("input", {type: "input", value: "#" + inhcolor, "class":'picker_value'}),
         apply = $c("input", {type: "button", value: "OK"}),
         cancel = $c("input", {type: "button", value: IDL("Cancel")})
     ]}));
     offsetcol = 30;//col.offsetHeight;
-    picker.appendChild(palette = $c("div", {style: "width: 256px; height: 256px; float: left; background: #f00;", draggable: "false", kids: [
+    picker.appendChild(palette = $c("div", {style: "width: 256px; height: 256px; float: left; background: #" + RGBToHex(HSBToRGB(bhsb)) + ";", draggable: "false", kids: [
         $c("img",{src: p_imgs.woverlay, style: "position: absolute", draggable: "false"}), 
         $c("img",{src: p_imgs.boverlay, style: "position: absolute", draggable: "false"}),
         cursor = $c("img",{src: p_imgs.cursor, id: "p_cursor", style: "position: absolute; z-index:1000; margin: -6px -2px; left: 255px;", draggable: "false"})
@@ -238,42 +308,25 @@ function init_colorpicker(target, onselect){
         arrows = $c("img",{src: p_imgs.arrows, style: "position: absolute; margin: -4px -11px; z-index: 1000", draggable: "false"}),
         $c("img",{src: p_imgs.slider, draggable: "false"})
     ]})); 
+    cursor.style.top = ((255 - hsb.b / 100 * 255 + 30) | 0) + "px";
+    cursor.style.left = ((hsb.s / 100 * 255) | 0) + "px";
+    arrows.style.top = ((hsb.h / 360 * 255) | 0 + 30) + "px";
 	var mousegpos = [0, 0],
     mousenpos = [0, 0],
     mousepos = [0, 0],
     paldown = 0,
     slddown = 0,
     lock = 0,
-    hue = 0, sat = 1, bri = 1,
+    hue = hsb.h / 360, sat = hsb.s / 100, bri = hsb.b / 100,
     color = [1, 0, 0],
-    hcolor = "#ff0000", 
-    bhcolor = "#ff0000", 
+    hcolor = inhcolor, 
+    bhcolor = RGBToHex(HSBToRGB(bhsb)), 
     heig = 255;
     function upcolor(){
-        color = [0, 0, 0],
-        huep = (hue * 6) | 0,
-        hueo = hue * 6 - huep,
-        a = (3 - ((huep / 2) | 0)) % 3,
-        b = (5 - ((huep / 2) | 0)) % 3,
-        nsat = 1 - sat;
-        if(huep & 1){
-            hueo = 1 - hueo;
-            var t = a;
-            a = b;
-            b = t;
-        }
-        color[a] = 1;
-        color[b] = hueo;
-        hcolor = "#";
-        bhcolor = "#";
-        for(var i = 0; i < 3; i++){
-            var t = (color[i] * 255 | 0).toString(16);
-            bhcolor += (t.length == 1 ? "0" : "") + t;
-            color[i] += (1 - color[i]) * nsat;
-            color[i] *= bri;
-            t = (color[i] * 255 | 0).toString(16);
-            hcolor += (t.length == 1 ? "0" : "") + t;
-        }
+        var hsb = {h: hue * 360, s: sat * 100, b: bri * 100},
+            bhsb = {h: hsb.h, s: 100, b: 100};
+        hcolor = "#" + RGBToHex(HSBToRGB(hsb));
+        bhcolor = "#" + RGBToHex(HSBToRGB(bhsb));
         val.value = hcolor;
         col.style.backgroundColor = hcolor;
         palette.style.backgroundColor = bhcolor;
@@ -298,7 +351,6 @@ function init_colorpicker(target, onselect){
                 target = target.parentNode;
                 break;
             }
-            console.log(target);
             mousepos[1] -= offsetcol;
         }
         mousegpos = [(e.pageX || e.x), (e.pageY || e.y)];
@@ -492,7 +544,7 @@ function vkInitSettings(){
 	  {id:25, text:IDL("seICQico")},
 	  {id:26, text:IDL("seCalcAge")},
 	  {id:38, text:'<table><tr><td> <table><tr><td width=20 height=20 id="spct11" bgcolor='+getFrColor()+'></td></tr></table> <td>'+
-      '<span class="cltool"><a onclick="init_colorpicker(this.parentNode,FrCol_click)">'+IDL("seLightFriends")+'</a></span>'+
+      '<span class="cltool"><a onclick="init_colorpicker(this.parentNode,FrCol_click,\'' + getFrColor() + '\')">'+IDL("seLightFriends")+'</a></span>'+
       '</td></tr></table>'},
 	  {id:39, text:IDL("seGrCom")},
 	  {id:41, header:IDL("seExpland_ProfileInfo"), text:IDL("seExplandProfileInfoText"),ops:[0,1,2,3]}
@@ -500,8 +552,8 @@ function vkInitSettings(){
 
     Messages:[
       {id:19, text:IDL("seQAns")},
-	  {id:28, text:'<table><tr><td> <table><tr><td width=20 height=20 id="spct10" bgcolor='+getMsgColor()+'></td></tr></table> <td>'+
-      '<span class="cltool"><a onclick="init_colorpicker(this.parentNode,MsgCol_click)">'+IDL("seHLMail")+'</a></span>'+
+	  {id:28, text:'<table><tr><td> <table><tr><td width=20 height=20 id="spct10" bgcolor=' + getMsgColor() + '></td></tr></table> <td>'+
+      '<span class="cltool"><a onclick="init_colorpicker(this.parentNode,MsgCol_click,\'' + getMsgColor() + '\')">'+IDL("seHLMail")+'</a></span>'+
       '</td></tr></table>'},
 	  {id:40, text:IDL("seMasDelPMsg")}
     ],

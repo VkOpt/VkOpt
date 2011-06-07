@@ -111,6 +111,7 @@ function vkOnNewLocation(startup){
 			case 'wall'   :vkWallPage(); break;
 			case 'friends':vkFriendsPage(); break;
 			case 'photos' :vkPhotosPage(); break;
+			case 'audio'  :vkAudioPage(); break;
 		}
 		if (startup && window.Fave) Fave.init();	
 	}
@@ -199,7 +200,12 @@ function VkOptMainInit(){
 	'DelAllComments':'[ \u0423\u0434\u0430\u043b\u0438\u0442\u044c \u0432\u0441\u0435 \u043a\u043e\u043c\u043c\u0435\u043d\u0442\u0430\u0440\u0438\u0438 ]',
 	'DelComments':'\u0423\u0434\u0430\u043b\u0435\u043d\u0438\u0435 \u043a\u043e\u043c\u043c\u0435\u043d\u0442\u0430\u0440\u0438\u0435\u0432',
 	'DelAllCommentsConfirm':'\u0412\u044b \u0443\u0432\u0435\u0440\u0435\u043d\u044b \u0447\u0442\u043e \u0445\u043e\u0442\u0438\u0442\u0435 \u0443\u0434\u0430\u043b\u0438\u0442\u044c \u0432\u0441\u0435 \u043a\u043e\u043c\u043c\u0435\u043d\u0442\u0430\u0440\u0438\u0438?',
-	'CommonFriends':'\u041e\u0431\u0449\u0438\u0435 \u0434\u0440\u0443\u0437\u044c\u044f'
+	'CommonFriends':'\u041e\u0431\u0449\u0438\u0435 \u0434\u0440\u0443\u0437\u044c\u044f',
+	'links':'\u0421\u0441\u044b\u043b\u043a\u0438',
+	'download_M3U':'\u0421\u043a\u0430\u0447\u0430\u0442\u044c M3U \u043f\u043b\u0435\u0439\u043b\u0438\u0441\u0442',
+	'download_PLS':'\u0421\u043a\u0430\u0447\u0430\u0442\u044c PLS \u043f\u043b\u0435\u0439\u043b\u0438\u0441\u0442',
+	'M3U_Playlist':'M3U \u043f\u043b\u0435\u0439\u043b\u0438\u0441\u0442',
+	'PLS_Playlist':'PLS \u043f\u043b\u0435\u0439\u043b\u0438\u0441\u0442'
   });
   vkStyles();
   if (!ge('content')) return;
@@ -1027,7 +1033,9 @@ function vkAudios(){
 		Inj.After('Audio.searchRequest',/cur.sContent.innerHTML.+res;/i,'vkAudioNode(cur.sContent);');
 		Inj.Before('Audio.loadRecommendations','if (json)','if (rows) rows=vkModAsNode(rows,vkAudioNode); if(preload) preload=vkModAsNode(preload,vkAudioNode); ');
 	}
-	//vkAudioShuffle(1);
+}
+function vkAudioPage(){
+	vkAudioPlayList(true);
 }
 function vkAudioNode(node){
   if ((node || ge('content')).innerHTML.indexOf('play_new')==-1) return;
@@ -1178,28 +1186,84 @@ function vkAudioDurSearchBtn(audio,fullname,id){
 	//var onclick='if (checkEvent(event)) return; Audio.selectPerformer(event, \''+sq+'\'); return false';'return nav.go(this, event);'
 	return '<a href="/search?c[q]='+sq+'&c[section]=audio" onmouseover="vkGetAudioSize(\''+id+'\',this)" onclick="if (checkEvent(event)) return; Audio.selectPerformer(event, \''+sq+'\'); return false">'+dur+'</a>';
 }
-/*
-function vkAudioShuffle(add_button){
-	if (add_button) {
-		if(ge('vk_ShuffleBtn')) return;
-		if (!ge('audio_summary')) return false;
-		var el=ge('audio_summary').parentNode;
-		var btn=vkCe('span',{id:'shuffle_btn'});
-		var bitem='<img id="vk_ShuffleBtn" src="'+shuffle_img+'" onClick="vkAudioShuffle();" class="vk_imgbtn">';
-		bitem='<span class="ptool">'+bitem+'<span class="ptip" id="st_tip" onClick="vkAudioShuffle();">'+IDL('SnufflePls')+'</span></span>';
-		btn.innerHTML=bitem;
-		el.appendChild(btn);
-	} else {
-		var nodes = ge('initial_list').childNodes;
-        var el = ge('initial_list');
-        var i = nodes.length, j, t;
-        while (i) {
-            j = Math.floor((i--) * Math.random());
-            el.insertBefore(nodes[i], nodes[j]);
-        }
+
+function vkAudioPlayList(add_button){
+	if(add_button){
+		if (ge('vkmp3links')) return;
+		var p=ge('audio_actions');
+		p.innerHTML+='<span class="divider">|</span><a onclick="vkAudioPlayList(); return false;" href="#" id="vkmp3links">'+IDL('Links')+'</a>';
+		return;
 	}
-}
+/*
+	ge('audio_actions')
+0: [
+	aid: 107685769
+	owner_id: 1456232
+	artist: The Pretty Reckless 
+	title: Zombie
+	duration: 186
+	url: http://cs4402.vkontakte.ru/u44980770/audio/08335489cdeb.mp3
+	lyrics_id: 2950274
+]
+
+[playlist]
+
+File1=http://cs4680.vk.com/u138381203/audio/96239874086e.mp3
+Title1=Rammstein - [Du Hast]
+Length1=235
+
+File2=http://cs5070.vk.com/u5897150/audio/a1f311111d9b.mp3
+Title2=Rammstein - Links 2,3,4
+Length2=216
+
 */
+	vkaddcss('#vk_mp3_links_area, #vk_m3u_playlist_area,#vk_pls_playlist_area{width:520px; height:400px;}');
+	var params={}; 
+	params[cur.oid>0?"uid":"gid"]=cur.oid; 
+	var box=vkAlertBox('',vkBigLdrImg);
+	dApi.call('audio.get',params,function(r){
+		var res='#EXTM3U\n';
+		var pls='[playlist]\n\n';
+		var links=[];
+		var list=r.response;
+		for (var i=0;i<list.length;i++){
+			var itm=list[i];
+			res+='#EXTINF:'+itm.duration+','+(winToUtf(itm.artist+" - "+itm.title))+'\n';
+			res+=itm.url+"\n";//+"?/"+(encodeURIComponent(itm.artist+" - "+itm.title))+".mp3"+"\n";
+			
+			pls+='File'+(i+1)+'='+itm.url+'\n';
+			pls+='Title'+(i+1)+'='+winToUtf(itm.artist+" - "+itm.title)+'\n';
+			pls+='Length'+(i+1)+'='+itm.duration+'\n\n';
+			
+			links.push(itm.url+"?/"+(itm.artist+" - "+itm.title)+".mp3");
+		}
+		pls+='\nNumberOfEntries='+list.length+'\n\nVersion=2'
+
+		box.hide();
+		m3u_html='<div class="vk_m3u_playlist">\
+				<textarea id="vk_m3u_playlist_area">'+res+'</textarea>\
+				<a href="data:audio/x-mpegurl;base64,' + base64_encode(utf8ToWindows1251(utf8_encode(res))) + '">'+vkButton(IDL('download_M3U'))+'</a>\
+				<a href="data:audio/x-mpegurl;base64,' + base64_encode(utf8_encode(res)) + '">'+vkButton(IDL('download_M3U')+' (UTF-8)','',1)+'</a>\
+				</div>';
+		pls_html='<div class="vk_pls_playlist">\
+				<textarea id="vk_pls_playlist_area">'+pls+'</textarea>\
+				<a href="data:audio/x-scpls;base64,' + base64_encode(utf8ToWindows1251(utf8_encode(pls))) + '">'+vkButton(IDL('download_PLS'))+'</a>\
+				<a href="data:audio/x-scpls;base64,' + base64_encode(utf8_encode(pls)) + '">'+vkButton(IDL('download_PLS')+' (UTF-8)','',1)+'</a>\
+				</div>';
+
+		var tabs=[];
+
+		tabs.push({name:IDL('links'),active:true, content:'<div class="vk_mp3_links"><textarea id="vk_mp3_links_area">'+links.join('\n')+'</textarea></div>'});
+		tabs.push({name:IDL('M3U_Playlist'),content:m3u_html});
+		tabs.push({name:IDL('PLS_Playlist'),content:pls_html});
+		box=vkAlertBox('MP3',vkMakeContTabs(tabs));
+		box.setOptions({width:"560px"});
+		/*alert(links.join('\n'));
+		alert(res);
+		*/
+	});
+}
+
 
 /* WIKI GET CODE*/
 function vkGetWikiCode(){
