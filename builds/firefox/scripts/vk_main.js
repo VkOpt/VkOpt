@@ -1194,29 +1194,6 @@ function vkAudioPlayList(add_button){
 		p.innerHTML+='<span class="divider">|</span><a onclick="vkAudioPlayList(); return false;" href="#" id="vkmp3links">'+IDL('Links')+'</a>';
 		return;
 	}
-/*
-	ge('audio_actions')
-0: [
-	aid: 107685769
-	owner_id: 1456232
-	artist: The Pretty Reckless 
-	title: Zombie
-	duration: 186
-	url: http://cs4402.vkontakte.ru/u44980770/audio/08335489cdeb.mp3
-	lyrics_id: 2950274
-]
-
-[playlist]
-
-File1=http://cs4680.vk.com/u138381203/audio/96239874086e.mp3
-Title1=Rammstein - [Du Hast]
-Length1=235
-
-File2=http://cs5070.vk.com/u5897150/audio/a1f311111d9b.mp3
-Title2=Rammstein - Links 2,3,4
-Length2=216
-
-*/
 	vkaddcss('#vk_mp3_links_area, #vk_m3u_playlist_area,#vk_pls_playlist_area{width:520px; height:400px;}');
 	var params={}; 
 	params[cur.oid>0?"uid":"gid"]=cur.oid; 
@@ -1513,19 +1490,23 @@ function vkMakeMsgHistory(uid){
 		dApi.call('messages.getHistory',{uid:uid,offset:offset,count:100},function(r){
 			ge('saveldr').innerHTML=vkProgressBar(offset,r.response[0],125);
 			var msgs=r.response;
+			var count=msgs.shift();
+			msgs.reverse();
 			var msg=null;
-			for (var i=1;i<msgs.length;i++){
+			var res=''
+			for (var i=0;i<msgs.length;i++){
 				msg=msgs[i];
 				var date=(new Date(msg.date*1000)).format(SAVE_MSG_HISTORY_DATE_FORMAT);
 				var user=(msg.from_id==mid?user2:user1);
 				var text=vkCe('div',{},msg.body).innerText;// no comments....
 				text=text.replace(/\n/g,'\r\n');
-				result+=SAVE_MSG_HISTORY_PATTERN
+				res+=SAVE_MSG_HISTORY_PATTERN
                  .replace(/%username%/g,user) //msg.from_id
                  .replace(/%date%/g,    date)
-                 .replace(/%message%/g, text)
+                 .replace(/%message%/g, text);
 			}
-			if (offset<r.response[0]){
+			result=res+result;
+			if (offset<count){
 				offset+=100;
 				setTimeout(function(){collect(callback);},300);
 			} else {
