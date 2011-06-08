@@ -1550,7 +1550,7 @@ function vkLoadTxt(callback,mask){
 }
 //END DATA LOADER
 function vkDisableAjax(){
-  if (window.nav && nav.go) Inj.Before('nav.go',/if.{0,4}window.persistentPlayback/i,"{ location.href='/'+strLoc; return true;};");
+  if (window.nav && nav.go) Inj.Before('nav.go',"var _a = window.audioPlayer;","{ location.href='/'+strLoc; return true;};");
 }
 
 

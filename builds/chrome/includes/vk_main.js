@@ -205,7 +205,12 @@ function VkOptMainInit(){
 	'download_M3U':'\u0421\u043a\u0430\u0447\u0430\u0442\u044c M3U \u043f\u043b\u0435\u0439\u043b\u0438\u0441\u0442',
 	'download_PLS':'\u0421\u043a\u0430\u0447\u0430\u0442\u044c PLS \u043f\u043b\u0435\u0439\u043b\u0438\u0441\u0442',
 	'M3U_Playlist':'M3U \u043f\u043b\u0435\u0439\u043b\u0438\u0441\u0442',
-	'PLS_Playlist':'PLS \u043f\u043b\u0435\u0439\u043b\u0438\u0441\u0442'
+	'PLS_Playlist':'PLS \u043f\u043b\u0435\u0439\u043b\u0438\u0441\u0442',
+	'WarnSetting':'<b>\u041f\u043e\u0442\u0435\u043d\u0446\u0438\u0430\u043b\u044c\u043d\u043e \u043d\u0435 \u0440\u0435\u043a\u043e\u043c\u0435\u043d\u0434\u0443\u0435\u043c\u0430\u044f \u043e\u043f\u0446\u0438\u044f</b><br>\u0415\u0441\u043b\u0438 \u0432\u044b \u043d\u0435 \u0443\u0432\u0435\u0440\u0435\u043d\u044b \u0432 \u043d\u0435\u043e\u0431\u0445\u043e\u0434\u0438\u043c\u043e\u0441\u0442\u0438 \u0434\u0430\u043d\u043d\u043e\u0439 \u0444\u0443\u043d\u043a\u0446\u0438\u0438, \u043d\u0435 \u0432\u043a\u043b\u044e\u0447\u0430\u0439\u0442\u0435 \u0435\u0451!',
+	'Reset':'\u0421\u0431\u0440\u043e\u0441\u0438\u0442\u044c',
+	'SaveHistoryCfg':'\u041f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u044b \u0441\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u0438\u044f \u043f\u0435\u0440\u0435\u043f\u0438\u0441\u043a\u0438',
+	'SaveMsgFormat':'\u0424\u043e\u0440\u043c\u0430\u0442 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u044f',
+	'SaveMsgDateFormat':'\u0424\u043e\u0440\u043c\u0430\u0442 \u0434\u0430\u0442\u044b \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u044f'
   });
   vkStyles();
   if (!ge('content')) return;
@@ -383,6 +388,7 @@ function vkStyles(){
 	.vk_mail_save_history{	display: block; height: 13px;	padding: 18px;	text-align: center;	}\
 	.vk_mail_save_history_block{	display: block; float:right; text-align: center; /*width: 200px;*/	}\
 	.vk_mail_save_history_block IMG{margin-top:13px;}\
+	.vk_mail_save_history_block .cfg{height: 11px; width: 15px; margin-top:2px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -60px;}\
 	.lskey{padding-left: 5px; float:left; width:140px; overflow:hidden; height:20px; line-height:20px; font-weight:bold;}\
     .lsval{height:20px; overflow:hidden; line-height:20px;}\
     .lsrow{border:1px solid #FFF; border-bottom:1px solid #DDD;}\
@@ -465,6 +471,7 @@ function vkStyles(){
 	";
 	//settings
 	main_css+="\
+		.vk_warning_ico{width:16px; height:16px; cursor:pointer; background-image:url('"+warning_img+"');}\
 		.sett_block{border-bottom:1px solid #CCC; width:49%; display:inline-block; margin-top:3px;margin-left: 4px; float:left}\
 		.sett_block .btns{border:0px solid; width:60px; float:left; height:100%; text-align:center;}\
 		.btns A{display:block;}\
@@ -682,7 +689,7 @@ function vkCommon(){
 	//Inj.Replace('ajax.framepost',' done',' function(p1,p2,p3,p4,p5,p6,p7,p8,p9,p10){done(p1,p2,p3,p4,p5,p6,p7,p8,p9,p10); setTimeout("vkProcessNode(); ",50);}'); //alert(\'qwe\');
 	Inj.Before('ajax._post','o.onDone.apply','vkResponseChecker(answer);');// если это будет пахать нормально, то можно снести часть инъекций в другие модули.
 	
-	Inj.Before('nav.go',/if.{0,4}window.persistentPlayback/i,"if (strLoc) if(vkAjaxNavDisabler(strLoc)){return true;}");
+	Inj.Before('nav.go',"var _a = window.audioPlayer;","if (strLoc) if(vkAjaxNavDisabler(strLoc)){return true;}");
 	
 	Inj.Start('renderFlash','vkOnRenderFlashVars(vars);');
 	//if (window.setFavIcon) Inj.Try('setFavIcon');
@@ -692,12 +699,15 @@ function vkCommon(){
 }
 
 function vkResponseChecker(answer){// detect HTML and prosessing
+
 	var rx=/div.+class.+[^\\]"/;
+	var _rx=/^\s*<div/;
 	//var nrx=/['"]\+.+\+['"]/;
-	var nrx=/(document\.|window\.|join\(.+\)|\.init|[\{\[]["']|\.length|function\()/;
+	var nrx=/(document\.|window\.|join\(.+\)|\.init|[\{\[]["']|\.length|[:=]\s*function\()/;
 	for (var i=0;i<answer.length;i++){
 		//if (typeof answer[i]=='string' && !nrx.test(answer[i]))	alert(answer[i]);
-		if (typeof answer[i]=='string' && rx.test(answer[i]) && !nrx.test(answer[i])){
+		//if (typeof answer[i]=='string') alert(answer[i].match(rx)+'\n'+answer[i].match(nrx)+'\n'+answer[i]);
+		if (typeof answer[i]=='string' && _rx.test(answer[i]) ){//|| (rx.test(answer[i]) && !nrx.test(answer[i]))
 			answer[i]=vkModAsNode(answer[i],vkProcessNodeLite);		
 		}
 	}
@@ -708,9 +718,11 @@ function vkNotifier(){
 		vk_allow_autohide_notify=false;
 		Inj.Before('Notifier.showEvent','ev.fadeTO','if (vk_allow_autohide_notify)');
 		Inj.Before('Notifier.unfreezeEvents','this.fadeTO','if (vk_allow_autohide_notify)'); 
+		
 		Inj.Before('Notifier.onInstanceFocus','Notifier.hideEvent','if (vk_allow_autohide_notify)');
 		Inj.Before('Notifier.onInstanceFocus','curNotifier.q_events = []','if (vk_allow_autohide_notify)');
 		Inj.Before('Notifier.onInstanceFocus','curNotifier.q_shown = []','if (vk_allow_autohide_notify)');
+		
 		Notifier.unfreezeEvents=Notifier.freezeEvents;
 	}
 	 /* delay for hide notify msg
@@ -1135,6 +1147,7 @@ function vkShowAddAudioTip(el,id){
 		});
 	}
 }
+
 function vkGetAudioSize(id,el){
 	vkShowAddAudioTip(el,id);
 	if (getSet(43)!='y') return;
@@ -1468,13 +1481,13 @@ function vkAddSaveMsgLink(){
   if (!ge('vk_history_to_file')){
 	var btn=vkCe('div', {	id:"vk_history_to_file_block", "class":"vk_mail_save_history_block", },
 					'<div id="saveldr" style="display:none; padding:8px; padding-top: 14px; text-align:center; width:130px;"><img src="/images/upload.gif"></div>'+
-					'<a href="#" onclick="vkMakeMsgHistory(); return false;" id="save_btn_text" class="vk_mail_save_history">'+IDL('SaveHistory')+'</a>'
+					'<a href="#" onclick="return false;" id="save_btn_text" class="vk_mail_save_history"><span onclick="vkMakeMsgHistory(); return false;">'+IDL('SaveHistory')+'</span><div class="cfg fl_r" onclick="vkMakeMsgHistory(null,true);"></div></a>'
 				);
 	var ref=ge('mail_history');
 	ref.parentNode.insertBefore(btn,ref);
   }
 }
-function vkMakeMsgHistory(uid){
+function vkMakeMsgHistory(uid,show_format){
 	vkInitDataSaver();
 	if (!uid) uid=cur.thread.id;
 	var offset=0;
@@ -1482,6 +1495,8 @@ function vkMakeMsgHistory(uid){
 	var user1='user1';
 	var user2='user1';
 	var mid=remixmid();
+	var msg_pattern=vkGetVal('VK_SAVE_MSG_HISTORY_PATTERN') || SAVE_MSG_HISTORY_PATTERN;
+	var date_fmt=vkGetVal('VK_SAVE_MSG_HISTORY_DATE_FORMAT') || SAVE_MSG_HISTORY_DATE_FORMAT;
 	var collect=function(callback){
 		hide('save_btn_text');
 		show('saveldr');
@@ -1496,11 +1511,11 @@ function vkMakeMsgHistory(uid){
 			var res=''
 			for (var i=0;i<msgs.length;i++){
 				msg=msgs[i];
-				var date=(new Date(msg.date*1000)).format(SAVE_MSG_HISTORY_DATE_FORMAT);
+				var date=(new Date(msg.date*1000)).format(date_fmt);
 				var user=(msg.from_id==mid?user2:user1);
 				var text=vkCe('div',{},msg.body).innerText;// no comments....
 				text=text.replace(/\n/g,'\r\n');
-				res+=SAVE_MSG_HISTORY_PATTERN
+				res+=msg_pattern
                  .replace(/%username%/g,user) //msg.from_id
                  .replace(/%date%/g,    date)
                  .replace(/%message%/g, text);
@@ -1510,20 +1525,47 @@ function vkMakeMsgHistory(uid){
 				offset+=100;
 				setTimeout(function(){collect(callback);},300);
 			} else {
+				alert(result);
 				callback(result);
 			}
 		});
 	}
-	dApi.call('getProfiles',{uids:remixmid()+','+uid},function(r){
-		user2=r.response[0].first_name+" "+r.response[0].last_name;
-		user1=r.response[1]?r.response[1].first_name+" "+r.response[1].last_name:'DELETED';
-		collect(function(t){
-			show('save_btn_text');
-			hide('saveldr');
-			vkSaveText(t,"messages_"+user1+"("+uid+").txt");
-			//alert(t);
-		});
-	});
+	var run=function(){
+		dApi.call('getProfiles',{uids:remixmid()+','+uid},function(r){
+			user2=r.response[0].first_name+" "+r.response[0].last_name;
+			user1=r.response[1]?r.response[1].first_name+" "+r.response[1].last_name:'DELETED';
+			collect(function(t){
+				show('save_btn_text');
+				hide('saveldr');
+				vkSaveText(t,"messages_"+user1+"("+uid+").txt");
+				//alert(t);
+			});
+		});	
+	}
+	
+	if (show_format){
+		var aBox = new MessageBox({title: IDL('SaveHistoryCfg')});
+		aBox.removeButtons();
+		aBox.addButton(IDL('Hide'), aBox.hide, 'no')
+		aBox.addButton(IDL('OK'),function(){  
+			msg_pattern=ge('vk_msg_fmt').value;
+			date_fmt=ge('vk_msg_date_fmt').value;
+			vkSetVal('VK_SAVE_MSG_HISTORY_PATTERN',msg_pattern);
+			vkSetVal('VK_SAVE_MSG_HISTORY_DATE_FORMAT',date_fmt);
+			aBox.hide(); 
+			run();	 
+		},'yes');
+		vkaddcss('.vk_save_hist_cfg textarea{width:370px;}');
+		html ='<h4>'+IDL('SaveMsgFormat')+'<a class="fl_r" onclick="ge(\'vk_msg_fmt\').value=SAVE_MSG_HISTORY_PATTERN;">'+
+					IDL('Reset')+'</a></h4><textarea id="vk_msg_fmt" onfocus="autosizeSetup(this,{});">'+msg_pattern+'</textarea><br><br>';
+					
+		html+='<h4>'+IDL('SaveMsgDateFormat')+'<a class="fl_r" onclick="ge(\'vk_msg_date_fmt\').value=SAVE_MSG_HISTORY_DATE_FORMAT;">'+
+					IDL('Reset')+'</a></h4><textarea id="vk_msg_date_fmt" onfocus="autosizeSetup(this,{});">'+date_fmt+'</textarea><br>';
+		aBox.content('<div class="vk_save_hist_cfg">'+html+'</div>');
+		aBox.show();
+		autosizeSetup('vk_msg_fmt',{});
+		autosizeSetup('vk_msg_date_fmt',{});
+	} else run();
 }
 
 // END OF SAVE HISTORY TO FILE

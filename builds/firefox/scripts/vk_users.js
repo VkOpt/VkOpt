@@ -10,8 +10,8 @@
 //  functions for work with users
 var vkUsersDomain={}; 
 var isUserRegEx=[
-/(^|\/)(reg|regstep|club|event|photo|photos|album|albums|video|videos|note|notes|app|page|board|topic|write|public|publics|groups|wall|graffiti|tag\d|doc)-?\d+/i,
-/(^|\/)(events|changemail|mail|im([^a-z0-9]|$)|audio|apps|editapp|feed|friends|friendsphotos|search|invite|settings|edit|fave|stats|video|groups|notes|docs)\??.*#?/i,
+/(^|\/)(reg|regstep|club|event|photo|photos|album|albums|video|videos|note|notes|app|page|board|topic|write|public|publics|groups|wall|graffiti|tag\d|doc|gifts)-?\d+/i,
+/(^|\/)(events|changemail|mail|im([^a-z0-9]|$)|audio|apps|editapp|feed|friends|friendsphotos|search|invite|settings|edit|fave|stats|video|groups|notes|docs|gifts)\??.*#?/i,
 /javascript|#|\.mp3|\.flv|\.mov|http...www|\/ru\//i,
 /\.php($|\?)/i,
 /\/$/i,

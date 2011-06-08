@@ -568,7 +568,7 @@ function vkInitSettings(){
       {id:13, header:IDL("seMyFrLink") , text:IDL("seMyFrLnkOps"),ops:[0,1,2]},
 	  {id:3, text:IDL("seCompactAudio")},
 	  {id:4, text:IDL("seMoreDarkViewer")},
-	  {id:5, text:IDL("seDisableAjaxNav")},
+	  {id:5, text:IDL("seDisableAjaxNav"),warn:true},
 	  {id:17, text:IDL("seCompactFave")},
 	  {id:16, text:IDL("seOnlineStatus")},
 	  {id:18, header:IDL("seFixLeftMenu"), text:IDL("seFixLeftMenuText"),ops:[0,1,2]},
@@ -678,18 +678,29 @@ function vkGetSettings(setts,allsett){
         }
       }
       var sub="";
+	  var warn=(set.warn?'<div class="vk_warning_ico fl_r" onmouseover="vkSettInfo(this,IDL(\'WarnSetting\'));"></div>':'');
       if (set.sub) {
         var subsets=[];
         var sops=set.sub.ops;
         for (var i=0;i<sops.length;i++) subsets.push('<a href="javascript:vkSwitchSet('+set.sub.id+','+sops[i]+',true);">'+sops[i]+'</a>');
         sub = set.sub.text.replace("%cur",'<span id="vkcurset'+set.sub.id+'">'+allsett[set.sub.id]+'</span>').replace("%sets",subsets.join(" - "));
       }
-      html+='</div><div class="stext">'+set.text+sub+'</div></div>\r\n';
+      html+='</div><div class="stext">'+set.text+sub+warn+'</div></div>\r\n';
   }
   return '<div style="display: inline-block; width:100%;">'+html+"</div>";
   
 }
 
+function vkSettInfo(el,text,hasover){
+	showTooltip(el, {
+		  hasover:hasover,
+		  text:text,
+		  slide: 15,
+		  //shift: [0, -3, 0],
+		  showdt: 100,
+		  hidedt: 200,
+	});
+}
 function vkCheckboxSetting(id,text,in_div){
 	var cfg=getSet(id)=='y'; 
 	return (in_div?'<div class="vk_checkbox_cont">':'')+'<input class="vk_checkbox" type="checkbox" '+(cfg?'checked="on"':'')+' style="margin-left:0px;" onchange="vkSetNY('+id+',this.checked)">'+text+(in_div?'</div>':'');
