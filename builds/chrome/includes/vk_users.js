@@ -169,6 +169,7 @@ function vkProcessUserLink(link){
 	inel.id="pup"+adid;
 	inel.setAttribute('class','vk_usermenu_btn'+(link.className.indexOf('fl_r')!=-1?' fl_r':''));
 	inel.setAttribute(mev,'pupShow(event,\''+adid+'\',\''+uid+'\'); return false;');
+	inel.setAttribute("onmousedown","event.cancelBubble = true;");
 	inel.innerHTML='&#9660; ';
 	link.setAttribute('exuser',true);
 	if (getSet(22)=='y' && link.parentNode.parentNode && link.parentNode.parentNode.id=='profile_groups'){
@@ -421,9 +422,8 @@ function vkPopupAvatar(id,el,in_box){
 		vkGetProfile(id,function(html,uid){
 			//LoadedProfiles[id]=html;
 			box.hide();
-			box=vkAlertBox('',html);
-			box.setOptions({width:"490px",onBeforeHide:box.destroy, onHide:function(){box.content(' '); box.hide();}});
-			//vkShowProfile(el,html,uid);
+			box=vkAlertBox('id'+uid,html);
+			box.setOptions({width:"455px",hideButtons:true, bodyStyle:'padding:0px;', onHide:__bq.hideAll});
 		},true);
 		
 	}else  if (LoadedProfiles[id]){
