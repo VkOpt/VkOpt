@@ -328,7 +328,9 @@ function vkMenu(){//vkExLeftMenu
   
   if (WALL_LINK){
 	var li=vkCe('li',{},'<a href="/wall'+remixmid()+'" onclick="return nav.go(this, event);">'+IDL('wall')+'<span></span></a>');
-	nav.appendChild(li);
+	var md=geByClass('more_div',nav)[0];
+	if (md) insertAfter(li,md) 
+	else nav.appendChild(li);
   }
   var ass=nav.getElementsByTagName('a');
   var items=[];
