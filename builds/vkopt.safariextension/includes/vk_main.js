@@ -188,6 +188,7 @@ function VkOptMainInit(){
 	'seRightBarFixAsSideBar':'\u0424\u0438\u043a\u0441\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u043a\u0430\u043a \u043b\u0435\u0432\u043e\u0435 \u043c\u0435\u043d\u044e',
 	'seSortFeedPhotos':'\u0421\u043e\u0440\u0442\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u043d\u043e\u0432\u044b\u0435 \u0444\u043e\u0442\u043e\u0433\u0440\u0430\u0444\u0438\u0438 \u0432 \u043d\u043e\u0432\u043e\u0441\u0442\u044f\u0445 \u0432 \u043f\u043e\u0440\u044f\u0434\u043a\u0435 \u0434\u043e\u0431\u0430\u0432\u043b\u0435\u043d\u0438\u044f',
 	'seAudioSize':'\u0417\u0430\u0433\u0440\u0443\u0436\u0430\u0442\u044c \u0438\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u044e \u043e \u0440\u0430\u0437\u043c\u0435\u0440\u0435 \u0438 \u043a\u0430\u0447\u0435\u0441\u0442\u0432\u0435 \u0430\u0443\u0434\u0438\u043e \u043f\u0440\u0438 \u043d\u0430\u0432\u0435\u0434\u0435\u043d\u0438\u0438 \u043d\u0430 \u0432\u0440\u0435\u043c\u044f',
+	'seAdNotHideSugFr':'\u041d\u0435 \u0441\u043a\u0440\u044b\u0432\u0430\u0442\u044c \u0431\u043b\u043e\u043a \u0432\u043e\u0437\u043c\u043e\u0436\u043d\u044b\u0445 \u0434\u0440\u0443\u0437\u0435\u0439',
 	'SavingImages':'\u0421\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u0438\u0435 \u0438\u0437\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u0439',
 	'ClickForShowPage':'\u041a\u043b\u0438\u043d\u0438\u0442\u0435 \u0437\u0434\u0435\u0441\u044c, \u0447\u0442\u043e\u0431\u044b \u043e\u0442\u043a\u0440\u044b\u0442\u044c \u043f\u043e\u0434\u0433\u043e\u0442\u043e\u0432\u043b\u0435\u043d\u043d\u0443\u044e \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0443',
 	'HtmlPageSaveHelp':'\u0414\u043b\u044f \u0441\u043e\u0445\u0440\u0430\u043d\u043d\u0435\u043d\u0438\u044f \u0432\u0441\u0435\u0445 \u0438\u0437\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u0439, \u0434\u043e\u0436\u0434\u0438\u0442\u0435\u0441\u044c \u043f\u043e\u043b\u043d\u043e\u0439 \u0437\u0430\u0433\u0440\u0443\u0437\u043a\u0438 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u044b, \u043f\u043e\u0441\u043b\u0435 \u0447\u0435\u0433\u043e \u0441\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u0435 \u0435\u0451. \u0418\u0437\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u044f \u0431\u0443\u0434\u0443\u0442 \u0441\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u044b \u0432 \u043f\u0430\u043f\u043a\u0435 \u0441 \u043e\u0434\u043d\u043e\u0438\u043c\u0435\u043d\u043d\u044b\u043c \u043d\u0430\u0437\u0432\u0430\u043d\u0438\u0435\u043c.\
@@ -270,6 +271,7 @@ function vkStyles(){
 	var MoreDarkPV=getSet(4);
 	var CompactFave=getSet(17);
 	var RemoveAd=getSet(21);
+	var NotHideSugFr= (getSet(44)=='y');
 	var main_css='';
 	if (getSet(28)=='y') main_css+=GetUnReadColorCss();
 	//compact fave
@@ -412,8 +414,12 @@ function vkStyles(){
 	.vk_popupmenu ul li{display:block;}\
 	.vk_popupmenu ul li a{display:block; padding:2px 5px;}\
 	.vk_popupmenu ul li a:hover{background:#E1E7ED; text-decoration:none;}\
-	"+(RemoveAd=='y'?".ad_box,.ad_box_new,.ad_help_link, .ad_help_link_new, #ad_help_link_new, #left_ads {display: none !important;}\#groups .clearFix {display: block !important;} #sideBar a[href*=\"help.php\"] {display: none !important;} #groups .clearFix {height: 100% !important;}":'')+"\
-	";
+	"+(RemoveAd=='y'?".ad_box,.ad_help_link, .ad_help_link_new, .ad_box_new, #ad_help_link_new {display: none !important;}\
+			"+(NotHideSugFr?'.ad_box_friend{display: block !important;} .ad_box_friend + .ad_box_new{display:block !important;}':'')+"\
+			#groups .clearFix {display: block !important;} \
+			#sideBar a[href*=\"help.php\"] {display: none !important;} \
+			#groups .clearFix {height: 100% !important;}":'')+"\
+	";//,, #left_ads
 
 	//compact audio
 	if (CompactAu=='y')	main_css+="\
@@ -679,36 +685,40 @@ function vkAjaxNavDisabler(strLoc){
 	}
 }
 function vkCommon(){
-  //if (window.nav && window.nav.go){
     if (getSet(6)=='y'){
 		goAway=function(lnk,params){document.location=lnk; return false;};
 		confirmGo=goAway;
 	}
-	// хук на функцию, которая и так сама по себе большой шиздец. надо что то другое придумать...
-	Inj.After('ajax._receive','html});','vkProcessNode(h);');
+	
+	//Inj.After('ajax._receive','html});','vkProcessOnReceive(h);'); // хук на функцию, которая и так сама по себе большой шиздец. надо что то другое придумать...
 	//Inj.Replace('ajax.framepost',' done',' function(p1,p2,p3,p4,p5,p6,p7,p8,p9,p10){done(p1,p2,p3,p4,p5,p6,p7,p8,p9,p10); setTimeout("vkProcessNode(); ",50);}'); //alert(\'qwe\');
+		
+	Inj.Start('ajax.framegot','if (h) h=vkProcessOnFramegot(h);');
 	Inj.Before('ajax._post','o.onDone.apply','vkResponseChecker(answer);');// если это будет пахать нормально, то можно снести часть инъекций в другие модули.
 	
 	Inj.Before('nav.go',"var _a = window.audioPlayer;","if (strLoc) if(vkAjaxNavDisabler(strLoc)){return true;}");
 	
 	Inj.Start('renderFlash','vkOnRenderFlashVars(vars);');
-	//if (window.setFavIcon) Inj.Try('setFavIcon');
 	Inj.End('nav.setLoc','setTimeout("vkOnNewLocation();",2);');
 	
- // }
+	//if (window.setFavIcon) Inj.Try('setFavIcon');
+
 }
+
+function vkProcessOnFramegot(h){ if (h && h.indexOf('name="vkoptmarker"')==-1) return vkModAsNode(h,vkProcessNodeLite); }
+function vkProcessOnReceive(h){	if (h.innerHTML && h.innerHTML.indexOf('name="vkoptmarker"')==-1) {	vkProcessNode(h);}}
 
 function vkResponseChecker(answer){// detect HTML and prosessing
 
 	var rx=/div.+class.+[^\\]"/;
 	var _rx=/^\s*<div/;
 	//var nrx=/['"]\+.+\+['"]/;
-	var nrx=/(document\.|window\.|join\(.+\)|\.init|[\{\[]["']|\.length|[:=]\s*function\()/;
+	//var nrx=/(document\.|window\.|join\(.+\)|\.init|[\{\[]["']|\.length|[:=]\s*function\()/;
 	for (var i=0;i<answer.length;i++){
 		//if (typeof answer[i]=='string' && !nrx.test(answer[i]))	alert(answer[i]);
-		//if (typeof answer[i]=='string') alert(answer[i].match(rx)+'\n'+answer[i].match(nrx)+'\n'+answer[i]);
+		//if (typeof answer[i]=='string') alert(answer[i].match(_rx)+'\n\n'+answer[i]);
 		if (typeof answer[i]=='string' && _rx.test(answer[i]) ){//|| (rx.test(answer[i]) && !nrx.test(answer[i]))
-			answer[i]=vkModAsNode(answer[i],vkProcessNodeLite);		
+			answer[i]=vkModAsNode(answer[i],vkProcessNodeLite)+'<input name="vkoptmarker" type="hidden" value=1>';		
 		}
 	}
 }
@@ -734,13 +744,13 @@ function vkNotifier(){
 } 
 /* PAGES.JS */
 function vkPage(){
-	if (!window.wall) return;
+	/*if (!window.wall) return;
 	Inj.Before('wall.receive','var current','vkProcessNode(n);');
-	Inj.End('wall._repliesLoaded','vkProcessNode(r);');
+	Inj.End('wall._repliesLoaded','vkProcessNode(r);');*/
 }
 /* FEED */
 function vkFeed(){
-	Inj.After("feed.showMore",/au.innerHTML.+rows;/,'vkProcessNode(au);');
+	//Inj.After("feed.showMore",/au.innerHTML.+rows;/,'vkProcessNode(au);');
 }
 function vkFeedPage(){
 	vkSortFeedPhotos();
@@ -771,7 +781,7 @@ function vkSortFeedPhotos(node){
 }
 /* FRIENDS */
 function vkFriends(){
-Inj.Before('Friends.showMore','cur.fContent.appendChild',"html=[vkModAsNode(html.join(''),vkProcessNode)];");
+	Inj.Before('Friends.showMore','cur.fContent.appendChild',"html=[vkModAsNode(html.join(''),vkProcessNode)];");
 }
 
 function vkModAsNode(text,func){
@@ -785,13 +795,13 @@ function vkModAsNode(text,func){
 }
 /* SEARCH */
 function vkSearch(){
-	Inj.Before('searcher.showMore',"ge('results')","rows=vkModAsNode(rows,vkProcessNodeLite);");
-	Inj.Before('searcher.sendSearchReq',"ge('results')","rows=vkModAsNode(rows,vkProcessNodeLite);");
+	//Inj.Before('searcher.showMore',"ge('results')","rows=vkModAsNode(rows,vkProcessNodeLite);");
+	//Inj.Before('searcher.sendSearchReq',"ge('results')","rows=vkModAsNode(rows,vkProcessNodeLite);");
 }
 /* PHOTOS */
 function vkPhotoViewer(){
   //main inj
-  Inj.End('photoview.receiveComms','vkProcessNode(comms);');
+  //Inj.End('photoview.receiveComms','vkProcessNode(comms);');
   Inj.Before('photoview.doShow','cur.pvNarrow','ph.comments=vkModAsNode(ph.comments,vkProcessNode);');
   Inj.Before('photoview.doShow','var likeop','vkProcessNode(cur.pvNarrow);');
   Inj.Before('photoview.doShow','+ (ph.actions.del','+ vkPVLinks(ph) ');
@@ -920,7 +930,7 @@ function vkGetPageWithPhotos(oid,aid){
 /* VIDEO */
 function vkVideoViewer(){
 	vkVidVarsGet();
-	Inj.End('videoview.receiveComms','vkProcessNode(comms);');
+	//Inj.End('videoview.receiveComms','vkProcessNode(comms);');
 	Inj.Before('videoview.showVideo','mvcur.mvNarrow','vkProcessNode(mvcur.mvWide);');
 	if (getSet(2)=='y') Inj.After('videoview.showVideo','innerHTML = info;','setTimeout(vkVidLinks,0);');
 	//Inj.Replace('videoview.minimize','browser.safari || browser.chrome || browser.mozilla','true');

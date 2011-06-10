@@ -3,20 +3,20 @@
   <Description about="urn:mozilla:install-manifest">
     <em:id>vkopt_moz@vkopt.net.ru</em:id>
     <em:type>2</em:type>
-	<em:unpack>true</em:unpack>
+    <em:unpack>true</em:unpack>
     <em:name>VkOpt</em:name>
     <em:version>2.0.0</em:version>
     <em:creator>KiberПсих</em:creator>
     <em:contributor></em:contributor>
 	<em:iconURL>chrome://VkOptExtension/skin/icon.png</em:iconURL>
 	<em:homepageURL>http://vkopt.net/</em:homepageURL>
-	<em:updateURL>http://vkopt.net/upd/update.rdf</em:updateURL>
+    <em:updateURL>https://vkopt.net/upd/update.rdf</em:updateURL>
     <em:description>Добавление множества функций для сайта ВКонтакте.ру</em:description>
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id> <!-- Firefox -->
         <em:minVersion>3.0</em:minVersion>
-        <em:maxVersion>5.*</em:maxVersion>
+        <em:maxVersion>6.*</em:maxVersion>
       </Description>
     </em:targetApplication>
   </Description>

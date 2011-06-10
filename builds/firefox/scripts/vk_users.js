@@ -47,7 +47,7 @@ function getGidUid(url,callback){ //callback(uid,gid)
 	if (url.match(/^g\d+$/)){callback(null,url.match(/^g(\d+)$/)[1]);  return;}
 	if (url.match(/club\d+$/)){callback(url.match(/club(\d+)$/)[1],null);  return;}
 	
-	if (vkUsersGroupsDomain[url]){callback(vkUsersDomain[url][0],vkUsersDomain[url][1]);  return; }
+	if (vkUsersGroupsDomain[url]){callback(vkUsersGroupsDomain[url][0],vkUsersGroupsDomain[url][1]);  return; }
 	AjGet('/al_groups.php?act=add_link_box&al=1&lnk='+url,function(r,t){
 		var res=t.match(/http:\/\/cs\d+.vk.+\/(u\d+|g\d+)\/[A-Za-z0-9]_[A-Za-z0-9]+.jpg/);
 		var id=res?res[1]:null;
@@ -311,7 +311,8 @@ function ExGroupItems(gid){
 function ExUserItems(id){
 var i=0;
 var uitems='';
-(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/id%uid" onclick="return nav.go(this, event);">'+IDL('Page')+'</a>'):i++;// onclick="AlternativeProfile(\'%uid\'); return false;"
+var fl_pr='<a href="#" onclick_="return false;" onclick="vkPopupAvatar(\'%uid\',this,true); return false;" onmouseout="vkHidePhoto();" class="fl_r">&gt;</a>';
+(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,fl_pr+'<a href="/id%uid" onclick="return nav.go(this, event);">'+IDL('Page')+'</a>'):i++;// onclick="AlternativeProfile(\'%uid\'); return false;"
 (ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/write%uid" onclick="return showWriteMessageBox(event, %uid);">'+IDL('txMessage')+'</a>'):i++;
 (ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/wall%uid" onclick="return nav.go(this, event);">'+IDL("clWa")+'</a>'):i++;
 (ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/tag%uid" onclick="return nav.go(this, event);">'+IDL("clPhW")+'</a>'):i++;
@@ -410,12 +411,22 @@ function ProcessUserPhotoLink(node){
 }
 allowHidePhoto=setTimeout(null,null);
 allowShowPhotoTimer=setTimeout(null,null);
-function vkPopupAvatar(id,el){
+function vkPopupAvatar(id,el,in_box){
     if (id==null) return;
     if (!window.LoadedProfiles) LoadedProfiles={};
     if (typeof allowShowPhoto =='undefined') allowShowPhoto=true;
     allowShowPhoto=true;
-    if (LoadedProfiles[id]){
+	if (in_box){
+		var box=vkAlertBox('',vkBigLdrImg);
+		vkGetProfile(id,function(html,uid){
+			//LoadedProfiles[id]=html;
+			box.hide();
+			box=vkAlertBox('',html);
+			box.setOptions({width:"490px",onBeforeHide:box.destroy, onHide:function(){box.content(' '); box.hide();}});
+			//vkShowProfile(el,html,uid);
+		},true);
+		
+	}else  if (LoadedProfiles[id]){
       allowShowPhotoTimer=setTimeout(function(){vkShowProfile(el,LoadedProfiles[id],id);},400);  
     } else {
 		vkGetProfile(id,function(html,uid){
@@ -519,9 +530,9 @@ function vkHidePhoto() {
 var VK_PROFILE_TPL='\
 <div class="vk_profile_info">\
 	<div id="vk_profile_block" class="vk_profile_block clear_fix">\
-		<div class="vk_profile_left fl_l" onmouseover="fadeIn(\'vk_profile_toogle\')" onmouseout="fadeOut(\'vk_profile_toogle\')">\
+		<div class="vk_profile_left fl_l" onmouseover%nb%="fadeIn(\'vk_profile_toogle\')" onmouseout%nb%="fadeOut(\'vk_profile_toogle\')">\
 			<div class="vk_profile_ava"><a href="/id%UID%" onclick="return nav.go(this, event);"><img src="%AVA_SRC%"/></a></div>\
-			<div style="margin-top:-2px;"><a id="vk_profile_toogle" onclick="return vkProfileToggle();" style="">&#9668;</a></div>\
+			<div style="margin-top:-2px;"><a id="vk_profile_toogle" onclick="return vkProfileToggle();" style="display:none;">&#9668;</a></div>\
 		</div>\
 		<div id="vk_profile_right_block" class="vk_profile_right fl_r">\
 		  <div class="vk_profile_header">\
@@ -565,7 +576,7 @@ function vkProfileToggle(init){
 	return false;
 }
 
-function vkGetProfile(uid,callback){
+function vkGetProfile(uid,callback,no_switch_button){
       var make_rate=function(rate){
 	    var fullwidth=200;
 		var level=Math.ceil(Math.log(rate)/Math.log(10));
@@ -632,6 +643,7 @@ function vkGetProfile(uid,callback){
 							   .replace("%ONLINE%",online)
 							   .replace("%PROFILE_INFO%",info_html)
 							   .replace("%COMMON_FR%",common);
+		if (no_switch_button) html=html.replace(/%nb%/g,'_'); else html=html.replace(/%nb%/g,'');
 		html=vkModAsNode(html,vkAddUserMenu);
 		callback(html,uid);
 		//uApi.show(r);	

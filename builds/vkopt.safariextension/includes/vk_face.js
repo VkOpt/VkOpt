@@ -41,6 +41,14 @@ function vkMakeRightBar(){
 		if (b) bar.appendChild(b);
 	}
 }
+//if (getSet(44)=='y') vkMoveSuggFrBox();
+function vkMoveSuggFrBox(){
+	var e=geByClass('ad_box_friend',ge('left_ads'))[0]; 
+	if (!e) return;
+	var e2=vkNextEl(e); 
+	ge('left_blocks').appendChild(e); 
+	if (!e2) ge('left_blocks').appendChild(e2);
+}
 
 function vkFrCat2Menu(ret){
   var str='';

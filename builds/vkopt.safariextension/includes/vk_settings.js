@@ -558,7 +558,7 @@ function vkInitSettings(){
 	  {id:40, text:IDL("seMasDelPMsg")}
     ],
     vkInterface:[
-      {id:21, text:IDL("seADRem")},
+      {id:21, text:IDL("seADRem")+vkCheckboxSetting(44,IDL("seAdNotHideSugFr"),true)},
 	  {id:12, text:IDL("seMenu")},
       {id:20, text:IDL("seAutoUpdMenu")},
       {id:14, text:IDL("seLoadFrCats")},  
@@ -590,7 +590,7 @@ function vkInitSettings(){
     ]
   };
 	  
-	//LAST 43
+	//LAST 44
 	
 	vkSetsType={
       "on"  :[IDL('on'),'y'],
