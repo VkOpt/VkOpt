@@ -538,14 +538,14 @@ function vkInitSettings(){
     Users:[
       {id:10, text:IDL("seExUserMenu")+'<br><a href="#" onclick="toggle(\'vkExUMenuCFG\'); return false;">[<b> '+IDL("Settings")+' </b>]</a><span id="vkExUMenuCFG" style="display:none">'+GetUserMenuSett()+'</span>'},
       {id:11, text:IDL("seExUMClik")},
-      {id:8, text:IDL("seZoomPhoto")},// {id:8, header:IDL("seZoomPhoto") , text:IDL("seZoomPhHelp"),ops:[0,1,2]},
+	  {id:38, text:'<table><tr><td> <table><tr><td width=20 height=20 id="spct11" bgcolor='+getFrColor()+'></td></tr></table> <td>'+
+      '<span class="cltool"><a onclick="init_colorpicker(this.parentNode,FrCol_click,\'' + getFrColor() + '\')">'+IDL("seLightFriends")+'</a></span>'+
+      '</td></tr></table>'},      
+	  {id:8, text:IDL("seZoomPhoto")},// {id:8, header:IDL("seZoomPhoto") , text:IDL("seZoomPhHelp"),ops:[0,1,2]},
 	  //{id 23 - store "is expland" profile} 
 	  {id:24, text:IDL("seAvaArrows")},
 	  {id:25, text:IDL("seICQico")},
 	  {id:26, text:IDL("seCalcAge")},
-	  {id:38, text:'<table><tr><td> <table><tr><td width=20 height=20 id="spct11" bgcolor='+getFrColor()+'></td></tr></table> <td>'+
-      '<span class="cltool"><a onclick="init_colorpicker(this.parentNode,FrCol_click,\'' + getFrColor() + '\')">'+IDL("seLightFriends")+'</a></span>'+
-      '</td></tr></table>'},
 	  {id:39, text:IDL("seGrCom")},
 	  {id:41, header:IDL("seExpland_ProfileInfo"), text:IDL("seExplandProfileInfoText"),ops:[0,1,2,3]}
     ],

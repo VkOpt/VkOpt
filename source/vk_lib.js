@@ -840,7 +840,7 @@ String.prototype.leftPad = function (l, c) {
 	
 	function vkProgressBar(val,max,width,text){
 			if (val>max) val=max;
-			var pos=(val*100/max).toFixed(2);;
+			var pos=(val*100/max).toFixed(2).replace(/\.00/,'');
 			var perw=(val/max)*width;
 			text=(text || '%').replace("%",pos+'%');
 			html='<div class="vkProg_Bar vkPB_Frame" style="width: '+perw+'px;">'+

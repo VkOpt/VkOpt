@@ -112,6 +112,7 @@ function vkOnNewLocation(startup){
 			case 'friends':vkFriendsPage(); break;
 			case 'photos' :vkPhotosPage(); break;
 			case 'audio'  :vkAudioPage(); break;
+			case 'notes'  :vkNotesPage(); break;
 		}
 		if (startup && window.Fave) Fave.init();	
 	}
@@ -211,7 +212,12 @@ function VkOptMainInit(){
 	'Reset':'\u0421\u0431\u0440\u043e\u0441\u0438\u0442\u044c',
 	'SaveHistoryCfg':'\u041f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u044b \u0441\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u0438\u044f \u043f\u0435\u0440\u0435\u043f\u0438\u0441\u043a\u0438',
 	'SaveMsgFormat':'\u0424\u043e\u0440\u043c\u0430\u0442 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u044f',
-	'SaveMsgDateFormat':'\u0424\u043e\u0440\u043c\u0430\u0442 \u0434\u0430\u0442\u044b \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u044f'
+	'SaveMsgDateFormat':'\u0424\u043e\u0440\u043c\u0430\u0442 \u0434\u0430\u0442\u044b \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u044f',
+	'nodesdel':'\u0423\u0434\u0430\u043b\u0435\u043d\u0438\u0435 \u0437\u0430\u043c\u0435\u0442\u043e\u043a',
+	'notesreq':'\u0417\u0430\u043f\u0440\u043e\u0441 \u0441\u043f\u0438\u0441\u043a\u0430 \u0437\u0430\u043c\u0435\u0442\u043e\u043a',
+	'ClearNotes':'\u0423\u0434\u0430\u043b\u0435\u043d\u0438\u0435 \u0432\u0441\u0435\u0445 \u0437\u0430\u043c\u0435\u0442\u043e\u043a',
+	'CleanNotesConfirm':'\u0412\u044b \u0443\u0432\u0435\u0440\u0435\u043d\u044b \u0447\u0442\u043e \u0445\u043e\u0442\u0438\u0442\u0435 \u0443\u0434\u0430\u043b\u0438\u0442\u044c \u0432\u0441\u0435 \u0437\u0430\u043c\u0435\u0442\u043a\u0438? \u0412\u043e\u0441\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u0442\u044c \u0437\u0430\u043c\u0435\u0442\u043a\u0438 \u0431\u0443\u0434\u0435\u0442 \u043d\u0435\u0432\u043e\u0437\u043c\u043e\u0436\u043d\u043e!',
+	'DelAllNotes':'[ \u0423\u0434\u0430\u043b\u0438\u0442\u044c \u0432\u0441\u0435 \u0437\u0430\u043c\u0435\u0442\u043a\u0438 ]'
   });
   vkStyles();
   if (!ge('content')) return;
@@ -714,7 +720,7 @@ function vkProcessOnReceive(h){	if (h.innerHTML && h.innerHTML.indexOf('name="vk
 function vkResponseChecker(answer){// detect HTML and prosessing
 
 	var rx=/div.+class.+[^\\]"/;
-	var _rx=/^\s*<div/;
+	var _rx=/^\s*<(div|table)/;
 	//var nrx=/['"]\+.+\+['"]/;
 	//var nrx=/(document\.|window\.|join\(.+\)|\.init|[\{\[]["']|\.length|[:=]\s*function\()/;
 	for (var i=0;i<answer.length;i++){
@@ -1583,6 +1589,82 @@ function vkMakeMsgHistory(uid,show_format){
 
 // END OF SAVE HISTORY TO FILE
 
+function vkNotesPage(){
+	if (!ge('vk_clean_notes') && cur.oid==remixmid()){
+		var p=geByClass('summary')[0];
+		p.innerHTML+='<span class="divide">|</span><a style="font-weight:normal" id="vk_clean_notes" href="#" onclick="vkCleanNotes(); return false;">'+IDL('DelAllNotes')+'</a>';
+	}
+}
+
+function vkCleanNotes(min_nid){
+	var REQ_CNT=100;
+	var WALL_DEL_REQ_DELAY=400;
+	var start_offset=0;
+	var box=null;
+	min_nid=min_nid?min_nid:0;
+	var mids=[];
+	var del_offset=0;
+	var cur_offset=0;
+	var abort=false;
+	var filter=['owner','others','all'];
+	var deldone=function(){
+			box.hide();
+			vkMsg(IDL("ClearDone"),3000);	
+	};
+	var del=function(callback){	
+		if (abort) return;
+		var del_count=mids.length;
+		ge('vk_del_msg').innerHTML=vkProgressBar(del_offset,del_count,310,IDL('nodesdel')+' %');
+		var nid=mids[del_offset];
+		if (!nid){
+			ge('vk_del_msg').innerHTML=vkProgressBar(1,1,310,' ');
+			del_offset=0;
+			callback();
+		} else
+		dApi.call('notes.delete', {nid:nid},function(r,t){
+			del_offset++;
+			setTimeout(function(){del(callback);},WALL_DEL_REQ_DELAY);
+		});
+	};
+	var msg_count=0;
+	var scan=function(){
+		mids=[];
+		if (cur_offset==0){
+			ge('vk_del_msg').innerHTML=vkProgressBar(1,1,310,' ');
+			ge('vk_scan_msg').innerHTML=vkProgressBar(cur_offset,2,310,IDL('notesreq')+' %');
+		}
+		dApi.call('notes.get',{count:REQ_CNT,offset:0+start_offset},function(r){
+			if (abort) return;
+			var ms=r.response;
+			if (ms==0 || !ms[1]){
+				deldone();
+				return;
+			}
+			if (msg_count==0) msg_count=ms.shift();
+			else ms.shift();
+			ge('vk_scan_msg').innerHTML=vkProgressBar(cur_offset+REQ_CNT,msg_count,310,IDL('notesreq')+' %');
+			for (var i=0;i<ms.length;i++) 
+				if (ms[i].nid>min_nid) mids.push(ms[i].nid);
+			cur_offset+=REQ_CNT;
+			if (mids.length==0){
+				deldone();
+				return;
+			} 
+			del(scan);
+			
+		});
+	};
+	var vkRunClean=function(soffset){
+		start_offset=soffset?soffset:0;
+		box=new MessageBox({title: IDL('ClearNotes'),closeButton:true,width:"350px"});
+		box.removeButtons();
+		box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no');
+		var html='<div id="vk_del_msg" style="padding-bottom:10px;"></div><div id="vk_scan_msg"></div>';
+		box.content(html).show();	
+		scan();
+	};
+	vkAlertBox(IDL('ClearNotes'),IDL('CleanNotesConfirm'),vkRunClean,true);
+}
 
 var vkstarted = (new Date().getTime());
 
