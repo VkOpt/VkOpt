@@ -241,6 +241,7 @@ function VkOptMainInit(){
   if (getSet(27)=='y') vkGetCalendar();
   if (getSet(20) == 'y') vk_updmenu_timeout=setTimeout("UpdateCounters();",vk_upd_menu_timeout);
   if (getSet(16) == 'y') UserOnlineStatus();
+  vkMoneyBoxAddHide();
   vkCheckUpdates();
   vkFriendsCheckRun();
   if (vkgetCookie('IDFriendsUpd') && (vkgetCookie('IDFriendsUpd') != '_')) {	vkShowFriendsUpd();  }
@@ -258,10 +259,12 @@ function GetUnReadColorCss(){
 												 //#E2E9FF
 	mailcss= '#mail_rows_t tr.new_msg { background-color: '+bgcolor+' !important;}\n\
 	#mail_rows_t tr.new_msg a { color: '+textcolor+' !important;}\n\
-	.im_hist tr.un,#im_dialogs .new_msg,.im_new_msg,.dialogs_new_msg { color: #000 !important; background-color: '+bgcolor+' !important; }\
-	#im_dialogs .new_msg a,.im_new_msg,.dialogs_new_msg{ color: '+textcolor+' !important; }\
+	.im_new_msg, .im_new_msg .im_log_author, .im_new_msg .im_log_body, .im_new_msg .im_log_date { color: #000 !important; background-color: '+bgcolor+' !important; }\
+	#im_dialogs .new_msg a,.im_new_msg, .dialogs_new_msg, .dialogs_new_msg .dialogs_msg_body{ color: '+textcolor+' !important;  background-color: '+bgcolor+' !important;}\
+	.im_new_msg .im_log_date a.im_date_link, .im_new_msg .im_fwd_log_date{color: '+textcolor+'}\
 	#im_dialogs .new_msg div.mail_body{color: #000;} .im_hist tr.un td.user a{color: '+textcolor+'}';
 	
+	//bg_old: .im_hist tr.un,#im_dialogs .new_msg,.im_new_msg,.dialogs_new_msg
 	return mailcss;                            //#3B4DA0  
 }
 

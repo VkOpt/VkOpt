@@ -555,6 +555,15 @@ function vkHighlightCounters(){
 	for (var i=0;i<VK_MENU_LAST_HIGHLIGHT.length;i++) vkMenuHighlightEl(VK_MENU_LAST_HIGHLIGHT[i]);
 }
 
+function vkMoneyBoxAddHide(){
+	var mb=ge('left_money_box');
+	if (!mb) return;
+	var lmb=vkCe('div',{id:'left_block_money',onmouseover:"leftBlockOver('_money')",onmouseout:"leftBlockOut('_money')"});
+	var hb=vkCe('div',{id:'left_hide_money', "class":"left_hide", onmouseover:"leftBlockOver(this)",onmouseout:"leftBlockOut(this)",onclick:"hide('left_block_money')"});
+	mb.parentNode.insertBefore(lmb,mb)
+	lmb.appendChild(hb);
+	lmb.appendChild(mb);
+}
 
 function UserOnlineStatus(status) {// ADD LAST STATUS
 	if (window.vk_check_online_timeout) clearTimeout(vk_check_online_timeout);
