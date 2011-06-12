@@ -11,7 +11,7 @@
 //
 
 var vVersion	= 200;
-var vBuild = 110610;
+var vBuild = 110612;
 var vPostfix = ' beta';
 var vk_DEBUG=1;
 

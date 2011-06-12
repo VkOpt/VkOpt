@@ -217,7 +217,8 @@ function VkOptMainInit(){
 	'notesreq':'\u0417\u0430\u043f\u0440\u043e\u0441 \u0441\u043f\u0438\u0441\u043a\u0430 \u0437\u0430\u043c\u0435\u0442\u043e\u043a',
 	'ClearNotes':'\u0423\u0434\u0430\u043b\u0435\u043d\u0438\u0435 \u0432\u0441\u0435\u0445 \u0437\u0430\u043c\u0435\u0442\u043e\u043a',
 	'CleanNotesConfirm':'\u0412\u044b \u0443\u0432\u0435\u0440\u0435\u043d\u044b \u0447\u0442\u043e \u0445\u043e\u0442\u0438\u0442\u0435 \u0443\u0434\u0430\u043b\u0438\u0442\u044c \u0432\u0441\u0435 \u0437\u0430\u043c\u0435\u0442\u043a\u0438? \u0412\u043e\u0441\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u0442\u044c \u0437\u0430\u043c\u0435\u0442\u043a\u0438 \u0431\u0443\u0434\u0435\u0442 \u043d\u0435\u0432\u043e\u0437\u043c\u043e\u0436\u043d\u043e!',
-	'DelAllNotes':'[ \u0423\u0434\u0430\u043b\u0438\u0442\u044c \u0432\u0441\u0435 \u0437\u0430\u043c\u0435\u0442\u043a\u0438 ]'
+	'DelAllNotes':'[ \u0423\u0434\u0430\u043b\u0438\u0442\u044c \u0432\u0441\u0435 \u0437\u0430\u043c\u0435\u0442\u043a\u0438 ]',
+	'DelCreatedAfterTime':'\u0423\u0434\u0430\u043b\u044f\u0442\u044c \u0442\u043e\u043b\u044c\u043a\u043e \u0437\u0430\u043c\u0435\u0442\u043a\u0438 \u0441\u043e\u0437\u0434\u0430\u043d\u043d\u044b\u0435 \u043f\u043e\u0441\u043b\u0435:'
   });
   vkStyles();
   if (!ge('content')) return;
@@ -301,7 +302,7 @@ function vkStyles(){
 	//getSet(38)=='y' 
 	main_css+='.vk_my_friend{color:'+getFrColor()+';}';
 	main_css+='\
-		.vk_common_group{background-color:#ffc1c1; background-color:rgba(255,0,0,0.2);}\
+		.vk_common_group{background-color:#ffc1c1; background-color: rgba(89, 125, 163, 0.23);}\
 		.vk_adm_group{font-weight:bold; padding:6px 0 !important; background-color: rgba(255, 255, 0, 0.4);}\
 		';
 	// main_css+='#notifiers_wrap{display:none !important;}'; /* hide all notifications */
@@ -456,6 +457,7 @@ function vkStyles(){
 		.audios_row .actions a{padding-right:2px !important; padding-left:2px !important;}\
 		.audios_row .audio_title_wrap{ width: auto !important; max-width: 295px; }\
 		.post_media .audio_title_wrap { width: 250px !important;}\
+		#mail_envelope .audio_title_wrap { width: 215px !important;}\
 	';
 	  //extend switch color in viewer
 	if (MoreDarkPV=='y') main_css+="\
@@ -567,7 +569,7 @@ function vkStyles(){
 				.vkPB_Frame{position:absolute; border:1px solid #36638e; overflow:hidden}\
 				.vkProg_BarBgFrame{ background-color: #EEE; border:1px solid #ccc;}\
 				.vkProg_BarBg{text-shadow: 0px 1px 0px #FFF; border:1px solid #EEE;  box-shadow: inset 0 10px 26px rgba(255, 255, 255, 0.5);}\
-				.vkaudio_down td{padding:0px !important;}\
+			.vkaudio_down td{padding:0px !important;}\
 			.vk_tBar { padding: 10px 10px 0px 10px;  border-bottom: solid 1px #36638E;}\
 			.vk_tab_nav{ padding:0px; margin:0px; width: 605px;}\
 			.vk_tab_nav li{   float:left;   text-align:center;    list-style-type: none;  }\
@@ -1596,12 +1598,12 @@ function vkNotesPage(){
 	}
 }
 
-function vkCleanNotes(min_nid){
+function vkCleanNotes(){
 	var REQ_CNT=100;
 	var WALL_DEL_REQ_DELAY=400;
 	var start_offset=0;
 	var box=null;
-	min_nid=min_nid?min_nid:0;
+	var by_time=false;
 	var mids=[];
 	var del_offset=0;
 	var cur_offset=0;
@@ -1643,8 +1645,9 @@ function vkCleanNotes(min_nid){
 			if (msg_count==0) msg_count=ms.shift();
 			else ms.shift();
 			ge('vk_scan_msg').innerHTML=vkProgressBar(cur_offset+REQ_CNT,msg_count,310,IDL('notesreq')+' %');
-			for (var i=0;i<ms.length;i++) 
-				if (ms[i].nid>min_nid) mids.push(ms[i].nid);
+			for (var i=0;i<ms.length;i++){ 
+				if ((ms[i].date>del_time && by_time) || !by_time) mids.push(ms[i].nid);
+			}
 			cur_offset+=REQ_CNT;
 			if (mids.length==0){
 				deldone();
@@ -1663,7 +1666,48 @@ function vkCleanNotes(min_nid){
 		box.content(html).show();	
 		scan();
 	};
-	vkAlertBox(IDL('ClearNotes'),IDL('CleanNotesConfirm'),vkRunClean,true);
+	var showLoader=function(){
+		loader_box=new MessageBox({title:''});
+		loader_box.setOptions({title: false, hideButtons: true}).show(); 
+		hide(loader_box.bodyNode); 
+		show(boxLoader);
+		boxRefreshCoords(boxLoader);	
+	};
+	var hideLoader=function(){
+		loader_box.hide();
+		hide(boxLoader);
+	}
+	
+	showLoader();
+	stManager.add(['ui_controls.js','ui_controls.css','datepicker.js','datepicker.css','events.css'], function() {
+		hideLoader();
+		html='<div class="clear_fix info_table page_add_event_info public_add_event_box"><div class="clear_fix">\
+		  <div style="padding-top:10px;" id="notes_del_by_time"></div>\
+		  <div class="labeled fl_l">\
+			<div class="fl_l"><input type="hidden" id="notes_del_after_date" name="notes_del_after_date"/></div>\
+			<div class="fl_l" style="padding:4px 4px 0"></div>\
+			<div class="fl_l"><input type="hidden" id="notes_del_after_time"/></div>\
+		  </div>\
+		</div></div>';		
+		var aBox = new MessageBox({title: IDL('ClearNotes'),width: "285px"});
+		aBox.removeButtons();
+		aBox.addButton(getLang('box_no'),aBox.hide, 'no');
+		aBox.addButton(getLang('box_yes'),function(){  
+			del_time = ge('notes_del_after_date').value;
+			aBox.hide(); 
+			vkRunClean();	 
+		},'yes');
+		  
+		aBox.content(IDL('CleanNotesConfirm')+html);
+		aBox.show();
+		//vkAlertBox(IDL('ClearNotes'),IDL('CleanNotesConfirm')+html,vkRunClean,true);
+		var delTime = new Datepicker(ge('notes_del_after_date'), {time:'notes_del_after_time', width:140});
+		var cb = new Checkbox(ge("notes_del_by_time"), {  width: 270,  
+														  checked:by_time,  
+														  label: IDL('DelCreatedAfterTime'),
+														  onChange: function(state) { by_time = (state == 1)?true:false; } 
+														})
+	});	
 }
 
 var vkstarted = (new Date().getTime());

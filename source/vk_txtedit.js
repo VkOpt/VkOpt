@@ -171,16 +171,16 @@ if(vk_EnableSwichText){
   var ctrlKey;
   var shiftKey;
   var pressed;
-  event=window.event;
-  Key=window.event.keyCode;//
-  ctrlKey=window.event.ctrlKey;
-  shiftKey=window.event.shiftKey;
-  altKey=window.event.altKey;
+  event=window.event?window.event:event;
+  Key=event.keyCode;//
+  ctrlKey=event.ctrlKey;
+  shiftKey=event.shiftKey;
+  altKey=event.altKey;
 
   pressedCtrlKey=ctrlKey;
   pressedAltKey=altKey;
   pressedShiftKey=shiftKey;
-
+  //topMsg(Key+'\n'+pressedCtrlKey);
   if (pressedCtrlKey){ //pressedCtrlKey
     var processedEvent=false;
     switch (Key){
@@ -196,7 +196,7 @@ if(vk_EnableSwichText){
     }
   }
   if (processedEvent){
-    e=window.event;
+    e=event;//window.event;
     e.returnValue=false;
     window.status="";
     return false;
