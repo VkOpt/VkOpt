@@ -112,6 +112,7 @@ function vkOnNewLocation(startup){
 			case 'friends':vkFriendsPage(); break;
 			case 'photos' :vkPhotosPage(); break;
 			case 'audio'  :vkAudioPage(); break;
+			case 'audio_edit'  :vkAudioEditPage(); break;
 			case 'notes'  :vkNotesPage(); break;
 		}
 		if (startup && window.Fave) Fave.init();	
@@ -218,7 +219,12 @@ function VkOptMainInit(){
 	'ClearNotes':'\u0423\u0434\u0430\u043b\u0435\u043d\u0438\u0435 \u0432\u0441\u0435\u0445 \u0437\u0430\u043c\u0435\u0442\u043e\u043a',
 	'CleanNotesConfirm':'\u0412\u044b \u0443\u0432\u0435\u0440\u0435\u043d\u044b \u0447\u0442\u043e \u0445\u043e\u0442\u0438\u0442\u0435 \u0443\u0434\u0430\u043b\u0438\u0442\u044c \u0432\u0441\u0435 \u0437\u0430\u043c\u0435\u0442\u043a\u0438? \u0412\u043e\u0441\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u0442\u044c \u0437\u0430\u043c\u0435\u0442\u043a\u0438 \u0431\u0443\u0434\u0435\u0442 \u043d\u0435\u0432\u043e\u0437\u043c\u043e\u0436\u043d\u043e!',
 	'DelAllNotes':'[ \u0423\u0434\u0430\u043b\u0438\u0442\u044c \u0432\u0441\u0435 \u0437\u0430\u043c\u0435\u0442\u043a\u0438 ]',
-	'DelCreatedAfterTime':'\u0423\u0434\u0430\u043b\u044f\u0442\u044c \u0442\u043e\u043b\u044c\u043a\u043e \u0437\u0430\u043c\u0435\u0442\u043a\u0438 \u0441\u043e\u0437\u0434\u0430\u043d\u043d\u044b\u0435 \u043f\u043e\u0441\u043b\u0435:'
+	'DelCreatedAfterTime':'\u0423\u0434\u0430\u043b\u044f\u0442\u044c \u0442\u043e\u043b\u044c\u043a\u043e \u0437\u0430\u043c\u0435\u0442\u043a\u0438 \u0441\u043e\u0437\u0434\u0430\u043d\u043d\u044b\u0435 \u043f\u043e\u0441\u043b\u0435:',
+	'DelAudios':'\u0423\u0434\u0430\u043b\u0435\u043d\u0438\u0435 \u0430\u0443\u0434\u0438\u043e',
+	'DelAllAutiosConfirm':'\u0412\u044b \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043b\u044c\u043d\u043e \u0445\u043e\u0442\u0438\u0442\u0435 \u0443\u0434\u0430\u043b\u0438\u0442\u044c \u0432\u0441\u0435 \u0430\u0443\u0434\u0438\u043e\u0437\u0430\u043f\u0438\u0441\u0438?',
+	'listreq':'\u0417\u0430\u043f\u0440\u043e\u0441 \u0441\u043f\u0438\u0441\u043a\u0430',
+	'deleting':'\u0423\u0434\u0430\u043b\u0435\u043d\u0438\u0435',
+	'DelAll':'[ \u0423\u0434\u0430\u043b\u0438\u0442\u044c \u0432\u0441\u0435 ]'
   });
   vkStyles();
   if (!ge('content')) return;
@@ -1070,6 +1076,73 @@ function vkAudios(){
 function vkAudioPage(){
 	vkAudioPlayList(true);
 }
+function vkAudioEditPage(){
+	vkCleanAudioLink();
+}
+
+function vkCleanAudioLink(){
+	if (!ge('vk_clean_audios') && ge('audio_actions')){
+		ge('audio_actions').innerHTML+='<span class="divide">|</span><a id="vk_clean_audios" href="#" onclick="vkCleanAudios(); return false;">'+IDL('DelAll')+'</a>';
+	}
+}
+
+function vkCleanAudios(){
+	var REQ_CNT=100;
+	var WALL_DEL_REQ_DELAY=400;
+	var box=null;
+	var mids=[];
+	var del_offset=0;
+	var abort=false;	
+	var deldone=function(){
+			box.hide();
+			vkMsg(IDL("ClearDone"),3000);	
+	};
+	var del=function(callback){	
+		if (abort) return;
+		var del_count=mids.length;
+		ge('vk_del_msg').innerHTML=vkProgressBar(del_offset,del_count,310,IDL('deleting')+' %');
+		var aid=mids[del_offset];
+		if (!aid){
+			ge('vk_del_msg').innerHTML=vkProgressBar(1,1,310,' ');
+			del_offset=0;
+			callback();
+		} else
+		dApi.call('audio.delete', {oid:cur.oid,aid:aid},function(r,t){
+			del_offset++;
+			setTimeout(function(){del(callback);},WALL_DEL_REQ_DELAY);
+		});
+	};
+	var msg_count=0;
+	var scan=function(){
+		mids=[];
+		ge('vk_del_msg').innerHTML=vkProgressBar(1,1,310,' ');
+		ge('vk_scan_msg').innerHTML=vkProgressBar(0,2,310,IDL('listreq')+' %');
+		var params={};
+		params[cur.oid>0?"uid":"gid"]=Math.abs(cur.oid);
+		dApi.call('audio.get',params,function(r){
+			if (abort) return;
+			var ms=r.response;
+			if (!ms.length){
+				deldone();
+				return;
+			}
+			ge('vk_scan_msg').innerHTML=vkProgressBar(2,2,310,IDL('listreq')+' %');
+			for (var i=0;i<ms.length;i++) mids.push(ms[i].aid);
+			vklog(mids);
+			del(deldone);	
+		});
+	};
+	var run=function(){
+		box=new MessageBox({title: IDL('DelAudios'),closeButton:true,width:"350px"});
+		box.removeButtons();
+		box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no');
+		var html='<div id="vk_del_msg" style="padding-bottom:10px;"></div><div id="vk_scan_msg"></div>';
+		box.content(html).show();	
+		scan();
+	};
+	vkAlertBox(IDL('DelAudios'),IDL('DelAllAutiosConfirm'),run,true);
+}
+
 function vkAudioNode(node){
   if ((node || ge('content')).innerHTML.indexOf('play_new')==-1) return;
   var smartlink=(getSet(1) == 'y')?true:false;
