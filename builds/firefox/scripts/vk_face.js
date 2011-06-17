@@ -564,7 +564,6 @@ function vkMoneyBoxAddHide(){
 	lmb.appendChild(hb);
 	lmb.appendChild(mb);
 }
-
 function UserOnlineStatus(status) {// ADD LAST STATUS
 	if (window.vk_check_online_timeout) clearTimeout(vk_check_online_timeout);
 	if (ge('vk_online_status')){

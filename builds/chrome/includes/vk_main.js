@@ -77,6 +77,7 @@ function vkProcessNodeLite(node){
 	//AddExUserMenu(node);
 	vkProccessLinks(node);
 	vkAudioNode(node);
+	vkPrepareTxtPanels(node);
 	vk_plugins.processnode(node,true);
   }  catch (e) {}
   vklog('ProcessNodeLite time:' + (unixtime()-tstart) +'ms');
@@ -89,12 +90,11 @@ function vkOnStorage(id,cmd){
 		case 'menu_counters':UpdateCounters(false,cmd); break;
 	}
 }
-
 function vkOnNewLocation(startup){
 	if (!(window.nav && nav.objLoc)) return;
 	vklog('Navigate:'+print_r(nav.objLoc).replace(/\n/g,','));
-	//window.last_loc=nav.strLoc
-	
+	var tstart=unixtime();
+
 	switch(nav.objLoc[0]){
 		case 'settings':vkSettingsPage(); break;
 		case 'mail': vkMailPage(); break;
@@ -120,14 +120,12 @@ function vkOnNewLocation(startup){
 
 	if (!window.last_navobjLoc || last_navobjLoc!=nav.objLoc[0]){// единичный запуск при переходе в новый модуль
 		last_navobjLoc=nav.objLoc[0];
-		//vkProcessNode();
-		//*
 		switch(cur.module){
 			case 'friends':vkProcessNode(); break;
-		}//*/
+		}
 	}
 	vk_plugins.onloc();
-
+	vklog('OnLocation time:' + (unixtime()-tstart) +'ms');
 }
 
 function vkLocationCheck(){
@@ -224,7 +222,8 @@ function VkOptMainInit(){
 	'DelAllAutiosConfirm':'\u0412\u044b \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043b\u044c\u043d\u043e \u0445\u043e\u0442\u0438\u0442\u0435 \u0443\u0434\u0430\u043b\u0438\u0442\u044c \u0432\u0441\u0435 \u0430\u0443\u0434\u0438\u043e\u0437\u0430\u043f\u0438\u0441\u0438?',
 	'listreq':'\u0417\u0430\u043f\u0440\u043e\u0441 \u0441\u043f\u0438\u0441\u043a\u0430',
 	'deleting':'\u0423\u0434\u0430\u043b\u0435\u043d\u0438\u0435',
-	'DelAll':'[ \u0423\u0434\u0430\u043b\u0438\u0442\u044c \u0432\u0441\u0435 ]'
+	'DelAll':'[ \u0423\u0434\u0430\u043b\u0438\u0442\u044c \u0432\u0441\u0435 ]',
+	'BanConfirm':'\u0412\u044b \u0443\u0432\u0435\u0440\u0435\u043d\u044b, \u0447\u0442\u043e \u0445\u043e\u0442\u0438\u0442\u0435 \u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u044d\u0442\u043e\u0433\u043e \u0447\u0435\u043b\u043e\u0432\u0435\u043a\u0430 \u0432 \u0447\u0435\u0440\u043d\u044b\u0439 \u0441\u043f\u0438\u0441\u043e\u043a \u0433\u0440\u0443\u043f\u043f\u044b?'
   });
   vkStyles();
   if (!ge('content')) return;
@@ -655,12 +654,25 @@ function vkGroupPage(){
 	addFakeGraffItem();
 	vkCheckGroupAdmin();
 }
+function vkGetGid(){
+	if (cur.oid>0) return false;
+	var gid=null;
+	if (cur.gid || cur.oid<0) 
+		gid=(cur.oid?Math.abs(cur.oid):cur.gid);
+	if (!gid && cur.topic && cur.topic.match(/-(\d+)_/)) 
+		gid=cur.topic.match(/-(\d+)_/)[1];
+	if (!gid && cur.pvListId && cur.pvListId.indexOf('album-')!=-1) 
+		gid=cur.pvListId.match(/album-(\d+)/)[1];
+	return gid;
+}
 function isGroupAdmin(gid){
-	var r="vk_adm_gr_"+remixmid();
-	var val=','+vkGetVal(r)+',';
-	if (val.indexOf(','+(gid || cur.oid)+',')!=-1) return true;
-	else return false;
-	
+	if (gid || cur.gid || cur.oid<0){
+		if (!gid) gid=-(cur.oid?Math.abs(cur.oid):cur.gid);
+		var r="vk_adm_gr_"+remixmid();
+		var val=','+vkGetVal(r)+',';
+		if (val.indexOf(','+(gid || cur.oid)+',')!=-1) return true;
+		else return false;
+	} else return false;
 }
 function vkCheckGroupAdmin(){
 	var r="vk_adm_gr_"+remixmid();
@@ -871,17 +883,23 @@ function vkPVLinks(ph){
 function vkPhotosPage(){
 	if (nav.objLoc[0].indexOf('album')!=-1){
 		var m=nav.objLoc[0].match(/album(-?\d+)_(\d+)/);
-		if(m){	
+		if(m && ! /album\d+_00/.test(nav.objLoc[0])){	
 			var oid=m[1];
 			var aid=m[2];
 			if (!ge('vk_html_album_tab') && !vkbrowser.chrome && !vkbrowser.safari){			
+				
 				var li=vkCe('li',{id:'vk_html_album_tab'},'\
 					<a href="#" onclick="vkGetPageWithPhotos('+oid+','+aid+'); return false;"><b class="tl1"><b></b></b><b class="tl2"></b><b class="tab_word"><nobr>'+
 					IDL('SaveAlbumAsHtml')+
 					'</nobr></b></a>\
 				');
-				geByClass('t0')[0].appendChild(li);		
-			}		
+				geByClass('t0')[0].appendChild(li);
+				
+				//p=geByClass('summary')[0];
+				//if (p)	p.innerHTML+='<span class="divide">|</span><span><a href="#" onclick="vkGetPageWithPhotos('+oid+','+aid+'); return false;">'+IDL('SaveAlbumAsHtml')+'</a></span>'
+				
+			}	
+								
 			if (!ge('vk_links_album_tab')){
 				var li=vkCe('li',{id:'vk_links_album_tab'},'\
 					<a href="#" onclick="vkGetLinksToPhotos('+oid+','+aid+'); return false;"><b class="tl1"><b></b></b><b class="tl2"></b><b class="tab_word"><nobr>'+
@@ -896,11 +914,10 @@ function vkPhotosPage(){
 
 //javascript: vkGetPageWithPhotos(13391307,42748479); void(0);
 function vkGetLinksToPhotos(oid,aid){  
-	var MakeLinksList=function(){
+	var MakeLinksList=function(phot){
 		var parr=[]; 
-		var phot=(vkPhotosList)?vkPhotosList:ph;
 		for (var i=0;i<phot.length;i++)
-		  parr.push('<a href="'+phot[i][phot[i].length-1]+'">'+phot[i][phot[i].length-1]+'</a>');
+		  parr.push('<a href="'+phot[i].max_src+'">'+phot[i].max_src+'</a>');
 		return parr;
 	}
 	if (!ge('vk_links_container')){
@@ -908,39 +925,44 @@ function vkGetLinksToPhotos(oid,aid){
 		var ref=ge('photos_container')
 		ref.parentNode.insertBefore(div,ref);
 	}
-	AjGet('photos.php?act=a_album&oid='+oid+'&aid='+aid,function(r,t){
-		vkPhotosList=eval('('+t+')');
-		div.innerHTML=MakeLinksList().join('<br>')+
+	vkApis.photos_hd(oid,aid,function(r){
+		div.innerHTML=MakeLinksList(r).join('<br>')+
 				'<div class="vk_hide_links" style="text-align:center; padding:20px;">\
 					<a href="#" onclick="re(\'vk_links_container\'); return false;">'+IDL('Hide')+'</a>\
 				</div>';
+	},function(c,f){
+		if (!f) f=1;
+		ge('vk_links_container').innerHTML=vkProgressBar(c,f,600);
+		//document.title=c+"/"+f
 	});
+	//vkApis.photos(oid,aid,);
 }
 
 function vkGetPageWithPhotos(oid,aid){  
-  var MakeImgsList=function(ph){
+  var MakeImgsList=function(phot){
     var parr=[]; 
-    var phot=(vkPhotosList)?vkPhotosList:ph;
     for (var i=0;i<phot.length;i++)
-      parr.push('<img src="'+phot[i][phot[i].length-1]+'">');
+      parr.push('<img src="'+phot[i].max_src+'">');
     return parr;
   }
 	var box=new MessageBox({title: IDL('SavingImages'),width:"350px"});
 	box.removeButtons();
 	box.addButton(box_close,box.hide,'no'); // IDL('Cancel')
-	box.content('<center>'+vkBigLdrImg+'</center>').show();
+	box.content('<div id="ph_ldr_progress"><center>'+vkBigLdrImg+'</center></div>').show();
 	
-  AjGet('photos.php?act=a_album&oid='+oid+'&aid='+aid,function(r,t){
-    vkPhotosList=eval('('+t+')');
-    vkImgsList=MakeImgsList().join('<br>');
-	if (vkImgsList=='')
-		var html='<h4>No images</h4>'
-	else {
-		vkImgsList='<div style="background:#FFB; border:1px solid #AA0;  margin:20px; padding:20px;">'+IDL('HtmlPageSaveHelp')+'</div>'+vkImgsList;
-		var html='<h4><a href="#" onclick="vkWnd(vkImgsList,\''+document.title.replace(/'"/g,"")+'\'); return false;">'+IDL('ClickForShowPage')+'</a></h4>';
-	}
-	box.content(html).show();
-  });
+    vkApis.photos_hd(oid,aid,function(r){
+		vkImgsList=MakeImgsList(r).join('<br>');
+		if (!vkImgsList.length)
+			var html='<h4>No images</h4>'
+		else {
+			vkImgsList='<div style="background:#FFB; border:1px solid #AA0;  margin:20px; padding:20px;">'+IDL('HtmlPageSaveHelp')+'</div>'+vkImgsList;
+			var html='<h4><a href="#" onclick="vkWnd(vkImgsList,\''+document.title.replace(/'"/g,"")+'\'); return false;">'+IDL('ClickForShowPage')+'</a></h4>';
+		}
+		box.content(html).show();
+    },function(c,f){
+		if (!f) f=1;
+		ge('ph_ldr_progress').innerHTML=vkProgressBar(c,f,310);
+	});
 }
 
 
@@ -1377,7 +1399,7 @@ function vkAddDeleteLink(){
 		');
 		ge('mail_tabs').appendChild(li);
 	}
-	if(nav.objLoc['act']=='show'){
+	if(nav.objLoc['act']=='show' || nav.objLoc['section']=='search'){
 		hide('vk_clean_msg');
 	} else {
 		show('vk_clean_msg');
@@ -1572,7 +1594,7 @@ function vkDeleteMessagesHistory(uid){
 
 // SAVE HISTORY TO FILE
 function vkAddSaveMsgLink(){ 
-  if (!ge('vk_history_to_file')){
+  if (!ge('vk_history_to_file_block')){
 	var btn=vkCe('div', {	id:"vk_history_to_file_block", "class":"vk_mail_save_history_block", },
 					'<div id="saveldr" style="display:none; padding:8px; padding-top: 14px; text-align:center; width:130px;"><img src="/images/upload.gif"></div>'+
 					'<a href="#" onclick="return false;" id="save_btn_text" class="vk_mail_save_history"><span onclick="vkMakeMsgHistory(); return false;">'+IDL('SaveHistory')+'</span><div class="cfg fl_r" onclick="vkMakeMsgHistory(null,true);"></div></a>'
@@ -1619,7 +1641,7 @@ function vkMakeMsgHistory(uid,show_format){
 				offset+=100;
 				setTimeout(function(){collect(callback);},300);
 			} else {
-				alert(result);
+				//alert(result);
 				callback(result);
 			}
 		});

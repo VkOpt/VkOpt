@@ -69,25 +69,29 @@ function PasteSmile(text,rfield,key){
 }
 
 function AddSmileBtn(rfield){
-	GetSmileItem=function (smiles,key,rfield){
-		var smile_text,big;
-		if (typeof smiles[key]!='string'){
-		  smile_text=smiles[key][0]; big=(smiles[key][2])?true:false;
-		} else {  smile_text=smiles[key]; big=false; }
-		var btn='<a href="#" onclick="return false;" class="vk_txt_smile_item" '+((big)?'style="display:block"':"")+'><img onclick="PasteSmile(\''+smile_text+'\',\''+rfield+'\',\''+key+'\')" src="'+vkSmilesLinks[key]+'" title="'+smile_text+'" alt="'+smile_text+'"></a>';
-		return btn;
-	}
-	var smiles=TextPasteSmiles;
-	var DivCode='<div>'+
-	 '<h4>'+IDL('sm_SelectSmile')+'</h4><div class="smilemenu">';
-	 var i=0;
-	 for (key in smiles){
-	  i++;
-	  DivCode+=GetSmileItem(smiles,key,rfield);
-	  if (i % 15 == 0) DivCode+='<br>';
-	 }
-	DivCode+= '</div></div>';
-	return DivCode;
+	var GenHtml=function(rfield){
+		GetSmileItem=function (smiles,key,rfield){
+			var smile_text,big;
+			if (typeof smiles[key]!='string'){
+			  smile_text=smiles[key][0]; big=(smiles[key][2])?true:false;
+			} else {  smile_text=smiles[key]; big=false; }
+			var btn='<a href="#" onclick="return false;" class="vk_txt_smile_item" '+((big)?'style="display:block"':"")+'><img onclick="PasteSmile(\''+smile_text+'\',\''+rfield+'\',\''+key+'\')" src="'+vkSmilesLinks[key]+'" title="'+smile_text+'" alt="'+smile_text+'"></a>';
+			return btn;
+		}
+		var smiles=TextPasteSmiles;
+		var DivCode='<div>'+
+		 '<h4>'+IDL('sm_SelectSmile')+'</h4><div class="smilemenu">';
+		 var i=0;
+		 for (key in smiles){
+		  i++;
+		  DivCode+=GetSmileItem(smiles,key,rfield);
+		  if (i % 15 == 0) DivCode+='<br>';
+		 }
+		DivCode+= '</div></div>';
+		return DivCode;
+	};
+	if (!window.smiles_panel_html) smiles_panel_html=GenHtml('%FIELD_ID%');
+	return smiles_panel_html.replace(/%FIELD_ID%/g,rfield);// GenHtml(rfield);//
 }
 
 function vkTxtPanelButtons(eid){
@@ -96,15 +100,14 @@ function vkTxtPanelButtons(eid){
 }
 function vkPrepareTxtPanels(node){
 	if (getSet(33)!='y') return;
+	var tstart=unixtime();
 	var tas=(node || document).getElementsByTagName('textarea');
 	var te_btn_count=0;
-	vkaddcss('\
-	');
-
 	var touts={};
+	if (!window.txtareas_events) txtareas_events=[];
 	for (var i=0;i<tas.length;i++){
 		var ta=tas[i];
-		if (ta.getAttribute('onfocus') && ta.getAttribute('onfocus').indexOf('showEditPost')!=-1) continue;
+		if ((ta.getAttribute('onfocus') && ta.getAttribute('onfocus').indexOf('showEditPost')!=-1) || ge('edit_btns_'+ta.id)) continue;
 		var panel=vkCe('div',{id:'edit_btns_'+ta.id,"class":'vk_textedit_panel'},
 						//vkTxtPanelButtons(ta.id)+
 						'<div style="float:left; font-size:7px; margin-top:-10px; margin-right:3px;" onclick="fadeOut(\''+'edit_btns_'+ta.id+'\');">x</div>');
@@ -128,14 +131,35 @@ function vkPrepareTxtPanels(node){
 			var panel=ge(pid);
 			clearTimeout(touts[pid]);
 		};
-		addEvent(panel, 'mousemove', panel_mousemove);
-		addEvent(panel, 'click', panel_mousemove);
-		
+		txtareas_events.push(panel_mousemove);
+		panel.setAttribute('onmousemove','txtareas_events['+(txtareas_events.length-1)+'](event);');
+		panel.setAttribute('onclick','txtareas_events['+(txtareas_events.length-1)+'](event);');
+		/*addEvent(panel, 'mousemove', panel_mousemove);
+		addEvent(panel, 'click', panel_mousemove);*/
+		txtareas_events.push([show_panel,hide_panel]);
+		var feid=(txtareas_events.length-1);
+		var onclick_area=function(e,el,idx){
+			if (!el.vk_txt_panel_enabled){
+				addEvent(el, 'focus', txtareas_events[idx][0]);//show_panel
+				addEvent(el, 'click', txtareas_events[idx][0]);
+				addEvent(el, 'blur', txtareas_events[idx][1]);//hide_panel
+				txtareas_events[idx][0](e);
+				el.vk_txt_panel_enabled=true;
+			}
+		};
+		if (!ta.getAttribute('onmousemove')){//onclick
+			txtareas_events.push(onclick_area);
+			ta.setAttribute('onmousemove','txtareas_events['+(txtareas_events.length-1)+'](event,this,'+feid+');');
+		}
 		addEvent(ta, 'focus', show_panel);
 		addEvent(ta, 'click', show_panel);
 		addEvent(ta, 'blur', hide_panel);
+		ta.vk_txt_panel_enabled=true;
+		
 	}
+	vklog('PrepareTxtPanels time:' + (unixtime()-tstart) +'ms');
 }
+
 
 /* INVERT LANG CHARS */
 function InpTexSetEvents(){

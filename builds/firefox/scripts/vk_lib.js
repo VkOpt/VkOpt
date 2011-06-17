@@ -1281,6 +1281,41 @@ var dApi = {
     pass();
   }
 };
+
+vkApis={
+	photos:function(oid,aid,callback){
+		var params={aid:aid};
+		var method='photos.get';
+		params[oid<0?'gid':'uid']=Math.abs(oid);		
+		dApi.call('photos.get',params,callback);
+	},
+	photos_hd:function(oid,aid,callback,progress){
+		var listId="album"+oid+"_"+aid;
+		var PER_REQ=10;
+		var cur=0;
+		var count=0;
+		var photos=[];
+		var temp={};
+		var get=function(){
+			if (progress) progress(cur,count);
+			ajax.post('al_photos.php', {act: 'show', list: listId, offset: cur}, {onDone: function(listId, ph_count, offset, data, opts) {
+				if (!count) count=ph_count;
+				for(var i=0; i<data.length;i++){
+					if (temp[data[i].id]) continue;
+					temp[data[i].id]=true;	
+					var p=data[i];
+					p.max_src= p.w_src || p.z_src || p.y_src || p.x_src
+					photos.push(p);
+				}
+				if (cur<count){
+					cur+=PER_REQ;
+					setTimeout(get,50);
+				} else callback(photos);
+			}});
+		}
+		get();
+	}
+}
 function vkMD5(string) {
 	function RotateLeft(lValue, iShiftBits) {		return (lValue<<iShiftBits) | (lValue>>>(32-iShiftBits));	}
 	function AddUnsigned(lX,lY) {		var lX4,lY4,lX8,lY8,lResult;		lX8 = (lX & 0x80000000);		lY8 = (lY & 0x80000000);		lX4 = (lX & 0x40000000);		lY4 = (lY & 0x40000000);		lResult = (lX & 0x3FFFFFFF)+(lY & 0x3FFFFFFF);		if (lX4 & lY4) {	return (lResult ^ 0x80000000 ^ lX8 ^ lY8);	}		if (lX4 | lY4) {	if (lResult & 0x40000000) {	return (lResult ^ 0xC0000000 ^ lX8 ^ lY8);}      else {return (lResult ^ 0x40000000 ^ lX8 ^ lY8);		}		} else {return (lResult ^ lX8 ^ lY8);} 	}
@@ -1599,6 +1634,21 @@ div.vk_top_result_baloon a {  color: #B1DAFF;  font-weight: bold;}\
   }, show_timeout);
 }
 
+vkLdr={
+	box:null,
+	show:function(){
+		vkLdr.box=new MessageBox({title:''});
+		vkLdr.box.setOptions({title: false, hideButtons: true,onHide:__bq.hideAll}).show(); 
+		hide(vkLdr.box.bodyNode); 
+		show(boxLoader);
+		boxRefreshCoords(boxLoader);	
+	},
+	hide:function(){
+		vkLdr.box.hide();
+		hide(boxLoader);
+	}
+}
+
 function vkAlertBox(title, text, callback, confirm) {// [callback] - "Yes" or "Close" button; [confirm] - "No" button
   var aBox = new MessageBox({title: title});
   aBox.removeButtons();
@@ -1682,77 +1732,6 @@ vk_plugins={
 	}
 }
 vkopt_plugin_run=vk_plugins.run;
-
-
-function vkopt_plugin_run(PLUGIN_ID){
-	var p=vkopt_plugins[PLUGIN_ID];
-	if (p.init) p.init();
-	if (p.css) vkaddcss(p.css);
-	if (p.onLocation) vkOnNewLocation();
-	if (p.onLibFiles) {
-	  for (var key in StaticFiles)  if (key.indexOf('.js') != -1) vkInj(key); 
-	}
-	if (p.processLinks) vkProccessLinks();
-}
-function vkopt_plugins_init(){
-	for (var key in vkopt_plugins){
-		var p=vkopt_plugins[key];
-		if (p.init){
-			var tstart=unixtime();
-			p.init();	
-			vklog('Plugin "'+key+'" inited. '+(unixtime()-tstart)+'ms');
-		}
-	}
-}
-
-function vkopt_plugins_css(){
-	var css='';
-	for (var key in vkopt_plugins){
-		var p=vkopt_plugins[key];
-		if (p.css) css+=p.css;	
-	}
-	return css;
-}
-function vkopt_plugins_onloc(){
-	for (var key in vkopt_plugins){
-		var p=vkopt_plugins[key];
-		if (p.onLocation){ 
-			var tstart=unixtime();
-			p.onLocation(nav.objLoc,cur.module);
-			vklog('Plugin "'+key+'" onLocation: '+(unixtime()-tstart)+'ms');
-		}
-	}
-}
-
-function vkopt_plugins_onjs(file){
-	for (var key in vkopt_plugins){
-		var p=vkopt_plugins[key];
-		if (p.onLibFiles) {
-			var tstart=unixtime();
-			p.onLibFiles(file);
-			vklog('Plugin "'+key+'" onLibFiles: '+(unixtime()-tstart)+'ms');
-		}
-	}
-}
-
-function vkopt_plugins_processlink(node){
-	for (var key in vkopt_plugins){
-		var p=vkopt_plugins[key];
-		if (p.processLinks) p.processLinks(node);
-	}
-}
-
-function vkopt_plugins_processnode(node){
-	for (var key in vkopt_plugins){
-		var p=vkopt_plugins[key];
-		if (p.processNode){ 
-			var tstart=unixtime();
-			p.processNode(node);
-			vklog('Plugin "'+key+'" ProcessNode: '+(unixtime()-tstart)+'ms');
-		}
-	}
-}
-
 
 /* WebMoney Form */
 function WMDonateForm(Amount,purse_id,descr_text,submit_text){

@@ -312,6 +312,9 @@ function ExGroupItems(gid){
 function ExUserItems(id){
 var i=0;
 var uitems='';
+if (isGroupAdmin('-'+vkGetGid())){
+	uitems+=mkExItem(0,'<a href="#" onclick="vkBanUser(\'/id%uid\'); return false;">'+IDL('banit')+'</a>');
+}
 var fl_pr='<a href="#" onclick_="return false;" onclick="vkPopupAvatar(\'%uid\',this,true); return false;" onmouseout="vkHidePhoto();" class="fl_r">&gt;</a>';
 (ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,fl_pr+'<a href="/id%uid" onclick="return nav.go(this, event);">'+IDL('Page')+'</a>'):i++;// onclick="AlternativeProfile(\'%uid\'); return false;"
 (ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/write%uid" onclick="return showWriteMessageBox(event, %uid);">'+IDL('txMessage')+'</a>'):i++;
@@ -370,6 +373,38 @@ function vkAddToBL(uid){
 		});
 	});
 }
+
+/*
+function vkBanUser(uid){
+	vkMsg(vkLdrMonoImg,1000);
+	AjGet('/settings?act=blacklist&al=1',function(r,t){
+		var hash=t.split('"blacklist_hash":')[1].split('"')[1];
+		AjPost('al_settings.php', {act: 'search_blacklist', query: '/id'+uid, hash: hash, al:1},function(r,t){
+			var msg=t.split('class="msg">')[1].split('</div>')[0];
+			vkMsg(msg,3000);
+		});
+	});
+}
+*/
+
+function vkBanUser(user_link,gid) {
+	if (gid || cur.gid || cur.oid<0){
+		if (!gid) gid=cur.oid?Math.abs(cur.oid):cur.gid;
+		var ban=function(){
+			vkLdr.show();
+			AjGet('/club'+gid+'?act=blacklist&al=1',function(r,t){
+				var hash=t.split("hash: '")[1].split("',")[0];
+				ajax.post('al_groups.php', {act: 'bl_user', name: user_link, gid: gid, hash: hash}, {onDone: function(text, mid, html) {
+					  vkLdr.hide();
+					  vkMsg(text,3000);
+					}
+				});//, showProgress: lockButton.pbind(btn), hideProgress: unlockButton.pbind(btn)
+			});
+		};
+		vkAlertBox(IDL('ban'),IDL('BanConfirm'),ban,true);
+	}
+}
+
 function AddExUserMenu(el){
  if (getSet(10)=='y') //&& !ge('phototags') && !ge('videotags')
     {
@@ -377,24 +412,22 @@ function AddExUserMenu(el){
      }
 }
 
-
 function vk_user_init(){
-
-if (ge('pageLayout')||ge('page_layout')){
- if (getSet(10)=='y'){
-    GetUserMenuCfg();
-    var addbg=' .pupBody { background:'+getStyle(document.body, 'background')+' !important;}';
-    vkaddcss(PUPCss+addbg);
-    phdiv=document.createElement('div');
-    phdiv.id='pupHead';
-    pmdiv=document.createElement('div');
-    pmdiv.id='pupMenu';
-    var vk_page_layout=document.getElementsByTagName('body')[0];//ge('pageLayout')||ge('page_layout');
-    vk_page_layout.appendChild(phdiv);
-    vk_page_layout.appendChild(pmdiv);
-    vkExUMlinks();
- }
-}
+	if (ge('pageLayout')||ge('page_layout')){
+	 if (getSet(10)=='y'){
+		GetUserMenuCfg();
+		var addbg=' .pupBody { background:'+getStyle(document.body, 'background')+' !important;}';
+		vkaddcss(PUPCss+addbg);
+		phdiv=document.createElement('div');
+		phdiv.id='pupHead';
+		pmdiv=document.createElement('div');
+		pmdiv.id='pupMenu';
+		var vk_page_layout=document.getElementsByTagName('body')[0];//ge('pageLayout')||ge('page_layout');
+		vk_page_layout.appendChild(phdiv);
+		vk_page_layout.appendChild(pmdiv);
+		vkExUMlinks();
+	 }
+	}
 }
 
 
@@ -812,7 +845,8 @@ function vkFriendsCheck(nid){
 					  else {
 						  ge('vkfrupdresult').innerHTML='<table width="100%"><tr valign="top"><td>'+remadd.rem+'</td><td valign="top">'+remadd.add+'</td></tr></table>';
 						  vkProccessLinks(ge('vkfrupdresult'));//AddExUserMenu
-						  dApi.call('getProfiles',{uids:fids.join(',')+','+nfids.join(',')},function(r){
+						  var fids_x=fids.concat(nfids);
+						  dApi.call('getProfiles',{uids:fids_x.join(',')},function(r){//fids.join(',')+','+nfids.join(',')
 							//alert(print_r(r));
 							for (var i=0;r.response && i<r.response.length;i++){
 							  var user=r.response[i];
