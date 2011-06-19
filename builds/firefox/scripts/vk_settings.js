@@ -547,7 +547,10 @@ function vkInitSettings(){
 	  {id:25, text:IDL("seICQico")},
 	  {id:26, text:IDL("seCalcAge")},
 	  {id:39, text:IDL("seGrCom")},
-	  {id:41, header:IDL("seExpland_ProfileInfo"), text:IDL("seExplandProfileInfoText"),ops:[0,1,2,3]}
+	  {id:41, header:IDL("seExpland_ProfileInfo"), text:IDL("seExplandProfileInfoText"),ops:[0,1,2,3]},
+	  {id:45, text:IDL("seSortNam"), ops:['name','last','none']},
+	  {id:46,  text:IDL("seLoadOnl"), sub:{id:5, text:'<br>'+IDL("now")+': <b>%cur</b> '+IDL("min")+'<br>'+IDL("set")+': %sets',ops:[1,2,3,4,5,10,15]},ops:['au','ru']},
+	  {id:47, text:IDL("seLoadCom"), ops:["au","ru"]}
     ],
 
     Messages:[
@@ -590,7 +593,7 @@ function vkInitSettings(){
     ]
   };
 	  
-	//LAST 44
+	//LAST 47
 	
 	vkSetsType={
       "on"  :[IDL('on'),'y'],
@@ -743,7 +746,7 @@ function vkMakeSettings(el){
     '</div>';
     tabs.push({name:IDL('Sounds'),content:sounds});
   }*/
-  var CfgArea='<input type="hidden" id="TxtEditDiv_remixbitset" /><textarea id="remixbitset" rows=1 style="border: 1px double #999999; overflow: hidden; width: 100%;" type="text" readonly onmouseover="this.value=vkRemixBitS()" onClick="this.focus();this.select();">IDBit=\''+vkgetCookie('remixbit')+'\';</textarea>'; 
+  var CfgArea='<input type="hidden" id="TxtEditDiv_remixbitset" /><textarea id="remixbitset" rows=1 style="border: 1px double #999999; overflow: hidden; width: 100%;" type="text" readonly onmouseover="this.value=vkRemixBitS()" onClick="this.focus();this.select();">DefSetBits=\''+vkgetCookie('remixbit')+'\';</textarea>'; 
   tabs.push({name:IDL('all'),content:'all'});
   tabs.push({name:IDL('Help'),content:'<table style="width:100%; border-bottom:1px solid #DDD; padding:10px;"><tr><td colspan="2" style="text-align:center; font-weight:bold; text-decoration:underline;">'+IDL('Donations')+'</td></tr><tr><td width="50%"><div>'+IDL("DevRekv")+'</div><div>'+WMPursesList('wmdonate')+'</div></td><td><div id="wmdonate">'+WMDonateForm(30,'R255120081922')+'</div></td></tr></table>'+
     '<div id="vkcurcfg">'+
@@ -757,7 +760,7 @@ function vkMakeSettings(el){
 	'<br>'+vkRoundButton([IDL('SaveOnServer'),'javascript: vkSaveSettingsOnServer();'],[IDL('LoadFromServer'),'javascript: vkLoadSettingsFromServer();'])+'</div>'
   });
 
-  vkRemixBitS=function(){return "IDBit='"+vkgetCookie('remixbit')+"';";}
+  vkRemixBitS=function(){return "DefSetBits='"+vkgetCookie('remixbit')+"';";}
   tabs[0].active=true;
   html=vkMakeContTabs(tabs);
   if (el) ge(el).innerHTML=html;//vkGetSettings(vkoptSets['Media'],allsett);

@@ -23,6 +23,8 @@ function vkProfilePage(){
 	addFakeGraffItem();
 	vkUpdWallBtn(); //Update wall button
 	vkFrProfile();
+	if (getSet(46) == 'n') vkFriends_get('online');
+	if (getSet(47) == 'n') vkFriends_get('common');
 	vkHighlightGroups();
 }
 
@@ -64,7 +66,6 @@ function vkHighlightGroups(){
 		}
 	}
 }
-
 
 /*WALL*/
 function vkWallPage(){
@@ -447,7 +448,7 @@ function vkFrProfile(){
     var div=document.createElement('div');
     div.className='module_header';
     div.appendChild(all);
-    //hdr.innerHTML='<a href="javascript:vkFriends_get(\''+postfix+'\')" id="Fr'+postfix+'Lnk">[ '+hdr.innerHTML+' ]</a>';
+    hdr.innerHTML='<a href="javascript:vkFriends_get(\''+postfix+'\')" id="Fr'+postfix+'Lnk">[ '+hdr.innerHTML+' ]</a>';
     hdr.appendChild(all);
     div.appendChild(hdr);
     insertAfter(div,el);
@@ -506,6 +507,75 @@ function vkFrProfile(){
         shut('profile_full_info','0');
         break; 
   }
+}
+function vkFriends_get(idx){
+//if (1) shut('profile_friends_'+idx);
+  var count_el=ge('Fr'+idx+'Lnk');
+  if (!count_el) return;
+  if (getSet(46) == 'n' && idx=='online') {
+    clearTimeout(window.IDFrOnlineTO);
+    IDFriendTime=getSet('-',5)*60000;
+	if (!IDFriendTime) {
+		topMsg('Please, check <a href="/settings?act=vkopt">VkOpt settings</a>');
+		return;
+	}
+    IDFrOnlineTO = setTimeout("vkFriends_get('"+idx+"');", IDFriendTime);
+  }
+  //vkStatus('[Friends '+idx+' Loading]');
+  //alert(idx);
+  var methods={
+	'online':'friends.getOnline',
+	'all':'friends.get',
+	'common':'friends.getMutual'
+  };
+  code='var a=API.'+methods[idx]+'({uid:'+cur.oid+',target_uid:'+cur.oid+'});'+
+  'var r=API.getProfiles({"uids":a,fields:"uid,first_name,last_name"});'+
+  'return r;'
+  dApi.call('execute',{code:code},function(r){
+  //dApi.call(methods[idx],{uid:cur.oid,target_uid:cur.oid,fields:'first_name,last_name'},function(r){
+  //AjPost('friends.php',{id:cur.oid,filter:idx,qty:'60'},function(r,t){
+    //var res=eval('('+t+')');
+    var fr=r.response;
+    count_el.innerHTML=count_el.innerHTML.replace(/\d+/,fr.length);
+    
+    var html='';
+    fr=vkSortFrList(fr);
+    for (var i=0; i<fr.length;i++)
+    html+='<div align="left" style="margin-left: 10px; width:180px;">&#x25AA;&nbsp;\
+			<a href="write'+fr[i].uid+'" onclick="return showWriteMessageBox(event, '+fr[i].uid+')" target="_blank">@</a>&nbsp;\
+			<a href="id'+fr[i].uid+'">'+fr[i].full_name+'</a>\
+		   </div>';
+    if (fr.length==0) html+='<div align="left" style="margin-left: 10px; width:180px;"><strike>&#x25AA;&nbsp;Nobody&nbsp;OnLine</strike></div>';
+    ge('friends_profile_'+idx).innerHTML=html;
+	vkProcessNodeLite(ge('friends_profile_'+idx));
+    //vkStatus('');
+    //if (getSet(17) == 'y' || getSet(17) > 0) best(idx);
+    
+    });
+}
+
+function vkSortFrList(arr){
+  var bit=getSet(45);    //1 - name //2 - lname   //3 - none 
+  for (var i=0;i<arr.length;i++)
+	if (bit==2) arr[i].full_name=arr[i].last_name+' '+arr[i].first_name;
+	else  arr[i].full_name=arr[i].first_name+' '+arr[i].last_name;
+  var fave={};
+  /*
+  if (vkGetVal('FavList')){
+    var fl=vkGetVal('FavList').split('-');
+    for (var i=0;i<fl.length;i++) fave[fl[i]]=true;   
+  }
+  */
+  var SortFunc=function(a,b){
+    if (bit==3) return 0;
+    if ( fave[a.uid] && !fave[b.uid]) return -1; 
+    if (!fave[a.uid] &&  fave[b.uid]) return 1; 
+    if(a.full_name<b.full_name)     return -1;
+    if(a.full_name>b.full_name)     return 1;
+    return 0
+  }  
+  arr.sort(SortFunc); 
+  return arr;
 }
 /////////////////////for shut
 // Profile tabs

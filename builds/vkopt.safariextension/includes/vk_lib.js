@@ -542,7 +542,9 @@ if (!window.Audio){
 	  if (!vkgetCookie('remixbit')) return null;}*/
 	  if (!SettBit) SettBit=vkgetCookie('remixbit');
 	  if (!type || type==null) type=0;
-	  if (num=='-') return SettBit.split('-')[type];
+	  if (num=='-')	return (SettBit.split('-')[type] || DefSetBits.split('-')[type]);
+	  
+	  
 	  
 	  var bit=SettBit.split('-')[type].charAt(num);
 	  if (!bit) bit=DefSetBits.split('-')[type].charAt(num);
@@ -1606,7 +1608,10 @@ function vkWnd(text,title){
 }
 
 function vkMsg(text,show_timeout){
-vkaddcss("/* Box notify */\
+	if (!show_timeout) show_timeout=1000;
+	showDoneBox(text,{out: show_timeout});
+/*
+vkaddcss("/* Box notify * /\
 .vk_top_result_baloon_wrap { padding-top: 50px;  z-index: 1000;}\
 .vk_top_result_baloon {\
   text-align:center;\
@@ -1631,7 +1636,7 @@ div.vk_top_result_baloon a {  color: #B1DAFF;  font-weight: bold;}\
     fadeOut(resEl.firstChild, 500, function () {
       re(resEl);
     });
-  }, show_timeout);
+  }, show_timeout);*/
 }
 
 vkLdr={
@@ -1675,6 +1680,16 @@ vk_plugins={
 		  for (var key in StaticFiles)  if (key.indexOf('.js') != -1) vkInj(key); 
 		}
 		if (p.processLinks) vkProccessLinks();
+		/*
+		if (cur.vkAlbumMenu && p.album_actions && !p.album_actions_ok) {
+			var m=nav.objLoc[0].match(/album(-?\d+)_(\d+)/);
+			if(m && ! /album\d+_00/.test(nav.objLoc[0])){	
+				var oid=m[1];
+				var aid=m[2];
+				var a=p.album_actions();
+				for(var i=0;i<a.lenght;i++) cur.vkAlbumMenu.addItem(a[i]);
+			}
+		}*/
 	},
 	init:function(){
 		for (var key in vkopt_plugins){
@@ -1729,9 +1744,72 @@ vk_plugins={
 				vklog('Plugin "'+key+'" ProcessNode: '+(unixtime()-tstart)+'ms');
 			}
 		}
+	},
+	photoview_actions:function(ph){
+		var r='';
+		for (var key in vkopt_plugins){
+			var p=vkopt_plugins[key];
+			if (p.pvActions) {
+				var tstart=unixtime();
+				r+=isFunction(p.pvActions)?p.pvActions(ph):p.pvActions;
+				vklog('Plugin "'+key+'" PhView actions: '+(unixtime()-tstart)+'ms');
+			}
+		}		
+		return r;
+	},
+	album_actions:function(oid,aid){
+		var a=[];
+		for (var key in vkopt_plugins){
+			var p=vkopt_plugins[key];
+			if (p.albumActions) {
+				var tstart=unixtime();
+				a=a.concat(isFunction(p.albumActions)?p.albumActions(oid,aid):p.albumActions);
+				vklog('Plugin "'+key+'" Album actions items: '+(unixtime()-tstart)+'ms');
+			}
+		}
+		p.album_actions_ok=true;		
+		return a;
 	}
 }
 vkopt_plugin_run=vk_plugins.run;
+
+/*! CONNECT PLUGIN CODE
+
+if (!window.vkopt_plugins) vkopt_plugins={};
+(function(){
+	var PLUGIN_ID = 'vkmyplugin';
+	var PLUGIN_NAME = 'vk my test plugin';
+	
+	var ADDITIONAL_CSS='';
+	
+	// FUNCTIONS
+	var INIT = null;							// function()
+	var ON_NEW_LOCATION = null;					// function(nav_obj,cur_module_name);
+	var PROCESS_NEW_SCRIPT = null;				// function(file_name);
+	var ON_STORAGE = null; 		  				// function(command_id,command_obj);
+	var PROCESS_LINK_FUNCTION = null;			// function(link);
+	var PROCESS_NODE_FUNCTION = null;			// function(node);
+	var PHOTOVIEWER_ACTIONS	= null;				// function(photo_data); ||  String
+	var ALBUM_ACTIONS = null;					// function(oid,aid); || Array with items. Example  [{l:'Link1', onClick:Link1Func},{l:'Link2', onClick:Link2Func}]
+	
+	
+	//DON'T EDIT CODE:
+	vkopt_plugins[PLUGIN_ID]={
+		Name:PLUGIN_NAME,
+		css:ADDITIONAL_CSS,
+		init:INIT,
+		onLocation:ON_NEW_LOCATION,
+		onLibFiles:PROCESS_NEW_SCRIPT,
+		onStorage :ON_STORAGE,
+		processLinks:PROCESS_LINK_FUNCTION,
+		processNode:PROCESS_NODE_FUNCTION,
+		pvActions:PHOTOVIEWER_ACTIONS,
+		albumActions:ALBUM_ACTIONS
+	};
+	if (window.vkopt_ready) vkopt_plugin_run(PLUGIN_ID);
+})();
+
+*/
 
 /* WebMoney Form */
 function WMDonateForm(Amount,purse_id,descr_text,submit_text){

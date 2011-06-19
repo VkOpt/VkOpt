@@ -105,9 +105,10 @@ function vkPrepareTxtPanels(node){
 	var te_btn_count=0;
 	var touts={};
 	if (!window.txtareas_events) txtareas_events=[];
+	
 	for (var i=0;i<tas.length;i++){
 		var ta=tas[i];
-		if ((ta.getAttribute('onfocus') && ta.getAttribute('onfocus').indexOf('showEditPost')!=-1) || ge('edit_btns_'+ta.id)) continue;
+		if ((ta.getAttribute('onfocus') && ta.getAttribute('onfocus').indexOf('showEditPost')!=-1) || ta.getAttribute('vk_edit_btns')) continue;//ge('edit_btns_'+ta.id)
 		var panel=vkCe('div',{id:'edit_btns_'+ta.id,"class":'vk_textedit_panel'},
 						//vkTxtPanelButtons(ta.id)+
 						'<div style="float:left; font-size:7px; margin-top:-10px; margin-right:3px;" onclick="fadeOut(\''+'edit_btns_'+ta.id+'\');">x</div>');
@@ -155,6 +156,7 @@ function vkPrepareTxtPanels(node){
 		addEvent(ta, 'click', show_panel);
 		addEvent(ta, 'blur', hide_panel);
 		ta.vk_txt_panel_enabled=true;
+		ta.setAttribute('vk_edit_btns', true);
 		
 	}
 	vklog('PrepareTxtPanels time:' + (unixtime()-tstart) +'ms');
