@@ -214,6 +214,7 @@ var vkbrowser = {
   safari_mobile: /iphone|ipod|ipad/i.test(_ua_),
   mobile: /iphone|ipod|ipad|opera mini|opera mobi/i.test(_ua_)
 }
+if (window.opera) {vkbrowser.mozilla=false; vkbrowser.opera=true;}
 
 
 

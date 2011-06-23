@@ -404,6 +404,32 @@ function vkBanUser(user_link,gid) {
 	}
 }
 
+function vkBanUserFunc(user_link,gid,callback) {
+	if (gid || cur.gid || cur.oid<0){
+		if (!gid) gid=cur.oid?Math.abs(cur.oid):cur.gid;
+		var ban=function(){
+			//vkLdr.show();
+			AjGet('/club'+gid+'?act=blacklist&al=1',function(r,t){
+				var hash=t.split("hash: '")[1];
+				if (!hash){
+					//vkLdr.hide();
+					//vkMsg(IDL('Error'),2000);
+					callback(null,true);
+					return;
+				}
+				hash=hash.split("',")[0];
+				ajax.post('al_groups.php', {act: 'bl_user', name: user_link, gid: gid, hash: hash}, {onDone: function(text, mid, html) {
+					  //vkLdr.hide();
+					  callback(text);
+					  //vkMsg(text,3000);
+					}
+				});//, showProgress: lockButton.pbind(btn), hideProgress: unlockButton.pbind(btn)
+			});
+		};
+		ban();
+	}
+}
+
 function AddExUserMenu(el){
  if (getSet(10)=='y') //&& !ge('phototags') && !ge('videotags')
     {
