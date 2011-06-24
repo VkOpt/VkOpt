@@ -439,7 +439,7 @@ function vkFrProfile(){
   var mod=function(el,postfix){
     if (postfix=='online' && el.parentNode.id=='profile_friends') el.parentNode.id='profile_friends_online';
     vkNextEl(el).id='friends_profile_'+postfix;
-    var hdr=geByClass('header_bottom',el)[0];
+    var hdr=geByClass('p_header_bottom',el)[0];
 	if (!hdr) return;
 	var rlink=geByClass('right_link',el)[0];
 	if (rlink) rlink.setAttribute('onclick',"return nav.go(this.parentNode.parentNode, event)");
@@ -454,7 +454,7 @@ function vkFrProfile(){
     insertAfter(div,el);
   };
   var mod_lite=function(el,postfix){
-    var hdr=geByClass('header_bottom',el)[0];
+    var hdr=geByClass('p_header_bottom',el)[0];
     if (!hdr) return;
 	var rlink=geByClass('right_link',el)[0];
 	if (rlink) rlink.setAttribute('onclick',"return nav.go(this.parentNode.parentNode, event)");
