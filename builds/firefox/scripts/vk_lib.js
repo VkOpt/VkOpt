@@ -1770,6 +1770,32 @@ vk_plugins={
 		}
 		p.album_actions_ok=true;		
 		return a;
+	},
+	video_links:function(video_data,links_array){
+		var r='';
+		for (var key in vkopt_plugins){
+			var p=vkopt_plugins[key];
+			if (p.vidActLinks) {
+				var tstart=unixtime();
+				r+=isFunction(p.vidActLinks)?p.vidActLinks(video_data,links_array):p.vidActLinks;
+				vklog('Plugin "'+key+'" VidLinks actions: '+(unixtime()-tstart)+'ms');
+			}
+		}		
+		return r;		
+	},
+	process_response:function(answer,url,params){
+		var r='';
+		for (var key in vkopt_plugins){
+			var p=vkopt_plugins[key];
+			if (p.onResponseAnswer) {
+				var tstart=unixtime();
+				r=p.onResponseAnswer(answer,url,params);
+				if (r){
+					vklog('Plugin "'+key+'" onResponseAnswer: '+(unixtime()-tstart)+'ms');
+				}
+			}
+		}		
+		//return r;		
 	}
 }
 vkopt_plugin_run=vk_plugins.run;
@@ -1792,8 +1818,8 @@ if (!window.vkopt_plugins) vkopt_plugins={};
 	var PROCESS_NODE_FUNCTION = null;			// function(node);
 	var PHOTOVIEWER_ACTIONS	= null;				// function(photo_data); ||  String
 	var ALBUM_ACTIONS = null;					// function(oid,aid); || Array with items. Example  [{l:'Link1', onClick:Link1Func},{l:'Link2', onClick:Link2Func}]
-	
-	
+	var VIDEO_ACT_LINKLS = null;				// function(video_data,links_array); ||  String
+	var PROCESS_AJAX_RESPONSE = null;			// function(answer,url,params); 'answer' is array. modify only array items
 	//DON'T EDIT CODE:
 	vkopt_plugins[PLUGIN_ID]={
 		Name:PLUGIN_NAME,
@@ -1805,7 +1831,9 @@ if (!window.vkopt_plugins) vkopt_plugins={};
 		processLinks:PROCESS_LINK_FUNCTION,
 		processNode:PROCESS_NODE_FUNCTION,
 		pvActions:PHOTOVIEWER_ACTIONS,
-		albumActions:ALBUM_ACTIONS
+		albumActions:ALBUM_ACTIONS,
+		vidActLinks:VIDEO_ACT_LINKLS,
+		onResponseAnswer:PROCESS_AJAX_RESPONSE
 	};
 	if (window.vkopt_ready) vkopt_plugin_run(PLUGIN_ID);
 })();

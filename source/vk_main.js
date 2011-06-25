@@ -726,7 +726,7 @@ function vkCommon(){
 	//Inj.Replace('ajax.framepost',' done',' function(p1,p2,p3,p4,p5,p6,p7,p8,p9,p10){done(p1,p2,p3,p4,p5,p6,p7,p8,p9,p10); setTimeout("vkProcessNode(); ",50);}'); //alert(\'qwe\');
 		
 	Inj.Start('ajax.framegot','if (h) h=vkProcessOnFramegot(h);');
-	Inj.Before('ajax._post','o.onDone.apply','vkResponseChecker(answer);');// если это будет пахать нормально, то можно снести часть инъекций в другие модули.
+	Inj.Before('ajax._post','o.onDone.apply','vkResponseChecker(answer,url,q);');// если это будет пахать нормально, то можно снести часть инъекций в другие модули.
 	
 	Inj.Before('nav.go',"var _a = window.audioPlayer;","if (strLoc) if(vkAjaxNavDisabler(strLoc)){return true;}");
 	
@@ -740,11 +740,10 @@ function vkCommon(){
 function vkProcessOnFramegot(h){ if (h && h.indexOf('vk_usermenu_btn')==-1 && h.indexOf('vkPopupAvatar')==-1) return vkModAsNode(h,vkProcessNodeLite); }
 function vkProcessOnReceive(h){	if (h.innerHTML && h.innerHTML.indexOf('vk_usermenu_btn')==-1 && h.indexOf('vkPopupAvatar')==-1) {	vkProcessNode(h);}}
 
-function vkResponseChecker(answer){// detect HTML and prosessing
+function vkResponseChecker(answer,url,q){// detect HTML and prosessing
 	//var rx=/div.+class.+[^\\]"/;
 	//var nrx=/['"]\+.+\+['"]/;
 	//var nrx=/(document\.|window\.|join\(.+\)|\.init|[\{\[]["']|\.length|[:=]\s*function\()/;
-	
 	var _rx=/^\s*<(div|table|input)/;
 	for (var i=0;i<answer.length;i++){
 		//if (typeof answer[i]=='string') alert(answer[i].match(_rx)+'\n\n'+answer[i]);
@@ -752,6 +751,7 @@ function vkResponseChecker(answer){// detect HTML and prosessing
 			answer[i]=vkModAsNode(answer[i],vkProcessNodeLite);//+'<input name="vkoptmarker" type="hidden" value=1>';	
 		}
 	}
+	vk_plugins.process_response(answer,url,q);
 }
 /* NOTIFIER */
 function vkNotifier(){
@@ -1018,6 +1018,37 @@ function vkVidDownloadLinks(vars){
     vidurl += generateHDLinks();
 	return vidurl;
 }
+
+function vkVidDownloadLinksArray(vars){
+    // /video.php?act=a_flash_vars&vid=39226536_159441582
+	if (!vars) return '';
+	var result=[];
+	var vuid=function (uid) { var s = "" + uid; while (s.length < 5) {s = "0" + s;}  return s; }
+	var get_flv=function() {
+		if (vars.sd_link != null && vars.sd_link.length > 0) {return vars.sd_link;}
+		if (vars.uid <= 0) return "http://" + vars.host + "/assets/videos/" + vars.vtag + "" + vars.vkid + ".vk.flv";
+		return vars.host + "u" + vuid(vars.uid) + "/video/" + vars.vtag + ".flv";
+	}
+	var pathToHD=function(res) {
+		var s = (vars.host.substr(0, 4) == 'http') ? vars.host : 'http://cs' + vars.host + '.' + (vk.intnat ? 'vk.com' : 'vkontakte.ru') + '/';
+		return s + 'u' + vars.uid + '/video/' + vars.vtag + '.' + res + '.mov';
+	};
+	var generateHDLinks=function(){
+		var s="";
+		var vidHDurl="";
+		if ( parseInt(vars.hd)>0)
+		  for (var i=1;i<=parseInt(vars.hd);i++){
+			var res = "360";
+			switch(i){case 2:{res = "480"; break;}  case 3:{  res = "720"; break;}}
+			vidHDurl=pathToHD(res);
+			if (vidHDurl) result.push(vidHDurl);
+		  }
+		  return s;
+	}
+	result.push((vars.no_flv=='1')?pathToHD('240'):get_flv());
+	generateHDLinks();
+	return result;
+}
 function vkGetVideoSize(el){
 	//if (getSet(43)!='y') return;
 	var WAIT_TIME=4000;
@@ -1049,14 +1080,17 @@ function vkVidVarsGet(){
 			vivar='{'+eval('"'+vivar.split('};')[0]+'"')+'}';
 			vkVidVars=eval('('+vivar+')');
 			setTimeout(vkVidLinks,300);
+		} else {
+			vkVidVars=null;
 		}
 	}
 }
 function vkVidLinks(data){	
 	//'mvcur.mvData.hash'
-	if (ge('mv_actions')){
+	if (ge('mv_actions') && vkVidVars){
 		var h=ge('mv_actions').innerHTML;
 		ge('mv_actions').innerHTML+=vkVidDownloadLinks(vkVidVars); 
+		ge('mv_actions').innerHTML+=vk_plugins.video_links(vkVidVars,vkVidDownloadLinksArray(vkVidVars));
 		//if (h.indexOf('showTagSelector')!=-1){	ge('mv_actions').innerHTML+='<a href="#" onclick="vkTagAllFriends(); return false;">'+IDL("selall")+'</a>';	}
 		
 	}

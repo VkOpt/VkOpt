@@ -22,7 +22,7 @@ function vkProfilePage(){
 	vkPrepareProfileInfo();
 	addFakeGraffItem();
 	vkUpdWallBtn(); //Update wall button
-	vkFrProfile();
+	if (MOD_PROFILE_BLOCKS) vkFrProfile();
 	if (getSet(46) == 'n') vkFriends_get('online');
 	if (getSet(47) == 'n') vkFriends_get('common');
 	vkHighlightGroups();
@@ -709,7 +709,8 @@ function addFakeGraffItem() {
   var AddGraffItem=function(bef){
     var mid=ge('mid')?ge('mid').value:(window.cur && cur.oid?cur.oid:0);
     if (bef && mid){
-    vkAddScript('/js/lib/swfobject.js');
+    bef=bef.getElementsByTagName('a')[0];
+	vkAddScript('/js/lib/swfobject.js');
     var a=document.createElement('a');
     a.setAttribute("onfocus","this.blur()");
     a.setAttribute("id","vk_wall_post_type0");
@@ -726,8 +727,12 @@ function addFakeGraffItem() {
   if (window.__addMediaIndex) vk__addMediaIndex=__addMediaIndex;
   var lnkId = ++vk__addMediaIndex;
   if (ge('page_add_media')){
-    Inj.Wait("ge('add_media_type_"+(lnkId-1)+"_0')",AddGraffItem,300,10);
+    Inj.Wait("geByClass('add_media_rows')[0]",AddGraffItem,300,10);
+	
+	/*
+	Inj.Wait("ge('add_media_type_"+(lnkId-1)+"_0')",AddGraffItem,300,10);
 	Inj.Wait("ge('add_media_type_"+lnkId+"_0')",AddGraffItem,300,10);
+	*/
   } 
   
    

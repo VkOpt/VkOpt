@@ -32,9 +32,10 @@ var MSG_SCAN_REQ_DELAY=400; //ms  used only in vkDeleteMessages_() - disabled
 var MSG_DEL_REQ_DELAY=300; 	//ms
 var MSG_IDS_PER_DEL_REQUEST=25;
 
-// http://vkontakte.ru/login.php?app=2168679&layout=popup&type=browser&settings=15615
+/* API SETTINGS PAGE: http://vkontakte.ru/login.php?app=2168679&layout=popup&type=browser&settings=15615 */
 
 /* Others */
+var MOD_PROFILE_BLOCKS=true;
 var CUT_VKOPT_BRACKET=false;
 var vkNewSettings=[3,4,17,5,29,35,36,42,43]; //"new" label on settings item
 var SetsOnLocalStore={
