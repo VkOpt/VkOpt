@@ -79,7 +79,9 @@ function vkProcessNodeLite(node){
 	vkAudioNode(node);
 	vkPrepareTxtPanels(node);
 	vk_plugins.processnode(node,true);
-  }  catch (e) {}
+  }  catch (e) {
+	topError(e,{dt:4});
+  }
   vklog('ProcessNodeLite time:' + (unixtime()-tstart) +'ms');
 }
 	
@@ -114,6 +116,7 @@ function vkOnNewLocation(startup){
 			case 'audio'  :vkAudioPage(); break;
 			case 'audio_edit'  :vkAudioEditPage(); break;
 			case 'notes'  :vkNotesPage(); break;
+			case 'board'  :vkBoardPage(); break;
 		}
 		if (startup && window.Fave) Fave.init();	
 	}
@@ -1845,6 +1848,68 @@ function vkCleanNotes(){
 														  onChange: function(state) { by_time = (state == 1)?true:false; } 
 														})
 	});	
+}
+/*
+  deleteReportPost: function(post, act) {
+    post = cur.owner + '_' + post;
+    var prg = geByClass1('bp_progress', ge('post' + post));
+    if (isVisible(prg)) return;
+
+    ajax.post('al_board.php', {act: act, post: post, hash: cur.hash}, {onDone: function(text, deleted) {
+      var info = ge('post' + post).firstChild.nextSibling;
+      if (info) {
+        info.firstChild.rows[0].cells[0].innerHTML = text;
+      } else {
+        info = ge('post' + post).appendChild(ce('div', {className: 'bp_deleted', innerHTML: '\
+<table cellspacing="0" cellpadding="0" style="width: 100%"><tr><td class="bp_deleted_td">\
+  ' + text + '\
+</td></tr></table>'}));
+        hide(info.previousSibling);
+      }
+
+      if (deleted) {
+        Pagination.recache(-1);
+        Board.loadedPosts(cur.pgCount);
+      }
+    }, progress: prg});
+  },
+ */ 
+function vkBoardPage(){
+ vkTopicSubscribe(true);
+}
+function vkTopicSubscribe(add_link){
+	if (add_link){
+		if (nav.objLoc[0].indexOf('topic-')!=-1){
+			 var divider=(ge('privacy_edit_topic_action') && ge('privacy_edit_topic_action').parentNode && isVisible(ge('privacy_edit_topic_action').parentNode))?'<span class="divide">|</span>':'';
+			 geByClass('t0')[0].appendChild(vkCe('li',{"class":"t_r"},'<a href="#" id="vksubscribetopic" onclick="return vkTopicSubscribe();">'+IDL('addtop')+'</a>'+divider))
+		}
+		return false;
+	}
+	progr_el=ge('vksubscribetopic');
+	var text='[subscribe]';
+	var last = ((cur.pgCont.childNodes[cur.pgNodesCount - 1].id || '').match(/\d+$/) || [0])[0];
+	ajax.post('al_board.php', {act: 'post_comment',topic: cur.topic,last: last,hash: cur.hash,comment: text},{
+		showProgress:showGlobalPrg.pbind(progr_el, {cls: 'progress_inv_img', w: 46, h: 16}),
+		hideProgress:hide.pbind('global_prg'),
+		onDone: function(count, from, rows, offset, pages, preload) {
+			var pid=rows.split(text)[1].match(/Board\.deletePost\((\d+)\)/);
+			if (!pid) {
+				vkMsg(IDL('Error'));
+			}
+			else {
+				var post = cur.owner + '_' + pid[1];
+				ajax.post('al_board.php', {act: 'delete_comment', post: post, hash: cur.hash}, {
+					showProgress:showGlobalPrg.pbind(progr_el, {cls: 'progress_inv_img', w: 46, h: 16}),
+					hideProgress:hide.pbind('global_prg'),
+					onDone: function(text, deleted) {
+						if (deleted) vkMsg(IDL('topicadded'));
+					}
+				});
+				
+			}
+		}
+	});
+	return false;
 }
 
 var vkstarted = (new Date().getTime());
