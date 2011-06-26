@@ -228,7 +228,8 @@ function VkOptMainInit(){
 	'DelAll':'[ \u0423\u0434\u0430\u043b\u0438\u0442\u044c \u0432\u0441\u0435 ]',
 	'BanConfirm':'\u0412\u044b \u0443\u0432\u0435\u0440\u0435\u043d\u044b, \u0447\u0442\u043e \u0445\u043e\u0442\u0438\u0442\u0435 \u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u044d\u0442\u043e\u0433\u043e \u0447\u0435\u043b\u043e\u0432\u0435\u043a\u0430 \u0432 \u0447\u0435\u0440\u043d\u044b\u0439 \u0441\u043f\u0438\u0441\u043e\u043a \u0433\u0440\u0443\u043f\u043f\u044b?',
 	'TetAtet':'\u0422\u0435\u0442-\u0430-\u0442\u0435\u0442',
-	'Actions':'[ \u0414\u0435\u0439\u0441\u0442\u0432\u0438\u044f ]'
+	'Actions':'[ \u0414\u0435\u0439\u0441\u0442\u0432\u0438\u044f ]',
+	'DeleteDuplicates':'[ \u0423\u0434\u0430\u043b\u0438\u0442\u044c \u0434\u0443\u0431\u043b\u0438\u043a\u0430\u0442\u044b ]'
   });
   vkStyles();
   if (!ge('content')) return;
@@ -1142,6 +1143,7 @@ function vkAudios(){
 }
 function vkAudioPage(){
 	vkAudioPlayList(true);
+	vkAudioDelDup(true);
 }
 function vkAudioEditPage(){
 	vkCleanAudioLink();
@@ -1210,6 +1212,40 @@ function vkCleanAudios(){
 	vkAlertBox(IDL('DelAudios'),IDL('DelAllAutiosConfirm'),run,true);
 }
 
+function vkParseAudioInfo(_aid,node,anode){
+    //var _a=audioPlayer;
+	
+	var info=null;
+    if (window.audioPlaylist && audioPlaylist[_aid]) {
+      info = audioPlaylist[_aid];
+    } else {
+      var sr=/<\/?span>/ig;
+	  var a_node = anode || ge('audio'+_aid) || $x(".//div[@id='audio" + _aid + "']", node)[0];
+	  //var t_node=ge('title'+_aid) || $x(".//span[@id='title" + _aid + "']", node)[0];
+	  var a_info=a_node.getElementsByTagName('input')[0];//ge('audio_info'+_aid) || $x(".//input[@id='audio_info" + _aid + "']", node)[0];
+	  
+	  var art, title, nfo = geByClass1('info', a_node);
+      art = geByTag1('b', nfo);
+      l = geByTag1('a', art);
+      if (l) art = l;
+	  art = art.innerHTML.replace(sr,'');
+      title = geByClass1('title', nfo);
+      if (!title) title = ge('title'+_aid) || $x(".//span[@id='title" + _aid + "']", node)[0];//t_node;
+      l = geByTag1('a', title);
+      if (l) title = l.innerHTML;
+      else title = title.innerHTML;
+      title = title.replace(sr,'');
+      dur = geByClass1('duration', nfo).innerHTML;
+      var data=a_info.value.split(',');
+      var url=data[0];
+      var duration=parseInt(data[1]);
+      data = _aid.split('_');
+      var uid = data[0];
+      var aid = data[1];
+      info = {0: uid, 1:aid, 2:url, 3:duration, 4:dur, 5: art, 6:title, node:a_node};
+    }
+	return info;
+}
 function vkAudioNode(node){
   if ((node || ge('content')).innerHTML.indexOf('play_new')==-1) return;
   var smartlink=(getSet(1) == 'y')?true:false;
@@ -1219,8 +1255,6 @@ function vkAudioNode(node){
   var trim=function(text) { return (text || "").replace(/^\s+|\s+$/g, ""); }
   //InitAudiosMenu();
   var icon_src='data:image/gif;base64,R0lGODdhEAARALMAAF99nf///+7u7pqxxv///8nW4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACwAAAAAEAARAAAEJpCUQaulRd5dJ/9gKI5hYJ7mh6LgGojsmJJ0PXq3JmaE4P9AICECADs=';
-  var qreg=/'|"/g;
-  var sreg=/\s*,\s*/;
  
   /*var makedownload=function(url,el){
     var a=document.createElement('a');
@@ -1266,8 +1300,7 @@ function vkAudioNode(node){
 			 }
 			 //vklog('Audio: id'+id+' '+ge('title'+id));
 			 (geByClass('title_wrap',el.parentNode)[0] || el.parentNode).appendChild(vkCe('small',{"class":"duration fl_r",id:"vk_asize"+id, "url":url, dur:data[1]}));
-			 //el.parentNode
-			 //<small class="duration fl_r" id="vk_asize">6.65 МB</small>
+
 		     var name=el.parentNode.getElementsByTagName('b')[0].innerText+' - '+(span_title || ge('title'+id) || spans[1] || spans[0]).innerText;
 		     if (smartlink) {url+='?'+vkDownloadPostfix()+'&/'+name+'.mp3';};//normal name
 		     if (SearchLink && el){el.innerHTML=vkAudioDurSearchBtn(el.innerText,name,id);/* "<a href='/search?c[section]=audio&c[q]="+name+"'>"+el.innerText+"</a>";*/}
@@ -1278,7 +1311,92 @@ function vkAudioNode(node){
       }  
   }
 }
+function vkAudioDelDup(add_button,btn){
+	if (add_button){
+		var p=ge('audio_search_filters');
+		if (ge('vk_deldup_btn') || !p) return;
+		p.appendChild(vkCe('div',{"class":'audio_filter_sep'}));
+		p.appendChild(vkCe('div',{"class":'audio_search_filter'},'<div id="vk_deldup_btn"  style="text-align:center;">'+vkButton(IDL('DeleteDuplicates'),"vkAudioDelDup(null,this)")+'</div>' ));
+		p.appendChild(vkCe('div',{"class":'audio_search_filter'},'<div id="vk_deldup_text"  style="text-align:center;"></div>' ))
+		return;
+	}
 
+	var check_lite=function(){
+		lockButton(btn);
+		var dcount=0;
+		var adata={};
+		var divs = vkArr2Arr(geByClass('play_new'));
+		for (var i=0; i<divs.length; i++){
+			if (divs[i].id && divs[i].id.split('play')[1]) var id=divs[i].id.split('play')[1];
+			else continue;
+			// info = {0: uid, 1:aid, 2:url, 3:duration, 4:dur, 5: art, 6:title};
+			var info=vkParseAudioInfo(id);
+			var check_id=info[3]+'|'+info[5].toLowerCase()+'|'+info[6].toLowerCase();
+			if (adata[check_id]) {
+				re(info.node); 
+				dcount++;
+			} else adata[check_id]=true;
+		}
+		ge('vk_deldup_text').innerHTML=IDL('Deleted')+': '+dcount
+		unlockButton(btn);
+	}
+	var tstart=unixtime();
+	check_lite();
+	vklog('DeleteDuplicates time:' + (unixtime()-tstart) +'ms');
+}
+
+/*
+function vkAudioNode(node){
+  if ((node || ge('content')).innerHTML.indexOf('play_new')==-1) return;
+  var smartlink=(getSet(1) == 'y')?true:false;
+  var download=(getSet(0) == 'y')?1:0;
+  if (!download) return;
+  var SearchLink=true;
+  var trim=function(text) { return (text || "").replace(/^\s+|\s+$/g, ""); }
+  //InitAudiosMenu();
+  var icon_src='data:image/gif;base64,R0lGODdhEAARALMAAF99nf///+7u7pqxxv///8nW4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACwAAAAAEAARAAAEJpCUQaulRd5dJ/9gKI5hYJ7mh6LgGojsmJJ0PXq3JmaE4P9AICECADs=';
+  var makedownload=function(url,el,id){
+    var table=document.createElement('table');
+    table.className="vkaudio_down";
+    var tr=document.createElement('tr');
+    table.appendChild(tr);
+    el.parentNode.appendChild(table);
+    
+    var td=document.createElement('td');
+    tr.appendChild(td);  
+    td.appendChild(el); 
+    td=document.createElement('td');
+    td.setAttribute('style',"vertical-align: top;");
+    td.innerHTML='<a href="'+url+'" onmouseover="vk$(this).dragout();"><div class="play_new down_btn" id="down'+id+'"></div></a>';//<img src="'+icon_src+'">
+    tr.appendChild(td);  
+    el.setAttribute('vk_ok','1');  
+  }
+  var divs = geByClass('play_new',node);
+  for (var i=0; i<divs.length; i++){
+     //var onclk=divs[i].getAttribute('onclick');
+     if (!divs[i].id || divs[i].hasAttribute('vk_ok')) continue;
+     if (divs[i].id.split('play')[1]){
+         var id=divs[i].id.split('play')[1];
+		 if (ge('down'+id)) continue;
+		 // info = {0: uid, 1:aid, 2:url, 3:duration, 4:dur, 5: art, 6:title};
+		 var anode=(node?divs[i].parentNode.parentNode.parentNode:ge('audio'+id));
+		 var info=vkParseAudioInfo(id,node,anode);
+		 var url=info[2];
+		 var anode=info.node;
+		 var el=geByClass("duration",anode )[0];
+		 (geByClass('title_wrap',el.parentNode)[0] || el.parentNode).appendChild(vkCe('small',{"class":"duration fl_r",id:"vk_asize"+id, "url":url, dur:info[3]}));
+
+		 var name=info[5] + ' - ' + info[6];
+		 if (smartlink) {url+='?'+vkDownloadPostfix()+'&/'+name+'.mp3';};//normal name
+		 if (SearchLink && el){el.innerHTML=vkAudioDurSearchBtn(info[4],name,id);}
+		 if (download){ 
+            divs[i].setAttribute('style','width:17px;'); 
+            makedownload(url,divs[i],id);
+         }    
+      }  
+  }
+}
+//*/
 function vkAddAudio(aid,oid,callback){
 	dApi.call('audio.add',{aid:aid,oid:oid},function(r){
 		if (callback) callback(r.response);
