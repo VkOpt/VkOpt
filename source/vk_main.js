@@ -117,6 +117,7 @@ function vkOnNewLocation(startup){
 			case 'audio_edit'  :vkAudioEditPage(); break;
 			case 'notes'  :vkNotesPage(); break;
 			case 'board'  :vkBoardPage(); break;
+			case 'search'  :vkSearchPage(); break;
 		}
 		if (startup && window.Fave) Fave.init();	
 	}
@@ -229,7 +230,9 @@ function VkOptMainInit(){
 	'BanConfirm':'\u0412\u044b \u0443\u0432\u0435\u0440\u0435\u043d\u044b, \u0447\u0442\u043e \u0445\u043e\u0442\u0438\u0442\u0435 \u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u044d\u0442\u043e\u0433\u043e \u0447\u0435\u043b\u043e\u0432\u0435\u043a\u0430 \u0432 \u0447\u0435\u0440\u043d\u044b\u0439 \u0441\u043f\u0438\u0441\u043e\u043a \u0433\u0440\u0443\u043f\u043f\u044b?',
 	'TetAtet':'\u0422\u0435\u0442-\u0430-\u0442\u0435\u0442',
 	'Actions':'[ \u0414\u0435\u0439\u0441\u0442\u0432\u0438\u044f ]',
-	'DeleteDuplicates':'[ \u0423\u0434\u0430\u043b\u0438\u0442\u044c \u0434\u0443\u0431\u043b\u0438\u043a\u0430\u0442\u044b ]'
+	'DeleteDuplicates':'[ \u0423\u0434\u0430\u043b\u0438\u0442\u044c \u0434\u0443\u0431\u043b\u0438\u043a\u0430\u0442\u044b ]',
+	'DupDelCheckSizes':'\u0423\u0447\u0438\u0442\u044b\u0432\u0430\u0442\u044c \u0440\u0430\u0437\u043c\u0435\u0440',
+	'Duplicates':'\u0414\u0443\u0431\u043b\u0438\u043a\u0430\u0442\u044b'
   });
   vkStyles();
   if (!ge('content')) return;
@@ -1311,13 +1314,42 @@ function vkAudioNode(node){
       }  
   }
 }
+
+var vk_del_dup_check_size=false;
 function vkAudioDelDup(add_button,btn){
 	if (add_button){
-		var p=ge('audio_search_filters');
-		if (ge('vk_deldup_btn') || !p) return;
-		p.appendChild(vkCe('div',{"class":'audio_filter_sep'}));
-		p.appendChild(vkCe('div',{"class":'audio_search_filter'},'<div id="vk_deldup_btn"  style="text-align:center;">'+vkButton(IDL('DeleteDuplicates'),"vkAudioDelDup(null,this)")+'</div>' ));
-		p.appendChild(vkCe('div',{"class":'audio_search_filter'},'<div id="vk_deldup_text"  style="text-align:center;"></div>' ))
+		if (nav.objLoc[0]=='audio'){
+			var p=ge('audio_search_filters');
+			if (ge('vk_deldup_btn') || !p) return;
+			p.appendChild(vkCe('div',{"class":'audio_filter_sep'}));
+			p.appendChild(vkCe('div',{"class":'audio_search_filter'},'<div id="vk_deldup_btn"  style="text-align:center;">'+vkButton(IDL('DeleteDuplicates'),"vkAudioDelDup(null,this)")+'</div>' ));
+			p.appendChild(vkCe('div',{"style":'padding-top:10px;', id:"deldup_by_size"}));
+			p.appendChild(vkCe('div',{"class":'audio_search_filter'},'<div id="vk_deldup_text"  style="text-align:center;"></div>' ));
+
+			var cb = new Checkbox(ge("deldup_by_size"), {  width: 150,  
+											  checked:vk_del_dup_check_size,  
+											  label: IDL('DupDelCheckSizes'),
+											  onChange: function(state) { vk_del_dup_check_size = (state == 1)?true:false; } 
+											});
+		} else if (nav.objLoc[0]=='search' && nav.objLoc['c[section]']=='audio'){
+			var p=ge('search_filters');
+			if (ge('vk_deldup_btn') || !p) return;
+			p.appendChild(vkCe('div',{"class":'no_select filter_open',
+									  "onclick":"searcher.toggleFilter(this, 'vk_del_dup');",
+									  "onselectstart":"return false"},IDL('Duplicates')));
+			p.appendChild(vkCe('div',{id:"vk_del_dup"},'\
+				<div class="audio_search_filter"><div id="vk_deldup_btn"  style="text-align:center;">'+vkButton(IDL('DeleteDuplicates'),"vkAudioDelDup(null,this)")+'</div></div>\
+				<div style="padding-top:10px;" id="deldup_by_size"></div>\
+				<div id="vk_deldup_text"  style="text-align:center;"></div>\
+				')
+			);
+			
+			var cb = new Checkbox(ge("deldup_by_size"), {  width: 150,  
+														  checked:vk_del_dup_check_size,  
+														  label: IDL('DupDelCheckSizes'),
+														  onChange: function(state) { vk_del_dup_check_size = (state == 1)?true:false; } 
+														});
+		}
 		return;
 	}
 
@@ -1339,9 +1371,69 @@ function vkAudioDelDup(add_button,btn){
 		}
 		ge('vk_deldup_text').innerHTML=IDL('Deleted')+': '+dcount
 		unlockButton(btn);
-	}
+	};
+	var check_pro=function(){
+		lockButton(btn);
+		var adata={};
+		var urls=[];
+		var dcount=0;
+		var divs = vkArr2Arr(geByClass('play_new'));
+		for (var i=0; i<divs.length; i++){
+			if (divs[i].id && divs[i].id.split('play')[1]) var id=divs[i].id.split('play')[1];
+			else continue;
+			// info = {0: uid, 1:aid, 2:url, 3:duration, 4:dur, 5: art, 6:title};
+			var info=vkParseAudioInfo(id);
+			info.aid=id;
+			info.url=info[2];
+			info[5]=info[5].toLowerCase();
+			info[6]=info[6].toLowerCase();
+			adata[id]=info;
+			urls.push([info[2],id]);
+		}
+		
+		var idx=0;
+		//var re=function(node){	node.setAttribute('style',"border:1px solid #F00;");	}
+		var re_dup=function(){
+			var rdata={};
+			for (var i=0; i<divs.length; i++){
+				if (divs[i].id && divs[i].id.split('play')[1]) var id=divs[i].id.split('play')[1];
+				else continue;
+				// info = {0: uid, 1:aid, 2:url, 3:duration, 4:dur, 5: art, 6:title};
+				var info=adata[id];
+				if (!info) continue;
+				var check_id=info[3]+'|'+info[5]+'|'+info[6];
+				
+				if (rdata[check_id] && rdata[check_id][0]>info.size) {
+					re(info.node); 
+					dcount++;
+				} else {
+					if(rdata[check_id]){ 
+						var n=rdata[check_id][1];
+						n.parentNode.replaceChild(info.node,n);
+						dcount++;
+					}
+					rdata[check_id]=[info.size,info.node,info.aid];
+				}
+			}
+			ge('vk_deldup_text').innerHTML=IDL('Deleted')+': '+dcount;
+			unlockButton(btn);
+		};
+		var get_sizes=function(){
+			if (urls[idx]){
+				ge('vk_deldup_text').innerHTML=vkProgressBar(idx,urls.length,150,idx+'/'+urls.length);
+				XFR.post(urls[idx][0],{},function(h,l){
+					adata[urls[idx][1]].size=l;
+					idx++;
+					get_sizes();
+				},true);	
+			} else {
+				re_dup();
+			}
+		}
+		get_sizes();
+	};
 	var tstart=unixtime();
-	check_lite();
+	(vk_del_dup_check_size?check_pro:check_lite)();
 	vklog('DeleteDuplicates time:' + (unixtime()-tstart) +'ms');
 }
 
@@ -1532,7 +1624,10 @@ function vkAudioPlayList(add_button){
 		*/
 	});
 }
-
+/* SEARCH */
+function vkSearchPage(){
+	vkAudioDelDup(true);
+}
 
 /* WIKI GET CODE*/
 function vkGetWikiCode(){
@@ -1967,6 +2062,7 @@ function vkCleanNotes(){
 														})
 	});	
 }
+
 /*
   deleteReportPost: function(post, act) {
     post = cur.owner + '_' + post;
