@@ -731,7 +731,8 @@ function vkMakeSettings(el){
 	tabs.push({name:IDL(cat),content:'<div class="sett_cat_header">'+IDL(cat)+'</div>'+vkGetSettings(vkoptSets[cat],allsett)});
     //html+='<div class="sett_container"><div class="sett_header" onclick="toggle(this.nextSibling);">'+IDL(cat)+'</div><div id="sett'+cat+'">'+vkGetSettings(vkoptSets[cat],allsett)+'</div></div>';
   }
-  /*if (vkLocalStoreReady()){
+  /*
+  if (vkLocalStoreReady()){
     var currsnd=vkGetVal('sounds_name');
     currsnd=(currsnd && currsnd!=''?currsnd:IDL('Default'));
     var sounds=

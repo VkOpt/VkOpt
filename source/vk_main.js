@@ -773,6 +773,10 @@ function vkNotifier(){
 		
 		Notifier.unfreezeEvents=Notifier.freezeEvents;
 	}
+	Inj.Wait('window.curNotifier && window.curNotifier.sound',function(){
+		curNotifier.sound=new Sound2('New');
+		curNotifier.sound_im=new Sound2('Msg');
+	});
 	 /* delay for hide notify msg
 	  vk_notifier_show_timeout=20000;
 	  //Inj.Replace('Notifier.showEventUi','5000','vk_notifier_show_timeout');
