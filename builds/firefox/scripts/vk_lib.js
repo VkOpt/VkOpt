@@ -1498,12 +1498,6 @@ function vkattachScript(id, c) {
 // DATA SAVER
 var VKFDS_SWF_LINK='http://cs4785.vkontakte.ru/u13391307/90ea533137b420.zip';
 var VKTextToSave="QweQwe Test File"; var VKFNameToSave="vkontakte.txt";
-function vkInitDataSaver(){
-  if (!window.SWFObject) vkattachScript(12,'/js/lib/swfobject.js');
-}
-/*  vkSaveText();
-  vkInitDataSaver();
-*/
   
 function vkOnSaveDebug(t,n){/*alert(n+"\n"+t)*/}
 function vkOnResizeSaveBtn(w,h){
@@ -1518,73 +1512,51 @@ function vkSaveText(text,fname){
              '<span id="vksavetext" style="display:none">'+IDL("ClickForSave")+'</span>'+
              '<div id="dscontainer" style="display:inline-block;position:relative;top:8px;"></div>'+
              '</div>';
-  //if (!window.DataSaveBox || isNewLib()) 
   DataSaveBox = new MessageBox({title: IDL('SaveToFile')});
   var Box = DataSaveBox;
-  //var Box = new MessageBox({title: IDL('SaveToFile')});
   vkOnSavedFile=function(){Box.hide(200);};
   Box.removeButtons();
   Box.addButton(IDL('Cancel'),Box.hide,'no');
-  //{    onClick: function(){ (200); },    style:'button_no',label:});
   Box.content(html).show(); 
-  
-  var so = new SWFObject(VKFDS_SWF_LINK,'vkdatasaver',"100","20",'10');
-  so.addParam("allowscriptaccess", "always");
-  so.addParam("wmode", "transparent");
-  so.addParam("preventhide", "1");
-  so.addParam("scale", "noScale");
-  so.write('dscontainer');    
+  var params={width:100, height:29, allowscriptaccess: 'always',"wmode":"transparent","preventhide":"1","scale":"noScale"};
+  var vars={};//'idl_browse':IDL('Browse'),'mask_name':mask[0],'mask_ext':mask[1]
+	renderFlash('dscontainer',
+		{url:VKFDS_SWF_LINK,id:"vkdatasaver"},
+		params,vars
+	); 
 }
-function vkSaveTxt(text,file_name){
-  vkInitDataSaver();
-  Inj.Wait("SWFObject",function(){
-    vkSaveText(text,file_name); 
-  });
-}
+
 //END DATA SAVER
 
 // DATA LOADER
 var VKFDL_SWF_LINK='http://cs4788.vkontakte.ru/u13391307/27aa308ec116fa.zip';
 function vkLoadTxt(callback,mask){
-  //if (!window.DataLoadBox) 
-  DataLoadBox = new MessageBox({title: IDL('LoadFromFile')});
-  var Box = DataLoadBox;
+	DataLoadBox = new MessageBox({title: IDL('LoadFromFile')});
+	var Box = DataLoadBox;
 
-  vkOnDataLoaded=function(text){
-    Box.hide(200);
-    callback(text);
-  }
-  vkOnInitDataLoader=function(w,h){
-    	//alert(w+'\n'+h);
-      ge("vkdataloader").style.width=w+2;
+	vkOnDataLoaded=function(text){
+		Box.hide();
+		setTimeout(function(){callback(text);},10);	
+	}
+	vkOnInitDataLoader=function(w,h){
+	  ge("vkdataloader").style.width=w+2;
 			ge("vkdataloader").style.height=h;
 			hide("vkdlldr"); show("vkloadtext");
-  }
-  if (!window.SWFObject) attachScript(12,'/js/lib/swfobject.js');
-  Inj.Wait("SWFObject",function(){
-      var html = '<div><span id="vkdlldr"><div class="box_loader"></div></span>'+
-             '<span id="vkloadtext" style="display:none">'+IDL("ClickForLoad")+'</span>'+
-             '<div id="dlcontainer" style="display:inline-block;position:relative;top:8px;"></div>'+
-             '</div>';
-      Box.removeButtons();
-      Box.addButton(IDL('Cancel'),Box.hide,'no');
-	  /*Box.addButton({
-        onClick: function(){ Box.hide(200); Box.content(""); },
-        style:'button_no',label:IDL('Cancel')});
-	  */
-      Box.content(html).show(); 
-      var so = new SWFObject(VKFDL_SWF_LINK,'vkdataloader',"100","29",'10');
-      so.addVariable('idl_browse', IDL('Browse'));
-      if (mask){
-          so.addVariable('mask_name', mask[0]);
-          so.addVariable('mask_ext', mask[1]);
-      }
-      so.addParam("allowscriptaccess", "always");
-      so.addParam("wmode", "transparent");
-      so.addParam("preventhide", "1");
-      so.addParam("scale", "noScale");
-      so.write('dlcontainer');  
-  });
+	}
+	var html = '<div><span id="vkdlldr"><div class="box_loader"></div></span>'+
+		 '<span id="vkloadtext" style="display:none">'+IDL("ClickForLoad")+'</span>'+
+		 '<div id="dlcontainer" style="display:inline-block;position:relative;top:8px;"></div>'+
+		 '</div>';
+	Box.removeButtons();
+	Box.addButton(IDL('Cancel'),Box.hide,'no');
+	Box.content(html).show(); 
+
+	var params={width:100, height:29, "allowscriptaccess":"always","wmode":"transparent","preventhide":"1","scale":"noScale"};
+	var vars={'idl_browse':IDL('Browse'),'mask_name':mask[0],'mask_ext':mask[1]};
+	renderFlash('dlcontainer',
+		{url:VKFDL_SWF_LINK,id:"vkdataloader"},
+		params,vars
+	); 
 }
 //END DATA LOADER
 function vkDisableAjax(){
@@ -1767,8 +1739,8 @@ vk_plugins={
 				a=a.concat(isFunction(p.albumActions)?p.albumActions(oid,aid):p.albumActions);
 				vklog('Plugin "'+key+'" Album actions items: '+(unixtime()-tstart)+'ms');
 			}
-		}
-		p.album_actions_ok=true;		
+			p.album_actions_ok=true;	
+		}	
 		return a;
 	},
 	video_links:function(video_data,links_array){

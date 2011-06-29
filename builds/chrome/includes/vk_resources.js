@@ -14,7 +14,7 @@
 
 
 if (!window.Audio){
-  Audio= function(url){
+  Audio = function(url){
     this.notification    = function(){this.play  = function(){};};
     this.play  = function(){};
   }
@@ -42,16 +42,25 @@ var vkSoundsRes={
 if (!window.Sound2){
   Sound2 = function(sound){
     //alert(sound);
-	this.pause = function(){};
-    this.play  = function(){
-      if (vkbrowser.safari || vkbrowser.chrome) sound+='_mp3';
-      var snd='';
-      if (vkLocalStoreReady() && vkGetVal('sound_'+sound)) snd=vkGetVal('sound_'+sound);
-      if (!snd || snd=='') snd=vkSoundsRes[sound];
-      
-      var notification = new window.Audio(snd);
-      notification.play();   
-    };
+	var audioObj = vkCe('audio');
+	
+	if (vkbrowser.safari || vkbrowser.chrome) sound+='_mp3';
+	var snd='';
+	if (vkLocalStoreReady() && vkGetVal('sound_'+sound)) snd=vkGetVal('sound_'+sound);
+	if (!snd || snd=='') snd=vkSoundsRes[sound];
+	//var notification = new Audio(snd);
+	if (!audioObj.canPlayType){
+		alert('no');
+		audioObj.load=function(){};
+		audioObj.play=function(){};
+		audioObj.pause=function(){};
+	}
+	audioObj.src=snd;
+	audioObj.load();
+
+	this.pause = function(){ audioObj.pause(); };
+    this.play  = function(){ audioObj.play() };
+	//function(){      notification.play();   };
   }
 }
 

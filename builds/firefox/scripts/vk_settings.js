@@ -142,7 +142,7 @@ function vkGetVkoptFullConfig(){
   var temp=[];
   for (var key in sets) if (sets[key]) temp.push(key+':'+'"'+sets[key]+'"');
   var config='{\r\n'+temp.join(',\r\n')+'\r\n}';
-  vkSaveTxt(config,'vksetts_id'+remixmid()+'.json');
+  vkSaveText(config,'vksetts_id'+remixmid()+'.json');
   //alert(config);
 }
 
@@ -584,15 +584,17 @@ function vkInitSettings(){
 	  {id:36, text:IDL("sePreventHideNotifications")},
 	  {id:42, text:IDL("seSortFeedPhotos")}
     ],
+	Sounds:[
+	  {id:48, text:IDL("ReplaceVkSounds")}	
+	],
     Others:[
 		{id:9,  header:IDL("seTestFr"), text:IDL("seRefList"), sub:{id:1, text:'<br>'+IDL("now")+': <b>%cur</b> '+IDL("day")+'<br>'+IDL("set")+': %sets'+
             '<br><a onClick="javascript:vkFriendsCheck();" style="cursor: hand;">'+IDL('seCreList')+'</a>',
             ops:[1,2,3,4,5,6,7]}},
 		{id:6, text:IDL("seOnAway")},
-		{id:34, text:IDL("seSwichTextChr")}
+		{id:34, text:IDL("seSwichTextChr")}	
     ]
-  };
-	  
+  };	  
 	//LAST 47
 	
 	vkSetsType={
@@ -728,25 +730,34 @@ function vkMakeSettings(el){
   var tabs=[];
   for (var cat in vkoptSets){
     //alert(vkGetSettings(vkoptSets[cat],allsett));
-	tabs.push({name:IDL(cat),content:'<div class="sett_cat_header">'+IDL(cat)+'</div>'+vkGetSettings(vkoptSets[cat],allsett)});
+	if (cat!='Sounds') tabs.push({name:IDL(cat),content:'<div class="sett_cat_header">'+IDL(cat)+'</div>'+vkGetSettings(vkoptSets[cat],allsett)});
     //html+='<div class="sett_container"><div class="sett_header" onclick="toggle(this.nextSibling);">'+IDL(cat)+'</div><div id="sett'+cat+'">'+vkGetSettings(vkoptSets[cat],allsett)+'</div></div>';
   }
-  /*
+  //*
   if (vkLocalStoreReady()){
     var currsnd=vkGetVal('sounds_name');
     currsnd=(currsnd && currsnd!=''?currsnd:IDL('Default'));
+	var s_preview='<div class="vk_sounds_preview">'+
+		'<div>'+IDL('SoundsThemeName')+': <b><span id="vkSndThemeName">'+currsnd+'</span></b></div>'+
+		'<br><div id="vkTestSounds">'+
+		'<a href="javascript: vkSound(\'Msg\')">'+IDL('SoundMsg')+'</a><br>'+
+		'<a href="javascript: vkSound(\'New\')">'+IDL('SoundNewEvents')+'</a><br>'+
+		//'<a href="javascript: vkSound(\'On\')">'+IDL('SoundFavOnl')+'</a><br>'+      
+		'</div>'+
+	'</div>';
     var sounds=
-    '<br><div style="padding: 0px 20px 0px 20px"><div>'+IDL('SoundsThemeName')+': <b><span id="vkSndThemeName">'+currsnd+'</span></b></div><br><div id="vkTestSounds">'+
-    '<a href="javascript: vkSound(\'Msg\')">'+IDL('SoundMsg')+'</a><br>'+
-    '<a href="javascript: vkSound(\'New\')">'+IDL('SoundNew')+'</a><br>'+
-    '<a href="javascript: vkSound(\'On\')">'+IDL('SoundFavOnl')+'</a><br>'+
-        
-    '</div><div style="clear:both" align="center"><br><h6>'+IDL('SoundsThemeLoadClear')+'</h6><br>'+
+	'<div class="vk_sounds_settrings">'+'<div class="sett_cat_header">'+IDL('Sounds')+'</div>'+
+	'<table><tr><td>'+vkGetSettings(vkoptSets['Sounds'],allsett)+'</td><td>'+s_preview+'</td></tr></table>'+
+	'</div>'+
+	
+    '<div style_="padding: 0px 20px 0px 20px">'+
+	//s_preview+
+	'<div style="clear:both" align="center"><br><h4>'+IDL('SoundsThemeLoadClear')+'</h4><br>'+
     vkRoundButton([IDL('LoadSoundsTheme'),'javascript: vkLoadSoundsFromFile();'],[IDL('ResetSoundsDef'),'javascript: vkResetSounds();'])+'</div>'+
-    '<h6><br></h6><small>'+IDL('SoundsThemeOnForum')+'</small>'+
+    '<h4><br></h4><small>'+IDL('SoundsThemeOnForum')+'</small>'+
     '</div>';
     tabs.push({name:IDL('Sounds'),content:sounds});
-  }*/
+  }//*/
   var CfgArea='<input type="hidden" id="TxtEditDiv_remixbitset" /><textarea id="remixbitset" rows=1 style="border: 1px double #999999; overflow: hidden; width: 100%;" type="text" readonly onmouseover="this.value=vkRemixBitS()" onClick="this.focus();this.select();">DefSetBits=\''+vkgetCookie('remixbit')+'\';</textarea>'; 
   tabs.push({name:IDL('all'),content:'all'});
   tabs.push({name:IDL('Help'),content:'<table style="width:100%; border-bottom:1px solid #DDD; padding:10px;"><tr><td colspan="2" style="text-align:center; font-weight:bold; text-decoration:underline;">'+IDL('Donations')+'</td></tr><tr><td width="50%"><div>'+IDL("DevRekv")+'</div><div>'+WMPursesList('wmdonate')+'</div></td><td><div id="wmdonate">'+WMDonateForm(30,'R255120081922')+'</div></td></tr></table>'+
@@ -877,17 +888,27 @@ function vkloadsettings_APP() {
     });
 } 
 
+function vkUpdateSounds(on_command){
+	if (getSet(48)=='y'){
+		if (!on_command) vkCmd('upd_sounds',{});
+		if (window.curNotifier){
+			curNotifier.sound=new Sound2('New');	
+			curNotifier.sound_im=new Sound2('Msg');
+		}
+	}
+}
 function vkResetSounds(){
   for (var key in vkSoundsRes) vkSetVal('sound_'+key,'');
   vkSetVal('sounds_name','');
   if(ge('vkSndThemeName')) ge('vkSndThemeName').innerHTML=IDL('Default');
+  //vkUpdateSounds();
 }
 
 function vkLoadSoundsFromFile(){
     vkLoadTxt(function(txt){
     try {
       var cfg=eval('('+txt+')');
-      /*alert(print_r(cfg));*/
+	  //alert('qwe');
       for (var key in cfg) if (cfg[key] && vkSoundsRes[key] && key!='Name') 
         vkSetVal('sound_'+key,cfg[key]);
       
@@ -897,6 +918,7 @@ function vkLoadSoundsFromFile(){
       if(ge('vkSndThemeName')) ge('vkSndThemeName').innerHTML=tname;
       
       alert(IDL('SoundsThemeLoaded'));
+	  //vkUpdateSounds();
     } catch(e) {
       alert(IDL('SoundsThemeError'));
     }

@@ -90,6 +90,7 @@ function vkOnStorage(id,cmd){
 	switch(id){
 		case 'user_online_status': UserOnlineStatus(cmd); break;
 		case 'menu_counters':UpdateCounters(false,cmd); break;
+		case 'upd_sounds':vkUpdateSounds(true); break;
 	}
 }
 function vkOnNewLocation(startup){
@@ -232,7 +233,9 @@ function VkOptMainInit(){
 	'Actions':'[ \u0414\u0435\u0439\u0441\u0442\u0432\u0438\u044f ]',
 	'DeleteDuplicates':'[ \u0423\u0434\u0430\u043b\u0438\u0442\u044c \u0434\u0443\u0431\u043b\u0438\u043a\u0430\u0442\u044b ]',
 	'DupDelCheckSizes':'\u0423\u0447\u0438\u0442\u044b\u0432\u0430\u0442\u044c \u0440\u0430\u0437\u043c\u0435\u0440',
-	'Duplicates':'\u0414\u0443\u0431\u043b\u0438\u043a\u0430\u0442\u044b'
+	'Duplicates':'\u0414\u0443\u0431\u043b\u0438\u043a\u0430\u0442\u044b',
+	'SoundNewEvents':'\u041d\u043e\u0432\u044b\u0435 \u0441\u043e\u0431\u044b\u0442\u0438\u044f',
+	'ReplaceVkSounds':'\u0417\u0430\u043c\u0435\u043d\u044f\u0442\u044c \u0437\u0432\u0443\u043a\u0438 \u043a\u043e\u043d\u0442\u0430\u043a\u0442\u0430'
   });
   vkStyles();
   if (!ge('content')) return;
@@ -386,7 +389,9 @@ function vkStyles(){
         }\
 		';
 	var calendar='#vk_calendar.calendar {	width: 120px; margin:0px; padding:0px;margin-left:-1px;}\
-		#vk_calendar .day_table {  width: 120px; }\
+		#vk_calendar .day_table {  width: 120px; table-layout: fixed;}\
+		#vk_calendar .day_cell.day2, #vk_calendar  .day_cell.day4, #vk_calendar .day_cell.day6, #vk_calendar .day_head.day2, #vk_calendar .day_head.day4, #vk_calendar .day_head.day6{}\
+		#vk_calendar .day_head{overflow:hidden; width: 16px; }\
 		#vk_calendar .day_cell {width: 16px; height: 16px;}\
 		#vk_calendar .day_cell.holiday{background-color: #fff2ab}\
 		#vk_calendar .day_cell.event{font-weight:bold;}\
@@ -524,6 +529,7 @@ function vkStyles(){
 		.sett_new_:after{content:'*'; color:#F00; position:absolute; margin-top:-3px;}\
 		.sett_new:before{content:'new'; color:#F00; position:absolute; margin-left:-3px; margin-top:-3px; font-size:7pt; text-shadow:white 1px 1px 2px; background:rgba(255,255,255,0.6); -moz-border-radius:2px; border-radius:2px; transform:rotate(-20deg); -webkit-transform:rotate(-20deg);  -moz-transform:rotate(-20deg);  -o-transform:rotate(-20deg);}\
 		.sett_cat_header{display: inline-block; width:100%; text-align: center; font-weight:bold; border: 1px solid #B1BDD6; color: #255B8E; background: #DAE2E8; line-height: 25px;}\
+		.vk_sounds_settrings .sett_block{border-bottom:0px; width: 300px;}\
 		#vkTestSounds a{  margin: 0px;  padding: 3px; padding-left:25px; line-height:20px; display: inline-block; width:225px;  \
 						  background: url(http:\/\/vk.com\/images\/play.gif) 4px 5px no-repeat;\
 						  border-bottom_: solid 1px #CCD3DA; }\
@@ -773,10 +779,12 @@ function vkNotifier(){
 		
 		Notifier.unfreezeEvents=Notifier.freezeEvents;
 	}
-	Inj.Wait('window.curNotifier && window.curNotifier.sound',function(){
-		curNotifier.sound=new Sound2('New');
-		curNotifier.sound_im=new Sound2('Msg');
-	});
+	if (getSet(48)=='y'){
+		Inj.Wait('window.curNotifier && window.curNotifier.sound',function(){
+			curNotifier.sound=new Sound2('New');
+			curNotifier.sound_im=new Sound2('Msg');
+		});
+	}
 	 /* delay for hide notify msg
 	  vk_notifier_show_timeout=20000;
 	  //Inj.Replace('Notifier.showEventUi','5000','vk_notifier_show_timeout');
@@ -1866,7 +1874,7 @@ function vkAddSaveMsgLink(){
   }
 }
 function vkMakeMsgHistory(uid,show_format){
-	vkInitDataSaver();
+	//vkInitDataSaver();
 	if (!uid) uid=cur.thread.id;
 	var offset=0;
 	var result='';

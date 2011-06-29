@@ -1,14 +1,14 @@
 ﻿{
 "content_scripts": [
 {
-  "js": ["vkinit.js"],
+  "js": ["vkinit.js","includes/vk_skinman.js"],
   "run_at": "document_start",
   "matches": ["http://vk.com/*","http://*.vk.com/*","http://vkontakte.ru/*","http://*.vkontakte.ru/*","http://durov.ru/*"],
   "all_frames": true
 }
 ],
   "name": "VkOpt",
-  "version": "2.0.0.1",
+  "version": "2.0.0.2",
   "description": "Добавление множества функций, упрощающих жизнь ВКонтакте.ру. Official site and support: http://vkopt.net/",
   "icons": { "32":"img/bk_n_32.png",
              "48": "img/bk_n_48.png",
