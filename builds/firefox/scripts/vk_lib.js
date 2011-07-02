@@ -1495,6 +1495,8 @@ function vkFileSize(size,c){
 function vkattachScript(id, c) {
  document.getElementsByTagName('head')[0].appendChild(  vkCe('script', {id: id, type: 'text/javascript', src: c})  );
 }
+
+
 // DATA SAVER
 var VKFDS_SWF_LINK='http://cs4785.vkontakte.ru/u13391307/90ea533137b420.zip';
 var VKTextToSave="QweQwe Test File"; var VKFNameToSave="vkontakte.txt";
@@ -1582,6 +1584,28 @@ function vkWnd(text,title){
 
 function vkMsg(text,show_timeout){
 	if (!show_timeout) show_timeout=1000;
+	var showDoneBox=function(msg, opts){
+	  opts = opts || {};
+	  var l = (opts.w || 380) + 20;
+	  var styles="z-index:9999;";
+	  var style = ' style="'+(opts.w ? 'width: ' + opts.w + 'px; ' : '')+styles+'"';
+	  var pageW = bodyNode.offsetWidth,
+		  resEl = ce('div', {
+		  className: 'top_result_baloon_wrap fixed',
+		  innerHTML: '<div class="top_result_baloon"' + style + '>' + msg + '</div>'
+	  }, {left: (pageW - l) / 2});
+	  bodyNode.insertBefore(resEl, ge('page_wrap'));
+	  boxRefreshCoords(resEl);
+	  var out = opts.out || 1000;
+	  setTimeout(function () {
+		fadeOut(resEl.firstChild, 500, function () {
+		  re(resEl);
+		  if (opts.callback) {
+			opts.callback();
+		  }
+		});
+	  }, out);
+	}
 	showDoneBox(text,{out: show_timeout});
 /*
 vkaddcss("/* Box notify * /\

@@ -238,7 +238,8 @@ function VkOptMainInit(){
 	'DupDelCheckSizes':'\u0423\u0447\u0438\u0442\u044b\u0432\u0430\u0442\u044c \u0440\u0430\u0437\u043c\u0435\u0440',
 	'Duplicates':'\u0414\u0443\u0431\u043b\u0438\u043a\u0430\u0442\u044b',
 	'SoundNewEvents':'\u041d\u043e\u0432\u044b\u0435 \u0441\u043e\u0431\u044b\u0442\u0438\u044f',
-	'ReplaceVkSounds':'\u0417\u0430\u043c\u0435\u043d\u044f\u0442\u044c \u0437\u0432\u0443\u043a\u0438 \u043a\u043e\u043d\u0442\u0430\u043a\u0442\u0430'
+	'ReplaceVkSounds':'\u0417\u0430\u043c\u0435\u043d\u044f\u0442\u044c \u0437\u0432\u0443\u043a\u0438 \u043a\u043e\u043d\u0442\u0430\u043a\u0442\u0430',
+	'Add':'[ \u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c ]'
   });
   vkStyles();
   if (!ge('content')) return;
@@ -905,6 +906,7 @@ function vkPVLinks(ph){
         (ph.w_src?'<a href="'+ph.w_src+'" class="fl_r">HD3</a>':'')+
     '</div><div class="clear"></div>';
   } 
+  html+='<a href="#" onclick="vkPhotoUrlUpload(\''+(ph.w_src || ph.z_src || ph.y_src || ph.x_src)+'\'); return false;">'+IDL('Add')+'</a>'
   html+=ph.x_src?'<a target="_blank" href="http://www.tineye.com/search?url='+ph.x_src+'">'+IDL('TinEyeSearch')+'</a>':'';
   return html;
 }
@@ -999,6 +1001,56 @@ function vkGetPageWithPhotos(oid,aid){
 	});
 }
 
+var VKPRU_SWF_LINK='http://cs9811.vk.com/u13391307/a305feb1a174aa.zip';
+function vkPhotoUrlUpload(url){
+	PRUBox = new MessageBox({title: IDL('PhotoUpload'),width:"290px"});
+	var Box = PRUBox;
+	
+	vk_vkpru_on_debug=function(msg){
+		vklog(msg);
+	};
+	vk_vkpru_on_done=function(pid,aid){
+		Box.hide();
+		vkSetVal('vk_pru_album',aid);
+		vkMsg('<a href="/'+pid+'">'+IDL('Uploaded')+' '+pid+'</a>',3000);
+	};
+	vk_vkpru_on_init=function(){
+		hide('vkpruldr');
+		Box.setOptions({});
+	}	
+		
+	var html = '<div><span id="vkpruldr"><div class="box_loader"></div></span>'+
+             '<div id="prucontainer" style_="display:inline-block;position:relative;top:8px;"></div>'+
+             '</div>';
+
+	vkOnSavedFile=function(){Box.hide(200);};
+	Box.removeButtons();
+	Box.addButton(IDL('Cancel'),Box.hide,'no');
+	Box.content(html).show(); 
+	var domain=location.href.match(/vk\.com|vkontakte\.ru/)[0];
+	dApi.call('photos.getAlbumsCount',{},function(){
+		var flashvars = {
+			api_id:dApi.api_id,
+			viewer_id:vkgetCookie('dapi_mid'),
+			user_id:vkgetCookie('dapi_mid'),
+			api_url:'http://api.'+domain+'/api.php',
+			api_sid:vkgetCookie('dapi_sid'),
+			api_secret:vkgetCookie('dapi_secret'),
+			image_url: url,
+			album_id:vkGetVal('vk_pru_album') || 0,
+			onFlashReady:"vk_vkpru_on_init", 
+			onUploadComplete:"vk_vkpru_on_done", 
+			onDebug:"vk_vkpru_on_debug"
+			//,"lang.button_upload":'Загрузить фотографию'
+		};
+		var params={width:260, height:345, allowscriptaccess: 'always',"wmode":"transparent","preventhide":"1","scale":"noScale"};
+		renderFlash('prucontainer',
+			{url:VKPRU_SWF_LINK,id:"vkphoto_reuploader"},
+			params,flashvars
+		); 
+	});
+}
+//vkPhotoUrlUpload('http://cs9543.vk.com/u3457516/124935920/w_5603bf45.jpg')
 
 /* VIDEO */
 function vkVideoViewer(){
