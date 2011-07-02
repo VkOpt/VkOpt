@@ -901,7 +901,7 @@ function vkResetSounds(){
   for (var key in vkSoundsRes) vkSetVal('sound_'+key,'');
   vkSetVal('sounds_name','');
   if(ge('vkSndThemeName')) ge('vkSndThemeName').innerHTML=IDL('Default');
-  //vkUpdateSounds();
+  vkUpdateSounds();
 }
 
 function vkLoadSoundsFromFile(){
@@ -918,7 +918,7 @@ function vkLoadSoundsFromFile(){
       if(ge('vkSndThemeName')) ge('vkSndThemeName').innerHTML=tname;
       
       alert(IDL('SoundsThemeLoaded'));
-	  //vkUpdateSounds();
+	  vkUpdateSounds();
     } catch(e) {
       alert(IDL('SoundsThemeError'));
     }

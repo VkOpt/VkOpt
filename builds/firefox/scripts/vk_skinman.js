@@ -96,7 +96,7 @@ function vkSkinnerInit(){
       styleElement.appendChild(document.createTextNode(VK_CURRENT_CSS_CODE));
       
     
-      var appendTo="body";
+      var appendTo='head';//"body";
       var headID = document.getElementsByTagName(appendTo)[0];
 	  //var link = document.getElementsByTagName('link')[0];
       if (headID){
@@ -355,7 +355,7 @@ function vkShowSkinMan(filter,page){
 
 
 function vkSkinManInit(){
-  /*if (window.icoNode){
+  if (window.icoNode){
       var flink = headNode.getElementsByTagName("link");
       for (var i=0; i<flink.length;i++) 
         if (flink[i].rel=='shortcut icon'){
@@ -363,7 +363,7 @@ function vkSkinManInit(){
           headNode.appendChild(icoNode);
           break;
         }
-  }*/
+  }
   if (getSet(32)=='n' || location.href.match(/widget_.+php/) || vkbrowser.mozilla) return;
   var body = document.getElementsByTagName('body')[0];
   div=document.createElement('div');

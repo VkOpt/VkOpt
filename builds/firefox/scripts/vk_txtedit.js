@@ -94,8 +94,18 @@ function AddSmileBtn(rfield){
 	return smiles_panel_html.replace(/%FIELD_ID%/g,rfield);// GenHtml(rfield);//
 }
 
+vk_gen_smiles_funcs=[];
 function vkTxtPanelButtons(eid){
-	var el=vkCe('a',{"class":"vk_edit_btn smile_btn",href:"#"},'<div class="vk_edit_sub_panel">'+AddSmileBtn(eid)+'</div>');
+	var idx=vk_gen_smiles_funcs.length;
+	var need_gen=true;
+	vk_gen_smiles_funcs.push(function(el){
+		if (need_gen){
+			el.getElementsByTagName('div')[0].innerHTML=AddSmileBtn(eid);
+			need_gen=false;
+		}
+	});
+	var el=vkCe('a',{"class":"vk_edit_btn smile_btn",href:"#","onmouseover":"vk_gen_smiles_funcs["+idx+"](this);"},'<div class="vk_edit_sub_panel">qqwe'+/*AddSmileBtn(eid)+*/'</div>');
+	//el.getElementsByTagName('div').innerHTML=AddSmileBtn(eid);
 	return el;//'<a class="vk_edit_btn smile_btn" href="#"><div class="vk_edit_sub_panel">'+AddSmileBtn(eid)+'</div></a>';
 }
 function vkPrepareTxtPanels(node){
@@ -113,8 +123,9 @@ function vkPrepareTxtPanels(node){
 						//vkTxtPanelButtons(ta.id)+
 						'<div style="float:left; font-size:7px; margin-top:-10px; margin-right:3px;" onclick="fadeOut(\''+'edit_btns_'+ta.id+'\');">x</div>');
 		panel.appendChild(vkTxtPanelButtons(ta.id));				
+		//alert(panel.innerHTML);
 		ta.parentNode.insertBefore(panel,ta);
-		hide(panel)
+		hide(panel);
 		var show_panel=function(e){
 			var pid='edit_btns_'+e.target.id;
 			var panel=ge(pid);

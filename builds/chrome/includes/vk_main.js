@@ -19,9 +19,11 @@ function vkStManHook(){/* for dynamic loaded *.js */
   stManCallback = function(callback,files){
     backfunc=callback;  
     callback=function(){    
-      stManBeforeCallback(files);    
+      //vklog(files);
+	  stManBeforeCallback(files);    
       backfunc();    
-      stManAfterCallback(files);  
+      stManAfterCallback(files);
+	  //vklog('done: '+files);
     };
     return callback;
   };
@@ -46,6 +48,7 @@ function vkInj(file){
 	case 'friends.js':		vkFriends();	break;
 	case 'notifier.js': 	vkNotifier(); 	break;
 	case 'common.js': 		vkCommon(); 	break;
+	case 'im.js': 			vkIM(); 	break;
   }
   vk_plugins.onjs(file); 
 }
@@ -757,7 +760,7 @@ function vkResponseChecker(answer,url,q){// detect HTML and prosessing
 	//var rx=/div.+class.+[^\\]"/;
 	//var nrx=/['"]\+.+\+['"]/;
 	//var nrx=/(document\.|window\.|join\(.+\)|\.init|[\{\[]["']|\.length|[:=]\s*function\()/;
-	var _rx=/^\s*<(div|table|input)/;
+	var _rx=/^\s*<(div|table|input|a)/;
 	for (var i=0;i<answer.length;i++){
 		//if (typeof answer[i]=='string') alert(answer[i].match(_rx)+'\n\n'+answer[i]);
 		if (typeof answer[i]=='string' && _rx.test(answer[i]) ){
@@ -765,6 +768,10 @@ function vkResponseChecker(answer,url,q){// detect HTML and prosessing
 		}
 	}
 	vk_plugins.process_response(answer,url,q);
+}
+/* IM */
+function vkIM(){
+	Inj.Before('IM.addTab','cur.tabs','vkProcessNodeLite(txtWrap);');
 }
 /* NOTIFIER */
 function vkNotifier(){
@@ -2105,6 +2112,7 @@ function vkBoardPage(){
 }
 function vkTopicSubscribe(add_link){
 	if (add_link){
+		if (ge('vksubscribetopic')) return;
 		if (nav.objLoc[0].indexOf('topic-')!=-1){
 			 var divider=(ge('privacy_edit_topic_action') && ge('privacy_edit_topic_action').parentNode && isVisible(ge('privacy_edit_topic_action').parentNode))?'<span class="divide">|</span>':'';
 			 geByClass('t0')[0].appendChild(vkCe('li',{"class":"t_r"},'<a href="#" id="vksubscribetopic" onclick="return vkTopicSubscribe();">'+IDL('addtop')+'</a>'+divider))
