@@ -1001,7 +1001,7 @@ function vkGetPageWithPhotos(oid,aid){
 	});
 }
 
-var VKPRU_SWF_LINK='http://cs9811.vk.com/u13391307/03a8be6fcee992.zip';
+var VKPRU_SWF_LINK='http://cs9811.vk.com/u13391307/74703af13c031f.zip';
 function vkPhotoUrlUpload(url){
 	PRUBox = new MessageBox({title: IDL('PhotoUpload'),width:"290px"});
 	var Box = PRUBox;
