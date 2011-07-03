@@ -1187,33 +1187,37 @@ var dApi = {
 	var sec=vkgetCookie('dapi_secret');
 	//var sig=vkgetCookie('dapi_sig');
 	var apiLoginDone=function(event){
-					var sess=event.data;
-					if (sess=='SHOWFRAME'){
-						if (!dApi.auth_frame || dApi.sett_visible) return;
-						dApi.sett_box=vkAlertBox('VkOpt Desktop API','<div id="vk_dapi_auth"></div>');
-						var fr=dApi.auth_frame;
-						fr.setAttribute('style',"width:530px; height:400px; display:block; border:1px solid #DDD;");
-						ge('vk_dapi_auth').appendChild(fr);
-						dApi.sett_box.setOptions({width:"560px"});
-						dApi.sett_visible=true;
-					} else if (sess.match(/^[{}":,\sa-z\d]+$/)){
-						var r=eval('('+sess+')');
-						//alert(print_r(r));
-						//vksetCookie('dapi_sig',r.sig);
-						if (!r.mid || !r.sid || !r.secret) return;
-						vksetCookie('dapi_mid',r.mid);
-						vksetCookie('dapi_sid',r.sid);
-						vksetCookie('dapi_secret',r.secret);
-						
-						dApi.sett_visible=false;
-						if (dApi.sett_box) dApi.sett_box.hide();
-						if (dApi.auth_frame) re(dApi.auth_frame);
-						dApi.auth_frame=null;
-						
-						dApi.call(method, inputParams, callback);
-					}
+		var sess=event.data;
+		if (sess=='SHOWFRAME'){
+			if (!dApi.auth_frame || dApi.sett_visible) return;
+			dApi.sett_box=vkAlertBox('VkOpt Desktop API','<div id="vk_dapi_auth"></div>');
+			var fr=dApi.auth_frame;
+			fr.setAttribute('style',"width:530px; height:400px; display:block; border:1px solid #DDD;");
+			ge('vk_dapi_auth').appendChild(fr);
+			dApi.sett_box.setOptions({width:"560px"});
+			dApi.sett_visible=true;
+		} else if (sess.match(/^[{}":,\sa-z\d]+$/)){
+			var r=eval('('+sess+')');
+			//alert(print_r(r));
+			//vksetCookie('dapi_sig',r.sig);
+			if (!r.mid || !r.sid || !r.secret) return;
+			vksetCookie('dapi_mid',r.mid);
+			vksetCookie('dapi_sid',r.sid);
+			vksetCookie('dapi_secret',r.secret);
+			
+			dApi.sett_visible=false;
+			if (dApi.sett_box) dApi.sett_box.hide();
+			if (dApi.auth_frame) re(dApi.auth_frame);
+			dApi.auth_frame=null;
+			
+			dApi.call(method, inputParams, callback);
+		}
 	}	
 	var apiReAuth=function(){
+		if (!remixmid()) {
+			vklog('API Error. user id not found');
+			return;
+		}
 		if (!dApi.sett_visible && !dApi.auth_frame){
 			dApi.reauth_count++;
 			window.addEventListener("message", apiLoginDone,false);
