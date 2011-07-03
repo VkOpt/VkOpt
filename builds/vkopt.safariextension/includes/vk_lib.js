@@ -1598,6 +1598,7 @@ function vkMsg(text,show_timeout){
 		  className: 'top_result_baloon_wrap fixed',
 		  innerHTML: '<div class="top_result_baloon"' + style + '>' + msg + '</div>'
 	  }, {left: (pageW - l) / 2});
+	  resEl.setAttribute('style','z-index:9999; '+resEl.getAttribute('style'));
 	  bodyNode.insertBefore(resEl, ge('page_wrap'));
 	  boxRefreshCoords(resEl);
 	  var out = opts.out || 1000;
