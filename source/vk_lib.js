@@ -377,6 +377,19 @@ if (!window.Audio){
 		node.unselectable = "on";
 		if (typeof node.style.MozUserSelect != "undefined") node.style.MozUserSelect = "none";
 	}
+	function disableRightClick (element) {
+		function preventer (event) {
+			event.preventDefault();
+			event.stopPropagation();
+			event.cancelBubble = true;
+		}
+
+		if(element.addEventListener) {
+			element.addEventListener('contextmenu', preventer, false);
+		} else if(document.attachEvent) {
+			element.attachEvent('oncontextmenu', preventer );
+		}
+	}
 	function vkCe(tagName, attr,inner){
 	  var el = document.createElement(tagName);
 	  for (var key in attr)  el.setAttribute(key,attr[key]);
@@ -406,6 +419,7 @@ if (!window.Audio){
 		document.getElementsByTagName("head")[0].appendChild(styleElement);
 		addcss='';
 	}
+	
 	function $c(type,params){
 		if(type == "#text" || type == "#"){
 			return document.createTextNode(params);

@@ -22,6 +22,7 @@ var vk_upd_menu_timeout=20000;//(ms) Update left menu timeout
 var vkMenuHideTimeout=400;    //(ms) Hide Menu Popups timeout
 var vkMenuIconSize=12;		  //(px) max 16px
 var MENU_HIGHLIGHT_DELAY=1000;//(ms) yellow highlight in menu on changed counters
+var SIDEBAR_ITEM_HIGHLIGHT_COLOR = "#fcf78a";
 
 /* Save messages history config */
 var SAVE_MSG_HISTORY_PATTERN="%username% (%date%):\r\n%message%\r\n\r\n"; //Save Messages history file format (one record)

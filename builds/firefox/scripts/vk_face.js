@@ -542,11 +542,12 @@ function UpdateCounters(only_msg,data){
 		AjGet('feed2.php?mask=m'+vkRand(),onupdate);
 	}
 }
+
 function vkHighlightCounters(){
 	var vkMenuHighlightEl=function(e){
 		var e=vk$(e); 
 		var backcolor=e.css('backgroundColor'); 
-		e.animate({backgroundColor:"#fcf78a"},700,function(){//rgb(255,255,0)
+		e.animate({backgroundColor:SIDEBAR_ITEM_HIGHLIGHT_COLOR},700,function(){//rgb(255,255,0)
 			setTimeout(function(){
 				e.animate({backgroundColor:backcolor},700,function(){e.css('backgroundColor',"")});
 			},MENU_HIGHLIGHT_DELAY);

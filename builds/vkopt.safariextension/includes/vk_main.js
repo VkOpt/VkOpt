@@ -864,9 +864,24 @@ function vkPhotoViewer(){
   Inj.Before('photoview.doShow','var likeop','vkProcessNode(cur.pvNarrow);');
   Inj.Before('photoview.doShow','+ (ph.actions.del','+ vkPVLinks(ph) + vk_plugins.photoview_actions(ph) ');
   if (getSet(7)=='y') Inj.Start('photoview.afterShow','vkPVMouseScroll();');
+  
+  vkPVNoCheckHeight=function(){return !window.PVShowFullHeight};
+  
+  Inj.Before('photoview.onResize','cur.pvCurrent.height * c >','vkPVNoCheckHeight() && ');
+  Inj.Before('photoview.doShow','h * c > ','vkPVNoCheckHeight() && ');
+  Inj.End('photoview.afterShow','vkPVAfterShow();');
+  
   if (nav.strLoc.match(/photo-?\d+_\d+/))  { 
     setTimeout(photoview.doShow,70);
   }
+}
+
+function vkPVAfterShow(){
+	vkPVChangeView=function(){
+		window.PVShowFullHeight=!window.PVShowFullHeight;
+		photoview.onResize();
+	}
+	if (ge('pv_summary')) ge('pv_summary').setAttribute('onclick','vkPVChangeView()');
 }
 
 function vkPVMouseScroll(img){
@@ -1017,6 +1032,7 @@ function vkPhotoUrlUpload(url){
 	vk_vkpru_on_init=function(){
 		hide('vkpruldr');
 		Box.setOptions({});
+		disableRightClick(ge('prucontainer'));
 	}	
 		
 	var html = '<div><span id="vkpruldr"><div class="box_loader"></div></span>'+
@@ -1027,6 +1043,7 @@ function vkPhotoUrlUpload(url){
 	Box.removeButtons();
 	Box.addButton(IDL('Cancel'),Box.hide,'no');
 	Box.content(html).show(); 
+	Box.setOptions({});
 	var domain=location.href.match(/vk\.com|vkontakte\.ru/)[0];
 	dApi.call('photos.getAlbumsCount',{},function(){
 		var flashvars = {
