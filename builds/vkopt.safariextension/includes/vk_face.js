@@ -20,6 +20,7 @@ function sideBar(original){
 function vkMakeRightBar(){
 	var page_layout=ge('page_layout');
 	if (!page_layout) return;
+	vkaddcss('#footer_wrap { width: 100% !important;}');
 	vk.width=vk.width+120;
 	Inj.Start('handlePageView','if (params.width) params.width+=120;');
 	Inj.Replace('handlePageView','791','911');
@@ -86,7 +87,7 @@ function vkFixedMenu(){
 	var side_bar=(ge('sideBar') || ge('side_bar'));
 	var right_bar=ge('right_bar');
 	var h=getSize(el)[1];
-	vkaddcss("#sideBar,#side_bar"+(cfg_r=='y'?", #right_bar":'')+"{ position: fixed;z-index: 100; top: "+h+"px }");
+	vkaddcss("#sideBar,#side_bar"+(cfg_r=='y'?", #right_bar":'')+"{ position: fixed;z-index: 101; top: "+h+"px }");
 	var onscroll=function(){
 		removeEvent(window, 'scroll', onscroll);
 		var ntop=h-getScrollTop();
@@ -145,6 +146,7 @@ function vkMenu(){//vkExLeftMenu
       #nav li ul, #side_bar li ul{display:none;}\
       #nav li ul, #side_bar li ul{position:absolute; z-index:999; /*background:#FFF;*/ width:130px; margin-left:70px;padding-left:0px; border:1px solid #AAA; }\
       #nav ul li, #side_bar li ul{list-style:none;}\
+	  #stl_side { z-index: 0 !important;}\
   ");
   var icon_url='http://vkoptimizer.narod.ru/icons/';
   var MenuIcons={
@@ -545,13 +547,23 @@ function UpdateCounters(only_msg,data){
 
 function vkHighlightCounters(){
 	var vkMenuHighlightEl=function(e){
+		//*
 		var e=vk$(e); 
 		var backcolor=e.css('backgroundColor'); 
 		e.animate({backgroundColor:SIDEBAR_ITEM_HIGHLIGHT_COLOR},700,function(){//rgb(255,255,0)
 			setTimeout(function(){
 				e.animate({backgroundColor:backcolor},700,function(){e.css('backgroundColor',"")});
 			},MENU_HIGHLIGHT_DELAY);
+		});	
+		//*/
+		/*
+		var backcolor=getStyle(e, 'backgroundColor');
+		animate(e, {backgroundColor: SIDEBAR_ITEM_HIGHLIGHT_COLOR}, 700,function(){//rgb(255,255,0)
+			setTimeout(function(){
+				animate(e,{backgroundColor:backcolor},700,function(){setStyle(e,{backgroundColor: ''})});
+			},MENU_HIGHLIGHT_DELAY);
 		});		
+		*/
 	}
 	for (var i=0;i<VK_MENU_LAST_HIGHLIGHT.length;i++) vkMenuHighlightEl(VK_MENU_LAST_HIGHLIGHT[i]);
 }

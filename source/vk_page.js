@@ -514,7 +514,8 @@ function vkFriends_get(idx){
   if (!count_el) return;
   if (getSet(46) == 'n' && idx=='online') {
     clearTimeout(window.IDFrOnlineTO);
-    IDFriendTime=getSet('-',5)*60000;
+	var tout=getSet('-',5);
+    IDFriendTime=(tout?tout:1)*60000;
 	if (!IDFriendTime) {
 		topMsg('Please, check <a href="/settings?act=vkopt">VkOpt settings</a>');
 		return;

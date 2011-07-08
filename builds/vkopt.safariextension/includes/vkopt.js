@@ -382,7 +382,7 @@ function vkOpt_toogle(){
 	var ref=ge('utils') || ge('pageContainer');
 	if (!ref) return;
 	cb.className='';
-	cb.setAttribute('style','position:absolute; top:0px; left:10px;');
+	cb.setAttribute('style','position:absolute; top:0px; left:10px; z-index:999;');
   }
   cb.appendChild(btn);
   cb.appendChild(div);

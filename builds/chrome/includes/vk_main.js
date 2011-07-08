@@ -257,6 +257,7 @@ function VkOptMainInit(){
 	vkAudioNode();
   } 
   vkProccessLinks();
+  if (ge('left_blocks')) vkProccessLinks(ge('left_blocks'));
   vk_user_init();
   vkFixedMenu();
   vkMenu();
@@ -416,6 +417,7 @@ function vkStyles(){
 		#vk_calendar .event_block{border:1px solid #e7e7e7; background-color: #fff; padding:5px; margin-bottom:3px; text-align: center;}';
 	//main
 	main_css+=float_profile+calendar+"\
+	#profile_current_info { max-height: none !important; }\
 	#right_bar { width: 118px;}\
 	#right_bar_container{width: 118px; margin:5px 10px 0px 0px;	padding-bottom: 10px;}\
 	.box_loader {  height: 50px;  background: url('/images/progress7.gif') center no-repeat;}\
@@ -1016,7 +1018,7 @@ function vkGetPageWithPhotos(oid,aid){
 	});
 }
 
-var VKPRU_SWF_LINK='http://cs9811.vk.com/u13391307/74703af13c031f.zip';
+var VKPRU_SWF_LINK='http://cs4320.vk.com/u13391307/ac8f5bbe4ce7a8.zip';
 function vkPhotoUrlUpload(url){
 	PRUBox = new MessageBox({title: IDL('PhotoUpload'),width:"290px"});
 	var Box = PRUBox;

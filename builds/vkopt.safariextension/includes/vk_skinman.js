@@ -368,7 +368,7 @@ function vkSkinManInit(){
   var body = document.getElementsByTagName('body')[0];
   div=document.createElement('div');
   div.id='chStyle';
-  div.setAttribute("style","position:fixed; top:0px; left:0px;");
+  div.setAttribute("style","position:fixed; top:0px; left:0px; z-index:999;");
   var arrow_style='font-size:11px; font-weight:normal; margin: 0px; line-height:15px; padding:0px 0px 0px 0px;';
   div.innerHTML='<div id="Strelki"><table><tr>'+
      // '<td><div style="'+arrow_style+'"><a href="#" style="'+arrow_style+'" onclick="return vkSwichStyle(prompt());">[S]</a></div></td>'+
