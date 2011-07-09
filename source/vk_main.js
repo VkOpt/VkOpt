@@ -239,7 +239,11 @@ function VkOptMainInit(){
 	'Duplicates':'\u0414\u0443\u0431\u043b\u0438\u043a\u0430\u0442\u044b',
 	'SoundNewEvents':'\u041d\u043e\u0432\u044b\u0435 \u0441\u043e\u0431\u044b\u0442\u0438\u044f',
 	'ReplaceVkSounds':'\u0417\u0430\u043c\u0435\u043d\u044f\u0442\u044c \u0437\u0432\u0443\u043a\u0438 \u043a\u043e\u043d\u0442\u0430\u043a\u0442\u0430',
-	'Add':'[ \u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c ]'
+	'Add':'[ \u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c ]',
+  'mPhFrP':'\u0410\u043b\u044c\u0431\u043e\u043c\u044b \u0434\u0440\u0443\u0437\u0435\u0439',
+  'mApS':'\u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438',
+  'mNeU':'\u041e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u044f',
+  'mNeR':'\u0420\u0435\u043a\u043e\u043c\u0435\u043d\u0434\u0430\u0446\u0438\u0438'
   });
   vkStyles();
   if (!ge('content')) return;
@@ -322,7 +326,7 @@ function vkStyles(){
 		//if (window.Fave) Fave.init();
 	}
 	//getSet(38)=='y' 
-	main_css+='.vk_my_friend{color:'+getFrColor()+';}';
+	main_css+='.vk_my_friend{color:'+getFrColor()+' !important;}';
 	main_css+='\
 		.vk_common_group{background-color:#ffc1c1; background-color: rgba(89, 125, 163, 0.23);}\
 		.vk_adm_group{font-weight:bold; padding:6px 0 !important; background-color: rgba(255, 255, 0, 0.4);}\
@@ -652,8 +656,9 @@ vklog('ProcessLinks time:' + (unixtime()-tstart) +'ms');
 
 function ProcessAwayLink(node){
   if (node.href && node.href.indexOf('away.php?')!=-1){ 
-	var lnk=vkLinksUnescapeCyr(node.href);
-	node.href=lnk.split('?to=')[1].replace(/%26/gi,'&').replace(/%3A/gi,':').replace(/%2F/gi,'/').replace(/%25/gi,'%').replace(/%3F/gi,'?').replace(/%3D/gi,'=').replace(/%26/gi,';').replace(/&h=[\da-z]{18}/i,'');
+	var lnk=vkLinksUnescapeCyr(node.href).split('?to=')[1];
+  if (!lnk) return;
+	node.href=lnk.replace(/%26/gi,'&').replace(/%3A/gi,':').replace(/%2F/gi,'/').replace(/%25/gi,'%').replace(/%3F/gi,'?').replace(/%3D/gi,'=').replace(/%26/gi,';').replace(/&h=[\da-z]{18}/i,'');
 	//alert(unescape(node.href));
   }
 }

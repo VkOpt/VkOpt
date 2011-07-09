@@ -188,6 +188,7 @@ function vkMenu(){//vkExLeftMenu
     ],
     'albums':[
         ['albums'+vkmid,IDL("mPhM")],
+        ['friendsphotos',IDL("mPhFrP")],
         ['tag'+vkmid,IDL("mPhW")],
         [["#","showBox('al_photos.php', {act: 'new_album_box'},{stat: ['photos.css']}); return false;"],IDL("mPhN")],
         ['photos'+vkmid+'?act=comments',IDL("mPhC")],
@@ -243,10 +244,12 @@ function vkMenu(){//vkExLeftMenu
     ],*/	
     'feed':[
         ['feed',IDL("mNeP")],
+        ['feed?section=updates',IDL("mNeU")],
         ['feed?section=friends',IDL("mNeF")],
         ['feed?section=groups',IDL("mNeG")],
-                ['feed?section=photos',IDL("clPh")],
+        ['feed?section=photos',IDL("clPh")],
         ['feed?section=comments',IDL("mNeB")],
+        ['feed?section=recommended',IDL("mNeR")],
         ['tag'+vkmid+'?act=comments',IDL("mNeFW")]       
     ],
 	'fave':[
@@ -279,8 +282,9 @@ function vkMenu(){//vkExLeftMenu
     'apps':[
         ['apps',IDL("mApM")],
         ['apps?act=catalog',IDL("mApA")],
-        ['apps?act=notifications',vk_lang["mTags"],true]
-		//,[['#',"Ajax.Send(\'apps.php?act=a_delete_all_not\', {}, function(){vkLoadLeftMenu();}); return false;"],IDL('MyTagsDelete'),true]    
+        ['apps?act=notifications',IDL("mTags"),true],
+        ['apps?act=settings',IDL("mApS")]  
+        //,[['#',"Ajax.Send(\'apps.php?act=a_delete_all_not\', {}, function(){vkLoadLeftMenu();}); return false;"],IDL('MyTagsDelete'),true]    
     ],
     'questions':[
         ['questions.php',IDL("mQuM")],
