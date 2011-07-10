@@ -11,8 +11,8 @@
 //
 
 var vVersion	= 200;
-var vBuild = 110709;
-var vPostfix = ' beta';
+var vBuild = 110710;
+var vPostfix = ' RC';
 var vk_DEBUG=1;
 
 /* EXT CONFIG */
@@ -40,6 +40,7 @@ var MOD_PROFILE_BLOCKS=true;
 var CUT_VKOPT_BRACKET=false;
 var vkNewSettings=[3,4,17,5,29,35,36,42,43]; //"new" label on settings item
 var SetsOnLocalStore={
+  'vkOVer':'c',
   'remixbit':'c',
   'remixumbit':'c',
   'IDNew':'c',

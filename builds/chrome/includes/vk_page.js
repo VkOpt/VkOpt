@@ -491,6 +491,7 @@ function vkFrProfile(){
       
       if (key && vk_shuts_mask[key]){
         els[i].setAttribute("onclick",'return shut("'+key+'");');
+        addClass(els[i],'shutable');
         addClass(key,'shut_open');
         if (shuts_mask & vk_shuts_mask[key]){	shut(key);	}
       }    
