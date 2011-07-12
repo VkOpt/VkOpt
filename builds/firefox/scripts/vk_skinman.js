@@ -100,7 +100,7 @@ function vkSkinnerInit(){
       var headID = document.getElementsByTagName(appendTo)[0];
 	  //var link = document.getElementsByTagName('link')[0];
       if (headID){
-        //headID.appendChild(document.createElement('link'));//fix
+        headID.appendChild(document.createElement('link'));//fix
         headID.appendChild(vkcssNode);
         headID.appendChild(styleElement);
       } else {

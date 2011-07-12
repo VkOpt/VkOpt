@@ -11,8 +11,8 @@
 //
 
 var vVersion	= 200;
-var vBuild = 110710;
-var vPostfix = ' RC';
+var vBuild = 110712;
+var vPostfix = ' ';
 var vk_DEBUG=1;
 
 /* EXT CONFIG */
