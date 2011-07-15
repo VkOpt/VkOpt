@@ -150,9 +150,11 @@ function vkLocationCheck(){
 function VkOptMainInit(){
   if (vkLocationCheck()) return;
   if (InstallRelease()) return;
-  /* // javascript: x=''; for (var key in vk_lang_ru) x+="'"+key+"': '"+(typeof vk_lang_ru[key] == 'string'?IDL(key):JSON.Str(vk_lang_ru[key]))+"'\n"; alert(x);
+  //* // javascript: x=''; for (var key in vk_lang_ru) x+="'"+key+"': '"+(typeof vk_lang_ru[key] == 'string'?IDL(key):JSON.Str(vk_lang_ru[key]))+"'\n"; alert(x);
   vkExtendLang({
- });*/
+    'EnterLinkToPhoto':'[\u0421\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 \u0444\u043e\u0442\u043e \u0432\u0438\u0434\u0430 `photoXXX_YYYYY`]',
+    'IncorrectPhotoLink':'\u041d\u0435\u043f\u0440\u0430\u0432\u0438\u043b\u044c\u043d\u0430\u044f \u0441\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 \u0444\u043e\u0442\u043e\u0433\u0440\u0430\u0444\u0438\u044e'
+  });//*/
   vkStyles();
   if (!ge('content')) return;
   if (getSet(31)=='y' || getSet(35)=='y') vkMakeRightBar();
@@ -683,7 +685,44 @@ function vkResponseChecker(answer,url,q){// detect HTML and prosessing
 			answer[i]=vkModAsNode(answer[i],vkProcessNodeLite);//+'<input name="vkoptmarker" type="hidden" value=1>';	
 		}
 	}
+  vkProcessResponse(answer,url,q);
 	vk_plugins.process_response(answer,url,q);
+}
+
+function vkProcessResponse(answer,url,q){
+  if (url=='/photos.php' && q.act=="a_choose_photo_box") vkPhChooseProcess(answer,url,q);
+}
+
+function vkPhChooseProcess(answer,url,q){
+//*
+  vkCheckPhotoLinkToMedia=function(){
+    var btn=ge('vk_link_to_photo_button');
+    var val=ge('vk_link_to_photo').value.match(/photo(-?\d+)_(\d+)/);
+    lockButton(btn);
+    if (val){
+      cur.chooseMedia('photo', val[1]+'_'+val[2]);//['http://cs5751.vk.com/u13391307/138034142/m_a6b31fd8.jpg', 'http://cs5751.vk.com/u13391307/138034142/s_818dc071.jpg', '9b949405dd303694e1', '{temp: {x_src: "http://cs5751.vk.com/u13391307/138034142/x_c8cae130.jpg"}, big: 1}']
+    } else {
+      alert(IDL('IncorrectPhotoLink'))
+    }
+    unlockButton(btn);
+  };
+  if (answer[1].indexOf('vk_link_to_photo')==-1){
+  var div=vkCe('div',{},answer[1]);
+  var ref=geByClass('summary',div)[0];
+  if (ref){
+    var node=vkCe('div',{"class":'ta_r','style':"height: 25px; padding-left:10px; padding-top:4px;"},'\
+    <div class="fl_l">\
+        '+IDL('EnterLinkToPhoto')+': \
+      <span><input id="vk_link_to_photo" type="text"  style="width:230px"></span>\
+      <div id="vk_link_to_photo_button" class="button_blue"><button onclick="vkCheckPhotoLinkToMedia();">'+IDL('OK')+'</button></div>\
+    </div>\
+    ');
+    ref.parentNode.insertBefore(node,ref);
+    ref.parentNode.insertBefore(vkCe('h4'),ref);
+    answer[1]=div.innerHTML;
+  }
+  }
+//*/  
 }
 /* IM */
 function vkIM(){

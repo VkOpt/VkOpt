@@ -381,10 +381,12 @@ function vkSkinManInit(){
 
 function vkCheckInstallCss(){
   var dloc=document.location.href;
-  if (dloc.match(/\/im\.php\?installcss=http:\/\/.+/)){
-    vkSwichStyle(dloc.match(/\/im\.php\?installcss=(.+)/)[1]);
+  if (dloc.match(/[\?&]installcss=http:\/\/.+/)){
+    vkSwichStyle(dloc.match(/[\?&]installcss=(.+)/)[1]);
     location.href="/";
+    return true;
   }
+  return false;
 }
 /*
 (function(){
