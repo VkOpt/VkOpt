@@ -139,6 +139,7 @@ function vkOnNewLocation(startup){
 function vkLocationCheck(){
   if (uApi.onLogin()) return true;
   if (dApi.onLogin()) return true;
+  if (vkCheckInstallCss()) return true;
   XFR.check();
   if (location.href.match('/away')) if (getSet(6) == 'y'){
 	location.href=unescape(vkLinksUnescapeCyr(location.href.split('to=')[1].split(/&h=.{18}/)[0]));
@@ -149,7 +150,7 @@ function vkLocationCheck(){
 function VkOptMainInit(){
   if (vkLocationCheck()) return;
   if (InstallRelease()) return;
-  /*
+  /* // javascript: x=''; for (var key in vk_lang_ru) x+="'"+key+"': '"+(typeof vk_lang_ru[key] == 'string'?IDL(key):JSON.Str(vk_lang_ru[key]))+"'\n"; alert(x);
   vkExtendLang({
  });*/
   vkStyles();
