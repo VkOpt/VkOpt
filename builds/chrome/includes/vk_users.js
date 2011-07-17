@@ -1059,9 +1059,9 @@ function vkHighlightFriends(){
 		load_friends(highlight);
 	}
 }
-/*
-(function(){
-  document.addEventListener('DOMContentLoaded',vk_user_init, false);
-})();*/
+
+/*  FavUsers */
+
+
 
 if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;

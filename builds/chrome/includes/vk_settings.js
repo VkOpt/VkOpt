@@ -146,7 +146,7 @@ function vkGetVkoptFullConfig(){
   var sets={
 	remixbit:vkgetCookie('remixbit'),
 	remixumbit:vkgetCookie('remixumbit'),
-	AdmGr:vkgetCookie('AdmGr'),
+	//AdmGr:vkgetCookie('AdmGr'),
 	FavList:vkGetVal('FavList'),
 	//VK_CURRENT_CSS_URL:vkGetVal('VK_CURRENT_CSS_URL'),
 	WallsID:vkGetVal('WallsID')
@@ -859,55 +859,6 @@ function vkLoadSettingsFromServer(check){
 	});
   
 }
-
-function vksavesettings_APP(callback) {
-    n = 3;
-    var sett = new Array();
-    var sp=vkgetCookie("remixbit").split('-');
-    for (i in sp) if (i > 0) sett[i - 1] = sp[i].replace("#", '__');
-    
-    var v1500=vkgetCookie("remixbit").split('-')[0];
-    var v1501=sett.join('-');
-    var v1502=vkgetCookie('remixclosed_tabs');
-    savecode='return [API.putVariable({key:1500,value:"'+v1500+'"}),API.putVariable({key:1501,value:"'+v1501+'"}),API.putVariable({key:1502,value:"'+v1502+'"})];';
-    vkApi.call('execute',{code:savecode},function(r){
-      //alert(print_r(r));
-      if (callback) callback();
-      else {
-        vkStatus('saved');
-        setTimeout("vkStatus();", 5000);
-      }
-    });    
-    
-}
-
-function vkloadsettings_APP() {
-    vkStatus('loading');
-    doAPIRequest('method=getVariable&key=1280',
-    function(r) {
-        var id = r.response;
-        if (id == null) id = '000000';
-        doAPIRequest('method=getVariables&key=1500&count=3',
-        function(r) {
-            //alert(r.response);
-            if (r.response[0].value.length == 0) {
-              alert('pls, tune up your VkOpt :)');
-              vkShowSettings();
-            }
-            else {
-                sett = r.response[0].value + '-' + r.response[1].value.replace(/__/g, '#');
-                sett = sett.split('-');
-                if (sett[11] != id) sett[11] = id;
-                vkStatus('bit');
-                vksetCookie('remixbit', sett.join('-'));
-                vkStatus('tabs');
-                vksetCookie('remixclosed_tabs', r.response[2].value);
-                vkStatus('loaded');
-                setTimeout("window.location.reload(1);", 2000);
-            }
-        });
-    });
-} 
 
 function vkUpdateSounds(on_command){
 	if (getSet(48)=='y'){

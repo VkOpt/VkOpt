@@ -241,6 +241,8 @@ function vkStyles(){
 		.vk_common_group{background-color:#ffc1c1; background-color: rgba(89, 125, 163, 0.23);}\
 		.vk_adm_group{font-weight:bold; padding:6px 0 !important; background-color: rgba(255, 255, 0, 0.4);}\
 		';
+   //main_css+='.friends_add_block[style]{display:block !important;};';
+
 	// main_css+='#notifiers_wrap{display:none !important;}'; /* hide all notifications */
 	// main_css+='.notifier_baloon_body{display:none !important;}'; /* hide only notification text and image*/
 	var float_profile='.vkrate{height: 20px; width: 200px; margin:4px auto;}\n\
@@ -686,11 +688,12 @@ function vkResponseChecker(answer,url,q){// detect HTML and prosessing
 		}
 	}
   vkProcessResponse(answer,url,q);
-	vk_plugins.process_response(answer,url,q);
+  vk_plugins.process_response(answer,url,q);
 }
 
 function vkProcessResponse(answer,url,q){
   if (url=='/photos.php' && q.act=="a_choose_photo_box") vkPhChooseProcess(answer,url,q);
+  if (url=='/al_friends.php' && q.act=='add_box') answer[1]=answer[1].replace('"friends_add_block" style="display: none;"','"friends_add_block"');
 }
 
 function vkPhChooseProcess(answer,url,q){
