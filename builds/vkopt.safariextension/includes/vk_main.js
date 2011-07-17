@@ -876,7 +876,7 @@ function vkPVLinks(ph){
     '</div><div class="clear"></div>';
   } 
   html+='<a href="#" onclick="vkPhotoUrlUpload(\''+(ph.w_src || ph.z_src || ph.y_src || ph.x_src)+'\'); return false;">'+IDL('Add')+'</a>'
-  html+=ph.x_src?'<a target="_blank" href="http://www.tineye.com/search?url='+ph.x_src+'">'+IDL('TinEyeSearch')+'</a>':'';
+  html+=ph.x_src?'<a target="_blank" href="http://www.tineye.com/search?url='+(ph.w_src || ph.z_src || ph.y_src || ph.x_src)+'">'+IDL('TinEyeSearch')+'</a>':'';
   return html;
 }
 

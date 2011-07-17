@@ -248,8 +248,8 @@ function vkMenu(){//vkExLeftMenu
         ['feed?section=friends',IDL("mNeF")],
         ['feed?section=groups',IDL("mNeG")],
         ['feed?section=photos',IDL("clPh")],
-        ['feed?section=comments',IDL("mNeB")],
         ['feed?section=recommended',IDL("mNeR")],
+        ['feed?section=comments',IDL("mNeB")],
         ['tag'+vkmid+'?act=comments',IDL("mNeFW")]       
     ],
 	'fave':[
