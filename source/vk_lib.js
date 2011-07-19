@@ -1682,6 +1682,28 @@ function vkAlertBox(title, text, callback, confirm) {// [callback] - "Yes" or "C
   return aBox.show();
 }
 
+function vkShowNotify(title,text,link,onclick){ 
+   vk_nf_id=window.vk_nf_id || 0;
+   vk_nf_id++;
+   var id='vk_nf_id_'+vk_nf_id, type='vkopt', author_photo, author_link, add_photo, add
+   notify=[
+      curNotifier.version,
+      type,
+      title || '',
+      author_photo || '',
+      author_link || false,
+      text || '',
+      add_photo || '',// WTF?
+      link,
+      onclick,
+      add,
+      id  
+   ];
+   Notifier.lcSend('feed',{events:[notify.join('<!>')],full:true});
+   Notifier.pushEvents([notify.join('<!>')]);
+}
+//vkShowNotify('TestTitle','QazQwe','/mail','alert(cur)');
+
 
 /* FOR VKOPT PLUGINS */
 if (!window.vkopt_plugins) vkopt_plugins={};
