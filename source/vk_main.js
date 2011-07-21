@@ -94,6 +94,7 @@ function vkOnStorage(id,cmd){
 		case 'user_online_status': UserOnlineStatus(cmd); break;
 		case 'menu_counters':UpdateCounters(false,cmd); break;
 		case 'upd_sounds':vkUpdateSounds(true); break;
+      case 'fav_users_statuses':vkFavOnlineChecker(cmd); break;
 	}
 }
 function vkOnNewLocation(startup){
@@ -154,7 +155,8 @@ function VkOptMainInit(){
   vkExtendLang({
     'EnterLinkToPhoto':'[\u0421\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 \u0444\u043e\u0442\u043e \u0432\u0438\u0434\u0430 `photoXXX_YYYYY`]',
     'IncorrectPhotoLink':'\u041d\u0435\u043f\u0440\u0430\u0432\u0438\u043b\u044c\u043d\u0430\u044f \u0441\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 \u0444\u043e\u0442\u043e\u0433\u0440\u0430\u0444\u0438\u044e',
-    'AddFrToList':'[ \u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0432 \u0441\u043f\u0438\u0441\u043e\u043a ]'
+    'AddFrToList':'[ \u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0432 \u0441\u043f\u0438\u0441\u043e\u043a ]',
+    'mNeMe':'\u0423\u043f\u043e\u043c\u0438\u043d\u0430\u043d\u0438\u044f'
   });//*/
   vkStyles();
   if (!ge('content')) return;
@@ -367,6 +369,7 @@ function vkStyles(){
 	.vk_popupmenu ul li{display:block;}\
 	.vk_popupmenu ul li a{display:block; padding:2px 5px;}\
 	.vk_popupmenu ul li a:hover{background:#E1E7ED; text-decoration:none;}\
+   .vk_tt_links_list a{display:block; padding:2px 1px;}\
 	"+(RemoveAd=='y'?".ad_box,.ad_help_link, .ad_help_link_new, .ad_box_new, #ad_help_link_new {display: none !important;}\
 			"+(NotHideSugFr?'.ad_box_friend{display: block !important;} .ad_box_friend + .ad_box_new{display:block !important;}':'')+"\
 			#groups .clearFix {display: block !important;} \
@@ -750,6 +753,7 @@ function vkNotifier(){
 			curNotifier.sound=new Sound2('New');
 			curNotifier.sound_im=new Sound2('Msg');
 		});
+      vkNotifyCustomSInit();
 	}
 	 /* delay for hide notify msg
 	  vk_notifier_show_timeout=20000;
@@ -757,7 +761,8 @@ function vkNotifier(){
 	  Inj.Replace('Notifier.showEvent','5000','vk_notifier_show_timeout');
 	  Inj.Replace('Notifier.unfreezeEvents','5000','vk_notifier_show_timeout');
 	  */
-} 
+}
+
 /* PAGES.JS */
 function vkPage(){
 	/*if (!window.wall) return;
@@ -1567,15 +1572,19 @@ function vkAddAudioT(oid,aid,el){
 		else p.innerHTML=IDL('Error');
 	});
 }
+function vkAudioWikiCode(aid){vkAlertBox('Wiki-code:','<center><input type="text" value="[[audio'+aid+']]" readonly onClick="this.focus();this.select();" size="25"/></center>');}
+
 function vkShowAddAudioTip(el,id){
-	if (ge('audio_add'+id)) return;
 	var a=id.match(/^(-?\d+)_(\d+)/);
-	//topMsg(a);
+   var show_add=(ge('audio_add'+id)) || (a[1]!=remixmid())
 	if (a){
-		if (a[1]==remixmid()) return;
-		showTooltip(el, {
+		var html = '';
+      html += !show_add ?'<a href="#" onclick="vkAddAudioT(\''+a[1]+'\',\''+a[2]+'\',this); return false;">'+IDL('AddMyAudio')+'</a>':'';
+      html +='<a href="#" onclick="vkAudioWikiCode(\''+a[1]+'_'+a[2]+'\'); return false;">'+IDL('Wiki')+'</a>'
+		html = '<div class="vk_tt_links_list">'+html+'</div>';
+      showTooltip(el, {
 		  hasover:true,
-		  text:'<a href="#" onclick="vkAddAudioT(\''+a[1]+'\',\''+a[2]+'\',this); return false;">'+IDL('AddMyAudio')+'</a>',
+		  text:html,
 		  slide: 15,
 		  shift: [0, -3, 0],
 		  showdt: 400,

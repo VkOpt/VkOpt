@@ -1060,8 +1060,53 @@ function vkHighlightFriends(){
 	}
 }
 
-/*  FavUsers */
+/*  FAV_USERS */
+function vkIsFavUser(uid,list){
+   if (!list){
+      list=vkGetVal('FavList');
+      list = list?'-'+list.split('-')+'-':'';
+   }
+   if (list.indexOf('-'+uid+'-')!=-1) return true;
+   else return false;
+}
 
+function vkFavAdd(uid){
+   var val=vkGetVal('FavList');
+   if (('-'+val+'-').indexOf('-' + uid + '-') != -1) return;
+   val+='-'+uid;
+   vkSetVal('FavList',val);   
+}
+function vkFavDel(uid){
+   var val=vkGetVal('FavList');
+   val+=('-'+val+'-').replace('-'+uid+'-','-');
+   val=val.replace(/^-+|-+$/g, '');
+   vkSetVal('FavList',val);	
+}
+
+function vkFavOnlineChecker(on_storage){
+   //case 'fav_users_statuses':vkFavOnlineChecker(true); break;
+   clearTimeout(window.vk_upd_favonl_timeout);
+   var timeout=function(){vk_upd_favonl_timeout=setTimeout("vkFavOnlineChecker();",vkGenDelay(CHECK_FAV_ONLINE_DELAY,on_storage));}
+   
+   if (on_storage) 
+      timeout();
+   else {
+      var val=(vkGetVal('FavList') || '').split('-');
+      dApi.call('');
+      
+      
+      vkCmd('fav_users_statuses','ok');
+   }
+   
+	
+   
+	//if (on_storage){
+      
+	//} else {
+		AjGet('feed2.php?mask=m'+vkRand(),onupdate);
+	//}	
+   
+}
 
 
 if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;

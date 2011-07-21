@@ -9,20 +9,21 @@
 //
 // (c) All Rights Reserved. VkOpt.
 //
-
+/* VERSION INFO */
 var vVersion	= 200;
-var vBuild = 110719;
+var vBuild = 110721;
 var vPostfix = ' ';
 var vk_DEBUG=0;
 
 /* EXT CONFIG */
 var DefSetBits='ynyynnyyynyyy0n0yy0nnyynyyynyy0nynynnnnyy0yyy1yyn-3-0-#c5d9e7-#34a235-1';
-var DefExUserMenuCfg='11111110111111111111';
-var vk_upd_menu_timeout=20000;//(ms) Update left menu timeout
-var vkMenuHideTimeout=400;    //(ms) Hide Menu Popups timeout
-var vkMenuIconSize=12;		  //(px) max 16px
-var MENU_HIGHLIGHT_DELAY=2000;//(ms) yellow highlight in menu on changed counters
+var DefExUserMenuCfg='11111110111111111111'; // default user-menu items config
+var vk_upd_menu_timeout=20000;      //(ms) Update left menu timeout
+var vkMenuHideTimeout=400;          //(ms) Hide Menu Popups timeout
+var vkMenuIconSize=12;              //(px) max 16px
+var MENU_HIGHLIGHT_DELAY=2000;      //(ms) yellow highlight in menu on changed counters
 var SIDEBAR_ITEM_HIGHLIGHT_COLOR = "#fcf78a";
+var CHECK_FAV_ONLINE_DELAY = 20000; //(ms)  delay for check online statuses of faved users
 
 /* Save messages history config */
 var SAVE_MSG_HISTORY_PATTERN="%username% (%date%):\r\n%message%\r\n\r\n"; //Save Messages history file format (one record)
