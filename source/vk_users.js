@@ -338,11 +338,15 @@ function ExUserItems(id,el){
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/gifts?id=%uid">'+IDL("clGi")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/rate.php?act=vote&id=%uid">'+IDL("clRa")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkRemoveFriend(%uid);" class="fl_r">x</a><a href="javascript:vkAddToFriends(%uid);">'+IDL("clAddFr")+'</a>'):i++;
-	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkAddToFave(%uid,1);">'+IDL("clAddToFav")+'</a>'):i++;
+	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkAddToFave(%uid,1);" class="fl_r">x</a><a href="javascript:vkAddToFave(%uid);">'+IDL("clAddToFav")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="#" style="cursor: hand;" onClick="vkAddToBL(%uid); return false;">'+IDL("addblack")+'</a>'):i++;
-	 
+	uitems+=mkExItem(0,'<a href="javascript:vkFavAddDel(%uid,1);" class="fl_r">x</a><a href="#" style="cursor: hand;" onClick="vkFavAddDel(%uid); return false;">'+IDL("FavAddUser")+'</a>');
 	return uitems;
 }
+/*
+(vkIsFavUser(uid)?vkFavAdd:vkFavDel)(uid);
+vkFavAddDel(%uid,vkIsFavUser(%uid))
+*/
 
 function pupHide() {
  if (pup_over) {
@@ -358,11 +362,11 @@ function pupHide() {
 function vkAddToFriends(uid) {    showBox('al_friends.php', {act: 'add_box', mid: uid});}
 function vkRemoveFriend(uid) {    showBox('al_friends.php', {act: 'remove_box', mid: uid});}
 
-function vkAddToFave(uid){ // Turn you to online
+function vkAddToFave(uid,is_del){ // Turn you to online
 	AjGet('/id'+uid+'?al=1',function(r,t){
 		var hash=t.split("Profile.toggleFave(this",2)[1].split("'",2)[1];
 		//alert(hash);
-		AjPost('fave.php', {act: 'addPerson', al:1, hash: hash, mid: uid},function(r,t){
+		AjPost('fave.php', {act: (is_del?'deletePerson':'addPerson'), al:1, hash: hash, mid: uid},function(r,t){
 			vkMsg('<b>OK</b>',2000);
 		});
 	});
@@ -1061,51 +1065,132 @@ function vkHighlightFriends(){
 }
 
 /*  FAV_USERS */
+
 function vkIsFavUser(uid,list){
-   if (!list){
-      list=vkGetVal('FavList');
-      list = list?'-'+list.split('-')+'-':'';
-   }
+   if (!list)  list=vkGetVal('FavList') || '';
+   list = list?'-'+list+'-':'';
    if (list.indexOf('-'+uid+'-')!=-1) return true;
    else return false;
 }
 
 function vkFavAdd(uid){
-   var val=vkGetVal('FavList');
+   var val=vkGetVal('FavList') || '';
    if (('-'+val+'-').indexOf('-' + uid + '-') != -1) return;
    val+='-'+uid;
+   val=val.replace(/^-+|-+$/g, '');
    vkSetVal('FavList',val);   
 }
 function vkFavDel(uid){
-   var val=vkGetVal('FavList');
-   val+=('-'+val+'-').replace('-'+uid+'-','-');
+   var val=vkGetVal('FavList') || '';
+   val=('-'+val+'-').replace('-'+uid+'-','-');
    val=val.replace(/^-+|-+$/g, '');
    vkSetVal('FavList',val);	
 }
 
+function vkFavAddDel(uid,is_del){
+   (is_del?vkFavDel:vkFavAdd)(uid);
+   vkMsg(IDL(is_del?"FavRemoved":"FavAdded"),2000);
+   if (ge('vk_fav_users_cont')) vkFavUsersList();
+}
+
+
 function vkFavOnlineChecker(on_storage){
    //case 'fav_users_statuses':vkFavOnlineChecker(true); break;
+   if (getSet(49)!='y')return;
    clearTimeout(window.vk_upd_favonl_timeout);
-   var timeout=function(){vk_upd_favonl_timeout=setTimeout("vkFavOnlineChecker();",vkGenDelay(CHECK_FAV_ONLINE_DELAY,on_storage));}
+   var timeout=function(){vk_upd_favonl_timeout=setTimeout("vkFavOnlineChecker();",vkGenDelay(CHECK_FAV_ONLINE_DELAY,on_storage || !window.curNotifier));}
    
    if (on_storage) 
       timeout();
    else {
-      var val=(vkGetVal('FavList') || '').split('-');
-      dApi.call('');
-      
-      
+      var ignore=false;
+      var list= vkGetVal('FavList') || '';
+      var val=list.split('-');
+      var oval=(vkGetVal('FavList_Onlines') || '').split('-');
+      //if (val.length != oval.length) ignore=true;
+      var onlines={};
+      for (var i=0; i<oval.length;i++){
+         var inf=oval[i].split('_');
+         if (inf[0] && inf[1] && vkIsFavUser(inf[0],list)) onlines[inf[0]]=inf[1]; 
+      }     
+      var new_onl=[];
       vkCmd('fav_users_statuses','ok');
+      dApi.call('getProfiles',{uids:val.join(','), fields:'online,photo_rec'},function(r){
+         if (r.response){
+            var res=r.response;
+            
+            for (var i=0; i<res.length;i++){
+               var u=res[i];
+               if (onlines[u.uid]==0 && u.online==1) new_onl.push(u);
+               onlines[u.uid]=u.online;
+            }
+            var ostr=[];
+            for (var key in onlines) ostr.push(key+'_'+onlines[key]);
+            vkSetVal('FavList_Onlines',ostr.join('-'));
+            if (!ignore){  
+               for (var i=0;i<new_onl.length;i++){
+                  var text='<b><a href="/id'+new_onl[i].uid+'" onclick="nav.go(this);">'+new_onl[i].first_name+' '+new_onl[i].last_name+'</a></b>';
+                  vkShowNotify({sound:'On',title:IDL('UserOnline'),text:text,author_photo:new_onl[i].photo_rec,author_link:'id'+new_onl[i].uid,link:'id'+new_onl[i].uid,onclick:"nav.go('id"+new_onl[i].uid+"')"});
+               }
+            }
+            vkCmd('fav_users_statuses','ok');
+         } else {
+            vklog('FavOnline Api error')
+         }
+         timeout();
+      });
    }
    
-	
-   
-	//if (on_storage){
-      
-	//} else {
-		AjGet('feed2.php?mask=m'+vkRand(),onupdate);
-	//}	
-   
+}
+
+function vkFavUsersList(add_button){
+   if (add_button){
+      var e=ge('fave_list_tabs');
+      if (!e || ge('vk_fav_users_btn')) return;
+      e.appendChild(vkCe('li',{"class":'t_r',id:'vk_fav_users_btn'},'<a onclick="return vkFavUsersList();">'+IDL('FavUsers')+'</a>'));
+      return;
+   }
+   var p=ge('content');
+   p.innerHTML='<div style="padding:10px;">'+vkBigLdrImg+'</div>';
+   var list= vkGetVal('FavList') || '';
+   var val=list.split('-');  
+   var tpl='\
+   <div class="fave_user_div" id="fave_user_div%uid">\
+     <div>\
+       <div style="width: 120px;">\
+         <a class="fave_user_image clear_fix" href="/id%uid" onclick="return nav.go(this, event);">\
+           <img alt="" src="%ava">\
+         </a>\
+         <span class="fave_user_name">\
+           <a href="/id%uid" onclick="return nav.go(this, event)">%username</a>\
+           <br>\
+           <span class="fave_online">%online</span>\
+         </span>\
+       </div>\
+     </div>\
+   </div>';
+   dApi.call('getProfiles',{uids:val.join(','), fields:'online,photo_medium_rec'},function(r){
+      var html='';
+      if (r.response){
+         var res=r.response;
+         var onlines=[];
+         for (var i=0; i<res.length;i++){
+            var u=res[i];
+            if (u.online==1) onlines.push(u);
+            html+=tpl.replace(/%uid/g,u.uid)
+                     .replace(/%username/g,u.first_name+' '+u.last_name)
+                     .replace(/%online/g,u.online?'Online':'')
+                     .replace(/%ava/g,u.photo_medium_rec)
+         }
+      } else {
+         html="Fav Error";
+      }
+      show('header');
+      ge('title').innerHTML=IDL('FavUsers');
+      p.innerHTML='<div id="vk_fav_users_cont" style="padding:10px;">'+html+'</div>';
+      vkProcessNode(p);
+   });
+   return false;
 }
 
 

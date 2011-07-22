@@ -123,6 +123,7 @@ function vkOnNewLocation(startup){
 			case 'notes'  :vkNotesPage(); break;
 			case 'board'  :vkBoardPage(); break;
 			case 'search'  :vkSearchPage(); break;
+         case 'fave'    :vkFavePage(); break;
 		}
 		if (startup && window.Fave) Fave.init();	
 	}
@@ -148,6 +149,7 @@ function vkLocationCheck(){
   }
   return false;
 }
+
 function VkOptMainInit(){
   if (vkLocationCheck()) return;
   if (InstallRelease()) return;
@@ -156,7 +158,12 @@ function VkOptMainInit(){
     'EnterLinkToPhoto':'[\u0421\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 \u0444\u043e\u0442\u043e \u0432\u0438\u0434\u0430 `photoXXX_YYYYY`]',
     'IncorrectPhotoLink':'\u041d\u0435\u043f\u0440\u0430\u0432\u0438\u043b\u044c\u043d\u0430\u044f \u0441\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 \u0444\u043e\u0442\u043e\u0433\u0440\u0430\u0444\u0438\u044e',
     'AddFrToList':'[ \u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0432 \u0441\u043f\u0438\u0441\u043e\u043a ]',
-    'mNeMe':'\u0423\u043f\u043e\u043c\u0438\u043d\u0430\u043d\u0438\u044f'
+    'mNeMe':'\u0423\u043f\u043e\u043c\u0438\u043d\u0430\u043d\u0438\u044f',
+    'FavAddUser':'\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0432 \u0438\u0437\u0431\u0440\u0430\u043d\u043d\u044b\u0435',
+    'FavRemoved':'\u041f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044c \u0443\u0434\u0430\u043b\u0451\u043d \u0438\u0437 \u0438\u0437\u0431\u0440\u0430\u043d\u043d\u044b\u0445',
+    'FavAdded':'\u041f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044c \u0434\u043e\u0431\u0430\u0432\u043b\u0435\u043d \u0432 \u0438\u0437\u0431\u0440\u0430\u043d\u043d\u044b\u0435',
+    'FavUsers':'[ \u0418\u0437\u0431\u0440\u0430\u043d\u043d\u044b\u0435 ]',
+    'UserOnline':'\u041f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044c \u0432 \u0441\u0435\u0442\u0438'
   });//*/
   vkStyles();
   if (!ge('content')) return;
@@ -187,6 +194,7 @@ function VkOptMainInit(){
   if (getSet(27)=='y') vkGetCalendar();
   if (getSet(20) == 'y') vk_updmenu_timeout=setTimeout("UpdateCounters();",vk_upd_menu_timeout);
   if (getSet(16) == 'y') UserOnlineStatus();
+  vkFavOnlineChecker();
   vkMoneyBoxAddHide();
   vkCheckUpdates();
   vkFriendsCheckRun();
@@ -1701,6 +1709,10 @@ function vkAudioPlayList(add_button){
 /* SEARCH */
 function vkSearchPage(){
 	vkAudioDelDup(true);
+}
+/* FAVE */
+function vkFavePage(){
+   vkFavUsersList(true);
 }
 
 /* WIKI GET CODE*/

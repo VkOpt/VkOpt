@@ -11,9 +11,9 @@
 //
 /* VERSION INFO */
 var vVersion	= 200;
-var vBuild = 110721;
+var vBuild = 110722;
 var vPostfix = ' ';
-var vk_DEBUG=0;
+if (!window.vk_DEBUG){var vk_DEBUG=0;}
 
 /* EXT CONFIG */
 var DefSetBits='ynyynnyyynyyy0n0yy0nnyynyyynyy0nynynnnnyy0yyy1yyn-3-0-#c5d9e7-#34a235-1';
@@ -39,7 +39,7 @@ var MSG_IDS_PER_DEL_REQUEST=25;
 /* Others */
 var MOD_PROFILE_BLOCKS=true;
 var CUT_VKOPT_BRACKET=false;
-var vkNewSettings=[3,4,17,5,29,35,36,42,43]; //"new" label on settings item
+var vkNewSettings=[3,4,17,5,29,35,36,42,43,49]; //"new" label on settings item
 var SetsOnLocalStore={
   'vkOVer':'c',
   'remixbit':'c',
@@ -409,16 +409,21 @@ function vkResetVkOptSetting(){
   location.reload();
 }
 
-function VkOptInit(){
+function VkOptInit(ignore_login){
   if (!window.vkscripts_ok || window.vkscripts_ok<vkOpt_js_count) {setTimeout(VkOptInit,10); return;}
   
 	/*if (window._vkopt_started) return;
 	window._vkopt_started=true;*/
 	vkOpt_toogle();
 	if (vkgetCookie('vkopt_disable')=='1') return;
-	if (ge("quick_login")) {
+	if (ge("quick_login") && !ignore_login) {
 		ql.insertBefore(ce('div', {innerHTML: '<iframe class="upload_frame" id="quick_login_frame" name="quick_login_frame"></iframe>'}), qf);
 		qf.target = 'quick_login_frame';
+      
+      //     Inj.Wait('window.vk && vk.id',function(){      VkOptMainInit();      }); 
+      window.onLoginDone = function(loc){document.location.href=loc};//nav.reload;
+      
+
 		return; 
 	}
 	VkOptMainInit();

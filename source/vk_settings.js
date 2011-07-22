@@ -603,7 +603,8 @@ function vkInitSettings(){
 	  {id:32, text:IDL("seSkinManBtn"), hide: (vkbrowser.mozilla)},
 	  {id:33, text:IDL("seSmiles")},
 	  {id:36, text:IDL("sePreventHideNotifications")},
-	  {id:42, text:IDL("seSortFeedPhotos")}
+	  {id:42, text:IDL("seSortFeedPhotos")},
+     {id:49, text:IDL("seFavOn")}
     ],
 	Sounds:[
 	  {id:48, text:IDL("ReplaceVkSounds")}	
@@ -616,7 +617,7 @@ function vkInitSettings(){
 		{id:34, text:IDL("seSwichTextChr")}	
     ]
   };	  
-	//LAST 47
+	//LAST 49
 	
 	vkSetsType={
       "on"  :[IDL('on'),'y'],
