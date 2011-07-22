@@ -764,7 +764,7 @@ function vkMakeSettings(el){
 		'<br><div id="vkTestSounds">'+
 		'<a href="javascript: vkSound(\'Msg\')">'+IDL('SoundMsg')+'</a><br>'+
 		'<a href="javascript: vkSound(\'New\')">'+IDL('SoundNewEvents')+'</a><br>'+
-		//'<a href="javascript: vkSound(\'On\')">'+IDL('SoundFavOnl')+'</a><br>'+      
+		'<a href="javascript: vkSound(\'On\')">'+IDL('SoundFavOnl')+'</a><br>'+      
 		'</div>'+
 	'</div>';
     var sounds=

@@ -65,12 +65,12 @@ if (!window.Sound2){
 }
 
 function vkSound(sound){
-    if (vkbrowser.safari || vkbrowser.chrome) sound+='_mp3';
+    /*if (vkbrowser.safari || vkbrowser.chrome) sound+='_mp3';
     var snd='';
     if (vkLocalStoreReady() && vkGetVal('sound_'+sound)) snd=vkGetVal('sound_'+sound);
-    if (!snd || snd=='') snd=vkSoundsRes[sound];
+    if (!snd || snd=='') snd=vkSoundsRes[sound];*/
     
-    var notification = new window.Audio(snd);
+    var notification = new Sound2(sound);//window.Audio(snd);
     notification.play();
 }
  
