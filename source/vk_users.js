@@ -1099,14 +1099,16 @@ function vkFavOnlineChecker(on_storage){
    if (getSet(49)!='y')return;
    clearTimeout(window.vk_upd_favonl_timeout);
    var timeout=function(){vk_upd_favonl_timeout=setTimeout("vkFavOnlineChecker();",vkGenDelay(CHECK_FAV_ONLINE_DELAY,on_storage || !window.curNotifier));}
+
+   var ignore=false;
+   var list= vkGetVal('FavList') || '';
+   var val=list.split('-');
+   var oval=(vkGetVal('FavList_Onlines') || '').split('-');   
    
-   if (on_storage) 
+   if (on_storage || !val.length) 
       timeout();
    else {
-      var ignore=false;
-      var list= vkGetVal('FavList') || '';
-      var val=list.split('-');
-      var oval=(vkGetVal('FavList_Onlines') || '').split('-');
+
       //if (val.length != oval.length) ignore=true;
       var onlines={};
       for (var i=0; i<oval.length;i++){

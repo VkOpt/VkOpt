@@ -545,7 +545,7 @@ function vkFriends_get(idx){
     for (var i=0; i<fr.length;i++)
     html+='<div align="left" style="margin-left: 10px; width:180px;">&#x25AA;&nbsp;\
 			<a href="write'+fr[i].uid+'" onclick="return showWriteMessageBox(event, '+fr[i].uid+')" target="_blank">@</a>&nbsp;\
-			<a href="id'+fr[i].uid+'">'+fr[i].full_name+'</a>\
+			<a href="id'+fr[i].uid+'" '+(vkIsFavUser(fr[i].uid)?'class="vk_faved_user"':'')+'>'+fr[i].full_name+'</a>\
 		   </div>';
     if (fr.length==0) html+='<div align="left" style="margin-left: 10px; width:180px;"><strike>&#x25AA;&nbsp;Nobody&nbsp;OnLine</strike></div>';
     ge('friends_profile_'+idx).innerHTML=html;
@@ -562,12 +562,12 @@ function vkSortFrList(arr){
 	if (bit==2) arr[i].full_name=arr[i].last_name+' '+arr[i].first_name;
 	else  arr[i].full_name=arr[i].first_name+' '+arr[i].last_name;
   var fave={};
-  /*
+  //*
   if (vkGetVal('FavList')){
     var fl=vkGetVal('FavList').split('-');
     for (var i=0;i<fl.length;i++) fave[fl[i]]=true;   
   }
-  */
+  //*/
   var SortFunc=function(a,b){
     if (bit==3) return 0;
     if ( fave[a.uid] && !fave[b.uid]) return -1; 
