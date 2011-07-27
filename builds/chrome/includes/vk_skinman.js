@@ -308,6 +308,9 @@ function vkShowSkinMan(filter,page){
           .smaximize:hover {  background-color: #DAE1E8;} \
           .smaximizeoff {  opacity: 0.5; color: #2b587a; border-bottom: 1px solid #DAE1E8;  height: 19px;  line-height: 19px;  background-color: transparent; display: block;  clear: both;  padding: 3px; padding-left:25px; border-bottom: solid 1px #CCD3DA; } \
           #vk_cat_skins_menu li a span, #vk_cat_skins_menu li a span{float:right;} \
+          #sideBar ol#vk_cat_skins_menu {  list-style: none;  margin: 0px 0px 10px;  padding: 0px;}\
+          #sideBar ol#vk_cat_skins_menu  li {  font-size: 1.0em;}\
+          #sideBar ol#vk_cat_skins_menu  li a {  border: 0;  display: block;  padding: 4px 3px 4px 6px;}\
           ");
   vkMakeCatMenu(cats);
   var html='<div class="bar clearFix summaryBar summary_wrap clear_fix">'+

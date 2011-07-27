@@ -94,6 +94,7 @@ function vkOnStorage(id,cmd){
 		case 'user_online_status': UserOnlineStatus(cmd); break;
 		case 'menu_counters':UpdateCounters(false,cmd); break;
 		case 'upd_sounds':vkUpdateSounds(true); break;
+      case 'fav_users_statuses':vkFavOnlineChecker(cmd); break;
 	}
 }
 function vkOnNewLocation(startup){
@@ -122,6 +123,7 @@ function vkOnNewLocation(startup){
 			case 'notes'  :vkNotesPage(); break;
 			case 'board'  :vkBoardPage(); break;
 			case 'search'  :vkSearchPage(); break;
+         case 'fave'    :vkFavePage(); break;
 		}
 		if (startup && window.Fave) Fave.init();	
 	}
@@ -147,13 +149,22 @@ function vkLocationCheck(){
   }
   return false;
 }
+
 function VkOptMainInit(){
   if (vkLocationCheck()) return;
   if (InstallRelease()) return;
   //* // javascript: x=''; for (var key in vk_lang_ru) x+="'"+key+"': '"+(typeof vk_lang_ru[key] == 'string'?IDL(key):JSON.Str(vk_lang_ru[key]))+"'\n"; alert(x);
   vkExtendLang({
     'EnterLinkToPhoto':'[\u0421\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 \u0444\u043e\u0442\u043e \u0432\u0438\u0434\u0430 `photoXXX_YYYYY`]',
-    'IncorrectPhotoLink':'\u041d\u0435\u043f\u0440\u0430\u0432\u0438\u043b\u044c\u043d\u0430\u044f \u0441\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 \u0444\u043e\u0442\u043e\u0433\u0440\u0430\u0444\u0438\u044e'
+    'IncorrectPhotoLink':'\u041d\u0435\u043f\u0440\u0430\u0432\u0438\u043b\u044c\u043d\u0430\u044f \u0441\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 \u0444\u043e\u0442\u043e\u0433\u0440\u0430\u0444\u0438\u044e',
+    'AddFrToList':'[ \u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0432 \u0441\u043f\u0438\u0441\u043e\u043a ]',
+    'mNeMe':'\u0423\u043f\u043e\u043c\u0438\u043d\u0430\u043d\u0438\u044f',
+    'FavAddUser':'\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0432 \u0438\u0437\u0431\u0440\u0430\u043d\u043d\u044b\u0435',
+    'FavRemoved':'\u041f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044c \u0443\u0434\u0430\u043b\u0451\u043d \u0438\u0437 \u0438\u0437\u0431\u0440\u0430\u043d\u043d\u044b\u0445',
+    'FavAdded':'\u041f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044c \u0434\u043e\u0431\u0430\u0432\u043b\u0435\u043d \u0432 \u0438\u0437\u0431\u0440\u0430\u043d\u043d\u044b\u0435',
+    'FavUsers':'[ \u0418\u0437\u0431\u0440\u0430\u043d\u043d\u044b\u0435 ]',
+    'UserOnline':'\u041f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044c \u0432 \u0441\u0435\u0442\u0438',
+    'FavListRelace':'Обнаружен локальный список «Избранных» пользователей. Вы желаете его заменить копией с сервера?'
   });//*/
   vkStyles();
   if (!ge('content')) return;
@@ -184,6 +195,7 @@ function VkOptMainInit(){
   if (getSet(27)=='y') vkGetCalendar();
   if (getSet(20) == 'y') vk_updmenu_timeout=setTimeout("UpdateCounters();",vk_upd_menu_timeout);
   if (getSet(16) == 'y') UserOnlineStatus();
+  vkFavOnlineChecker();
   vkMoneyBoxAddHide();
   vkCheckUpdates();
   vkFriendsCheckRun();
@@ -240,6 +252,7 @@ function vkStyles(){
 	main_css+='\
 		.vk_common_group{background-color:#ffc1c1; background-color: rgba(89, 125, 163, 0.23);}\
 		.vk_adm_group{font-weight:bold; padding:6px 0 !important; background-color: rgba(255, 255, 0, 0.4);}\
+      .vk_faved_user{font-weight:bold;} .vk_faved_user nobr{text-decoration:underline;}\
 		';
    //main_css+='.friends_add_block[style]{display:block !important;};';
 
@@ -366,6 +379,7 @@ function vkStyles(){
 	.vk_popupmenu ul li{display:block;}\
 	.vk_popupmenu ul li a{display:block; padding:2px 5px;}\
 	.vk_popupmenu ul li a:hover{background:#E1E7ED; text-decoration:none;}\
+   .vk_tt_links_list a{display:block; padding:2px 1px;}\
 	"+(RemoveAd=='y'?".ad_box,.ad_help_link, .ad_help_link_new, .ad_box_new, #ad_help_link_new {display: none !important;}\
 			"+(NotHideSugFr?'.ad_box_friend{display: block !important;} .ad_box_friend + .ad_box_new{display:block !important;}':'')+"\
 			#groups .clearFix {display: block !important;} \
@@ -727,10 +741,45 @@ function vkPhChooseProcess(answer,url,q){
   }
 //*/  
 }
+
+
 /* IM */
 function vkIM(){
 	Inj.Before('IM.addTab','cur.tabs','vkProcessNodeLite(txtWrap);');
+
+   if (getSet(51)=='y'){
+      Inj.Replace('IM.wrapFriends',/text\.push\(/g,'vkIMwrapFrMod(text,');
+      Inj.Replace('IM.wrapFriends','text.join(','vkIMwrapFrModSort(text,');   
+   }
 }
+
+function vkIMwrapFrModSort(text){
+   mysort=function(a,b){
+      if (String(a).indexOf('im_friend')!=-1 && String(b).indexOf('im_friend')!=-1){
+         var at=(String(a).indexOf('vk_faved_user')!=-1);
+         var bt=(String(b).indexOf('vk_faved_user')!=-1);
+         if (at && bt) return 0;
+         if (at && !bt) return -1;
+         if (!at && bt) return 1;
+      }
+      return 0;
+   }
+   text.sort(mysort);
+   return text.join('');
+}
+
+function vkIMwrapFrMod(){
+   var text=arguments[0];
+   var args=[];
+   if (arguments.length>2){
+      for (var i=1; i<arguments.length;i++) args.push(arguments[i]);
+      if (vkIsFavUser(args[3])) args[1]+=' vk_faved_user';
+      text.push(args.join(''));
+   } else {
+      text.push(arguments[1]);
+   }
+}
+
 /* NOTIFIER */
 function vkNotifier(){
 	if(getSet(36)=='y'){
@@ -749,6 +798,7 @@ function vkNotifier(){
 			curNotifier.sound=new Sound2('New');
 			curNotifier.sound_im=new Sound2('Msg');
 		});
+      vkNotifyCustomSInit();
 	}
 	 /* delay for hide notify msg
 	  vk_notifier_show_timeout=20000;
@@ -756,7 +806,8 @@ function vkNotifier(){
 	  Inj.Replace('Notifier.showEvent','5000','vk_notifier_show_timeout');
 	  Inj.Replace('Notifier.unfreezeEvents','5000','vk_notifier_show_timeout');
 	  */
-} 
+}
+
 /* PAGES.JS */
 function vkPage(){
 	/*if (!window.wall) return;
@@ -797,6 +848,22 @@ function vkSortFeedPhotos(node){
 /* FRIENDS */
 function vkFriends(){
 	Inj.Before('Friends.showMore','cur.fContent.appendChild',"html=[vkModAsNode(html.join(''),vkProcessNode)];");
+   //Inj.Replace('Friends.acceptRequest','text;','text+vkFrLstSel(mid); alert(text);');
+   Inj.Replace('Friends.acceptRequest','text;','vkFrReqDoneAddUserLists(text,mid);');
+}
+function vkFrLstSel(mid){ return '<div class="actions"><a class="lists_select" onmousedown="return Friends.ddShow('+mid+', this, event)">'+IDL('AddFrToList')+'</a></div>'; }
+function vkFrReqDoneAddUserLists(text,mid){
+   var div=vkCe('div',{},text);
+   var el=geByClass('friends_added',div)[0];
+   //var mid=text.match(/friends_added_(\d+)/);
+   //mid = mid?mid[1]:0;
+   if (el && mid && cur.userLists){
+      el.innerHTML+='<div class="friends_added_text box_controls_text">'+IDL('AddFrToList')+'</div>';
+      for (var key in cur.userLists) el.innerHTML+='<div class="checkbox" onclick="return Friends.checkCat(this, '+mid+', '+key+', 1);"><div></div>'+cur.userLists[key]+'</div>';    
+      return div.innerHTML;
+   } else {
+      return text+'<br><small>add user lists error</small>';
+   }
 }
 
 function vkModAsNode(text,func){
@@ -817,7 +884,7 @@ function vkSearch(){
 function vkPhotoViewer(){
   //main inj
   //Inj.End('photoview.receiveComms','vkProcessNode(comms);');
-  Inj.Before('photoview.doShow','cur.pvNarrow','ph.comments=vkModAsNode(ph.comments,vkProcessNode);');
+  Inj.Before('photoview.doShow','cur.pvNarrow','ph.comments=vkModAsNode(ph.comments,vkProcessNode); if(ph.tagshtml) ph.tagshtml=vkModAsNode(ph.tagshtml,vkProcessNode);');
   Inj.Before('photoview.doShow','var likeop','vkProcessNode(cur.pvNarrow);');
   Inj.Before('photoview.doShow','+ (ph.actions.del','+ vkPVLinks(ph) + vk_plugins.photoview_actions(ph) ');
   if (getSet(7)=='y') Inj.Start('photoview.afterShow','vkPVMouseScroll();');
@@ -1550,15 +1617,20 @@ function vkAddAudioT(oid,aid,el){
 		else p.innerHTML=IDL('Error');
 	});
 }
+function vkAudioWikiCode(aid,oid,id){vkAlertBox('Wiki-code:','<center><input type="text" value="[[audio'+aid+']]" readonly onClick="this.focus();this.select();" size="25"/><br><br>\
+                              <a href="/audio?'+(parseInt(oid)>0?'':'g')+'id='+Math.abs(oid)+'&audio_id='+id+'">'+IDL('Link')+'</a></center>');}
+
 function vkShowAddAudioTip(el,id){
-	if (ge('audio_add'+id)) return;
 	var a=id.match(/^(-?\d+)_(\d+)/);
-	//topMsg(a);
+   var show_add=(ge('audio_add'+id)) || (a[1]!=remixmid())
 	if (a){
-		if (a[1]==remixmid()) return;
-		showTooltip(el, {
+		var html = '';
+      html += !show_add ?'<a href="#" onclick="vkAddAudioT(\''+a[1]+'\',\''+a[2]+'\',this); return false;">'+IDL('AddMyAudio')+'</a>':'';
+      html +='<a href="#" onclick="vkAudioWikiCode(\''+a[1]+'_'+a[2]+'\',\''+a[1]+'\',\''+a[2]+'\'); return false;">'+IDL('Wiki')+'</a>'
+		html = '<div class="vk_tt_links_list">'+html+'</div>';
+      showTooltip(el, {
 		  hasover:true,
-		  text:'<a href="#" onclick="vkAddAudioT(\''+a[1]+'\',\''+a[2]+'\',this); return false;">'+IDL('AddMyAudio')+'</a>',
+		  text:html,
 		  slide: 15,
 		  shift: [0, -3, 0],
 		  showdt: 400,
@@ -1675,6 +1747,10 @@ function vkAudioPlayList(add_button){
 /* SEARCH */
 function vkSearchPage(){
 	vkAudioDelDup(true);
+}
+/* FAVE */
+function vkFavePage(){
+   vkFavUsersList(true);
 }
 
 /* WIKI GET CODE*/

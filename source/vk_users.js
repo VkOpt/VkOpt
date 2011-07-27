@@ -1131,7 +1131,9 @@ function vkFavOnlineChecker(on_storage){
             vkSetVal('FavList_Onlines',ostr.join('-'));
             if (!ignore){  
                for (var i=0;i<new_onl.length;i++){
-                  var text='<b><a href="/id'+new_onl[i].uid+'" onclick="nav.go(this);">'+new_onl[i].first_name+' '+new_onl[i].last_name+'</a></b>';
+                  var time='<div class="fl_r">'+(new Date).format('isoTime')+'</div>';
+                  var text='<b><a href="/id'+new_onl[i].uid+'" onclick="nav.go(this);">'+new_onl[i].first_name+' '+new_onl[i].last_name+'</a></b>'+time;
+                  
                   vkShowNotify({sound:'On',title:IDL('UserOnline'),text:text,author_photo:new_onl[i].photo_rec,author_link:'id'+new_onl[i].uid,link:'id'+new_onl[i].uid,onclick:"nav.go('id"+new_onl[i].uid+"')"});
                }
             }

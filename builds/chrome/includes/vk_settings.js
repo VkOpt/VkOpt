@@ -571,11 +571,14 @@ function vkInitSettings(){
 	  {id:41, header:IDL("seExpland_ProfileInfo"), text:IDL("seExplandProfileInfoText"),ops:[0,1,2,3]},
 	  {id:45, text:IDL("seSortNam"), ops:['name','last','none']},
 	  {id:46,  text:IDL("seLoadOnl"), sub:{id:5, text:'<br>'+IDL("now")+': <b>%cur</b> '+IDL("min")+'<br>'+IDL("set")+': %sets',ops:[1,2,3,4,5,10,15]},ops:['au','ru']},
-	  {id:47, text:IDL("seLoadCom"), ops:["au","ru"]}
+	  {id:47, text:IDL("seLoadCom"), ops:["au","ru"]},
+     {id:49, text:IDL("seFavOn")},
+     {id:50, text:IDL("seFavOnline")},
+     {id:51, text:IDL("seFavToTopIm")}
     ],
 
     Messages:[
-      {id:19, text:IDL("seQAns")},
+     {id:19, text:IDL("seQAns")},
 	  {id:28, text:'<table><tr><td> <table><tr><td width=20 height=20 id="spct10" bgcolor=' + getMsgColor() + '></td></tr></table> <td>'+
       '<span class="cltool"><a onclick="init_colorpicker(this.parentNode,MsgCol_click,\'' + getMsgColor() + '\')">'+IDL("seHLMail")+'</a></span>'+
       '</td></tr></table>'},
@@ -583,27 +586,28 @@ function vkInitSettings(){
     ],
     vkInterface:[
       {id:21, text:IDL("seADRem")+vkCheckboxSetting(44,IDL("seAdNotHideSugFr"),true)},
-	  {id:12, text:IDL("seMenu")},
+      {id:12, text:IDL("seMenu")},
       {id:20, text:IDL("seAutoUpdMenu")},
       {id:14, text:IDL("seLoadFrCats")},  
       {id:15, header:IDL("seLMenuH") , text:IDL("seLMenuO"),ops:[0,1,2,3]},
-	  {id:29, text:IDL("seLMenuWallLink")},
-	  {id:22, text:IDL("seGInCol")},
+      {id:29, text:IDL("seLMenuWallLink")},
+      {id:22, text:IDL("seGInCol")},
       {id:13, header:IDL("seMyFrLink") , text:IDL("seMyFrLnkOps"),ops:[0,1,2]},
-	  {id:3, text:IDL("seCompactAudio")},
-	  {id:4, text:IDL("seMoreDarkViewer")},
-	  {id:5, text:IDL("seDisableAjaxNav"),warn:true},
-	  {id:17, text:IDL("seCompactFave")},
-	  {id:16, text:IDL("seOnlineStatus")},
-	  {id:18, header:IDL("seFixLeftMenu"), text:IDL("seFixLeftMenuText"),ops:[0,1,2]},
-	  {id:27, text:IDL("seCalend")},
-	  {id:30, header:IDL("seClockH") , text:IDL("seClockO"),ops:[0,1,2,3]},
-	  {id:31, text:IDL("seRightBar")+vkCheckboxSetting(37,IDL("seRightBarFixAsSideBar"),true)},
-	  {id:35, text:IDL("seBlocksToRightBar")},
-	  {id:32, text:IDL("seSkinManBtn"), hide: (vkbrowser.mozilla)},
-	  {id:33, text:IDL("seSmiles")},
-	  {id:36, text:IDL("sePreventHideNotifications")},
-	  {id:42, text:IDL("seSortFeedPhotos")}
+      {id:3, text:IDL("seCompactAudio")},
+      {id:4, text:IDL("seMoreDarkViewer")},
+      {id:5, text:IDL("seDisableAjaxNav"),warn:true},
+      {id:17, text:IDL("seCompactFave")},
+      {id:16, text:IDL("seOnlineStatus")},
+      {id:18, header:IDL("seFixLeftMenu"), text:IDL("seFixLeftMenuText"),ops:[0,1,2]},
+      {id:27, text:IDL("seCalend")},
+      {id:30, header:IDL("seClockH") , text:IDL("seClockO"),ops:[0,1,2,3]},
+      {id:31, text:IDL("seRightBar")+vkCheckboxSetting(37,IDL("seRightBarFixAsSideBar"),true)},
+      {id:35, text:IDL("seBlocksToRightBar")},
+      {id:32, text:IDL("seSkinManBtn"), hide: (vkbrowser.mozilla)},
+      {id:33, text:IDL("seSmiles")},
+      {id:36, text:IDL("sePreventHideNotifications")},
+      {id:42, text:IDL("seSortFeedPhotos")}
+
     ],
 	Sounds:[
 	  {id:48, text:IDL("ReplaceVkSounds")}	
@@ -616,7 +620,7 @@ function vkInitSettings(){
 		{id:34, text:IDL("seSwichTextChr")}	
     ]
   };	  
-	//LAST 47
+	//LAST 51
 	
 	vkSetsType={
       "on"  :[IDL('on'),'y'],
@@ -763,7 +767,7 @@ function vkMakeSettings(el){
 		'<br><div id="vkTestSounds">'+
 		'<a href="javascript: vkSound(\'Msg\')">'+IDL('SoundMsg')+'</a><br>'+
 		'<a href="javascript: vkSound(\'New\')">'+IDL('SoundNewEvents')+'</a><br>'+
-		//'<a href="javascript: vkSound(\'On\')">'+IDL('SoundFavOnl')+'</a><br>'+      
+		'<a href="javascript: vkSound(\'On\')">'+IDL('SoundFavOnl')+'</a><br>'+      
 		'</div>'+
 	'</div>';
     var sounds=
@@ -829,9 +833,12 @@ function vkSaveSettingsOnServer(check){
 	var sett=vkgetCookie("remixbit");
 	var cur_date=Math.round((new Date().getTime())/1000);
 	sett+='|'+cur_date;
+   //dApi.call('execute',{code:'return [API.storage.get({key:"remixbits"}),API.storage.get({key:"Qwe"}),];'},uApi.show)
 	dApi.call('storage.set',{key:'remixbits',value:sett},function(r){
 		ge('cfg_on_serv_info').innerHTML='<div class="vk_cfg_info">'+IDL('seCfgBackupSaved')+'</div>';
 	});
+ 	var FavList=vkGetVal('FavList');
+   if(FavList && FavList!='')  dApi.call('storage.set',{key:'FavList',value:FavList},function(){});  
 }
 function vkLoadSettingsFromServer(check){
 	dApi.call('storage.get',{key:'remixbits'},function(r){
@@ -847,7 +854,7 @@ function vkLoadSettingsFromServer(check){
 			} else {
 				ge('cfg_on_serv_info').innerHTML='<div class="vk_cfg_warn">'+IDL('seCfgNoBackup')+' #2</div>';
 			}		
-		} else {
+      } else {
 			if (r.response && r.response!=''){
 				var cfg=r.response.split('|');
 				vksetCookie('remixbit', cfg[0]);
@@ -855,8 +862,18 @@ function vkLoadSettingsFromServer(check){
 			} else {
 				ge('cfg_on_serv_info').innerHTML='<div class="vk_cfg_error">'+IDL('seCfgLoadError')+' #0</div>';
 			}
+         dApi.call('storage.get',{key:'FavList'},function(r){
+            var val=r.response;
+            var FavList=vkGetVal('FavList');
+            if (val && val!='' && FavList!=val){
+               if(!FavList || FavList=='') vkSetVal('FavList',val);
+               else if(confirm(IDL('FavListRelace'))) vkSetVal('FavList',val);
+            }
+         }); 
 		}
 	});
+   
+ 
   
 }
 

@@ -163,7 +163,8 @@ function VkOptMainInit(){
     'FavRemoved':'\u041f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044c \u0443\u0434\u0430\u043b\u0451\u043d \u0438\u0437 \u0438\u0437\u0431\u0440\u0430\u043d\u043d\u044b\u0445',
     'FavAdded':'\u041f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044c \u0434\u043e\u0431\u0430\u0432\u043b\u0435\u043d \u0432 \u0438\u0437\u0431\u0440\u0430\u043d\u043d\u044b\u0435',
     'FavUsers':'[ \u0418\u0437\u0431\u0440\u0430\u043d\u043d\u044b\u0435 ]',
-    'UserOnline':'\u041f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044c \u0432 \u0441\u0435\u0442\u0438'
+    'UserOnline':'\u041f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044c \u0432 \u0441\u0435\u0442\u0438',
+    'FavListRelace':'Обнаружен локальный список «Избранных» пользователей. Вы желаете его заменить копией с сервера?'
   });//*/
   vkStyles();
   if (!ge('content')) return;
@@ -251,7 +252,7 @@ function vkStyles(){
 	main_css+='\
 		.vk_common_group{background-color:#ffc1c1; background-color: rgba(89, 125, 163, 0.23);}\
 		.vk_adm_group{font-weight:bold; padding:6px 0 !important; background-color: rgba(255, 255, 0, 0.4);}\
-      .vk_faved_user{font-weight:bold;}\
+      .vk_faved_user{font-weight:bold;} .vk_faved_user nobr{text-decoration:underline;}\
 		';
    //main_css+='.friends_add_block[style]{display:block !important;};';
 
@@ -740,10 +741,45 @@ function vkPhChooseProcess(answer,url,q){
   }
 //*/  
 }
+
+
 /* IM */
 function vkIM(){
 	Inj.Before('IM.addTab','cur.tabs','vkProcessNodeLite(txtWrap);');
+
+   if (getSet(51)=='y'){
+      Inj.Replace('IM.wrapFriends',/text\.push\(/g,'vkIMwrapFrMod(text,');
+      Inj.Replace('IM.wrapFriends','text.join(','vkIMwrapFrModSort(text,');   
+   }
 }
+
+function vkIMwrapFrModSort(text){
+   mysort=function(a,b){
+      if (String(a).indexOf('im_friend')!=-1 && String(b).indexOf('im_friend')!=-1){
+         var at=(String(a).indexOf('vk_faved_user')!=-1);
+         var bt=(String(b).indexOf('vk_faved_user')!=-1);
+         if (at && bt) return 0;
+         if (at && !bt) return -1;
+         if (!at && bt) return 1;
+      }
+      return 0;
+   }
+   text.sort(mysort);
+   return text.join('');
+}
+
+function vkIMwrapFrMod(){
+   var text=arguments[0];
+   var args=[];
+   if (arguments.length>2){
+      for (var i=1; i<arguments.length;i++) args.push(arguments[i]);
+      if (vkIsFavUser(args[3])) args[1]+=' vk_faved_user';
+      text.push(args.join(''));
+   } else {
+      text.push(arguments[1]);
+   }
+}
+
 /* NOTIFIER */
 function vkNotifier(){
 	if(getSet(36)=='y'){
@@ -848,7 +884,7 @@ function vkSearch(){
 function vkPhotoViewer(){
   //main inj
   //Inj.End('photoview.receiveComms','vkProcessNode(comms);');
-  Inj.Before('photoview.doShow','cur.pvNarrow','ph.comments=vkModAsNode(ph.comments,vkProcessNode);');
+  Inj.Before('photoview.doShow','cur.pvNarrow','ph.comments=vkModAsNode(ph.comments,vkProcessNode); if(ph.tagshtml) ph.tagshtml=vkModAsNode(ph.tagshtml,vkProcessNode);');
   Inj.Before('photoview.doShow','var likeop','vkProcessNode(cur.pvNarrow);');
   Inj.Before('photoview.doShow','+ (ph.actions.del','+ vkPVLinks(ph) + vk_plugins.photoview_actions(ph) ');
   if (getSet(7)=='y') Inj.Start('photoview.afterShow','vkPVMouseScroll();');
@@ -1581,7 +1617,8 @@ function vkAddAudioT(oid,aid,el){
 		else p.innerHTML=IDL('Error');
 	});
 }
-function vkAudioWikiCode(aid){vkAlertBox('Wiki-code:','<center><input type="text" value="[[audio'+aid+']]" readonly onClick="this.focus();this.select();" size="25"/></center>');}
+function vkAudioWikiCode(aid,oid,id){vkAlertBox('Wiki-code:','<center><input type="text" value="[[audio'+aid+']]" readonly onClick="this.focus();this.select();" size="25"/><br><br>\
+                              <a href="/audio?'+(parseInt(oid)>0?'':'g')+'id='+Math.abs(oid)+'&audio_id='+id+'">'+IDL('Link')+'</a></center>');}
 
 function vkShowAddAudioTip(el,id){
 	var a=id.match(/^(-?\d+)_(\d+)/);
@@ -1589,7 +1626,7 @@ function vkShowAddAudioTip(el,id){
 	if (a){
 		var html = '';
       html += !show_add ?'<a href="#" onclick="vkAddAudioT(\''+a[1]+'\',\''+a[2]+'\',this); return false;">'+IDL('AddMyAudio')+'</a>':'';
-      html +='<a href="#" onclick="vkAudioWikiCode(\''+a[1]+'_'+a[2]+'\'); return false;">'+IDL('Wiki')+'</a>'
+      html +='<a href="#" onclick="vkAudioWikiCode(\''+a[1]+'_'+a[2]+'\',\''+a[1]+'\',\''+a[2]+'\'); return false;">'+IDL('Wiki')+'</a>'
 		html = '<div class="vk_tt_links_list">'+html+'</div>';
       showTooltip(el, {
 		  hasover:true,

@@ -22,9 +22,11 @@ function vkProfilePage(){
 	vkPrepareProfileInfo();
 	addFakeGraffItem();
 	vkUpdWallBtn(); //Update wall button
+   if (remixmid()==cur.oid && getSet(50)=='y' && !ge('profile_fave')) vkFaveProfileBlock();   
 	if (MOD_PROFILE_BLOCKS) vkFrProfile();
 	if (getSet(46) == 'n') vkFriends_get('online');
 	if (getSet(47) == 'n') vkFriends_get('common');
+
 	vkHighlightGroups();
 }
 
@@ -426,6 +428,75 @@ function vkCleanWall(oid){
 	//vkAlertBox(IDL('ClearWall'),IDL('CleanWallConfirm'),vkRunCleanWall,true);
 }
 
+
+function vkFaveProfileBlock(is_list){
+   
+   if (!ge('profile_fave')){
+      var html='\
+        <a href="/fave" onclick="return nav.go(this, event)" class="module_header"><div class="header_top clear_fix">'+IDL('FaveOnline')+'</div></a>\
+        <div class="module_header">\
+          <div class="p_header_bottom">\
+            <a href="javascript:vkFaveProfileBlock(true)" id="vk_fave_all_link">[ '+ IDL('FaveOnline') +' ( -- ) ]</a>\
+            <span class="fl_r"><a href="/fave" onclick="return nav.go(this, event)">'+IDL('all')+'</a></span>\
+          </div>\
+        </div>\
+        <div class="module_body clear_fix" id="vk_fave_users_content"></div>\
+      ';
+      //html=html.replace('%USERS%',users);
+      var div=vkCe('div',{"class":"module clear people_module",id:"profile_fave"});
+      div.innerHTML=html;
+      var p=ge('profile_friends');
+      p.parentNode.insertBefore(div,p);  
+   }
+   ge('vk_fave_users_content').innerHTML=vkBigLdrImg;
+   if (is_list){
+      ge("vk_fave_all_link").href="javascript:vkFaveProfileBlock()";
+   } else {
+      ge("vk_fave_all_link").href="javascript:vkFaveProfileBlock(true)";
+   }
+   AjGet('/fave?al=1',function(r,t){
+      var r=t.match(/"faveUsers"\s*:\s*(\[[^\]]+\])/);
+      if (r){
+         r=eval('('+r[1]+')');
+         var onlines=[];
+         for(var i=0;i<r.length;i++) if(r[i].online) onlines.push(r[i]);
+         var to=3;
+         var count=Math.min(onlines.length,FAVE_ONLINE_BLOCK_SHOW_COUNT);
+         var users='';
+         for (var i = 0; i < count; i++) {
+            if (!is_list){
+            var n1=onlines[i].name.split(' ')[0] || '';
+            var n2=onlines[i].name.split(' ')[1] || '';
+            users += ((i == 0 || i % to == 0) ? '<div class="people_row">' : '') + 
+                     '<div class="fl_l people_cell">\
+                       <a href="/id'+onlines[i].id+'" onclick="return nav.go(this, event)">\
+                         <img width="50" height="50" src="'+onlines[i].photo+'">\
+                       </a>\
+                       <div class="name_field">\
+                         <a href="/id'+onlines[i].id+'" onclick="return nav.go(this, event)">\
+                           '+n1+'<br><small>'+n2+'</small>\
+                         </a>\
+                       </div>\
+                     </div>'+
+                  ((i > 0 && (i + 1) % to == 0) ? '</div>' : '');
+            } else {
+               users +='<div align="left" style="margin-left: 10px; width:180px;">&#x25AA;&nbsp;\
+                  <a href="write'+onlines[i].id+'" onclick="return showWriteMessageBox(event, '+onlines[i].id+')" target="_blank">@</a>&nbsp;\
+                  <a href="id'+onlines[i].id+'" '+(vkIsFavUser(onlines[i].id)?'class="vk_faved_user"':'')+'>'+onlines[i].name+'</a>\
+                  </div>';
+            }
+         }
+         if (ge('vk_fave_users_content')){
+            ge("vk_fave_all_link").innerHTML='[ '+ IDL('FaveOnline') +' ('+onlines.length+') ]';
+            ge('vk_fave_users_content').innerHTML=users;
+            vkProcessNodeLite(ge('vk_fave_users_content'));
+         }
+      }
+   });
+}
+
+
+
 function vkFrProfile(){
   var els=geByClass('module_header');
   var shuts_mask=parseInt(vkgetCookie('remixbit',1).split('-')[12]);
@@ -545,7 +616,7 @@ function vkFriends_get(idx){
     for (var i=0; i<fr.length;i++)
     html+='<div align="left" style="margin-left: 10px; width:180px;">&#x25AA;&nbsp;\
 			<a href="write'+fr[i].uid+'" onclick="return showWriteMessageBox(event, '+fr[i].uid+')" target="_blank">@</a>&nbsp;\
-			<a href="id'+fr[i].uid+'">'+fr[i].full_name+'</a>\
+			<a href="id'+fr[i].uid+'" '+(vkIsFavUser(fr[i].uid)?'class="vk_faved_user"':'')+'>'+fr[i].full_name+'</a>\
 		   </div>';
     if (fr.length==0) html+='<div align="left" style="margin-left: 10px; width:180px;"><strike>&#x25AA;&nbsp;Nobody&nbsp;OnLine</strike></div>';
     ge('friends_profile_'+idx).innerHTML=html;
@@ -562,12 +633,12 @@ function vkSortFrList(arr){
 	if (bit==2) arr[i].full_name=arr[i].last_name+' '+arr[i].first_name;
 	else  arr[i].full_name=arr[i].first_name+' '+arr[i].last_name;
   var fave={};
-  /*
+  //*
   if (vkGetVal('FavList')){
     var fl=vkGetVal('FavList').split('-');
     for (var i=0;i<fl.length;i++) fave[fl[i]]=true;   
   }
-  */
+  //*/
   var SortFunc=function(a,b){
     if (bit==3) return 0;
     if ( fave[a.uid] && !fave[b.uid]) return -1; 
@@ -600,7 +671,7 @@ var vk_shuts_mask = {
   'profile_opinions'      : 0x8000,
   'profile_audios'        : 0x10000,
 //  'profile_wall'          : 0x20000,
-  'profile_gifts'         : 0x40000,
+  'profile_fave'         : 0x40000,
   'profile_optional'      : 0x80000,
   'profile_fans'          : 0x100000,
   'profile_idols'         : 0x200000,
@@ -736,9 +807,7 @@ function addFakeGraffItem() {
 	Inj.Wait("ge('add_media_type_"+lnkId+"_0')",AddGraffItem,300,10);
 	*/
   } 
-  
-   
-
+ 
 }
 
 

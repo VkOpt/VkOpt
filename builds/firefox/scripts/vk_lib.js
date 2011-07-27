@@ -1190,7 +1190,11 @@ var dApi = {
   },
   call: function(method, inputParams, callback, captcha) {
 	if (arguments.length == 2) {    callback=inputParams;     inputParams={};   }
-	if (dApi.captcha_visible && !captcha){
+	if (!remixmid()) {
+			vklog('API Error. user id not found');
+			return;
+	}
+   if (dApi.captcha_visible && !captcha){
 		setTimeout(function(){
 			dApi.call(method, inputParams, callback);
 		},300);
@@ -1681,6 +1685,37 @@ function vkAlertBox(title, text, callback, confirm) {// [callback] - "Yes" or "C
   aBox.content(text);
   return aBox.show();
 }
+
+/* NOTIFY TOOLS */
+function vkNotifyCustomSInit(){
+      vkNotifierSound = function(sound){   if (typeof sound == 'string') (new Sound2(sound)).play();};
+      Inj.Before('Notifier.pushEvents','curNotifier.sound.play();','if (arguments[2]) vkNotifierSound(arguments[2]); else ');
+      Inj.After('Notifier.lcRecv','!data.full',', data.sound');
+}
+function vkShowNotify(params){ 
+   params = params || {};
+   vk_nf_id=window.vk_nf_id || 0;
+   params.id='vk_nf_id_'+(vk_nf_id++);
+   params.type='vkopt';
+   Inj.Wait('curNotifier.version',function(){
+      var notify=[
+         curNotifier.version,
+         params.type,
+         params.title || '',
+         params.author_photo || '',
+         params.author_link || false,
+         params.text || '',
+         params.add_photo || '',// WTF?
+         params.link,
+         params.onclick,
+         params.add,
+         params.id  
+      ];
+      Notifier.lcSend('feed',{events:[notify.join('<!>')],full:true,sound:params.sound});
+      Notifier.pushEvents([notify.join('<!>')],null,params.sound);
+   });
+}
+//vkShowNotify({sound:'On',title:'TestTitle',text:'QazQwe',author_photo:'http://cs10781.vk.com/u17115308/e_ceb5c84f.jpg',author_link:'mail',link:'audio',onclick:'nav.go(this)'}); //,
 
 
 /* FOR VKOPT PLUGINS */

@@ -248,6 +248,7 @@ function vkMenu(){//vkExLeftMenu
         ['feed?section=friends',IDL("mNeF")],
         ['feed?section=groups',IDL("mNeG")],
         ['feed?section=photos',IDL("clPh")],
+        ['feed?section=mentions',IDL("mNeMe")],
         ['feed?section=recommended',IDL("mNeR")],
         ['feed?section=comments',IDL("mNeB")],
         ['tag'+vkmid+'?act=comments',IDL("mNeFW")]       
@@ -470,7 +471,7 @@ var vk_updmenu_timeout=0;
 var VK_MENU_LAST_HIGHLIGHT=[];
 
 function UpdateCounters(only_msg,data){	
-	var AUTO_UPD_MENU=20;
+	var AUTO_UPD_MENU=20; //cfg bit id
 	clearTimeout(vk_updmenu_timeout);
 	var menu_vars = { 
 		"friends": 	{i:0, id:'fr',lnk:'friends',add:null},

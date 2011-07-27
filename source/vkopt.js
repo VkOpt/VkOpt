@@ -11,12 +11,13 @@
 //
 /* VERSION INFO */
 var vVersion	= 200;
-var vBuild = 110723;
+var vBuild = 110727;
 var vPostfix = ' ';
 if (!window.vk_DEBUG){var vk_DEBUG=0;}
 
 /* EXT CONFIG */
-var DefSetBits='ynyynnyyynyyy0n0yy0nnyynyyynyy0nynynnnnyy0yyy1yyn-3-0-#c5d9e7-#34a235-1';
+
+var DefSetBits='ynyynnyyynyyy0n0yy0nnyynyyynyy0nynynnnnyy0yyy1yynnnn-3-0-#c5d9e7-#34a235-1';
 var DefExUserMenuCfg='11111110111111111111'; // default user-menu items config
 var vk_upd_menu_timeout=20000;      //(ms) Update left menu timeout
 var vkMenuHideTimeout=400;          //(ms) Hide Menu Popups timeout
@@ -24,6 +25,7 @@ var vkMenuIconSize=12;              //(px) max 16px
 var MENU_HIGHLIGHT_DELAY=2000;      //(ms) yellow highlight in menu on changed counters
 var SIDEBAR_ITEM_HIGHLIGHT_COLOR = "#fcf78a";
 var CHECK_FAV_ONLINE_DELAY = 20000; //(ms)  delay for check online statuses of faved users
+var FAVE_ONLINE_BLOCK_SHOW_COUNT=6;
 
 /* Save messages history config */
 var SAVE_MSG_HISTORY_PATTERN="%username% (%date%):\r\n%message%\r\n\r\n"; //Save Messages history file format (one record)
@@ -39,7 +41,7 @@ var MSG_IDS_PER_DEL_REQUEST=25;
 /* Others */
 var MOD_PROFILE_BLOCKS=true;
 var CUT_VKOPT_BRACKET=false;
-var vkNewSettings=[3,4,17,5,29,35,36,42,43,49]; //"new" label on settings item
+var vkNewSettings=[3,4,17,5,29,35,36,42,43,49,50,51]; //"new" label on settings item
 var SetsOnLocalStore={
   'vkOVer':'c',
   'remixbit':'c',
