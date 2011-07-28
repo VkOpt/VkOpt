@@ -1197,5 +1197,57 @@ function vkFavUsersList(add_button){
    return false;
 }
 
+////
+//*///
+function vkFaveOnlineChecker(on_storage){
+   //case 'fave_users_statuses':vkFaveOnlineChecker(true); break;
+   if (getSet(52)!='y') return;
+   clearTimeout(window.vk_upd_faveonl_timeout);
+   var timeout=function(){vk_upd_faveonl_timeout=setTimeout("vkFaveOnlineChecker();",vkGenDelay(CHECK_FAV_ONLINE_DELAY,on_storage || !window.curNotifier));}
 
+   var ignore=false;
+   var list= vkGetVal('FavList') || '';
+   var val=list.split('-');
+   var oval=(vkGetVal('FaveList_Onlines') || '').split('-');   
+   
+   if (on_storage) 
+      timeout();
+   else {
+      var onlines={};
+      for (var i=0; i<oval.length;i++){
+         var inf=oval[i].split('_');
+         if (inf[0] && inf[1]) onlines[inf[0]]=inf[1]; 
+      }     
+      var new_onl=[];
+      vkCmd('fave_users_statuses','ok');
+      vkApis.faves(function(r,onl){
+         if (r){
+            for (var i=0; i<r.length;i++){
+               var u=r[i];
+               if (onlines[u.id]==0 && u.online) new_onl.push(u);
+               onlines[u.id]=u.online;
+            }
+            var ostr=[];
+            for (var key in onlines) ostr.push(key+'_'+(onlines[key]?1:0));
+            vkSetVal('FaveList_Onlines',ostr.join('-'));
+            if (!ignore){  
+               for (var i=0;i<new_onl.length;i++){
+                  if (getSet(49)=='y' && vkIsFavUser(new_onl[i].id)) continue;
+                  var time='<div class="fl_r">'+(new Date).format('isoTime')+'</div>';
+                  var text='<b><a href="/id'+new_onl[i].id+'" onclick="nav.go(this);">'+new_onl[i].name+'</a></b>'+time;
+                  
+                  vkShowNotify({sound:'On',title:IDL('FaveOnline'),text:text,author_photo:new_onl[i].photo,author_link:'id'+new_onl[i].id,link:'id'+new_onl[i].id,onclick:"nav.go('id"+new_onl[i].id+"')"});
+               }
+            }
+            vkCmd('fave_users_statuses','ok');
+         } else {
+            vklog('FaveOnline Api error')
+         }
+         timeout();
+      });
+   }
+   
+}
+//*///
+////
 if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
