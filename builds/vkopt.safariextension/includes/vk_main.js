@@ -95,6 +95,7 @@ function vkOnStorage(id,cmd){
 		case 'menu_counters':UpdateCounters(false,cmd); break;
 		case 'upd_sounds':vkUpdateSounds(true); break;
       case 'fav_users_statuses':vkFavOnlineChecker(cmd); break;
+      case 'fave_users_statuses':vkFaveOnlineChecker(cmd); break;
 	}
 }
 function vkOnNewLocation(startup){
@@ -164,7 +165,11 @@ function VkOptMainInit(){
     'FavAdded':'\u041f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044c \u0434\u043e\u0431\u0430\u0432\u043b\u0435\u043d \u0432 \u0438\u0437\u0431\u0440\u0430\u043d\u043d\u044b\u0435',
     'FavUsers':'[ \u0418\u0437\u0431\u0440\u0430\u043d\u043d\u044b\u0435 ]',
     'UserOnline':'\u041f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044c \u0432 \u0441\u0435\u0442\u0438',
-    'FavListRelace':'Обнаружен локальный список «Избранных» пользователей. Вы желаете его заменить копией с сервера?'
+    'FavListRelace':'\u041e\u0431\u043d\u0430\u0440\u0443\u0436\u0435\u043d \u043b\u043e\u043a\u0430\u043b\u044c\u043d\u044b\u0439 \u0441\u043f\u0438\u0441\u043e\u043a \u00ab\u0418\u0437\u0431\u0440\u0430\u043d\u043d\u044b\u0445\u00bb \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u0435\u0439. \u0412\u044b \u0436\u0435\u043b\u0430\u0435\u0442\u0435 \u0435\u0433\u043e \u0437\u0430\u043c\u0435\u043d\u0438\u0442\u044c \u043a\u043e\u043f\u0438\u0435\u0439 \u0441 \u0441\u0435\u0440\u0432\u0435\u0440\u0430?',
+    'seFaveOnline':'\u0423\u0432\u0435\u0434\u043e\u043c\u043b\u044f\u0442\u044c \u043e \u0432\u044b\u0445\u043e\u0434\u0435 \u043b\u044e\u0434\u0435\u0439 \u0438\u0437 \u0437\u0430\u043a\u043b\u0430\u0434\u043e\u043a \u0432 \u043e\u043d\u043b\u0430\u0439\u043d',
+    'infoUseNetTrafic':'\u0414\u0430\u043d\u043d\u0430\u044f \u043e\u043f\u0446\u0438\u044f \u043c\u043e\u0436\u0435\u0442 \u043f\u043e\u0442\u0440\u0435\u0431\u043b\u044f\u0442\u044c \u0434\u043e\u043f\u043e\u043b\u043d\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0439 \u0438\u043d\u0442\u0435\u0440\u043d\u0435\u0442-\u0442\u0440\u0430\u0444\u0438\u043a.',
+    'SearchAudioLyr':'\u041f\u043e\u0438\u0441\u043a \u0442\u0435\u043a\u0441\u0442\u0430 \u043f\u0435\u0441\u043d\u0438',
+    'seShutProfilesBlock':'\u0412\u043e\u0437\u043c\u043e\u0436\u043d\u043e\u0441\u0442\u044c \u0441\u0432\u043e\u0440\u0430\u0447\u0438\u0432\u0430\u0442\u044c \u043d\u0435\u043a\u043e\u0442\u043e\u0440\u044b\u0435 \u0431\u043b\u043e\u043a\u0438 \u043d\u0430 \u043f\u0440\u043e\u0444\u0438\u043b\u0435'
   });//*/
   vkStyles();
   if (!ge('content')) return;
@@ -196,6 +201,7 @@ function VkOptMainInit(){
   if (getSet(20) == 'y') vk_updmenu_timeout=setTimeout("UpdateCounters();",vk_upd_menu_timeout);
   if (getSet(16) == 'y') UserOnlineStatus();
   vkFavOnlineChecker();
+  vkFaveOnlineChecker();
   vkMoneyBoxAddHide();
   vkCheckUpdates();
   vkFriendsCheckRun();
@@ -442,9 +448,12 @@ function vkStyles(){
       .vkcheckbox_off{opacity: 0.5; margin: 3px 3px -3px 0; display:inline-block; height: 14px; width: 15px; overflow: hidden; background: transparent url(/images/icons/check.gif?1) 0px 0px no-repeat;}\
       .vkcheckbox_on{opacity: 0.5; margin: 3px 3px -3px 0; display:inline-block; height: 14px; width: 15px; overflow: hidden; background: transparent url(/images/icons/check.gif?1) 0px -14px no-repeat;}\
 	";
-	//settings
+	//settings 
 	main_css+="\
-		.vk_warning_ico{width:16px; height:16px; cursor:pointer; background-image:url('"+warning_img+"');}\
+      .vk_warning_ico,.vk_info_ico,.vk_hint_ico{width:16px; height:16px; cursor:pointer;}\
+		.vk_warning_ico{background-image:url('"+warning_img+"');}\
+      .vk_info_ico{background-image:url('"+info_img+"');}\
+      .vk_hint_ico{background-image:url('"+hint_img+"');}\
 		.sett_block{border-bottom:1px solid #CCC; width:49%; display:inline-block; margin-top:3px;margin-left: 4px; float:left}\
 		.sett_block .btns{border:0px solid; width:60px; float:left; height:100%; text-align:center;}\
 		.btns A{display:block;}\
@@ -1364,6 +1373,7 @@ function vkParseAudioInfo(_aid,node,anode){
     }
 	return info;
 }
+
 function vkAudioNode(node){
   if ((node || ge('content')).innerHTML.indexOf('play_new')==-1) return;
   var smartlink=(getSet(1) == 'y')?true:false;
@@ -1620,13 +1630,17 @@ function vkAddAudioT(oid,aid,el){
 function vkAudioWikiCode(aid,oid,id){vkAlertBox('Wiki-code:','<center><input type="text" value="[[audio'+aid+']]" readonly onClick="this.focus();this.select();" size="25"/><br><br>\
                               <a href="/audio?'+(parseInt(oid)>0?'':'g')+'id='+Math.abs(oid)+'&audio_id='+id+'">'+IDL('Link')+'</a></center>');}
 
-function vkShowAddAudioTip(el,id){
-	var a=id.match(/^(-?\d+)_(\d+)/);
+function vkShowAddAudioTip(el,id){	
+   var a=id.match(/^(-?\d+)_(\d+)/);
    var show_add=(ge('audio_add'+id)) || (a[1]!=remixmid())
 	if (a){
-		var html = '';
+		var name=vkParseAudioInfo(id);
+      name=(name[5]+' '+name[6]).replace(/[\?\&\s]/g,'+');
+      var html = '';
       html += !show_add ?'<a href="#" onclick="vkAddAudioT(\''+a[1]+'\',\''+a[2]+'\',this); return false;">'+IDL('AddMyAudio')+'</a>':'';
-      html +='<a href="#" onclick="vkAudioWikiCode(\''+a[1]+'_'+a[2]+'\',\''+a[1]+'\',\''+a[2]+'\'); return false;">'+IDL('Wiki')+'</a>'
+      html +='<a href="#" onclick="vkAudioWikiCode(\''+a[1]+'_'+a[2]+'\',\''+a[1]+'\',\''+a[2]+'\'); return false;">'+IDL('Wiki')+'</a>';
+      html +='<a href="'+SEARCH_AUDIO_LYRIC_LINK.replace('%AUDIO_NAME%',name)+'" target="_blank">'+IDL('SearchAudioLyr')+'</a>';
+      
 		html = '<div class="vk_tt_links_list">'+html+'</div>';
       showTooltip(el, {
 		  hasover:true,

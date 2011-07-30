@@ -498,6 +498,7 @@ function vkFaveProfileBlock(is_list){
 
 
 function vkFrProfile(){
+  var EnableShut= (getSet(53)=='y');
   var els=geByClass('module_header');
   var shuts_mask=parseInt(vkgetCookie('remixbit',1).split('-')[12]);
   var c=ge('profile_full_link') ? ge('profile_full_link') : geByClass('profile_info_link')[0];
@@ -560,7 +561,7 @@ function vkFrProfile(){
       var key=els[i].parentNode.id;
       if (mod_el[key]) mod_el[key](els[i].parentNode);
       
-      if (key && vk_shuts_mask[key]){
+      if (key && vk_shuts_mask[key] && EnableShut){
         els[i].setAttribute("onclick",'return shut("'+key+'");');
         addClass(els[i],'shutable');
         addClass(key,'shut_open');

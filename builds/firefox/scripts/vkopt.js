@@ -11,13 +11,13 @@
 //
 /* VERSION INFO */
 var vVersion	= 200;
-var vBuild = 110727;
+var vBuild = 110728;
 var vPostfix = ' ';
-if (!window.vk_DEBUG){var vk_DEBUG=0;}
+if (!window.vk_DEBUG) var vk_DEBUG=0;
 
 /* EXT CONFIG */
-
-var DefSetBits='ynyynnyyynyyy0n0yy0nnyynyyynyy0nynynnnnyy0yyy1yynnnn-3-0-#c5d9e7-#34a235-1';
+if (!window.DefSetBits)
+var DefSetBits='ynyynnyyynyyy0n0yy0nnyynyyynyy0nynynnnnyy0yyy1yynnnnny-3-0-#c5d9e7-#34a235-1';
 var DefExUserMenuCfg='11111110111111111111'; // default user-menu items config
 var vk_upd_menu_timeout=20000;      //(ms) Update left menu timeout
 var vkMenuHideTimeout=400;          //(ms) Hide Menu Popups timeout
@@ -36,12 +36,13 @@ var MSG_SCAN_REQ_DELAY=400; //ms  used only in vkDeleteMessages_() - disabled
 var MSG_DEL_REQ_DELAY=300; 	//ms
 var MSG_IDS_PER_DEL_REQUEST=25;
 
+var SEARCH_AUDIO_LYRIC_LINK='http://yandex.ru/yandsearch?text=%AUDIO_NAME%+%28%2Bsite%3Alyrics.mp3s.ru+%7C+%2Bsite%3Alyrics-keeper.com+%7C+%2Bsite%3Aalloflyrics.com++%7C+%2Bsite%3A2song.net++%7C+%2Bsite%3Amegalyrics.ru+%7C+%2Bsite%3Aakkords.ru%29';
 /* API SETTINGS PAGE: http://vkontakte.ru/login.php?app=2168679&layout=popup&type=browser&settings=15615 */
 
 /* Others */
 var MOD_PROFILE_BLOCKS=true;
 var CUT_VKOPT_BRACKET=false;
-var vkNewSettings=[3,4,17,5,29,35,36,42,43,49,50,51]; //"new" label on settings item
+var vkNewSettings=[3,4,17,5,29,35,36,42,43,49,50,51,52]; //"new" label on settings item
 var SetsOnLocalStore={
   'vkOVer':'c',
   'remixbit':'c',

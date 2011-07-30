@@ -552,29 +552,30 @@ function vkInitSettings(){
     Media:[
       {id:0, text:IDL("seLinkAu")},
       {id:1, text:IDL("seAudioDownloadName")},
-	  {id:43, text:IDL("seAudioSize")},
-	  {id:2, text:IDL("seLinkVi")},
+      {id:43, text:IDL("seAudioSize")},
+      {id:2, text:IDL("seLinkVi")},
       {id:7, text:IDL("seScroolPhoto")}
     ],
     Users:[
       {id:10, text:IDL("seExUserMenu")+'<br><a href="#" onclick="toggle(\'vkExUMenuCFG\'); return false;">[<b> '+IDL("Settings")+' </b>]</a><span id="vkExUMenuCFG" style="display:none">'+GetUserMenuSett()+'</span>'},
       {id:11, text:IDL("seExUMClik")},
-	  {id:38, text:'<table><tr><td> <table><tr><td width=20 height=20 id="spct11" bgcolor='+getFrColor()+'></td></tr></table> <td>'+
-      '<span class="cltool"><a onclick="init_colorpicker(this.parentNode,FrCol_click,\'' + getFrColor() + '\')">'+IDL("seLightFriends")+'</a></span>'+
-      '</td></tr></table>'},      
-	  {id:8, text:IDL("seZoomPhoto")},// {id:8, header:IDL("seZoomPhoto") , text:IDL("seZoomPhHelp"),ops:[0,1,2]},
-	  //{id 23 - store "is expland" profile} 
-	  {id:24, text:IDL("seAvaArrows")},
-	  {id:25, text:IDL("seICQico")},
-	  {id:26, text:IDL("seCalcAge")},
-	  {id:39, text:IDL("seGrCom")},
-	  {id:41, header:IDL("seExpland_ProfileInfo"), text:IDL("seExplandProfileInfoText"),ops:[0,1,2,3]},
-	  {id:45, text:IDL("seSortNam"), ops:['name','last','none']},
-	  {id:46,  text:IDL("seLoadOnl"), sub:{id:5, text:'<br>'+IDL("now")+': <b>%cur</b> '+IDL("min")+'<br>'+IDL("set")+': %sets',ops:[1,2,3,4,5,10,15]},ops:['au','ru']},
-	  {id:47, text:IDL("seLoadCom"), ops:["au","ru"]},
-     {id:49, text:IDL("seFavOn")},
-     {id:50, text:IDL("seFavOnline")},
-     {id:51, text:IDL("seFavToTopIm")}
+      {id:38, text:'<table><tr><td> <table><tr><td width=20 height=20 id="spct11" bgcolor='+getFrColor()+'></td></tr></table> <td>'+
+         '<span class="cltool"><a onclick="init_colorpicker(this.parentNode,FrCol_click,\'' + getFrColor() + '\')">'+IDL("seLightFriends")+'</a></span>'+
+         '</td></tr></table>'},      
+      {id:8, text:IDL("seZoomPhoto")},// {id:8, header:IDL("seZoomPhoto") , text:IDL("seZoomPhHelp"),ops:[0,1,2]},
+      //{id 23 - store "is expland" profile} 
+      {id:24, text:IDL("seAvaArrows")},
+      {id:25, text:IDL("seICQico")},
+      {id:26, text:IDL("seCalcAge")},
+      {id:39, text:IDL("seGrCom")},
+      {id:41, header:IDL("seExpland_ProfileInfo"), text:IDL("seExplandProfileInfoText"),ops:[0,1,2,3]},
+      {id:45, text:IDL("seSortNam"), ops:['name','last','none']},
+      {id:46,  text:IDL("seLoadOnl"), sub:{id:5, text:'<br>'+IDL("now")+': <b>%cur</b> '+IDL("min")+'<br>'+IDL("set")+': %sets',ops:[1,2,3,4,5,10,15]},ops:['au','ru']},
+      {id:47, text:IDL("seLoadCom"), ops:["au","ru"]},
+      {id:49, text:IDL("seFavOn")},
+      {id:50, text:IDL("seFavOnline"),info:'infoUseNetTrafic'},
+      {id:51, text:IDL("seFavToTopIm")},
+      {id:52, text:IDL("seFaveOnline"),info:'infoUseNetTrafic'}
     ],
 
     Messages:[
@@ -587,7 +588,7 @@ function vkInitSettings(){
     vkInterface:[
       {id:21, text:IDL("seADRem")+vkCheckboxSetting(44,IDL("seAdNotHideSugFr"),true)},
       {id:12, text:IDL("seMenu")},
-      {id:20, text:IDL("seAutoUpdMenu")},
+      {id:20, text:IDL("seAutoUpdMenu"),info:'infoUseNetTrafic'},
       {id:14, text:IDL("seLoadFrCats")},  
       {id:15, header:IDL("seLMenuH") , text:IDL("seLMenuO"),ops:[0,1,2,3]},
       {id:29, text:IDL("seLMenuWallLink")},
@@ -597,7 +598,7 @@ function vkInitSettings(){
       {id:4, text:IDL("seMoreDarkViewer")},
       {id:5, text:IDL("seDisableAjaxNav"),warn:true},
       {id:17, text:IDL("seCompactFave")},
-      {id:16, text:IDL("seOnlineStatus")},
+      {id:16, text:IDL("seOnlineStatus"),info:'infoUseNetTrafic'},
       {id:18, header:IDL("seFixLeftMenu"), text:IDL("seFixLeftMenuText"),ops:[0,1,2]},
       {id:27, text:IDL("seCalend")},
       {id:30, header:IDL("seClockH") , text:IDL("seClockO"),ops:[0,1,2,3]},
@@ -606,7 +607,8 @@ function vkInitSettings(){
       {id:32, text:IDL("seSkinManBtn"), hide: (vkbrowser.mozilla)},
       {id:33, text:IDL("seSmiles")},
       {id:36, text:IDL("sePreventHideNotifications")},
-      {id:42, text:IDL("seSortFeedPhotos")}
+      {id:42, text:IDL("seSortFeedPhotos")},
+      {id:53, text:IDL("seShutProfilesBlock")}
 
     ],
 	Sounds:[
@@ -620,7 +622,7 @@ function vkInitSettings(){
 		{id:34, text:IDL("seSwichTextChr")}	
     ]
   };	  
-	//LAST 51
+	//LAST 53
 	
 	vkSetsType={
       "on"  :[IDL('on'),'y'],
@@ -709,13 +711,14 @@ function vkGetSettings(setts,allsett){
       }
       var sub="";
 	  var warn=(set.warn?'<div class="vk_warning_ico fl_r" onmouseover="vkSettInfo(this,IDL(\'WarnSetting\'));"></div>':'');
+     var info=(set.info?'<div class="vk_info_ico fl_r" onmouseover="vkSettInfo(this,'+(typeof set.info=='string'?'IDL(\''+set.info+'\')':'IDL(\'InfoSetting\')')+');"></div>':'');
       if (set.sub) {
         var subsets=[];
         var sops=set.sub.ops;
         for (var i=0;i<sops.length;i++) subsets.push('<a href="javascript:vkSwitchSet('+set.sub.id+','+sops[i]+',true);">'+sops[i]+'</a>');
         sub = set.sub.text.replace("%cur",'<span id="vkcurset'+set.sub.id+'">'+allsett[set.sub.id]+'</span>').replace("%sets",subsets.join(" - "));
       }
-      html+='</div><div class="stext">'+set.text+sub+warn+'</div></div>\r\n';
+      html+='</div><div class="stext">'+set.text+sub+warn+info+'</div></div>\r\n';
   }
   return '<div style="display: inline-block; width:100%;">'+html+"</div>";
   

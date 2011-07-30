@@ -1339,8 +1339,20 @@ vkApis={
 			}});
 		}
 		get();
-	}
+	},
+   faves:function(callback){
+      AjGet('/fave?al=1',function(r,t){
+         var r=t.match(/"faveUsers"\s*:\s*(\[[^\]]+\])/);
+         if (r){
+            r=eval('('+r[1]+')');
+            var onlines=[];
+            for(var i=0;i<r.length;i++) if(r[i].online) onlines.push(r[i]);
+            callback(r,onlines);
+         } else callback(null,null);
+      });
+   }
 }
+
 function vkMD5(string) {
 	function RotateLeft(lValue, iShiftBits) {		return (lValue<<iShiftBits) | (lValue>>>(32-iShiftBits));	}
 	function AddUnsigned(lX,lY) {		var lX4,lY4,lX8,lY8,lResult;		lX8 = (lX & 0x80000000);		lY8 = (lY & 0x80000000);		lX4 = (lX & 0x40000000);		lY4 = (lY & 0x40000000);		lResult = (lX & 0x3FFFFFFF)+(lY & 0x3FFFFFFF);		if (lX4 & lY4) {	return (lResult ^ 0x80000000 ^ lX8 ^ lY8);	}		if (lX4 | lY4) {	if (lResult & 0x40000000) {	return (lResult ^ 0xC0000000 ^ lX8 ^ lY8);}      else {return (lResult ^ 0x40000000 ^ lX8 ^ lY8);		}		} else {return (lResult ^ lX8 ^ lY8);} 	}
