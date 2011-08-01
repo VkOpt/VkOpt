@@ -138,6 +138,13 @@ function vkOnNewLocation(startup){
 	vk_plugins.onloc();
 	vklog('OnLocation time:' + (unixtime()-tstart) +'ms');
 }
+function vkProcessResponseNode(node,url,q){
+   if (!url) return;
+   if (q.offset && url.indexOf('wall')!=-1) vkAddDelWallCommentsLink(node);
+   if (q.offset && url.indexOf('albums')!=-1) vkAddAlbumCommentsLinks(node);
+   // alert(url+'\n'+JSON.Str(q));albums-126529
+
+}
 
 function vkLocationCheck(){
   if (uApi.onLogin()) return true;
@@ -707,7 +714,7 @@ function vkResponseChecker(answer,url,q){// detect HTML and prosessing
 	for (var i=0;i<answer.length;i++){
 		//if (typeof answer[i]=='string') alert(answer[i].match(_rx)+'\n\n'+answer[i]);
 		if (typeof answer[i]=='string' && _rx.test(answer[i]) ){
-			answer[i]=vkModAsNode(answer[i],vkProcessNodeLite);//+'<input name="vkoptmarker" type="hidden" value=1>';	
+			answer[i]=vkModAsNode(answer[i],vkProcessNodeLite,url,q);//+'<input name="vkoptmarker" type="hidden" value=1>';	
 		}
 	}
   vkProcessResponse(answer,url,q);
@@ -875,15 +882,17 @@ function vkFrReqDoneAddUserLists(text,mid){
    }
 }
 
-function vkModAsNode(text,func){
+function vkModAsNode(text,func,url,q){ //url,q - for processing response 
 	var is_table=text.substr(0,3)=='<tr';
 	var div=vkCe(is_table?'table':'div');
 	div.innerHTML=text;
 	func(div);
+   vkProcessResponseNode(div,url,q);
 	var txt=div.innerHTML;
 	if (is_table && txt.substr(0,7)=="<tbody>")	txt=txt.substr(7,txt.length-15);
 	return txt;
 }
+
 /* SEARCH */
 function vkSearch(){
 	//Inj.Before('searcher.showMore',"ge('results')","rows=vkModAsNode(rows,vkProcessNodeLite);");
@@ -960,8 +969,11 @@ function vkPVLinks(ph){
 }
 
 function vkPhotosPage(){
-	if (nav.objLoc[0].indexOf('album')!=-1){
-		var m=nav.objLoc[0].match(/album(-?\d+)_(\d+)/);
+	if (nav.objLoc[0].indexOf('albums')!=-1){
+      vkAddAlbumCommentsLinks();
+   } else if (nav.objLoc[0].indexOf('album')!=-1){
+		
+      var m=nav.objLoc[0].match(/album(-?\d+)_(\d+)/);
 		if(m && ! /album\d+_00/.test(nav.objLoc[0])){	
 			var oid=m[1];
 			var aid=m[2];
@@ -1047,6 +1059,15 @@ function vkGetPageWithPhotos(oid,aid){
 		if (!f) f=1;
 		ge('ph_ldr_progress').innerHTML=vkProgressBar(c,f,310);
 	});
+}
+
+function vkAddAlbumCommentsLinks(node){
+   var els=geByClass('album',node);
+   for (var i=0;i<els.length;i++){
+      var el=geByClass('info_wrap',els[i])[0];
+      var id=els[i].id?els[i].id:el.innerHTML.match(/album-?\d+_\d+/);
+      el.innerHTML+='<a class="fl_r" href="/'+id+'?act=comments" onclick="return nav.go(this, event)">'+IDL('komm',1)+'</a>';
+   }
 }
 
 var VKPRU_SWF_LINK='http://cs4320.vk.com/u13391307/ac8f5bbe4ce7a8.zip';

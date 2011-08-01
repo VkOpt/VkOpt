@@ -312,15 +312,16 @@ if (!window.Audio){
 			return output;
 	}
 	
-	function vkCutBracket(s){
+	function vkCutBracket(s,bracket){
 		if (CUT_VKOPT_BRACKET) s=(s.substr(0,1)=='[')?s.substr(1,s.length-2):s;
+      else if (bracket) s='[ '+s+' ]';
 		return s;
 	}
-	function IDL(i) {
+	function IDL(i,bracket) {
 	  vkLangGet();
-	  if (vk_lang[i]) return vkCutBracket(decodeURI(vk_lang[i]));
-	  if (vk_lang_ru[i]) return vkCutBracket(decodeURI(vk_lang_ru[i]));
-	  if (window.vk_lang_add && vk_lang_add[i]) return vkCutBracket(decodeURI(vk_lang_add[i]));
+	  if (vk_lang[i]) return vkCutBracket(decodeURI(vk_lang[i]),bracket);
+	  if (vk_lang_ru[i]) return vkCutBracket(decodeURI(vk_lang_ru[i]),bracket);
+	  if (window.vk_lang_add && vk_lang_add[i]) return vkCutBracket(decodeURI(vk_lang_add[i]),bracket);
 	  else return i;
 	}
 
