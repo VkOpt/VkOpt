@@ -77,7 +77,6 @@ function vkProcessNode(node){
 function vkProcessNodeLite(node){
   var tstart=unixtime();
   try{
-	//AddExUserMenu(node);
 	vkProccessLinks(node);
 	vkAudioNode(node);
 	vkPrepareTxtPanels(node);
@@ -1137,6 +1136,11 @@ function vkVideoViewer(){
 }
 function vkVidDownloadLinks(vars){
     // /video.php?act=a_flash_vars&vid=39226536_159441582
+    ////
+   var smartlink=(getSet(1) == 'y')?true:false;
+   var vidname=winToUtf(mvcur.mvData.title).replace(/\?/g,'%3F').replace(/\&/g,'%26');
+   vidname='?'+vkDownloadPostfix()+'&/'+vidname;
+   //(smartlink?vidname+'.mov')
 	if (!vars) return '';
 	var vuid=function (uid) { var s = "" + uid; while (s.length < 5) {s = "0" + s;}  return s; }
 	var get_flv=function() {
@@ -1150,7 +1154,7 @@ function vkVidDownloadLinks(vars){
 		var s = (vars.host.substr(0, 4) == 'http')
 		  ? vars.host
 		  : 'http://cs' + vars.host + '.' + (vk.intnat ? 'vk.com' : 'vkontakte.ru') + '/';
-		return s + 'u' + vars.uid + '/video/' + vars.vtag + '.' + res + '.mov';
+		return s + 'u' + vars.uid + '/video/' + vars.vtag + '.' + res + '.mov'+(smartlink?vidname+'.mov':'');
 	};
 	var generateHDLinks=function(){
 		var s="";
@@ -1165,9 +1169,10 @@ function vkVidDownloadLinks(vars){
 		  }
 		  return s;
 	}
-	vidurl=(vars.no_flv=='1')?pathToHD('240'):get_flv();
+	vidurl=(vars.no_flv=='1')?pathToHD('240'):(get_flv()+(smartlink?vidname+'.flv':''));
     vidurl =  '<a href="'+vidurl+'" onmouseover="vkGetVideoSize(this);">'+IDL("download")+'<small class="fl_r divide" url="'+vidurl+'"></small></a>';
     vidurl += generateHDLinks();
+    //vidname
 	return vidurl;
 }
 
@@ -1395,6 +1400,7 @@ function vkParseAudioInfo(_aid,node,anode){
 	return info;
 }
 
+
 function vkAudioNode(node){
   if ((node || ge('content')).innerHTML.indexOf('play_new')==-1) return;
   var smartlink=(getSet(1) == 'y')?true:false;
@@ -1460,6 +1466,8 @@ function vkAudioNode(node){
       }  
   }
 }
+
+
 
 var vk_del_dup_check_size=false;
 function vkAudioDelDup(add_button,btn){

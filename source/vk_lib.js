@@ -594,6 +594,7 @@ if (!window.Audio){
 		document.getElementsByTagName('head')[0].appendChild(js);
 	  }
 	}
+   
 	function vkRand(){return Math.round((Math.random() * (100000000 - 1)));}
 	function unixtime() { return Math.round(new Date().getTime());}
 	function getScrH(){ return window.innerHeight ? window.innerHeight : (document.documentElement.clientHeight ? document.documentElement.clientHeight : document.body.offsetHeight);}
@@ -1707,8 +1708,8 @@ function vkNotifyCustomSInit(){
 }
 function vkShowNotify(params){ 
    params = params || {};
-   vk_nf_id=window.vk_nf_id || 0;
-   params.id='vk_nf_id_'+(vk_nf_id++);
+   vk_nf_id=unixtime()+vkRand();//window.vk_nf_id || 0;
+   params.id='vk_nf_id_'+vk_nf_id;//(++);
    params.type='vkopt';
    Inj.Wait('curNotifier.version',function(){
       var notify=[
