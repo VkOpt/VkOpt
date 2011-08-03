@@ -811,5 +811,95 @@ function addFakeGraffItem() {
  
 }
 
+function vkAudioBlock(load_audios,oid){
+   if (ge('group_audios')) return; 
+   oid = oid || cur.oid;
+   var block_tpl='\
+     <a href="/audio?id='+cur.oid+'" onclick="return nav.go(this, event);" class="module_header">\
+     <div class="header_top clear_fix">'+IDL('clAu',1)+'</div>\
+     </a>\
+     <div class="p_header_bottom">\
+       <!--<span class="fl_r" >'+IDL('all')+'</span>-->\
+       <span id="vk_audio_count">---</span>\
+     </div>\
+     <div class="module_body clear_fix" id="vk_audio_content" ></div>';
+   
+   var audio_tpl='<div class="audio" id="audio%AID%">\
+     <table cellspacing="0" cellpadding="0" width="100%">\
+       <tr>\
+         <td>\
+           <a onclick="playAudioNew(\'%AID%\')"><div class="play_new" id="play%AID%"></div></a>\
+           <input type="hidden" id="audio_info%AID%" value="%URL%,%DURATION%" />\
+         </td>\
+         <td class="info">\
+           <div class="duration fl_r">%DURATIONTEXT%</div>\
+           <div class="audio_title_wrap fl_l"><b><a href="/search?c[section]=audio&c[q]=%ARTIST%" onclick="return nav.go(this, event);">%ARTIST%</a></b> - <span id="title%AID%">%TITLE%</span></div>\
+         </td>\
+       </tr>\
+     </table>\
+     <div class="player_wrap">\
+       <div id="line%AID%" class="playline"><div></div></div>\
+       <div id="player%AID%" class="player" ondragstart="return false;" onselectstart="return false;">\
+         <table width="100%" border="0" cellpadding="0" cellspacing="0">\
+           <tr valign="top" id="audio_tr%AID%">\
+             <td style="width:100%;padding:0px;position:relative;">\
+               <div id="audio_white_line%AID%" class="audio_white_line" onmousedown="audioPlayer.prClick(event);"></div>\
+               <div id="audio_load_line%AID%" class="audio_load_line" onmousedown="audioPlayer.prClick(event);"><!-- --></div>\
+               <div id="audio_progress_line%AID%" class="audio_progress_line" onmousedown="audioPlayer.prClick(event);">\
+                 <div id="audio_pr_slider%AID%" class="audio_pr_slider"><!-- --></div>\
+               </div>\
+             </td>\
+             <td id="audio_vol%AID%" style="position: relative;"></td>\
+           </tr>\
+         </table>\
+       </div>\
+     </div>\
+   </div>';
+   
+   var p=ge('group_photos') || ge('group_wide_topics');
+   if (p && !ge('vk_group_audios')){
+      var div=vkCe('div',{"class":"module clear audios_module",id:"vk_group_audios"},block_tpl);
+      insertAfter(div,p);
+      addClass(div,'empty');
+      ge('vk_audio_content').innerHTML='<a href="#" onclick="vkAudioBlock(true); return false;">'+IDL('GetAudiosList')+'</a>';
+   }
+   
+   if (!load_audios) return;
+   var div=ge('vk_group_audios');
+   addClass(div,'empty');
+   ge('vk_audio_content').innerHTML=vkBigLdrImg;   
+	var params={}; 
+	params[cur.oid>0?"uid":"gid"]=Math.abs(cur.oid);
+   var is_vkcom=(document.location.href.indexOf('vk.com')!=-1);
+	dApi.call('audio.get',params,function(r){
+		var html='';
+		var list=r.response;
+		for (var i=0;i<list.length;i++){
+			var itm=list[i];
+			var aid=cur.oid+'_'+itm.aid+'_'+irand(0,10);
+         dur=(new Date(itm.duration*1000)).format('MM:ss');
+         html+=audio_tpl.replace(/%AID%/g,aid)
+                        .replace(/%ARTIST%/g,itm.artist)
+                        .replace(/%TITLE%/g,itm.title)
+                        .replace(/%DURATION%/g,itm.duration)
+                        .replace(/%DURATIONTEXT%/g,dur)
+                        .replace(/%URL%/g,(is_vkcom?itm.url.replace('vkontakte.ru','vk.com'):itm.url));
+		}
+      
+      removeClass(div,'empty');
+      ge('vk_audio_count').innerHTML=list.length;
+      ge('vk_audio_content').innerHTML=html;
+      vkAudioNode(div);
+	});
+   /*
+   // AUDIO
+   %AID% = cur.oid+'_'+aid+'_'+random(10);
+   %ARTIST%
+   %TITLE%
+   %DURATIONTEXT%
+   %DURATION%
+   %URL%
+   */
+}
 
 if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;

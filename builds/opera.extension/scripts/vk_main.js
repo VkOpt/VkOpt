@@ -77,7 +77,6 @@ function vkProcessNode(node){
 function vkProcessNodeLite(node){
   var tstart=unixtime();
   try{
-	//AddExUserMenu(node);
 	vkProccessLinks(node);
 	vkAudioNode(node);
 	vkPrepareTxtPanels(node);
@@ -138,6 +137,7 @@ function vkOnNewLocation(startup){
 	vk_plugins.onloc();
 	vklog('OnLocation time:' + (unixtime()-tstart) +'ms');
 }
+
 function vkProcessResponseNode(node,url,q){
    if (!url) return;
    if (q.offset && url.indexOf('wall')!=-1) vkAddDelWallCommentsLink(node);
@@ -176,7 +176,10 @@ function VkOptMainInit(){
     'seFaveOnline':'\u0423\u0432\u0435\u0434\u043e\u043c\u043b\u044f\u0442\u044c \u043e \u0432\u044b\u0445\u043e\u0434\u0435 \u043b\u044e\u0434\u0435\u0439 \u0438\u0437 \u0437\u0430\u043a\u043b\u0430\u0434\u043e\u043a \u0432 \u043e\u043d\u043b\u0430\u0439\u043d',
     'infoUseNetTrafic':'\u0414\u0430\u043d\u043d\u0430\u044f \u043e\u043f\u0446\u0438\u044f \u043c\u043e\u0436\u0435\u0442 \u043f\u043e\u0442\u0440\u0435\u0431\u043b\u044f\u0442\u044c \u0434\u043e\u043f\u043e\u043b\u043d\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0439 \u0438\u043d\u0442\u0435\u0440\u043d\u0435\u0442-\u0442\u0440\u0430\u0444\u0438\u043a.',
     'SearchAudioLyr':'\u041f\u043e\u0438\u0441\u043a \u0442\u0435\u043a\u0441\u0442\u0430 \u043f\u0435\u0441\u043d\u0438',
-    'seShutProfilesBlock':'\u0412\u043e\u0437\u043c\u043e\u0436\u043d\u043e\u0441\u0442\u044c \u0441\u0432\u043e\u0440\u0430\u0447\u0438\u0432\u0430\u0442\u044c \u043d\u0435\u043a\u043e\u0442\u043e\u0440\u044b\u0435 \u0431\u043b\u043e\u043a\u0438 \u043d\u0430 \u043f\u0440\u043e\u0444\u0438\u043b\u0435'
+    'seShutProfilesBlock':'\u0412\u043e\u0437\u043c\u043e\u0436\u043d\u043e\u0441\u0442\u044c \u0441\u0432\u043e\u0440\u0430\u0447\u0438\u0432\u0430\u0442\u044c \u043d\u0435\u043a\u043e\u0442\u043e\u0440\u044b\u0435 \u0431\u043b\u043e\u043a\u0438 \u043d\u0430 \u043f\u0440\u043e\u0444\u0438\u043b\u0435',
+    'seMoveNotifier':'Положение всплывающих уведомлений',
+    'seMoveNotifierText':'- не менять <br>- справа снизу <br>- справа сверху <br>- слева сверху',
+    'GetAudiosList':'Показать список аудио (если доступно)'
   });//*/
   vkStyles();
   if (!ge('content')) return;
@@ -245,21 +248,17 @@ function vkStyles(){
 	var NotHideSugFr= (getSet(44)=='y');
 	var main_css='';
 	if (getSet(28)=='y') main_css+=GetUnReadColorCss();
+   main_css+=vkNotifierWrapMove();
 	//compact fave
 	if (CompactFave=='y'){
-		/*vkaddcss('\r\n\
-			#users_content .fave_user_div{height: 110px !important; width: 67px !important;}\r\n \
-			#users_content .fave_user_image{height: 50px !important;}\r\n \
-			#users_content .fave_user_div a img{width:50px !important;}\r\n\
-			#users_content .fave_user_div div[style]{width: 65px !important;}\r\n \
-		');*/
-		vkaddcss('\
+		main_css+='\
 		.fave_user_div{height: 110px !important; width: 67px !important;}\
 		.fave_user_div *{width:67px !important;} .fave_user_div a img{width:50px !important;}\
 		.fave_user_image{height: 50px !important;}\
-		');
+		';
 		//if (window.Fave) Fave.init();
 	}
+   
 	//getSet(38)=='y' 
 	main_css+='.vk_my_friend{color:'+getFrColor()+' !important;}';
 	main_css+='\
@@ -577,7 +576,30 @@ function vkStyles(){
 	main_css+=vk_plugins.css();
 
 	vkaddcss(main_css);
+}
 
+function vkNotifierWrapMove(){
+   var bit=getSet(54);
+   var css='#notifiers_wrap {'
+   switch(bit){
+      case '1': css+='top: auto !important;\
+                      bottom:0px !important;\
+                      right: 10px !important;\
+                      left: auto !important';
+               break;
+      case '2': css+='top:0px  !important;\
+                      bottom:auto !important;\
+                      right: 10px !important;\
+                      left: auto !important';
+               break;  
+      case '3': css+='top:0px  !important;\
+                      bottom:auto !important;\
+                      right: auto !important;\
+                      left: 0px !important';
+               break;                 
+   }
+   css+='}';
+   return css;
 }
 
 
@@ -622,6 +644,7 @@ function vkEventPage(){
 function vkGroupPage(){
 	addFakeGraffItem();
 	vkCheckGroupAdmin();
+   vkAudioBlock();
 }
 function vkGetGid(){
 	if (cur.oid>0) return false;
@@ -816,6 +839,7 @@ function vkNotifier(){
 		});
       vkNotifyCustomSInit();
 	}
+   Inj.Before('Notifier.lpCheck','var response','if (!text || text=="") return;'); //error fix?
 	 /* delay for hide notify msg
 	  vk_notifier_show_timeout=20000;
 	  //Inj.Replace('Notifier.showEventUi','5000','vk_notifier_show_timeout');
@@ -1137,6 +1161,11 @@ function vkVideoViewer(){
 }
 function vkVidDownloadLinks(vars){
     // /video.php?act=a_flash_vars&vid=39226536_159441582
+    ////
+   var smartlink=(getSet(1) == 'y')?true:false;
+   var vidname=winToUtf(mvcur.mvData.title).replace(/\?/g,'%3F').replace(/\&/g,'%26');
+   vidname='?'+vkDownloadPostfix()+'&/'+vidname;
+   //(smartlink?vidname+'.mov')
 	if (!vars) return '';
 	var vuid=function (uid) { var s = "" + uid; while (s.length < 5) {s = "0" + s;}  return s; }
 	var get_flv=function() {
@@ -1161,13 +1190,14 @@ function vkVidDownloadLinks(vars){
 			var res = "360";
 			switch(i){case 2:{res = "480"; break;}  case 3:{  res = "720"; break;}}
 			vidHDurl=pathToHD(res);
-			s += (vidHDurl)?'<a href="'+vidHDurl+'" onmouseover="vkGetVideoSize(this);">'+IDL("downloadHD")+' '+res+'p<small class="fl_r divide" url="'+vidHDurl+'"></small></a>':"";   
+			s += (vidHDurl)?'<a href="'+vidHDurl+(smartlink?vidname+'.mov':'')+'" onmouseover="vkGetVideoSize(this);">'+IDL("downloadHD")+' '+res+'p<small class="fl_r divide" url="'+vidHDurl+'"></small></a>':"";   
 		  }
 		  return s;
 	}
-	vidurl=(vars.no_flv=='1')?pathToHD('240'):get_flv();
+	vidurl=(vars.no_flv=='1')?pathToHD('240'):(get_flv()+(smartlink?vidname+'.flv':''));
     vidurl =  '<a href="'+vidurl+'" onmouseover="vkGetVideoSize(this);">'+IDL("download")+'<small class="fl_r divide" url="'+vidurl+'"></small></a>';
     vidurl += generateHDLinks();
+    //vidname
 	return vidurl;
 }
 
@@ -1395,6 +1425,7 @@ function vkParseAudioInfo(_aid,node,anode){
 	return info;
 }
 
+
 function vkAudioNode(node){
   if ((node || ge('content')).innerHTML.indexOf('play_new')==-1) return;
   var smartlink=(getSet(1) == 'y')?true:false;
@@ -1460,6 +1491,8 @@ function vkAudioNode(node){
       }  
   }
 }
+
+
 
 var vk_del_dup_check_size=false;
 function vkAudioDelDup(add_button,btn){
@@ -1802,6 +1835,10 @@ function vkMailPage(){
 		vkAddSaveMsgLink();
 		if (getSet(40)=='y') vkAddDelMsgHistLink();
 		vkProcessNode();
+      if (!cur.addMailMedia){
+         cur.addMailMedia = initAddMedia('mail_add_link', 'mail_added_row', [["photo"," "],["video"," "],["audio"," "],["doc"," "]]);
+         cur.addMailMedia.onChange = mail.onMediaChange;
+      }
 	}
 	if (getSet(40)=='y') vkAddDeleteLink();
 }

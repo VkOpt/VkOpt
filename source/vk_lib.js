@@ -1730,7 +1730,7 @@ function vkShowNotify(params){
    });
 }
 //vkShowNotify({sound:'On',title:'TestTitle',text:'QazQwe',author_photo:'http://cs10781.vk.com/u17115308/e_ceb5c84f.jpg',author_link:'mail',link:'audio',onclick:'nav.go(this)'}); //,
-
+//setInterval(function(){vkShowNotify({sound:'On',title:'TestTitle',text:'QazQwe',author_photo:'http://cs10781.vk.com/u17115308/e_ceb5c84f.jpg',author_link:'mail',link:'audio',onclick:'nav.go(this)'});},500)
 
 /* FOR VKOPT PLUGINS */
 if (!window.vkopt_plugins) vkopt_plugins={};

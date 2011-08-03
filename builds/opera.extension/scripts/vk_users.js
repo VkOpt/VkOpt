@@ -60,12 +60,18 @@ function getGidUid(url,callback){ //callback(uid,gid)
 				callback(null,id);//group
 		} else if (t.indexOf('images/question_100.gif')>0){ //if NULL AVA
 			if (t.match(/http:\/\/vk.+\/images\/question_100\.gif/)){// if 'NULL AVA (USER)';
-				 AjGet('/groups_ajax.php?act=a_inv_by_link&page='+url,function(r){
+				 
+             dApi.call('getProfiles',{domains:url},function(r){
+               if (r.response.length && r.response[0].uid)     callback(r.response[0].uid,null);
+               else callback(null,null);
+             });
+             /*
+             AjGet('/groups_ajax.php?act=a_inv_by_link&page='+url,function(r){
 					r=r.responseText;
 					var uid=(r)?r.match(/name=.id..value=.(\d+)/)[1]:null;
 					vkUsersGroupsDomain[url]=[uid,null];
 					callback(uid,null);
-				 });	
+				 });*/	
 			} else {  // if 'NULL AVA (GROUP)';
 				var gurl=url.split('/'); 
 				gurl=(gurl[gurl.length-1])?gurl[gurl.length-1]:url;
@@ -186,46 +192,6 @@ function vkAddUserMenu(el){
 	for (var i=0;i<nodes.length;i++) vkProcessUserLink(nodes[i]);
 }
 
-function vkExUMlinks(el){
- return;
- if (!el) el=ge('pageBody') || ge('page_body');
- //alert(el);
- if(ge(el).getElementsByTagName('a')){
-  var nodes=ge(el).getElementsByTagName('a');
-  var i=0;
-  var mask=new Array();
-  mask['small']=/[^<]*<small>[^<]*<\/small>/i;
-  mask['strong']=/[^<]*<strong>[^<]*<\/strong>/i;
-  mask['em']=/[^<]*<em>[^<]*<\/em>/i;
-  mask['img']=/[^<]*<img/i;  
-  for (i=0;i<nodes.length;i++){  
-    var tmp1=nodes[i];
-    var tmp2=ExtractUserID(tmp1.href);
-    if (tmp2 && tmp2.match(/\?/)) tmp2=false;
-    if(tmp2){
-      var uid=tmp2;//[1];
-       var tes=tmp1.innerHTML;
-       var adid=uid+'_'+i;
-       var mev=(getSet(11)=='y')?'onclick':'onmouseover';
-       var inel=document.createElement('a');
-       inel.id="pup"+adid;
-	   inel.setAttribute('class','vk_usermenu_btn');
-       inel.setAttribute(mev,'pupShow(event,\''+adid+'\',\''+uid+'\',this); return false;');
-       inel.innerHTML='&#9660; ';
-	   //addEvent(inel,'mouseover',function(){animate(inel, {opacity: 1}, 200);});
-       //addEvent(inel,'mouseout',function(){animate(inel, {opacity: 0.5}, 200);});
-       //inelem='<a id="pup'+adid+'" '+mev+'="pupShow(event,\''+adid+'\',\''+uid+'\'); return false;">&#9660; </a>';
-        var atr_cl=tmp1.getAttribute('onclick');
-        if (!tmp1.innerHTML.match('pupShow') && !tmp1.hasAttribute('exuser') && (!atr_cl || (atr_cl &&  atr_cl.match("nav.go"))|| tmp1.hasAttribute("altprof")) && tmp1.parentNode.parentNode.id!='profile_groups'){//  tmp1.getAttribute('altprof')
-        if (((tes.match(mask['small']) || tes.match(mask['strong']) || tes.match(mask['em'])) && !tes.match(mask['img'])) || !tes.match('<')){
-          tmp1.setAttribute('exuser',true);
-          //tmp1.outerHTML=tmp1.outerHTML+inelem;
-          insertAfter(inel,tmp1);
-        }
-        }
-    }
-  }}
-}
 var PUPCss= //position: fixed;
 '#pupMenu { background: #FFFFFF; position:absolute; display: none; cursor: pointer; z-index: 200000;}'+
 '.pupBody { background: #FFFFFF; border: 1px solid #96AABE; width: 156px; _width: 157px;}'+
@@ -260,10 +226,16 @@ function pupShow(event,pid,id,el) {
       //if (uid==null) hide();
       ready=true; 
  });*/
- 
+   var addldr=function(inner){
+      var sz=getSize(pup_menu); 
+      pup_menu.innerHTML = '<div id="pupMenuBlock" style="position:absolute; opacity: 0.5;  background: #FFFFFF; height:'+sz[1]+'px; line-height:'+sz[1]+'px; width:'+sz[0]+'px;"'+
+                             'onmouseover="clearTimeout(pup_tout);" onmouseout="pup_tout=setTimeout(pupHide, 50);">'+
+                             '<center id="pupUidLoader">'+(inner || '<img  src="/images/progress7.gif">')+'</center></div>'+str;
+   };
   getGidUid(id,function(uid,gid){// getUserID 
       if (!uid && !gid) {
-        ge("pupUidLoader").innerHTML='<span style="font-weight:bold; color:#F00;">'+IDL('NotUser')+'</span>'
+        if (!ge("pupUidLoader")) addldr('<span style="font-weight:bold; color:#F00;">'+IDL('NotUser')+'</span>');
+        else ge("pupUidLoader").innerHTML='<span style="font-weight:bold; color:#F00;">'+IDL('NotUser')+'</span>';
         setStyle("pupMenuBlock", {opacity: 0.8});
       };
 	  if (uid){
@@ -283,10 +255,7 @@ function pupShow(event,pid,id,el) {
  });
  
  show(pup_menu);
- var sz=getSize(pup_menu); 
- if (!ready) {pup_menu.innerHTML = '<div id="pupMenuBlock" style="position:absolute; opacity: 0.5;  background: #FFFFFF; height:'+sz[1]+'px; line-height:'+sz[1]+'px; width:'+sz[0]+'px;"'+
-                                   'onmouseover="clearTimeout(pup_tout);" onmouseout="pup_tout=setTimeout(pupHide, 50);">'+
-                                   '<center id="pupUidLoader"><img  src="/images/progress7.gif"></center></div>'+str;}
+ if (!ready && !ge("pupUidLoader")) addldr();
  pup_menu.style.visible='visible';
  clearTimeout(pup_tout);
  pup_tout=setTimeout(pupHide, pup_show_delay);
@@ -434,13 +403,6 @@ function vkBanUserFunc(user_link,gid,callback) {
 	}
 }
 
-function AddExUserMenu(el){
- if (getSet(10)=='y') //&& !ge('phototags') && !ge('videotags')
-    {
-    vkExUMlinks(el);
-     }
-}
-
 function vk_user_init(){
 	if (ge('pageLayout')||ge('page_layout')){
 	 if (getSet(10)=='y'){
@@ -454,7 +416,6 @@ function vk_user_init(){
 		var vk_page_layout=document.getElementsByTagName('body')[0];//ge('pageLayout')||ge('page_layout');
 		vk_page_layout.appendChild(phdiv);
 		vk_page_layout.appendChild(pmdiv);
-		vkExUMlinks();
 	 }
 	}
 }
@@ -479,25 +440,27 @@ function vkPopupAvatar(id,el,in_box){
     if (!window.LoadedProfiles) LoadedProfiles={};
     if (typeof allowShowPhoto =='undefined') allowShowPhoto=true;
     allowShowPhoto=true;
-	if (in_box){
-		var box=vkAlertBox('',vkBigLdrImg);
-		vkGetProfile(id,function(html,uid){
-			//LoadedProfiles[id]=html;
-			box.hide();
-			box=vkAlertBox('id'+uid,html);
-			box.setOptions({width:"455px",hideButtons:true, bodyStyle:'padding:0px;', onHide:__bq.hideAll});
-		},true);
-		
-	}else  if (LoadedProfiles[id]){
-      allowShowPhotoTimer=setTimeout(function(){vkShowProfile(el,LoadedProfiles[id],id);},400);  
-    } else {
-		vkGetProfile(id,function(html,uid){
-			LoadedProfiles[id]=html;
-			allowShowPhotoTimer=setTimeout(function(){
-				vkShowProfile(el,html,uid);
-			},400);
-		});
-    }
+    getGidUid(id,function(id,gid){
+      if (in_box){
+         var box=vkAlertBox('',vkBigLdrImg);
+         vkGetProfile(id,function(html,uid){
+            //LoadedProfiles[id]=html;
+            box.hide();
+            box=vkAlertBox('id'+uid,html);
+            box.setOptions({width:"455px",hideButtons:true, bodyStyle:'padding:0px;', onHide:__bq.hideAll});
+         },true);
+         
+      }else  if (LoadedProfiles[id]){
+         allowShowPhotoTimer=setTimeout(function(){vkShowProfile(el,LoadedProfiles[id],id);},400);  
+       } else {
+         vkGetProfile(id,function(html,uid){
+            LoadedProfiles[id]=html;
+            allowShowPhotoTimer=setTimeout(function(){
+               vkShowProfile(el,html,uid);
+            },400);
+         });
+       }
+    });
 }
 function vkShowProfile(el,html,uid,right){
 	clearTimeout(allowHidePhoto);
@@ -655,7 +618,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 		  '</div>';
 		return html;
 	  }
-	  make_rate(361);
+	  //make_rate(361);
 	  var MakeProfile = function(r){
 		if (!r.response || !r.response.profile) return;
 		var profile=r.response.profile;
@@ -873,7 +836,7 @@ function vkFriendsCheck(nid){
 					  if (!remadd) ge('vkfrupdresult').innerHTML='<b>'+IDL('WithoutChanges')+'</b>';
 					  else {
 						  ge('vkfrupdresult').innerHTML='<table width="100%"><tr valign="top"><td>'+remadd.rem+'</td><td valign="top">'+remadd.add+'</td></tr></table>';
-						  vkProccessLinks(ge('vkfrupdresult'));//AddExUserMenu
+						  vkProccessLinks(ge('vkfrupdresult'));
 						  var fids_x=fids.concat(nfids);
 						  dApi.call('getProfiles',{uids:fids_x.join(',')},function(r){//fids.join(',')+','+nfids.join(',')
 							//alert(print_r(r));
@@ -928,7 +891,7 @@ function vkShowFriendsUpd(ret,names){
 			sideBar().appendChild(el);
   }
   el.innerHTML=html.rem+html.add;
-  vkProccessLinks(el);//AddExUserMenu
+  vkProccessLinks(el);
   if (names) dApi.call('getProfiles',{uids:names.join(',')},function(r){
     for (var i=0;r.response && i<r.response.length;i++){
             var user=r.response[i];

@@ -608,7 +608,8 @@ function vkInitSettings(){
       {id:33, text:IDL("seSmiles")},
       {id:36, text:IDL("sePreventHideNotifications")},
       {id:42, text:IDL("seSortFeedPhotos")},
-      {id:53, text:IDL("seShutProfilesBlock")}
+      {id:53, text:IDL("seShutProfilesBlock")},
+      {id:54, header:IDL("seMoveNotifier") , text:IDL("seMoveNotifierText"),ops:[0,1,2,3]}
 
     ],
 	Sounds:[
@@ -622,7 +623,7 @@ function vkInitSettings(){
 		{id:34, text:IDL("seSwichTextChr")}	
     ]
   };	  
-	//LAST 53
+	//LAST 54
 	
 	vkSetsType={
       "on"  :[IDL('on'),'y'],
