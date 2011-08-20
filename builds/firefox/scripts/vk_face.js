@@ -647,10 +647,18 @@ function vkGetCalendar(){
 			</div>\
 	';
 	sideBar().appendChild(vkCe('div',{id:'vk_calendar_block'},html));
+	vkGetCalendarInfo(function(month, year, events, holidays){
+      vk_initCalendar(month, year, events, holidays);
+      vk_cur.vk_calGetMonth(0);
+   });
+}
+
+function vkGetCalendarInfo(callback){ //callback(month, year, events, holidays)    
 	AjGet('/al_events.php?act=calendar&al=1',function(r,t){
 		var res=t.split('initCalendar(')[1].split(');')[0];
-		eval('vk_initCalendar('+res+')');
-		vk_cur.vk_calGetMonth(0);
+		//eval(callback+'('+res+')');
+      var args=eval('['+res+']');
+      callback.apply(this,args);
 	});
 }
 function vk_initCalendar(month, year, events, holidays) {

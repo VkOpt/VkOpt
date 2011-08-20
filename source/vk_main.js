@@ -748,6 +748,12 @@ function vkResponseChecker(answer,url,q){// detect HTML and prosessing
 function vkProcessResponse(answer,url,q){
   if (url=='/photos.php' && q.act=="a_choose_photo_box") vkPhChooseProcess(answer,url,q);
   if (url=='/al_friends.php' && q.act=='add_box') answer[1]=answer[1].replace('"friends_add_block" style="display: none;"','"friends_add_block"');
+  if(url=='/al_groups.php' && q.act=='people_silent') {
+   if(answer[0].members)  answer[0].members = vkModAsNode(answer[0].members,vkProcessNodeLite,url,q);
+   if(answer[0].requests) answer[0].requests = vkModAsNode(answer[0].requests,vkProcessNodeLite,url,q);
+  if(answer[0].invites) answer[0].invites = vkModAsNode(answer[0].invites,vkProcessNodeLite,url,q);
+  if(answer[0].admins) answer[0].admins = vkModAsNode(answer[0].admins,vkProcessNodeLite,url,q);
+  }
 }
 
 function vkPhChooseProcess(answer,url,q){

@@ -94,6 +94,58 @@ function vkPrepareProfileInfo(){
 	}
 }
 
+function checkAgeFunc(_this,_id,_day,_month){
+  /*
+  if(getSet(27)!='y'){
+    alert(unescape('%u041D%u0443%u0436%u043D%u043E%20%u0432%u043A%u043B%u044E%u0447%u0438%u0442%u044C%20%u043A%u0430%u043B%u0435%u043D%u0434%u0430%u0440%u044C%21'));
+    return;
+  }*/
+  var getAge=function(){
+       var full_years=0;
+       var _tmp=vk_cur.vk_calEvents[_month][_day];
+       for(var i in _tmp){
+         if(_tmp[i][0]==_id){
+           if(_tmp[i][3]){
+             var bDay = new Date(_tmp[i][3] * 1000);
+             var nowDay = new Date();
+             var curDay = new Date(nowDay.getFullYear(), _month-1, _day);
+             if(bDay.getFullYear() != nowDay.getFullYear()){
+               var years = Number(curDay.getFullYear() - bDay.getFullYear());
+               if(nowDay.getMonth()<bDay.getMonth()){
+                 full_years=years-1;
+               }else if(nowDay.getMonth()==bDay.getMonth()){
+                 if(nowDay.getDate()<bDay.getDate()){
+                   full_years=years-1;
+                 }else{
+                   full_years=years;
+                 }
+               }else{
+                 full_years=years;
+               }
+             }
+           }
+         }
+       }
+         
+       if(full_years>0)
+         ge('checkAge').innerHTML='<b>'+langNumeric(full_years, vk_lang["vk_year"])+'</b>';
+       else
+         ge('checkAge').innerHTML=IDL('AgeNA');  
+  };
+  
+  if(vk_cur.vk_calEvents){
+      getAge();
+  }else{
+      _this.innerHTML=vkLdrImg;
+      vkGetCalendarInfo(function(month, year, events, holidays){
+         if (!window.vk_cur) vk_cur={};
+         vk_cur.vk_calEvents=events;
+         getAge();
+      });
+    //setTimeout(function(){checkAgeFunc(_this,_id,_day,_month)},100);
+  }
+}
+
 // @name Vkontakte Calculate Age
 // @namespace http://polkila.googlecode.com
 // @author Васютинский Олег http://vasyutinskiy.ru
@@ -103,7 +155,14 @@ var t = ge('profile_info').parentNode;//('rightColumn').childNodes[3];personal
 if (!t) return;
   var byear = /c[\[%5B]{1,3}byear[\]%5D]{1,3}=([0-9]{4})/.exec(t.innerHTML);
   var bdate = /c[\[%5B]{1,3}bday[\]%5D]{1,3}=([0-9]{1,2})[&amp;]{1,5}c[\[%5B]{1,3}bmonth[\]%5D]{1,3}=([0-9]{1,2})/.exec(t.innerHTML);
+  var _href='';
   var date_info='';
+  if(!byear && bdate && bdate[1] && bdate[2]){
+    //var _tmp=(new RegExp("{act: 'remove_box', mid: (.*?)}",'img')).exec(ge('profile').innerHTML);
+    if(ge('profile_other_acts') && ge('profile_other_acts').innerHTML.indexOf('remove_box')!=-1){
+      _href='<span id="checkAge"><a id="checkAgeLink" href="#" onClick="checkAgeFunc(this,'+cur.oid+', '+bdate[1]+', '+bdate[2]+'); return false;">'+IDL('UznatVozrast')+'</a></span>';
+    }
+  }
   //if (!byear) return;
   //alert (bdate[1]+'\n'+bdate[2]+'\n'+byear[1]);
   var lang = parseInt(vkgetCookie('remixlang')), _sign_ = '', now = new Date();
@@ -112,22 +171,11 @@ if (!t) return;
 	if (bdate && bdate[2]>now.getMonth()+1) age--;
 	else if (bdate && bdate[2]==now.getMonth()+1 && bdate[1]>now.getDate()) age--;
 
-	if (lang) _years_ = 'years old';
-	else{
-		last = age.toString().substr(1);
-		if (last==1) _years_ = '&#1075;&#1086;&#1076;';
-		if (last>1 && last<5) _years_ = '&#1075;&#1086;&#1076;&#1072;';
-		if (last>4 || last==0) _years_ = '&#1083;&#1077;&#1090;';
-		if (age>4 && age<21) _years_ = '&#1083;&#1077;&#1090;';
-	}
-  date_info+=age+' '+_years_;
+  date_info+=langNumeric(age, vk_lang["vk_year"]);// age+' '+_years_;
   }
 
 	if (bdate){
-		//if (lang) var signs = new Array('Capricorn','Aquarius','Pisces','Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius');
-		//else
-    var signs = new Array('&#1050;&#1086;&#1079;&#1077;&#1088;&#1086;&#1075;','&#1042;&#1086;&#1076;&#1086;&#1083;&#1077;&#1081;','&#1056;&#1099;&#1073;&#1099;','&#1054;&#1074;&#1077;&#1085;','&#1058;&#1077;&#1083;&#1077;&#1094;','&#1041;&#1083;&#1080;&#1079;&#1085;&#1077;&#1094;&#1099;','&#1056;&#1072;&#1082;','&#1051;&#1077;&#1074;','&#1044;&#1077;&#1074;&#1072;','&#1042;&#1077;&#1089;&#1099;','&#1057;&#1082;&#1086;&#1088;&#1087;&#1080;&#1086;&#1085;','&#1057;&#1090;&#1088;&#1077;&#1083;&#1077;&#1094;');
-		//var lastD = new Array(19,18,20,19,20,21,22,22,22,22,21,21);
+      var signs = new Array('&#1050;&#1086;&#1079;&#1077;&#1088;&#1086;&#1075;','&#1042;&#1086;&#1076;&#1086;&#1083;&#1077;&#1081;','&#1056;&#1099;&#1073;&#1099;','&#1054;&#1074;&#1077;&#1085;','&#1058;&#1077;&#1083;&#1077;&#1094;','&#1041;&#1083;&#1080;&#1079;&#1085;&#1077;&#1094;&#1099;','&#1056;&#1072;&#1082;','&#1051;&#1077;&#1074;','&#1044;&#1077;&#1074;&#1072;','&#1042;&#1077;&#1089;&#1099;','&#1057;&#1082;&#1086;&#1088;&#1087;&#1080;&#1086;&#1085;','&#1057;&#1090;&#1088;&#1077;&#1083;&#1077;&#1094;');
 		var lastD = new Array(20,19,20,20,21,21,22,23,23,23,22,21);
 		var signN = bdate[2]-1;
 		if (bdate[1]>lastD[signN]) signN = (signN+1) % 12;
@@ -157,7 +205,7 @@ if (!t) return;
     var lnk=alinks[i];
     if(lnk.href && lnk.href.indexOf(rhdr)!=-1) {
       total--;
-      lnk.parentNode.innerHTML+=' ('+date_info+_sign_.replace(/dateYear/g,'dateYear'+total)+')';
+      lnk.parentNode.innerHTML+=' ('+date_info+_sign_.replace(/dateYear/g,'dateYear'+total)+' '+_href+')';
       // cur.options.info[1]
     }
     if (!total) break;
@@ -168,9 +216,14 @@ if (!t) return;
     //alert(cur.options.info[0].match(/(c\[byear\]=[^>]+>[^<>]+<\/a>)/));//http://vk.com/search?c[section]=people&c[bday]=6&c[bmonth]=5
 	var r1=/(c\[byear\]=[^>]+>[^<>]+<\/a>)/;
 	r1=cur.options.info[0].match(r1)?r1:/(c\[bmonth\]=[^>]+>[^<>]+<\/a>)/;
-	cur.options.info[0]=cur.options.info[0].replace(r1,"$1"+' ('+date_info+_sign_.replace(/dateYear/g,'dateYear'+0)+')');
-    cur.options.info[1]=cur.options.info[1].replace(r1,"$1"+' ('+date_info+_sign_.replace(/dateYear/g,'dateYear'+1)+')');
+	cur.options.info[0]=cur.options.info[0].replace(r1,"$1"+' ('+date_info+_sign_.replace(/dateYear/g,'dateYear'+0)+' '+_href+')');
+    cur.options.info[1]=cur.options.info[1].replace(r1,"$1"+' ('+date_info+_sign_.replace(/dateYear/g,'dateYear'+1)+' '+_href+')');
   }
+
+   if(ge('checkAgeLink')) {
+      if(window.vk_cur && vk_cur.vk_calEvents) ge('checkAgeLink').onclick();
+      else if (getSet(27)=='y') Inj.Wait('window.vk_cur && vk_cur.vk_calEvents',ge('checkAgeLink').onclick);
+   }
 }
 
 
