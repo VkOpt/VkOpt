@@ -983,10 +983,12 @@ function ProcessHighlightFriendLink(link){
 		var id=href.split('/');
 		id=id[id.length-1];
 		id=id.split('?')[0].split('#')[0];
+      if (!id) return;
 		var list=','+vk_friends_id_list+',';
 		if (list.indexOf(','+id+',')!=-1){
 			//link.setAttribute('is_friend','true');
 			addClass(link,'vk_my_friend');
+         //vklog(id+'|>'+(id?'true':'false'));
 		}
 	}
 }
