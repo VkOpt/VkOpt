@@ -1139,6 +1139,7 @@ var uApi = {
 
 DAPI_APP_ID=2168679;
 //javascript: dApi.call('notes.get',{},uApi.show)
+
 var dApi = {
   api_id: DAPI_APP_ID,
   reauth_count:0,
@@ -1188,7 +1189,9 @@ var dApi = {
 	}	 
   },
   show_error:function(r){
-	    topError(r.error.error_msg+'<br>error_code: '+r.error.error_code,{dt:2});
+	    var text=r.error.error_msg+'<br>error_code: '+r.error.error_code;
+       if (r.error.error_code == 3) vklog(text);
+       else topError(text,{dt:2});
   },
   call: function(method, inputParams, callback, captcha) {
 	if (arguments.length == 2) {    callback=inputParams;     inputParams={};   }
@@ -1286,7 +1289,8 @@ var dApi = {
 					dApi.call(method, inputParams, callback);
 				},500);
 			} else if (response.error.error_code == 4 || ((response.error.error_code == 3 || response.error.error_code == 7)  && dApi.reauth_count==0)){
-				apiReAuth();				
+				
+            apiReAuth();				
 			} else if(response.error.error_code == 14) { // Captcha needed
 				dApi.captcha_visible=true;
 				vkShowCaptcha(response.error.captcha_sid, response.error.captcha_img, function(sid, value) {

@@ -137,6 +137,7 @@ function GetUserMenuSett() {
                      IDL("clNo"), 
                      IDL("clGi"), 
                      IDL("clRa"), 
+                     IDL("mNeP"), 
                      IDL("clAddFr"), 
                      IDL("clAddToFav"), 
                      IDL("addblack")
@@ -176,7 +177,7 @@ function vkProcessUserLink(link){
 	inel.setAttribute('class','vk_usermenu_btn'+(link.className.indexOf('fl_r')!=-1?' fl_r':''));
 	inel.setAttribute(mev,'pupShow(event,\''+adid+'\',\''+uid+'\',this); return false;');
 	inel.setAttribute("onmousedown","event.cancelBubble = true;");
-	inel.innerHTML='&#9660; ';
+	inel.innerHTML=USERMENU_SYMBOL;
 	link.setAttribute('exuser',true);
 	if (getSet(22)=='y' && link.parentNode.parentNode && link.parentNode.parentNode.id=='profile_groups'){
 		inel.setAttribute('class','vk_usermenu_btn fl_r');
@@ -306,6 +307,7 @@ function ExUserItems(id,el){
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/notes%uid" onclick="return nav.go(this, event);">'+IDL("clNo")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/gifts?id=%uid">'+IDL("clGi")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/rate.php?act=vote&id=%uid">'+IDL("clRa")+'</a>'):i++;
+   (ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/feed?section=source&source=%uid">'+IDL("mNeP")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkRemoveFriend(%uid);" class="fl_r">x</a><a href="javascript:vkAddToFriends(%uid);">'+IDL("clAddFr")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkAddToFave(%uid,1);" class="fl_r">x</a><a href="javascript:vkAddToFave(%uid);">'+IDL("clAddToFav")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="#" style="cursor: hand;" onClick="vkAddToBL(%uid); return false;">'+IDL("addblack")+'</a>'):i++;
@@ -433,6 +435,8 @@ function ProcessUserPhotoLink(node){
     }    
   }
 }
+
+
 allowHidePhoto=setTimeout(null,null);
 allowShowPhotoTimer=setTimeout(null,null);
 function vkPopupAvatar(id,el,in_box){
@@ -1058,7 +1062,18 @@ function vkFavAddDel(uid,is_del){
    if (ge('vk_fav_users_cont')) vkFavUsersList();
 }
 
-
+function vkFavChekUserAndToArray(mid,array,item){
+   /*var umenu='<a id="pup'+mid+'_0" class="vk_usermenu_btn" onclick="pupShow(event,\''+mid+'_0\',\''+mid+'\',this); return false;" onmousedown="event.cancelBubble = true;">'+USERMENU_SYMBOL+'</a>';
+   
+   alert(item);*/
+   if (getSet(8)=='y') item=item.replace('<img','<img onmouseover="vkPopupAvatar(\''+mid+'\',this);" onmouseout="vkHidePhoto();"');
+   if (vkIsFavUser(mid)){ 
+      item=item.replace('class="fc_contact','class="fc_contact vk_faved_user')
+      array.splice(0,0,item);
+   }
+   else array.push(item);
+}
+   
 function vkFavOnlineChecker(on_storage){
    //case 'fav_users_statuses':vkFavOnlineChecker(true); break;
    if (getSet(49)!='y')return;
@@ -1070,7 +1085,7 @@ function vkFavOnlineChecker(on_storage){
    var val=list.split('-');
    var oval=(vkGetVal('FavList_Onlines') || '').split('-');   
    
-   if (on_storage || !val.length) 
+   if (on_storage || !val[0]) 
       timeout();
    else {
 

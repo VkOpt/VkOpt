@@ -10,8 +10,8 @@
 // (c) All Rights Reserved. VkOpt.
 //
 /* VERSION INFO */
-var vVersion	= 200;
-var vBuild = 110803;
+var vVersion	= 201;
+var vBuild = 110831;
 var vPostfix = ' ';
 if (!window.vk_DEBUG) var vk_DEBUG=0;
 
@@ -40,6 +40,7 @@ var SEARCH_AUDIO_LYRIC_LINK='http://yandex.ru/yandsearch?text=%AUDIO_NAME%+%28%2
 /* API SETTINGS PAGE: http://vkontakte.ru/login.php?app=2168679&layout=popup&type=browser&settings=15615 */
 
 /* Others */
+var USERMENU_SYMBOL='&#9660; ';
 var MOD_PROFILE_BLOCKS=true;
 var CUT_VKOPT_BRACKET=false;
 var vkNewSettings=[3,4,17,5,29,35,36,42,43,49,50,51,52]; //"new" label on settings item

@@ -4,6 +4,8 @@
 <dict>
 	<key>Author</key>
 	<string>KiberПсих</string>
+	<key>Builder Version</key>
+	<string>534.50</string>
 	<key>CFBundleDisplayName</key>
 	<string>VkOpt</string>
 	<key>CFBundleIdentifier</key>
@@ -11,9 +13,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.0.0</string>
+	<string>2.0.1</string>
 	<key>CFBundleVersion</key>
-	<string>2.0.0.2</string>
+	<string>2.0.1.0</string>
 	<key>Chrome</key>
 	<dict/>
 	<key>Content</key>
@@ -41,6 +43,7 @@
 				<string>*.vkontakte.ru</string>
 				<string>vk.com</string>
 				<string>*.vk.com</string>
+				<string>*.vkadre.ru</string>
 			</array>
 			<key>Level</key>
 			<string>Some</string>
