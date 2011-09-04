@@ -26,10 +26,18 @@ function vkProfilePage(){
 	if (MOD_PROFILE_BLOCKS) vkFrProfile();
 	if (getSet(46) == 'n') vkFriends_get('online');
 	if (getSet(47) == 'n') vkFriends_get('common');
-
+   
+   vkAddCheckBox_OnlyForFriends();
 	vkHighlightGroups();
 }
 
+function vkAddCheckBox_OnlyForFriends(){
+   if (cur.oid!=remixmid() || ge('friends_only') ) return;
+   var p=ge('page_add_media');
+   if (!p) return;
+   var cb=vkCe('div',{"class":"checkbox fl_l","id":"friends_only","onclick":"checkbox(this);checkbox('status_export',!isChecked(this));checkbox('facebook_export',!isChecked(this));"},'<div></div>'+IDL('OnlyForFriends'))
+   p.parentNode.insertBefore(cb,p);
+}
 
 function vkProfile(){
 	Inj.After('profile.init','});','setTimeout("vkProcessNode();",2);');
@@ -157,12 +165,12 @@ if (!t) return;
   var bdate = /c[\[%5B]{1,3}bday[\]%5D]{1,3}=([0-9]{1,2})[&amp;]{1,5}c[\[%5B]{1,3}bmonth[\]%5D]{1,3}=([0-9]{1,2})/.exec(t.innerHTML);
   var _href='';
   var date_info='';
-  if(!byear && bdate && bdate[1] && bdate[2]){
-    //var _tmp=(new RegExp("{act: 'remove_box', mid: (.*?)}",'img')).exec(ge('profile').innerHTML);
-    if(ge('profile_other_acts') && ge('profile_other_acts').innerHTML.indexOf('remove_box')!=-1){
+   /*if(!byear && bdate && bdate[1] && bdate[2]){
+   if(ge('profile_other_acts') && ge('profile_other_acts').innerHTML.indexOf('remove_box')!=-1){
       _href='<span id="checkAge"><a id="checkAgeLink" href="#" onClick="checkAgeFunc(this,'+cur.oid+', '+bdate[1]+', '+bdate[2]+'); return false;">'+IDL('UznatVozrast')+'</a></span>';
     }
-  }
+  }*/
+  
   //if (!byear) return;
   //alert (bdate[1]+'\n'+bdate[2]+'\n'+byear[1]);
   var lang = parseInt(vkgetCookie('remixlang')), _sign_ = '', now = new Date();

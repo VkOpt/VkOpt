@@ -1020,6 +1020,7 @@ function vkShowCaptcha(sid, img, onClick, onShow, onHide) {
   addEvent(ge('refreshCaptcha'), 'click', onClickHandler);
   key.focus();
 }
+
 /* VK API */
 //javascript: uApi.call('friends',{id:'13391307'},uApi.show);
 var uApi = {

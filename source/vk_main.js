@@ -164,26 +164,9 @@ function vkLocationCheck(){
 function VkOptMainInit(){
   if (vkLocationCheck()) return;
   if (InstallRelease()) return;
-  //* // javascript: x=''; for (var key in vk_lang_ru) x+="'"+key+"': '"+(typeof vk_lang_ru[key] == 'string'?IDL(key):JSON.Str(vk_lang_ru[key]))+"'\n"; alert(x);
+  /* // javascript: x=''; for (var key in vk_lang_ru) x+="'"+key+"': '"+(typeof vk_lang_ru[key] == 'string'?IDL(key):JSON.Str(vk_lang_ru[key]))+"'\n"; alert(x);
   vkExtendLang({
-    'EnterLinkToPhoto':'[\u0421\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 \u0444\u043e\u0442\u043e \u0432\u0438\u0434\u0430 `photoXXX_YYYYY`]',
-    'IncorrectPhotoLink':'\u041d\u0435\u043f\u0440\u0430\u0432\u0438\u043b\u044c\u043d\u0430\u044f \u0441\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 \u0444\u043e\u0442\u043e\u0433\u0440\u0430\u0444\u0438\u044e',
-    'AddFrToList':'[ \u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0432 \u0441\u043f\u0438\u0441\u043e\u043a ]',
-    'mNeMe':'\u0423\u043f\u043e\u043c\u0438\u043d\u0430\u043d\u0438\u044f',
-    'FavAddUser':'\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0432 \u0438\u0437\u0431\u0440\u0430\u043d\u043d\u044b\u0435',
-    'FavRemoved':'\u041f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044c \u0443\u0434\u0430\u043b\u0451\u043d \u0438\u0437 \u0438\u0437\u0431\u0440\u0430\u043d\u043d\u044b\u0445',
-    'FavAdded':'\u041f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044c \u0434\u043e\u0431\u0430\u0432\u043b\u0435\u043d \u0432 \u0438\u0437\u0431\u0440\u0430\u043d\u043d\u044b\u0435',
-    'FavUsers':'[ \u0418\u0437\u0431\u0440\u0430\u043d\u043d\u044b\u0435 ]',
-    'UserOnline':'\u041f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044c \u0432 \u0441\u0435\u0442\u0438',
-    'FavListRelace':'\u041e\u0431\u043d\u0430\u0440\u0443\u0436\u0435\u043d \u043b\u043e\u043a\u0430\u043b\u044c\u043d\u044b\u0439 \u0441\u043f\u0438\u0441\u043e\u043a \u00ab\u0418\u0437\u0431\u0440\u0430\u043d\u043d\u044b\u0445\u00bb \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u0435\u0439. \u0412\u044b \u0436\u0435\u043b\u0430\u0435\u0442\u0435 \u0435\u0433\u043e \u0437\u0430\u043c\u0435\u043d\u0438\u0442\u044c \u043a\u043e\u043f\u0438\u0435\u0439 \u0441 \u0441\u0435\u0440\u0432\u0435\u0440\u0430?',
-    'seFaveOnline':'\u0423\u0432\u0435\u0434\u043e\u043c\u043b\u044f\u0442\u044c \u043e \u0432\u044b\u0445\u043e\u0434\u0435 \u043b\u044e\u0434\u0435\u0439 \u0438\u0437 \u0437\u0430\u043a\u043b\u0430\u0434\u043e\u043a \u0432 \u043e\u043d\u043b\u0430\u0439\u043d',
-    'infoUseNetTrafic':'\u0414\u0430\u043d\u043d\u0430\u044f \u043e\u043f\u0446\u0438\u044f \u043c\u043e\u0436\u0435\u0442 \u043f\u043e\u0442\u0440\u0435\u0431\u043b\u044f\u0442\u044c \u0434\u043e\u043f\u043e\u043b\u043d\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0439 \u0438\u043d\u0442\u0435\u0440\u043d\u0435\u0442-\u0442\u0440\u0430\u0444\u0438\u043a.',
-    'SearchAudioLyr':'\u041f\u043e\u0438\u0441\u043a \u0442\u0435\u043a\u0441\u0442\u0430 \u043f\u0435\u0441\u043d\u0438',
-    'seShutProfilesBlock':'\u0412\u043e\u0437\u043c\u043e\u0436\u043d\u043e\u0441\u0442\u044c \u0441\u0432\u043e\u0440\u0430\u0447\u0438\u0432\u0430\u0442\u044c \u043d\u0435\u043a\u043e\u0442\u043e\u0440\u044b\u0435 \u0431\u043b\u043e\u043a\u0438 \u043d\u0430 \u043f\u0440\u043e\u0444\u0438\u043b\u0435',
-    'seMoveNotifier':'\u041f\u043e\u043b\u043e\u0436\u0435\u043d\u0438\u0435 \u0432\u0441\u043f\u043b\u044b\u0432\u0430\u044e\u0449\u0438\u0445 \u0443\u0432\u0435\u0434\u043e\u043c\u043b\u0435\u043d\u0438\u0439',
-    'seMoveNotifierText':'- \u043d\u0435 \u043c\u0435\u043d\u044f\u0442\u044c <br>- \u0441\u043f\u0440\u0430\u0432\u0430 \u0441\u043d\u0438\u0437\u0443 <br>- \u0441\u043f\u0440\u0430\u0432\u0430 \u0441\u0432\u0435\u0440\u0445\u0443 <br>- \u0441\u043b\u0435\u0432\u0430 \u0441\u0432\u0435\u0440\u0445\u0443',
-    'GetAudiosList':'\u041f\u043e\u043a\u0430\u0437\u0430\u0442\u044c \u0441\u043f\u0438\u0441\u043e\u043a \u0430\u0443\u0434\u0438\u043e (\u0435\u0441\u043b\u0438 \u0434\u043e\u0441\u0442\u0443\u043f\u043d\u043e)',
-    'AgeNA':'\u0412\u043e\u0437\u0440\u0430\u0441\u0442 \u043d\u0435\u0434\u043e\u0441\u0442\u0443\u043f\u0435\u043d'
+
   });//*/
   vkStyles();
   if (!ge('content')) return;
@@ -617,6 +600,7 @@ var tstart=unixtime();
 	  if (getSet(8)=='y')  ProcessUserPhotoLink(nodes[i]);
 	  if (getSet(6)=='y')  ProcessAwayLink(nodes[i]);
 	  if (getSet(38)=='y') ProcessHighlightFriendLink(nodes[i]);
+     vkProcessTopicLink(nodes[i]);
 	  vk_plugins.processlink(nodes[i]);
     }
 vklog('ProcessLinks time:' + (unixtime()-tstart) +'ms');
@@ -2298,7 +2282,32 @@ function vkCleanNotes(){
  */ 
 function vkBoardPage(){
  vkTopicSubscribe(true);
+ //vkTopicsTip();
 }
+
+function vkProcessTopicLink(link){
+   var id=link.href.match(/topic(-?\d+)_(\d+)/);
+   var post=link.href.match(/post=(\d+)/);
+   if (!id) return;
+   if(!link.hasAttribute('onmouseover')) link.setAttribute('onmouseover', "vkTopicTooltip(this, "+id[1]+","+id[2]+","+(post?post[1]:null)+");");
+}
+function vkTopicTooltip(el,gid,topic,post){
+    var post_id=post?(gid+'_'+post):(gid+'_topic'+topic);
+    var url = post?'al_board.php':'al_wall.php';
+    stManager.add(post?'board.css':'wall.css', function() {
+       showTooltip(el, {
+         url: url,
+         params: extend({act: 'post_tt', post: post_id}, {}),
+         slide: 15,
+         shift: [30, -3, 0],//78
+         ajaxdt: 100,
+         showdt: 400,
+         hidedt: 200,
+         className: 'rich wall_tt'
+       });    
+    });
+}
+
 function vkTopicSubscribe(add_link){
 	if (add_link){
 		if (ge('vksubscribetopic')) return;
