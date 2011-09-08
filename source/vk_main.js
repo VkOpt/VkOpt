@@ -127,6 +127,7 @@ function vkOnNewLocation(startup){
 			case 'board'  :vkBoardPage(); break;
 			case 'search'  :vkSearchPage(); break;
          case 'fave'    :vkFavePage(); break;
+         case 'im': vkImPage(); break;
 		}
 		if (startup && window.Fave) Fave.init();	
 	}
@@ -778,6 +779,28 @@ function vkPhChooseProcess(answer,url,q){
    
 
 /* IM */
+function vkImPage(){
+   vkImAddPreventHideCB();
+}
+function vkImAddPreventHideCB(){
+   Inj.Wait('cur.imMedia',function(){
+      var p=geByClass('rows', cur.imMedia.menu.menuNode)[0];
+      var html='<div class="checkbox" id="vk_no_hide_add_box" onclick="checkbox(this); window.vk_prevent_addmedia_hide=isChecked(this);">'+
+                  //'<div></div>'+IDL('PreventHide')+
+                   '<table style="border-spacing:0px;"><tr><td><div></div></td>\
+                        <td>\
+                          <nobr>'+IDL('PreventHide')+'</nobr>\
+                        </td>\
+                      </tr>\
+                    </tbody>\
+                   </table>'+
+               '</div>';
+      var a=vkCe('a',{id:'add_media_type_' +  cur.imMedia.menu.id + '_nohide','style':'border-top:1px solid #DDD; padding:2px; padding-top:4px;'},html);
+      p.appendChild(a);
+      Inj.Before(' cur.imMedia.onChange','boxQueue','if (!window.vk_prevent_addmedia_hide)');
+   });
+}
+
 function vkIM(){
 	Inj.Before('IM.addTab','cur.tabs','vkProcessNodeLite(txtWrap);');
 
@@ -2286,8 +2309,10 @@ function vkBoardPage(){
 }
 
 function vkProcessTopicLink(link){
-   var id=link.href.match(/topic(-?\d+)_(\d+)/);
-   var post=link.href.match(/post=(\d+)/);
+   var href=link.getAttribute('href');
+   if (!href) return;
+   var id=href.match(/topic(-?\d+)_(\d+)/);
+   var post=href.match(/post=(\d+)/);
    if (!id) return;
    if(!link.hasAttribute('onmouseover')) link.setAttribute('onmouseover', "vkTopicTooltip(this, "+id[1]+","+id[2]+","+(post?post[1]:null)+");");
 }
