@@ -795,11 +795,15 @@ function vkImAddPreventHideCB(){
                     </tbody>\
                    </table>'+
                '</div>';
-      var a=vkCe('a',{id:'add_media_type_' +  cur.imMedia.menu.id + '_nohide','style':'border-top:1px solid #DDD; padding:2px; padding-top:4px;'},html);
-      p.appendChild(a);
+      var id='add_media_type_' +  cur.imMedia.menu.id + '_nohide';
+      if (!ge(id)){
+         var a=vkCe('a',{id:id,'style':'border-top:1px solid #DDD; padding:2px; padding-top:4px;'},html);
+         p.appendChild(a);
+      }
       Inj.Before(' cur.imMedia.onChange','boxQueue','if (!window.vk_prevent_addmedia_hide)');
    });
 }
+
 
 function vkIM(){
 	Inj.Before('IM.addTab','cur.tabs','vkProcessNodeLite(txtWrap);');
@@ -884,15 +888,16 @@ function vkFeedPage(){
 function vkSortFeedPhotos(node){
 	if (getSet(42)!='y' || nav.objLoc[0]!='feed') return;
 	var tstart=unixtime();
-	var fnodes=geByClass('feed_photos',node);
+	var fnodes=geByClass('post_media',node);
 	var re=/photo-?\d+_(\d+)/;
 	for (var z=0; z<fnodes.length; z++){
 		var node=fnodes[z];
-		var nodes=node.getElementsByTagName('a'); 
+		var nodes=geByClass('page_media_thumb',node); 
 		var narr=[];
 		for(var i=0;i<nodes.length;i++){ 
-			if (!nodes[i].href) continue;
-			var pid=nodes[i].href.match(re);
+			var p=nodes[i].getElementsByTagName('a')[0];
+         if (!p || !p.href) continue;
+			var pid=p.href.match(re);
 			if (pid) narr.push([nodes[i],pid[1]]);
 		}
 		var sf=function(a,b){

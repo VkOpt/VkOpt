@@ -21,6 +21,7 @@ function vkProfilePage(){
 	if (getSet(26) == 'y') VkCalcAge();
 	vkPrepareProfileInfo();
 	addFakeGraffItem();
+   //vkWallAddPreventHideCB();
 	vkUpdWallBtn(); //Update wall button
    if (remixmid()==cur.oid && getSet(50)=='y' && !ge('profile_fave')) vkFaveProfileBlock();   
 	if (MOD_PROFILE_BLOCKS) vkFrProfile();
@@ -80,6 +81,7 @@ function vkHighlightGroups(){
 /*WALL*/
 function vkWallPage(){
 	addFakeGraffItem();
+   //vkWallAddPreventHideCB();
 	vkAddCleanWallLink();
 	vkAddDelWallCommentsLink();
 }
@@ -870,6 +872,29 @@ function addFakeGraffItem() {
 	*/
   } 
  
+}
+
+function vkWallAddPreventHideCB(){
+   Inj.Wait('cur.wallAddMedia',function(){
+      var p=geByClass('rows', cur.wallAddMedia.menu.menuNode)[0];
+      var html='<div class="checkbox" id="vk_no_hide_add_box" onclick="checkbox(this); window.vk_prevent_addmedia_hide=isChecked(this);">'+
+                  //'<div></div>'+IDL('PreventHide')+
+                   '<table style="border-spacing:0px;"><tr><td><div></div></td>\
+                        <td>\
+                          <nobr>'+IDL('PreventHide')+'</nobr>\
+                        </td>\
+                      </tr>\
+                    </tbody>\
+                   </table>'+
+               '</div>';
+      var id='add_media_type_' +  cur.wallAddMedia.menu.id + '_nohide';
+      if (!ge(id)){
+         var a=vkCe('a',{id:id,'style':'border-top:1px solid #DDD; padding:2px; padding-top:4px;'},html);
+         p.appendChild(a);
+      }
+      Inj.Replace('cur.wallAddMedia.chooseMedia',/addMedia/g,'cur.wallAddMedia');
+      Inj.Before('cur.wallAddMedia.chooseMedia','boxQueue','if (!window.vk_prevent_addmedia_hide)');
+   });
 }
 
 function vkAudioBlock(load_audios,oid){

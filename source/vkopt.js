@@ -415,9 +415,15 @@ function vkResetVkOptSetting(){
 
 function VkOptInit(ignore_login){
   if (!window.vkscripts_ok || window.vkscripts_ok<vkOpt_js_count) {setTimeout(VkOptInit,10); return;}
-  
-	/*if (window._vkopt_started) return;
-	window._vkopt_started=true;*/
+  /*
+  var err=IDL('VkoptDupFound');
+  err=(err=='VkoptDupFound')?'\u041e\u0431\u043d\u0430\u0440\u0443\u0436\u0435\u043d\u043e \u0431\u043e\u043b\u0435\u0435 \u043e\u0434\u043d\u043e\u0439 \u0443\u0441\u0442\u0430\u043d\u043e\u0432\u043b\u0435\u043d\u043d\u043e\u0439 \u043a\u043e\u043f\u0438\u0438 VkOpt`\u0430.<br>\u0423\u0434\u0430\u043b\u0438\u0442\u0435 \u043b\u0438\u0448\u043d\u0438\u0435 \u043a\u043e\u043f\u0438\u0438.':err;
+  if (window.vkscripts_ok>vkOpt_js_count){
+   topError(err);
+   return;
+  }*/
+	if (window._vkopt_started) return;
+	window._vkopt_started=true;
 	vkOpt_toogle();
 	if (vkgetCookie('vkopt_disable')=='1') return;
 	if (ge("quick_login") && !ignore_login) {
