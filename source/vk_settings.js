@@ -583,7 +583,9 @@ function vkInitSettings(){
 	  {id:28, text:'<table><tr><td> <table><tr><td width=20 height=20 id="spct10" bgcolor=' + getMsgColor() + '></td></tr></table> <td>'+
       '<span class="cltool"><a onclick="init_colorpicker(this.parentNode,MsgCol_click,\'' + getMsgColor() + '\')">'+IDL("seHLMail")+'</a></span>'+
       '</td></tr></table>'},
-	  {id:40, text:IDL("seMasDelPMsg")}
+	  {id:40, text:IDL("seMasDelPMsg")},
+     {id:55, text:IDL("seIMFullTime")},
+     {id:56, text:IDL("seIMAlwaysShowTime")},
     ],
     vkInterface:[
       {id:21, text:IDL("seADRem")+vkCheckboxSetting(44,IDL("seAdNotHideSugFr"),true)},
@@ -623,7 +625,7 @@ function vkInitSettings(){
 		{id:34, text:IDL("seSwichTextChr")}	
     ]
   };	  
-	//LAST 54
+	//LAST 56
 	
 	vkSetsType={
       "on"  :[IDL('on'),'y'],

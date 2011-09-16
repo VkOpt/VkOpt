@@ -233,6 +233,7 @@ function vkStyles(){
 	var MoreDarkPV=getSet(4);
 	var CompactFave=getSet(17);
 	var RemoveAd=getSet(21);
+   var ShowAllTime=getSet(56);
 	var NotHideSugFr= (getSet(44)=='y');
 	var main_css='';
 	if (getSet(28)=='y') main_css+=GetUnReadColorCss();
@@ -246,6 +247,16 @@ function vkStyles(){
 		';
 		//if (window.Fave) Fave.init();
 	}
+   if (ShowAllTime=='y'){
+   main_css+='\
+      #im_rows .im_add_row .im_log_date a.im_date_link{\
+         display: block;\
+         font-size: 6pt;\
+         margin-bottom: -5px;\
+         margin-top: -2px;\
+      }\
+      ';
+   }
    
 	//getSet(38)=='y' 
 	main_css+='.vk_my_friend{color:'+getFrColor()+' !important;}';
@@ -346,6 +357,7 @@ function vkStyles(){
 		#vk_calendar .event_block{border:1px solid #e7e7e7; background-color: #fff; padding:5px; margin-bottom:3px; text-align: center;}';
 	//main
 	main_css+=float_profile+calendar+"\
+   ul#settings_filters a{margin-right: 1px !important;}\
 	#profile_current_info { max-height: none !important; }\
 	#right_bar { width: 118px;}\
 	#right_bar_container{width: 118px; margin:5px 10px 0px 0px;	padding-bottom: 10px;}\
@@ -593,19 +605,22 @@ function vkNotifierWrapMove(){
 
 /* USERS */
 function vkProccessLinks(el){
-var tstart=unixtime();
-  el=(el)?el:ge('content');//document
+ var tstart=unixtime();
+ el=(el)?el:ge('content');//document
     var nodes=el.getElementsByTagName('a'); 
     for (var i=0;i<nodes.length;i++){  
       if (getSet(10)=='y') vkProcessUserLink(nodes[i]);
 	  if (getSet(8)=='y')  ProcessUserPhotoLink(nodes[i]);
 	  if (getSet(6)=='y')  ProcessAwayLink(nodes[i]);
 	  if (getSet(38)=='y') ProcessHighlightFriendLink(nodes[i]);
+     if (getSet(55)=='y') vkProcessIMDateLink(nodes[i]);
      vkProcessTopicLink(nodes[i]);
 	  vk_plugins.processlink(nodes[i]);
     }
-vklog('ProcessLinks time:' + (unixtime()-tstart) +'ms');
+ vklog('ProcessLinks time:' + (unixtime()-tstart) +'ms');
 }
+
+
 
 function ProcessAwayLink(node){
   if (node.href && node.href.indexOf('away.php?')!=-1){ 
@@ -615,6 +630,7 @@ function ProcessAwayLink(node){
 	//alert(unescape(node.href));
   }
 }
+
 
 /* FRIENDS */
 function vkFriendsPage(){
@@ -782,6 +798,16 @@ function vkPhChooseProcess(answer,url,q){
 function vkImPage(){
    vkImAddPreventHideCB();
 }
+
+function vkProcessIMDateLink(node){
+   if (node.className=='im_date_link'){
+      var inp=vkNextEl(node); 
+      var ts=0;
+      var fmt=(node.parentNode && node.parentNode.parentNode && hasClass(node.parentNode.parentNode,'im_add_row'))?'HH:MM:ss':'d.mm.yy HH:MM:ss';
+      if (inp && (ts=parseInt(inp.value)))  node.innerHTML=(new Date(ts*1000)).format(fmt); 
+   }
+}
+
 function vkImAddPreventHideCB(){
    Inj.Wait('cur.imMedia',function(){
       var p=geByClass('rows', cur.imMedia.menu.menuNode)[0];
@@ -1710,12 +1736,13 @@ function vkAudioWikiCode(aid,oid,id){vkAlertBox('Wiki-code:','<center><input typ
 
 function vkShowAddAudioTip(el,id){	
    var a=id.match(/^(-?\d+)_(\d+)/);
-   var show_add=(ge('audio_add'+id)) || (a[1]!=remixmid())
+   var show_add=(!ge('audio_add'+id)) && (a[1]!=remixmid());
+   //alert(ge('audio_add'+id)+'\n'+(a[1]!=remixmid())+'\n'+show_add);
 	if (a){
 		var name=vkParseAudioInfo(id);
       name=(name[5]+' '+name[6]).replace(/[\?\&\s]/g,'+');
       var html = '';
-      html += !show_add ?'<a href="#" onclick="vkAddAudioT(\''+a[1]+'\',\''+a[2]+'\',this); return false;">'+IDL('AddMyAudio')+'</a>':'';
+      html += show_add ?'<a href="#" onclick="vkAddAudioT(\''+a[1]+'\',\''+a[2]+'\',this); return false;">'+IDL('AddMyAudio')+'</a>':'';
       html +='<a href="#" onclick="vkAudioWikiCode(\''+a[1]+'_'+a[2]+'\',\''+a[1]+'\',\''+a[2]+'\'); return false;">'+IDL('Wiki')+'</a>';
       html +='<a href="'+SEARCH_AUDIO_LYRIC_LINK.replace('%AUDIO_NAME%',name)+'" target="_blank">'+IDL('SearchAudioLyr')+'</a>';
       
