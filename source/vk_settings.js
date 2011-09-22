@@ -573,7 +573,7 @@ function vkInitSettings(){
       {id:46,  text:IDL("seLoadOnl"), sub:{id:5, text:'<br>'+IDL("now")+': <b>%cur</b> '+IDL("min")+'<br>'+IDL("set")+': %sets',ops:[1,2,3,4,5,10,15]},ops:['au','ru']},
       {id:47, text:IDL("seLoadCom"), ops:["au","ru"]},
       {id:49, text:IDL("seFavOn")},
-      {id:50, text:IDL("seFavOnline"),info:'infoUseNetTrafic'},
+      {id:50, text:IDL("seFavOnline")+'<span style="padding-left:10px;">'+vkCheckboxSetting(57,IDL("seOnRightPart"))+'</span>',info:'infoUseNetTrafic'},
       {id:51, text:IDL("seFavToTopIm")},
       {id:52, text:IDL("seFaveOnline"),info:'infoUseNetTrafic'}
     ],
@@ -625,7 +625,7 @@ function vkInitSettings(){
 		{id:34, text:IDL("seSwichTextChr")}	
     ]
   };	  
-	//LAST 56
+	//LAST 57
 	
 	vkSetsType={
       "on"  :[IDL('on'),'y'],

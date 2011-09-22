@@ -493,7 +493,7 @@ function vkCleanWall(oid){
 
 
 function vkFaveProfileBlock(is_list){
-   
+   var is_right_block = (getSet(57)=='y');
    if (!ge('profile_fave')){
       var html='\
         <a href="/fave" onclick="return nav.go(this, event)" class="module_header"><div class="header_top clear_fix">'+IDL('FaveOnline')+'</div></a>\
@@ -508,7 +508,7 @@ function vkFaveProfileBlock(is_list){
       //html=html.replace('%USERS%',users);
       var div=vkCe('div',{"class":"module clear people_module",id:"profile_fave"});
       div.innerHTML=html;
-      var p=ge('profile_friends');
+      var p=ge(is_right_block?'profile_wall':'profile_friends');
       p.parentNode.insertBefore(div,p);  
    }
    ge('vk_fave_users_content').innerHTML=vkBigLdrImg;
@@ -524,7 +524,7 @@ function vkFaveProfileBlock(is_list){
          var onlines=[];
          for(var i=0;i<r.length;i++) if(r[i].online) onlines.push(r[i]);
          var to=3;
-         var count=Math.min(onlines.length,FAVE_ONLINE_BLOCK_SHOW_COUNT);
+         var count=is_list?onlines.length:Math.min(onlines.length,FAVE_ONLINE_BLOCK_SHOW_COUNT);
          var users='';
          for (var i = 0; i < count; i++) {
             if (!is_list){

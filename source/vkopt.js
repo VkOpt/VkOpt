@@ -11,13 +11,13 @@
 //
 /* VERSION INFO */
 var vVersion	= 201;
-var vBuild = 110831;
+var vBuild = 110919;
 var vPostfix = ' ';
 if (!window.vk_DEBUG) var vk_DEBUG=0;
 
 /* EXT CONFIG */
 if (!window.DefSetBits)
-var DefSetBits='ynyynnyyynyyy0n0yy0nnyynyyynyy0nynynnnnyy0yyy1yynnnnny0yy-3-0-#c5d9e7-#34a235-1';
+var DefSetBits='ynyynnyyynyyy0n0yy0nnyynyyynyy0nynynnnnyy0yyy1yynnnnny0yyn-3-0-#c5d9e7-#34a235-1';
 var DefExUserMenuCfg='11111110111111111111'; // default user-menu items config
 var vk_upd_menu_timeout=20000;      //(ms) Update left menu timeout
 var vkMenuHideTimeout=400;          //(ms) Hide Menu Popups timeout
@@ -427,13 +427,11 @@ function VkOptInit(ignore_login){
 	vkOpt_toogle();
 	if (vkgetCookie('vkopt_disable')=='1') return;
 	if (ge("quick_login") && !ignore_login) {
-		ql.insertBefore(ce('div', {innerHTML: '<iframe class="upload_frame" id="quick_login_frame" name="quick_login_frame"></iframe>'}), qf);
-		qf.target = 'quick_login_frame';
-      
+      ql.insertBefore(ce('div', {innerHTML: '<iframe class="upload_frame" id="quick_login_frame" name="quick_login_frame"></iframe>'}), qf);
+      qf.target = 'quick_login_frame';
+
       //     Inj.Wait('window.vk && vk.id',function(){      VkOptMainInit();      }); 
       window.onLoginDone = function(loc){document.location.href=loc};//nav.reload;
-      
-
 		return; 
 	}
 	VkOptMainInit();
