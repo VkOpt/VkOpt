@@ -10,14 +10,14 @@
 // (c) All Rights Reserved. VkOpt.
 //
 /* VERSION INFO */
-var vVersion	= 201;
-var vBuild = 110831;
+var vVersion	= 202;
+var vBuild = 110925;
 var vPostfix = ' ';
 if (!window.vk_DEBUG) var vk_DEBUG=0;
 
 /* EXT CONFIG */
 if (!window.DefSetBits)
-var DefSetBits='ynyynnyyynyyy0n0yy0nnyynyyynyy0nynynnnnyy0yyy1yynnnnny0-3-0-#c5d9e7-#34a235-1';
+var DefSetBits='ynyynnyyynyyy0n0yy0nnyynyyynyy0nynynnnnyy0yyy1yynnnnny0yynyn-3-0-#c5d9e7-#34a235-1';
 var DefExUserMenuCfg='11111110111111111111'; // default user-menu items config
 var vk_upd_menu_timeout=20000;      //(ms) Update left menu timeout
 var vkMenuHideTimeout=400;          //(ms) Hide Menu Popups timeout
@@ -43,7 +43,7 @@ var SEARCH_AUDIO_LYRIC_LINK='http://yandex.ru/yandsearch?text=%AUDIO_NAME%+%28%2
 var USERMENU_SYMBOL='&#9660; ';
 var MOD_PROFILE_BLOCKS=true;
 var CUT_VKOPT_BRACKET=false;
-var vkNewSettings=[3,4,17,5,29,35,36,42,43,49,50,51,52]; //"new" label on settings item
+var vkNewSettings=[50,51,52,54,55,56,58,59]; //"new" label on settings item
 var SetsOnLocalStore={
   'vkOVer':'c',
   'remixbit':'c',
@@ -415,23 +415,28 @@ function vkResetVkOptSetting(){
 
 function VkOptInit(ignore_login){
   if (!window.vkscripts_ok || window.vkscripts_ok<vkOpt_js_count) {setTimeout(VkOptInit,10); return;}
-  
-	/*if (window._vkopt_started) return;
-	window._vkopt_started=true;*/
+  /*
+  var err=IDL('VkoptDupFound');
+  err=(err=='VkoptDupFound')?'\u041e\u0431\u043d\u0430\u0440\u0443\u0436\u0435\u043d\u043e \u0431\u043e\u043b\u0435\u0435 \u043e\u0434\u043d\u043e\u0439 \u0443\u0441\u0442\u0430\u043d\u043e\u0432\u043b\u0435\u043d\u043d\u043e\u0439 \u043a\u043e\u043f\u0438\u0438 VkOpt`\u0430.<br>\u0423\u0434\u0430\u043b\u0438\u0442\u0435 \u043b\u0438\u0448\u043d\u0438\u0435 \u043a\u043e\u043f\u0438\u0438.':err;
+  if (window.vkscripts_ok>vkOpt_js_count){
+   topError(err);
+   return;
+  }*/
+	if (window._vkopt_started) return;
+	
 	vkOpt_toogle();
 	if (vkgetCookie('vkopt_disable')=='1') return;
 	if (ge("quick_login") && !ignore_login) {
-		ql.insertBefore(ce('div', {innerHTML: '<iframe class="upload_frame" id="quick_login_frame" name="quick_login_frame"></iframe>'}), qf);
-		qf.target = 'quick_login_frame';
-      
+      ql.insertBefore(ce('div', {innerHTML: '<iframe class="upload_frame" id="quick_login_frame" name="quick_login_frame"></iframe>'}), qf);
+      qf.target = 'quick_login_frame';
+
       //     Inj.Wait('window.vk && vk.id',function(){      VkOptMainInit();      }); 
       window.onLoginDone = function(loc){document.location.href=loc};//nav.reload;
-      
-
 		return; 
 	}
 	VkOptMainInit();
 	md5=vkMD5;
+   window._vkopt_started=true;
 }
 
 var dloc=document.location.href;

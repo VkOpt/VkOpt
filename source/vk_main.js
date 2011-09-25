@@ -235,6 +235,7 @@ function vkStyles(){
 	var RemoveAd=getSet(21);
    var ShowAllTime=getSet(56);
 	var NotHideSugFr= (getSet(44)=='y');
+   var ShowGroupNews=getSet(59);
 	var main_css='';
 	if (getSet(28)=='y') main_css+=GetUnReadColorCss();
    main_css+=vkNotifierWrapMove();
@@ -257,6 +258,7 @@ function vkStyles(){
       }\
       ';
    }
+   if (ShowGroupNews=='y') main_css+='#group .group_wiki_wrap .wk_text{display:block}';
    
 	//getSet(38)=='y' 
 	main_css+='.vk_my_friend{color:'+getFrColor()+' !important;}';
@@ -614,7 +616,7 @@ function vkProccessLinks(el){
 	  if (getSet(6)=='y')  ProcessAwayLink(nodes[i]);
 	  if (getSet(38)=='y') ProcessHighlightFriendLink(nodes[i]);
      if (getSet(55)=='y') vkProcessIMDateLink(nodes[i]);
-     vkProcessTopicLink(nodes[i]);
+     if (getSet(58)=='y') vkProcessTopicLink(nodes[i]);
 	  vk_plugins.processlink(nodes[i]);
     }
  vklog('ProcessLinks time:' + (unixtime()-tstart) +'ms');

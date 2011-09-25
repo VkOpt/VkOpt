@@ -573,7 +573,7 @@ function vkInitSettings(){
       {id:46,  text:IDL("seLoadOnl"), sub:{id:5, text:'<br>'+IDL("now")+': <b>%cur</b> '+IDL("min")+'<br>'+IDL("set")+': %sets',ops:[1,2,3,4,5,10,15]},ops:['au','ru']},
       {id:47, text:IDL("seLoadCom"), ops:["au","ru"]},
       {id:49, text:IDL("seFavOn")},
-      {id:50, text:IDL("seFavOnline"),info:'infoUseNetTrafic'},
+      {id:50, text:IDL("seFavOnline")+'<span style="padding-left:10px;">'+vkCheckboxSetting(57,IDL("seOnRightPart"))+'</span>',info:'infoUseNetTrafic'},
       {id:51, text:IDL("seFavToTopIm")},
       {id:52, text:IDL("seFaveOnline"),info:'infoUseNetTrafic'}
     ],
@@ -583,7 +583,9 @@ function vkInitSettings(){
 	  {id:28, text:'<table><tr><td> <table><tr><td width=20 height=20 id="spct10" bgcolor=' + getMsgColor() + '></td></tr></table> <td>'+
       '<span class="cltool"><a onclick="init_colorpicker(this.parentNode,MsgCol_click,\'' + getMsgColor() + '\')">'+IDL("seHLMail")+'</a></span>'+
       '</td></tr></table>'},
-	  {id:40, text:IDL("seMasDelPMsg")}
+	  {id:40, text:IDL("seMasDelPMsg")},
+     {id:55, text:IDL("seIMFullTime")},
+     {id:56, text:IDL("seIMAlwaysShowTime")},
     ],
     vkInterface:[
       {id:21, text:IDL("seADRem")+vkCheckboxSetting(44,IDL("seAdNotHideSugFr"),true)},
@@ -609,8 +611,9 @@ function vkInitSettings(){
       {id:36, text:IDL("sePreventHideNotifications")},
       {id:42, text:IDL("seSortFeedPhotos")},
       {id:53, text:IDL("seShutProfilesBlock")},
-      {id:54, header:IDL("seMoveNotifier") , text:IDL("seMoveNotifierText"),ops:[0,1,2,3]}
-
+      {id:54, header:IDL("seMoveNotifier") , text:IDL("seMoveNotifierText"),ops:[0,1,2,3]},
+      {id:58, text:IDL("sePopupBoardInfo")},
+      {id:59, text:IDL("seExplandGroupNews")}
     ],
 	Sounds:[
 	  {id:48, text:IDL("ReplaceVkSounds")}	
@@ -623,7 +626,7 @@ function vkInitSettings(){
 		{id:34, text:IDL("seSwichTextChr")}	
     ]
   };	  
-	//LAST 54
+	//LAST 59
 	
 	vkSetsType={
       "on"  :[IDL('on'),'y'],

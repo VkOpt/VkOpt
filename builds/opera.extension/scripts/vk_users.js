@@ -140,7 +140,8 @@ function GetUserMenuSett() {
                      IDL("mNeP"), 
                      IDL("clAddFr"), 
                      IDL("clAddToFav"), 
-                     IDL("addblack")
+                     IDL("addblack"),
+                     IDL("SendAbuse")
                     ];
     
     var res="";
@@ -311,6 +312,7 @@ function ExUserItems(id,el){
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkRemoveFriend(%uid);" class="fl_r">x</a><a href="javascript:vkAddToFriends(%uid);">'+IDL("clAddFr")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkAddToFave(%uid,1);" class="fl_r">x</a><a href="javascript:vkAddToFave(%uid);">'+IDL("clAddToFav")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="#" style="cursor: hand;" onClick="vkAddToBL(%uid); return false;">'+IDL("addblack")+'</a>'):i++;
+   (ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="#" style="cursor: hand;" onClick="vkUserAbuse(%uid); return false;">'+IDL("SendAbuse")+'</a>'):i++;
 	uitems+=mkExItem(0,'<a href="javascript:vkFavAddDel(%uid,1);" class="fl_r">x</a><a href="#" style="cursor: hand;" onClick="vkFavAddDel(%uid); return false;">'+IDL("FavAddUser")+'</a>');
 	return uitems;
 }
@@ -405,6 +407,10 @@ function vkBanUserFunc(user_link,gid,callback) {
 	}
 }
 
+function vkUserAbuse(oid){
+   showBox('abuse.php', {act: 'a_page_abuse_box', oid: oid}, {stat: ['page.css'],params: {width: 410}, cache: 1}); void(0);
+   
+}
 function vk_user_init(){
 	if (ge('pageLayout')||ge('page_layout')){
 	 if (getSet(10)=='y'){

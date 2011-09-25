@@ -1020,18 +1020,21 @@ function vkShowCaptcha(sid, img, onClick, onShow, onHide) {
   addEvent(ge('refreshCaptcha'), 'click', onClickHandler);
   key.focus();
 }
+
 /* VK API */
 //javascript: uApi.call('friends',{id:'13391307'},uApi.show);
+
 var uApi = {
   base_url:'http://userapi.com/data?',
   req_id:0,
   reqs:[],
+  marker:'DUROVSID|',
   show:function(r){alert(print_r(r))},
   onLogin:function(){
 	var dloc=document.location.href;
 	if (dloc.match("durov.ru") && dloc.match("sid=")){
 		var sid=dloc.split('sid=')[1];
-		parent.window.postMessage(sid,"*");
+		parent.window.postMessage(uApi.marker+sid,"*");
 		return true;
 	}
   },
@@ -1055,10 +1058,14 @@ var uApi = {
 	function Auth(){
 		var box = new MessageBox({title: IDL('UserAPI_Auth')});
 		var onAuth=function(event){
-				var e=ge("uapi_login_frame");
+				var sid=event.data;
+            if (sid.indexOf(uApi.marker)==-1) return;
+            sid=sid.replace(uApi.marker,'');	
+            
+            var e=ge("uapi_login_frame");
 				e.parentNode.removeChild(e);
 				// event.origin=='http://durov.ru'
-				var sid=event.data;
+
 				if (sid.match(/^-\d$/)){
 					var error=parseInt(sid);
 					var err='WTF Error?';
@@ -1601,6 +1608,13 @@ function vkLoadTxt(callback,mask){
 	); 
 }
 //END DATA LOADER
+
+function vkSwitchHost(){
+   var vk='//vk.com/';
+   var vko='//vkontakte.ru/';
+   var v= (location.href.indexOf(vk)==-1);
+   location.assign(location.href.split(v?vko:vk).join(v?vk:vko));
+}
 function vkDisableAjax(){
   if (window.nav && nav.go) Inj.Before('nav.go',"var _a = window.audioPlayer;","{ location.href='/'+strLoc; return true;};");
 }

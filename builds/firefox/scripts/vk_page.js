@@ -21,15 +21,24 @@ function vkProfilePage(){
 	if (getSet(26) == 'y') VkCalcAge();
 	vkPrepareProfileInfo();
 	addFakeGraffItem();
+   //vkWallAddPreventHideCB();
 	vkUpdWallBtn(); //Update wall button
    if (remixmid()==cur.oid && getSet(50)=='y' && !ge('profile_fave')) vkFaveProfileBlock();   
 	if (MOD_PROFILE_BLOCKS) vkFrProfile();
 	if (getSet(46) == 'n') vkFriends_get('online');
 	if (getSet(47) == 'n') vkFriends_get('common');
-
+   
+   vkAddCheckBox_OnlyForFriends();
 	vkHighlightGroups();
 }
 
+function vkAddCheckBox_OnlyForFriends(){
+   if (cur.oid!=remixmid() || ge('friends_only') ) return;
+   var p=ge('page_add_media');
+   if (!p) return;
+   var cb=vkCe('div',{"class":"checkbox fl_l","id":"friends_only","onclick":"checkbox(this);checkbox('status_export',!isChecked(this));checkbox('facebook_export',!isChecked(this));"},'<div></div>'+IDL('OnlyForFriends'))
+   p.parentNode.insertBefore(cb,p);
+}
 
 function vkProfile(){
 	Inj.After('profile.init','});','setTimeout("vkProcessNode();",2);');
@@ -72,6 +81,7 @@ function vkHighlightGroups(){
 /*WALL*/
 function vkWallPage(){
 	addFakeGraffItem();
+   //vkWallAddPreventHideCB();
 	vkAddCleanWallLink();
 	vkAddDelWallCommentsLink();
 }
@@ -157,12 +167,12 @@ if (!t) return;
   var bdate = /c[\[%5B]{1,3}bday[\]%5D]{1,3}=([0-9]{1,2})[&amp;]{1,5}c[\[%5B]{1,3}bmonth[\]%5D]{1,3}=([0-9]{1,2})/.exec(t.innerHTML);
   var _href='';
   var date_info='';
-  if(!byear && bdate && bdate[1] && bdate[2]){
-    //var _tmp=(new RegExp("{act: 'remove_box', mid: (.*?)}",'img')).exec(ge('profile').innerHTML);
-    if(ge('profile_other_acts') && ge('profile_other_acts').innerHTML.indexOf('remove_box')!=-1){
+   /*if(!byear && bdate && bdate[1] && bdate[2]){
+   if(ge('profile_other_acts') && ge('profile_other_acts').innerHTML.indexOf('remove_box')!=-1){
       _href='<span id="checkAge"><a id="checkAgeLink" href="#" onClick="checkAgeFunc(this,'+cur.oid+', '+bdate[1]+', '+bdate[2]+'); return false;">'+IDL('UznatVozrast')+'</a></span>';
     }
-  }
+  }*/
+  
   //if (!byear) return;
   //alert (bdate[1]+'\n'+bdate[2]+'\n'+byear[1]);
   var lang = parseInt(vkgetCookie('remixlang')), _sign_ = '', now = new Date();
@@ -483,7 +493,7 @@ function vkCleanWall(oid){
 
 
 function vkFaveProfileBlock(is_list){
-   
+   var is_right_block = (getSet(57)=='y');
    if (!ge('profile_fave')){
       var html='\
         <a href="/fave" onclick="return nav.go(this, event)" class="module_header"><div class="header_top clear_fix">'+IDL('FaveOnline')+'</div></a>\
@@ -498,7 +508,7 @@ function vkFaveProfileBlock(is_list){
       //html=html.replace('%USERS%',users);
       var div=vkCe('div',{"class":"module clear people_module",id:"profile_fave"});
       div.innerHTML=html;
-      var p=ge('profile_friends');
+      var p=ge(is_right_block?'profile_wall':'profile_friends');
       p.parentNode.insertBefore(div,p);  
    }
    ge('vk_fave_users_content').innerHTML=vkBigLdrImg;
@@ -514,7 +524,7 @@ function vkFaveProfileBlock(is_list){
          var onlines=[];
          for(var i=0;i<r.length;i++) if(r[i].online) onlines.push(r[i]);
          var to=3;
-         var count=Math.min(onlines.length,FAVE_ONLINE_BLOCK_SHOW_COUNT);
+         var count=is_list?onlines.length:Math.min(onlines.length,FAVE_ONLINE_BLOCK_SHOW_COUNT);
          var users='';
          for (var i = 0; i < count; i++) {
             if (!is_list){
@@ -862,6 +872,29 @@ function addFakeGraffItem() {
 	*/
   } 
  
+}
+
+function vkWallAddPreventHideCB(){
+   Inj.Wait('cur.wallAddMedia',function(){
+      var p=geByClass('rows', cur.wallAddMedia.menu.menuNode)[0];
+      var html='<div class="checkbox" id="vk_no_hide_add_box" onclick="checkbox(this); window.vk_prevent_addmedia_hide=isChecked(this);">'+
+                  //'<div></div>'+IDL('PreventHide')+
+                   '<table style="border-spacing:0px;"><tr><td><div></div></td>\
+                        <td>\
+                          <nobr>'+IDL('PreventHide')+'</nobr>\
+                        </td>\
+                      </tr>\
+                    </tbody>\
+                   </table>'+
+               '</div>';
+      var id='add_media_type_' +  cur.wallAddMedia.menu.id + '_nohide';
+      if (!ge(id)){
+         var a=vkCe('a',{id:id,'style':'border-top:1px solid #DDD; padding:2px; padding-top:4px;'},html);
+         p.appendChild(a);
+      }
+      Inj.Replace('cur.wallAddMedia.chooseMedia',/addMedia/g,'cur.wallAddMedia');
+      Inj.Before('cur.wallAddMedia.chooseMedia','boxQueue','if (!window.vk_prevent_addmedia_hide)');
+   });
 }
 
 function vkAudioBlock(load_audios,oid){

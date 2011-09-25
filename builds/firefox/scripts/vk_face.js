@@ -36,8 +36,8 @@ function vkMakeRightBar(){
 	
 	ref.parentNode.insertBefore(bar_cont,ref);
 	if (getSet(35)=='y'){
-		bar.appendChild(ge("left_money_box"));
-		bar.appendChild(ge("left_blocks"));
+		if (ge("left_money_box")) bar.appendChild(ge("left_money_box"));
+		if (ge("left_blocks")) bar.appendChild(ge("left_blocks"));
 		var b=geByClass('left_box',ge('side_bar'))[0];
 		if (b) bar.appendChild(b);
 	}
@@ -146,8 +146,10 @@ function vkMenu(){//vkExLeftMenu
       #nav li ul, #side_bar li ul{display:none;}\
       #nav li ul, #side_bar li ul{position:absolute; z-index:999; /*background:#FFF;*/ width:130px; margin-left:70px;padding-left:0px; border:1px solid #AAA; }\
       #nav ul li, #side_bar li ul{list-style:none;}\
+      #side_bar ol li#myprofile ul a { display: block;  padding: 4px 3px 4px 6px; }\
 	  #stl_side { z-index: 0 !important;}\
   ");
+  
   var icon_url='http://vkoptimizer.narod.ru/icons/';
   var MenuIcons={
       'profile':'home.png',
@@ -175,10 +177,17 @@ function vkMenu(){//vkExLeftMenu
   };
   // sub_item = [link, lang, show_only_when_<b>21</b>, expressinon_when_item_hide]
  var ExMenu={ 
-    /*'edit':[
-      ['?','qweqwe'],
+    //*
+    'profile':[
+      ['gifts'+vkmid,IDL('clGi')],
+      ['fans.php?act=fans&mid='+vkmid,IDL('clFans')],
+      ['fans.php?act=idols',IDL('clSubscriptions')]
+    ],//*/
+    /*
+    'edit':[
+      ['?','Edit1'],
       ['?','qazqaz']
-    ],*/
+    ],//*/
     'friends':[
       ['friends?section=all',IDL("mFrA")],
       ['friends?section=online',IDL("mFrO")],
@@ -391,6 +400,7 @@ function vkMenu(){//vkExLeftMenu
 
       }
       ul.innerHTML=html;
+      if (page=='profile') item.parentNode.appendChild(vkCe('div',{"class":"clear"}));
       item.parentNode.appendChild(ul);
     }
   }
