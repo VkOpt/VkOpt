@@ -165,7 +165,7 @@ function vkLocationCheck(){
 function VkOptMainInit(){
   if (vkLocationCheck()) return;
   if (InstallRelease()) return;
-  /* // javascript: x=''; for (var key in vk_lang_ru) x+="'"+key+"': '"+(typeof vk_lang_ru[key] == 'string'?IDL(key):JSON.Str(vk_lang_ru[key]))+"'\n"; alert(x);
+  /* // javascript:x=[];for (var key in vk_lang_ru) x.push("'"+key+"': '"+(typeof vk_lang_ru[key] == 'string'?IDL(key):JSON.Str(vk_lang_ru[key]))+"'"); alert(x.join(',\n'));
   vkExtendLang({
 
   });//*/
