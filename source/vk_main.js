@@ -638,6 +638,7 @@ function ProcessAwayLink(node){
 function vkFriendsPage(){
 	vkFriendsBySex(true);
 	vkCheckFrLink();
+   vkFrNotInListsLink();
 }
 /* PUBLICS */
 function vkPublicPage(){
@@ -1726,11 +1727,11 @@ function vkAddAudio(aid,oid,callback){
 	});
 }
 function vkAddAudioT(oid,aid,el){
-	var p=el.parentNode;
+	var p=el;//.parentNode;
 	p.innerHTML=vkLdrImg;
-	vkAddAudio(aid,oid,function(r){
-		if (r) p.innerHTML=IDL('Done');
-		else p.innerHTML=IDL('Error');
+	vkAddAudio(aid,oid,function(r){  
+      if (r) p.innerHTML=IDL('AddMyAudio')+' - '+IDL('Done');
+		else p.innerHTML=IDL('AddMyAudio')+' - '+IDL('Error');
 	});
 }
 function vkAudioWikiCode(aid,oid,id){vkAlertBox('Wiki-code:','<center><input type="text" value="[[audio'+aid+']]" readonly onClick="this.focus();this.select();" size="25"/><br><br>\
@@ -1874,7 +1875,7 @@ function vkFavePage(){
    vkFavUsersList(true);
 }
 
-/* WIKI GET CODE*/
+/* WIKI GET CODE*/ //NOT USED
 function vkGetWikiCode(){
 	var dloc=document.location.href;
 	var gid=dloc.match(/o=-(\d+)/);
@@ -1888,10 +1889,10 @@ function vkMailPage(){
 		vkAddSaveMsgLink();
 		if (getSet(40)=='y') vkAddDelMsgHistLink();
 		vkProcessNode();
-      if (!cur.addMailMedia){
+      /*if (!cur.addMailMedia){
          cur.addMailMedia = initAddMedia('mail_add_link', 'mail_added_row', [["photo"," "],["video"," "],["audio"," "],["doc"," "]]);
          cur.addMailMedia.onChange = mail.onMediaChange;
-      }
+      }*/
 	}
 	if (getSet(40)=='y') vkAddDeleteLink();
 }

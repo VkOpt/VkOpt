@@ -719,6 +719,16 @@ function vkCheckFrLink(){
 	}
 }
 
+function vkFrNotInListsLink(){
+	if (!ge('section_frnolist')){
+		var ref=ge("section_suggestions");
+      if (!ref) return;
+		var sec=vkCe('a',{href:'#', onclick:"vkFrShowNotInList(); Friends.selectSection('frnolist');return false;",id:'section_frnolist',"class":"side_filter"},IDL("FrNotInLists"));
+		ref.parentNode.insertBefore(sec, ref.nextSibling);//
+		return;
+	}
+}
+
 function vkFriendsCheckRun(cl){
 		if ((getSet(9) == 'y') && (!vkgetCookie('IDFriendsUpd') || cl)) {
 			vkAlertBox(IDL('FriendsListTest'),IDL('RefreshFrListConfirm'),function(){//yes
@@ -1236,4 +1246,18 @@ function vkFaveOnlineChecker(on_storage){
 }
 //*///
 ////
+
+function vkFrGenNotInListsCat(){
+   if (!cur.friendsList || !cur.friendsList['all']) return;
+   var data=cur.friendsList['all'];
+   var list=[];
+   for (var i=0; i<data.length;i++)
+      if (data[i][5]=='1') list.push(data[i]);
+   cur.friendsList['not_in_list']=list;
+}
+function vkFrShowNotInList(){
+   vkFrGenNotInListsCat();
+   Friends.showSection('not_in_list');
+}
+
 if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
