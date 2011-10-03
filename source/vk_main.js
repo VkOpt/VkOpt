@@ -680,6 +680,7 @@ function vkCheckGroupAdmin(){
 	var add=function(s){
 		if ((','+val+',').indexOf(',' + s + ',') != -1) return;
 		val+=','+s;
+      val=val.replace(/^,+|,+$/g, '');
 		vkSetVal(r,val);
 	}
 	var del=function(s){
@@ -737,7 +738,7 @@ function vkCommon(){
 function vkProcessOnFramegot(h){ if (h && h.indexOf('vk_usermenu_btn')==-1 && h.indexOf('vkPopupAvatar')==-1) return vkModAsNode(h,vkProcessNodeLite); }
 function vkProcessOnReceive(h){	if (h.innerHTML && h.innerHTML.indexOf('vk_usermenu_btn')==-1 && h.indexOf('vkPopupAvatar')==-1) {	vkProcessNode(h);}}
 
-function vkResponseChecker(answer,url,q){// detect HTML and prosessing
+function vkResponseChecker(answer,url,q){// detect HTML in response and prosessing
 	//var rx=/div.+class.+[^\\]"/;
 	//var nrx=/['"]\+.+\+['"]/;
 	//var nrx=/(document\.|window\.|join\(.+\)|\.init|[\{\[]["']|\.length|[:=]\s*function\()/;
@@ -1442,6 +1443,55 @@ function vkCleanAudios(){
 	};
 	vkAlertBox(IDL('DelAudios'),IDL('DelAllAutiosConfirm'),run,true);
 }
+vkAudioEd = {
+   Delete:function(id,aid,el){
+    var el = ge('audio' + aid);
+    var h = getSize(geByClass1('play_btn', el))[1];
+    stManager.add(['audio_edit.js']);
+    ajax.post(Audio.address, {act: 'delete_audio', oid: cur.oid, aid: id, hash: cur.hashes.delete_hash, restore: 1}, {
+      onDone: function(text, delete_all) {
+        cur.deleting = false;
+        if (!cur.deletedAudios) cur.deletedAudios = [];
+        cur.deletedAudios[id] = ge('audio'+aid).innerHTML;
+        text=text.replace(/AudioEdit.restoreAudio\(\d+\)/,'vkAudioEd.Restore('+id+',\''+aid+'\')');
+        el.innerHTML = text;
+        h=30;
+        setStyle(geByClass1('dld', el), {height: h+'px'});
+        //el.style.cursor = 'auto';
+        //el.setAttribute('nosorthandle', '1');
+        if (delete_all) {
+          cur.summaryLang.delete_all = delete_all;
+        }
+        cur.audiosIndex.remove(cur.audios[id]);
+        cur.audios[id].deleted = true;
+        cur.sectionCount--;
+        Audio.changeSummary();
+        
+      }
+    });
+    return false;
+   },
+   Restore: function(id,aid) {
+    if (cur.restoring) {
+      return;
+    }
+    cur.restoring = true;
+    var el = ge('audio' + aid);
+    ajax.post(Audio.address, {act: 'restore_audio', oid: cur.oid, aid: id, hash: cur.hashes.restore_hash}, {
+      onDone: function(text) {
+        cur.restoring = false;
+        el.innerHTML = cur.deletedAudios[id];
+        //el.style.cursor = 'move';
+        //el.removeAttribute('nosorthandle');
+        cur.audiosIndex.add(cur.audios[id]);
+        cur.audios[id].deleted = false;
+        cur.sectionCount++;
+        Audio.changeSummary();
+      }
+    });
+  }
+}
+
 
 function vkParseAudioInfo(_aid,node,anode){
     //var _a=audioPlayer;
@@ -1745,6 +1795,7 @@ function vkShowAddAudioTip(el,id){
 		var name=vkParseAudioInfo(id);
       name=(name[5]+' '+name[6]).replace(/[\?\&\s]/g,'+');
       var html = '';
+      html += (remixmid()==cur.oid || isGroupAdmin(cur.oid))?'<a href="#" onclick="vkAudioEd.Delete(\''+a[2]+'\',\''+id+'\',this); return false;">'+IDL('delete',2)+'</a>':'';
       html += show_add ?'<a href="#" onclick="vkAddAudioT(\''+a[1]+'\',\''+a[2]+'\',this); return false;">'+IDL('AddMyAudio')+'</a>':'';
       html +='<a href="#" onclick="vkAudioWikiCode(\''+a[1]+'_'+a[2]+'\',\''+a[1]+'\',\''+a[2]+'\'); return false;">'+IDL('Wiki')+'</a>';
       html +='<a href="'+SEARCH_AUDIO_LYRIC_LINK.replace('%AUDIO_NAME%',name)+'" target="_blank">'+IDL('SearchAudioLyr')+'</a>';
