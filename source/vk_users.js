@@ -141,7 +141,8 @@ function GetUserMenuSett() {
                      IDL("clAddFr"), 
                      IDL("clAddToFav"), 
                      IDL("addblack"),
-                     IDL("SendAbuse")
+                     IDL("SendAbuse"),
+                     IDL("AddToSubscribtions")
                     ];
     
     var res="";
@@ -313,7 +314,8 @@ function ExUserItems(id,el){
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkAddToFave(%uid,1);" class="fl_r">x</a><a href="javascript:vkAddToFave(%uid);">'+IDL("clAddToFav")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="#" style="cursor: hand;" onClick="vkAddToBL(%uid); return false;">'+IDL("addblack")+'</a>'):i++;
    (ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="#" style="cursor: hand;" onClick="vkUserAbuse(%uid); return false;">'+IDL("SendAbuse")+'</a>'):i++;
-	uitems+=mkExItem(0,'<a href="javascript:vkFavAddDel(%uid,1);" class="fl_r">x</a><a href="#" style="cursor: hand;" onClick="vkFavAddDel(%uid); return false;">'+IDL("FavAddUser")+'</a>');
+	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkAddToSubscribtions(%uid,1);" class="fl_r">x</a><a href="#" style="cursor: hand;" onClick="vkAddToSubscribtions(%uid); return false;">'+IDL("AddToSubscribtions")+'</a>'):i++;
+   uitems+=mkExItem(0,'<a href="javascript:vkFavAddDel(%uid,1);" class="fl_r">x</a><a href="#" style="cursor: hand;" onClick="vkFavAddDel(%uid); return false;">'+IDL("FavAddUser")+'</a>');
 	return uitems;
 }
 /*
@@ -343,6 +345,17 @@ function vkAddToFave(uid,is_del){ // Turn you to online
 			vkMsg('<b>OK</b>',2000);
 		});
 	});
+}
+
+function vkAddToSubscribtions(uid,is_del){
+   if (is_del)
+      dApi.call('subscriptions.unfollow',{uid:uid},function(r){
+         vkMsg('<b>OK</b>',2000);
+      });   
+   else 
+      dApi.call('subscriptions.follow',{uid:uid},function(r){
+         vkMsg('<b>OK</b>',2000);
+      });
 }
 
 function vkAddToBL(uid){
@@ -1089,7 +1102,28 @@ function vkFavChekUserAndToArray(mid,array,item){
    }
    else array.push(item);
 }
-   
+/*
+function vkNotifyUserCheckAndShow(params){
+   params = params || {};
+   var show=true;
+   var data=curNotifier.q_shown;
+   for (var i=0;i<data.length;i++){
+      var n=data[i];
+      if (n.title==params.title && n.author_link==params.author_link && n.baloonEl){
+         var el=geByClass('notifier_baloon_msg',n.baloonEl)[0].getElementsByTagName('div')[0];
+         el.innerHTML+='<small> ['+(params._time || params.text)+'] </small>';
+         show=false;
+      }
+   }
+   if (show) {
+      //if (params._time) params.text+=params._time;
+      vkShowNotify(params);
+    } else {
+         if (!window.vk_fav_onl_sound) var window.vk_fav_onl_sound=new Sound2('On');
+         vk_fav_onl_sound.play();         
+    }
+}  */
+
 function vkFavOnlineChecker(on_storage){
    //case 'fav_users_statuses':vkFavOnlineChecker(true); break;
    if (getSet(49)!='y')return;
@@ -1127,10 +1161,11 @@ function vkFavOnlineChecker(on_storage){
             vkSetVal('FavList_Onlines',ostr.join('-'));
             if (!ignore){  
                for (var i=0;i<new_onl.length;i++){
-                  var time='<div class="fl_r">'+(new Date).format('isoTime')+'</div>';
+                  var tm=(new Date).format('isoTime');
+                  var time='<div class="fl_r">'+tm+'</div>';
                   var text='<b><a href="/id'+new_onl[i].uid+'" onclick="nav.go(this);">'+new_onl[i].first_name+' '+new_onl[i].last_name+'</a></b>'+time;
-                  
-                  vkShowNotify({sound:'On',title:IDL('UserOnline'),text:text,author_photo:new_onl[i].photo_rec,author_link:'id'+new_onl[i].uid,link:'id'+new_onl[i].uid,onclick:"nav.go('id"+new_onl[i].uid+"')"});
+                  // vkNotifyUserCheckAndShow
+                  vkShowNotify({sound:'On',title:IDL('UserOnline'),text:text,_time:tm,author_photo:new_onl[i].photo_rec,author_link:'id'+new_onl[i].uid,link:'id'+new_onl[i].uid,onclick:"nav.go('id"+new_onl[i].uid+"')"});
                }
             }
             vkCmd('fav_users_statuses','ok');
@@ -1142,6 +1177,8 @@ function vkFavOnlineChecker(on_storage){
    }
    
 }
+
+
 
 function vkFavUsersList(add_button){
    if (add_button){
@@ -1229,10 +1266,11 @@ function vkFaveOnlineChecker(on_storage){
             if (!ignore){  
                for (var i=0;i<new_onl.length;i++){
                   if (getSet(49)=='y' && vkIsFavUser(new_onl[i].id)) continue;
-                  var time='<div class="fl_r">'+(new Date).format('isoTime')+'</div>';
+                  var tm=(new Date).format('isoTime');
+                  var time='<div class="fl_r">'+tm+'</div>';
                   var text='<b><a href="/id'+new_onl[i].id+'" onclick="nav.go(this);">'+new_onl[i].name+'</a></b>'+time;
-                  
-                  vkShowNotify({sound:'On',title:IDL('FaveOnline'),text:text,author_photo:new_onl[i].photo,author_link:'id'+new_onl[i].id,link:'id'+new_onl[i].id,onclick:"nav.go('id"+new_onl[i].id+"')"});
+                  // vkNotifyUserCheckAndShow
+                  vkShowNotify({sound:'On',title:IDL('FaveOnline'),text:text,_time:tm,author_photo:new_onl[i].photo,author_link:'id'+new_onl[i].id,link:'id'+new_onl[i].id,onclick:"nav.go('id"+new_onl[i].id+"')"});
                }
             }
             vkCmd('fave_users_statuses','ok');

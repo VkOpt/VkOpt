@@ -1314,6 +1314,7 @@ var dApi = {
 	allow_call:true,
 	auth_frame:null,
 	log: function(s){vklog('API: '+s)},
+   captcha_visible:false,
    onLogin:function(){},
 	Auth: function(callback) {
 		var appId=dApi.API_ID;
@@ -1392,8 +1393,18 @@ var dApi = {
 			},300);
 			return;
 		}
+      if (dApi.captcha_visible && !captcha){
+         setTimeout(function(){
+            dApi.call(method, inputParams, callback);
+         },300);
+         return;
+      }
 		var apiReAuth=function(){
-			dApi.Auth(function(){
+			if (!remixmid()) {
+            vklog('API Error. user id not found');
+            return;
+         }
+         dApi.Auth(function(){
 				dApi.call(method, inputParams, callback);
 			});
 		}
@@ -1409,6 +1420,11 @@ var dApi = {
 			apiReAuth();		
 			return;
 		}
+      if (remixmid()!='' && mid!=remixmid()){
+         apiReAuth();		
+         return;
+      }
+      
 		var params = {  
 			api_id: dApi.API_ID,
 			method: method,
@@ -1441,17 +1457,21 @@ var dApi = {
 				} else if ( response.error.error_code == 4 || (response.error.error_code == 3 || response.error.error_code == 7) ){
 					apiReAuth();				
 				} else if(response.error.error_code == 14) { // Captcha needed
+               dApi.captcha_visible=true;
 					dApi.captcha(response.error.captcha_sid, response.error.captcha_img, function(sid, value) {
 						inputParams['captcha_sid'] = sid;  inputParams['captcha_key'] = value;
 						dApi.call(method, inputParams, callback, true);
 					}, false, function() { callback(response); });
 				}else {
 					dApi.show_error(response); 
-					if (captcha) vk_api_captchaBox.hide();  
+					if (captcha) {
+                  vk_api_captchaBox.setOptions({onHide: function(){dApi.captcha_visible=false}}).hide();  
+                  //vk_api_captchaBox.hide();  
+               }
 					callback(response,response.response,response.error);  
 				} 
 			} else { 
-				if (captcha) vk_api_captchaBox.hide();  
+				if (captcha) vk_api_captchaBox.setOptions({onHide: function(){dApi.captcha_visible=false}}).hide(); //vk_api_captchaBox.hide();  
 				callback(response);  
 			}
 		  });
