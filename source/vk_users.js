@@ -48,6 +48,29 @@ function getGidUid(url,callback){ //callback(uid,gid)
 	if (url.match(/club\d+$/)){callback(url.match(/club(\d+)$/)[1],null);  return;}
 	
 	if (vkUsersGroupsDomain[url]){callback(vkUsersGroupsDomain[url][0],vkUsersGroupsDomain[url][1]);  return; }
+   
+   var obj_id=url.split('/').pop();
+   dApi.call('resolveScreenName',{screen_name:obj_id},function(r){
+     var res=r.response;
+     switch(res.type){
+      case 'user': callback(res.object_id);                  break;
+      case 'group': callback(null,res.object_id);            break;
+      case 'application': callback(null,null,res.object_id); break;
+     }
+   });
+
+}
+/*
+function getGidUid(url,callback){ //callback(uid,gid)
+	url=String(url);
+	if (url.match(/^\d+$/)){callback(url);  return;}
+	if (url.match(/^u\d+$/)){callback(url.match(/^u(\d+)$/)[1],null);  return;}
+	if (url.match(/id\d+$/)){callback(url.match(/id(\d+)$/)[1],null);  return;}
+	
+	if (url.match(/^g\d+$/)){callback(null,url.match(/^g(\d+)$/)[1]);  return;}
+	if (url.match(/club\d+$/)){callback(url.match(/club(\d+)$/)[1],null);  return;}
+	
+	if (vkUsersGroupsDomain[url]){callback(vkUsersGroupsDomain[url][0],vkUsersGroupsDomain[url][1]);  return; }
 	AjGet('/al_groups.php?act=add_link_box&al=1&lnk='+url,function(r,t){
 		var res=t.match(/http:\/\/cs\d+.vk.+\/(u\d+|g\d+)\/[A-Za-z0-9]_[A-Za-z0-9]+.jpg/);
 		var id=res?res[1]:null;
@@ -65,13 +88,13 @@ function getGidUid(url,callback){ //callback(uid,gid)
                if (r.response.length && r.response[0].uid)     callback(r.response[0].uid,null);
                else callback(null,null);
              });
-             /*
+             /_*
              AjGet('/groups_ajax.php?act=a_inv_by_link&page='+url,function(r){
 					r=r.responseText;
 					var uid=(r)?r.match(/name=.id..value=.(\d+)/)[1]:null;
 					vkUsersGroupsDomain[url]=[uid,null];
 					callback(uid,null);
-				 });*/	
+				 });*_/	
 			} else {  // if 'NULL AVA (GROUP)';
 				var gurl=url.split('/'); 
 				gurl=(gurl[gurl.length-1])?gurl[gurl.length-1]:url;
@@ -87,7 +110,7 @@ function getGidUid(url,callback){ //callback(uid,gid)
 		}
 	});	
 }
-
+*/
 function ExtractUserID(link){
     if (!link) return null;
 	var tmp2=link.match(/\/id(\d+)$/);
@@ -287,7 +310,7 @@ function ExUserItems(id,el){
 	if (isGroupAdmin('-'+vkGetGid())){
 		uitems+=mkExItem(0,'<a href="#" onclick="vkBanUser(\'/id%uid\'); return false;">'+IDL('banit')+'</a>');
 	}
-	if (cur.oid>0 && geByClass('wall_post_text',el.parentNode)[0]){
+	if (window.cur && cur.oid>0 && geByClass('wall_post_text',el.parentNode)[0]){
 		uitems+=mkExItem(0,'<a href="/wall'+cur.oid+'?with=%uid" onclick="return nav.go(this, event)">'+IDL('TetAtet')+'</a>');
 	}
 	if (uitems!='') uitems+='<li><div class="vk_user_menu_divider"></div></li>';
@@ -648,13 +671,19 @@ function vkGetProfile(uid,callback,no_switch_button){
 		var activity=r.response.activity;
 		var country=r.response.country;
 		var city=r.response.city;
+
+         
 		var common='';
 		
 		var username='<a href="/id'+uid+'" onclick="return nav.go(this, event);">'+profile.first_name+' '+profile.nickname+' '+profile.last_name+'</a>';
 		var ava_url=profile.photo_big;
 		var online=profile.online?'Online':'';//'Offline';
 		var rate=make_rate(profile.rate);
-		
+      
+      var relation=profile.relation;
+      var sex=profile.sex;
+      var rel=IDL((sex==1?'profile_relation_f_':'profile_relation_m_')+relation);	
+      
 		if (r.response.common){
 			var fr=r.response.common;
 			common='<div class="vk_profile_common_fr_header" onclick="slideToggle(\'vkp_commfr\');">'+IDL('CommonFriends')+' ('+fr.length+')</div>';
@@ -670,6 +699,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 			[profile.bdate, Birth_date[1]],
 			[country,Country],
 			[city,select_city],
+         [rel,Family],
 			[profile.mobile_phone, Contact_mob_tel_abbr],
 			[profile.home_phone, Contact_home_tel_abbr],
 			[profile.university_name,select_university_name],
@@ -701,7 +731,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 		MakeProfile(VK_CURRENT_PROFILES_DATA['uid'+uid]);
 	  else {
 		  code  = 'var activity=API.status.get({uid:"'+uid+'"});';
-		  code += 'var profile=API.getProfiles({uids:"'+uid+'",fields:"nickname,photo_big,online,rate,bdate,city,country,contacts,education,can_post,can_write_private_message"})[0];';
+		  code += 'var profile=API.getProfiles({uids:"'+uid+'",fields:"relation,sex,nickname,photo_big,online,rate,bdate,city,country,contacts,education,can_post,can_write_private_message"})[0];';
 		  code += 'var commonfr=API.friends.getMutual({target_uid:"'+uid+'"});';
 		  code += 'var commons=API.getProfiles({uids:commonfr,fields:"online"});';
 		  code += 'return {';
