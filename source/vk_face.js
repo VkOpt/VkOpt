@@ -643,7 +643,7 @@ function UserOnlineStatus(status) {// ADD LAST STATUS
 /* CALENDAR */
 vk_cur={};
 function vkGetCalendar(){
-	stManager.add('events.css');
+	if (window.stManager) stManager.add('events.css');
 	var html='\
 		 <div id="vk_calendar" class="calendar">\
 			<div class="calendar_header">\

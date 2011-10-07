@@ -428,6 +428,7 @@ function vkStyles(){
 		.audios_row .audio_title_wrap{ width: auto !important; max-width: 295px; }\
 		.post_media .audio_title_wrap { width: 250px !important;}\
 		#mail_envelope .audio_title_wrap { width: 215px !important;}\
+      .narrow_column .audio_title_wrap { width: 115px !important;}\
 	';
 	  //extend switch color in viewer
 	if (MoreDarkPV=='y') main_css+="\
