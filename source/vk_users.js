@@ -682,7 +682,8 @@ function vkGetProfile(uid,callback,no_switch_button){
       
       var relation=profile.relation;
       var sex=profile.sex;
-      var rel=IDL((sex==1?'profile_relation_f_':'profile_relation_m_')+relation);	
+      var rel=IDL((sex==1?'profile_relation_f_':'profile_relation_m_')+relation);
+      rel=relation?rel:'';
       
 		if (r.response.common){
 			var fr=r.response.common;
