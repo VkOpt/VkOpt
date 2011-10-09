@@ -137,6 +137,7 @@ function vkOnNewLocation(startup){
 		switch(cur.module){
 			case 'friends':vkProcessNode(); break;
 		}
+      vkWallAddBtnOnError();
 	}
 	vk_plugins.onloc();
 	vklog('OnLocation time:' + (unixtime()-tstart) +'ms');

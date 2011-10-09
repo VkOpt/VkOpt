@@ -593,6 +593,15 @@ function vkMoneyBoxAddHide(){
 	lmb.appendChild(hb);
 	lmb.appendChild(mb);
 }
+
+function vkWallAddBtnOnError(){
+   var oid=nav.objLoc[0].match(/wall(\d+)/);
+   var el=ge('msg_back_button');
+   if (oid && el){
+      el.parentNode.parentNode.innerHTML+=
+      '<a href="wall'+oid[1]+'?own=1"><div style="display: block; margin: 15px auto 0px;" class="button_gray"><button style="width: 100%;">'+IDL('GoToUserPosts')+'</button></div></a>'
+   }
+}
 function UserOnlineStatus(status) {// ADD LAST STATUS
 	if (window.vk_check_online_timeout) clearTimeout(vk_check_online_timeout);
 	if (ge('vk_online_status')){
