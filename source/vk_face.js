@@ -276,7 +276,7 @@ function vkMenu(){//vkExLeftMenu
         ['settings?act=blacklist',IDL("mSeB")],
         ['settings?act=mobile',IDL("mSeMobile")],
         [['settings?act=vkopt',"vkShowSettings(false); return false;"],"VKOpt"], //['settings?act=vkopt" onClick="vkShowSettings(false); return false;',"VKOpt"],   
-        [['#','vkShowSkinMan(); return false;'],IDL("SkinMan"),false,vkbrowser.mozilla],
+        [['settings?skinman','vkShowSkinMan(); return false;'],IDL("SkinMan"),false,vkbrowser.mozilla],
         [['#','hz_chooselang(); return false;'],IDL("ChangeVkOptLang")] 
     ],
     'matches':[

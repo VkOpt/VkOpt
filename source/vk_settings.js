@@ -575,7 +575,9 @@ function vkInitSettings(){
       {id:49, text:IDL("seFavOn")},
       {id:50, text:IDL("seFavOnline")+'<span style="padding-left:10px;">'+vkCheckboxSetting(57,IDL("seOnRightPart"))+'</span>',info:'infoUseNetTrafic'},
       {id:51, text:IDL("seFavToTopIm")},
-      {id:52, text:IDL("seFaveOnline"),info:'infoUseNetTrafic'}
+      {id:52, text:IDL("seFaveOnline"),info:'infoUseNetTrafic'},
+      {id:60, text:IDL("seProfileMoveAudioBlock")},
+      {id:61, text:IDL("seProfileGroups"),info:'infoUseNetTrafic'}
     ],
 
     Messages:[
@@ -613,7 +615,7 @@ function vkInitSettings(){
       {id:53, text:IDL("seShutProfilesBlock")},
       {id:54, header:IDL("seMoveNotifier") , text:IDL("seMoveNotifierText"),ops:[0,1,2,3]},
       {id:58, text:IDL("sePopupBoardInfo")},
-      {id:59, text:IDL("seExplandGroupNews")}
+      {id:59, text:IDL("seExplandGroupNews")}      
     ],
 	Sounds:[
 	  {id:48, text:IDL("ReplaceVkSounds")}	
@@ -626,7 +628,7 @@ function vkInitSettings(){
 		{id:34, text:IDL("seSwichTextChr")}	
     ]
   };	  
-	//LAST 59
+	//LAST 61
 	
 	vkSetsType={
       "on"  :[IDL('on'),'y'],
