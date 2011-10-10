@@ -598,23 +598,23 @@ function vkProfileGroupBlock(){
       
    }
    ge('vk_group_block_content').innerHTML=vkBigLdrImg;
-
-   ajax.post('al_groups.php', {act: 'get_list', mid: cur.oid,tab:'groups'}, {
-      onDone: function(data) {
-         if (!data || !data.length){ 
+   AjPost('al_groups.php',{act: 'get_list', mid: cur.oid,tab:'groups',al:1},function(r,t){
+      var data=t.split('<!json>');
+      if (!data[1]){
             ge('vk_group_block_content').innerHTML=IDL('NA');
-            return;
-         }
-         var count=data.length;
-         ge('vk_group_block_count').innerHTML=' ('+count+')';
-         var html='';
-         for (var i=0; i<data.length;i++)
-            if (data[i][0]) html+='<a href="'+data[i][3]+'">'+data[i][0]+' </a>';
-         
-         ge('vk_group_block_content').innerHTML=html;
-         vkHighlightGroups();
-         vkProcessNode(ge('vk_group_block_content'));
-      } 
+            hide('profile_groups');
+            return;      
+      }
+      data=eval(data[1]);
+      var count=data.length;
+      ge('vk_group_block_count').innerHTML=' ('+count+')';
+      var html='';
+      for (var i=0; i<data.length;i++)
+         if (data[i][0]) html+='<a href="'+data[i][3]+'">'+data[i][0]+' </a>';
+      
+      ge('vk_group_block_content').innerHTML=html;
+      vkHighlightGroups();
+      vkProcessNode(ge('vk_group_block_content'));     
    });
 }//*/
 
