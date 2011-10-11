@@ -180,8 +180,8 @@ function vkMenu(){//vkExLeftMenu
     //*
     'profile':[
       ['gifts'+vkmid,IDL('clGi')],
-      ['fans.php?act=fans&mid='+vkmid,IDL('clFans')],
-      ['fans.php?act=idols',IDL('clSubscriptions')]
+      [['fans.php?act=fans&mid='+vkmid,"return !showTabbedBox('al_fans.php', {act: 'show_fans_box', oid: "+vkmid+"}, {cache: 1}, event);"],IDL('clFans')],
+      [['fans.php?act=idols',"return !showTabbedBox('al_fans.php', {act: 'show_publics_box', oid: "+vkmid+"}, {cache: 1}, event);"],IDL('clSubscriptions')]
     ],//*/
     /*
     'edit':[

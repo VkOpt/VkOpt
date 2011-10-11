@@ -683,8 +683,11 @@ function vkCheckGroupAdmin(){
 	var val=vkGetVal(r);
 	var add=function(s){
 		if ((','+val+',').indexOf(',' + s + ',') != -1) return;
+      vklog(val);
 		val+=','+s;
+      vklog(val);
       val=val.replace(/^,+|,+$/g, '');
+      vklog(val);
 		vkSetVal(r,val);
 	}
 	var del=function(s){

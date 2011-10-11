@@ -610,7 +610,7 @@ function vkProfileGroupBlock(){
       ge('vk_group_block_count').innerHTML=' ('+count+')';
       var html='';
       for (var i=0; i<data.length;i++)
-         if (data[i][0]) html+='<a href="'+data[i][3]+'">'+data[i][0]+' </a>';
+         if (data[i][0]) html+='<a onclick="return nav.go(this, event)" href="'+data[i][3]+'">'+data[i][0]+' </a>';
       
       ge('vk_group_block_content').innerHTML=html;
       vkHighlightGroups();
