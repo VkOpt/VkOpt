@@ -11,7 +11,7 @@
 //
 /* VERSION INFO */
 var vVersion	= 202;
-var vBuild = 111009;
+var vBuild = 111013;
 var vPostfix = ' ';
 if (!window.vk_DEBUG) var vk_DEBUG=0;
 
@@ -40,7 +40,7 @@ var SEARCH_AUDIO_LYRIC_LINK='http://yandex.ru/yandsearch?text=%AUDIO_NAME%+%28%2
 /* API SETTINGS PAGE: http://vkontakte.ru/login.php?app=2168679&layout=popup&type=browser&settings=15615 */
 
 /* Others */
-var USERMENU_SYMBOL='&#9660; ';
+var USERMENU_SYMBOL='&#9660;&nbsp;';
 var MOD_PROFILE_BLOCKS=true;
 var CUT_VKOPT_BRACKET=false;
 var vkNewSettings=[55,56,58,59,60,61]; //"new" label on settings item

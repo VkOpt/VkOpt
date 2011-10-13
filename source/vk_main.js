@@ -1214,7 +1214,7 @@ function vkAddAlbumCommentsLinks(node){
    for (var i=0;i<els.length;i++){
       var el=geByClass('info_wrap',els[i])[0];
       var id=els[i].id?els[i].id:el.innerHTML.match(/album-?\d+_\d+/);
-      el.innerHTML+='<a class="fl_r" href="/'+id+'?act=comments" onclick="return nav.go(this, event)">'+IDL('komm',1)+'</a>';
+      if (el.innerHTML.indexOf('act=comments')==-1) el.innerHTML+='<a class="fl_r" href="/'+id+'?act=comments" onclick="return nav.go(this, event)">'+IDL('komm',1)+'</a>';
    }
 }
 
