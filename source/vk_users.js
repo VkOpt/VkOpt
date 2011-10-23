@@ -159,7 +159,7 @@ function GetUserMenuSett() {
                      //IDL("clEv"), 
                      IDL("clNo"), 
                      IDL("clGi"), 
-                     IDL("clRa"), 
+                     //IDL("clRa"), 
                      IDL("mNeP"), 
                      IDL("clAddFr"), 
                      IDL("clAddToFav"), 
@@ -299,6 +299,7 @@ function ExGroupItems(gid,el){
 	uitems+=mkExItem(i++,'<a href="/board%GID">'+IDL('board')+'</a>');
 	uitems+=mkExItem(i++,'<a href="/albums-%GID">'+IDL('clPh')+'</a>');
 	uitems+=mkExItem(i++,'<a href="/video?gid=%GID">'+IDL('clVi')+'</a>');
+   uitems+=mkExItem(i++,'<a href="/audio?gid=%GID">'+IDL('clAu')+'</a>');
 	uitems+=mkExItem(i++,'<a href="/photos-%GID">'+IDL('clPhBrowse')+'</a>');
 	uitems+=mkExItem(i++,'<a href="/apps?gid=%GID">'+IDL('clAp')+'</a>');
 	uitems+=mkExItem(i++,'<a href="/search?c[section]=people&c[group]=%GID">'+IDL('clGu')+'</a>');
@@ -331,7 +332,7 @@ function ExUserItems(id,el){
 	//(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/events.php?id=%uid">'+IDL("clEv")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/notes%uid" onclick="return nav.go(this, event);">'+IDL("clNo")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/gifts?id=%uid">'+IDL("clGi")+'</a>'):i++;
-	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/rate.php?act=vote&id=%uid">'+IDL("clRa")+'</a>'):i++;
+	//(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/rate.php?act=vote&id=%uid">'+IDL("clRa")+'</a>'):i++;
    (ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/feed?section=source&source=%uid">'+IDL("mNeP")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkRemoveFriend(%uid);" class="fl_r">x</a><a href="javascript:vkAddToFriends(%uid);">'+IDL("clAddFr")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkAddToFave(%uid,1);" class="fl_r">x</a><a href="javascript:vkAddToFave(%uid);">'+IDL("clAddToFav")+'</a>'):i++;
@@ -668,7 +669,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 	  var MakeProfile = function(r){
 		if (!r.response || !r.response.profile) return;
 		var profile=r.response.profile;
-		var activity=r.response.activity;
+		//var activity=r.response.activity;
 		var country=r.response.country;
 		var city=r.response.city;
 
@@ -717,7 +718,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 		var html=VK_PROFILE_TPL.replace("%AVA_SRC%",ava_url)
 							   .replace("%UID%",uid)
 							   .replace("%USERNAME%",username)
-							   .replace("%ACTIVITY%",activity)
+							   .replace("%ACTIVITY%",profile.activity)
 							   .replace("%RATE%",rate)
 							   .replace("%ONLINE%",online)
 							   .replace("%PROFILE_INFO%",info_html)
@@ -731,13 +732,14 @@ function vkGetProfile(uid,callback,no_switch_button){
 	  if (VK_CURRENT_PROFILES_DATA['uid'+uid]) 
 		MakeProfile(VK_CURRENT_PROFILES_DATA['uid'+uid]);
 	  else {
-		  code  = 'var activity=API.status.get({uid:"'+uid+'"});';
-		  code += 'var profile=API.getProfiles({uids:"'+uid+'",fields:"relation,sex,nickname,photo_big,online,rate,bdate,city,country,contacts,education,can_post,can_write_private_message"})[0];';
+		  var code = '';
+        //code  += 'var activity=API.status.get({uid:"'+uid+'"});';
+		  code += 'var profile=API.getProfiles({uids:"'+uid+'",fields:"relation,sex,nickname,activity,photo_big,online,rate,bdate,city,country,contacts,education,can_post,can_write_private_message"})[0];';
 		  code += 'var commonfr=API.friends.getMutual({target_uid:"'+uid+'"});';
 		  code += 'var commons=API.getProfiles({uids:commonfr,fields:"online"});';
 		  code += 'return {';
 		  code += 'profile:profile';
-		  code += ',activity:activity.text';
+		  //code += ',activity:activity.text';
 		  code += ',country: API.getCountries({cids: profile.country})[0].name';
 		  code += ',city: API.getCities({cids: profile.city})[0].name';
 		  code += ',common:commons';
