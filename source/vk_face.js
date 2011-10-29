@@ -256,6 +256,7 @@ function vkMenu(){//vkExLeftMenu
         ['feed?section=updates',IDL("mNeU")],
         ['feed?section=friends',IDL("mNeF")],
         ['feed?section=groups',IDL("mNeG")],
+        ['feed?section=notifications',IDL("mNeNotif")],
         ['feed?section=photos',IDL("clPh")],
         ['feed?section=mentions',IDL("mNeMe")],
         ['feed?section=recommended',IDL("mNeR")],
