@@ -109,7 +109,10 @@ function vkOnNewLocation(startup){
 		case 'settings':vkSettingsPage(); break;
 		case 'mail': vkMailPage(); break;
 		case 'feed': vkFeedPage(); break;
-	}	
+      default:
+         if (nav.objLoc[0].match(/write\d+/)) vkMailPage();
+	}
+   
 	
 	if (cur.module){	
 		vklog(cur.module+'|'+print_r(nav.objLoc).replace(/\n/g,','));
@@ -1200,6 +1203,7 @@ function vkGetPageWithPhotos(oid,aid){
 			var html='<h4>No images</h4>'
 		else {
 			vkImgsList='<div style="background:#FFB; border:1px solid #AA0;  margin:20px; padding:20px;">'+IDL('HtmlPageSaveHelp')+'</div>'+vkImgsList;
+         //vkImgsList=vkImgsList.replace(/#/g,'%23');
 			var html='<h4><a href="#" onclick="vkWnd(vkImgsList,\''+document.title.replace(/'"/g,"")+'\'); return false;">'+IDL('ClickForShowPage')+'</a></h4>';
 		}
 		box.content(html).show();
@@ -2008,7 +2012,7 @@ function vkGetWikiCode(){
 
 /* MAIL */
 function vkMailPage(){
-	if(nav.objLoc['act']=='show') {
+	if(nav.objLoc['act']=='show' || nav.objLoc[0].match(/write\d+/)) {
 		vkAddSaveMsgLink();
 		if (getSet(40)=='y') vkAddDelMsgHistLink();
 		vkProcessNode();

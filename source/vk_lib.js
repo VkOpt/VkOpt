@@ -1815,7 +1815,7 @@ function vkWnd(text,title){
 	var as_data=true;
 	text='<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"><html><head><title>'+(title?title:'VkOpt')+'</title></head><body>'+text+'</body></html>';
 	if (as_data){		
-		url='data:text/html;charset=utf-8,'+encodeURI(text);//charset=utf-8,
+		url='data:text/html;charset=utf-8,'+encodeURIComponent(text);//charset=utf-8,
 	}
 	var wnd	= window.open(url, '_blank', '');//dialog,width=300,height=150,scrollbars=yes
 	if (!as_data){
