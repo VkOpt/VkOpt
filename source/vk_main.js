@@ -366,6 +366,7 @@ function vkStyles(){
 	//main
 	main_css+=float_profile+calendar+"\
    ul#settings_filters a{margin-right: 1px !important;}\
+   .module_header .p_header_bottom .fl_r { display: inline;  }\
 	#profile_current_info { max-height: none !important; }\
 	#right_bar { width: 118px;}\
 	#right_bar_container{width: 118px; margin:5px 10px 0px 0px;	padding-bottom: 10px;}\
@@ -636,7 +637,8 @@ function vkProccessLinks(el){
 function ProcessAwayLink(node){
   if (node.href && node.href.indexOf('away.php?')!=-1){ 
 	var lnk=vkLinksUnescapeCyr(node.href).split('?to=')[1];
-  if (!lnk) return;
+   if (!lnk) return;
+   var lnk=lnk.split('&h=')[0].split('&post=')[0];
 	node.href=lnk.replace(/%26/gi,'&').replace(/%3A/gi,':').replace(/%2F/gi,'/').replace(/%25/gi,'%').replace(/%3F/gi,'?').replace(/%3D/gi,'=').replace(/%26/gi,';').replace(/&h=[\da-z]{18}/i,'');
 	//alert(unescape(node.href));
   }

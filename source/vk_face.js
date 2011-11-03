@@ -20,7 +20,7 @@ function sideBar(original){
 function vkMakeRightBar(){
 	var page_layout=ge('page_layout');
 	if (!page_layout) return;
-	vkaddcss('#footer_wrap { width: 100% !important;}');
+	vkaddcss('#main_feed #feed_rate_slider_wrap { right: 152px; } #footer_wrap{ width: 100% !important;}');
 	vk.width=vk.width+120;
 	Inj.Start('handlePageView','if (params.width) params.width+=120;');
 	Inj.Replace('handlePageView','791','911');
