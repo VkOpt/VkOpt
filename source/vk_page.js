@@ -628,6 +628,9 @@ function vkFrProfile(){
     c.id='profile_full_link';
     c.setAttribute('onclick','shut("profile_full_info");');
   }
+  var c2 = geByClass('page_list_module')[0];
+  if (c2) c2.id="page_list_module";
+  
   //els=vkArr2Arr(els);
   var mod=function(el,postfix){
     if (postfix=='online' && el.parentNode.id=='profile_friends') el.parentNode.id='profile_friends_online';
@@ -792,12 +795,13 @@ var vk_shuts_mask = {
   'profile_military'      : 0x4000,
   'profile_opinions'      : 0x8000,
   'profile_audios'        : 0x10000,
-//  'profile_wall'          : 0x20000,
-  'profile_fave'         : 0x40000,
+  'page_list_module'      : 0x20000,
+  'profile_fave'          : 0x40000,
   'profile_optional'      : 0x80000,
   'profile_fans'          : 0x100000,
   'profile_idols'         : 0x200000,
   'profile_infos'         : 0x400000
+  // 'profile_wall'          : 0x20000,  
   //,'profile_photos_module' : 0x800000
 }
 var vk_shuts_prof=0x400000;
@@ -955,6 +959,16 @@ function vkWallAddPreventHideCB(){
    });
 }
 
+
+function vkModGroupBlocks(){
+   var el=ge('group_albums');
+   if (el && !ge('gr_photo_browse')){
+      el=geByClass('p_header_bottom',el)[0];
+      var a=vkCe('a',{id:'gr_photo_browse', href:'/photos'+cur.oid, onclick:"event.cancelBubble = true; return nav.go(this, event)"},IDL("obzor",1));
+      el.appendChild(a);
+      //el.innerHTML+='<a href="/photos'+cur.oid+'" onmousedown="event.cancelBubble = true;" onclick="event.cancelBubble = true; return nav.go(this, event);">[ '+IDL("obzor")+' ]</a>';
+   }
+}
 function vkAudioBlock(load_audios,oid){
    if (ge('group_audios')) return; 
    oid = oid || cur.oid;

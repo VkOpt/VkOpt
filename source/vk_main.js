@@ -663,6 +663,7 @@ function vkEventPage(){
 function vkGroupPage(){
 	addFakeGraffItem();
 	vkCheckGroupAdmin();
+   vkModGroupBlocks();
    vkAudioBlock();
 }
 function vkGetGid(){
