@@ -23,7 +23,9 @@ function vkProfilePage(){
 	addFakeGraffItem();
    //vkWallAddPreventHideCB();
 	vkUpdWallBtn(); //Update wall button
-   if (remixmid()==cur.oid && getSet(50)=='y' && !ge('profile_fave')) vkFaveProfileBlock();   
+   if (remixmid()==cur.oid && getSet(50)=='y' && !ge('profile_fave')) vkFaveProfileBlock(); 
+   if (getSet(60) == 'y') vkProfileMoveAudioBlock(); 
+   if (getSet(61) == 'y') vkProfileGroupBlock();   
 	if (MOD_PROFILE_BLOCKS) vkFrProfile();
 	if (getSet(46) == 'n') vkFriends_get('online');
 	if (getSet(47) == 'n') vkFriends_get('common');
@@ -158,7 +160,7 @@ function checkAgeFunc(_this,_id,_day,_month){
 
 // @name Vkontakte Calculate Age
 // @namespace http://polkila.googlecode.com
-// @author ¬‡Ò˛ÚËÌÒÍËÈ ŒÎÂ„ http://vasyutinskiy.ru
+// @author –í–∞—Å—é—Ç–∏–Ω—Å–∫–∏–π –û–ª–µ–≥ http://vasyutinskiy.ru
 
 function VkCalcAge(){
 var t = ge('profile_info').parentNode;//('rightColumn').childNodes[3];personal
@@ -238,21 +240,29 @@ if (!t) return;
 
 
 function status_icq(node) { //add image-link 'check status in ICQ'
-  var t,i,icq=null;
+  var t,i,icq,skype=null;
   var labels=geByClass('label',node);
-  for(i=0;i<labels.length;i++)
-    if(labels[i].innerHTML=='ICQ:'){  
-      icq=labels[i]; 
-      break; 
-    }
+  for(i=0;i<labels.length;i++){
+    if(!icq && labels[i].innerHTML=='ICQ:'){    icq=labels[i];   }
+    if(!skype && labels[i].innerHTML=='Skype:'){    skype=labels[i];   }
+    if (icq && skype) break; 
+  }
+    
   if(icq) {	
 	var el=icq.parentNode.getElementsByTagName('div')[1];//geByClass('dataWrap')[a];
     t=el.innerHTML;
     t=t.replace(/\D+/g,'');
     if(t.length)                                                                                                                                                   // http://kanicq.ru/invisible/favicon.ico
       el.innerHTML+=' <a href="http://kanicq.ru/invisible/'+t+'" title="'+IDL("CheckStatus")+'" target=new><img src="http://status.icq.com/online.gif?img=26&icq='+t+'&'+Math.floor(Math.random()*(100000))+'" alt="'+IDL("CheckStatus")+'"></a>';
-      //'http://status.icq.com/online.gif?img=26&icq='+t//252297701
   } 
+  //*
+  if(skype) {	
+	var el=skype.parentNode.getElementsByTagName('div')[1];
+    t=el.innerHTML;
+    t=t.match(/skype\:(.+)\?call/);
+    if(t.length)                                                                                                                                                   // http://kanicq.ru/invisible/favicon.ico
+      el.innerHTML+='<img style="margin-bottom:-3px" src=" http://mystatus.skype.com/smallicon/'+t[1]+'?'+Math.floor(Math.random()*(100000))+'">';
+  } //*/
 }
 function vkAvkoNav(){
   avko_num = 0;
@@ -490,8 +500,7 @@ function vkCleanWall(oid){
 	var abox=vkAlertBox(IDL('ClearWall'),html);
 	//vkAlertBox(IDL('ClearWall'),IDL('CleanWallConfirm'),vkRunCleanWall,true);
 }
-
-
+    
 function vkFaveProfileBlock(is_list){
    var is_right_block = (getSet(57)=='y');
    if (!ge('profile_fave')){
@@ -558,7 +567,56 @@ function vkFaveProfileBlock(is_list){
    });
 }
 
-
+function vkProfileMoveAudioBlock(){
+   var e=ge("profile_audios");
+   var p=ge('profile_wall');
+   if (e && p)  p.parentNode.insertBefore(e,p);  
+}
+//*
+function vkProfileGroupBlock(){
+   var is_right_block = false;//(getSet(57)=='y');
+   if (ge('profile_groups')) re(ge('profile_groups'));
+   if (!ge('profile_groups')){
+      var html='\
+        <a href="/groups?id='+cur.oid+'" onclick="return nav.go(this, event)" class="module_header"><div class="header_top clear_fix">'+IDL('clGr')+'<span id="vk_group_block_count"></span></div></a>\
+        <div class="module_header">\
+          <div class="p_header_bottom">\
+            <a href="/groups?id='+cur.oid+'" onclick="return nav.go(this, event)"> </a>\
+            <span class=""><a href="/groups?id='+cur.oid+'" onclick="return nav.go(this, event)">'+IDL('all')+'</a></span>\
+          </div>\
+        </div>\
+        <div class="module_body clear_fix" id="vk_group_block_content"></div>\
+      ';
+      //html=html.replace('%USERS%',users);
+      var div=vkCe('div',{"class":"module clear groups_list_module",id:"profile_groups"});
+      div.innerHTML=html;
+      var p=ge(is_right_block?'profile_wall':'profile_friends');
+      if (is_right_block)
+         p.parentNode.insertBefore(div,ge('profile_wall'));  
+      else
+         ge('profile_narrow').appendChild(div);
+      
+   }
+   ge('vk_group_block_content').innerHTML=vkBigLdrImg;
+   AjPost('al_groups.php',{act: 'get_list', mid: cur.oid,tab:'groups',al:1},function(r,t){
+      var data=t.split('<!json>');
+      if (!data[1]){
+            ge('vk_group_block_content').innerHTML=IDL('NA');
+            hide('profile_groups');
+            return;      
+      }
+      data=eval(data[1]);
+      var count=data.length;
+      ge('vk_group_block_count').innerHTML=' ('+count+')';
+      var html='';
+      for (var i=0; i<data.length;i++)
+         if (data[i][0]) html+='<a onclick="return nav.go(this, event)" href="'+data[i][3]+'">'+data[i][0]+' </a>';
+      
+      ge('vk_group_block_content').innerHTML=html;
+      vkHighlightGroups();
+      vkProcessNode(ge('vk_group_block_content'));     
+   });
+}//*/
 
 function vkFrProfile(){
   var EnableShut= (getSet(53)=='y');
@@ -570,6 +628,9 @@ function vkFrProfile(){
     c.id='profile_full_link';
     c.setAttribute('onclick','shut("profile_full_info");');
   }
+  var c2 = geByClass('page_list_module')[0];
+  if (c2) c2.id="page_list_module";
+  
   //els=vkArr2Arr(els);
   var mod=function(el,postfix){
     if (postfix=='online' && el.parentNode.id=='profile_friends') el.parentNode.id='profile_friends_online';
@@ -734,12 +795,13 @@ var vk_shuts_mask = {
   'profile_military'      : 0x4000,
   'profile_opinions'      : 0x8000,
   'profile_audios'        : 0x10000,
-//  'profile_wall'          : 0x20000,
-  'profile_fave'         : 0x40000,
+  'page_list_module'      : 0x20000,
+  'profile_fave'          : 0x40000,
   'profile_optional'      : 0x80000,
   'profile_fans'          : 0x100000,
   'profile_idols'         : 0x200000,
   'profile_infos'         : 0x400000
+  // 'profile_wall'          : 0x20000,  
   //,'profile_photos_module' : 0x800000
 }
 var vk_shuts_prof=0x400000;
@@ -897,6 +959,16 @@ function vkWallAddPreventHideCB(){
    });
 }
 
+
+function vkModGroupBlocks(){
+   var el=ge('group_albums');
+   if (el && !ge('gr_photo_browse')){
+      el=geByClass('p_header_bottom',el)[0];
+      var a=vkCe('a',{id:'gr_photo_browse', href:'/photos'+cur.oid, onclick:"event.cancelBubble = true; return nav.go(this, event)"},IDL("obzor",1));
+      el.appendChild(a);
+      //el.innerHTML+='<a href="/photos'+cur.oid+'" onmousedown="event.cancelBubble = true;" onclick="event.cancelBubble = true; return nav.go(this, event);">[ '+IDL("obzor")+' ]</a>';
+   }
+}
 function vkAudioBlock(load_audios,oid){
    if (ge('group_audios')) return; 
    oid = oid || cur.oid;

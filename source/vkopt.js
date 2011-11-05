@@ -10,8 +10,8 @@
 // (c) All Rights Reserved. VkOpt.
 //
 /* VERSION INFO */
-var vVersion	= 202;
-var vBuild = 111104;
+var vVersion	= 203;
+var vBuild = 111105;
 var vPostfix = ' ';
 if (!window.vk_DEBUG) var vk_DEBUG=0;
 

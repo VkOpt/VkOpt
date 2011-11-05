@@ -5,7 +5,7 @@
 	<key>Author</key>
 	<string>KiberПсих</string>
 	<key>Builder Version</key>
-	<string>534.50</string>
+	<string>534.51.22</string>
 	<key>CFBundleDisplayName</key>
 	<string>VkOpt</string>
 	<key>CFBundleIdentifier</key>
@@ -13,9 +13,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.0.2</string>
+	<string>2.0.3</string>
 	<key>CFBundleVersion</key>
-	<string>2.0.2.0</string>
+	<string>2.0.3.0</string>
 	<key>Chrome</key>
 	<dict/>
 	<key>Content</key>

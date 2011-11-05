@@ -613,7 +613,9 @@ function vkInitSettings(){
       {id:53, text:IDL("seShutProfilesBlock")},
       {id:54, header:IDL("seMoveNotifier") , text:IDL("seMoveNotifierText"),ops:[0,1,2,3]},
       {id:58, text:IDL("sePopupBoardInfo")},
-      {id:59, text:IDL("seExplandGroupNews")}
+      {id:59, text:IDL("seExplandGroupNews")},
+      {id:60, text:IDL("seProfileMoveAudioBlock")},
+      {id:61, text:IDL("seProfileGroups"),info:'infoUseNetTrafic'}      
     ],
 	Sounds:[
 	  {id:48, text:IDL("ReplaceVkSounds")}	
@@ -626,7 +628,7 @@ function vkInitSettings(){
 		{id:34, text:IDL("seSwichTextChr")}	
     ]
   };	  
-	//LAST 59
+	//LAST 61
 	
 	vkSetsType={
       "on"  :[IDL('on'),'y'],

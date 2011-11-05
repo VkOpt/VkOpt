@@ -20,7 +20,7 @@ function sideBar(original){
 function vkMakeRightBar(){
 	var page_layout=ge('page_layout');
 	if (!page_layout) return;
-	vkaddcss('#footer_wrap { width: 100% !important;}');
+	vkaddcss('#main_feed #feed_rate_slider_wrap { right: 152px; } #footer_wrap{ width: 100% !important;}');
 	vk.width=vk.width+120;
 	Inj.Start('handlePageView','if (params.width) params.width+=120;');
 	Inj.Replace('handlePageView','791','911');
@@ -180,8 +180,8 @@ function vkMenu(){//vkExLeftMenu
     //*
     'profile':[
       ['gifts'+vkmid,IDL('clGi')],
-      ['fans.php?act=fans&mid='+vkmid,IDL('clFans')],
-      ['fans.php?act=idols',IDL('clSubscriptions')]
+      [['fans.php?act=fans&mid='+vkmid,"return !showTabbedBox('al_fans.php', {act: 'show_fans_box', oid: "+vkmid+"}, {cache: 1}, event);"],IDL('clFans')],
+      [['fans.php?act=idols',"return !showTabbedBox('al_fans.php', {act: 'show_publics_box', oid: "+vkmid+"}, {cache: 1}, event);"],IDL('clSubscriptions')]
     ],//*/
     /*
     'edit':[
@@ -193,7 +193,9 @@ function vkMenu(){//vkExLeftMenu
       ['friends?section=online',IDL("mFrO")],
       ['friends?section=recent',IDL("mFrNew")],
       ['friends?section=suggestions',IDL("mFrSug")],
-      ['friends?section=requests',IDL("mFrR"),true]
+      ['friends?section=requests',IDL("mFrR"),true],
+      ['friends?section=all_requests',IDL("mFrAllReq")],
+      ['friends?section=out_requests',IDL("mFrOutReq")]
     ],
     'albums':[
         ['albums'+vkmid,IDL("mPhM")],
@@ -256,6 +258,7 @@ function vkMenu(){//vkExLeftMenu
         ['feed?section=updates',IDL("mNeU")],
         ['feed?section=friends',IDL("mNeF")],
         ['feed?section=groups',IDL("mNeG")],
+        ['feed?section=notifications',IDL("mNeNotif")],
         ['feed?section=photos',IDL("clPh")],
         ['feed?section=mentions',IDL("mNeMe")],
         ['feed?section=recommended',IDL("mNeR")],
@@ -276,7 +279,7 @@ function vkMenu(){//vkExLeftMenu
         ['settings?act=blacklist',IDL("mSeB")],
         ['settings?act=mobile',IDL("mSeMobile")],
         [['settings?act=vkopt',"vkShowSettings(false); return false;"],"VKOpt"], //['settings?act=vkopt" onClick="vkShowSettings(false); return false;',"VKOpt"],   
-        [['#','vkShowSkinMan(); return false;'],IDL("SkinMan"),false,vkbrowser.mozilla],
+        [['settings?skinman','vkShowSkinMan(); return false;'],IDL("SkinMan"),false,vkbrowser.mozilla],
         [['#','hz_chooselang(); return false;'],IDL("ChangeVkOptLang")] 
     ],
     'matches':[
@@ -315,6 +318,7 @@ function vkMenu(){//vkExLeftMenu
 	],	
     'vkopt':['[VKopt]',(!window.Vk_NoMnuLinks)?
             '<a href="javascript: vkHighlightCounters();" style="float:right;">^</a>'+'<a href="javascript:UpdateCounters();">- '+IDL('updateLMenu')+'</a>'+
+            '<a href="javascript: vkSwitchHost();" class="vk_published_by">'+(document.location.href.substr(7,6)=="vk.com"?'vkontakte.ru':'vk.com')+'</a>'+
             (vk_DEBUG?'<a href="javascript:if (window.vk_updmenu_timeout) clearTimeout(vk_updmenu_timeout);">- <b>Stop Upd Menu</b></a>':'')+
             '<a href="http://vkopt.net/forum/">- <b>VkOpt Forum</b></a>'
             //+'<a href="/id13391307">- <b>Bkontakte</b></a>'
@@ -592,6 +596,15 @@ function vkMoneyBoxAddHide(){
 	lmb.appendChild(hb);
 	lmb.appendChild(mb);
 }
+
+function vkWallAddBtnOnError(){
+   var oid=nav.objLoc[0].match(/wall(\d+)/);
+   var el=ge('msg_back_button');
+   if (oid && el){
+      el.parentNode.parentNode.innerHTML+=
+      '<a href="wall'+oid[1]+'?own=1"><div style="display: block; margin: 15px auto 0px;" class="button_gray"><button style="width: 100%;">'+IDL('GoToUserPosts')+'</button></div></a>'
+   }
+}
 function UserOnlineStatus(status) {// ADD LAST STATUS
 	if (window.vk_check_online_timeout) clearTimeout(vk_check_online_timeout);
 	if (ge('vk_online_status')){
@@ -642,7 +655,7 @@ function UserOnlineStatus(status) {// ADD LAST STATUS
 /* CALENDAR */
 vk_cur={};
 function vkGetCalendar(){
-	stManager.add('events.css');
+	if (window.stManager) stManager.add('events.css');
 	var html='\
 		 <div id="vk_calendar" class="calendar">\
 			<div class="calendar_header">\

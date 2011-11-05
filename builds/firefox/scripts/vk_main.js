@@ -109,7 +109,10 @@ function vkOnNewLocation(startup){
 		case 'settings':vkSettingsPage(); break;
 		case 'mail': vkMailPage(); break;
 		case 'feed': vkFeedPage(); break;
-	}	
+      default:
+         if (nav.objLoc[0].match(/write\d+/)) vkMailPage();
+	}
+   
 	
 	if (cur.module){	
 		vklog(cur.module+'|'+print_r(nav.objLoc).replace(/\n/g,','));
@@ -137,6 +140,7 @@ function vkOnNewLocation(startup){
 		switch(cur.module){
 			case 'friends':vkProcessNode(); break;
 		}
+      vkWallAddBtnOnError();
 	}
 	vk_plugins.onloc();
 	vklog('OnLocation time:' + (unixtime()-tstart) +'ms');
@@ -165,7 +169,7 @@ function vkLocationCheck(){
 function VkOptMainInit(){
   if (vkLocationCheck()) return;
   if (InstallRelease()) return;
-  /* // javascript: x=''; for (var key in vk_lang_ru) x+="'"+key+"': '"+(typeof vk_lang_ru[key] == 'string'?IDL(key):JSON.Str(vk_lang_ru[key]))+"'\n"; alert(x);
+  /* // javascript:x=[];for (var key in vk_lang_ru) x.push("'"+key+"': '"+(typeof vk_lang_ru[key] == 'string'?(IDL(key)==key?'':IDL(key)):JSON.Str(vk_lang_ru[key]))+"'"); alert(x.join(',\n'));
   vkExtendLang({
 
   });//*/
@@ -221,7 +225,9 @@ function GetUnReadColorCss(){
 	.im_new_msg, .im_new_msg .im_log_author, .im_new_msg .im_log_body, .im_new_msg .im_log_date { color: #000 !important; background-color: '+bgcolor+' !important; }\
 	#im_dialogs .new_msg a,.im_new_msg, .dialogs_new_msg, .dialogs_new_msg .dialogs_msg_body, .fc_msgs_unread, .fc_msg_unread{ color: '+textcolor+' !important;  background-color: '+bgcolor+' !important;}\
 	.im_new_msg .im_log_date a.im_date_link, .im_new_msg .im_fwd_log_date{color: '+textcolor+'}\
-	#im_dialogs .new_msg div.mail_body{color: #000;} .im_hist tr.un td.user a{color: '+textcolor+'}';
+	#im_dialogs .new_msg div.mail_body{color: #000;} .im_hist tr.un td.user a{color: '+textcolor+'}\
+   .mail_history_unread {background-color: '+bgcolor+' !important; color: '+textcolor+'}\
+   ';
 	
 	//bg_old: .im_hist tr.un,#im_dialogs .new_msg,.im_new_msg,.dialogs_new_msg
 	return mailcss;                            //#3B4DA0  
@@ -360,6 +366,7 @@ function vkStyles(){
 	//main
 	main_css+=float_profile+calendar+"\
    ul#settings_filters a{margin-right: 1px !important;}\
+   .module_header .p_header_bottom .fl_r { display: inline;  }\
 	#profile_current_info { max-height: none !important; }\
 	#right_bar { width: 118px;}\
 	#right_bar_container{width: 118px; margin:5px 10px 0px 0px;	padding-bottom: 10px;}\
@@ -428,6 +435,8 @@ function vkStyles(){
 		.audios_row .audio_title_wrap{ width: auto !important; max-width: 295px; }\
 		.post_media .audio_title_wrap { width: 250px !important;}\
 		#mail_envelope .audio_title_wrap { width: 215px !important;}\
+      .narrow_column .audio_title_wrap { width: 115px !important;}\
+      #profile_audios .audio_title_wrap { width: auto;}\
 	';
 	  //extend switch color in viewer
 	if (MoreDarkPV=='y') main_css+="\
@@ -574,6 +583,7 @@ function vkStyles(){
 			a.vk_edit_btn:hover .vk_edit_sub_panel{display:block;}\
 			.vk_txt_smile_item IMG{background-color:transparent;}\
 			.vk_txt_smile_item:hover IMG{background-color:#DDD;}\
+         #side_bar ol li a.vk_published_by {  padding-left: 17px;  background-image: url(/images/icons/published.gif); background-position:3px 6px; background-repeat:no-repeat;}\
 	";
 	main_css+=vk_plugins.css();
 
@@ -627,7 +637,8 @@ function vkProccessLinks(el){
 function ProcessAwayLink(node){
   if (node.href && node.href.indexOf('away.php?')!=-1){ 
 	var lnk=vkLinksUnescapeCyr(node.href).split('?to=')[1];
-  if (!lnk) return;
+   if (!lnk) return;
+   var lnk=lnk.split('&h=')[0].split('&post=')[0];
 	node.href=lnk.replace(/%26/gi,'&').replace(/%3A/gi,':').replace(/%2F/gi,'/').replace(/%25/gi,'%').replace(/%3F/gi,'?').replace(/%3D/gi,'=').replace(/%26/gi,';').replace(/&h=[\da-z]{18}/i,'');
 	//alert(unescape(node.href));
   }
@@ -638,6 +649,7 @@ function ProcessAwayLink(node){
 function vkFriendsPage(){
 	vkFriendsBySex(true);
 	vkCheckFrLink();
+   vkFrNotInListsLink();
 }
 /* PUBLICS */
 function vkPublicPage(){
@@ -651,10 +663,11 @@ function vkEventPage(){
 function vkGroupPage(){
 	addFakeGraffItem();
 	vkCheckGroupAdmin();
+   vkModGroupBlocks();
    vkAudioBlock();
 }
 function vkGetGid(){
-	if (cur.oid>0) return false;
+	if (!window.cur || cur.oid>0) return false;
 	var gid=null;
 	if (cur.gid || cur.oid<0) 
 		gid=(cur.oid?Math.abs(cur.oid):cur.gid);
@@ -678,7 +691,11 @@ function vkCheckGroupAdmin(){
 	var val=vkGetVal(r);
 	var add=function(s){
 		if ((','+val+',').indexOf(',' + s + ',') != -1) return;
+      vklog(val);
 		val+=','+s;
+      vklog(val);
+      val=val.replace(/^,+|,+$/g, '');
+      vklog(val);
 		vkSetVal(r,val);
 	}
 	var del=function(s){
@@ -736,7 +753,7 @@ function vkCommon(){
 function vkProcessOnFramegot(h){ if (h && h.indexOf('vk_usermenu_btn')==-1 && h.indexOf('vkPopupAvatar')==-1) return vkModAsNode(h,vkProcessNodeLite); }
 function vkProcessOnReceive(h){	if (h.innerHTML && h.innerHTML.indexOf('vk_usermenu_btn')==-1 && h.indexOf('vkPopupAvatar')==-1) {	vkProcessNode(h);}}
 
-function vkResponseChecker(answer,url,q){// detect HTML and prosessing
+function vkResponseChecker(answer,url,q){// detect HTML in response and prosessing
 	//var rx=/div.+class.+[^\\]"/;
 	//var nrx=/['"]\+.+\+['"]/;
 	//var nrx=/(document\.|window\.|join\(.+\)|\.init|[\{\[]["']|\.length|[:=]\s*function\()/;
@@ -753,6 +770,8 @@ function vkResponseChecker(answer,url,q){// detect HTML and prosessing
 
 function vkProcessResponse(answer,url,q){
   if (url=='/photos.php' && q.act=="a_choose_photo_box") vkPhChooseProcess(answer,url,q);
+  if (url=='/video.php' && q.act=="a_choose_video_box") vkVidChooseProcess(answer,url,q);
+  if ((url=='/audio' || url=='/audio.php') && q.act=="a_choose_audio_box") vkAudioChooseProcess(answer,url,q);
   if (url=='/al_friends.php' && q.act=='add_box') answer[1]=answer[1].replace('"friends_add_block" style="display: none;"','"friends_add_block"');
   if(url=='/al_groups.php' && q.act=='people_silent') {
    if(answer[0].members)  answer[0].members = vkModAsNode(answer[0].members,vkProcessNodeLite,url,q);
@@ -794,6 +813,67 @@ function vkPhChooseProcess(answer,url,q){
 //*/  
 }
 
+function vkVidChooseProcess(answer,url,q){
+//*
+  vkCheckVideoLinkToMedia=function(){
+    var btn=ge('vk_link_to_video_button');
+    var val=ge('vk_link_to_video').value.match(/video(-?\d+)_(\d+)/);
+    lockButton(btn);
+    if (val){
+      cur.chooseMedia('video', val[1]+'_'+val[2], 'http://vk.com/images/video_s.png');
+    } else {
+      alert(IDL('IncorrectVideoLink'))
+    }
+    unlockButton(btn);
+  };
+  if (answer[1].indexOf('vk_link_to_video')==-1){
+  var div=vkCe('div',{},answer[1]);
+  var ref=geByClass('summary',div)[0];
+  if (ref){
+    var node=vkCe('div',{"class":'ta_r','style':"height: 25px; padding-left:10px; padding-top:4px;"},'\
+    <div class="fl_l">\
+        '+IDL('EnterLinkToVideo')+': \
+      <span><input id="vk_link_to_video" type="text"  style="width:230px"></span>\
+      <div id="vk_link_to_video_button" class="button_blue"><button onclick="vkCheckVideoLinkToMedia();">'+IDL('OK')+'</button></div>\
+    </div>\
+    ');
+    ref.parentNode.insertBefore(node,ref);
+    ref.parentNode.insertBefore(vkCe('h4'),ref);
+    answer[1]=div.innerHTML;
+  }
+  }
+//*/  
+}
+
+function vkAudioChooseProcess(answer,url,q){
+  vkCheckAudioLinkToMedia=function(){
+    var btn=ge('vk_link_to_audio_button');
+    var val=ge('vk_link_to_audio').value.match(/audio(-?\d+)_(\d+)/);
+    lockButton(btn);
+    if (val){
+      cur.chooseMedia('audio', val[1]+'_'+val[2], [val[1], val[2]]);//[artist,name]
+    } else {
+      alert(IDL('IncorrectAudioLink'))
+    }
+    unlockButton(btn);
+  };
+  if (answer[1].indexOf('vk_link_to_audio')==-1){
+  var div=vkCe('div',{},answer[1]);
+  var ref=geByClass('summary',div)[0];
+  if (ref){
+    var node=vkCe('div',{"class":'ta_r','style':"height: 25px; padding-left:10px; padding-top:4px;"},'\
+    <div class="fl_l">\
+        '+IDL('EnterLinkToAudio')+': \
+      <span><input id="vk_link_to_audio" type="text"  style="width:230px"></span>\
+      <div id="vk_link_to_audio_button" class="button_blue"><button onclick="vkCheckAudioLinkToMedia();">'+IDL('OK')+'</button></div>\
+    </div>\
+    ');
+    ref.parentNode.insertBefore(node,ref);
+    ref.parentNode.insertBefore(vkCe('h4'),ref);
+    answer[1]=div.innerHTML;
+  }
+  }  
+}
    
 
 /* IM */
@@ -1128,6 +1208,7 @@ function vkGetPageWithPhotos(oid,aid){
 			var html='<h4>No images</h4>'
 		else {
 			vkImgsList='<div style="background:#FFB; border:1px solid #AA0;  margin:20px; padding:20px;">'+IDL('HtmlPageSaveHelp')+'</div>'+vkImgsList;
+         //vkImgsList=vkImgsList.replace(/#/g,'%23');
 			var html='<h4><a href="#" onclick="vkWnd(vkImgsList,\''+document.title.replace(/'"/g,"")+'\'); return false;">'+IDL('ClickForShowPage')+'</a></h4>';
 		}
 		box.content(html).show();
@@ -1142,7 +1223,7 @@ function vkAddAlbumCommentsLinks(node){
    for (var i=0;i<els.length;i++){
       var el=geByClass('info_wrap',els[i])[0];
       var id=els[i].id?els[i].id:el.innerHTML.match(/album-?\d+_\d+/);
-      el.innerHTML+='<a class="fl_r" href="/'+id+'?act=comments" onclick="return nav.go(this, event)">'+IDL('komm',1)+'</a>';
+      if (el.innerHTML.indexOf('act=comments')==-1) el.innerHTML+='<a class="fl_r" href="/'+id+'?act=comments" onclick="return nav.go(this, event)">'+IDL('komm',1)+'</a>';
    }
 }
 
@@ -1216,6 +1297,7 @@ function vkVidDownloadLinks(vars){
     ////
    var smartlink=(getSet(1) == 'y')?true:false;
    var vidname=winToUtf(mvcur.mvData.title).replace(/\?/g,'%3F').replace(/\&/g,'%26');
+   vidname=vkCleanFileName(vidname);
    vidname='?'+vkDownloadPostfix()+'&/'+vidname;
    //(smartlink?vidname+'.mov')
 	if (!vars) return '';
@@ -1441,6 +1523,55 @@ function vkCleanAudios(){
 	};
 	vkAlertBox(IDL('DelAudios'),IDL('DelAllAutiosConfirm'),run,true);
 }
+vkAudioEd = {
+   Delete:function(id,aid,el){
+    var el = ge('audio' + aid);
+    var h = getSize(geByClass1('play_btn', el))[1];
+    stManager.add(['audio_edit.js']);
+    ajax.post(Audio.address, {act: 'delete_audio', oid: cur.oid, aid: id, hash: cur.hashes.delete_hash, restore: 1}, {
+      onDone: function(text, delete_all) {
+        cur.deleting = false;
+        if (!cur.deletedAudios) cur.deletedAudios = [];
+        cur.deletedAudios[id] = ge('audio'+aid).innerHTML;
+        text=text.replace(/AudioEdit.restoreAudio\(\d+\)/,'vkAudioEd.Restore('+id+',\''+aid+'\')');
+        el.innerHTML = text;
+        h=30;
+        setStyle(geByClass1('dld', el), {height: h+'px'});
+        //el.style.cursor = 'auto';
+        //el.setAttribute('nosorthandle', '1');
+        if (delete_all) {
+          cur.summaryLang.delete_all = delete_all;
+        }
+        cur.audiosIndex.remove(cur.audios[id]);
+        cur.audios[id].deleted = true;
+        cur.sectionCount--;
+        Audio.changeSummary();
+        
+      }
+    });
+    return false;
+   },
+   Restore: function(id,aid) {
+    if (cur.restoring) {
+      return;
+    }
+    cur.restoring = true;
+    var el = ge('audio' + aid);
+    ajax.post(Audio.address, {act: 'restore_audio', oid: cur.oid, aid: id, hash: cur.hashes.restore_hash}, {
+      onDone: function(text) {
+        cur.restoring = false;
+        el.innerHTML = cur.deletedAudios[id];
+        //el.style.cursor = 'move';
+        //el.removeAttribute('nosorthandle');
+        cur.audiosIndex.add(cur.audios[id]);
+        cur.audios[id].deleted = false;
+        cur.sectionCount++;
+        Audio.changeSummary();
+      }
+    });
+  }
+}
+
 
 function vkParseAudioInfo(_aid,node,anode){
     //var _a=audioPlayer;
@@ -1534,6 +1665,7 @@ function vkAudioNode(node){
 			 (geByClass('title_wrap',el.parentNode)[0] || el.parentNode).appendChild(vkCe('small',{"class":"duration fl_r",id:"vk_asize"+id, "url":url, dur:data[1]}));
 
 		     var name=el.parentNode.getElementsByTagName('b')[0].innerText+' - '+(span_title || ge('title'+id) || spans[1] || spans[0]).innerText;
+           name=vkCleanFileName(name);
 		     if (smartlink) {url+='?'+vkDownloadPostfix()+'&/'+name+'.mp3';};//normal name
 		     if (SearchLink && el){el.innerHTML=vkAudioDurSearchBtn(el.innerText,name,id);/* "<a href='/search?c[section]=audio&c[q]="+name+"'>"+el.innerText+"</a>";*/}
          if (download){ 
@@ -1726,11 +1858,11 @@ function vkAddAudio(aid,oid,callback){
 	});
 }
 function vkAddAudioT(oid,aid,el){
-	var p=el.parentNode;
+	var p=el;//.parentNode;
 	p.innerHTML=vkLdrImg;
-	vkAddAudio(aid,oid,function(r){
-		if (r) p.innerHTML=IDL('Done');
-		else p.innerHTML=IDL('Error');
+	vkAddAudio(aid,oid,function(r){  
+      if (r) p.innerHTML=IDL('AddMyAudio')+' - '+IDL('Done');
+		else p.innerHTML=IDL('AddMyAudio')+' - '+IDL('Error');
 	});
 }
 function vkAudioWikiCode(aid,oid,id){vkAlertBox('Wiki-code:','<center><input type="text" value="[[audio'+aid+']]" readonly onClick="this.focus();this.select();" size="25"/><br><br>\
@@ -1744,6 +1876,7 @@ function vkShowAddAudioTip(el,id){
 		var name=vkParseAudioInfo(id);
       name=(name[5]+' '+name[6]).replace(/[\?\&\s]/g,'+');
       var html = '';
+      html += (remixmid()==cur.oid || isGroupAdmin(cur.oid))?'<a href="#" onclick="vkAudioEd.Delete(\''+a[2]+'\',\''+id+'\',this); return false;">'+IDL('delete',2)+'</a>':'';
       html += show_add ?'<a href="#" onclick="vkAddAudioT(\''+a[1]+'\',\''+a[2]+'\',this); return false;">'+IDL('AddMyAudio')+'</a>':'';
       html +='<a href="#" onclick="vkAudioWikiCode(\''+a[1]+'_'+a[2]+'\',\''+a[1]+'\',\''+a[2]+'\'); return false;">'+IDL('Wiki')+'</a>';
       html +='<a href="'+SEARCH_AUDIO_LYRIC_LINK.replace('%AUDIO_NAME%',name)+'" target="_blank">'+IDL('SearchAudioLyr')+'</a>';
@@ -1874,7 +2007,7 @@ function vkFavePage(){
    vkFavUsersList(true);
 }
 
-/* WIKI GET CODE*/
+/* WIKI GET CODE*/ //NOT USED
 function vkGetWikiCode(){
 	var dloc=document.location.href;
 	var gid=dloc.match(/o=-(\d+)/);
@@ -1884,14 +2017,14 @@ function vkGetWikiCode(){
 
 /* MAIL */
 function vkMailPage(){
-	if(nav.objLoc['act']=='show') {
+	if(nav.objLoc['act']=='show' || nav.objLoc[0].match(/write\d+/)) {
 		vkAddSaveMsgLink();
 		if (getSet(40)=='y') vkAddDelMsgHistLink();
 		vkProcessNode();
-      if (!cur.addMailMedia){
+      /*if (!cur.addMailMedia){
          cur.addMailMedia = initAddMedia('mail_add_link', 'mail_added_row', [["photo"," "],["video"," "],["audio"," "],["doc"," "]]);
          cur.addMailMedia.onChange = mail.onMediaChange;
-      }
+      }*/
 	}
 	if (getSet(40)=='y') vkAddDeleteLink();
 }

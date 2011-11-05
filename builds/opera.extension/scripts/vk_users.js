@@ -48,6 +48,29 @@ function getGidUid(url,callback){ //callback(uid,gid)
 	if (url.match(/club\d+$/)){callback(url.match(/club(\d+)$/)[1],null);  return;}
 	
 	if (vkUsersGroupsDomain[url]){callback(vkUsersGroupsDomain[url][0],vkUsersGroupsDomain[url][1]);  return; }
+   
+   var obj_id=url.split('/').pop();
+   dApi.call('resolveScreenName',{screen_name:obj_id},function(r){
+     var res=r.response;
+     switch(res.type){
+      case 'user': callback(res.object_id);                  break;
+      case 'group': callback(null,res.object_id);            break;
+      case 'application': callback(null,null,res.object_id); break;
+     }
+   });
+
+}
+/*
+function getGidUid(url,callback){ //callback(uid,gid)
+	url=String(url);
+	if (url.match(/^\d+$/)){callback(url);  return;}
+	if (url.match(/^u\d+$/)){callback(url.match(/^u(\d+)$/)[1],null);  return;}
+	if (url.match(/id\d+$/)){callback(url.match(/id(\d+)$/)[1],null);  return;}
+	
+	if (url.match(/^g\d+$/)){callback(null,url.match(/^g(\d+)$/)[1]);  return;}
+	if (url.match(/club\d+$/)){callback(url.match(/club(\d+)$/)[1],null);  return;}
+	
+	if (vkUsersGroupsDomain[url]){callback(vkUsersGroupsDomain[url][0],vkUsersGroupsDomain[url][1]);  return; }
 	AjGet('/al_groups.php?act=add_link_box&al=1&lnk='+url,function(r,t){
 		var res=t.match(/http:\/\/cs\d+.vk.+\/(u\d+|g\d+)\/[A-Za-z0-9]_[A-Za-z0-9]+.jpg/);
 		var id=res?res[1]:null;
@@ -65,13 +88,13 @@ function getGidUid(url,callback){ //callback(uid,gid)
                if (r.response.length && r.response[0].uid)     callback(r.response[0].uid,null);
                else callback(null,null);
              });
-             /*
+             /_*
              AjGet('/groups_ajax.php?act=a_inv_by_link&page='+url,function(r){
 					r=r.responseText;
 					var uid=(r)?r.match(/name=.id..value=.(\d+)/)[1]:null;
 					vkUsersGroupsDomain[url]=[uid,null];
 					callback(uid,null);
-				 });*/	
+				 });*_/	
 			} else {  // if 'NULL AVA (GROUP)';
 				var gurl=url.split('/'); 
 				gurl=(gurl[gurl.length-1])?gurl[gurl.length-1]:url;
@@ -87,7 +110,7 @@ function getGidUid(url,callback){ //callback(uid,gid)
 		}
 	});	
 }
-
+*/
 function ExtractUserID(link){
     if (!link) return null;
 	var tmp2=link.match(/\/id(\d+)$/);
@@ -136,12 +159,13 @@ function GetUserMenuSett() {
                      //IDL("clEv"), 
                      IDL("clNo"), 
                      IDL("clGi"), 
-                     IDL("clRa"), 
+                     //IDL("clRa"), 
                      IDL("mNeP"), 
                      IDL("clAddFr"), 
                      IDL("clAddToFav"), 
                      IDL("addblack"),
-                     IDL("SendAbuse")
+                     IDL("SendAbuse"),
+                     IDL("AddToSubscribtions")
                     ];
     
     var res="";
@@ -275,6 +299,7 @@ function ExGroupItems(gid,el){
 	uitems+=mkExItem(i++,'<a href="/board%GID">'+IDL('board')+'</a>');
 	uitems+=mkExItem(i++,'<a href="/albums-%GID">'+IDL('clPh')+'</a>');
 	uitems+=mkExItem(i++,'<a href="/video?gid=%GID">'+IDL('clVi')+'</a>');
+   uitems+=mkExItem(i++,'<a href="/audio?gid=%GID">'+IDL('clAu')+'</a>');
 	uitems+=mkExItem(i++,'<a href="/photos-%GID">'+IDL('clPhBrowse')+'</a>');
 	uitems+=mkExItem(i++,'<a href="/apps?gid=%GID">'+IDL('clAp')+'</a>');
 	uitems+=mkExItem(i++,'<a href="/search?c[section]=people&c[group]=%GID">'+IDL('clGu')+'</a>');
@@ -286,7 +311,7 @@ function ExUserItems(id,el){
 	if (isGroupAdmin('-'+vkGetGid())){
 		uitems+=mkExItem(0,'<a href="#" onclick="vkBanUser(\'/id%uid\'); return false;">'+IDL('banit')+'</a>');
 	}
-	if (cur.oid>0 && geByClass('wall_post_text',el.parentNode)[0]){
+	if (window.cur && cur.oid>0 && geByClass('wall_post_text',el.parentNode)[0]){
 		uitems+=mkExItem(0,'<a href="/wall'+cur.oid+'?with=%uid" onclick="return nav.go(this, event)">'+IDL('TetAtet')+'</a>');
 	}
 	if (uitems!='') uitems+='<li><div class="vk_user_menu_divider"></div></li>';
@@ -307,13 +332,14 @@ function ExUserItems(id,el){
 	//(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/events.php?id=%uid">'+IDL("clEv")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/notes%uid" onclick="return nav.go(this, event);">'+IDL("clNo")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/gifts?id=%uid">'+IDL("clGi")+'</a>'):i++;
-	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/rate.php?act=vote&id=%uid">'+IDL("clRa")+'</a>'):i++;
+	//(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/rate.php?act=vote&id=%uid">'+IDL("clRa")+'</a>'):i++;
    (ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/feed?section=source&source=%uid">'+IDL("mNeP")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkRemoveFriend(%uid);" class="fl_r">x</a><a href="javascript:vkAddToFriends(%uid);">'+IDL("clAddFr")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkAddToFave(%uid,1);" class="fl_r">x</a><a href="javascript:vkAddToFave(%uid);">'+IDL("clAddToFav")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="#" style="cursor: hand;" onClick="vkAddToBL(%uid); return false;">'+IDL("addblack")+'</a>'):i++;
    (ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="#" style="cursor: hand;" onClick="vkUserAbuse(%uid); return false;">'+IDL("SendAbuse")+'</a>'):i++;
-	uitems+=mkExItem(0,'<a href="javascript:vkFavAddDel(%uid,1);" class="fl_r">x</a><a href="#" style="cursor: hand;" onClick="vkFavAddDel(%uid); return false;">'+IDL("FavAddUser")+'</a>');
+	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkAddToSubscribtions(%uid,1);" class="fl_r">x</a><a href="#" style="cursor: hand;" onClick="vkAddToSubscribtions(%uid); return false;">'+IDL("AddToSubscribtions")+'</a>'):i++;
+   uitems+=mkExItem(0,'<a href="javascript:vkFavAddDel(%uid,1);" class="fl_r">x</a><a href="#" style="cursor: hand;" onClick="vkFavAddDel(%uid); return false;">'+IDL("FavAddUser")+'</a>');
 	return uitems;
 }
 /*
@@ -343,6 +369,17 @@ function vkAddToFave(uid,is_del){ // Turn you to online
 			vkMsg('<b>OK</b>',2000);
 		});
 	});
+}
+
+function vkAddToSubscribtions(uid,is_del){
+   if (is_del)
+      dApi.call('subscriptions.unfollow',{uid:uid},function(r){
+         vkMsg('<b>OK</b>',2000);
+      });   
+   else 
+      dApi.call('subscriptions.follow',{uid:uid},function(r){
+         vkMsg('<b>OK</b>',2000);
+      });
 }
 
 function vkAddToBL(uid){
@@ -632,16 +669,23 @@ function vkGetProfile(uid,callback,no_switch_button){
 	  var MakeProfile = function(r){
 		if (!r.response || !r.response.profile) return;
 		var profile=r.response.profile;
-		var activity=r.response.activity;
+		//var activity=r.response.activity;
 		var country=r.response.country;
 		var city=r.response.city;
+
+         
 		var common='';
 		
 		var username='<a href="/id'+uid+'" onclick="return nav.go(this, event);">'+profile.first_name+' '+profile.nickname+' '+profile.last_name+'</a>';
 		var ava_url=profile.photo_big;
 		var online=profile.online?'Online':'';//'Offline';
 		var rate=make_rate(profile.rate);
-		
+      
+      var relation=profile.relation;
+      var sex=profile.sex;
+      var rel=IDL((sex==1?'profile_relation_f_':'profile_relation_m_')+relation);
+      rel=relation?rel:'';
+      
 		if (r.response.common){
 			var fr=r.response.common;
 			common='<div class="vk_profile_common_fr_header" onclick="slideToggle(\'vkp_commfr\');">'+IDL('CommonFriends')+' ('+fr.length+')</div>';
@@ -657,6 +701,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 			[profile.bdate, Birth_date[1]],
 			[country,Country],
 			[city,select_city],
+         [rel,Family],
 			[profile.mobile_phone, Contact_mob_tel_abbr],
 			[profile.home_phone, Contact_home_tel_abbr],
 			[profile.university_name,select_university_name],
@@ -673,7 +718,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 		var html=VK_PROFILE_TPL.replace("%AVA_SRC%",ava_url)
 							   .replace("%UID%",uid)
 							   .replace("%USERNAME%",username)
-							   .replace("%ACTIVITY%",activity)
+							   .replace("%ACTIVITY%",profile.activity)
 							   .replace("%RATE%",rate)
 							   .replace("%ONLINE%",online)
 							   .replace("%PROFILE_INFO%",info_html)
@@ -687,13 +732,14 @@ function vkGetProfile(uid,callback,no_switch_button){
 	  if (VK_CURRENT_PROFILES_DATA['uid'+uid]) 
 		MakeProfile(VK_CURRENT_PROFILES_DATA['uid'+uid]);
 	  else {
-		  code  = 'var activity=API.status.get({uid:"'+uid+'"});';
-		  code += 'var profile=API.getProfiles({uids:"'+uid+'",fields:"nickname,photo_big,online,rate,bdate,city,country,contacts,education,can_post,can_write_private_message"})[0];';
+		  var code = '';
+        //code  += 'var activity=API.status.get({uid:"'+uid+'"});';
+		  code += 'var profile=API.getProfiles({uids:"'+uid+'",fields:"relation,sex,nickname,activity,photo_big,online,rate,bdate,city,country,contacts,education,can_post,can_write_private_message"})[0];';
 		  code += 'var commonfr=API.friends.getMutual({target_uid:"'+uid+'"});';
 		  code += 'var commons=API.getProfiles({uids:commonfr,fields:"online"});';
 		  code += 'return {';
 		  code += 'profile:profile';
-		  code += ',activity:activity.text';
+		  //code += ',activity:activity.text';
 		  code += ',country: API.getCountries({cids: profile.country})[0].name';
 		  code += ',city: API.getCities({cids: profile.city})[0].name';
 		  code += ',common:commons';
@@ -714,6 +760,16 @@ function vkCheckFrLink(){
 	if (getSet(9)=='y' && !ge('section_frcheck')){
 		var ref=ge("section_suggestions");
 		var sec=vkCe('a',{href:'#', onclick:"vkFriendsCheckRun(true);return false;",id:'section_frcheck',"class":"side_filter"},IDL("refreshList"));
+		ref.parentNode.insertBefore(sec, ref.nextSibling);//
+		return;
+	}
+}
+
+function vkFrNotInListsLink(){
+	if (!ge('section_frnolist')){
+		var ref=ge("section_suggestions");
+      if (!ref) return;
+		var sec=vkCe('a',{href:'#', onclick:"vkFrShowNotInList(); Friends.selectSection('frnolist');return false;",id:'section_frnolist',"class":"side_filter"},IDL("FrNotInLists"));
 		ref.parentNode.insertBefore(sec, ref.nextSibling);//
 		return;
 	}
@@ -1079,7 +1135,28 @@ function vkFavChekUserAndToArray(mid,array,item){
    }
    else array.push(item);
 }
-   
+/*
+function vkNotifyUserCheckAndShow(params){
+   params = params || {};
+   var show=true;
+   var data=curNotifier.q_shown;
+   for (var i=0;i<data.length;i++){
+      var n=data[i];
+      if (n.title==params.title && n.author_link==params.author_link && n.baloonEl){
+         var el=geByClass('notifier_baloon_msg',n.baloonEl)[0].getElementsByTagName('div')[0];
+         el.innerHTML+='<small> ['+(params._time || params.text)+'] </small>';
+         show=false;
+      }
+   }
+   if (show) {
+      //if (params._time) params.text+=params._time;
+      vkShowNotify(params);
+    } else {
+         if (!window.vk_fav_onl_sound) var window.vk_fav_onl_sound=new Sound2('On');
+         vk_fav_onl_sound.play();         
+    }
+}  */
+
 function vkFavOnlineChecker(on_storage){
    //case 'fav_users_statuses':vkFavOnlineChecker(true); break;
    if (getSet(49)!='y')return;
@@ -1117,10 +1194,11 @@ function vkFavOnlineChecker(on_storage){
             vkSetVal('FavList_Onlines',ostr.join('-'));
             if (!ignore){  
                for (var i=0;i<new_onl.length;i++){
-                  var time='<div class="fl_r">'+(new Date).format('isoTime')+'</div>';
+                  var tm=(new Date).format('isoTime');
+                  var time='<div class="fl_r">'+tm+'</div>';
                   var text='<b><a href="/id'+new_onl[i].uid+'" onclick="nav.go(this);">'+new_onl[i].first_name+' '+new_onl[i].last_name+'</a></b>'+time;
-                  
-                  vkShowNotify({sound:'On',title:IDL('UserOnline'),text:text,author_photo:new_onl[i].photo_rec,author_link:'id'+new_onl[i].uid,link:'id'+new_onl[i].uid,onclick:"nav.go('id"+new_onl[i].uid+"')"});
+                  // vkNotifyUserCheckAndShow
+                  vkShowNotify({sound:'On',title:IDL('UserOnline'),text:text,_time:tm,author_photo:new_onl[i].photo_rec,author_link:'id'+new_onl[i].uid,link:'id'+new_onl[i].uid,onclick:"nav.go('id"+new_onl[i].uid+"')"});
                }
             }
             vkCmd('fav_users_statuses','ok');
@@ -1132,6 +1210,8 @@ function vkFavOnlineChecker(on_storage){
    }
    
 }
+
+
 
 function vkFavUsersList(add_button){
    if (add_button){
@@ -1219,10 +1299,11 @@ function vkFaveOnlineChecker(on_storage){
             if (!ignore){  
                for (var i=0;i<new_onl.length;i++){
                   if (getSet(49)=='y' && vkIsFavUser(new_onl[i].id)) continue;
-                  var time='<div class="fl_r">'+(new Date).format('isoTime')+'</div>';
+                  var tm=(new Date).format('isoTime');
+                  var time='<div class="fl_r">'+tm+'</div>';
                   var text='<b><a href="/id'+new_onl[i].id+'" onclick="nav.go(this);">'+new_onl[i].name+'</a></b>'+time;
-                  
-                  vkShowNotify({sound:'On',title:IDL('FaveOnline'),text:text,author_photo:new_onl[i].photo,author_link:'id'+new_onl[i].id,link:'id'+new_onl[i].id,onclick:"nav.go('id"+new_onl[i].id+"')"});
+                  // vkNotifyUserCheckAndShow
+                  vkShowNotify({sound:'On',title:IDL('FaveOnline'),text:text,_time:tm,author_photo:new_onl[i].photo,author_link:'id'+new_onl[i].id,link:'id'+new_onl[i].id,onclick:"nav.go('id"+new_onl[i].id+"')"});
                }
             }
             vkCmd('fave_users_statuses','ok');
@@ -1236,4 +1317,18 @@ function vkFaveOnlineChecker(on_storage){
 }
 //*///
 ////
+
+function vkFrGenNotInListsCat(){
+   if (!cur.friendsList || !cur.friendsList['all']) return;
+   var data=cur.friendsList['all'];
+   var list=[];
+   for (var i=0; i<data.length;i++)
+      if (data[i][5]=='1') list.push(data[i]);
+   cur.friendsList['not_in_list']=list;
+}
+function vkFrShowNotInList(){
+   vkFrGenNotInListsCat();
+   Friends.showSection('not_in_list');
+}
+
 if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;

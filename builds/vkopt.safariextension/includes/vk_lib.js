@@ -313,8 +313,8 @@ if (!window.Audio){
 	}
 	
 	function vkCutBracket(s,bracket){
-		if (CUT_VKOPT_BRACKET) s=(s.substr(0,1)=='[')?s.substr(1,s.length-2):s;
-      else if (bracket) s='[ '+s+' ]';
+		if (CUT_VKOPT_BRACKET || bracket==2) s=(s.substr(0,1)=='[')?s.substr(1,s.length-2):s;
+      else if (bracket &&  bracket!=2) s='[ '+s+' ]';
 		return s;
 	}
 	function IDL(i,bracket) {
@@ -364,12 +364,20 @@ if (!window.Audio){
 		}
 		return res;
 	}
-    
+   function vkCleanFileName(s){   return s.replace(/[\\\/\:\*\?\"\<\>\|]/g,'_');   }
+   
+   
+   function num_to_text(s){
+      s+='';
+      return s.length<4?s:s.split('').reverse().join('').replace(/(\d{3})/g,'$1 ').split('').reverse().join('').replace(/^\s+/,'');
+   }
+
 	function vkLinksUnescapeCyr(str){
 	  var escaped=["%B8", "%E9", "%F6", "%F3", "%EA", "%E5", "%ED", "%E3", "%F8", "%F9", "%E7", "%F5", "%FA", "%F4", "%FB", "%E2", "%E0", "%EF", "%F0", "%EE", "%EB", "%E4", "%E6", "%FD", "%FF", "%F7", "%F1", "%EC", "%E8", "%F2", "%FC", "%E1", "%FE","%A8", "%C9", "%D6", "%D3", "%CA", "%C5", "%CD", "%C3", "%D8", "%D9", "%C7", "%D5", "%DA", "%D4", "%DB", "%C2", "%C0", "%CF", "%D0", "%CE", "%CB", "%C4", "%C6", "%DD", "%DF", "%D7", "%D1", "%CC", "%C8", "%D2", "%DC", "%C1", "%DE"];
 	  var unescaped=["ё", "й", "ц", "у", "к", "е", "н", "г", "ш", "щ", "з", "х", "ъ", "ф", "ы", "в", "а", "п", "р", "о", "л", "д", "ж", "э", "я", "ч", "с", "м", "и", "т", "ь", "б", "ю","Ё", "Й", "Ц", "У", "К", "Е", "Н", "Г", "Ш", "Щ", "З", "Х", "Ъ", "Ф", "Ы", "В", "А", "П", "Р", "О", "Л", "Д", "Ж", "Э", "Я", "Ч", "С", "М", "И", "Т", "Ь", "Б", "Ю"];
 	  for (var i=0;i<escaped.length;i++)
 		str=str.split(escaped[i]).join(unescaped[i]);
+     str=str.replace('%23','#');
 	  return str;
 	}
 	function disableSelectText(node) {    
@@ -1146,7 +1154,7 @@ var uApi = {
 
 DAPI_APP_ID=2168679;
 //javascript: dApi.call('notes.get',{},uApi.show)
-
+/*
 var dApi = {
   api_id: DAPI_APP_ID,
   reauth_count:0,
@@ -1156,28 +1164,13 @@ var dApi = {
   login_url:"/login.php?app="+DAPI_APP_ID+"&layout=popup&type=browser&settings=15615",//touch popup
   onLogin:function(){
 	var dloc=document.location.href;
-	if (dloc.indexOf("login.php?app="+DAPI_APP_ID)!=-1){
-		/*
-		var connect=function(){
-			if (isVisible('login_form')) {
-			  doLogin();
-			} else if (app_settings_need && app_session) {
-			  saveSettings();
-			} else {
-			  doAppPermit();
-			}
-		};
-		connect();
-		setTimeout(function(){
-			parent.window.postMessage("SHOWFRAME","*");
-		},dApi.wait_sett);	*/	
-		
+	if (dloc.indexOf("login.php?app="+DAPI_APP_ID)!=-1){		
 		Inj.Wait("ge('connect_button').onclick",function(){
 			ge('connect_button').onclick();
 			setTimeout(function(){
 				parent.window.postMessage("SHOWFRAME","*");
 			},dApi.wait_sett);		
-		});	//*/
+		});	
 	}
 	//alert('check');
 	if (dloc.match("login_success\.html")){
@@ -1319,7 +1312,204 @@ var dApi = {
     pass();
   }
 };
+//*/
 
+
+var dApi = {
+	API_ID: DAPI_APP_ID,
+	SETTINGS: 15615, /* FULL: 15615 + 131072;   Don't use NOT_USED_SETTING */
+	NOT_USED_SETTING: 99999999, //32768, /* need for get auth dialog when all settings allowed */
+	allow_call:true,
+	auth_frame:null,
+	log: function(s){vklog('API: '+s)},
+   captcha_visible:false,
+   onLogin:function(){},
+	Auth: function(callback) {
+		var appId=dApi.API_ID;
+		var settings=dApi.SETTINGS;
+		
+		var oncheck=function(r,t) {
+			if (t.indexOf('Login success')!=-1) dApi.onAuth(callback);
+			else frame_auth();
+		}
+		var frame_auth=function(){
+			if (dApi.auth_frame) {
+				setTimeout(function(){dApi.Auth(callback);},2000);
+				return;
+			}
+			dApi.auth_frame = ce("iframe", {
+				src: '/login.php?app=' + appId + '&layout=popup&type=browser&settings=' + settings
+				}, {position: 'relative', width: '530px', height: '400px', border:'0px'});
+			
+			dApi.auth_frame.onload=function() { dApi.onAuth(callback);}
+			
+			var onHideBox=function(){
+				var fr=dApi.auth_frame;
+				dApi.auth_frame=null;
+				re(fr);	
+			};
+			dApi.aBox = new MessageBox({title: 0,width:"560px",onHide:onHideBox});
+			var aBox=dApi.aBox;
+			aBox.removeButtons();
+			aBox.addButton(getLang('box_close'),aBox.hide);  
+			aBox.content('<div id="vk_api_auth"></div>');
+			aBox.show();
+			ge('vk_api_auth').appendChild(dApi.auth_frame);
+		}	
+		AjPost('/login.php?app=' + dApi.API_ID + '&layout=popup&type=browser&settings=' + dApi.SETTINGS,{},oncheck);	
+	},
+
+	onAuth: function(callback) {
+		var onlogin=function(r,t) {
+         var res='{' + t.split('app_session = {')[1].split('}')[0] + '}';
+			sessionInfo=eval('(' + res + ')');
+			dApi.mid = sessionInfo.mid;
+			dApi.secret = sessionInfo.secret;
+			dApi.sid = sessionInfo.sid;
+         
+         vksetCookie('dapi_mid',dApi.mid);
+			vksetCookie('dapi_sid',dApi.sid);
+			vksetCookie('dapi_secret',dApi.secret);
+			
+			if (callback) callback(dApi.mid,dApi.secret,dApi.sid);
+	
+		}
+		var oncheck=function(r,t) {
+			if (t.indexOf('Login failure')!=-1){
+				vklog('API failed to log on. ');
+			} else if (t.indexOf('Login success')!=-1){	
+				if (dApi.aBox) {
+					dApi.aBox.hide();
+					dApi.aBox=null;
+				}
+				AjPost('/login.php?app=' + dApi.API_ID + '&layout=popup&type=browser&settings='+dApi.NOT_USED_SETTING,{},onlogin);					
+			}	
+		}
+		AjPost('/login.php?app=' + dApi.API_ID + '&layout=popup&type=browser&settings=' + dApi.SETTINGS,{},oncheck)
+	},
+	show_error:function(r){
+		topError(r.error.error_msg+'<br>error_code: '+r.error.error_code,{dt:2});
+	},
+	call: function(method, inputParams, callback, captcha) {
+		if (arguments.length == 2) {    callback=inputParams;     inputParams={};   }
+		if (dApi.allow_call){
+			dApi.allow_call=false;
+			dApi.allow_t=setTimeout("dApi.allow_call=true;",300);
+		} else {
+			setTimeout(function(){
+				dApi.call(method, inputParams, callback);
+			},300);
+			return;
+		}
+      if (dApi.captcha_visible && !captcha){
+         setTimeout(function(){
+            dApi.call(method, inputParams, callback);
+         },300);
+         return;
+      }
+		var apiReAuth=function(){
+			if (!remixmid()) {
+            vklog('API Error. user id not found');
+            return;
+         }
+         dApi.Auth(function(){
+				dApi.call(method, inputParams, callback);
+			});
+		}
+		dApi.mid=vkgetCookie('dapi_mid');
+      dApi.sid=vkgetCookie('dapi_sid');
+      dApi.secret=vkgetCookie('dapi_secret');
+      
+		var mid=dApi.mid;
+		var sid=dApi.sid;
+		var sec=dApi.secret;
+
+		if (!dApi.sid || !dApi.secret || !dApi.mid || dApi.mid!=vk.id){
+			apiReAuth();		
+			return;
+		}
+      if (remixmid()!='' && mid!=remixmid()){
+         apiReAuth();		
+         return;
+      }
+      
+		var params = {  
+			api_id: dApi.API_ID,
+			method: method,
+			v: '3.0',       
+			format: 'json' 
+		}
+		if (inputParams) for (var i in inputParams) params[i] = inputParams[i];  
+		var lParams=[];
+		for (i in params) {  lParams.push([i,params[i]]);   }
+
+		function sName(i, ii) {    if (i[0] > ii[0]) return 1;  else if (i[0] < ii[0]) return -1;   else  return 0;  }
+		lParams.sort(sName);
+		var sig = mid;
+		for (i in lParams) sig+=lParams[i][0]+'='+lParams[i][1];
+		sig+=sec;
+
+		function pass() {
+		  params['sig']=vkMD5(sig);
+		  params['sid']=sid;
+		  //dApi.log('api.call('+method+(window.JSON?', '+JSON.stringify(inputParams):'')+')');
+        dApi.log(method);
+		  AjPost("/api.php", params,function(obj, text) {
+			if (text=='') text='{}';
+			var response = eval("("+text+")");
+			if (response.error){
+				if (response.error.error_code == 6){
+					setTimeout(function(){
+						dApi.call(method, inputParams, callback);
+					},500);
+				} else if ( response.error.error_code == 4 || (response.error.error_code == 3 || response.error.error_code == 7) ){
+					apiReAuth();				
+				} else if(response.error.error_code == 14) { // Captcha needed
+               dApi.captcha_visible=true;
+					dApi.captcha(response.error.captcha_sid, response.error.captcha_img, function(sid, value) {
+						inputParams['captcha_sid'] = sid;  inputParams['captcha_key'] = value;
+						dApi.call(method, inputParams, callback, true);
+					}, false, function() { callback(response); });
+				}else {
+					dApi.show_error(response); 
+					if (captcha) {
+                  vk_api_captchaBox.setOptions({onHide: function(){dApi.captcha_visible=false}}).hide();  
+                  //vk_api_captchaBox.hide();  
+               }
+					callback(response,response.response,response.error);  
+				} 
+			} else { 
+				if (captcha) vk_api_captchaBox.setOptions({onHide: function(){dApi.captcha_visible=false}}).hide(); //vk_api_captchaBox.hide();  
+				callback(response);  
+			}
+		  });
+		}
+		pass();
+	},
+	captcha: function(sid, img, onClick, onShow, onHide) {
+		vk_api_captchaBox = new MessageBox({title: getLang('captcha_enter_code'), width: 300});
+		var box = vk_api_captchaBox;
+		box.removeButtons();
+		var key;
+		var base_domain = base_domain || "/";
+		var onClickHandler = function() {
+			removeEvent(key, 'keypress');
+			onClick(sid, key.value);
+			hide('captchaKey');
+			show('captchaLoader');
+		}
+		box.addButton(getLang('captcha_cancel'), function(){removeEvent(key, 'keypress');box.hide();},'no');
+		box.addButton(getLang('captcha_send'),onClickHandler);
+		box.setOptions({onHide: onHide, bodyStyle: 'padding: 16px 14px'});
+		box.content('<div style="text-align: center; height: 76px"><a href="#" id="refreshCaptcha"><img id="captchaImg" class="captchaImg" src="'+img+ '"/></a><div></div><input id="captchaKey" class="inputText" name="captcha_key" type="text" style="width: 120px; margin: 3px 0px 0px;" maxlength="7"/><img id="captchaLoader" src="'+base_domain+'images/progress7.gif" style="display:none; margin-top: 13px;" /></div>');
+		box.show();
+		if (isFunction(onShow)) onShow();
+		key = ge('captchaKey');
+		addEvent(key, 'keypress', function(e) { if(e.keyCode==13){ onClickHandler(); }});
+		addEvent(ge('refreshCaptcha'), 'click', onClickHandler);
+		key.focus();
+	}
+};
 vkApis={
 	photos:function(oid,aid,callback){
 		var params={aid:aid};
@@ -1625,7 +1815,7 @@ function vkWnd(text,title){
 	var as_data=true;
 	text='<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"><html><head><title>'+(title?title:'VkOpt')+'</title></head><body>'+text+'</body></html>';
 	if (as_data){		
-		url='data:text/html;charset=utf-8,'+encodeURI(text);//charset=utf-8,
+		url='data:text/html;charset=utf-8,'+encodeURIComponent(text);//charset=utf-8,
 	}
 	var wnd	= window.open(url, '_blank', '');//dialog,width=300,height=150,scrollbars=yes
 	if (!as_data){
