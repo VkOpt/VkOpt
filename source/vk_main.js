@@ -1642,9 +1642,10 @@ function vkAudioNode(node){
     td.appendChild(el); 
     td=document.createElement('td');
     td.setAttribute('style',"vertical-align: top;");
-    td.innerHTML='<a href="'+url+'" onmouseover="vk$(this).dragout();"><div class="play_new down_btn" id="down'+id+'"></div></a>';//<img src="'+icon_src+'">
+    td.innerHTML='<a href="'+url+'" onmouseover="vkDragOutFile(this);"><div class="play_new down_btn" id="down'+id+'"></div></a>';//<img src="'+icon_src+'">
     tr.appendChild(td);  
     el.setAttribute('vk_ok','1');  
+    //vk$(this).dragout();
   }
   var divs = geByClass('play_new',node);
   for (var i=0; i<divs.length; i++){
@@ -1680,7 +1681,19 @@ function vkAudioNode(node){
   }
 }
 
-
+function vkDragOutFile(el) {
+    var a = el.getAttribute("href");
+    if (a.indexOf("?&/") != -1) {
+        a = a.split("?&/");
+        a = ":" + a[1] + ":" + a[0];
+        //alert(a);
+    } else {
+        a = '::' + a
+    }
+    el.addEventListener("dragstart", function(e) {
+        e.dataTransfer.setData("DownloadURL", a)
+    },false);
+}
 
 var vk_del_dup_check_size=false;
 function vkAudioDelDup(add_button,btn){
