@@ -11,7 +11,7 @@
 //
 /* VERSION INFO */
 var vVersion	= 203;
-var vBuild = 111105;
+var vBuild = 111108;
 var vPostfix = ' ';
 if (!window.vk_DEBUG) var vk_DEBUG=0;
 

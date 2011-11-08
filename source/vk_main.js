@@ -501,10 +501,12 @@ function vkStyles(){
 	var shut='\
 		.shut .module_body {	display: none !important;}\
 		.shut { padding-bottom: 3px !important; }\
-		#profile_wall.shut div {display: none !important;}\
-		#profile_wall.shut div.module_header {display: block !important;}\
-		.module_header.shutable .header_top{	padding-left: 23px !important;	background: #e1e7ed url("http://vkontakte.ru/images/flex_arrow_open.gif") 0% 50% no-repeat;	}\
-		.shut .module_header.shutable .header_top{ padding-left: 23px;  background: #eeeeee url("http://vkontakte.ru/images/flex_arrow_shut.gif") 0% 50% no-repeat;}\
+      .vk_shut_btn{ display:block; background:url("http://vkontakte.ru/images/flex_arrow_open.gif") no-repeat -6px 2px; width:20px; height:20px; margin:-4px 0; }\
+      .shut .vk_shut_btn{ background-image:url("http://vkontakte.ru/images/flex_arrow_shut.gif");}\
+		#profile_wall.shut div,#profile_photos_module.shut #profile_photos{display: none !important;}\
+		#profile_wall.shut div.module_header, #profile_photos_module.shut div.module_header {display: block !important;}\
+		.module_header.shutable .header_top{ background: #e1e7ed;	}\
+		.shut .module_header.shutable .header_top{ background: #eeeeee;}\
 		.shut .module_header {background-color:#f9f9f9;}\
 	  ';
 	var gr_in_col=(GR_IN_COL == 'y')?"\
@@ -970,6 +972,8 @@ function vkNotifier(){
       vkNotifyCustomSInit();
 	}
    if (getSet(51)=='y') Inj.Replace('FastChat.clistRender','html.push(','vkFavChekUserAndToArray(mid,html,');
+   //Inj.Before('FastChat.clistRender','if (lastMid','html.sort(vkFastChatSortUsers);');
+  
    //Inj.Before('FastChat.clistRender','FastChat.clistUpdateTitle','vkProccessLinks(curFastChat.el.clist);');
    Inj.Before('Notifier.lpCheck','var response','if (!text || text=="") return;'); //error fix?
 	 /* delay for hide notify msg

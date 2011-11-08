@@ -1128,12 +1128,47 @@ function vkFavChekUserAndToArray(mid,array,item){
    /*var umenu='<a id="pup'+mid+'_0" class="vk_usermenu_btn" onclick="pupShow(event,\''+mid+'_0\',\''+mid+'\',this); return false;" onmousedown="event.cancelBubble = true;">'+USERMENU_SYMBOL+'</a>';
    
    alert(item);*/
+   /*
+   online=curFastChat.onlines[mid]
+   */
    if (getSet(8)=='y') item=item.replace('<img','<img onmouseover="vkPopupAvatar(\''+mid+'\',this);" onmouseout="vkHidePhoto();"');
    if (vkIsFavUser(mid)){ 
       item=item.replace('class="fc_contact','class="fc_contact vk_faved_user')
       array.splice(0,0,item);
    }
    else array.push(item);
+}
+
+function vkFastChatSortUsers(a,b){
+   var x=0;
+   var y=0;
+   
+  
+   af=(a.indexOf('vk_faved_user')!=-1);
+   ao=(a.indexOf('fc_contact_online')!=-1);
+   
+   bf=(b.indexOf('vk_faved_user')!=-1);
+   bo=(b.indexOf('fc_contact_online')!=-1);   
+   
+   /*
+   if (af && bf) return 1;
+   else if (!af && bf) return 1;
+   else return 0; */
+   /*
+   else if (!af && !ao) return 1;
+   //else if (!bf && !bo) return 1;
+   else if (af && bf){
+      if (ao && !bo) return -1;
+      else if (!ao && bo) return 1;
+      else return 0;
+   } else {
+      if (ao && !bo) return -1;
+      else if (!ao && bo) return 1;
+      else return 0; 
+   }*/
+
+   
+   //vkFastChatSortUsers
 }
 /*
 function vkNotifyUserCheckAndShow(params){
