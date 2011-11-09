@@ -1907,7 +1907,20 @@ function vkAlertBox(title, text, callback, confirm) {// [callback] - "Yes" or "C
   aBox.content(text);
   return aBox.show();
 }
-
+//Download with normal name by dragout link
+function vkDragOutFile(el) {
+    var a = el.getAttribute("href");
+    if (a.indexOf("?&/") != -1) {
+        a = a.split("?&/");
+        a = ":" + a[1] + ":" + a[0];
+        //alert(a);
+    } else {
+        a = '::' + a
+    }
+    el.addEventListener("dragstart", function(e) {
+        e.dataTransfer.setData("DownloadURL", a)
+    },false);
+}
 /* NOTIFY TOOLS */
 function vkNotifyCustomSInit(){
       vkNotifierSound = function(sound){   if (typeof sound == 'string') (new Sound2(sound)).play();};

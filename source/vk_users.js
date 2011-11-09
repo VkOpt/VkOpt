@@ -212,6 +212,13 @@ function vkProcessUserLink(link){
 	}
 	// tmp1.parentNode.parentNode.id!='profile_groups' - insertBefore, class="fl_r"
 }
+function vkTsUserMenuLink(mid){
+   var mev=(getSet(11)=='y')?'onclick':'onmouseover';
+   return '</span>'+
+            '<span class="fl_l vk_ts_exmenu vk_usermenu_btn" onmousedown="cancelEvent(event);" '+
+            mev+'="cancelEvent(event); pupShow(event,\'ts_vkm'+mid+'\',\'id'+mid+'\',this); return false;">'+
+            USERMENU_SYMBOL;//+'</span>';
+}
 function vkAddUserMenu(el){
 	el=(el || ge('content'));
 	var nodes=el.getElementsByTagName('a');

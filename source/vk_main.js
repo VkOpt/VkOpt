@@ -372,6 +372,7 @@ function vkStyles(){
 	#right_bar_container{width: 118px; margin:5px 10px 0px 0px;	padding-bottom: 10px;}\
 	.box_loader {  height: 50px;  background: url('/images/progress7.gif') center no-repeat;}\
 	.vk_usermenu_btn{color: rgba(100,100,100,0.5);} .vk_usermenu_btn:hover{/*opacity: 0.1;*/ text-decoration:none;}\
+   .vk_ts_exmenu{display: block; line-height: 30px;text-overflow: ellipsis;white-space: nowrap;width: 10px;}\
 	.vk_user_menu_divider{border-bottom:1px solid #DDD;}\
 	.vk_mail_save_history{	display: block; height: 13px;	padding: 18px;	text-align: center;	}\
 	.vk_mail_save_history_block{	display: block; float:right; text-align: center; /*width: 200px;*/	}\
@@ -748,6 +749,8 @@ function vkCommon(){
 	Inj.Start('renderFlash','vkOnRenderFlashVars(vars);');
 	Inj.End('nav.setLoc','setTimeout("vkOnNewLocation();",2);');
 	
+   Inj.After('TopSearch.row','name +','vkTsUserMenuLink(mid)+');
+   //if(window.TopSearch) Inj.End('TopSearch.prepareRows','vkProccessLinks(tsWrap);');
 	//if (window.setFavIcon) Inj.Try('setFavIcon');
 
 }
@@ -1679,20 +1682,6 @@ function vkAudioNode(node){
          }    
       }  
   }
-}
-
-function vkDragOutFile(el) {
-    var a = el.getAttribute("href");
-    if (a.indexOf("?&/") != -1) {
-        a = a.split("?&/");
-        a = ":" + a[1] + ":" + a[0];
-        //alert(a);
-    } else {
-        a = '::' + a
-    }
-    el.addEventListener("dragstart", function(e) {
-        e.dataTransfer.setData("DownloadURL", a)
-    },false);
 }
 
 var vk_del_dup_check_size=false;
