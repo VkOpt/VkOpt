@@ -264,7 +264,7 @@ function vkStyles(){
       }\
       ';
    }
-   if (ShowGroupNews=='y') main_css+='#group .group_wiki_wrap .wk_text{display:block}';
+   if (ShowGroupNews=='y') main_css+='#group .wide_column .group_wiki_wrap .wk_text{display:block}';
    
 	//getSet(38)=='y' 
 	main_css+='.vk_my_friend{color:'+getFrColor()+' !important;}';
