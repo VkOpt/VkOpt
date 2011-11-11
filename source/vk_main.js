@@ -750,6 +750,7 @@ function vkCommon(){
 	Inj.End('nav.setLoc','setTimeout("vkOnNewLocation();",2);');
 	
    Inj.After('TopSearch.row','name +','vkTsUserMenuLink(mid)+');
+
    //if(window.TopSearch) Inj.End('TopSearch.prepareRows','vkProccessLinks(tsWrap);');
 	//if (window.setFavIcon) Inj.Try('setFavIcon');
 
@@ -975,6 +976,8 @@ function vkNotifier(){
       vkNotifyCustomSInit();
 	}
    if (getSet(51)=='y') Inj.Replace('FastChat.clistRender','html.push(','vkFavChekUserAndToArray(mid,html,');
+   
+   
    //Inj.Before('FastChat.clistRender','if (lastMid','html.sort(vkFastChatSortUsers);');
   
    //Inj.Before('FastChat.clistRender','FastChat.clistUpdateTitle','vkProccessLinks(curFastChat.el.clist);');
@@ -985,6 +988,9 @@ function vkNotifier(){
 	  Inj.Replace('Notifier.showEvent','5000','vk_notifier_show_timeout');
 	  Inj.Replace('Notifier.unfreezeEvents','5000','vk_notifier_show_timeout');
 	  */
+     
+    if (getSet(62)=='y')  FastChat.selectPeer=function(mid,e){return showWriteMessageBox(e, mid)}
+     
 }
 
 /* PAGES.JS */

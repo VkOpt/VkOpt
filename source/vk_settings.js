@@ -586,6 +586,7 @@ function vkInitSettings(){
 	  {id:40, text:IDL("seMasDelPMsg")},
      {id:55, text:IDL("seIMFullTime")},
      {id:56, text:IDL("seIMAlwaysShowTime")},
+     {id:62, text:IDL("seWriteBoxWithoutFastChat")}
     ],
     vkInterface:[
       {id:21, text:IDL("seADRem")+vkCheckboxSetting(44,IDL("seAdNotHideSugFr"),true)},
@@ -628,7 +629,7 @@ function vkInitSettings(){
 		{id:34, text:IDL("seSwichTextChr")}	
     ]
   };	  
-	//LAST 61
+	//LAST 62
 	
 	vkSetsType={
       "on"  :[IDL('on'),'y'],
