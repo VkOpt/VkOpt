@@ -43,7 +43,7 @@ var SEARCH_AUDIO_LYRIC_LINK='http://yandex.ru/yandsearch?text=%AUDIO_NAME%+%28%2
 var USERMENU_SYMBOL='&#9660;&nbsp;';
 var MOD_PROFILE_BLOCKS=true;
 var CUT_VKOPT_BRACKET=false;
-var vkNewSettings=[59,60,61,62]; //"new" label on settings item
+var vkNewSettings=[59,60,61, 53,62]; //"new" label on settings item
 var SetsOnLocalStore={
   'vkOVer':'c',
   'remixbit':'c',
