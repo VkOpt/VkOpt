@@ -49,6 +49,7 @@ function vkInj(file){
 	case 'notifier.js': 	vkNotifier(); 	break;
 	case 'common.js': 		vkCommon(); 	break;
 	case 'im.js': 			vkIM(); 	break;
+   case 'mail.js': 			vkMail(); 	break;
   }
   vk_plugins.onjs(file); 
 }
@@ -732,6 +733,13 @@ function vkAjaxNavDisabler(strLoc){
 		return false;
 	}
 }
+function vkAllowPost(url, q, options){
+   if (MAIL_BLOCK_UNREAD_REQ){
+      if (url=='al_mail.php' && q.act=='show') return false;
+      if (url=='al_im.php' && q.act=='a_mark_read') return false;
+   }
+   return true;
+}
 function vkCommon(){
     if (getSet(6)=='y'){
 		goAway=function(lnk,params){document.location=lnk; return false;};
@@ -743,7 +751,8 @@ function vkCommon(){
 		
 	Inj.Start('ajax.framegot','if (h) h=vkProcessOnFramegot(h);');
 	Inj.Before('ajax._post','o.onDone.apply','vkResponseChecker(answer,url,q);');// если это будет пахать нормально, то можно снести часть инъекций в другие модули.
-	
+	Inj.Start('ajax.post','if (vkAllowPost(url, query, options)==false) return;');
+   
 	Inj.Before('nav.go',"var _a = window.audioPlayer;","if (strLoc) if(vkAjaxNavDisabler(strLoc)){return true;}");
 	
 	Inj.Start('renderFlash','vkOnRenderFlashVars(vars);');
@@ -2028,6 +2037,12 @@ function vkGetWikiCode(){
 }
 
 /* MAIL */
+function vkMail(){
+   Inj.Before('mail.showMessage','return false;','vkMailSendFix();');
+}
+function vkMailSendFix(){
+
+}
 function vkMailPage(){
 	if(nav.objLoc['act']=='show' || nav.objLoc[0].match(/write\d+/)) {
 		vkAddSaveMsgLink();
