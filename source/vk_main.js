@@ -85,6 +85,7 @@ function vkProcessNodeLite(node){
 	vkAudioNode(node);
 	vkPrepareTxtPanels(node);
 	vk_plugins.processnode(node,true);
+   if (getSet(63)=='y') vkSmiles(node);
   }  catch (e) {
 	topError(e,{dt:4});
   }
@@ -2038,10 +2039,10 @@ function vkGetWikiCode(){
 
 /* MAIL */
 function vkMail(){
-   Inj.Before('mail.showMessage','return false;','vkMailSendFix();');
+   if (MAIL_SHOWMSG_FIX) Inj.Before('mail.showMessage','return false;','vkMailSendFix();');
 }
 function vkMailSendFix(){
-
+   if (nav.objLoc['act']=='show' && !cur.addMailMedia) setTimeout("mail.showMessage(nav.objLoc['id']);",100);
 }
 function vkMailPage(){
 	if(nav.objLoc['act']=='show' || nav.objLoc[0].match(/write\d+/)) {

@@ -11,13 +11,13 @@
 //
 /* VERSION INFO */
 var vVersion	= 203;
-var vBuild = 111113;
+var vBuild = 111119;
 var vPostfix = ' ';
 if (!window.vk_DEBUG) var vk_DEBUG=0;
 
 /* EXT CONFIG */
 if (!window.DefSetBits)
-var DefSetBits='ynyynnyyynyyy0n0yy0nnyynyyynyy0nynynnnnyy0yyy1yynnnnny0yynynynn-3-0-#c5d9e7-#34a235-1';
+var DefSetBits='ynyynnyyynyyy0n0yy0nnyynyyynyy0nynynnnnyy0yyy1yynnnnny0yynynynnn-3-0-#c5d9e7-#34a235-1';
 var DefExUserMenuCfg='11111110111111111111'; // default user-menu items config
 var vk_upd_menu_timeout=20000;      //(ms) Update left menu timeout
 var vkMenuHideTimeout=400;          //(ms) Hide Menu Popups timeout
@@ -42,8 +42,9 @@ var SEARCH_AUDIO_LYRIC_LINK='http://yandex.ru/yandsearch?text=%AUDIO_NAME%+%28%2
 /* Others */
 var USERMENU_SYMBOL='&#9660;&nbsp;';
 var MOD_PROFILE_BLOCKS=true;
-var CUT_VKOPT_BRACKET=false;
-var MAIL_BLOCK_UNREAD_REQ=false;
+var CUT_VKOPT_BRACKET=false;     // true - убирает из надписей вкопта скобки "[" и "]"
+var MAIL_BLOCK_UNREAD_REQ=false; // true - отключает отсылку отчёта о прочтении сообщения, при его открытии из /mail
+var MAIL_SHOWMSG_FIX=true;
 var vkNewSettings=[59,60,61, 53,62]; //"new" label on settings item
 var SetsOnLocalStore={
   'vkOVer':'c',
