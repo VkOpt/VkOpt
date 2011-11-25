@@ -659,6 +659,7 @@ function vkFriendsPage(){
 /* PUBLICS */
 function vkPublicPage(){
 	addFakeGraffItem();
+   //vkModGroupBlocks();
 }
 /* EVENTS */
 function vkEventPage(){

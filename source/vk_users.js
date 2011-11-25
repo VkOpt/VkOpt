@@ -505,13 +505,13 @@ function vkPopupAvatar(id,el,in_box){
          },true);
          
       }else  if (LoadedProfiles[id]){
-         allowShowPhotoTimer=setTimeout(function(){vkShowProfile(el,LoadedProfiles[id],id);},400);  
+         allowShowPhotoTimer=setTimeout(function(){vkShowProfile(el,LoadedProfiles[id],id);},SHOW_POPUP_PROFILE_DELAY);
        } else {
          vkGetProfile(id,function(html,uid){
             LoadedProfiles[id]=html;
             allowShowPhotoTimer=setTimeout(function(){
                vkShowProfile(el,html,uid);
-            },400);
+            },SHOW_POPUP_PROFILE_DELAY);
          });
        }
     });

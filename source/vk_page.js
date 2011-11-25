@@ -976,7 +976,7 @@ function vkWallAddPreventHideCB(){
 
 
 function vkModGroupBlocks(){
-   var el=ge('group_albums');
+   var el=ge('group_albums');// || ge('public_albums');
    if (el && !ge('gr_photo_browse')){
       el=geByClass('p_header_bottom',el)[0];
       var a=vkCe('a',{id:'gr_photo_browse', href:'/photos'+cur.oid, onclick:"event.cancelBubble = true; return nav.go(this, event)"},IDL("obzor",1));
