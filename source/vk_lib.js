@@ -322,7 +322,7 @@ if (!window.Audio){
 	  if (vk_lang[i]) return vkCutBracket(decodeURI(vk_lang[i]),bracket);
 	  if (vk_lang_ru[i]) return vkCutBracket(decodeURI(vk_lang_ru[i]),bracket);
 	  if (window.vk_lang_add && vk_lang_add[i]) return vkCutBracket(decodeURI(vk_lang_add[i]),bracket);
-	  else return i;
+	  else return vkCutBracket(i,bracket);
 	}
 
 	function vkExtendLang(obj) {
@@ -364,7 +364,7 @@ if (!window.Audio){
 		}
 		return res;
 	}
-   function vkCleanFileName(s){   return s.replace(/[\\\/\:\*\?\"\<\>\|]/g,'_');   }
+   function vkCleanFileName(s){   return s.replace(/[\\\/\:\*\?\"\<\>\|]/g,'_').substr(0,200);   }
    
    
    function num_to_text(s){

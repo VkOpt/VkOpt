@@ -23,7 +23,7 @@ function vkMakeRightBar(){
 	vkaddcss('#main_feed #feed_rate_slider_wrap { right: 152px; } #footer_wrap{ width: 100% !important;}');
 	vk.width=vk.width+120;
    vk.width_dec=280;
-	Inj.Start('handlePageView','if (params.width) params.width+=120; if (params.width_dec) params.width_dec+=120');
+	Inj.Start('handlePageView','if (params.width) params.width+=120; if (params.width_dec) params.width_dec+=120;');
 	Inj.Replace('handlePageView','791','911');
 	Inj.Replace('handlePageView','160','280');
 	
