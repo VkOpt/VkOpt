@@ -1709,7 +1709,7 @@ var XFR={
 			var data=q[1];
 			var req_id=q[2];
 			var method=q[3]==1?'HEAD':'POST';
-			this.ajax(method,url,data,function(r,t){
+			XFR.ajax(method,url,data,function(r,t){
 				if (method=='HEAD'){
 					var all=r.getAllResponseHeaders();
 					var len=r.getResponseHeader('Content-Length');
