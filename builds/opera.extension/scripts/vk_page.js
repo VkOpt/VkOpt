@@ -619,7 +619,7 @@ function vkProfileGroupBlock(){
 }//*/
 
 function vkFrProfile(){
-  var EnableShut= (getSet(53)=='y');
+  var EnableShut = (getSet(53)=='y');
   var els=geByClass('module_header');
   var shuts_mask=parseInt(vkgetCookie('remixbit',1).split('-')[12]);
   var c=ge('profile_full_link') ? ge('profile_full_link') : geByClass('profile_info_link')[0];
@@ -640,12 +640,15 @@ function vkFrProfile(){
 	var rlink=geByClass('right_link',el)[0];
 	if (rlink) rlink.setAttribute('onclick',"return nav.go(this.parentNode.parentNode, event)");
     var all=hdr.getElementsByTagName('span')[0];
-    all.innerHTML='<a href="'+el.href+'" onclick="'+el.getAttribute('onclick')+'">'+all.innerHTML+'</a>';//return nav.go(this, event)
-    var div=document.createElement('div');
-    div.className='module_header';
-    div.appendChild(all);
     hdr.innerHTML='<a href="javascript:vkFriends_get(\''+postfix+'\')" id="Fr'+postfix+'Lnk">[ '+hdr.innerHTML+' ]</a>';
-    hdr.appendChild(all);
+    if (all) {
+       all.innerHTML='<a href="'+el.href+'" onclick="'+el.getAttribute('onclick')+'">'+all.innerHTML+'</a>';//return nav.go(this, event)
+       var div=document.createElement('div');
+       div.className='module_header';
+       div.appendChild(all);
+       hdr.appendChild(all);
+    }
+
     div.appendChild(hdr);
     insertAfter(div,el);
   };
@@ -655,12 +658,14 @@ function vkFrProfile(){
 	var rlink=geByClass('right_link',el)[0];
 	if (rlink) rlink.setAttribute('onclick',"return nav.go(this.parentNode.parentNode, event)");
     var all=hdr.getElementsByTagName('span')[0];
-    all.innerHTML='<a href="'+el.href+'"  onclick="'+el.getAttribute('onclick')+'">'+all.innerHTML+'</a>';
-    var div=document.createElement('div');
-    div.className='module_header';
-    div.appendChild(all);
+    if (all) {
+       all.innerHTML='<a href="'+el.href+'"  onclick="'+el.getAttribute('onclick')+'">'+all.innerHTML+'</a>';
+       var div=document.createElement('div');
+       div.className='module_header';
+       div.appendChild(all);
+       hdr.appendChild(all);
+    }
     //hdr.innerHTML='<a href="javascript:vkFriends_get(\''+postfix+'\')" id="Fr'+postfix+'Lnk">[ '+hdr.innerHTML+' ]</a>';
-    hdr.appendChild(all);
     div.appendChild(hdr);
     insertAfter(div,el);
   };
@@ -676,19 +681,29 @@ function vkFrProfile(){
       }
   };
   for (var i=0; i<els.length;i++)
-    if (els[i].href){
+    if (els[i].href || els[i].parentNode.id=='profile_wall'){
       var mod_l=false;
-      for (var key in fr_match){
-          if (els[i].href.match(fr_match[key])) {mod_l=true; mod(els[i],key);}  
-      }
-      if (!mod_l) mod_lite(els[i]);
       var key=els[i].parentNode.id;
-      if (mod_el[key]) mod_el[key](els[i].parentNode);
+      if (key!='profile_wall'){
+         for (var key in fr_match){
+             if (els[i].href.match(fr_match[key])) {mod_l=true; mod(els[i],key);}  
+         }
+         if (!mod_l) mod_lite(els[i]);
+         var key=els[i].parentNode.id;
+         if (mod_el[key]) mod_el[key](els[i].parentNode);
+      }
       
       if (key && vk_shuts_mask[key] && EnableShut){
-        els[i].setAttribute("onclick",'return shut("'+key+'");');
-        addClass(els[i],'shutable');
+        var s=vkCe('span',{"class":'fl_l',"onclick":'cancelEvent(event); return shut("'+key+'");'},'<span class="vk_shut_btn"></span>');
+        var p=geByClass('header_top',els[i])[0];
+        if (p)  p.insertBefore(s,p.firstChild); 
         addClass(key,'shut_open');
+        addClass(els[i],'shutable');
+        /*
+        els[i].setAttribute("onclick",'return shut("'+key+'");');
+        
+        addClass(key,'shut_open');
+        */
         if (shuts_mask & vk_shuts_mask[key]){	shut(key);	}
       }    
     }
@@ -800,9 +815,9 @@ var vk_shuts_mask = {
   'profile_optional'      : 0x80000,
   'profile_fans'          : 0x100000,
   'profile_idols'         : 0x200000,
-  'profile_infos'         : 0x400000
-  // 'profile_wall'          : 0x20000,  
-  //,'profile_photos_module' : 0x800000
+  'profile_infos'         : 0x400000,
+  'profile_wall'          : 0x800000 
+  ,'profile_photos_module' : 0x1000000
 }
 var vk_shuts_prof=0x400000;
 
@@ -961,7 +976,7 @@ function vkWallAddPreventHideCB(){
 
 
 function vkModGroupBlocks(){
-   var el=ge('group_albums');
+   var el=ge('group_albums');// || ge('public_albums');
    if (el && !ge('gr_photo_browse')){
       el=geByClass('p_header_bottom',el)[0];
       var a=vkCe('a',{id:'gr_photo_browse', href:'/photos'+cur.oid, onclick:"event.cancelBubble = true; return nav.go(this, event)"},IDL("obzor",1));

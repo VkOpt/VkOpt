@@ -1452,6 +1452,7 @@ function vkGetVideoSize(el){
 				el.innerHTML=vkFileSize(l,2);
 			} else {
 				el.innerHTML='0 byte';
+            el.removeAttribute('getsize_ok');
 			}
 			
 		},true);	
@@ -1471,19 +1472,85 @@ function vkVidVarsGet(){
 		}
 	}
 }
+/* YOUTUBE FUNCTIONS */
+function YTDataDecode(qa) {
+  if (!qa) return {};
+  var exclude={'url':1,'type':1};// !='url' && key!='type' 
+  var query = {}, dec = function(str) {
+    try {
+      return decodeURIComponent(str);
+    } catch (e) { return str; }
+  };
+  qa = qa.split('&');
+  for (var i=0;i<qa.length;i++){
+      var a=qa[i];
+      var t = a.split('=');
+      if (t[0]) {
+         var key=dec(t[0]);
+         var v=exclude[key]?[dec(t[1] + '')]:dec(t[1] + '').split(',');
+         query[key]=[];
+         for (var j=0; j<v.length; j++){
+             if (v[j].indexOf('&')!=-1 && v[j].indexOf('=')!=-1 && !exclude[key]) v[j]=YTDataDecode(v[j]);
+            query[key].push(v[j]);                
+         }
+         if (query[key].length==1) query[key]=query[key][0];
+      }
+  }
+  return query;
+}  
+
+function vkGetYoutubeLinks(vid, callback) {
+  var url = 'http://www.youtube.com/get_video_info?video_id=' + vid +
+            '&asv=3&eurl=' + 
+            encodeURIComponent(location.href) + '&el=embedded';
+
+   XFR.post(url,{},function(t){   
+      var obj=YTDataDecode(t);
+      //alert(JSON.Str(obj));
+      var map=(obj.fmt_url_map || obj.url_encoded_fmt_stream_map);
+      if (!map) return [];
+      var links=[];
+      for (var i=0;i<map.length;i++){
+         var format=(map[i].stereo3d?'3D/':'')+YT_video_itag_formats[map[i].itag];
+         var info=(map[i].type+'').split(';')[0]+' '+(obj.fmt_list[i]+'').split('/')[1];
+         if (!format) format=info;
+         links.push([map[i].url+(obj.title?'&title='+encodeURIComponent(obj.title):''), format,info]);
+      }
+      callback(links);
+   });
+}
+
+function vkYTVideoLinks(link){
+   if (String(link).indexOf('youtube.com')==-1) return;
+   var vid=String(link).split('?')[0].split('/').pop();
+   vkGetYoutubeLinks(vid,function(r){
+      //alert(JSON.Str(r));
+      if (!r) return;
+      var html=''; 
+      for (var i=0;i<r.length;i++)
+         html+='<a href="'+r[i][0]+'" title="'+r[i][2]+'"  class="clear_fix" onmouseover="vkGetVideoSize(this);">'+IDL("download")+' '+r[i][1]+'<small class="fl_r divide" url="'+r[i][0]+'"></small></a>';
+         //'<a href="'+vidurl+'" onmouseover="vkGetVideoSize(this);">'+IDL("download")+'<small class="fl_r divide" url="'+vidurl+'"></small></a>';
+      ge('vkyoutubelinks').innerHTML='<a id="vkyoutubelinks_show" href="javascript: toggle(\'vkyoutubelinks_list\');">'+IDL('download')+'</a><span id="vkyoutubelinks_list" style="display:none;">'+html+'</span>';      
+   });
+   return '<span id="vkyoutubelinks"></span>';
+}
+/*END OF YOUTUBE FUNCTIONS */
+
 function vkVidLinks(data){	
-	//'mvcur.mvData.hash'
 	if (ge('mv_actions')){
       if (ge('video_player') && ge('video_player').tagName.toUpperCase()=='IFRAME'){
-         var link=ge('video_player').src;
-         if (link && link.indexOf('youtube')!=-1){
-            link=link.split('?')[0].replace('embed/','watch?v=');
-            ge('mv_actions').innerHTML+=savefrom_link_tpl.replace('%URL%',link).replace('%CLASS%','fl_l')+'<a href="'+link+'">'+IDL('YouTube',1)+'</a>'; 
+         var vlink=ge('video_player').getAttribute('src');
+         if (vlink && vlink.indexOf('youtube')!=-1){
+            var link=vlink.split('?')[0].replace('embed/','watch?v=');
+            ge('mv_actions').innerHTML+='<a href="'+link+'">'+IDL('YouTube',1)+'</a>';/*savefrom_link_tpl.replace('%URL%',link).replace('%CLASS%','fl_l')+*/ 
+            ge('mv_actions').innerHTML+=vkYTVideoLinks(vlink);
             /*
-            http://www.youtube.com/watch?v=jfKVHD3hCS0
-            http://www.youtube.com/embed/jfKVHD3hCS0?autoplay=0&autohide=1&wmode=opaque&showinfo=0*/
+               http://www.youtube.com/embed/jfKVHD3hCS0?autoplay=0
+               http://www.youtube.com/watch?v=jfKVHD3hCS0
+            */
             
          }
+         ge('mv_actions').innerHTML+=vk_plugins.video_links(ge('video_player').src);
       } else if (vkVidVars){  
          var h=ge('mv_actions').innerHTML;
          if (h.indexOf('vkGetVideoSize')!=-1) return;

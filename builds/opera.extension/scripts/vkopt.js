@@ -11,13 +11,13 @@
 //
 /* VERSION INFO */
 var vVersion	= 203;
-var vBuild = 111105;
+var vBuild = 111205;
 var vPostfix = ' ';
 if (!window.vk_DEBUG) var vk_DEBUG=0;
 
 /* EXT CONFIG */
 if (!window.DefSetBits)
-var DefSetBits='ynyynnyyynyyy0n0yy0nnyynyyynyy0nynynnnnyy0yyy1yynnnnny0yynynyn-3-0-#c5d9e7-#34a235-1';
+var DefSetBits='ynyynnyyynyyy0n0yy0nnyynyyynyy0nynynnnnyy0yyy1yynnnnny0yynynynnn-3-0-#c5d9e7-#34a235-1';
 var DefExUserMenuCfg='11111110111111111111'; // default user-menu items config
 var vk_upd_menu_timeout=20000;      //(ms) Update left menu timeout
 var vkMenuHideTimeout=400;          //(ms) Hide Menu Popups timeout
@@ -26,6 +26,7 @@ var MENU_HIGHLIGHT_DELAY=2000;      //(ms) yellow highlight in menu on changed c
 var SIDEBAR_ITEM_HIGHLIGHT_COLOR = "#fcf78a";
 var CHECK_FAV_ONLINE_DELAY = 20000; //(ms)  delay for check online statuses of faved users
 var FAVE_ONLINE_BLOCK_SHOW_COUNT=6;
+var SHOW_POPUP_PROFILE_DELAY=400;//ms 
 
 /* Save messages history config */
 var SAVE_MSG_HISTORY_PATTERN="%username% (%date%):\r\n%message%\r\n\r\n"; //Save Messages history file format (one record)
@@ -37,13 +38,16 @@ var MSG_DEL_REQ_DELAY=300; 	//ms
 var MSG_IDS_PER_DEL_REQUEST=25;
 
 var SEARCH_AUDIO_LYRIC_LINK='http://yandex.ru/yandsearch?text=%AUDIO_NAME%+%28%2Bsite%3Alyrics.mp3s.ru+%7C+%2Bsite%3Alyrics-keeper.com+%7C+%2Bsite%3Aalloflyrics.com++%7C+%2Bsite%3A2song.net++%7C+%2Bsite%3Amegalyrics.ru+%7C+%2Bsite%3Aakkords.ru%29';
+var INJ_AUDIOPLAYER_DUR_MOD=true; //enable JS-injections to player functions, for duration label modification
 /* API SETTINGS PAGE: http://vkontakte.ru/login.php?app=2168679&layout=popup&type=browser&settings=15615 */
 
 /* Others */
 var USERMENU_SYMBOL='&#9660;&nbsp;';
 var MOD_PROFILE_BLOCKS=true;
-var CUT_VKOPT_BRACKET=false;
-var vkNewSettings=[55,56,58,59,60,61]; //"new" label on settings item
+var CUT_VKOPT_BRACKET=false;     // true - убирает из надписей вкопта скобки "[" и "]"
+var MAIL_BLOCK_UNREAD_REQ=false; // true - отключает отсылку отчёта о прочтении сообщения, при его открытии из /mail
+var MAIL_SHOWMSG_FIX=true;
+var vkNewSettings=[59,60,61, 53,62]; //"new" label on settings item
 var SetsOnLocalStore={
   'vkOVer':'c',
   'remixbit':'c',
@@ -71,6 +75,31 @@ var vkOpt_js_count=9; // Count of vkopt files
 
 var FriendsNid=[];
 
+//YouTube formats list
+var YT_video_itag_formats={
+     '0':  '240p.flv',
+     '5':  '240p.flv',
+     '6':  '360p.flv',
+     '34': '360p.flv',
+     '35': '480p.flv',   
+     
+     '13': '.3gp (small)',
+     '17': '.3gp (medium)',
+     
+     '18': '360p.mp4',
+     '22': '720p.mp4',
+     '37': '1080p.mp4',
+     '38': '4k.mp4',
+     '84': '720p.mp4',//3d?
+     '82': '360p.mp4',//3d?
+     
+     '43': '360p.WebM',
+     '44': '480p.WebM',
+     '45': '720p.WebM',
+     '102':'720p.WebM',//3d?
+     '100':'360p.WebM'//3d?
+
+}; 
  // kolobok.us
 var SmilesMap = {
 'girl_angel': /O:-\)|O:\)|O\+\)|O=\)|0:-\)|0:\)|0\+\)|0=\)/gi,

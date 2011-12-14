@@ -165,7 +165,7 @@ function GetUserMenuSett() {
                      IDL("clAddToFav"), 
                      IDL("addblack"),
                      IDL("SendAbuse"),
-                     IDL("AddToSubscribtions")
+                     //IDL("AddToSubscribtions")
                     ];
     
     var res="";
@@ -211,6 +211,13 @@ function vkProcessUserLink(link){
 		insertAfter(inel,link);
 	}
 	// tmp1.parentNode.parentNode.id!='profile_groups' - insertBefore, class="fl_r"
+}
+function vkTsUserMenuLink(mid){
+   var mev=(getSet(11)=='y')?'onclick':'onmouseover';
+   return '</span>'+
+            '<span class="fl_l vk_ts_exmenu vk_usermenu_btn" onmousedown="cancelEvent(event);" '+
+            mev+'="cancelEvent(event); pupShow(event,\'ts_vkm'+mid+'\',\'id'+mid+'\',this); return false;">'+
+            USERMENU_SYMBOL;//+'</span>';
 }
 function vkAddUserMenu(el){
 	el=(el || ge('content'));
@@ -338,7 +345,7 @@ function ExUserItems(id,el){
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkAddToFave(%uid,1);" class="fl_r">x</a><a href="javascript:vkAddToFave(%uid);">'+IDL("clAddToFav")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="#" style="cursor: hand;" onClick="vkAddToBL(%uid); return false;">'+IDL("addblack")+'</a>'):i++;
    (ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="#" style="cursor: hand;" onClick="vkUserAbuse(%uid); return false;">'+IDL("SendAbuse")+'</a>'):i++;
-	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkAddToSubscribtions(%uid,1);" class="fl_r">x</a><a href="#" style="cursor: hand;" onClick="vkAddToSubscribtions(%uid); return false;">'+IDL("AddToSubscribtions")+'</a>'):i++;
+	//(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkAddToSubscribtions(%uid,1);" class="fl_r">x</a><a href="#" style="cursor: hand;" onClick="vkAddToSubscribtions(%uid); return false;">'+IDL("AddToSubscribtions")+'</a>'):i++;
    uitems+=mkExItem(0,'<a href="javascript:vkFavAddDel(%uid,1);" class="fl_r">x</a><a href="#" style="cursor: hand;" onClick="vkFavAddDel(%uid); return false;">'+IDL("FavAddUser")+'</a>');
 	return uitems;
 }
@@ -498,13 +505,13 @@ function vkPopupAvatar(id,el,in_box){
          },true);
          
       }else  if (LoadedProfiles[id]){
-         allowShowPhotoTimer=setTimeout(function(){vkShowProfile(el,LoadedProfiles[id],id);},400);  
+         allowShowPhotoTimer=setTimeout(function(){vkShowProfile(el,LoadedProfiles[id],id);},SHOW_POPUP_PROFILE_DELAY);
        } else {
          vkGetProfile(id,function(html,uid){
             LoadedProfiles[id]=html;
             allowShowPhotoTimer=setTimeout(function(){
                vkShowProfile(el,html,uid);
-            },400);
+            },SHOW_POPUP_PROFILE_DELAY);
          });
        }
     });
@@ -1128,12 +1135,47 @@ function vkFavChekUserAndToArray(mid,array,item){
    /*var umenu='<a id="pup'+mid+'_0" class="vk_usermenu_btn" onclick="pupShow(event,\''+mid+'_0\',\''+mid+'\',this); return false;" onmousedown="event.cancelBubble = true;">'+USERMENU_SYMBOL+'</a>';
    
    alert(item);*/
+   /*
+   online=curFastChat.onlines[mid]
+   */
    if (getSet(8)=='y') item=item.replace('<img','<img onmouseover="vkPopupAvatar(\''+mid+'\',this);" onmouseout="vkHidePhoto();"');
    if (vkIsFavUser(mid)){ 
       item=item.replace('class="fc_contact','class="fc_contact vk_faved_user')
       array.splice(0,0,item);
    }
    else array.push(item);
+}
+
+function vkFastChatSortUsers(a,b){
+   var x=0;
+   var y=0;
+   
+  
+   af=(a.indexOf('vk_faved_user')!=-1);
+   ao=(a.indexOf('fc_contact_online')!=-1);
+   
+   bf=(b.indexOf('vk_faved_user')!=-1);
+   bo=(b.indexOf('fc_contact_online')!=-1);   
+   
+   /*
+   if (af && bf) return 1;
+   else if (!af && bf) return 1;
+   else return 0; */
+   /*
+   else if (!af && !ao) return 1;
+   //else if (!bf && !bo) return 1;
+   else if (af && bf){
+      if (ao && !bo) return -1;
+      else if (!ao && bo) return 1;
+      else return 0;
+   } else {
+      if (ao && !bo) return -1;
+      else if (!ao && bo) return 1;
+      else return 0; 
+   }*/
+
+   
+   //vkFastChatSortUsers
 }
 /*
 function vkNotifyUserCheckAndShow(params){

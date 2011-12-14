@@ -3,6 +3,7 @@
 // @include       *vk.com*
 // @include       *vkadre.ru*
 // @include       *durov.ru*
+// @include       *youtube.com*
 // ==/UserScript==
 
 opera.extension.onmessage = function(event){

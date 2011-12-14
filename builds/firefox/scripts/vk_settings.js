@@ -586,6 +586,7 @@ function vkInitSettings(){
 	  {id:40, text:IDL("seMasDelPMsg")},
      {id:55, text:IDL("seIMFullTime")},
      {id:56, text:IDL("seIMAlwaysShowTime")},
+     {id:62, text:IDL("seWriteBoxWithoutFastChat")}
     ],
     vkInterface:[
       {id:21, text:IDL("seADRem")+vkCheckboxSetting(44,IDL("seAdNotHideSugFr"),true)},
@@ -607,7 +608,7 @@ function vkInitSettings(){
       {id:31, text:IDL("seRightBar")+vkCheckboxSetting(37,IDL("seRightBarFixAsSideBar"),true)},
       {id:35, text:IDL("seBlocksToRightBar")},
       {id:32, text:IDL("seSkinManBtn"), hide: (vkbrowser.mozilla)},
-      {id:33, text:IDL("seSmiles")},
+      {id:33, text:IDL("seSmiles")+vkCheckboxSetting(63,IDL("seSmilesAlwaysShow"),true),warn:'seSmilesAlwaysShowWarning'},
       {id:36, text:IDL("sePreventHideNotifications")},
       {id:42, text:IDL("seSortFeedPhotos")},
       {id:53, text:IDL("seShutProfilesBlock")},
@@ -628,7 +629,7 @@ function vkInitSettings(){
 		{id:34, text:IDL("seSwichTextChr")}	
     ]
   };	  
-	//LAST 61
+	//LAST 63
 	
 	vkSetsType={
       "on"  :[IDL('on'),'y'],
@@ -716,7 +717,7 @@ function vkGetSettings(setts,allsett){
         }
       }
       var sub="";
-	  var warn=(set.warn?'<div class="vk_warning_ico fl_r" onmouseover="vkSettInfo(this,IDL(\'WarnSetting\'));"></div>':'');
+	  var warn=(set.warn?'<div class="vk_warning_ico fl_r" onmouseover="vkSettInfo(this,'+(typeof set.warn=='string'?'IDL(\''+set.warn+'\')':'IDL(\'WarnSetting\')')+');"></div>':'');
      var info=(set.info?'<div class="vk_info_ico fl_r" onmouseover="vkSettInfo(this,'+(typeof set.info=='string'?'IDL(\''+set.info+'\')':'IDL(\'InfoSetting\')')+');"></div>':'');
       if (set.sub) {
         var subsets=[];
@@ -724,7 +725,7 @@ function vkGetSettings(setts,allsett){
         for (var i=0;i<sops.length;i++) subsets.push('<a href="javascript:vkSwitchSet('+set.sub.id+','+sops[i]+',true);">'+sops[i]+'</a>');
         sub = set.sub.text.replace("%cur",'<span id="vkcurset'+set.sub.id+'">'+allsett[set.sub.id]+'</span>').replace("%sets",subsets.join(" - "));
       }
-      html+='</div><div class="stext">'+set.text+sub+warn+info+'</div></div>\r\n';
+      html+='</div><div class="stext">'+warn+info +set.text+sub+'</div></div>\r\n';
   }
   return '<div style="display: inline-block; width:100%;">'+html+"</div>";
   

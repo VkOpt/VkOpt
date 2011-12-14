@@ -40,6 +40,7 @@ function vkInj(file){
     case 'photoview.js':    vkPhotoViewer();	break;
 	case 'videoview.js':	vkVideoViewer();	break;
 	case 'audio.js':		vkAudios();		break;
+   case 'new_player.js':		vkAudioPlayer();		break;
 	case 'feed.js':			vkFeed();		break;
 	case 'search.js':		vkSearch();		break;
 	case 'profile.js':		vkProfile();	break;
@@ -49,6 +50,7 @@ function vkInj(file){
 	case 'notifier.js': 	vkNotifier(); 	break;
 	case 'common.js': 		vkCommon(); 	break;
 	case 'im.js': 			vkIM(); 	break;
+   case 'mail.js': 			vkMail(); 	break;
   }
   vk_plugins.onjs(file); 
 }
@@ -84,6 +86,7 @@ function vkProcessNodeLite(node){
 	vkAudioNode(node);
 	vkPrepareTxtPanels(node);
 	vk_plugins.processnode(node,true);
+   if (getSet(63)=='y') vkSmiles(node);
   }  catch (e) {
 	topError(e,{dt:4});
   }
@@ -126,6 +129,7 @@ function vkOnNewLocation(startup){
 			case 'photos' :vkPhotosPage(); break;
 			case 'audio'  :vkAudioPage(); break;
 			case 'audio_edit'  :vkAudioEditPage(); break;
+         case 'video'  :vkVideoPage(); break;
 			case 'notes'  :vkNotesPage(); break;
 			case 'board'  :vkBoardPage(); break;
 			case 'search'  :vkSearchPage(); break;
@@ -207,6 +211,7 @@ function VkOptMainInit(){
   vkMoneyBoxAddHide();
   vkCheckUpdates();
   vkFriendsCheckRun();
+  setTimeout(vkVidLinks,0);
   if (vkgetCookie('IDFriendsUpd') && (vkgetCookie('IDFriendsUpd') != '_')) {	vkShowFriendsUpd();  }
   
 }
@@ -264,7 +269,7 @@ function vkStyles(){
       }\
       ';
    }
-   if (ShowGroupNews=='y') main_css+='#group .group_wiki_wrap .wk_text{display:block}';
+   if (ShowGroupNews=='y') main_css+='#group .wide_column .group_wiki_wrap .wk_text{display:block}';
    
 	//getSet(38)=='y' 
 	main_css+='.vk_my_friend{color:'+getFrColor()+' !important;}';
@@ -372,6 +377,7 @@ function vkStyles(){
 	#right_bar_container{width: 118px; margin:5px 10px 0px 0px;	padding-bottom: 10px;}\
 	.box_loader {  height: 50px;  background: url('/images/progress7.gif') center no-repeat;}\
 	.vk_usermenu_btn{color: rgba(100,100,100,0.5);} .vk_usermenu_btn:hover{/*opacity: 0.1;*/ text-decoration:none;}\
+   .vk_ts_exmenu{display: block; line-height: 30px;text-overflow: ellipsis;white-space: nowrap;width: 10px;}\
 	.vk_user_menu_divider{border-bottom:1px solid #DDD;}\
 	.vk_mail_save_history{	display: block; height: 13px;	padding: 18px;	text-align: center;	}\
 	.vk_mail_save_history_block{	display: block; float:right; text-align: center; /*width: 200px;*/	}\
@@ -417,7 +423,7 @@ function vkStyles(){
 		.audio_table .audio td.play_btn, .audio_table .audio td.play_btn td { padding-bottom: 0px !important; padding-top: 0px !important;padding: 0px !important; }\
 		.audio_table .audio td{ padding-bottom: 0px !important; padding-top: 0px !important;}\
 		.audio_table table{ border-spacing: 0px !important;}\
-		.audios_row { margin-top: 0px !important;}\
+		.audios_row { margin-top: 0px !important; padding-top:0px !important;}\
 		.audios_row .actions a{padding-top:2px !important; padding-bottom:2px !important;}\
 	";
 	//additional audio styles
@@ -501,10 +507,12 @@ function vkStyles(){
 	var shut='\
 		.shut .module_body {	display: none !important;}\
 		.shut { padding-bottom: 3px !important; }\
-		#profile_wall.shut div {display: none !important;}\
-		#profile_wall.shut div.module_header {display: block !important;}\
-		.module_header.shutable .header_top{	padding-left: 23px !important;	background: #e1e7ed url("http://vkontakte.ru/images/flex_arrow_open.gif") 0% 50% no-repeat;	}\
-		.shut .module_header.shutable .header_top{ padding-left: 23px;  background: #eeeeee url("http://vkontakte.ru/images/flex_arrow_shut.gif") 0% 50% no-repeat;}\
+      .vk_shut_btn{ display:block; background:url("http://vkontakte.ru/images/flex_arrow_open.gif") no-repeat -6px 2px; width:20px; height:20px; margin:-4px 0; }\
+      .shut .vk_shut_btn{ background-image:url("http://vkontakte.ru/images/flex_arrow_shut.gif");}\
+		#profile_wall.shut div,#profile_photos_module.shut #profile_photos{display: none !important;}\
+		#profile_wall.shut div.module_header, #profile_photos_module.shut div.module_header {display: block !important;}\
+		.module_header.shutable .header_top{ background: #e1e7ed;	}\
+		.shut .module_header.shutable .header_top{ background: #eeeeee;}\
 		.shut .module_header {background-color:#f9f9f9;}\
 	  ';
 	var gr_in_col=(GR_IN_COL == 'y')?"\
@@ -654,10 +662,13 @@ function vkFriendsPage(){
 /* PUBLICS */
 function vkPublicPage(){
 	addFakeGraffItem();
+   vkWallAlbumLink();
+   //vkModGroupBlocks();
 }
 /* EVENTS */
 function vkEventPage(){
 	addFakeGraffItem();
+   vkWallAlbumLink();
 }
 /* GROUPS */
 function vkGroupPage(){
@@ -665,6 +676,8 @@ function vkGroupPage(){
 	vkCheckGroupAdmin();
    vkModGroupBlocks();
    vkAudioBlock();
+   vkWallAlbumLink();
+   
 }
 function vkGetGid(){
 	if (!window.cur || cur.oid>0) return false;
@@ -729,6 +742,13 @@ function vkAjaxNavDisabler(strLoc){
 		return false;
 	}
 }
+function vkAllowPost(url, q, options){
+   if (MAIL_BLOCK_UNREAD_REQ){
+      if (url=='al_mail.php' && q.act=='show') return false;
+      if (url=='al_im.php' && q.act=='a_mark_read') return false;
+   }
+   return true;
+}
 function vkCommon(){
     if (getSet(6)=='y'){
 		goAway=function(lnk,params){document.location=lnk; return false;};
@@ -740,12 +760,16 @@ function vkCommon(){
 		
 	Inj.Start('ajax.framegot','if (h) h=vkProcessOnFramegot(h);');
 	Inj.Before('ajax._post','o.onDone.apply','vkResponseChecker(answer,url,q);');// если это будет пахать нормально, то можно снести часть инъекций в другие модули.
-	
+	Inj.Start('ajax.post','if (vkAllowPost(url, query, options)==false) return;');
+   
 	Inj.Before('nav.go',"var _a = window.audioPlayer;","if (strLoc) if(vkAjaxNavDisabler(strLoc)){return true;}");
 	
 	Inj.Start('renderFlash','vkOnRenderFlashVars(vars);');
 	Inj.End('nav.setLoc','setTimeout("vkOnNewLocation();",2);');
 	
+   Inj.After('TopSearch.row','name +','vkTsUserMenuLink(mid)+');
+
+   //if(window.TopSearch) Inj.End('TopSearch.prepareRows','vkProccessLinks(tsWrap);');
 	//if (window.setFavIcon) Inj.Try('setFavIcon');
 
 }
@@ -970,6 +994,10 @@ function vkNotifier(){
       vkNotifyCustomSInit();
 	}
    if (getSet(51)=='y') Inj.Replace('FastChat.clistRender','html.push(','vkFavChekUserAndToArray(mid,html,');
+   
+   
+   //Inj.Before('FastChat.clistRender','if (lastMid','html.sort(vkFastChatSortUsers);');
+  
    //Inj.Before('FastChat.clistRender','FastChat.clistUpdateTitle','vkProccessLinks(curFastChat.el.clist);');
    Inj.Before('Notifier.lpCheck','var response','if (!text || text=="") return;'); //error fix?
 	 /* delay for hide notify msg
@@ -978,6 +1006,9 @@ function vkNotifier(){
 	  Inj.Replace('Notifier.showEvent','5000','vk_notifier_show_timeout');
 	  Inj.Replace('Notifier.unfreezeEvents','5000','vk_notifier_show_timeout');
 	  */
+     
+    if (getSet(62)=='y')  FastChat.selectPeer=function(mid,e){return showWriteMessageBox(e, mid)}
+     
 }
 
 /* PAGES.JS */
@@ -1128,6 +1159,7 @@ function vkPVLinks(ph){
 function vkPhotosPage(){
 	if (nav.objLoc[0].indexOf('albums')!=-1){
       vkAddAlbumCommentsLinks();
+      if (cur.oid<0) vkPhotosWallAlbum();
    } else if (nav.objLoc[0].indexOf('album')!=-1){
 		
       var m=nav.objLoc[0].match(/album(-?\d+)_(\d+)/);
@@ -1227,6 +1259,42 @@ function vkAddAlbumCommentsLinks(node){
    }
 }
 
+function vkPhotosWallAlbum(){
+   var p=geByClass('t_bar')[0].getElementsByTagName('ul')[0];
+   if (!p || ge('vk_ph_wall')) return;
+   var html='<a href="/album'+cur.oid+'_00?rev=1" onclick="return nav.go(this, event)"><b class="tl1"><b></b></b><b class="tl2"></b><b class="tab_word"><nobr>'+IDL('photos_on_wall',1)+'</nobr></b> </a>';
+   p.appendChild(vkCe('li',{id:"vk_ph_wall"},html));
+   
+   /*
+   if (ge('photos_top_container')) return;
+   var gid=cur.oid;
+   var html='<div class="clear_fix album top_album">\
+       <div class="fl_l thumb"><a href="/album'+gid+'_00?rev=1" onclick="return nav.go(this, event)"><img src="http://vk.com/images/m_noalbum.gif"></a></div>\
+       <div class="fl_l info_wrap">\
+         <div class="name"><a href="/album'+gid+'_00?rev=1" onclick="return nav.go(this, event)">'+IDL('photos_on_wall')+'</a></div>\
+         <a class="fl_r" href="/album'+gid+'_00?act=comments" onclick="return nav.go(this, event)">'+IDL('komm',1)+'</a>\
+       </div>\
+     </div>';
+   var p=ge('photos_container');
+   var div=vkCe('div',{id:'photos_top_container'},html);
+   p.parentNode.insertBefore(div,p);
+   */
+}
+function vkWallAlbumLink(){
+   if (ge('vk_wall_album_link')) return;
+   if (isVisible('page_wall_switch'))  ge('page_wall_header').appendChild(vkCe('span',{"class":'fl_r right_link divide'},'|'))
+   var href=ge('page_wall_header').getAttribute('href');
+   ge('page_wall_header').appendChild(vkCe('a',{
+               "class":'fl_r right_link', 
+               id:'vk_wall_album_link',
+               href:'/album'+cur.oid+'_00?rev=1',
+               onclick:"cancelEvent(event); return nav.go(this, event);",
+               onmouseover:"this.parentNode.href='/album"+cur.oid+"_00?rev=1'",
+               onmouseout:"this.parentNode.href='"+href+"';"
+            },IDL('photo',1)))
+}
+
+
 var VKPRU_SWF_LINK='http://cs4320.vk.com/u13391307/ac8f5bbe4ce7a8.zip';
 function vkPhotoUrlUpload(url){
 	PRUBox = new MessageBox({title: IDL('PhotoUpload'),width:"290px"});
@@ -1284,6 +1352,8 @@ function vkPhotoUrlUpload(url){
 //vkPhotoUrlUpload('http://cs9543.vk.com/u3457516/124935920/w_5603bf45.jpg')
 
 /* VIDEO */
+function vkVideoPage(){}
+
 function vkVideoViewer(){
 	vkVidVarsGet();
 	//Inj.End('videoview.receiveComms','vkProcessNode(comms);');
@@ -1324,7 +1394,7 @@ function vkVidDownloadLinks(vars){
 			var res = "360";
 			switch(i){case 2:{res = "480"; break;}  case 3:{  res = "720"; break;}}
 			vidHDurl=pathToHD(res);
-			s += (vidHDurl)?'<a href="'+vidHDurl+(smartlink?vidname+'.mov':'')+'" onmouseover="vkGetVideoSize(this);">'+IDL("downloadHD")+' '+res+'p<small class="fl_r divide" url="'+vidHDurl+'"></small></a>':"";   
+			s += (vidHDurl)?'<a href="'+vidHDurl+(smartlink?vidname+'.mov':'')+'" onmouseover="vkGetVideoSize(this); vkDragOutFile(this);">'+IDL("downloadHD")+' '+res+'p<small class="fl_r divide" url="'+vidHDurl+'"></small></a>':"";   
 		  }
 		  return s;
 	}
@@ -1382,6 +1452,7 @@ function vkGetVideoSize(el){
 				el.innerHTML=vkFileSize(l,2);
 			} else {
 				el.innerHTML='0 byte';
+            el.removeAttribute('getsize_ok');
 			}
 			
 		},true);	
@@ -1401,15 +1472,93 @@ function vkVidVarsGet(){
 		}
 	}
 }
+/* YOUTUBE FUNCTIONS */
+function YTDataDecode(qa) {
+  if (!qa) return {};
+  var exclude={'url':1,'type':1};// !='url' && key!='type' 
+  var query = {}, dec = function(str) {
+    try {
+      return decodeURIComponent(str);
+    } catch (e) { return str; }
+  };
+  qa = qa.split('&');
+  for (var i=0;i<qa.length;i++){
+      var a=qa[i];
+      var t = a.split('=');
+      if (t[0]) {
+         var key=dec(t[0]);
+         var v=exclude[key]?[dec(t[1] + '')]:dec(t[1] + '').split(',');
+         query[key]=[];
+         for (var j=0; j<v.length; j++){
+             if (v[j].indexOf('&')!=-1 && v[j].indexOf('=')!=-1 && !exclude[key]) v[j]=YTDataDecode(v[j]);
+            query[key].push(v[j]);                
+         }
+         if (query[key].length==1) query[key]=query[key][0];
+      }
+  }
+  return query;
+}  
+
+function vkGetYoutubeLinks(vid, callback) {
+  var url = 'http://www.youtube.com/get_video_info?video_id=' + vid +
+            '&asv=3&eurl=' + 
+            encodeURIComponent(location.href) + '&el=embedded';
+
+   XFR.post(url,{},function(t){   
+      var obj=YTDataDecode(t);
+      //alert(JSON.Str(obj));
+      var map=(obj.fmt_url_map || obj.url_encoded_fmt_stream_map);
+      if (!map) return [];
+      var links=[];
+      for (var i=0;i<map.length;i++){
+         var format=(map[i].stereo3d?'3D/':'')+YT_video_itag_formats[map[i].itag];
+         var info=(map[i].type+'').split(';')[0]+' '+(obj.fmt_list[i]+'').split('/')[1];
+         if (!format) format=info;
+         links.push([map[i].url+(obj.title?'&title='+encodeURIComponent(obj.title):''), format,info]);
+      }
+      callback(links);
+   });
+}
+
+function vkYTVideoLinks(link){
+   if (String(link).indexOf('youtube.com')==-1) return;
+   var vid=String(link).split('?')[0].split('/').pop();
+   vkGetYoutubeLinks(vid,function(r){
+      //alert(JSON.Str(r));
+      if (!r) return;
+      var html=''; 
+      for (var i=0;i<r.length;i++)
+         html+='<a href="'+r[i][0]+'" title="'+r[i][2]+'"  class="clear_fix" onmouseover="vkGetVideoSize(this);">'+IDL("download")+' '+r[i][1]+'<small class="fl_r divide" url="'+r[i][0]+'"></small></a>';
+         //'<a href="'+vidurl+'" onmouseover="vkGetVideoSize(this);">'+IDL("download")+'<small class="fl_r divide" url="'+vidurl+'"></small></a>';
+      ge('vkyoutubelinks').innerHTML='<a id="vkyoutubelinks_show" href="javascript: toggle(\'vkyoutubelinks_list\');">'+IDL('download')+'</a><span id="vkyoutubelinks_list" style="display:none;">'+html+'</span>';      
+   });
+   return '<span id="vkyoutubelinks"></span>';
+}
+/*END OF YOUTUBE FUNCTIONS */
+
 function vkVidLinks(data){	
-	//'mvcur.mvData.hash'
-	if (ge('mv_actions') && vkVidVars){
-		var h=ge('mv_actions').innerHTML;
-		ge('mv_actions').innerHTML+=vkVidDownloadLinks(vkVidVars); 
-		ge('mv_actions').innerHTML+=vk_plugins.video_links(vkVidVars,vkVidDownloadLinksArray(vkVidVars));
-		//if (h.indexOf('showTagSelector')!=-1){	ge('mv_actions').innerHTML+='<a href="#" onclick="vkTagAllFriends(); return false;">'+IDL("selall")+'</a>';	}
-		
-	}
+	if (ge('mv_actions')){
+      if (ge('video_player') && ge('video_player').tagName.toUpperCase()=='IFRAME'){
+         var vlink=ge('video_player').getAttribute('src');
+         if (vlink && vlink.indexOf('youtube')!=-1){
+            var link=vlink.split('?')[0].replace('embed/','watch?v=');
+            ge('mv_actions').innerHTML+='<a href="'+link+'">'+IDL('YouTube',1)+'</a>';/*savefrom_link_tpl.replace('%URL%',link).replace('%CLASS%','fl_l')+*/ 
+            ge('mv_actions').innerHTML+=vkYTVideoLinks(vlink);
+            /*
+               http://www.youtube.com/embed/jfKVHD3hCS0?autoplay=0
+               http://www.youtube.com/watch?v=jfKVHD3hCS0
+            */
+            
+         }
+         ge('mv_actions').innerHTML+=vk_plugins.video_links(ge('video_player').src);
+      } else if (vkVidVars){  
+         var h=ge('mv_actions').innerHTML;
+         if (h.indexOf('vkGetVideoSize')!=-1) return;
+         ge('mv_actions').innerHTML+=vkVidDownloadLinks(vkVidVars); 
+         ge('mv_actions').innerHTML+=vk_plugins.video_links(vkVidVars,vkVidDownloadLinksArray(vkVidVars));
+         //if (h.indexOf('showTagSelector')!=-1){	ge('mv_actions').innerHTML+='<a href="#" onclick="vkTagAllFriends(); return false;">'+IDL("selall")+'</a>';	}
+      } 
+   }
 }
 
 function vkTagAllFriends(vid,hash){
@@ -1441,12 +1590,22 @@ function vkTagAllFriends(vid,hash){
 }
 
 /* AUDIO */
+
+function vkAudioPlayer(){
+   if (getSet(0)=='y' && INJ_AUDIOPLAYER_DUR_MOD){
+      window.vkAudioDurMod=function(res){   return vkAudioDurSearchBtn(res,audioPlayer.lastSong[5]+' - '+audioPlayer.lastSong[6],audioPlayer.id) }
+      Inj.Replace('audioPlayer.setCurTime','dur.innerHTML = res','dur.innerHTML = vkAudioDurMod(res)');
+      Inj.Replace('audioPlayer.setGraphics','dur.innerHTML = res','dur.innerHTML = vkAudioDurMod(res)');
+   }
+}
 function vkAudios(){		
 	if (getSet(0)=='y'){
 		if (cur.audioTpl){ 
-		Inj.After('cur.audioTpl','id="play\'+aid+\'"></div></a>',"'+vkAudioDownBtn(audio)+'");
-		Inj.After('cur.audioTpl',"author+'</span>","'+vkAudioSizeLabel(audio)+'");
-		Inj.Replace('cur.audioTpl','audio[4]','vkAudioDurSearchBtn(audio)');
+         Inj.After('cur.audioTpl','id="play\'+aid+\'"></div></a>',"'+vkAudioDownBtn(audio)+'");
+         Inj.After('cur.audioTpl',"author+'</span>","'+vkAudioSizeLabel(audio)+'");
+         Inj.Replace('cur.audioTpl',/audio\[4\]/g,'vkAudioDurSearchBtn(audio)');
+         //Inj.Replace('cur.audioTpl','>\'+audio[4]',' onmouseover="vkGetAudioSize(\\\'\'+aid+\'\\\',this)">\'+audio[4]');
+          
 		}
 		Inj.After('Audio.searchRequest',/cur.sPreload.innerHTML.+preload;/i,'vkAudioNode(cur.sPreload);');
 		Inj.After('Audio.searchRequest',/cur.sContent.innerHTML.+res;/i,'vkAudioNode(cur.sContent);');
@@ -1589,13 +1748,15 @@ function vkParseAudioInfo(_aid,node,anode){
       art = geByTag1('b', nfo);
       l = geByTag1('a', art);
       if (l) art = l;
-	  art = art.innerHTML.replace(sr,'');
+      var reArr = ['<span>', '</span>', '<span class="match">'];
+      var re = new RegExp(reArr.join('|'), "gi");
+      art = art.innerHTML.replace(sr,'').replace(re, '');
       title = geByClass1('title', nfo);
       if (!title) title = ge('title'+_aid) || $x(".//span[@id='title" + _aid + "']", node)[0];//t_node;
       l = geByTag1('a', title);
       if (l) title = l.innerHTML;
       else title = title.innerHTML;
-      title = title.replace(sr,'');
+      title = title.replace(re,'').replace(sr,'');
       dur = geByClass1('duration', nfo).innerHTML;
       var data=a_info.value.split(',');
       var url=data[0];
@@ -1638,9 +1799,10 @@ function vkAudioNode(node){
     td.appendChild(el); 
     td=document.createElement('td');
     td.setAttribute('style',"vertical-align: top;");
-    td.innerHTML='<a href="'+url+'" onmouseover="vk$(this).dragout();"><div class="play_new down_btn" id="down'+id+'"></div></a>';//<img src="'+icon_src+'">
+    td.innerHTML='<a href="'+url+'" onmouseover="vkDragOutFile(this);"><div class="play_new down_btn" id="down'+id+'"></div></a>';//<img src="'+icon_src+'">
     tr.appendChild(td);  
     el.setAttribute('vk_ok','1');  
+    //vk$(this).dragout();
   }
   var divs = geByClass('play_new',node);
   for (var i=0; i<divs.length; i++){
@@ -1675,8 +1837,6 @@ function vkAudioNode(node){
       }  
   }
 }
-
-
 
 var vk_del_dup_check_size=false;
 function vkAudioDelDup(add_button,btn){
@@ -1882,6 +2042,7 @@ function vkShowAddAudioTip(el,id){
       html +='<a href="'+SEARCH_AUDIO_LYRIC_LINK.replace('%AUDIO_NAME%',name)+'" target="_blank">'+IDL('SearchAudioLyr')+'</a>';
       
 		html = '<div class="vk_tt_links_list">'+html+'</div>';
+      //alert(html);
       showTooltip(el, {
 		  hasover:true,
 		  text:html,
@@ -1937,6 +2098,7 @@ function vkAudioDownBtn(audio){
 	var names=(getSet(1) == 'y')?true:false;
 	return '<a href="'+audio[2]+'?'+vkDownloadPostfix()+(names?'&/'+audio[5]+' - '+audio[6]+'.mp3':'')+'" onmouseover="vk$(this).dragout();"><div class="play_new down_btn" id="down'+audio[0]+'_'+audio[1]+'"></div></a>'; 
 }
+
 function vkAudioDurSearchBtn(audio,fullname,id){
 	var sq=fullname?fullname:audio[5]+' - '+audio[6];
 	var dur=fullname?audio:audio[4];
@@ -2016,6 +2178,12 @@ function vkGetWikiCode(){
 }
 
 /* MAIL */
+function vkMail(){
+   if (MAIL_SHOWMSG_FIX) Inj.Before('mail.showMessage','return false;','vkMailSendFix();');
+}
+function vkMailSendFix(){
+   if (nav.objLoc['act']=='show' && !cur.addMailMedia) setTimeout("mail.showMessage(nav.objLoc['id']);",100);
+}
 function vkMailPage(){
 	if(nav.objLoc['act']=='show' || nav.objLoc[0].match(/write\d+/)) {
 		vkAddSaveMsgLink();

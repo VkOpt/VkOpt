@@ -11,7 +11,7 @@
 //
 /* VERSION INFO */
 var vVersion	= 203;
-var vBuild = 111205;
+var vBuild = 111214;
 var vPostfix = ' ';
 if (!window.vk_DEBUG) var vk_DEBUG=0;
 
@@ -75,6 +75,31 @@ var vkOpt_js_count=9; // Count of vkopt files
 
 var FriendsNid=[];
 
+//YouTube formats list
+var YT_video_itag_formats={
+     '0':  '240p.flv',
+     '5':  '240p.flv',
+     '6':  '360p.flv',
+     '34': '360p.flv',
+     '35': '480p.flv',   
+     
+     '13': '.3gp (small)',
+     '17': '.3gp (medium)',
+     
+     '18': '360p.mp4',
+     '22': '720p.mp4',
+     '37': '1080p.mp4',
+     '38': '4k.mp4',
+     '84': '720p.mp4',//3d?
+     '82': '360p.mp4',//3d?
+     
+     '43': '360p.WebM',
+     '44': '480p.WebM',
+     '45': '720p.WebM',
+     '102':'720p.WebM',//3d?
+     '100':'360p.WebM'//3d?
+
+}; 
  // kolobok.us
 var SmilesMap = {
 'girl_angel': /O:-\)|O:\)|O\+\)|O=\)|0:-\)|0:\)|0\+\)|0=\)/gi,

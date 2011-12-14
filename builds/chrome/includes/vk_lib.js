@@ -7,6 +7,7 @@
 // @include       *vk.com*
 // @include       *vkadre.ru*
 // @include       *durov.ru*
+// @include       *youtube.com*
 // ==/UserScript==
 //*
 
@@ -322,7 +323,7 @@ if (!window.Audio){
 	  if (vk_lang[i]) return vkCutBracket(decodeURI(vk_lang[i]),bracket);
 	  if (vk_lang_ru[i]) return vkCutBracket(decodeURI(vk_lang_ru[i]),bracket);
 	  if (window.vk_lang_add && vk_lang_add[i]) return vkCutBracket(decodeURI(vk_lang_add[i]),bracket);
-	  else return i;
+	  else return vkCutBracket(i,bracket);
 	}
 
 	function vkExtendLang(obj) {
@@ -364,7 +365,7 @@ if (!window.Audio){
 		}
 		return res;
 	}
-   function vkCleanFileName(s){   return s.replace(/[\\\/\:\*\?\"\<\>\|]/g,'_');   }
+   function vkCleanFileName(s){   return s.replace(/[\\\/\:\*\?\"\<\>\|]/g,'_').substr(0,200);   }
    
    
    function num_to_text(s){
@@ -1656,6 +1657,7 @@ var XFR={
 	callbacks:[],
 	post:function(url,data,callback,only_head){
 		var domain='http://'+url.split('/')[2];
+      if (domain.indexOf('youtube.com')!=-1) domain+='/embed/';
 		data=data || {};
 		var req_id=this.reqs++;
 		var frame_url=domain+'?xfr_query='+escape(JSON.Str([url,data,req_id,only_head?1:0]));
@@ -1690,7 +1692,7 @@ var XFR={
 			request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
 			request.onreadystatechange = function () {
 				//vklog(request.readyState);
-				vklog(request.getAllResponseHeaders().replace(/\r?\n/g,'<br>'));
+				//vklog(request.getAllResponseHeaders().replace(/\r?\n/g,'<br>'));
 				//if(request.readyState == 2) alert(request.getResponseHeader("Location"));
         
 				if(request.readyState == 4 && callback) callback(request,request.responseText);
@@ -1701,7 +1703,8 @@ var XFR={
 		var dloc=document.location.href;
 		var q=dloc.split('xfr_query=')[1];
 		if (q){
-			q=JSON.parse(unescape(q));
+			
+         q=JSON.parse(unescape(q));
 			var url=q[0];
 			var data=q[1];
 			var req_id=q[2];
@@ -1907,7 +1910,20 @@ function vkAlertBox(title, text, callback, confirm) {// [callback] - "Yes" or "C
   aBox.content(text);
   return aBox.show();
 }
-
+//Download with normal name by dragout link
+function vkDragOutFile(el) {
+    var a = el.getAttribute("href");
+    if (a.indexOf("?&/") != -1) {
+        a = a.split("?&/");
+        a = ":" + a[1] + ":" + a[0];
+        //alert(a);
+    } else {
+        a = '::' + a
+    }
+    el.addEventListener("dragstart", function(e) {
+        e.dataTransfer.setData("DownloadURL", a)
+    },false);
+}
 /* NOTIFY TOOLS */
 function vkNotifyCustomSInit(){
       vkNotifierSound = function(sound){   if (typeof sound == 'string') (new Sound2(sound)).play();};
@@ -2090,7 +2106,7 @@ if (!window.vkopt_plugins) vkopt_plugins={};
 	var PROCESS_NODE_FUNCTION = null;			// function(node);
 	var PHOTOVIEWER_ACTIONS	= null;				// function(photo_data); ||  String
 	var ALBUM_ACTIONS = null;					// function(oid,aid); || Array with items. Example  [{l:'Link1', onClick:Link1Func},{l:'Link2', onClick:Link2Func}]
-	var VIDEO_ACT_LINKLS = null;				// function(video_data,links_array); ||  String
+	var VIDEO_ACT_LINKLS = null;				// function(video_data,links_array); ||  String.   video_data may contain iframe url
 	var PROCESS_AJAX_RESPONSE = null;			// function(answer,url,params); 'answer' is array. modify only array items
 	//DON'T EDIT CODE:
 	vkopt_plugins[PLUGIN_ID]={
@@ -2195,4 +2211,9 @@ if (!window.ge) ge=function(q) {return document.getElementById(q);}
 if (!window.geByTag) geByTag=function(searchTag, node) {return (node || document).getElementsByTagName(searchTag);}
 if (!window.geByTag1) geByTag1=function(searchTag, node) {return geByTag(searchTag, node)[0];}
 
+var dloc=document.location.href.split('/')[2] || '';
+if(!(dloc.indexOf('vk.com')!=-1 || dloc.indexOf('vkontakte.ru')!=-1)) {setTimeout(XFR.check,800);}
+
 if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
+
+

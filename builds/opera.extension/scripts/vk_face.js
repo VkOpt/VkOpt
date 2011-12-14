@@ -22,7 +22,8 @@ function vkMakeRightBar(){
 	if (!page_layout) return;
 	vkaddcss('#main_feed #feed_rate_slider_wrap { right: 152px; } #footer_wrap{ width: 100% !important;}');
 	vk.width=vk.width+120;
-	Inj.Start('handlePageView','if (params.width) params.width+=120;');
+   vk.width_dec=280;
+	Inj.Start('handlePageView','if (params.width) params.width+=120; if (params.width_dec) params.width_dec+=120;');
 	Inj.Replace('handlePageView','791','911');
 	Inj.Replace('handlePageView','160','280');
 	
@@ -87,7 +88,7 @@ function vkFixedMenu(){
 	var side_bar=(ge('sideBar') || ge('side_bar'));
 	var right_bar=ge('right_bar');
 	var h=getSize(el)[1];
-	vkaddcss("#sideBar,#side_bar"+(cfg_r=='y'?", #right_bar":'')+"{ position: fixed;z-index: 101; top: "+h+"px }");
+	vkaddcss("#sideBar,#side_bar"+(cfg_r=='y'?", #right_bar":'')+"{ position: fixed;z-index: 101; top: "+h+"px } #page_wrap{overflow: visible !important;");
 	var onscroll=function(){
 		removeEvent(window, 'scroll', onscroll);
 		var ntop=h-getScrollTop();
@@ -195,7 +196,8 @@ function vkMenu(){//vkExLeftMenu
       ['friends?section=suggestions',IDL("mFrSug")],
       ['friends?section=requests',IDL("mFrR"),true],
       ['friends?section=all_requests',IDL("mFrAllReq")],
-      ['friends?section=out_requests',IDL("mFrOutReq")]
+      ['friends?section=out_requests',IDL("mFrOutReq")],
+      [['/friends?w=calendar','return nav.change({w: \'calendar\'})'],IDL("Birthdays")] 
     ],
     'albums':[
         ['albums'+vkmid,IDL("mPhM")],
@@ -293,7 +295,7 @@ function vkMenu(){//vkExLeftMenu
         ['opinions.php?act=friends',IDL("mOpF")]    
     ],
     'apps':[
-        ['apps',IDL("mApM")],
+        ['apps?act=apps',IDL("mApM")],
         ['apps?act=catalog',IDL("mApA")],
         ['apps?act=notifications',IDL("mTags"),true],
         ['apps?act=settings',IDL("mApS")]  
@@ -315,6 +317,9 @@ function vkMenu(){//vkExLeftMenu
 	'wall':[
 		['wall'+remixmid(),IDL('mWAllPosts')],
 		['wall'+remixmid()+'?own=1',IDL('mWMyPosts')],
+      ['notes',IDL("mNoM")],
+      ['notes?act=new',IDL("mNoN")],
+      ['notes?act=comments',IDL("mNoC")]
 	],	
     'vkopt':['[VKopt]',(!window.Vk_NoMnuLinks)?
             '<a href="javascript: vkHighlightCounters();" style="float:right;">^</a>'+'<a href="javascript:UpdateCounters();">- '+IDL('updateLMenu')+'</a>'+

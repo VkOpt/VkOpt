@@ -5,7 +5,7 @@
 	<key>Author</key>
 	<string>KiberПсих</string>
 	<key>Builder Version</key>
-	<string>534.51.22</string>
+	<string>534.52.7</string>
 	<key>CFBundleDisplayName</key>
 	<string>VkOpt</string>
 	<key>CFBundleIdentifier</key>
@@ -44,6 +44,8 @@
 				<string>vk.com</string>
 				<string>*.vk.com</string>
 				<string>*.vkadre.ru</string>
+				<string>youtube.com</string>
+				<string>*.youtube.com</string>
 			</array>
 			<key>Level</key>
 			<string>Some</string>

@@ -3,7 +3,9 @@
 {
   "js": ["vkinit.js","includes/vk_skinman.js"],
   "run_at": "document_start",
-  "matches": ["http://vk.com/*","http://*.vk.com/*","http://vkontakte.ru/*","http://*.vkontakte.ru/*","http://durov.ru/*"],
+  "matches": ["http://vk.com/*","http://*.vk.com/*","http://vkontakte.ru/*","http://*.vkontakte.ru/*",
+              "http://durov.ru/*",
+              "http://youtube.com/*","http://*.youtube.com/*"],
   "all_frames": true
 }
 ],
