@@ -1294,6 +1294,20 @@ function vkWallAlbumLink(){
             },IDL('photo',1)))
 }
 
+function vkWallNotesLink(){
+   if (ge('vk_wall_notes_link')) return;
+   if (isVisible('page_wall_switch'))  ge('page_wall_header').appendChild(vkCe('span',{"class":'fl_r right_link divide'},'|'))
+   var href=ge('page_wall_header').getAttribute('href');
+   ge('page_wall_header').appendChild(vkCe('a',{
+               "class":'fl_r right_link', 
+               id:'vk_wall_notes_link',
+               href:'/notes'+cur.oid,
+               onclick:"cancelEvent(event); return nav.go(this, event);",
+               onmouseover:"this.parentNode.href='/notes"+cur.oid+"';",
+               onmouseout:"this.parentNode.href='"+href+"';"
+            },IDL('clNo',1)))
+}
+
 
 var VKPRU_SWF_LINK='http://cs4320.vk.com/u13391307/ac8f5bbe4ce7a8.zip';
 function vkPhotoUrlUpload(url){

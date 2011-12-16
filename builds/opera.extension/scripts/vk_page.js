@@ -23,6 +23,7 @@ function vkProfilePage(){
 	addFakeGraffItem();
    //vkWallAddPreventHideCB();
 	vkUpdWallBtn(); //Update wall button
+   vkWallNotesLink();
    if (remixmid()==cur.oid && getSet(50)=='y' && !ge('profile_fave')) vkFaveProfileBlock(); 
    if (getSet(60) == 'y') vkProfileMoveAudioBlock(); 
    if (getSet(61) == 'y') vkProfileGroupBlock();   

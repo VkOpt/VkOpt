@@ -11,7 +11,7 @@
 //
 /* VERSION INFO */
 var vVersion	= 203;
-var vBuild = 111214;
+var vBuild = 111216;
 var vPostfix = ' ';
 if (!window.vk_DEBUG) var vk_DEBUG=0;
 
@@ -90,14 +90,19 @@ var YT_video_itag_formats={
      '22': '720p.mp4',
      '37': '1080p.mp4',
      '38': '4k.mp4',
-     '84': '720p.mp4',//3d?
      '82': '360p.mp4',//3d?
+     //'83': '480p.mp4',//3d?
+     '84': '720p.mp4',//3d?
+     //'85': '1080p.mp4',//3d?
      
      '43': '360p.WebM',
      '44': '480p.WebM',
      '45': '720p.WebM',
-     '102':'720p.WebM',//3d?
-     '100':'360p.WebM'//3d?
+     '46': '1080p.WebM',
+     '100':'360p.WebM',//3d?
+     //'101':'480p.WebM',//3d?
+     '102':'720p.WebM'//3d?
+     //'103':'1080p.WebM',//3d?
 
 }; 
  // kolobok.us
