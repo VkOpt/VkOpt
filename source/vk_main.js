@@ -1475,7 +1475,7 @@ function vkVidVarsGet(){
 /* YOUTUBE FUNCTIONS */
 function YTDataDecode(qa) {
   if (!qa) return {};
-  var exclude={'url':1,'type':1};// !='url' && key!='type' 
+  var exclude={'url':1,'type':1,'ttsurl':1};// !='url' && key!='type' 
   var query = {}, dec = function(str) {
     try {
       return decodeURIComponent(str);
@@ -1511,9 +1511,9 @@ function vkGetYoutubeLinks(vid, callback) {
       if (!map) return [];
       var links=[];
       for (var i=0;i<map.length;i++){
-         var format=(map[i].stereo3d?'3D/':'')+YT_video_itag_formats[map[i].itag];
+         var format=YT_video_itag_formats[map[i].itag];
          var info=(map[i].type+'').split(';')[0]+' '+(obj.fmt_list[i]+'').split('/')[1];
-         if (!format) format=info;
+         format=(map[i].stereo3d?'3D/':'')+(format?format:info);
          links.push([map[i].url+(obj.title?'&title='+encodeURIComponent(obj.title):''), format,info]);
       }
       callback(links);
@@ -1541,8 +1541,9 @@ function vkVidLinks(data){
       if (ge('video_player') && ge('video_player').tagName.toUpperCase()=='IFRAME'){
          var vlink=ge('video_player').getAttribute('src');
          if (vlink && vlink.indexOf('youtube')!=-1){
+            if (ge('vk_youtube_video_link')) return;
             var link=vlink.split('?')[0].replace('embed/','watch?v=');
-            ge('mv_actions').innerHTML+='<a href="'+link+'">'+IDL('YouTube',1)+'</a>';/*savefrom_link_tpl.replace('%URL%',link).replace('%CLASS%','fl_l')+*/ 
+            ge('mv_actions').innerHTML+='<a href="'+link+'" id="vk_youtube_video_link">'+IDL('YouTube',1)+'</a>';/*savefrom_link_tpl.replace('%URL%',link).replace('%CLASS%','fl_l')+*/ 
             ge('mv_actions').innerHTML+=vkYTVideoLinks(vlink);
             /*
                http://www.youtube.com/embed/jfKVHD3hCS0?autoplay=0
