@@ -1913,15 +1913,19 @@ function vkAlertBox(title, text, callback, confirm) {// [callback] - "Yes" or "C
 //Download with normal name by dragout link
 function vkDragOutFile(el) {
     var a = el.getAttribute("href");
+    var url='';
+    var name='';
     if (a.indexOf("?&/") != -1) {
         a = a.split("?&/");
+        url=a[0];
+        name=a[1];
         a = ":" + a[1] + ":" + a[0];
         //alert(a);
     } else {
         a = '::' + a
     }
     el.addEventListener("dragstart", function(e) {
-        e.dataTransfer.setData("DownloadURL", a)
+        e.dataTransfer.setData("DownloadURL", a);//
     },false);
 }
 /* NOTIFY TOOLS */

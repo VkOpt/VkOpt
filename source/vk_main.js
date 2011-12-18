@@ -647,7 +647,12 @@ function ProcessAwayLink(node){
 	var lnk=vkLinksUnescapeCyr(node.href).split('?to=')[1];
    if (!lnk) return;
    var lnk=lnk.split('&h=')[0].split('&post=')[0];
-	node.href=lnk.replace(/%26/gi,'&').replace(/%3A/gi,':').replace(/%2F/gi,'/').replace(/%25/gi,'%').replace(/%3F/gi,'?').replace(/%3D/gi,'=').replace(/%26/gi,';').replace(/&h=[\da-z]{18}/i,'');
+	node.href=unescape(lnk).replace(/&h=[\da-z]{18}/i,'');
+   /*
+   lnk.replace(/%26/gi,'&').replace(/%3A/gi,':').
+   replace(/%2F/gi,'/').replace(/%25/gi,'%').
+   replace(/%3F/gi,'?').replace(/%3D/gi,'=').
+   replace(/%26/gi,';').replace(/&h=[\da-z]{18}/i,'');*/
 	//alert(unescape(node.href));
   }
 }
