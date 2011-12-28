@@ -285,10 +285,10 @@ if (!window.Audio){
 			var thick_pad = repeat_char(pad_val*(cur_depth+1), pad_char);
 			var str = "";
 
-			if(obj instanceof Array || obj instanceof Object) {
+			if(typeof obj=='object' || typeof obj=='array') {
 				str += '[\n';//"Array\n" + base_pad + "(\n";
 				for(var key in obj) {
-					if(obj[key] instanceof Array || obj[key] instanceof Object) {
+					if(typeof obj[key]=='object' || typeof obj[key]=='array') {
 						str += thick_pad + ""+key+": "+formatArray(obj[key], cur_depth+1, pad_val, pad_char);
 					} else {
 						str += thick_pad + ""+key+": " + obj[key] + "\n";
