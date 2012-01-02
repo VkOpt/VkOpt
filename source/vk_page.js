@@ -527,7 +527,7 @@ function vkFaveProfileBlock(is_list){
    } else {
       ge("vk_fave_all_link").href="javascript:vkFaveProfileBlock(true)";
    }
-   AjGet('/fave?al=1',function(r,t){
+   AjGet('/fave?section=users&al=1',function(r,t){
       var r=t.match(/"faveUsers"\s*:\s*(\[[^\]]+\])/);
       if (r){
          r=eval('('+r[1]+')');

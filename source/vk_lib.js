@@ -1546,7 +1546,7 @@ vkApis={
 		get();
 	},
    faves:function(callback){
-      AjGet('/fave?al=1',function(r,t){
+      AjGet('/fave?section=users&al=1',function(r,t){
          var r=t.match(/"faveUsers"\s*:\s*(\[[^\]]+\])/);
          if (r){
             r=eval('('+r[1]+')');
@@ -2089,7 +2089,27 @@ vk_plugins={
 			}
 		}		
 		//return r;		
-	}
+	},
+   user_menu_items:function(uid,gid){
+		var r='';
+		for (var key in vkopt_plugins){
+			var p=vkopt_plugins[key];
+			if (p.UserMenuItems) {
+				var tstart=unixtime();
+            var i = p.UserMenuItems(uid,gid) || '';
+            if (isArray(i)){
+               r+='<li><div class="vk_user_menu_divider"></div></li>';
+               for (var j=0; j<i.length;j++)
+                  r+='<li onmousemove="clearTimeout(pup_tout);" onmouseout="pup_tout=setTimeout(pupHide, 400);">'+i[j]+'</li>';              
+            } else {
+               if (i) r+='<li><div class="vk_user_menu_divider"></div></li>';
+               r+='<li onmousemove="clearTimeout(pup_tout);" onmouseout="pup_tout=setTimeout(pupHide, 400);">'+i+'</li>';
+            } 
+				if (r) vklog('Plugin "'+key+'" user_menu_items: '+(unixtime()-tstart)+'ms');	
+			}
+		}		
+		return r;		   
+   }
 }
 vkopt_plugin_run=vk_plugins.run;
 
@@ -2098,35 +2118,24 @@ vkopt_plugin_run=vk_plugins.run;
 if (!window.vkopt_plugins) vkopt_plugins={};
 (function(){
 	var PLUGIN_ID = 'vkmyplugin';
-	var PLUGIN_NAME = 'vk my test plugin';
-	
+	var PLUGIN_NAME = 'vk my test plugin';	
 	var ADDITIONAL_CSS='';
-	
-	// FUNCTIONS
-	var INIT = null;							// function()
-	var ON_NEW_LOCATION = null;					// function(nav_obj,cur_module_name);
-	var PROCESS_NEW_SCRIPT = null;				// function(file_name);
-	var ON_STORAGE = null; 		  				// function(command_id,command_obj);
-	var PROCESS_LINK_FUNCTION = null;			// function(link);
-	var PROCESS_NODE_FUNCTION = null;			// function(node);
-	var PHOTOVIEWER_ACTIONS	= null;				// function(photo_data); ||  String
-	var ALBUM_ACTIONS = null;					// function(oid,aid); || Array with items. Example  [{l:'Link1', onClick:Link1Func},{l:'Link2', onClick:Link2Func}]
-	var VIDEO_ACT_LINKLS = null;				// function(video_data,links_array); ||  String.   video_data may contain iframe url
-	var PROCESS_AJAX_RESPONSE = null;			// function(answer,url,params); 'answer' is array. modify only array items
-	//DON'T EDIT CODE:
+
 	vkopt_plugins[PLUGIN_ID]={
 		Name:PLUGIN_NAME,
 		css:ADDITIONAL_CSS,
-		init:INIT,
-		onLocation:ON_NEW_LOCATION,
-		onLibFiles:PROCESS_NEW_SCRIPT,
-		onStorage :ON_STORAGE,
-		processLinks:PROCESS_LINK_FUNCTION,
-		processNode:PROCESS_NODE_FUNCTION,
-		pvActions:PHOTOVIEWER_ACTIONS,
-		albumActions:ALBUM_ACTIONS,
-		vidActLinks:VIDEO_ACT_LINKLS,
-		onResponseAnswer:PROCESS_AJAX_RESPONSE
+	// FUNCTIONS
+      init:             null,                    // function();                        //run on connect plugin to vkopt
+		onLocation:       null,                    // function(nav_obj,cur_module_name); //On new location
+		onLibFiles:       null,                    // function(file_name);               //On connect new vk script
+		onStorage :       null,                    // function(command_id,command_obj);
+		processLinks:     null,                    // function(link);
+		processNode:      null,                    // function(node);
+		pvActions:        null,                    // function(photo_data); ||  String    //PHOTOVIEWER_ACTIONS
+		albumActions:     null,                    // function(oid,aid); || Array with items. Example  [{l:'Link1', onClick:Link1Func},{l:'Link2', onClick:Link2Func}]
+		vidActLinks:      null,                    // function(video_data,links_array); ||  String.   video_data may contain iframe url
+		onResponseAnswer: null,                    // function(answer,url,params); 'answer' is array. modify only array items
+      UserMenuItems:    null                     // function(uid) || string
 	};
 	if (window.vkopt_ready) vkopt_plugin_run(PLUGIN_ID);
 })();
