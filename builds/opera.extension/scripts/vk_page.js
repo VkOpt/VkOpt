@@ -527,7 +527,7 @@ function vkFaveProfileBlock(is_list){
    } else {
       ge("vk_fave_all_link").href="javascript:vkFaveProfileBlock(true)";
    }
-   AjGet('/fave?al=1',function(r,t){
+   AjGet('/fave?section=users&al=1',function(r,t){
       var r=t.match(/"faveUsers"\s*:\s*(\[[^\]]+\])/);
       if (r){
          r=eval('('+r[1]+')');
@@ -817,8 +817,9 @@ var vk_shuts_mask = {
   'profile_fans'          : 0x100000,
   'profile_idols'         : 0x200000,
   'profile_infos'         : 0x400000,
-  'profile_wall'          : 0x800000 
-  ,'profile_photos_module' : 0x1000000
+  'profile_wall'          : 0x800000,
+  'profile_photos_module' : 0x1000000,
+  'profile_gifts'         : 0x2000000,
 }
 var vk_shuts_prof=0x400000;
 

@@ -161,6 +161,7 @@ function GetUserMenuSett() {
                      IDL("clGi"), 
                      //IDL("clRa"), 
                      IDL("mNeP"), 
+                     IDL("clNews"),
                      IDL("clAddFr"), 
                      IDL("clAddToFav"), 
                      IDL("addblack"),
@@ -244,7 +245,7 @@ function pupShow(event,pid,id,el) {
  pup_menu.style.left=event.pageX+"px";//pageX
  pup_menu.style.top=event.pageY+"px";//pageY
  var str = '<div class="vk_popupmenu"><ul>';//"<table cellpadding=0 cellspacing=0><tr><td class='pupSide'></td><td><div class='pupBody'>";
- str += ExUserItems(id,el);//pupItems(pid);
+ str += ExUserItems(id,el)+'%plugins';//pupItems(pid);
  str += '</ul></div>';//"</div><div class='pupBottom'></div><div class='pupBottom2'></div></td><td class='pupSide'></td></tr>";
  pup_menu.innerHTML = str;
  var ready=false;
@@ -272,13 +273,13 @@ function pupShow(event,pid,id,el) {
         setStyle("pupMenuBlock", {opacity: 0.8});
       };
 	  if (uid){
-		  pup_menu.innerHTML=pup_menu.innerHTML.replace(/%uid/g,uid); 
+		  pup_menu.innerHTML=pup_menu.innerHTML.replace(/%uid/g,uid).replace(/%plugins/g,vk_plugins.user_menu_items(uid));     
 		  if (ge('pupMenuBlock')) hide('pupMenuBlock');
 		  ready=true; 
 	  }
 	  if (gid){
 		 var str2 = '<div class="vk_popupmenu"><ul>';
-		 str2 += ExGroupItems(gid,el);
+		 str2 += ExGroupItems(gid,el)+vk_plugins.user_menu_items(null,gid); ;
 		 str2 += '</ul></div>';	
 		 str2=str2.replace(/%GID/g,gid); 
 		 pup_menu.innerHTML = str2;
@@ -341,11 +342,12 @@ function ExUserItems(id,el){
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/gifts?id=%uid">'+IDL("clGi")+'</a>'):i++;
 	//(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/rate.php?act=vote&id=%uid">'+IDL("clRa")+'</a>'):i++;
    (ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/feed?section=source&source=%uid">'+IDL("mNeP")+'</a>'):i++;
+	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/feed?owner=%uid&section=owner" onClick="return nav.go(this,event);">'+IDL("clNews")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkRemoveFriend(%uid);" class="fl_r">x</a><a href="javascript:vkAddToFriends(%uid);">'+IDL("clAddFr")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkAddToFave(%uid,1);" class="fl_r">x</a><a href="javascript:vkAddToFave(%uid);">'+IDL("clAddToFav")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="#" style="cursor: hand;" onClick="vkAddToBL(%uid); return false;">'+IDL("addblack")+'</a>'):i++;
    (ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="#" style="cursor: hand;" onClick="vkUserAbuse(%uid); return false;">'+IDL("SendAbuse")+'</a>'):i++;
-	//(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkAddToSubscribtions(%uid,1);" class="fl_r">x</a><a href="#" style="cursor: hand;" onClick="vkAddToSubscribtions(%uid); return false;">'+IDL("AddToSubscribtions")+'</a>'):i++;
+   //(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkAddToSubscribtions(%uid,1);" class="fl_r">x</a><a href="#" style="cursor: hand;" onClick="vkAddToSubscribtions(%uid); return false;">'+IDL("AddToSubscribtions")+'</a>'):i++;
    uitems+=mkExItem(0,'<a href="javascript:vkFavAddDel(%uid,1);" class="fl_r">x</a><a href="#" style="cursor: hand;" onClick="vkFavAddDel(%uid); return false;">'+IDL("FavAddUser")+'</a>');
 	return uitems;
 }
@@ -1257,9 +1259,18 @@ function vkFavOnlineChecker(on_storage){
 
 function vkFavUsersList(add_button){
    if (add_button){
-      var e=ge('fave_list_tabs');
-      if (!e || ge('vk_fav_users_btn')) return;
-      e.appendChild(vkCe('li',{"class":'t_r',id:'vk_fav_users_btn'},'<a onclick="return vkFavUsersList();">'+IDL('FavUsers')+'</a>'));
+      var e=ge('fave_likes_tabs');
+      var x=ge('vk_fav_users_btn');
+      if (x) (nav.objLoc['section']=='users'?show:hide)(x);
+      if (!e || x) return;
+      var p=geByClass('summary_tab',e);
+      p=p[p.length-1];
+      if (!p || nav.objLoc['section']!='users') return;
+      x=vkCe('div',{"class":'fave_more_button fl_r',id:'vk_fav_users_btn'},
+            '<div class="button_blue"><button onclick="vkFavUsersList();">'+IDL('FavUsers')+'</button></div>'
+            //'<a onclick="return vkFavUsersList();">'+IDL('FavUsers')+'</a>'
+            );
+      insertAfter(x,p)
       return;
    }
    var p=ge('content');

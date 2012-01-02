@@ -200,10 +200,11 @@ var _ua_ = window.navigator.userAgent.toLowerCase();
 var vkbrowser = {
   version: (_ua_.match( /.+(?:me|ox|on|rv|it|ra|ie)[\/: ]([\d.]+)/ ) || [0,'0'])[1],
   opera: /opera/i.test(_ua_),
-  msie: (!this.opera && /msie/i.test(_ua_)),
-  msie6: (!this.opera && /msie 6/i.test(_ua_)),
-  msie7: (!this.opera && /msie 7/i.test(_ua_)),
-  msie8: (!this.opera && /msie 8/i.test(_ua_)),
+  msie: (/msie/i.test(_ua_) && !/opera/i.test(_ua_)),
+  msie6: (/msie 6/i.test(_ua_) && !/opera/i.test(_ua_)),
+  msie7: (/msie 7/i.test(_ua_) && !/opera/i.test(_ua_)),
+  msie8: (/msie 8/i.test(_ua_) && !/opera/i.test(_ua_)),
+  msie9: (/msie 9/i.test(_ua_) && !/opera/i.test(_ua_)),
   mozilla: /firefox/i.test(_ua_),
   chrome: /chrome/i.test(_ua_),
   safari: (!(/chrome/i.test(_ua_)) && /webkit|safari|khtml/i.test(_ua_)),
@@ -213,7 +214,9 @@ var vkbrowser = {
   ipod4: /ipod.*OS 4/i.test(_ua_),
   ipad: /ipad/i.test(_ua_),
   safari_mobile: /iphone|ipod|ipad/i.test(_ua_),
-  mobile: /iphone|ipod|ipad|opera mini|opera mobi/i.test(_ua_)
+  opera_mobile: /opera mini|opera mobi/i.test(_ua_),
+  mobile: /iphone|ipod|ipad|opera mini|opera mobi/i.test(_ua_),
+  mac: /mac/i.test(_ua_)
 }
 if (window.opera) {vkbrowser.mozilla=false; vkbrowser.opera=true;}
 
@@ -272,46 +275,69 @@ if (!window.Audio){
     this.play  = function(){};
   }
 }
+
+var vkMozExtension = {  
+  send_request: function(data, callback) { // analogue of chrome.extension.sendRequest  
+    var request = document.createTextNode("");  
+    request.setUserData("data", data, null);  
+    if (callback) {
+      request.setUserData("callback", callback, null);  
+      document.addEventListener("mozext-response", function(event) {  
+        var node = event.target, callback = node.getUserData("callback"), response = node.getUserData("response");  
+        document.documentElement.removeChild(node);  
+        document.removeEventListener("mozext-response", arguments.callee, false);  
+        return callback(response);  
+      }, false);  
+    }  
+    document.documentElement.appendChild(request);  
+    var sender = document.createEvent("HTMLEvents");  
+    sender.initEvent("mozext-query", true, false);  
+    return request.dispatchEvent(sender);  
+  },  
+
+  callback: function(response) {    return alert("response: " + (response && response.toSource ? response.toSource() : response)); }  
+} 
 /* FUNCTIONS. LEVEL 1 */
-	//LANG
-	function print_r( array, return_val ) {
-		var output = "", pad_char = " ", pad_val = 4;
+	//LANG   
+   function print_r( array, return_val ) {
+      var output = "", pad_char = " ", pad_val = 4;
 
-		var formatArray = function (obj, cur_depth, pad_val, pad_char) {
-			if(cur_depth > 0)
-				cur_depth++;
+      var formatArray = function (obj, cur_depth, pad_val, pad_char) {
+         if(cur_depth > 0)
+            cur_depth++;
 
-			var base_pad = repeat_char(pad_val*cur_depth, pad_char);
-			var thick_pad = repeat_char(pad_val*(cur_depth+1), pad_char);
-			var str = "";
+         var base_pad = repeat_char(pad_val*cur_depth, pad_char);
+         var thick_pad = repeat_char(pad_val*(cur_depth+1), pad_char);
+         var str = "";
 
-			if(obj instanceof Array || obj instanceof Object) {
-				str += '[\n';//"Array\n" + base_pad + "(\n";
-				for(var key in obj) {
-					if(obj[key] instanceof Array || obj[key] instanceof Object) {
-						str += thick_pad + ""+key+": "+formatArray(obj[key], cur_depth+1, pad_val, pad_char);
-					} else {
-						str += thick_pad + ""+key+": " + obj[key] + "\n";
-					}
-				}
-				str += base_pad + "]\n";
-			} else {
-				str = obj.toString();
-			};
+         if(typeof obj=='object' || typeof obj=='array' || (obj.length>0 && typeof obj!='string' && typeof obj!='number')) {
+            if(!(typeof obj=='object' || typeof obj=='array'))str = '\n'+obj.toString()+'\n';
+         str += '[\n';//"Array\n" + base_pad + "(\n";
+            for(var key in obj) {
+               if(typeof obj[key]=='object' || typeof obj[key]=='array' || (obj.length>0 && typeof obj!='string' && typeof obj!='number')) {
+             str += thick_pad + ""+key+": "+((!(typeof obj=='object' || typeof obj=='array'))?'\n'+obj[key]+'\n':'')+formatArray(obj[key], cur_depth+1, pad_val, pad_char)+'\n';
+               } else {
+                  str += thick_pad + ""+key+": " + obj[key] + "\n";
+               }
+            }
+            str += base_pad + "]\n";
+         } else {
+            str = obj.toString();
+         };
 
-			return str;
-		};
+         return str;
+      };
 
-		var repeat_char = function (len, char) {
-			var str = "";
-			for(var i=0; i < len; i++) { str += char; };
-			return str;
-			return str;
-		};
+      var repeat_char = function (len, char) {
+         var str = "";
+         for(var i=0; i < len; i++) { str += char; };
+         return str;
+         return str;
+      };
 
-		output = formatArray(array, 0, pad_val, pad_char);
-			return output;
-	}
+      output = formatArray(array, 0, pad_val, pad_char);
+         return output;
+   }
 	
 	function vkCutBracket(s,bracket){
 		if (CUT_VKOPT_BRACKET || bracket==2) s=(s.substr(0,1)=='[')?s.substr(1,s.length-2):s;
@@ -1545,7 +1571,7 @@ vkApis={
 		get();
 	},
    faves:function(callback){
-      AjGet('/fave?al=1',function(r,t){
+      AjGet('/fave?section=users&al=1',function(r,t){
          var r=t.match(/"faveUsers"\s*:\s*(\[[^\]]+\])/);
          if (r){
             r=eval('('+r[1]+')');
@@ -1913,17 +1939,35 @@ function vkAlertBox(title, text, callback, confirm) {// [callback] - "Yes" or "C
 //Download with normal name by dragout link
 function vkDragOutFile(el) {
     var a = el.getAttribute("href");
+    var url='';
+    var name='';
     if (a.indexOf("?&/") != -1) {
         a = a.split("?&/");
+        url=a[0];
+        name=a[1];
         a = ":" + a[1] + ":" + a[0];
         //alert(a);
     } else {
         a = '::' + a
     }
     el.addEventListener("dragstart", function(e) {
-        e.dataTransfer.setData("DownloadURL", a)
+        e.dataTransfer.setData("DownloadURL", a);//
     },false);
 }
+function vkDownloadFile(el) { 
+   if (!vkbrowser.mozilla) return true;
+   var a = el.getAttribute("href");
+   var url=a;
+   var name='';
+   if (a.indexOf("?&/") != -1) {
+      a = a.split("?&/");
+      url=a[0];
+      name=decodeURI(a[1]);
+   }
+   vkMozExtension.send_request({download:1,url:url,name:name});
+   return false;
+}
+
 /* NOTIFY TOOLS */
 function vkNotifyCustomSInit(){
       vkNotifierSound = function(sound){   if (typeof sound == 'string') (new Sound2(sound)).play();};
@@ -2084,7 +2128,27 @@ vk_plugins={
 			}
 		}		
 		//return r;		
-	}
+	},
+   user_menu_items:function(uid,gid){
+		var r='';
+		for (var key in vkopt_plugins){
+			var p=vkopt_plugins[key];
+			if (p.UserMenuItems) {
+				var tstart=unixtime();
+            var i = p.UserMenuItems(uid,gid) || '';
+            if (isArray(i)){
+               r+='<li><div class="vk_user_menu_divider"></div></li>';
+               for (var j=0; j<i.length;j++)
+                  r+='<li onmousemove="clearTimeout(pup_tout);" onmouseout="pup_tout=setTimeout(pupHide, 400);">'+i[j]+'</li>';              
+            } else {
+               if (i) r+='<li><div class="vk_user_menu_divider"></div></li>';
+               r+='<li onmousemove="clearTimeout(pup_tout);" onmouseout="pup_tout=setTimeout(pupHide, 400);">'+i+'</li>';
+            } 
+				if (r) vklog('Plugin "'+key+'" user_menu_items: '+(unixtime()-tstart)+'ms');	
+			}
+		}		
+		return r;		   
+   }
 }
 vkopt_plugin_run=vk_plugins.run;
 
@@ -2093,35 +2157,24 @@ vkopt_plugin_run=vk_plugins.run;
 if (!window.vkopt_plugins) vkopt_plugins={};
 (function(){
 	var PLUGIN_ID = 'vkmyplugin';
-	var PLUGIN_NAME = 'vk my test plugin';
-	
+	var PLUGIN_NAME = 'vk my test plugin';	
 	var ADDITIONAL_CSS='';
-	
-	// FUNCTIONS
-	var INIT = null;							// function()
-	var ON_NEW_LOCATION = null;					// function(nav_obj,cur_module_name);
-	var PROCESS_NEW_SCRIPT = null;				// function(file_name);
-	var ON_STORAGE = null; 		  				// function(command_id,command_obj);
-	var PROCESS_LINK_FUNCTION = null;			// function(link);
-	var PROCESS_NODE_FUNCTION = null;			// function(node);
-	var PHOTOVIEWER_ACTIONS	= null;				// function(photo_data); ||  String
-	var ALBUM_ACTIONS = null;					// function(oid,aid); || Array with items. Example  [{l:'Link1', onClick:Link1Func},{l:'Link2', onClick:Link2Func}]
-	var VIDEO_ACT_LINKLS = null;				// function(video_data,links_array); ||  String.   video_data may contain iframe url
-	var PROCESS_AJAX_RESPONSE = null;			// function(answer,url,params); 'answer' is array. modify only array items
-	//DON'T EDIT CODE:
+
 	vkopt_plugins[PLUGIN_ID]={
 		Name:PLUGIN_NAME,
 		css:ADDITIONAL_CSS,
-		init:INIT,
-		onLocation:ON_NEW_LOCATION,
-		onLibFiles:PROCESS_NEW_SCRIPT,
-		onStorage :ON_STORAGE,
-		processLinks:PROCESS_LINK_FUNCTION,
-		processNode:PROCESS_NODE_FUNCTION,
-		pvActions:PHOTOVIEWER_ACTIONS,
-		albumActions:ALBUM_ACTIONS,
-		vidActLinks:VIDEO_ACT_LINKLS,
-		onResponseAnswer:PROCESS_AJAX_RESPONSE
+	// FUNCTIONS
+      init:             null,                    // function();                        //run on connect plugin to vkopt
+		onLocation:       null,                    // function(nav_obj,cur_module_name); //On new location
+		onLibFiles:       null,                    // function(file_name);               //On connect new vk script
+		onStorage :       null,                    // function(command_id,command_obj);
+		processLinks:     null,                    // function(link);
+		processNode:      null,                    // function(node);
+		pvActions:        null,                    // function(photo_data); ||  String    //PHOTOVIEWER_ACTIONS
+		albumActions:     null,                    // function(oid,aid); || Array with items. Example  [{l:'Link1', onClick:Link1Func},{l:'Link2', onClick:Link2Func}]
+		vidActLinks:      null,                    // function(video_data,links_array); ||  String.   video_data may contain iframe url
+		onResponseAnswer: null,                    // function(answer,url,params); 'answer' is array. modify only array items
+      UserMenuItems:    null                     // function(uid) || string
 	};
 	if (window.vkopt_ready) vkopt_plugin_run(PLUGIN_ID);
 })();

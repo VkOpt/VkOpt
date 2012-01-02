@@ -200,10 +200,11 @@ var _ua_ = window.navigator.userAgent.toLowerCase();
 var vkbrowser = {
   version: (_ua_.match( /.+(?:me|ox|on|rv|it|ra|ie)[\/: ]([\d.]+)/ ) || [0,'0'])[1],
   opera: /opera/i.test(_ua_),
-  msie: (!this.opera && /msie/i.test(_ua_)),
-  msie6: (!this.opera && /msie 6/i.test(_ua_)),
-  msie7: (!this.opera && /msie 7/i.test(_ua_)),
-  msie8: (!this.opera && /msie 8/i.test(_ua_)),
+  msie: (/msie/i.test(_ua_) && !/opera/i.test(_ua_)),
+  msie6: (/msie 6/i.test(_ua_) && !/opera/i.test(_ua_)),
+  msie7: (/msie 7/i.test(_ua_) && !/opera/i.test(_ua_)),
+  msie8: (/msie 8/i.test(_ua_) && !/opera/i.test(_ua_)),
+  msie9: (/msie 9/i.test(_ua_) && !/opera/i.test(_ua_)),
   mozilla: /firefox/i.test(_ua_),
   chrome: /chrome/i.test(_ua_),
   safari: (!(/chrome/i.test(_ua_)) && /webkit|safari|khtml/i.test(_ua_)),
@@ -213,7 +214,9 @@ var vkbrowser = {
   ipod4: /ipod.*OS 4/i.test(_ua_),
   ipad: /ipad/i.test(_ua_),
   safari_mobile: /iphone|ipod|ipad/i.test(_ua_),
-  mobile: /iphone|ipod|ipad|opera mini|opera mobi/i.test(_ua_)
+  opera_mobile: /opera mini|opera mobi/i.test(_ua_),
+  mobile: /iphone|ipod|ipad|opera mini|opera mobi/i.test(_ua_),
+  mac: /mac/i.test(_ua_)
 }
 if (window.opera) {vkbrowser.mozilla=false; vkbrowser.opera=true;}
 
@@ -272,8 +275,30 @@ if (!window.Audio){
     this.play  = function(){};
   }
 }
+
+var vkMozExtension = {  
+  send_request: function(data, callback) { // analogue of chrome.extension.sendRequest  
+    var request = document.createTextNode("");  
+    request.setUserData("data", data, null);  
+    if (callback) {
+      request.setUserData("callback", callback, null);  
+      document.addEventListener("mozext-response", function(event) {  
+        var node = event.target, callback = node.getUserData("callback"), response = node.getUserData("response");  
+        document.documentElement.removeChild(node);  
+        document.removeEventListener("mozext-response", arguments.callee, false);  
+        return callback(response);  
+      }, false);  
+    }  
+    document.documentElement.appendChild(request);  
+    var sender = document.createEvent("HTMLEvents");  
+    sender.initEvent("mozext-query", true, false);  
+    return request.dispatchEvent(sender);  
+  },  
+
+  callback: function(response) {    return alert("response: " + (response && response.toSource ? response.toSource() : response)); }  
+} 
 /* FUNCTIONS. LEVEL 1 */
-	//LANG
+	//LANG   
    function print_r( array, return_val ) {
       var output = "", pad_char = " ", pad_val = 4;
 
@@ -1929,6 +1954,20 @@ function vkDragOutFile(el) {
         e.dataTransfer.setData("DownloadURL", a);//
     },false);
 }
+function vkDownloadFile(el) { 
+   if (!vkbrowser.mozilla) return true;
+   var a = el.getAttribute("href");
+   var url=a;
+   var name='';
+   if (a.indexOf("?&/") != -1) {
+      a = a.split("?&/");
+      url=a[0];
+      name=decodeURI(a[1]);
+   }
+   vkMozExtension.send_request({download:1,url:url,name:name});
+   return false;
+}
+
 /* NOTIFY TOOLS */
 function vkNotifyCustomSInit(){
       vkNotifierSound = function(sound){   if (typeof sound == 'string') (new Sound2(sound)).play();};

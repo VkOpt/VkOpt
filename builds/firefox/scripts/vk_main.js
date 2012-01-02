@@ -647,7 +647,12 @@ function ProcessAwayLink(node){
 	var lnk=vkLinksUnescapeCyr(node.href).split('?to=')[1];
    if (!lnk) return;
    var lnk=lnk.split('&h=')[0].split('&post=')[0];
-	node.href=lnk.replace(/%26/gi,'&').replace(/%3A/gi,':').replace(/%2F/gi,'/').replace(/%25/gi,'%').replace(/%3F/gi,'?').replace(/%3D/gi,'=').replace(/%26/gi,';').replace(/&h=[\da-z]{18}/i,'');
+	node.href=unescape(lnk).replace(/&h=[\da-z]{18}/i,'');
+   /*
+   lnk.replace(/%26/gi,'&').replace(/%3A/gi,':').
+   replace(/%2F/gi,'/').replace(/%25/gi,'%').
+   replace(/%3F/gi,'?').replace(/%3D/gi,'=').
+   replace(/%26/gi,';').replace(/&h=[\da-z]{18}/i,'');*/
 	//alert(unescape(node.href));
   }
 }
@@ -1408,12 +1413,12 @@ function vkVidDownloadLinks(vars){
 			var res = "360";
 			switch(i){case 2:{res = "480"; break;}  case 3:{  res = "720"; break;}}
 			vidHDurl=pathToHD(res);
-			s += (vidHDurl)?'<a href="'+vidHDurl+(smartlink?vidname+'.mov':'')+'" onmouseover="vkGetVideoSize(this); vkDragOutFile(this);">'+IDL("downloadHD")+' '+res+'p<small class="fl_r divide" url="'+vidHDurl+'"></small></a>':"";   
+			s += (vidHDurl)?'<a href="'+vidHDurl+(smartlink?vidname+'.mov':'')+'" onclick="return vkDownloadFile(this);" onmouseover="vkGetVideoSize(this); vkDragOutFile(this);">'+IDL("downloadHD")+' '+res+'p<small class="fl_r divide" url="'+vidHDurl+'"></small></a>':"";   
 		  }
 		  return s;
 	}
 	vidurl=(vars.no_flv=='1')?pathToHD('240')+(smartlink?vidname+'.mov':''):(get_flv()+(smartlink?vidname+'.flv':''));
-    vidurl =  '<a href="'+vidurl+'" onmouseover="vkGetVideoSize(this);">'+IDL("download")+'<small class="fl_r divide" url="'+vidurl+'"></small></a>';
+    vidurl =  '<a href="'+vidurl+'" onclick="return vkDownloadFile(this);" onmouseover="vkGetVideoSize(this); vkDragOutFile(this);">'+IDL("download")+'<small class="fl_r divide" url="'+vidurl+'"></small></a>';
     vidurl += generateHDLinks();
     //vidname
 	return vidurl;
@@ -1814,7 +1819,7 @@ function vkAudioNode(node){
     td.appendChild(el); 
     td=document.createElement('td');
     td.setAttribute('style',"vertical-align: top;");
-    td.innerHTML='<a href="'+url+'" onmouseover="vkDragOutFile(this);"><div class="play_new down_btn" id="down'+id+'"></div></a>';//<img src="'+icon_src+'">
+    td.innerHTML='<a href="'+url+'"  onclick="return vkDownloadFile(this);" onmouseover="vkDragOutFile(this);"><div class="play_new down_btn" id="down'+id+'"></div></a>';//<img src="'+icon_src+'">
     tr.appendChild(td);  
     el.setAttribute('vk_ok','1');  
     //vk$(this).dragout();
@@ -2111,7 +2116,7 @@ return '<small class="duration fl_r" id="vk_asize'+audio[0]+'_'+audio[1]+'" url=
 
 function vkAudioDownBtn(audio){
 	var names=(getSet(1) == 'y')?true:false;
-	return '<a href="'+audio[2]+'?'+vkDownloadPostfix()+(names?'&/'+audio[5]+' - '+audio[6]+'.mp3':'')+'" onmouseover="vk$(this).dragout();"><div class="play_new down_btn" id="down'+audio[0]+'_'+audio[1]+'"></div></a>'; 
+	return '<a href="'+audio[2]+'?'+vkDownloadPostfix()+(names?'&/'+audio[5]+' - '+audio[6]+'.mp3':'')+'"  onclick="return vkDownloadFile(this);"  onmouseover="vk$(this).dragout();"><div class="play_new down_btn" id="down'+audio[0]+'_'+audio[1]+'"></div></a>'; 
 }
 
 function vkAudioDurSearchBtn(audio,fullname,id){
