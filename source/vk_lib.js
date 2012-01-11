@@ -401,7 +401,7 @@ var vkMozExtension = {
 
 	function vkLinksUnescapeCyr(str){
 	  var escaped=["%B8", "%E9", "%F6", "%F3", "%EA", "%E5", "%ED", "%E3", "%F8", "%F9", "%E7", "%F5", "%FA", "%F4", "%FB", "%E2", "%E0", "%EF", "%F0", "%EE", "%EB", "%E4", "%E6", "%FD", "%FF", "%F7", "%F1", "%EC", "%E8", "%F2", "%FC", "%E1", "%FE","%A8", "%C9", "%D6", "%D3", "%CA", "%C5", "%CD", "%C3", "%D8", "%D9", "%C7", "%D5", "%DA", "%D4", "%DB", "%C2", "%C0", "%CF", "%D0", "%CE", "%CB", "%C4", "%C6", "%DD", "%DF", "%D7", "%D1", "%CC", "%C8", "%D2", "%DC", "%C1", "%DE"];
-	  var unescaped=["ё", "й", "ц", "у", "к", "е", "н", "г", "ш", "щ", "з", "х", "ъ", "ф", "ы", "в", "а", "п", "р", "о", "л", "д", "ж", "э", "я", "ч", "с", "м", "и", "т", "ь", "б", "ю","Ё", "Й", "Ц", "У", "К", "Е", "Н", "Г", "Ш", "Щ", "З", "Х", "Ъ", "Ф", "Ы", "В", "А", "П", "Р", "О", "Л", "Д", "Ж", "Э", "Я", "Ч", "С", "М", "И", "Т", "Ь", "Б", "Ю"];
+	  var unescaped=["\u0451", "\u0439", "\u0446", "\u0443", "\u043a", "\u0435", "\u043d", "\u0433", "\u0448", "\u0449", "\u0437", "\u0445", "\u044a", "\u0444", "\u044b", "\u0432", "\u0430", "\u043f", "\u0440", "\u043e", "\u043b", "\u0434", "\u0436", "\u044d", "\u044f", "\u0447", "\u0441", "\u043c", "\u0438", "\u0442", "\u044c", "\u0431", "\u044e","\u0401", "\u0419", "\u0426", "\u0423", "\u041a", "\u0415", "\u041d", "\u0413", "\u0428", "\u0429", "\u0417", "\u0425", "\u042a", "\u0424", "\u042b", "\u0412", "\u0410", "\u041f", "\u0420", "\u041e", "\u041b", "\u0414", "\u0416", "\u042d", "\u042f", "\u0427", "\u0421", "\u041c", "\u0418", "\u0422", "\u042c", "\u0411", "\u042e"];
 	  for (var i=0;i<escaped.length;i++)
 		str=str.split(escaped[i]).join(unescaped[i]);
      str=str.replace('%23','#');
@@ -1008,6 +1008,100 @@ String.prototype.leftPad = function (l, c) {
 	  return html;
 	}
 	// javascript: ge('content').innerHTML=vkMakeContTabs([{name:'Tab',content:'Tab1 text',active:true},{name:'Qaz(Tab2)',content:'<font size="24px">Tab2 text:qwere qwere qwee</font>'}]); void(0);
+
+vk_hor_slider={
+ default_percent:50,
+ topPercent:0,
+ init:function(id,value){
+   var div=vkCe('div',{"id":id+"_slider_scale",
+                       "class":"vk_slider_scale",
+                       "onmousedown":"vk_hor_slider.sliderScaleClick(event,this);",
+                       "slider_id":id},'\
+           <input type="hidden" id="'+id+'_select">\
+           <div id="'+id+'_slider_line" class="vk_slider_line"><!-- --></div>\
+           <div id="'+id+'_slider" class="vk_slider" onmousedown="vk_hor_slider.sliderClick(event,this.parentNode);"><!-- --></div>\
+         ');
+   ge(id).appendChild(div);
+   vk_hor_slider.sliderUpdate(value || 0,null,id);
+ },
+ sliderScaleClick: function (e,el) {
+    var id=el.getAttribute("slider_id");
+    if (checkEvent(e)) return;
+    var slider = ge(id+'_slider'),
+        scale = slider.parentNode,
+        maxX = (scale.clientWidth || 100) - slider.offsetWidth,
+        margin = Math.max(0, Math.min(maxX, (e.offsetX || e.layerX) - slider.offsetWidth / 2)),
+        percent = margin / maxX * 100;
+
+    setStyle(id+'_slider', 'marginLeft', margin);
+    vk_hor_slider.sliderUpdate(percent,null,id);
+    vk_hor_slider.sliderClick(e);
+  },
+  sliderClick: function (e,el) {
+    var id=el.getAttribute("slider_id");
+    if (checkEvent(e)) return;
+    e.cancelBubble = true;
+
+    var startX = e.clientX || e.pageX,
+        slider = ge(id+'_slider'),
+        scale = slider.parentNode,
+        startMargin = slider.offsetLeft || 0,
+        maxX = (scale.clientWidth || 100) - slider.offsetWidth,
+        selectEvent = 'mousedown selectstart',
+        defPercent = intval(vk_hor_slider.default_percent),
+        margin, percent;
+
+    var _temp = function (e) {
+      margin = Math.max(0, Math.min(maxX, startMargin + (e.clientX || e.pageX)- startX));
+      percent = margin / maxX * 100;
+
+      if (Math.abs(percent - 100) < 9) {
+        percent = 100;
+      }
+      if (defPercent > 0 && Math.abs(percent - defPercent) < 3) {
+        percent = defPercent;
+      }
+      percent = intval(percent);
+      margin = maxX * percent / 100;
+      slider.style.marginLeft = margin + 'px';
+      vk_hor_slider.sliderUpdate(percent,null,id);
+      return cancelEvent(e);
+    }, _temp2 = function () {
+      removeEvent(document, 'mousemove', _temp);
+      removeEvent(document, 'mouseup', _temp2);
+      removeEvent(document, selectEvent, cancelEvent);
+      setStyle(bodyNode, 'cursor', '');
+      setStyle(scale, 'cursor', '');
+      vk_hor_slider.sliderApply();
+    };
+
+    addEvent(document, 'mousemove', _temp);
+    addEvent(document, 'mouseup', _temp2);
+    addEvent(document, selectEvent, cancelEvent);
+    setStyle(bodyNode, 'cursor', 'pointer');
+    setStyle(scale, 'cursor', 'pointer');
+    return false;
+  },
+  sliderSelectChanged: function (id) {
+    var percent = ge(id+'_select').value;
+    vk_hor_slider.sliderUpdate(percent,null,id);
+    vk_hor_slider.sliderApply();
+  },
+  sliderUpdate: function (percent, upd,id) {
+    percent = intval(percent);
+    ge(id+'_select').value=percent;
+    //val(id+'_slider_label', percent == 100 ? getLang('news_top_all_news') : (percent ? getLang('news_top_X_percent', percent) : getLang('news_top_no_news')));
+    vk_hor_slider.topPercent = percent;
+    //if (upd) {
+        var slider = ge(id+'_slider'),
+            maxX = (slider.parentNode.clientWidth || 100) - slider.offsetWidth;
+        setStyle(id+'_slider', 'marginLeft', maxX * percent / 100); 
+    //}
+  },
+  sliderApply: function () {
+    //vk_hor_slider.switchSection(vk_hor_slider.topPercent == 100 ? 'posts' : 'top');
+  }
+}   
 /*END OF VK GUI*/
 
 function vkSetMouseScroll(el,next,back){
@@ -2156,27 +2250,27 @@ vkopt_plugin_run=vk_plugins.run;
 
 if (!window.vkopt_plugins) vkopt_plugins={};
 (function(){
-	var PLUGIN_ID = 'vkmyplugin';
-	var PLUGIN_NAME = 'vk my test plugin';	
-	var ADDITIONAL_CSS='';
+   var PLUGIN_ID = 'vkmyplugin';
+   var PLUGIN_NAME = 'vk my test plugin';   
+   var ADDITIONAL_CSS='';
 
-	vkopt_plugins[PLUGIN_ID]={
-		Name:PLUGIN_NAME,
-		css:ADDITIONAL_CSS,
-	// FUNCTIONS
+   vkopt_plugins[PLUGIN_ID]={
+      Name:PLUGIN_NAME,
+      css:ADDITIONAL_CSS,
+   // FUNCTIONS
       init:             null,                    // function();                        //run on connect plugin to vkopt
-		onLocation:       null,                    // function(nav_obj,cur_module_name); //On new location
-		onLibFiles:       null,                    // function(file_name);               //On connect new vk script
-		onStorage :       null,                    // function(command_id,command_obj);
-		processLinks:     null,                    // function(link);
-		processNode:      null,                    // function(node);
-		pvActions:        null,                    // function(photo_data); ||  String    //PHOTOVIEWER_ACTIONS
-		albumActions:     null,                    // function(oid,aid); || Array with items. Example  [{l:'Link1', onClick:Link1Func},{l:'Link2', onClick:Link2Func}]
-		vidActLinks:      null,                    // function(video_data,links_array); ||  String.   video_data may contain iframe url
-		onResponseAnswer: null,                    // function(answer,url,params); 'answer' is array. modify only array items
+      onLocation:       null,                    // function(nav_obj,cur_module_name); //On new location
+      onLibFiles:       null,                    // function(file_name);               //On connect new vk script
+      onStorage :       null,                    // function(command_id,command_obj);
+      processLinks:     null,                    // function(link);
+      processNode:      null,                    // function(node);
+      pvActions:        null,                    // function(photo_data); ||  String    //PHOTOVIEWER_ACTIONS
+      albumActions:     null,                    // function(oid,aid); || Array with items. Example  [{l:'Link1', onClick:Link1Func},{l:'Link2', onClick:Link2Func}]
+      vidActLinks:      null,                    // function(video_data,links_array); ||  String.   video_data may contain iframe url
+      onResponseAnswer: null,                    // function(answer,url,params); 'answer' is array. modify only array items
       UserMenuItems:    null                     // function(uid) || string
-	};
-	if (window.vkopt_ready) vkopt_plugin_run(PLUGIN_ID);
+   };
+   if (window.vkopt_ready) vkopt_plugin_run(PLUGIN_ID);
 })();
 
 */

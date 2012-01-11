@@ -14,20 +14,13 @@
 
 // stManager Hook
 function vkStManHook(){/* for dynamic loaded *.js */
-  stManBeforeCallback = function (files){  vkInjCheck(files);  };
-  stManAfterCallback = function (files){ /*alert(print_r(files));*/};
-  stManCallback = function(callback,files){
-    backfunc=callback;  
-    callback=function(){    
-      //vklog(files);
-	  stManBeforeCallback(files);    
-      backfunc();    
-      stManAfterCallback(files);
-	  //vklog('done: '+files);
-    };
-    return callback;
-  };
-  Inj.After("stManager.add",/if\s*\(!callback\)\s*{*\s*return;\s*}*/,"callback=stManCallback(callback,files);"); 
+  stManBeforeCallback = function (files){  
+      return function(){
+         vkInjCheck(files); 
+      }      
+  };  
+  Inj.Before("stManager.add","__stm._waiters.push","__stm._waiters.push([wait, stManBeforeCallback(files)]);");
+  Inj.After("stManager.add",/if\s*\(!callback\)\s*{*\s*return;\s*}*/,"if (!wait.length){stManBeforeCallback(files)();}"); //"callback=stManCallback(callback,files);"
 }
 function vkInjCheck(files){
   if (!isArray(files)) files = [files];
@@ -592,6 +585,9 @@ function vkStyles(){
 			.vk_txt_smile_item IMG{background-color:transparent;}\
 			.vk_txt_smile_item:hover IMG{background-color:#DDD;}\
          #side_bar ol li a.vk_published_by {  padding-left: 17px;  background-image: url(/images/icons/published.gif); background-position:3px 6px; background-repeat:no-repeat;}\
+         .vk_slider_scale {  cursor: pointer;  padding-top: 3px; }\
+         .vk_slider_line {  cursor: pointer;  border-bottom: 1px solid #5F7D9D; }\
+         .vk_slider {  cursor: pointer;  background: #5F7D9D;  width: 11px;  height: 4px; }\
 	";
 	main_css+=vk_plugins.css();
 
@@ -1375,10 +1371,8 @@ function vkVideoPage(){}
 
 function vkVideoViewer(){
 	vkVidVarsGet();
-	//Inj.End('videoview.receiveComms','vkProcessNode(comms);');
-	Inj.Before('videoview.showVideo','mvcur.mvNarrow','vkProcessNode(mvcur.mvWide);');
-	if (getSet(2)=='y') Inj.After('videoview.showVideo','innerHTML = info;','setTimeout(vkVidLinks,0);');
-	//Inj.Replace('videoview.minimize','browser.safari || browser.chrome || browser.mozilla','true');
+   Inj.End('videoview.showVideo','vkProcessNode(mvcur.mvWide);');
+	if (getSet(2)=='y') Inj.End('videoview.showVideo','setTimeout(vkVidLinks,0);');//Inj.After('videoview.showVideo','innerHTML = info;','setTimeout(vkVidLinks,0);');
 	videoview.enabledResize=function(){return true;}
 }
 function vkVidDownloadLinks(vars){
@@ -1791,6 +1785,8 @@ function vkParseAudioInfo(_aid,node,anode){
 
 
 function vkAudioNode(node){
+  // get mp3 url maybe from /audio?act=reload_audio&al=1&audio_id=132434853&owner_id=10723321
+  
   if ((node || ge('content')).innerHTML.indexOf('play_new')==-1) return;
   var smartlink=(getSet(1) == 'y')?true:false;
   var download=(getSet(0) == 'y')?1:0;
@@ -1833,7 +1829,8 @@ function vkAudioNode(node){
 		 if (ge('down'+id)) continue;
          var data = (node?divs[i].parentNode.parentNode.getElementsByTagName('input')[0]:ge('audio_info' + id)).value.split(',');
          var url=data[0];
-		 var anode=(node?divs[i].parentNode.parentNode.parentNode:ge('audio'+id));
+         if (url.indexOf('/u00000/')!=-1) continue;
+         var anode=(node?divs[i].parentNode.parentNode.parentNode:ge('audio'+id));
 			 var el=geByClass("duration",anode )[0];
 			 var spans=el.parentNode.getElementsByTagName('span');
 			 var span_title=null;
@@ -2116,7 +2113,7 @@ return '<small class="duration fl_r" id="vk_asize'+audio[0]+'_'+audio[1]+'" url=
 
 function vkAudioDownBtn(audio){
 	var names=(getSet(1) == 'y')?true:false;
-	return '<a href="'+audio[2]+'?'+vkDownloadPostfix()+(names?'&/'+audio[5]+' - '+audio[6]+'.mp3':'')+'"  onclick="return vkDownloadFile(this);"  onmouseover="vk$(this).dragout();"><div class="play_new down_btn" id="down'+audio[0]+'_'+audio[1]+'"></div></a>'; 
+	return '<a href="'+audio[2]+'?'+vkDownloadPostfix()+(names?'&/'+audio[5]+' - '+audio[6]+'.mp3':'')+'"  onclick="return vkDownloadFile(this);"  onmouseover="vkDragOutFile(this);"><div class="play_new down_btn" id="down'+audio[0]+'_'+audio[1]+'"></div></a>'; 
 }
 
 function vkAudioDurSearchBtn(audio,fullname,id){
