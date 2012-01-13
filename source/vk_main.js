@@ -495,6 +495,7 @@ function vkStyles(){
 						  background: url(http:\/\/vk.com\/images\/play.gif) 4px 5px no-repeat;\
 						  border-bottom_: solid 1px #CCD3DA; }\
 		#vkTestSounds a:hover {  text-decoration: none;  background-color: #DAE1E8; }\
+      #vk_sound_vol{text-align:center; width:200px; margin:0 auto;}\
 	"; 
 	
 	var shut='\
