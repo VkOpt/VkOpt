@@ -338,7 +338,28 @@ var vkMozExtension = {
       output = formatArray(array, 0, pad_val, pad_char);
          return output;
    }
-	
+	function vkTimer(callback, delay) {
+       /* Example:
+         var timer = new Timer(function() {
+             alert("Done!");
+         }, 1000);
+         timer.pause();
+         timer.resume();         
+       */ 
+       var timerId, start, remaining = delay;
+
+       this.pause = function() {
+           window.clearTimeout(timerId);
+           remaining -= new Date() - start;
+       };
+
+       this.resume = function() {
+           start = new Date();
+           timerId = window.setTimeout(callback, remaining);
+       };
+
+       this.resume();
+   }
 	function vkCutBracket(s,bracket){
 		if (CUT_VKOPT_BRACKET || bracket==2) s=(s.substr(0,1)=='[')?s.substr(1,s.length-2):s;
       else if (bracket &&  bracket!=2) s='[ '+s+' ]';
@@ -1011,60 +1032,100 @@ String.prototype.leftPad = function (l, c) {
 
 vk_hor_slider={
  default_percent:50,
- topPercent:0,
- init:function(id,value){
-   var div=vkCe('div',{"id":id+"_slider_scale",
-                       "class":"vk_slider_scale",
-                       "onmousedown":"vk_hor_slider.sliderScaleClick(event,this);",
-                       "slider_id":id},'\
+ callbacks:[null],
+ upd_callbacks:[null],
+ init:function(id,max_value,value,callback,on_update,width){
+   var el=ge(id);
+   var rh=false;
+   if (!el){ 
+      el=vkCe('div',{id:id, style:"width:"+(width || 100)+"px; opacity:0.01;"});
+      document.getElementsByTagName('body')[0].appendChild(el);
+      rh=true;
+   }
+   var cback='';
+   if (callback){
+      vk_hor_slider.callbacks.push(callback);
+      cback=' callback="'+(vk_hor_slider.callbacks.length-1)+'" ';
+   }
+   var ucback='';
+   if (on_update){
+      vk_hor_slider.upd_callbacks.push(on_update);
+      ucback=' ucallback="'+(vk_hor_slider.upd_callbacks.length-1)+'" ';
+   }   
+   var div=vkCe('div',{"id":id+"_slider_wrap",
+                       "class":"vk_slider_wrap",
+                       "style":"position:relative; width:"+(width || getSize(el,true)[0])+"px;"},'\
+         <div id="'+id+'_slider_scale" class="vk_slider_scale" onmousedown="vk_hor_slider.sliderScaleClick(event,this);" slider_id="'+id+'" max_value="'+max_value+'" '+cback+ucback+'>\
            <input type="hidden" id="'+id+'_select">\
+           <input type="hidden" id="'+id+'_position">\
            <div id="'+id+'_slider_line" class="vk_slider_line"><!-- --></div>\
            <div id="'+id+'_slider" class="vk_slider" onmousedown="vk_hor_slider.sliderClick(event,this.parentNode);"><!-- --></div>\
+         </div>\
          ');
-   ge(id).appendChild(div);
-   vk_hor_slider.sliderUpdate(value || 0,null,id);
+   el.appendChild(div);
+   max_value = max_value || 100;
+   value=value || 0;
+   var percent= value * 100 / max_value;
+   vk_hor_slider.sliderUpdate(percent,value,id);
+   if (rh){
+      return el.innerHTML;
+      el.parentNode.removeChild(el);
+   }
  },
  sliderScaleClick: function (e,el) {
     var id=el.getAttribute("slider_id");
     if (checkEvent(e)) return;
     var slider = ge(id+'_slider'),
+        maxVal=parseInt(el.getAttribute("max_value")) || 0,
         scale = slider.parentNode,
         maxX = (scale.clientWidth || 100) - slider.offsetWidth,
         margin = Math.max(0, Math.min(maxX, (e.offsetX || e.layerX) - slider.offsetWidth / 2)),
-        percent = margin / maxX * 100;
+        percent = margin / maxX * 100,
+        position = margin / maxX * maxVal;
 
     setStyle(id+'_slider', 'marginLeft', margin);
-    vk_hor_slider.sliderUpdate(percent,null,id);
-    vk_hor_slider.sliderClick(e);
+    vk_hor_slider.sliderUpdate(percent,position,id);
+    vk_hor_slider.sliderClick(e,el);
   },
   sliderClick: function (e,el) {
     var id=el.getAttribute("slider_id");
     if (checkEvent(e)) return;
     e.cancelBubble = true;
-
+    
     var startX = e.clientX || e.pageX,
         slider = ge(id+'_slider'),
+        maxVal=parseInt(el.getAttribute("max_value")) || 0,
         scale = slider.parentNode,
         startMargin = slider.offsetLeft || 0,
         maxX = (scale.clientWidth || 100) - slider.offsetWidth,
         selectEvent = 'mousedown selectstart',
         defPercent = intval(vk_hor_slider.default_percent),
-        margin, percent;
+        margin, percent,position;
 
     var _temp = function (e) {
       margin = Math.max(0, Math.min(maxX, startMargin + (e.clientX || e.pageX)- startX));
       percent = margin / maxX * 100;
+      position = margin / maxX * maxVal;
 
+      
+      if (maxVal<100){
+         percent = Math.round(position)*100/maxVal;
+         position = percent / 100 * maxVal;
+      }
+      /*
       if (Math.abs(percent - 100) < 9) {
         percent = 100;
       }
       if (defPercent > 0 && Math.abs(percent - defPercent) < 3) {
         percent = defPercent;
       }
+      */
+ 
+
       percent = intval(percent);
       margin = maxX * percent / 100;
       slider.style.marginLeft = margin + 'px';
-      vk_hor_slider.sliderUpdate(percent,null,id);
+      vk_hor_slider.sliderUpdate(percent,position,id);
       return cancelEvent(e);
     }, _temp2 = function () {
       removeEvent(document, 'mousemove', _temp);
@@ -1072,7 +1133,7 @@ vk_hor_slider={
       removeEvent(document, selectEvent, cancelEvent);
       setStyle(bodyNode, 'cursor', '');
       setStyle(scale, 'cursor', '');
-      vk_hor_slider.sliderApply();
+      vk_hor_slider.sliderApply(id);
     };
 
     addEvent(document, 'mousemove', _temp);
@@ -1084,21 +1145,26 @@ vk_hor_slider={
   },
   sliderSelectChanged: function (id) {
     var percent = ge(id+'_select').value;
-    vk_hor_slider.sliderUpdate(percent,null,id);
-    vk_hor_slider.sliderApply();
+    var pos=ge(id+'_position').value;
+    vk_hor_slider.sliderUpdate(percent,pos,id);
+    vk_hor_slider.sliderApply(id);
   },
-  sliderUpdate: function (percent, upd,id) {
-    percent = intval(percent);
-    ge(id+'_select').value=percent;
-    //val(id+'_slider_label', percent == 100 ? getLang('news_top_all_news') : (percent ? getLang('news_top_X_percent', percent) : getLang('news_top_no_news')));
-    vk_hor_slider.topPercent = percent;
-    //if (upd) {
-        var slider = ge(id+'_slider'),
-            maxX = (slider.parentNode.clientWidth || 100) - slider.offsetWidth;
-        setStyle(id+'_slider', 'marginLeft', maxX * percent / 100); 
-    //}
+  sliderUpdate: function (percent, val,id) {
+      percent = intval(percent);
+      ge(id+'_select').value=percent;
+      ge(id+'_position').value=val;
+      var maxVal=parseInt(ge(id+'_slider_scale').getAttribute("max_value")) || 0;
+      
+      var slider = ge(id+'_slider'),
+      maxX = (slider.parentNode.clientWidth || 100) - slider.offsetWidth;
+      setStyle(id+'_slider', 'marginLeft', maxX * percent / 100); 
+      
+      var cid=parseInt(ge(id+'_slider_scale').getAttribute('ucallback'));
+      if (cid) vk_hor_slider.upd_callbacks[cid](parseInt(ge(id+'_position').value),parseInt(ge(id+'_select').value));   
   },
-  sliderApply: function () {
+  sliderApply: function (id) {
+   var cid=parseInt(ge(id+'_slider_scale').getAttribute('callback'));
+   if (cid) vk_hor_slider.callbacks[cid](parseInt(ge(id+'_position').value),parseInt(ge(id+'_select').value));
     //vk_hor_slider.switchSection(vk_hor_slider.topPercent == 100 ? 'posts' : 'top');
   }
 }   

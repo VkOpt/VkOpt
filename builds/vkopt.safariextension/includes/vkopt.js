@@ -63,7 +63,8 @@ var SetsOnLocalStore={
   'GrList':'s',//myGrList
   'VK_CURRENT_CSS_URL':'s',
   //'VK_CURRENT_CSS_CODE':'s'
-  'WallsID':'s'
+  'WallsID':'s',
+  'vk_sounds_vol':'s'
 }
 var vk_showinstall=true;
 var vkLdrImg='<img src="/images/upload.gif">';

@@ -33,7 +33,6 @@ if (!window.Sound2){
   Sound2 = function(sound){
     //alert(sound);
 	var audioObj = vkCe('audio');
-	
 	if (vkbrowser.safari || vkbrowser.chrome) sound+='_mp3';
 	var snd='';
 	if (vkLocalStoreReady() && vkGetVal('sound_'+sound)) snd=vkGetVal('sound_'+sound);
@@ -47,9 +46,20 @@ if (!window.Sound2){
 	}
 	audioObj.src=snd;
 	audioObj.load();
-
-	this.pause = function(){ audioObj.pause(); };
-    this.play  = function(){ audioObj.play() };
+   
+   var vol=function(){
+      if (audioObj.volume)
+         audioObj.volume = parseFloat(((window.localStorage?localStorage['vk_sounds_vol']:100)|| 100) / 100); 
+   }
+   
+	this.pause = function(){ 
+      vol();
+      audioObj.pause(); 
+   };
+   this.play  = function(){ 
+      vol();
+      audioObj.play() 
+   };
 	//function(){      notification.play();   };
   }
 }

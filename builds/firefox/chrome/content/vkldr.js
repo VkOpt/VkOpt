@@ -102,7 +102,7 @@ function vkDownloadFile(aURL, aDefaultFileName, aContentType, aShouldBypassCache
    }
    persist.persistFlags |= nsIWBP.PERSIST_FLAGS_AUTODETECT_APPLY_CONVERSION;
    persist.persistFlags |= nsIWBP.PERSIST_FLAGS_DONT_CHANGE_FILENAMES
-   var tr = Components.classes["@mozilla.org / transfer; 1 "].createInstance(Components.interfaces.nsITransfer);
+   var tr = Components.classes["@mozilla.org/transfer;1"].createInstance(Components.interfaces.nsITransfer);
    tr.init(source, fileURL, "", null, null, null, persist);
    persist.progressListener = tr;
    persist.saveURI(source, null, null, null, null, fileURL);

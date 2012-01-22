@@ -268,7 +268,7 @@ function vkMenu(){//vkExLeftMenu
         ['tag'+vkmid+'?act=comments',IDL("mNeFW")]       
     ],
 	'fave':[
-        ["fave",IDL("mFaV")],
+        ["fave?section=users",IDL("mFaV")],
         ["fave?section=links",IDL("mFaL")],
         ["fave?filter=photo&section=likes",IDL("mFaP")],
         ["fave?filter=video&section=likes",IDL("mFaVI")],

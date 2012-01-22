@@ -770,14 +770,34 @@ function vkMakeSettings(el){
   }
   //*
   if (vkLocalStoreReady()){
-    var currsnd=vkGetVal('sounds_name');
-    currsnd=(currsnd && currsnd!=''?currsnd:IDL('Default'));
+   var currsnd=vkGetVal('sounds_name');
+   currsnd=(currsnd && currsnd!=''?currsnd:IDL('Default'));
+   var changevolume=function(v,p,u){
+      var f=function(){
+         if (!ge('vk_sound_vol_label')){
+            setTimeout(f,100);
+            return;
+         }
+         ge('vk_sound_vol_label').innerHTML=IDL('Volume')+": "+p+"%";
+      }
+      f(); 
+      if (!u){
+         localStorage['vk_sounds_vol']=p;
+      }
+   };
 	var s_preview='<div class="vk_sounds_preview">'+
 		'<div>'+IDL('SoundsThemeName')+': <b><span id="vkSndThemeName">'+currsnd+'</span></b></div>'+
 		'<br><div id="vkTestSounds">'+
-		'<a href="javascript: vkSound(\'Msg\')">'+IDL('SoundMsg')+'</a><br>'+
-		'<a href="javascript: vkSound(\'New\')">'+IDL('SoundNewEvents')+'</a><br>'+
-		'<a href="javascript: vkSound(\'On\')">'+IDL('SoundFavOnl')+'</a><br>'+      
+         '<a href="javascript: vkSound(\'Msg\')">'+IDL('SoundMsg')+'</a><br>'+
+         '<a href="javascript: vkSound(\'New\')">'+IDL('SoundNewEvents')+'</a><br>'+
+         '<a href="javascript: vkSound(\'On\')">'+IDL('SoundFavOnl')+'</a><br>'+
+         (window.localStorage?'<div id="vk_sound_vol"><div id="vk_sound_vol_label"></div>'+
+            vk_hor_slider.init('vk_sound_vol',100,parseInt(localStorage['vk_sounds_vol'] || 100),
+               changevolume,
+               function(v,p){
+                  changevolume(v,p,true);
+               },200)+
+         '</div>':'')+
 		'</div>'+
 	'</div>';
     var sounds=

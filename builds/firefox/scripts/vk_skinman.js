@@ -77,11 +77,9 @@ function vkStyle(url){ if (ge("vkStyleCSS")) ge("vkStyleCSS").href=url; }
 function vkSkinnerInit(){
   //var lsredy=vkLocalStoreReady();
   if (EnableSetStyle && !ge('vkStyleCSS')) {                                                           
-    VK_CURRENT_CSS_URL=vkGetVal("VK_CURRENT_CSS_URL");//vk_LSGetVal - only localstore; vkGetVal- localstore && cookie
-    if (!VK_CURRENT_CSS_URL) VK_CURRENT_CSS_URL="";
+    VK_CURRENT_CSS_URL=vkGetVal("VK_CURRENT_CSS_URL") || "";//vk_LSGetVal - only localstore; vkGetVal- localstore && cookie 
+    VK_CURRENT_CSS_CODE=vk_LSGetVal('VK_CURRENT_CSS_CODE') || "";
     
-    VK_CURRENT_CSS_CODE=vk_LSGetVal('VK_CURRENT_CSS_CODE');
-    if (!VK_CURRENT_CSS_CODE) VK_CURRENT_CSS_CODE="";
       vkSetBodyScrResolution();
       var vkcssNode = document.createElement('link');
       vkcssNode.type = 'text/css';
