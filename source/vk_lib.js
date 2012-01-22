@@ -338,7 +338,28 @@ var vkMozExtension = {
       output = formatArray(array, 0, pad_val, pad_char);
          return output;
    }
-	
+	function vkTimer(callback, delay) {
+       /* Example:
+         var timer = new Timer(function() {
+             alert("Done!");
+         }, 1000);
+         timer.pause();
+         timer.resume();         
+       */ 
+       var timerId, start, remaining = delay;
+
+       this.pause = function() {
+           window.clearTimeout(timerId);
+           remaining -= new Date() - start;
+       };
+
+       this.resume = function() {
+           start = new Date();
+           timerId = window.setTimeout(callback, remaining);
+       };
+
+       this.resume();
+   }
 	function vkCutBracket(s,bracket){
 		if (CUT_VKOPT_BRACKET || bracket==2) s=(s.substr(0,1)=='[')?s.substr(1,s.length-2):s;
       else if (bracket &&  bracket!=2) s='[ '+s+' ]';
