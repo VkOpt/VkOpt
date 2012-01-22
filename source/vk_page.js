@@ -1099,8 +1099,8 @@ function vkToTopBackLink(){
    var s = {
       onmousedown: _stlMousedown
    };
-    extend(_stlLeft, s);
-    extend(_stlSide, s);
+   if (window._stlLeft) extend(_stlLeft, s);
+   if (window._stlSide)  extend(_stlSide, s);
 }
 
 if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
