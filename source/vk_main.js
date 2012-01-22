@@ -771,8 +771,11 @@ function vkCommon(){
 	
    Inj.After('TopSearch.row','name +','vkTsUserMenuLink(mid)+');
 
+   
    //if(window.TopSearch) Inj.End('TopSearch.prepareRows','vkProccessLinks(tsWrap);');
 	//if (window.setFavIcon) Inj.Try('setFavIcon');
+   
+   if (getSet(64)=='y')vkToTopBackLink();
 
 }
 
