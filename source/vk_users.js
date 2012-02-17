@@ -319,7 +319,7 @@ function ExUserItems(id,el){
 	if (isGroupAdmin('-'+vkGetGid())){
 		uitems+=mkExItem(0,'<a href="#" onclick="vkBanUser(\'/id%uid\'); return false;">'+IDL('banit')+'</a>');
 	}
-	if (window.cur && cur.oid>0 && geByClass('wall_post_text',el.parentNode)[0]){
+	if (window.cur && cur.oid>0 && (geByClass('wall_post_text',el.parentNode)[0] || hasClass(el.parentNode,'wall_text'))){
 		uitems+=mkExItem(0,'<a href="/wall'+cur.oid+'?with=%uid" onclick="return nav.go(this, event)">'+IDL('TetAtet')+'</a>');
 	}
 	if (uitems!='') uitems+='<li><div class="vk_user_menu_divider"></div></li>';
@@ -339,7 +339,7 @@ function ExUserItems(id,el){
 	//(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/apps.php?mid=%uid">'+IDL("clAp")+'</a>'):i++;
 	//(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/events.php?id=%uid">'+IDL("clEv")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/notes%uid" onclick="return nav.go(this, event);">'+IDL("clNo")+'</a>'):i++;
-	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/gifts?id=%uid">'+IDL("clGi")+'</a>'):i++;
+	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/gifts%uid">'+IDL("clGi")+'</a>'):i++;
 	//(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/rate.php?act=vote&id=%uid">'+IDL("clRa")+'</a>'):i++;
    (ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/feed?section=source&source=%uid">'+IDL("mNeP")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/feed?owner=%uid&section=owner" onClick="return nav.go(this,event);">'+IDL("clNews")+'</a>'):i++;

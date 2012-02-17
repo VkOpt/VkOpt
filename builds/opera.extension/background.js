@@ -2,6 +2,7 @@ vkopt_scripts=[
     "vklang.js",
 	"vk_lib.js", 
 	"vk_settings.js",
+   "vk_media.js",
 	"vk_users.js",
 	"vk_face.js",
 	"vk_page.js",

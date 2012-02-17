@@ -79,6 +79,8 @@ function vkLoadFiendsGroups(sh){
 		}
 	});
 }
+
+
 function vkFixedMenu(){
 	if (!window.getSize) return;
 	var cfg=getSet(18);
@@ -489,6 +491,8 @@ function vkCheckNewMessages(data){
 var vk_updmenu_timeout=0;
 var VK_MENU_LAST_HIGHLIGHT=[];
 
+
+
 function UpdateCounters(only_msg,data){	
 	var AUTO_UPD_MENU=20; //cfg bit id
 	clearTimeout(vk_updmenu_timeout);
@@ -497,11 +501,11 @@ function UpdateCounters(only_msg,data){
 		"photos": 	{i:1, id:'ph',lnk:'albums' + vk.id,add:'act=added'},
 		"videos": 	{i:2, id:'vid',lnk:'video',add:'section=tagged'},	
 		"messages": {i:3, id:'msg',lnk:'mail',add:null},
-		"notes": 	{i:4, id:'nts',lnk:'notes',add:'act=comments'},
-		"groups": 	{i:5, id:'gr',lnk:'groups',add:'tab=inv'},	
-		"events": 	{i:6, id:'ev',lnk:'events',add:'tab=invitations'}
-
+		"groups": 	{i:5, id:'gr',lnk:'groups',add:'tab=inv'}	
+		
 		/*OLDEST INACTIVE* /
+      "notes": 	{i:4, id:'nts',lnk:'notes',add:'act=comments'},
+      "events": 	{i:6, id:'ev',lnk:'events',add:'tab=inv'},
 		"gifts": 	{id:'wsh',lnk:'gifts.php?act=wishlist',add:null},
 		"offers": 	{id:'mat',lnk:'matches.php',add:null},   
 		"opinions": {id:'op',lnk:'opinions.php',add:null},
@@ -513,11 +517,12 @@ function UpdateCounters(only_msg,data){
 		var cnt=[0,0,0,0,0,0,0];
 		if (!only_msg){
 			for (var key in menu_vars){
-				var e=menu_vars[key];
-				var el=ge('l_'+e.id);
-				if (!el) return;
-				var v=geByTag1('span', el.firstChild).innerHTML.match(/\d+/);
-				v=v?v:0;
+            var e=menu_vars[key];
+            var el=ge('l_'+e.id);
+            if (!el) return;
+            var v = (geByClass1('left_count', el.firstChild, 'span') || geByTag1('span', el.firstChild)).innerHTML.match(/\d+/);
+				console.log(v);
+            v=v?v:0;
 				cnt[e.i]=v;
 			}
 			window.VK_LAST_COUNTERS=cnt.join('-');
@@ -541,14 +546,18 @@ function UpdateCounters(only_msg,data){
 				for (var key in menu_vars){
 					var e = ge('l_' + menu_vars[key].id);
 					var v=c[key].count;
-					toAdd = (v && menu_vars[key].add) ? ('?' + menu_vars[key].add) : '';
-					geByTag1('span', e.firstChild).innerHTML = v ? ('(<b>' + v + '</b>)') : '';
-					e.firstChild.href = '/' + menu_vars[key].lnk + toAdd;
-					e.firstChild.onclick = function (ev) { return nav.go(this, ev);}; 
-					if (parseInt(old[menu_vars[key].i])!=v) {
-						HL.push(e.firstChild);
-						//vkMenuHighlightEl(e.firstChild);
-					}
+               if (window.handlePageCount){
+                  handlePageCount(menu_vars[key].id, v,menu_vars[key].lnk,menu_vars[key].add);
+               } else {
+                  toAdd = (v && menu_vars[key].add) ? ('?' + menu_vars[key].add) : '';
+                  geByTag1('span', e.firstChild).innerHTML = v ? ('(<b>' + v + '</b>)') : '';
+                  e.firstChild.href = '/' + menu_vars[key].lnk + toAdd;
+                  e.firstChild.onclick = function (ev) { return nav.go(this, ev);}; 
+                  if (parseInt(old[menu_vars[key].i])!=v) {
+                     HL.push(e.firstChild);
+                     //vkMenuHighlightEl(e.firstChild);
+                  }
+               }
 					
 				}
 				VK_LAST_COUNTERS=cnt.join('-');

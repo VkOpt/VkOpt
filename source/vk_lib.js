@@ -2099,31 +2099,34 @@ function vkAlertBox(title, text, callback, confirm) {// [callback] - "Yes" or "C
 //Download with normal name by dragout link
 function vkDragOutFile(el) {
     var a = el.getAttribute("href");
+    var d = el.getAttribute("download");
     var url='';
     var name='';
-    if (a.indexOf("?&/") != -1) {
-        a = a.split("?&/");
+    if (a.indexOf("&/") != -1) {
+        a = a.split("&/");
         url=a[0];
-        name=a[1];
-        a = ":" + a[1] + ":" + a[0];
+        name=d || a[1];
+        a = ":" + name + ":" + url;
         //alert(a);
     } else {
-        a = '::' + a
+        a = ':'+(d?d:'')+':' + a
     }
     el.addEventListener("dragstart", function(e) {
         e.dataTransfer.setData("DownloadURL", a);//
     },false);
 }
-function vkDownloadFile(el) { 
-   if (!vkbrowser.mozilla) return true;
+function vkDownloadFile(el,ignore) { 
+   if (!vkbrowser.mozilla || ignore) return true;
    var a = el.getAttribute("href");
+   var d = el.getAttribute("download");
    var url=a;
    var name='';
-   if (a.indexOf("?&/") != -1) {
-      a = a.split("?&/");
+   if (a.indexOf("&/") != -1) {
+      a = a.split("&/");
       url=a[0];
-      name=decodeURI(a[1]);
+      name=d || decodeURI(a[1]);
    }
+   if (!name) return true;//name = url.split('/').pop();
    vkMozExtension.send_request({download:1,url:url,name:name});
    return false;
 }

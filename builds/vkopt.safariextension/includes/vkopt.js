@@ -11,13 +11,13 @@
 //
 /* VERSION INFO */
 var vVersion	= 205;
-var vBuild = 120111;
+var vBuild = 120217;
 var vPostfix = ' ';
 if (!window.vk_DEBUG) var vk_DEBUG=0;
 
 /* EXT CONFIG */
 if (!window.DefSetBits)
-var DefSetBits='ynyynnyyynyyy0n0yy0nnyynyyynyy0nynynnnnyy0yyy1yynnnnny0yynynynnn-3-0-#c5d9e7-#34a235-1';
+var DefSetBits='ynyynnyyynyyy0n0yy0nnyynyyynyy0nynynnnnyy0yyy1yynnnnny0yynynynnnn-3-0-#c5d9e7-#34a235-1';
 var DefExUserMenuCfg='11111110111111111111'; // default user-menu items config
 var vk_upd_menu_timeout=20000;      //(ms) Update left menu timeout
 var vkMenuHideTimeout=400;          //(ms) Hide Menu Popups timeout
@@ -72,7 +72,7 @@ var vkLdrMonoImg='<img src="/images/upload_inv_mono.gif">';
 var vkLdrMiniImg='<img src="/images/upload_inv_mini.gif">';
 var vkBigLdrImg='<center><img src="/images/progress7.gif"></center>';
 var SettBit=false;
-var vkOpt_js_count=9; // Count of vkopt files
+var vkOpt_js_count=11; // Count of vkopt files
 
 var FriendsNid=[];
 

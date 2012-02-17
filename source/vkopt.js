@@ -11,7 +11,7 @@
 //
 /* VERSION INFO */
 var vVersion	= 205;
-var vBuild = 120122;
+var vBuild = 120217;
 var vPostfix = ' ';
 if (!window.vk_DEBUG) var vk_DEBUG=0;
 
@@ -72,7 +72,7 @@ var vkLdrMonoImg='<img src="/images/upload_inv_mono.gif">';
 var vkLdrMiniImg='<img src="/images/upload_inv_mini.gif">';
 var vkBigLdrImg='<center><img src="/images/progress7.gif"></center>';
 var SettBit=false;
-var vkOpt_js_count=9; // Count of vkopt files
+var vkOpt_js_count=11; // Count of vkopt files
 
 var FriendsNid=[];
 

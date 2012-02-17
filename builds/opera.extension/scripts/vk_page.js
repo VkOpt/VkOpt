@@ -1077,4 +1077,30 @@ function vkAudioBlock(load_audios,oid){
    */
 }
 
+
+function vkToTopBackLink(){
+   window._stlMousedown = function (e) {
+     e = e || window.event;
+     if (checkEvent(e)) {
+       return;
+     }
+     if (!__afterFocus) {
+       var y = _stlSaved;
+       _stlSaved = y ? 0 : scrollGetY();
+       _stlBack=_stlSaved;
+       _stlText.className = (y || !_stlSaved) ? '' : 'down';
+       scrollToY(y, 0);
+     }
+     return cancelEvent(e);
+   }
+
+
+   window._stlSaved=0;
+   var s = {
+      onmousedown: _stlMousedown
+   };
+   if (window._stlLeft) extend(_stlLeft, s);
+   if (window._stlSide)  extend(_stlSide, s);
+}
+
 if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
