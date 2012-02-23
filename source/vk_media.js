@@ -97,12 +97,15 @@ function vkPhotosPage(){
 				
 				var p_options = [];
 				if (!vkbrowser.chrome && !vkbrowser.safari)
-					p_options.push({l:IDL('SaveAlbumAsHtml'), onClick:function(item) {
-						vkGetPageWithPhotos(oid,aid);
-					}});
+               p_options.push({l:IDL('SaveAlbumAsHtml'), onClick:function(item) {
+                  vkGetPageWithPhotos(oid,aid);
+               }});
 				p_options.push({l:IDL('Links'), onClick:function(item) {
 						vkGetLinksToPhotos(oid,aid);
 				}});
+            if (cur.statsPhotoAddHash)
+               p_options.push({l:IDL('Add'), h:'/album'+oid+'_'+aid+'?act=add' /*onClick:function(item) { vkGetLinksToPhotos(oid,aid);}*/
+               });
 				
 				p_options=p_options.concat(vk_plugins.album_actions(oid,aid));
 				stManager.add(['ui_controls.js', 'ui_controls.css'],function(){

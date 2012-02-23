@@ -28,6 +28,7 @@ function vkProfilePage(){
    if (getSet(60) == 'y') vkProfileMoveAudioBlock(); 
    if (getSet(61) == 'y') vkProfileGroupBlock();   
 	if (MOD_PROFILE_BLOCKS) vkFrProfile();
+   if (getSet(65)=='y') vkShowLastActivity()
 	if (getSet(46) == 'n') vkFriends_get('online');
 	if (getSet(47) == 'n') vkFriends_get('common');
    
@@ -48,7 +49,19 @@ function vkProfile(){
 	Inj.End('profile.init','setTimeout("vkOnNewLocation();",2);');
 }
 
-
+function vkLastActivity(uid,callback){
+   ajax.post('al_im.php', {act: 'a_history', peer: uid, offset: 0, whole: 0}, {
+      onDone: function (html, msgs, all_shown, newmsg, data) {callback(data?data.lastact:null)}
+   });
+}
+function vkShowLastActivity(){
+   if (!ge('vk_profile_online_la')) 
+      ge('title').appendChild(vkCe('b',{id:"vk_profile_online_la", "class":"fl_r", "onclick":"vkShowLastActivity();"}));
+   ge('vk_profile_online_la').innerHTML = "";   
+   vkLastActivity(cur.oid,function(info){
+      if (info) ge('vk_profile_online_la').innerHTML = info;
+   });
+}
 function vkHighlightGroups(){
 	var common=(getSet(39) == 'y');
 	if (ge('profile_groups') && geByClass('module_body',ge('profile_groups'))[0]){
