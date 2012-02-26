@@ -18,7 +18,7 @@ function vkProfilePage(){
 	ge('profile_info').appendChild(vkCe('input',{type:'hidden',id:'vk_profile_inited'}));
 	if (getSet(24) == 'y') vkAvkoNav();
 	if (getSet(25) == 'y') status_icq(ge('profile_full_info'));
-	if (getSet(26) == 'y') VkCalcAge();
+	if (getSet(26) == 'y') vkProcessProfileBday(); //VkCalcAge();
 	vkPrepareProfileInfo();
 	addFakeGraffItem();
    //vkWallAddPreventHideCB();
@@ -172,6 +172,102 @@ function checkAgeFunc(_this,_id,_day,_month){
   }
 }
 
+
+function vkProcessBirthday(day,month,year){
+   var zodiac_cfg=[20,19,20,20,21,21,22,23,23,23,22,21];// days
+   //'zodiac_signs':['Козерог','Водолей','Рыбы','Овен','Телец','Близнецы','Рак','Лев','Дева','Весы','Скорпион','Стрелец']
+   var info=[];
+   
+   if (day && month && year){
+      var date=new Date(year, month-1, day);
+      var cur_date = new Date().getTime();  
+      var age= (new Date(cur_date-date)).getFullYear()-1970; 
+      info.push(langNumeric(age, vk_lang["vk_year"]));
+   }
+  
+   if (day && month){
+      var zodiacs=vk_lang['zodiac_signs'];
+      var idx = day>zodiac_cfg[month-1]?(month) % 12:(month-1);
+		var zodiac = zodiacs[idx];
+      info.push(zodiac);
+   }
+   return info;
+}
+function vkProcessProfileBday(node){
+   node = node ||  ge('profile_info');//"profile_full_info"
+   
+   var rmd=/c(?:%5B|\[)bday(?:%5D|\])=(\d+).+c(?:%5B|\[)bmonth(?:%5D|\])=(\d+)/;
+   var ryr=/c(?:%5B|\[)byear(?:%5D|\])=(\d+)/;
+   
+   var h = node.innerHTML;
+   var md=h.match(rmd); 
+   var yr=h.match(ryr);
+   var info=vkProcessBirthday(md?md[1]:null,md?md[2]:null,yr?yr[1]:null);
+   
+   if (info.length>0){
+      info = ' ('+info.join(', ')+')';
+      var links=node.getElementsByTagName('a');
+      for (var i=0;i<links.length;i++){
+         if (links[i].href && links[i].href.match(rmd)) 
+            links[i].parentNode.appendChild(vkCe('span',{"class":"vk_bday_info"},info));
+      }
+      if (cur.options.info) {
+         var r1 = /(c\[byear\]=[^>]+>[^<>]+<\/a>)/;
+         r1 = cur.options.info[0].match(r1) ? r1 : /(c\[bmonth\]=[^>]+>[^<>]+<\/a>)/;
+         cur.options.info[0] = cur.options.info[0].replace(r1, "$1" + info);
+         cur.options.info[1] = cur.options.info[1].replace(r1, "$1" + info);
+      }     
+   }
+}
+
+function vkProcessBirthday(day,month,year){
+   var zodiac_cfg=[20,19,20,20,21,21,22,23,23,23,22,21];// days
+   //'zodiac_signs':['Козерог','Водолей','Рыбы','Овен','Телец','Близнецы','Рак','Лев','Дева','Весы','Скорпион','Стрелец']
+   var info=[];
+   
+   if (day && month && year){
+      var date=new Date(year, month-1, day);
+      var cur_date = new Date().getTime();  
+      var age= (new Date(cur_date-date)).getFullYear()-1970; 
+      info.push(langNumeric(age, vk_lang["vk_year"]));
+   }
+  
+   if (day && month){
+      var zodiacs=vk_lang['zodiac_signs'];
+      var idx = day>zodiac_cfg[month-1]?(month) % 12:(month-1);
+		var zodiac = zodiacs[idx];
+      info.push(zodiac);
+   }
+   return info;
+}
+function vkProcessProfileBday(node){
+   node = node ||  ge('profile_info');//"profile_full_info"
+   
+   var rmd=/c(?:%5B|\[)bday(?:%5D|\])=(\d+).+c(?:%5B|\[)bmonth(?:%5D|\])=(\d+)/;
+   var ryr=/c(?:%5B|\[)byear(?:%5D|\])=(\d+)/;
+   
+   var h = node.innerHTML;
+   var md=h.match(rmd); 
+   var yr=h.match(ryr);
+   var info=vkProcessBirthday(md?md[1]:null,md?md[2]:null,yr?yr[1]:null);
+   
+   if (info.length>0){
+      info = ' ('+info.join(', ')+')';
+      var links=node.getElementsByTagName('a');
+      for (var i=0;i<links.length;i++){
+         if (links[i].href && links[i].href.match(rmd)) 
+            links[i].parentNode.appendChild(vkCe('span',{"class":"vk_bday_info"},info));
+      }
+      if (cur.options.info) {
+         var r1 = /(c\[byear\]=[^>]+>[^<>]+<\/a>)/;
+         r1 = cur.options.info[0].match(r1) ? r1 : /(c\[bmonth\]=[^>]+>[^<>]+<\/a>)/;
+         cur.options.info[0] = cur.options.info[0].replace(r1, "$1" + info);
+         cur.options.info[1] = cur.options.info[1].replace(r1, "$1" + info);
+      }     
+   }
+}
+
+/*
 // @name Vkontakte Calculate Age
 // @namespace http://polkila.googlecode.com
 // @author Васютинский Олег http://vasyutinskiy.ru
@@ -183,12 +279,7 @@ if (!t) return;
   var bdate = /c[\[%5B]{1,3}bday[\]%5D]{1,3}=([0-9]{1,2})[&amp;]{1,5}c[\[%5B]{1,3}bmonth[\]%5D]{1,3}=([0-9]{1,2})/.exec(t.innerHTML);
   var _href='';
   var date_info='';
-   /*if(!byear && bdate && bdate[1] && bdate[2]){
-   if(ge('profile_other_acts') && ge('profile_other_acts').innerHTML.indexOf('remove_box')!=-1){
-      _href='<span id="checkAge"><a id="checkAgeLink" href="#" onClick="checkAgeFunc(this,'+cur.oid+', '+bdate[1]+', '+bdate[2]+'); return false;">'+IDL('UznatVozrast')+'</a></span>';
-    }
-  }*/
-  
+ 
   //if (!byear) return;
   //alert (bdate[1]+'\n'+bdate[2]+'\n'+byear[1]);
   var lang = parseInt(vkgetCookie('remixlang')), _sign_ = '', now = new Date();
@@ -212,19 +303,7 @@ if (!t) return;
   
   
   var alinks=document.getElementsByTagName('a');
-/*
-  if (_sign_)
-		if(bdate!=null && byear==null){
-			var dloc=document.location.href;
-			var IdForMyPageInYear=remixmid();//ge('myprofile').getElementsByTagName('a')[1].href.split('/id')[1];
-			var vkuid=cur.oid;//ge('mid').value;//(dloc.match(/id(\d+)/i))?dloc.match(/id(\d+)/i)[1]:((dloc.match(/profile\.php\?id=(\d+)/i))?dloc.match(/profile\.php\?id=(\d+)/i)[1]:false);
-			if(IdForMyPageInYear!=vkuid && !ge('profile_actions').innerHTML.match('profile.addFriendBox()')){
-				GsearthIDDay=bdate[1];
-				GsearthIDMonth=bdate[2];
-				_sign_+=" <span id='dateYear'><a onclick='SeartchDate("+bdate[2]+");'>"+IDL('UznatVozrast')+"</a></span>";
-			}
-			//      alert(bdate[1]+" "+bdate[2]);
-		}*/
+
   var rhdr='/search?c[section]=people&c[bday]=';
   var total=2;
   for(i = 0; i<alinks.length; i++ ){
@@ -236,8 +315,8 @@ if (!t) return;
     }
     if (!total) break;
   }
-  /*vk.com/search?c[section]=people&c[bday]=28&c[bmonth]=4
-  vk.com/search?c[section]=people&c[byear]=1991*/
+  //vk.com/search?c[section]=people&c[bday]=28&c[bmonth]=4
+  //vk.com/search?c[section]=people&c[byear]=1991
   if (cur.options.info){
     //alert(cur.options.info[0].match(/(c\[byear\]=[^>]+>[^<>]+<\/a>)/));//http://vk.com/search?c[section]=people&c[bday]=6&c[bmonth]=5
 	var r1=/(c\[byear\]=[^>]+>[^<>]+<\/a>)/;
@@ -251,7 +330,7 @@ if (!t) return;
       else if (getSet(27)=='y') Inj.Wait('window.vk_cur && vk_cur.vk_calEvents',ge('checkAgeLink').onclick);
    }
 }
-
+//*/
 
 function status_icq(node) { //add image-link 'check status in ICQ'
   var t,i,icq,skype=null;

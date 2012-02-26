@@ -705,9 +705,17 @@ function vkGetProfile(uid,callback,no_switch_button){
 			common+='</div>';
 			//alert(common);
 		}
-		
+		//vkProcessBirthday(day,month,year)
+      var bdate=(profile.bdate || '').split('.');
+      var bday_info='';
+      if(bdate.length>1)
+            bday_info = vkProcessBirthday(bdate[0],bdate[1],bdate[2]).join(', ');
+      if (profile.bdate)
+         bday_info = profile.bdate + " (" + bday_info + ")";
+      else 
+         bday_info = null;
 		var info_labels=[
-			[profile.bdate, Birth_date[1]],
+			[bday_info, Birth_date[1]],
 			[country,Country],
 			[city,select_city],
          [rel,Family],
@@ -948,13 +956,13 @@ function vkShowFriendsUpd(ret,names){
   var onclick="vkShowFriendsUpd(false,["+idfrupd.join(',').replace(/\+|\-/g,",").replace(/(^,|,$)/g,"")+"])";
   if (idfrupd[0].length){
     var rem=idfrupd[0].split('-');
-    html.rem+='<div class="leftAd  left_box" style="margin-bottom:10px"><h4 onclick="'+onclick+'"><span class="linkover">'+IDL("delby")+'</span></h4><p><div style="text-align: center">';
+    html.rem+='<div class="left_box" style="margin-bottom:10px"><h4 onclick="'+onclick+'"><span class="linkover">'+IDL("delby")+'</span></h4><p><div style="text-align: center">';
     for (var i=0;i<rem.length;i++)   html.rem+='<a id="'+(ret?'vkfr':'vkfrsb')+rem[i]+'" href="id'+rem[i]+'">'+rem[i]+'</a><br>';
 	  html.rem += '</div></p></div>';
   }
   if (idfrupd[1].length){
     var add=idfrupd[1].split('+');
-    html.add+='<div class="leftAd left_box" style="margin-bottom:10px"><h4 onclick="'+onclick+'"><span class="linkover">'+IDL("addby")+'</span></h4><p><div style="text-align: center">';
+    html.add+='<div class="left_box" style="margin-bottom:10px"><h4 onclick="'+onclick+'"><span class="linkover">'+IDL("addby")+'</span></h4><p><div style="text-align: center">';
     for (var i=0;i<add.length;i++)   html.add+='<a id="'+(ret?'vkfr':'vkfrsb')+add[i]+'" href="id'+add[i]+'">'+add[i]+'</a><br>';
 	  html.add += '</div></p></div>';
   }

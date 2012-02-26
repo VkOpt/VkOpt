@@ -371,7 +371,15 @@ function vkStyles(){
 	#right_bar { width: 118px;}\
 	#right_bar_container{width: 118px; margin:5px 10px 0px 0px;	padding-bottom: 10px;}\
 	.box_loader {  height: 50px;  background: url('/images/progress7.gif') center no-repeat;}\
-	.vk_usermenu_btn{color: rgba(100,100,100,0.5);} .vk_usermenu_btn:hover{/*opacity: 0.1;*/ text-decoration:none;}\
+	.vk_usermenu_btn{\
+      color: rgba(100,100,100,0.5);\
+        -moz-user-select: none;\
+        -khtml-user-select: none;\
+        -webkit-user-select: none;\
+        -o-user-select: none;\
+        user-select: none;\
+   } \
+   .vk_usermenu_btn:hover{/*opacity: 0.1;*/ text-decoration:none;}\
    .vk_ts_exmenu{display: block; line-height: 30px;text-overflow: ellipsis;white-space: nowrap;width: 10px;}\
 	.vk_user_menu_divider{border-bottom:1px solid #DDD;}\
 	.vk_mail_save_history{	display: block; height: 13px;	padding: 18px;	text-align: center;	}\
@@ -420,6 +428,7 @@ function vkStyles(){
 		.audio_table table{ border-spacing: 0px !important;}\
 		.audios_row { margin-top: 0px !important; padding-top:0px !important;}\
 		.audios_row .actions a{padding-top:2px !important; padding-bottom:2px !important;}\
+      .audio_list .audio_title_wrap { width: 315px;}\
 	";
 	//additional audio styles
 	var img="data:image/gif;base64,R0lGODdhEAARALMAAF99nf///+7u7pqxxv///8nW4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACwAAAAAEAARAAAEJpCUQaulRd5dJ/9gKI5hYJ7mh6LgGojsmJJ0PXq3JmaE4P9AICECADs=";
