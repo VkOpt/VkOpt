@@ -46,6 +46,8 @@
 				<string>*.vkadre.ru</string>
 				<string>youtube.com</string>
 				<string>*.youtube.com</string>
+            <string>userapi.com</string>
+				<string>*.userapi.com</string>
 			</array>
 			<key>Level</key>
 			<string>Some</string>

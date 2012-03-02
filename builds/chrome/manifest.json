@@ -4,6 +4,7 @@
   "js": ["vkinit.js","includes/vk_skinman.js"],
   "run_at": "document_start",
   "matches": ["http://vk.com/*","http://*.vk.com/*","http://vkontakte.ru/*","http://*.vkontakte.ru/*",
+              "http://userapi.com/*","http://*.userapi.com/*",
               "http://durov.ru/*",
               "http://youtube.com/*","http://*.youtube.com/*"],
   "all_frames": true
@@ -16,5 +17,5 @@
              "48": "img/bk_n_48.png",
              "128": "img/bk_n_128.png" },
   "update_url_":"http://vkopt.net/upd/updates.xml",
-  "permissions": ["http://*.vk.com/*","http://vk.com/*", "http://*.vkontakte.ru/*","http://vkontakte.ru/*","http://durov.ru/*"]
+  "permissions": ["<all_urls>"]
 }

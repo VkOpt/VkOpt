@@ -428,7 +428,7 @@ function vkStyles(){
 		.audio_table table{ border-spacing: 0px !important;}\
 		.audios_row { margin-top: 0px !important; padding-top:0px !important;}\
 		.audios_row .actions a{padding-top:2px !important; padding-bottom:2px !important;}\
-      .audio_list .audio_title_wrap { width: 315px;}\
+      .audio_list .audio_title_wrap { width: 315px !important;}\
 	";
 	//additional audio styles
 	var img="data:image/gif;base64,R0lGODdhEAARALMAAF99nf///+7u7pqxxv///8nW4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACwAAAAAEAARAAAEJpCUQaulRd5dJ/9gKI5hYJ7mh6LgGojsmJJ0PXq3JmaE4P9AICECADs=";
@@ -443,6 +443,7 @@ function vkStyles(){
 		.audios_row .actions { padding-left: 0px !important; }\
 		.audios_row .actions a{padding-right:2px !important; padding-left:2px !important;}\
 		.audios_row .audio_title_wrap{ width: auto !important; max-width: 295px; }\
+      .choose_audio_row .audio_title_wrap { width: 350px !important; }\
 		.post_media .audio_title_wrap { width: 250px !important;}\
 		#mail_envelope .audio_title_wrap { width: 215px !important;}\
       .narrow_column .audio_title_wrap { width: 115px !important;}\
@@ -1076,12 +1077,15 @@ function vkFriends(){
 function vkFrLstSel(mid){ return '<div class="actions"><a class="lists_select" onmousedown="return Friends.ddShow('+mid+', this, event)">'+IDL('AddFrToList')+'</a></div>'; }
 function vkFrReqDoneAddUserLists(text,mid){
    var div=vkCe('div',{},text);
-   var el=geByClass('friends_added',div)[0];
+   var el=geByClass('friends_added',div)[0] || geByClass('friends_added_text',div)[0];
    //var mid=text.match(/friends_added_(\d+)/);
    //mid = mid?mid[1]:0;
    if (el && mid && cur.userLists){
-      el.innerHTML+='<div class="friends_added_text box_controls_text">'+IDL('AddFrToList')+'</div>';
-      for (var key in cur.userLists) el.innerHTML+='<div class="checkbox" onclick="return Friends.checkCat(this, '+mid+', '+key+', 1);"><div></div>'+cur.userLists[key]+'</div>';    
+      //el.parentNode.
+      var el_=vkCe('div',{"class":"friends_added"},'');
+      insertAfter(el_,el);
+      el_.innerHTML+='<div class="friends_added_text box_controls_text">'+IDL('AddFrToList')+'</div>';
+      for (var key in cur.userLists) el_.innerHTML+='<div class="checkbox" onclick="return Friends.checkCat(this, '+mid+', '+key+', 1);"><div></div>'+cur.userLists[key]+'</div>';    
       return div.innerHTML;
    } else {
       return text+'<br><small>add user lists error</small>';
