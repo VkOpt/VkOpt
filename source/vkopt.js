@@ -331,9 +331,9 @@ function vkonDOMReady(fn, ctx){
     var onChange = function(e){
 		if(e && e.type == "DOMContentLoaded"){
             fireDOMReady();
-        }/*else if(e && e.type == "load"){
+        }else if(e && e.type == "load"){
             fireDOMReady();
-        }*/else if(document.readyState){
+        }else if(document.readyState){
             if((/loaded|complete/).test(document.readyState)){
                 fireDOMReady();
             }else if(!!document.documentElement.doScroll){
@@ -449,7 +449,16 @@ function vkResetVkOptSetting(){
 }
 
 function VkOptInit(ignore_login){
-  if (!window.vkscripts_ok || window.vkscripts_ok<vkOpt_js_count) {setTimeout(VkOptInit,10); return;}
+  var allow_init=true;
+  if (window.StaticFiles)
+   for (var key in StaticFiles){
+      if (StaticFiles[key].t=='js' && StaticFiles[key].l!=1){
+         allow_init=false;
+         break;
+      }
+   }
+  
+  if (!window.vkscripts_ok || window.vkscripts_ok<vkOpt_js_count || !allow_init) {setTimeout(VkOptInit,10); return;}
   /*
   var err=IDL('VkoptDupFound');
   err=(err=='VkoptDupFound')?'\u041e\u0431\u043d\u0430\u0440\u0443\u0436\u0435\u043d\u043e \u0431\u043e\u043b\u0435\u0435 \u043e\u0434\u043d\u043e\u0439 \u0443\u0441\u0442\u0430\u043d\u043e\u0432\u043b\u0435\u043d\u043d\u043e\u0439 \u043a\u043e\u043f\u0438\u0438 VkOpt`\u0430.<br>\u0423\u0434\u0430\u043b\u0438\u0442\u0435 \u043b\u0438\u0448\u043d\u0438\u0435 \u043a\u043e\u043f\u0438\u0438.':err;
