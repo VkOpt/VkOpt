@@ -331,9 +331,9 @@ function vkonDOMReady(fn, ctx){
     var onChange = function(e){
 		if(e && e.type == "DOMContentLoaded"){
             fireDOMReady();
-        }else if(e && e.type == "load"){
+        }/*else if(e && e.type == "load"){
             fireDOMReady();
-        }else if(document.readyState){
+        }*/else if(document.readyState){
             if((/loaded|complete/).test(document.readyState)){
                 fireDOMReady();
             }else if(!!document.documentElement.doScroll){

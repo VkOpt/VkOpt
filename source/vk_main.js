@@ -956,7 +956,8 @@ function vkImAddPreventHideCB(){
 
 
 function vkIM(){
-	Inj.Before('IM.addTab','cur.tabs','vkProcessNodeLite(txtWrap);');
+	//if (!window.IM) return;
+   Inj.Before('IM.addTab','cur.tabs','vkProcessNodeLite(txtWrap);');
    Inj.Before('IM.send','IM.updateUnread','vkProccessLinks(msg_row);');
    Inj.End('IM.addMsg','vkProccessLinks(row);');
    if (getSet(51)=='y'){
