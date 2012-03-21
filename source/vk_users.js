@@ -811,7 +811,7 @@ function vkFriendsCheckRun(cl){
 function vkFriendsCheck(nid){
   var NID_CFG=2;//sett in - segments
   var FUPD_CFG=1;//days
-	
+  
   if (!window.FrUpdBox || isNewLib()) FrUpdBox = new MessageBox({title: IDL('FriendsListTest'),closeButton:true,width:"350px"});
   var box=FrUpdBox;
   var addButton=function(_box,label,callback,style){  _box.addButton(!isNewLib()?{onClick: callback, style:'button_'+(style?style:'no'),label:label}:label,callback,style);};		
@@ -973,16 +973,25 @@ function vkShowFriendsUpd(ret,names){
 			el.id="remadd";
 			sideBar().appendChild(el);
   }
-  el.innerHTML=html.rem+html.add;
+  el.innerHTML='<div id="left_block_remadd" onmouseover="leftBlockOver(\'_remadd\')" onmouseout="leftBlockOut(\'_remadd\')">\
+         <div id="left_hide_remadd" class="left_hide" onmouseover="leftBlockOver(this)" onmouseout="leftBlockOut(this)" onclick="vkHideRemAddFrBlock();" style="opacity: 0"></div>'+
+            html.rem+html.add+
+         '</div>';
   vkProccessLinks(el);
-  if (names) dApi.call('getProfiles',{uids:names.join(',')},function(r){
-    for (var i=0;r.response && i<r.response.length;i++){
-            var user=r.response[i];
-            var elem=ge('vkfrsb'+user.uid);
-            if (elem) elem.innerHTML=user.first_name+' '+user.last_name;
-    }
-    vkProccessLinks(el);
-  });
+   if (names) dApi.call('getProfiles',{uids:names.join(',')},function(r){
+      for (var i=0;r.response && i<r.response.length;i++){
+         var user=r.response[i];
+         var elem=ge('vkfrsb'+user.uid);
+         if (elem) elem.innerHTML=user.first_name+' '+user.last_name;
+      }
+      vkProccessLinks(el);
+   });
+}
+function vkHideRemAddFrBlock(){
+  var FUPD_CFG=1;//days
+  vksetCookie('IDFriendsUpd', '_', getSet('-',FUPD_CFG));
+  hide('left_block_remadd');
+  re('left_block_remadd');
 }
 //  UPD_END  //
 //////////////

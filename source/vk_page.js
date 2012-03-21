@@ -24,11 +24,12 @@ function vkProfilePage(){
    //vkWallAddPreventHideCB();
 	vkUpdWallBtn(); //Update wall button
    vkWallNotesLink();
+   if (cur.oid!=vk.id) vkWallTatLink();
    if (remixmid()==cur.oid && getSet(50)=='y' && !ge('profile_fave')) vkFaveProfileBlock(); 
    if (getSet(60) == 'y') vkProfileMoveAudioBlock(); 
    if (getSet(61) == 'y') vkProfileGroupBlock();   
 	if (MOD_PROFILE_BLOCKS) vkFrProfile();
-   if (getSet(65)=='y') vkShowLastActivity()
+   //if (getSet(65)=='y') vkShowLastActivity()
 	if (getSet(46) == 'n') vkFriends_get('online');
 	if (getSet(47) == 'n') vkFriends_get('common');
    
@@ -47,6 +48,46 @@ function vkAddCheckBox_OnlyForFriends(){
 function vkProfile(){
 	Inj.After('profile.init','});','setTimeout("vkProcessNode();",2);');
 	Inj.End('profile.init','setTimeout("vkOnNewLocation();",2);');
+}
+
+function vkWallTatLink(){
+   if (ge('vk_wall_tat_link')) return;
+   if (isVisible('page_wall_switch'))  ge('page_wall_header').appendChild(vkCe('span',{"class":'fl_r right_link divide'},'|'))
+   var href=ge('page_wall_header').getAttribute('href');
+   ge('page_wall_header').appendChild(vkCe('a',{
+               "class":'fl_r right_link', 
+               id:'vk_wall_tat_link',
+               href:'/wall'+cur.oid+'?with='+vk.id,
+               onclick:"cancelEvent(event); return nav.go(this, event);",
+               onmouseover:"this.parentNode.href='/wall"+cur.oid+"?with="+vk.id+"';",
+               onmouseout:"this.parentNode.href='"+href+"';"
+            },IDL('T-a-T',1)))
+}
+function vkWallNotesLink(get_count){
+   if (get_count){
+         dApi.call('notes.get',{uid:cur.oid, count:1},function(r){ 
+            ge('pr_notes_count').innerHTML=(r.response || [0]).shift()
+         });
+   }
+   
+   /*
+   if (ge('vk_wall_notes_link')) return;
+   if (isVisible('page_wall_switch'))  ge('page_wall_header').appendChild(vkCe('span',{"class":'fl_r right_link divide'},'|'))
+   var href=ge('page_wall_header').getAttribute('href');
+   ge('page_wall_header').appendChild(vkCe('a',{
+               "class":'fl_r right_link', 
+               id:'vk_wall_notes_link',
+               href:'/notes'+cur.oid,
+               onclick:"cancelEvent(event); return nav.go(this, event);",
+               onmouseover:"this.parentNode.href='/notes"+cur.oid+"';",
+               onmouseout:"this.parentNode.href='"+href+"';"
+            },IDL('clNo',1)))*/
+   html='<a class="notes" onclick="return nav.go(this, event);" href="/notes'+cur.oid+'" onmouseover="vkWallNotesLink(true);">\
+   <span class="fl_r thumb"></span><span class="fl_r" id="pr_notes_count"></span>'+IDL('clNo',1)+'</a>';
+   if (ge('profile_counts') && !ge('pr_notes_count')){
+      ge('profile_counts').appendChild(vkCe('div',{},html));
+   }         
+  
 }
 
 function vkLastActivity(uid,callback){
@@ -1081,6 +1122,9 @@ function vkModGroupBlocks(){
 function vkAudioBlock(load_audios,oid){
    if (ge('group_audios')) return; 
    oid = oid || cur.oid;
+   var mini_tpl='<a href="/audio?id='+cur.oid+'" onclick="return nav.go(this, event);" class="module_header"><div class="header_top clear_fix">'+
+                     IDL('clAu',1)+
+                  '</div></a>';
    var block_tpl='\
      <a href="/audio?id='+cur.oid+'" onclick="return nav.go(this, event);" class="module_header">\
      <div class="header_top clear_fix">'+IDL('clAu',1)+'</div>\
@@ -1125,13 +1169,15 @@ function vkAudioBlock(load_audios,oid){
    
    var p=ge('group_photos') || ge('group_wide_topics');
    if (p && !ge('vk_group_audios')){
-      var div=vkCe('div',{"class":"module clear audios_module",id:"vk_group_audios"},block_tpl);
+      var div=vkCe('div',{"class":"module clear audios_module",id:"vk_group_audios", style:"margin-bottom:3px;"},mini_tpl);//block_tpl
       insertAfter(div,p);
-      addClass(div,'empty');
-      ge('vk_audio_content').innerHTML='<a href="#" onclick="vkAudioBlock(true); return false;">'+IDL('GetAudiosList')+'</a>';
+      geByClass('header_top',div)[0].innerHTML+='<a class="fl_r right_link"  href="#" onclick="cancelEvent(event); vkAudioBlock(true); return false;">'+IDL('GetAudiosList')+'</a>';
+      //addClass(div,'empty');
+      //ge('vk_audio_content').innerHTML='<a href="#" onclick="vkAudioBlock(true); return false;">'+IDL('GetAudiosList')+'</a>';
    }
    
    if (!load_audios) return;
+   ge('vk_group_audios').innerHTML=block_tpl;
    var div=ge('vk_group_audios');
    addClass(div,'empty');
    ge('vk_audio_content').innerHTML=vkBigLdrImg;   

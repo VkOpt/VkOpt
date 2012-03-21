@@ -124,26 +124,35 @@ function vkMenu(){//vkExLeftMenu
   
   
 
-  var vkmenu_css1=(CSS_ICONS)?'\
-      #nav a:before{vertical-align:text-bottom !important; margin-right:5px;}\
-      #myfriends > a:before {content:url('+icon_url+'freinds.png) !important;}\
-      #myprofile .hasedit:before {content:url('+icon_url+'home.png) !important;}\
-      #nav a[href^="/photos.php"]:before {content:url('+icon_url+'photo.png) !important;}\
-      #nav a[href^="/video.php"]:before {content:url('+icon_url+'videos.png) !important;}\
-      #nav a[href^="/audio.php"]:before {content:url('+icon_url+'audios.png) !important;}\
-      #nav a[href^="/mail.php"]:before {content:url('+icon_url+'mail.png) !important;}\
-      #nav a[href^="/notes.php"]:before {content:url('+icon_url+'notes.png) !important;}\
-      #nav a[href^="/groups.php"]:before {content:url('+icon_url+'groups.png) !important;}\
-      #nav a[href^="/events.php"]:before {content:url('+icon_url+'events.png) !important;}\
-      #nav a[href^="/newsfeed.php"]:before {content:url('+icon_url+'news.png) !important;}\
-      #nav a[href^="/fave.php"]:before {content:url('+icon_url+'fave.png) !important;}\
-      #nav a[href^="/settings.php"]:before {content:url('+icon_url+'settings.png) !important;}\
-      #nav a[href^="/matches.php"]:before {content:url('+icon_url+'matches.png) !important;}\
-      #nav a[href^="/opinions.php"]:before {content:url('+icon_url+'opinions.png) !important;}\
-      #nav a[href^="/questions.php"]:before {content:url('+icon_url+'questions.png) !important;}\
-      #nav a[href^="/apps.php"]:before {content:url('+icon_url+'apps.png) !important;}\
-      #nav a[href^="/market.php"]:before {content:url('+icon_url+'market.png) !important;}\
-    ':'#nav a IMG, #side_bar ol a IMG{margin-right:3px; height:'+vkMenuIconSize+'px;}';//float:left; 
+  var vkmenu_css1='\
+         #nav a IMG, #side_bar ol a IMG{margin-right:1px; height:'+vkMenuIconSize+'px;}\
+         #nav a .vkicon, #side_bar ol a .vkicon{float:left; width:13px; height:13px; margin-right:3px; /*background:#DDD;*/}\
+         .vkico_friends, .vkico_profile, .vkico_albums,\
+         .vkico_video,.vkico_audio,.vkico_mail,.vkico_im,\
+         .vkico_notes,.vkico_groups,.vkico_events,\
+         .vkico_feed, .vkico_newsfeed,.vkico_fave,\
+         .vkico_settings,.vkico_apps,.vkico_docs,\
+         .vkico_wall,.vkico_gifts,.vkico_vkplug,.vkico_app{background:url("http://vk.com/images/icons/mono_iconset.gif") no-repeat;}\
+         .left_row  .vkicon{margin: 4px 3px -4px 0px;}\
+         \
+         .vkico_profile{background-position:0 0px;}\
+         .vkico_albums{background-position:0 -29px;}\
+         .vkico_friends{background-position:0 -88px;}\
+         .vkico_video{background-position:0 -74px;}\
+         .vkico_audio{background-position:0 -221px;}\
+         .vkico_mail,.vkico_im{background-position:0 -193px;}\
+         .vkico_notes{background-position:0 -133px;}\
+         .vkico_groups{background-position:0 -177px;}\
+         .vkico_feed, .vkico_newsfeed{background-position:0 -163px;}\
+         .vkico_fave{background-position:0 -118px;}\
+         .vkico_settings,.vkico_vkplug{background-position:0 -58px;}\
+         .vkico_apps, .vkico_app{background-position:0 -104px;/-207px*/}\
+         .vkico_docs{background-position:0 -148px;}\
+         .vkico_wall{background-position:0 -44px;}\
+         \
+         /*.vkico_events{background-position:0 -168px;}*/\
+         /*.vkico_gifts{background-position:0 -104px;}*/\
+   ';//float:left; 
 
   var vkmid=remixmid();//#nav li:hover ul{display:block;}\
   vkaddcss(vkmenu_css1+"\
@@ -384,10 +393,16 @@ function vkMenu(){//vkExLeftMenu
     }
 
 
-    if (!CSS_ICONS && MenuIcons[page] && (cfg > 1)){
+    if (cfg > 1 && !hasClass(item,'fl_r')){// && MenuIcons[page]
+      /*
       var img=document.createElement('img');
       img.src=(cfg == 2)?icon_url+MenuIcons[page]:vkSideImg(page);
-      item.insertBefore(img,item.firstChild);
+      item.insertBefore(img,item.firstChild);*/
+      var ico=document.createElement('div');
+      ico.className='vkicon vkico_'+page;
+      item.insertBefore(ico,item.firstChild);
+      
+      
     }
     var bcout=item.innerHTML.match(/<b>(\d+)<\/b>/);
     bcout=(bcout)?bcout[1]:0;

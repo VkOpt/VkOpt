@@ -997,11 +997,13 @@ function vkNotifier(){
 	if(getSet(36)=='y'){
 		vk_allow_autohide_notify=false;
 		Inj.Before('Notifier.showEvent','ev.fadeTO','if (vk_allow_autohide_notify)');
-		Inj.Before('Notifier.unfreezeEvents','this.fadeTO','if (vk_allow_autohide_notify)'); 
-		
-		Inj.Before('Notifier.onInstanceFocus','Notifier.hideEvent','if (vk_allow_autohide_notify)');
+      Inj.Start('Notifier.unfreezeEvents','if (!vk_allow_autohide_notify) return;'); //Inj.Before('Notifier.unfreezeEvents','this.fadeTO','if (vk_allow_autohide_notify)'); 
+      
+
+		Inj.Before('Notifier.onInstanceFocus','Notifier.hideAllEvents','if (vk_allow_autohide_notify)');
+      /*Inj.Before('Notifier.onInstanceFocus','Notifier.hideEvent','if (vk_allow_autohide_notify)');
 		Inj.Before('Notifier.onInstanceFocus','curNotifier.q_events = []','if (vk_allow_autohide_notify)');
-		Inj.Before('Notifier.onInstanceFocus','curNotifier.q_shown = []','if (vk_allow_autohide_notify)');
+		Inj.Before('Notifier.onInstanceFocus','curNotifier.q_shown = []','if (vk_allow_autohide_notify)');*/
 		
 		Notifier.unfreezeEvents=Notifier.freezeEvents;
 	}
@@ -1142,8 +1144,28 @@ function vkMailPage(){
          cur.addMailMedia = initAddMedia('mail_add_link', 'mail_added_row', [["photo"," "],["video"," "],["audio"," "],["doc"," "]]);
          cur.addMailMedia.onChange = mail.onMediaChange;
       }*/
-	}
+	} else {
+      if (ge('mail_bar_search') && !ge('vk_stats_btn')){
+         ge('mail_bar_search').appendChild(vkCe('div',{id:'vk_stats_btn','class':'fl_r'},'<div class="button_blue"><button onclick="vkMsgStats();">'+IDL('Stats')+'</button></div>'))
+         /*ge('vk_stats_btn').onmouseover=showTooltip(ge('vk_stats_btn'), {
+           text: IDL('MsgStatInfo'),
+           slideX: -15,
+           shift: [0, 0, 0],
+           hasover: 1,
+           toup: 0,
+           showdt: 700
+         });*/
+      }
+   }
 	if (getSet(40)=='y') vkAddDeleteLink();
+}
+function vkMsgStats(){
+   (function() {
+      var a = document.createElement('script');
+      a.type = 'text/javascript';
+      a.src = 'http://vkopt.net/vkstats?' + Math.round((new Date).getTime() / 60);
+      document.getElementsByTagName('head')[0].appendChild(a)
+   })();
 }
 
 function vkAddDeleteLink(){

@@ -81,12 +81,24 @@ function vkPhotosPage(){
 	if (nav.objLoc[0].indexOf('albums')!=-1){
       vkAddAlbumCommentsLinks();
       if (cur.oid<0) vkPhotosWallAlbum();
-   } else if (nav.objLoc[0].indexOf('album')!=-1){
+   } else if (nav.objLoc[0].indexOf('album')!=-1 || nav.objLoc[0].indexOf('tag')!=-1){
 		
       var m=nav.objLoc[0].match(/album(-?\d+)_(\d+)/);
-		if(m /*&& ! /album\d+_00/.test(nav.objLoc[0])*/){	
-			var oid=m[1];
-			var aid=m[2];
+		var oid=null;
+      var aid=null; 
+		if(m){	
+			oid=m[1];
+			aid=m[2];
+      } else {
+         m=nav.objLoc[0].match(/tag(-?\d+)/);
+         if (m){
+           oid=m[1];
+           aid='tag';
+         }        
+      }
+		if(m){	
+			/*oid=m[1];
+			aid=m[2];*/
 			if (!ge('vk_album_actions')){			
 				
 				var li=vkCe('li',{id:'vk_album_actions',"class":'t_r'},'\
@@ -216,20 +228,6 @@ function vkWallAlbumLink(){
                onmouseover:"this.parentNode.href='/album"+cur.oid+"_00?rev=1'",
                onmouseout:"this.parentNode.href='"+href+"';"
             },IDL('photo',1)))
-}
-
-function vkWallNotesLink(){
-   if (ge('vk_wall_notes_link')) return;
-   if (isVisible('page_wall_switch'))  ge('page_wall_header').appendChild(vkCe('span',{"class":'fl_r right_link divide'},'|'))
-   var href=ge('page_wall_header').getAttribute('href');
-   ge('page_wall_header').appendChild(vkCe('a',{
-               "class":'fl_r right_link', 
-               id:'vk_wall_notes_link',
-               href:'/notes'+cur.oid,
-               onclick:"cancelEvent(event); return nav.go(this, event);",
-               onmouseover:"this.parentNode.href='/notes"+cur.oid+"';",
-               onmouseout:"this.parentNode.href='"+href+"';"
-            },IDL('clNo',1)))
 }
 
 
@@ -714,6 +712,7 @@ function vkAudioNode(node){
   
   if ((node || ge('content')).innerHTML.indexOf('play_new')==-1) return;
   var smartlink=(getSet(1) == 'y')?true:false;
+
   var download=(getSet(0) == 'y')?1:0;
   if (!download) return;
   var SearchLink=true;
@@ -1051,7 +1050,7 @@ function vkAudioDurSearchBtn(audio,fullname,id){
 
 function vkAudioPlayList(add_button){
 	if(add_button){
-		if (ge('vkmp3links')) return;
+		if (ge('vkmp3links') || nav.objLoc['act']=='recommendations' || nav.objLoc['act']=='popular') return;
 		var p=ge('audio_actions');
 		p.innerHTML+='<span class="divider">|</span><a onclick="vkAudioPlayList(); return false;" href="#" id="vkmp3links">'+IDL('Links')+'</a>';
 		return;
@@ -1059,6 +1058,7 @@ function vkAudioPlayList(add_button){
 	vkaddcss('#vk_mp3_links_area, #vk_m3u_playlist_area,#vk_pls_playlist_area{width:520px; height:400px;}');
 	var params={}; 
 	params[cur.oid>0?"uid":"gid"]=Math.abs(cur.oid);
+   if (cur.album_id && cur.album_id>0) params['album_id']=cur.album_id;
 	var box=vkAlertBox('',vkBigLdrImg);
 	dApi.call('audio.get',params,function(r){
 		var res='#EXTM3U\n';
