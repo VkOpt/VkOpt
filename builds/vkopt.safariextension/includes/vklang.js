@@ -172,7 +172,7 @@ vk_lang_ru={
 'seSortNam':'%5B%20%D0%A1%D0%BE%D1%80%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B0%20%D1%81%D0%BF%D0%B8%D1%81%D0%BA%D0%BE%D0%B2%20%D0%B4%D1%80%D1%83%D0%B7%D0%B5%D0%B9%20%D0%BF%D0%BE%20%D0%BF%D0%B0%D1%80%D0%B0%D0%BC%D0%B5%D1%82%D1%80%D1%83%20%5D',
 'seUpdate':'%5B%20%D0%98%D0%BD%D1%84%D0%BE%D1%80%D0%BC%D0%B0%D1%86%D0%B8%D1%8F%20%D0%BE%D0%B1%20%D0%BE%D0%B1%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F%D1%85%20%D1%81%D0%BA%D1%80%D0%B8%D0%BF%D1%82%D0%B0%20%5D',
 'seLMenuH':'%5B%20%D0%9B%D0%B5%D0%B2%D0%BE%D0%B5%20%D0%BC%D0%B5%D0%BD%D1%8E%20%5D',
-'seLMenuO':'0-%20%D0%BD%D0%B5%20%D0%BC%D0%B5%D0%BD%D1%8F%D1%82%D1%8C%20%D0%BB%D0%B5%D0%B2%D0%BE%D0%B5%20%D0%BC%D0%B5%D0%BD%D1%8E%3Cbr%3E%201-%20%D1%83%D0%B1%D0%B8%D1%80%D0%B0%D1%82%D1%8C%20%22%D0%9C%D0%BE%D0%B8%22%3Cbr%3E%202-%20%22%D0%9C%D0%BE%D0%B8%22%20%D0%B7%D0%B0%D0%BC%D0%B5%D0%BD%D1%8F%D1%82%D1%8C%20%D0%B7%D0%BD%D0%B0%D1%87%D0%BA%D0%B0%D0%BC%D0%B8%3Cbr%3E%20//3-%D1%80%D0%B5%D0%B7%D0%B5%D1%80%D0%B2%D0%BD%D1%8B%D0%B5%20%D0%B7%D0%BD%D0%B0%D1%87%D0%BA%D0%B8..',
+'seLMenuO':'0-%20%D0%BD%D0%B5%20%D0%BC%D0%B5%D0%BD%D1%8F%D1%82%D1%8C%20%D0%BB%D0%B5%D0%B2%D0%BE%D0%B5%20%D0%BC%D0%B5%D0%BD%D1%8E%3Cbr%3E%201-%20%D1%83%D0%B1%D0%B8%D1%80%D0%B0%D1%82%D1%8C%20%22%D0%9C%D0%BE%D0%B8%22%3Cbr%3E%202-%20%22%D0%9C%D0%BE%D0%B8%22%20%D0%B7%D0%B0%D0%BC%D0%B5%D0%BD%D1%8F%D1%82%D1%8C%20%D0%B7%D0%BD%D0%B0%D1%87%D0%BA%D0%B0%D0%BC%D0%B8',
 'seVkBlog':'%5B%20%D0%9F%D0%BE%D0%BA%D0%B0%D0%B7%D1%8B%D0%B2%D0%B0%D1%82%D1%8C%20%D0%BD%D0%BE%D0%B2%D0%BE%D1%81%D1%82%D0%B8%20%D0%BA%D0%BE%D0%BD%D1%82%D0%B0%D0%BA%D1%82%D0%B0%20%5D',
 'seClockH':'%5B%20%D0%A7%D0%B0%D1%81%D1%8B%20%5D',
 'seClockO':'0-%20%D0%9D%D0%B5%D1%82%3Cbr%3E%201-%20%D0%A6%D0%B8%D1%84%D1%80%D0%BE%D0%B2%D1%8B%D0%B5%20(%D0%B2%D1%80%D0%B5%D0%BC%D1%8F)%3Cbr%3E%202-%20%D0%A6%D0%B8%D1%84%D1%80%D0%BE%D0%B2%D1%8B%D0%B5%20(%D0%B2%D1%80%D0%B5%D0%BC%D1%8F+%D0%B4%D0%B0%D1%82%D0%B0)%3Cbr%3E%203-%D0%90%D0%BD%D0%B0%D0%BB%D0%BE%D0%B3%D0%BE%D0%B2%D1%8B%D0%B5',
@@ -417,7 +417,7 @@ vk_lang_ru={
 'qDelAllStatus':'%D0%92%D1%8B%20%D0%B4%D0%B5%D0%B9%D1%81%D1%82%D0%B2%D0%B8%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D0%BE%20%D1%85%D0%BE%D1%82%D0%B8%D1%82%D0%B5%20%D1%83%D0%B4%D0%B0%D0%BB%D0%B8%D1%82%D1%8C%20%D0%B2%D1%81%D0%B5%20%D0%B2%D0%B8%D0%B4%D0%B8%D0%BC%D1%8B%D0%B5%20%D1%81%D1%82%D0%B0%D1%82%D1%83%D1%81%D1%8B%20%D0%B8%D0%B7%20%D0%B8%D1%81%D1%82%D0%BE%D1%80%D0%B8%D0%B8?',
 //
 
-'vk_year':["","%s \u0433\u043e\u0434.","%s \u0433\u043e\u0434\u0430.","%s \u043b\u0435\u0442."],
+'vk_year':["","%s \u0433\u043e\u0434","%s \u0433\u043e\u0434\u0430","%s \u043b\u0435\u0442"],
 
 'ParseFriends':'\u0420\u0430\u0437\u0431\u043e\u0440 \u0434\u0440\u0443\u0437\u0435\u0439',
 'FrToCatsBySex':'\u0418\u043c\u0435\u043d\u0430 \u043d\u043e\u0432\u044b\u0445 \u043a\u0430\u0442\u0435\u0433\u043e\u0440\u0438\u0439 \u0434\u043b\u044f \u0440\u0430\u0437\u043d\u044b\u0445 \u043f\u043e\u043b\u043e\u0432 \u0434\u0440\u0443\u0437\u0435\u0439',
@@ -696,8 +696,12 @@ vk_lang_ru={
    'ScrobblingOff':'<b><a href="http://last.fm/user/<username>" target="_blank"><username></a></b>, \u043e\u0442\u043a\u043b\u044e\u0447\u0435\u043d\u043e.',
    'AuthNeeded':'\u041d\u0435\u043e\u0431\u0445\u043e\u0434\u0438\u043c\u0430 \u0430\u0432\u0442\u043e\u0440\u0438\u0437\u0430\u0446\u0438\u044f \u043d\u0430 Last.FM',
    'Logout':'[\u0412\u044b\u0445\u043e\u0434]',
-   'LogoutSubmit':'\u0412\u044b \u0430\u0432\u0442\u043e\u0440\u0438\u0437\u0438\u0440\u043e\u0432\u0430\u043d\u044b \u043a\u0430\u043a <b><a href="http://last.fm/user/<username>" target="_blank"><username></a></b>. \u0412\u044b \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043b\u044c\u043d\u043e \u0445\u043e\u0442\u0438\u0442\u0435 \u043e\u0442\u043a\u043b\u044e\u0447\u0438\u0442\u044c\u0441\u044f \u043e\u0442 \u044d\u0442\u043e\u0433\u043e \u0430\u043a\u043a\u0443\u0430\u043d\u0442\u0430?'
+   'LogoutSubmit':'\u0412\u044b \u0430\u0432\u0442\u043e\u0440\u0438\u0437\u0438\u0440\u043e\u0432\u0430\u043d\u044b \u043a\u0430\u043a <b><a href="http://last.fm/user/<username>" target="_blank"><username></a></b>. \u0412\u044b \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043b\u044c\u043d\u043e \u0445\u043e\u0442\u0438\u0442\u0435 \u043e\u0442\u043a\u043b\u044e\u0447\u0438\u0442\u044c\u0441\u044f \u043e\u0442 \u044d\u0442\u043e\u0433\u043e \u0430\u043a\u043a\u0443\u0430\u043d\u0442\u0430?',
    /* end scrobbler lang */
+   'seShowLastActivity':'\u0418\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u044f \u043d\u0430 \u043f\u0440\u043e\u0444\u0438\u043b\u0435 \u043e \u0442\u043e\u043c, \u043a\u043e\u0433\u0434\u0430 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044c \u0431\u044b\u043b \u043e\u043d\u043b\u0430\u0439\u043d',
+   'mGrAdmin':'\u0423\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u0435',
+   'zodiac_signs':['\u041a\u043e\u0437\u0435\u0440\u043e\u0433','\u0412\u043e\u0434\u043e\u043b\u0435\u0439','\u0420\u044b\u0431\u044b','\u041e\u0432\u0435\u043d','\u0422\u0435\u043b\u0435\u0446','\u0411\u043b\u0438\u0437\u043d\u0435\u0446\u044b','\u0420\u0430\u043a','\u041b\u0435\u0432','\u0414\u0435\u0432\u0430','\u0412\u0435\u0441\u044b','\u0421\u043a\u043e\u0440\u043f\u0438\u043e\u043d','\u0421\u0442\u0440\u0435\u043b\u0435\u0446'],
+   'Stats':'\u0421\u0442\u0430\u0442\u0438\u0441\u0442\u0438\u043a\u0430'
 };//*/
 
 vk_lang_en={ //by Hzy
@@ -863,7 +867,7 @@ vk_lang_en={ //by Hzy
 'seSortNam':'[ Sort friends list by parameter ]',
 'seUpdate':'[ Notify about updates ]',
 'seLMenuH':'[ Left menu ]',
-'seLMenuO':'0- don\'t change<br> 1- remove "My"<br> 2- "My" replace with icons<br> //3-Advanced icons..',
+'seLMenuO':'0- don\'t change<br> 1- remove "My"<br> 2- "My" replace with icons',
 'seVkBlog':'[ Show Vkontakte developers news ]',
 'seClockH':'[ Show clock dial ]',
 'seClockO':'0- No<br> 1- Digital (time)<br> 2- Digital (time+date)<br> 3-Analog',
@@ -1168,12 +1172,13 @@ vk_lang_en={ //by Hzy
 'seExplandProfileInfo':'Autodrop detailed info in profile',
 'seMoveMBlog':'Put microblog in bottom',
 'Links':'[ Links ]',
-'seOldStatusHistory':'Show old status history at profile'
+'seOldStatusHistory':'Show old status history at profile',
+'zodiac_signs': ["Goat-horned", "Water-Bearer", "Fish", "Ram", "Bull", "Twins", "Crab", "Lion", "Maiden", "Scales", "Scorpion", "Archer"]
 };
 
 
-vk_lang_ua={//by Vall (id3476823) and vall_gorr
-'LangAuthor':'<a href="/id3476823">by Vall</a>',
+vk_lang_ua={//by Vall (id3476823) and 
+'LangAuthor':'<a href="/id3476823">by Vall</a> & <a href="/vall_gorr">Vall_gorr</a>',
 'LinksGet':'\u041e\u0442\u0440\u0438\u043c\u0430\u0442\u0438 \u043f\u043e\u0441\u0438\u043b\u0430\u043d\u043d\u044f',
 'Error':'\u041f\u043e\u043c\u0438\u043b\u043a\u0430',
 'download':'[ \u0417\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0438\u0442\u0438 ]',
@@ -1335,7 +1340,7 @@ vk_lang_ua={//by Vall (id3476823) and vall_gorr
 'seSortNam':'[ \u0421\u043e\u0440\u0442\u0443\u0432\u0430\u043d\u043d\u044f \u0441\u043f\u0438\u0441\u043a\u0456\u0432 \u0434\u0440\u0443\u0437\u0456\u0432 \u043f\u043e \u043f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u0443 ]',
 'seUpdate':'[ \u0406\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0456\u044f \u043f\u0440\u043e \u043e\u043d\u043e\u0432\u043b\u0435\u043d\u043d\u044f \u0441\u043a\u0440\u0438\u043f\u0442\u0430 ]',
 'seLMenuH':'[ \u041b\u0456\u0432\u0435 \u043c\u0435\u043d\u044e ]',
-'seLMenuO':'0- \u043d\u0435 \u0437\u043c\u0456\u043d\u044e\u0432\u0430\u0442\u0438 \u043b\u0456\u0432\u0435 \u043c\u0435\u043d\u044e<br> 1- \u043f\u0440\u0438\u0431\u0438\u0440\u0430\u0442\u0438 "\u041c\u043e\u0457"<br> 2- "\u041c\u043e\u0457" \u0437\u0430\u043c\u0456\u043d\u044e\u0432\u0430\u0442\u0438 \u0437\u043d\u0430\u0447\u043a\u0430\u043c\u0438<br> //3-\u0440\u0435\u0437\u0435\u0440\u0432\u043d\u0456 \u0437\u043d\u0430\u0447\u043a\u0438..',
+'seLMenuO':'0- \u043d\u0435 \u0437\u043c\u0456\u043d\u044e\u0432\u0430\u0442\u0438 \u043b\u0456\u0432\u0435 \u043c\u0435\u043d\u044e<br> 1- \u043f\u0440\u0438\u0431\u0438\u0440\u0430\u0442\u0438 "\u041c\u043e\u0457"<br> 2- "\u041c\u043e\u0457" \u0437\u0430\u043c\u0456\u043d\u044e\u0432\u0430\u0442\u0438 \u0437\u043d\u0430\u0447\u043a\u0430\u043c\u0438',
 'seVkBlog':'[ \u041f\u043e\u043a\u0430\u0437\u0430\u0442\u0438 \u043d\u043e\u0432\u0438\u043d\u0438 \u043a\u043e\u043d\u0442\u0430\u043a\u0442\u0443 ]',
 'seClockH':'[ \u0413\u043e\u0434\u0438\u043d\u043d\u0438\u043a ]',
 'seClockO':'0- \u041d\u0435\u043c\u0430\u0454<br> 1- \u0426\u0438\u0444\u0440\u043e\u0432\u0438\u0439 (\u0447\u0430\u0441)<br> 2- \u0426\u0438\u0444\u0440\u043e\u0432\u0438\u0439 (\u0447\u0430\u0441, \u0434\u0430\u0442\u0430)<br> 3-\u0410\u043d\u0430\u043b\u043e\u0433\u043e\u0432\u0438\u0439',
@@ -1834,7 +1839,24 @@ vk_lang_ua={//by Vall (id3476823) and vall_gorr
 'Birthdays':'\u0414\u043d\u0456 \u043d\u0430\u0440\u043e\u0434\u0436\u0435\u043d\u043d\u044f',
 'clNews':'\u041d\u043e\u0432\u0438\u043d\u0438',
 'Volume':'\u0413\u0443\u0447\u043d\u0456\u0441\u0442\u044c',
-'seToTopOld':'\u0421\u0442\u0430\u0440\u0430 \u043f\u043e\u0432\u0435\u0434\u0456\u043d\u043a\u0430 \u043a\u043d\u043e\u043f\u043a\u0438 &ldquo;\u041d\u0430\u0432\u0435\u0440\u0445&rdquo;(\u0412\u0433\u043e\u0440\u0443/\u0412\u043d\u0438\u0437)'
+'seToTopOld':'\u0421\u0442\u0430\u0440\u0430 \u043f\u043e\u0432\u0435\u0434\u0456\u043d\u043a\u0430 \u043a\u043d\u043e\u043f\u043a\u0438 &ldquo;\u041d\u0430\u0432\u0435\u0440\u0445&rdquo;(\u0412\u0433\u043e\u0440\u0443/\u0412\u043d\u0438\u0437)',
+   /* Scrobbler */
+   'AuthBoxTitle' :'Last.FM Auth',
+   'AuthBoxText'  :'\u0412\u0438 \u0445\u043e\u0447\u0435\u0442\u0435 \u043f\u0456\u0434\u043a\u044e\u0447\u0438\u0442\u0438\u0441\u044f \u0434\u043e Last.FM?',
+   'AuthDone'     :'<b><a href="http://last.fm/user/<username>" target="_blank"><username></a></b>, \u0412\u0438 \u0443\u0441\u043f\u0456\u0448\u043d\u043e \u0430\u0432\u0442\u043e\u0440\u0438\u0437\u0443\u0432\u0430\u043b\u0438\u0441\u044f \u043d\u0430 Last.FM',
+   'TimeRemaining':'\u0414\u043e \u0441\u043a\u0440\u043e\u0431\u043b\u0456\u043d\u0433\u0443 \u0442\u0440\u0435\u043a\u0443 \u0437\u0430\u043b\u0438\u0448\u0438\u043b\u043e\u0441\u044f <time>',
+   'TrackScrobbled':'\u0422\u0440\u0435\u043a \u0437\u0430\u0441\u043a\u0440\u043e\u0431\u043b\u0435\u043d\u0438\u0439',
+   'TrackNotScrobbled':'\u041f\u043e\u043c\u0438\u043b\u043a\u0430 \u043f\u0440\u0438 \u0441\u043a\u0440\u043e\u0431\u043b\u0456\u043d\u0433\u0443 \u0442\u0440\u0435\u043a\u0443',
+   'TrackPassed':'\u0422\u0440\u0435\u043a \u043f\u0440\u043e\u0456\u0433\u043d\u043e\u0440\u043e\u0432\u0430\u043d\u0438\u0439',
+   'ScrobblingOn':'<b><a href="http://last.fm/user/<username>" target="_blank"><username></a></b>, \u0430\u043a\u0442\u0438\u0432\u043d\u043e.',
+   'ScrobblingOff':'<b><a href="http://last.fm/user/<username>" target="_blank"><username></a></b>, \u0432\u0456\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u043e.',
+   'AuthNeeded':'\u041d\u0435\u043e\u0431\u0445\u0456\u0434\u043d\u0430 \u0430\u0432\u0442\u043e\u0440\u0438\u0437\u0430\u0446\u0456\u044f \u043d\u0430 Last.FM',
+   'Logout':'[\u0412\u0438\u0445\u0456\u0434]',
+   'LogoutSubmit':'\u0412\u0438 \u0430\u0432\u0442\u043e\u0440\u0438\u0437\u043e\u0432\u0430\u043d\u0456 \u044f\u043a <b><a href="http://last.fm/user/<username>" target="_blank"><username></a></b>. \u0412\u0438 \u0434\u0456\u0439\u0441\u043d\u043e \u0445\u043e\u0447\u0435\u0442\u0435 \u0432\u0456\u0434\u043a\u043b\u044e\u0447\u0438\u0442\u0438\u0441\u044f \u0432\u0456\u0434 \u0446\u044c\u043e\u0433\u043e \u0430\u043a\u043a\u0430\u0443\u043d\u0442\u0430?',
+   /* end scrobbler lang */
+   'seShowLastActivity':'\u0406\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0456\u044f \u043d\u0430 \u043f\u0440\u043e\u0444\u0456\u043b\u0456 \u043f\u0440\u043e \u0442\u0435, \u043a\u043e\u043b\u0438 \u043a\u043e\u0440\u0438\u0441\u0442\u0443\u0432\u0430\u0447 \u0431\u0443\u0432 \u043e\u043d\u043b\u0430\u0439\u043d',
+   'mGrAdmin':'\u041a\u0435\u0440\u0443\u0432\u0430\u043d\u043d\u044f',
+   'zodiac_signs':['\u041a\u043e\u0437\u0435\u0440\u0456\u0433','\u0412\u043e\u0434\u043e\u043b\u0456\u0439','\u0420\u0438\u0431\u0438','\u041e\u0432\u0435\u043d','\u0422\u0435\u043b\u0435\u0446\u044c','\u0411\u043b\u0438\u0437\u043d\u044e\u043a\u0438','\u0420\u0430\u043a','\u041b\u0435\u0432','\u0414\u0456\u0432\u0430','\u0422\u0435\u0440\u0435\u0437\u0438','\u0421\u043a\u043e\u0440\u043f\u0456\u043e\u043d','\u0421\u0442\u0440\u0456\u043b\u0435\u0446\u044c']
 };
 
 vk_lang_by={ //by Gavr id8610702
@@ -2000,7 +2022,7 @@ vk_lang_by={ //by Gavr id8610702
 'seSortNam':'[ \u0421\u0430\u0440\u0442\u0430\u0432\u0430\u043d\u043d\u0435 \u0441\u044c\u043f\u0456\u0441\u0430\u045e \u0441\u044f\u0431\u0440\u043e\u045e \u043f\u0430 \u043f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u044b ]',
 'seUpdate':'[ \u0406\u043d\u0444\u0430\u0440\u043c\u0430\u0446\u044b\u044f \u043f\u0440\u0430 \u0430\u0431\u043d\u0430\u045e\u043b\u0435\u043d\u044c\u043d\u0435 \u0441\u043a\u0440\u044b\u043f\u0442\u0443 ]',
 'seLMenuH':'[ \u041b\u0435\u0432\u0430\u0435 \u043c\u0435\u043d\u044e ]',
-'seLMenuO':'0- \u043d\u0435 \u0437\u043c\u044f\u043d\u044f\u0446\u044c \u043b\u0435\u0432\u0430\u0435 \u043c\u0435\u043d\u044e<br> 1- \u043f\u0440\u044b\u0431\u0456\u0440\u0430\u0446\u044c "\u041c\u0430\u0435"<br> 2- "\u041c\u0430\u0435" \u0437\u0430\u043c\u044f\u043d\u044f\u0446\u044c \u0437\u043d\u0430\u0447\u043a\u0430\u043c\u0456<br> //3-\u0440\u044d\u0437\u0435\u0440\u0432\u043e\u0432\u044b\u044f \u0437\u043d\u0430\u0447\u043a\u0456..',
+'seLMenuO':'0- \u043d\u0435 \u0437\u043c\u044f\u043d\u044f\u0446\u044c \u043b\u0435\u0432\u0430\u0435 \u043c\u0435\u043d\u044e<br> 1- \u043f\u0440\u044b\u0431\u0456\u0440\u0430\u0446\u044c "\u041c\u0430\u0435"<br> 2- "\u041c\u0430\u0435" \u0437\u0430\u043c\u044f\u043d\u044f\u0446\u044c \u0437\u043d\u0430\u0447\u043a\u0430\u043c\u0456',
 'seVkBlog':'[ \u041f\u0430\u043a\u0430\u0437\u0432\u0430\u0446\u044c \u043d\u0430\u0432\u0456\u043d\u044b \u043a\u0430\u043d\u0442\u0430\u043a\u0442\u0443 ]',
 'seClockH':'[ \u0413\u0430\u0434\u0437\u0456\u043d\u044c\u043d\u0456\u043a ]',
 'seClockO':'0- \u041d\u044f\u043c\u0430<br> 1- \u041b\u0456\u0447\u0431\u0430\u0432\u044b (\u0447\u0430\u0441)<br> 2- \u041b\u0456\u0447\u0431\u0430\u0432\u044b (\u0447\u0430\u0441 \u0434\u0430\u0442\u0430)<br> 3- \u0410\u043d\u0430\u043b\u0430\u0433\u0430\u0432\u044b',
@@ -2461,7 +2483,7 @@ vk_lang_it={ //by Maybkot /id5027410 (mayboroda.com.ua)
 'seSortNam':'[ Classifica i listi degli amici con parametro ]',
 'seUpdate':'[ La informazione di versioni nuovi di VKopt ]',
 'seLMenuH':'[ Menu sinistro ]',
-'seLMenuO':'0- non cambia menu sinistro<br> 1- rimuovi "Miei"(per VK.com in Russo)<br> 2- Mostra "Miei" con disegni <br> //3- Scorte disegni..',
+'seLMenuO':'0- non cambia menu sinistro<br> 1- rimuovi "Miei"(per VK.com in Russo)<br> 2- Mostra "Miei" con disegni',
 'seVkBlog':'[ Mostra le novit%C3%A0 di VK.com ]',
 'seClockH':'[ Orologio ]',
 'seClockO':'0- No<br> 1- Digitale (tempo)<br> 2- Digitale (tempo, data)<br> 3-Con lancette',
@@ -3058,7 +3080,7 @@ vk_lang_tat = {//by eurotat /id15202178
     seSortNam: "[ \u0421\u043e\u0440\u0442\u0438\u0440\u043e\u0432\u043a\u0430 \u0441\u043f\u0438\u0441\u043a\u043e\u0432 \u0434\u0440\u0443\u0437\u0435\u0439 \u043f\u043e \u043f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u0443 ]",
     seUpdate: "[ \u0418\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u044f \u043e\u0431 \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u044f\u0445 \u0441\u043a\u0440\u0438\u043f\u0442\u0430 ]",
     seLMenuH: "[ \u0421\u0443\u043b\u044a\u044f\u043a \u043c\u0435\u043d\u044e ]",
-    seLMenuO: '0- \u0421\u0443\u043b\u044a\u044f\u043a \u043c\u0435\u043d\u044e\u043d\u044b \u04af\u0437\u0433\u04d9\u0440\u0442\u043c\u04d9\u0441\u043a\u04d9<br> 1- "\u041c\u0438\u043d\u0435\u043c"\u043d\u0435 \u043a\u04af\u0440\u0441\u04d9\u0442\u043c\u04d9\u0441\u043a\u04d9<br> 2- "\u041c\u0438\u043d\u0435\u043c"\u043d\u0435 \u0440\u04d9\u0441\u0435\u043c \u0431\u0435\u043b\u04d9\u043d \u0430\u043b\u043c\u0430\u0448\u0442\u044b\u0440\u044b\u0440\u0433\u0430<br> //3-\u0440\u0435\u0437\u0435\u0440\u0432 \u0440\u04d9\u0441\u0435\u043c\u043d\u04d9\u0440..',
+    seLMenuO: '0- \u0421\u0443\u043b\u044a\u044f\u043a \u043c\u0435\u043d\u044e\u043d\u044b \u04af\u0437\u0433\u04d9\u0440\u0442\u043c\u04d9\u0441\u043a\u04d9<br> 1- "\u041c\u0438\u043d\u0435\u043c"\u043d\u0435 \u043a\u04af\u0440\u0441\u04d9\u0442\u043c\u04d9\u0441\u043a\u04d9<br> 2- "\u041c\u0438\u043d\u0435\u043c"\u043d\u0435 \u0440\u04d9\u0441\u0435\u043c \u0431\u0435\u043b\u04d9\u043d \u0430\u043b\u043c\u0430\u0448\u0442\u044b\u0440\u044b\u0440\u0433\u0430',
     seVkBlog: "[ \u041a\u043e\u043d\u0442\u0430\u043a\u0442\u043d\u044b\u04a3 \u044f\u04a3\u0430\u043b\u044b\u043a\u043b\u0430\u0440\u044b\u043d \u043a\u04af\u0440\u0441\u04d9\u0442\u0435\u0440\u0433\u04d9 ]",
     seClockH: "[ \u0421\u04d9\u0433\u0430\u0442\u044c\u043b\u04d9\u0440 ]",
     seClockO: "0- \u042e\u043a<br> 1- \u0421\u0430\u043d (\u0441\u04d9\u0433\u0430\u0442\u044c)<br> 2- \u0421\u0430\u043d (\u0432\u0430\u043a\u044b\u0442, \u043a\u04e9\u043d)<br> 3-\u0410\u043d\u0430\u043b\u043e\u0433",

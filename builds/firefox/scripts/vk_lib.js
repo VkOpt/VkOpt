@@ -5,6 +5,7 @@
 // @description   Vkontakte Optimizer 2.x
 // @include       *vkontakte.ru*
 // @include       *vk.com*
+// @include       *userapi.com*
 // @include       *vkadre.ru*
 // @include       *durov.ru*
 // @include       *youtube.com*
@@ -413,7 +414,10 @@ var vkMozExtension = {
 		return res;
 	}
    function vkCleanFileName(s){   return s.replace(/[\\\/\:\*\?\"\<\>\|]/g,'_').substr(0,200);   }
-   
+   function vkEncodeFileName(s){
+      // [^A-Za-zА-Яа-я]
+      return s.replace(/([^A-Za-z\u0410-\u042f\u0430-\u044f])/g,function (str, p1, offset, s) {return encodeURIComponent(p1) });
+   }
    
    function num_to_text(s){
       s+='';
@@ -1705,7 +1709,7 @@ vkApis={
 		dApi.call('photos.get',params,callback);
 	},
 	photos_hd:function(oid,aid,callback,progress){
-		var listId="album"+oid+"_"+aid;
+		var listId=(aid=='tag') ? 'tag'+oid : "album"+oid+"_"+aid;
 		var PER_REQ=10;
 		var cur=0;
 		var count=0;
@@ -1909,6 +1913,139 @@ var XFR={
 			});
 		}
 	}
+};
+
+
+var XFR2 = {
+   reqs: 0,
+   callbacks: [],
+   req_options: [],
+   fr_handler: null,
+   send: function(options, callback) {
+      url = options.url || '';
+      var domain = 'http://' + url.split('/')[2];
+      if (domain.indexOf('youtube.com') != -1) domain += '/embed/';
+
+      var req_id = this.reqs++;
+      var frame_url = domain + '?xfr__query=' + escape(JSON.Str([req_id, url]));
+      var fr = vkCe('iframe', {
+         src: frame_url,
+         id: "xfr_frame" + req_id,
+         style: "visibility:hidden; position:absolute; display:none;"
+      });
+      document.body.appendChild(fr);
+      if (this.callbacks.length == 0) window.addEventListener("message", this.onMessage, false);
+      var back = function() {
+            re(fr);
+            callback.apply(this, arguments);
+         };
+      this.callbacks[req_id] = back;
+      this.req_options[req_id] = [fr, options];
+   },
+   onMessage: function(e) {
+      
+      var res = e.data;
+      var req_id = res.id!=null?res.id: -1;
+      if (req_id == -1) return;
+      if (res.get_request_options) {
+         var fr = XFR2.req_options[req_id][0];
+         var options = XFR2.req_options[req_id][1];
+         fr.contentWindow.postMessage({
+            _xfr_request: true,
+            options: options
+         }, "*");
+      } else if (res.request_done) {
+         //console.log(JSON.stringify(e.data));
+         XFR2.callbacks[req_id].apply(this, [res.response]);
+      }
+   },
+   
+   check: function() {
+      var dloc = document.location.href;
+      var q = dloc.split('xfr__query=')[1];
+      if (q) {
+         q = JSON.parse(unescape(q));
+         var req_id = q[0];
+         var url = q[1];
+         if (!XFR2.fr_handler) {
+            XFR2.fr_handler = function(e) {
+               var serialize = function (obj) {
+                   var pairs = [];
+                   for (var key in obj) {
+                       pairs.push(encodeURIComponent(key)
+                           + '=' + encodeURIComponent(obj[key]));
+                   }
+                   return pairs.join('&');
+               };
+               
+               var res = e.data;
+               if (res._xfr_request) {
+                  var options = res.options; /*///////////////////////////////////////*/
+                  var xhr = new XMLHttpRequest(),
+                     //callback = callback || this.noop,
+                     method = options.method || 'GET',
+                     params = serialize(options.params || {}),
+                     headers = options.headers || {},
+                     data = options.data || null,
+                     url = options.url || '',
+                     contentType = headers['Content-type'] || 'x-www-form-urlencoded';
+
+                  if (~contentType.indexOf('multipart/form-data') && method == 'POST' && data && data.length) {
+                     var buffer = new Uint8Array(data.length);
+                     for (var i = 0; i < data.length; i++) {
+                        buffer[i] = data[i];
+                     }
+                     data = buffer.buffer;
+                  }
+
+                  url += ~url.indexOf('?') ? '&' + params : '?' + params;
+
+                  var callback = function(r) {
+                        
+                        parent.window.postMessage({
+                           id: req_id,
+                           response: r,
+                           request_done: true
+                        }, "*");
+                     }
+                  try {
+                     xhr.open(method, url, false);
+
+                     for (var i in headers) {
+                        xhr.setRequestHeader(i, headers[i]);
+                     }
+
+                     xhr.onreadystatechange = function() {
+                        if (xhr.readyState == 4) {
+                           var response = {};
+                           response.text = xhr.responseText;
+                           response.headers = xhr.getAllResponseHeaders();
+                           response.status = xhr.status;
+                           callback(response);
+                        }
+                     }
+                     
+                     xhr.send(data);
+                     
+                  } catch (e) {
+                     console.log('XHR ERROR', e);
+                     callback({
+                        error: e
+                     });
+                  }
+
+                  /*///////////////////////////////////////*/
+               }
+            };
+            window.addEventListener("message", XFR2.fr_handler, false);
+
+         }
+         parent.window.postMessage({
+            id: req_id,
+            get_request_options: true
+         }, "*");         
+      }
+   }
 };
 
 function vkFileSize(size,c){
@@ -2117,6 +2254,7 @@ function vkDragOutFile(el) {
 }
 function vkDownloadFile(el,ignore) { 
    if (!vkbrowser.mozilla || ignore) return true;
+   if (getSet(1) == 'n') return true;
    var a = el.getAttribute("href");
    var d = el.getAttribute("download");
    var url=a;
@@ -2429,6 +2567,7 @@ if (!window.geByTag1) geByTag1=function(searchTag, node) {return geByTag(searchT
 
 var dloc=document.location.href.split('/')[2] || '';
 if(!(dloc.indexOf('vk.com')!=-1 || dloc.indexOf('vkontakte.ru')!=-1)) {setTimeout(XFR.check,800);}
+/*if(!(dloc.indexOf('vk.com')!=-1 || dloc.indexOf('vkontakte.ru')!=-1)) {*/setTimeout(XFR2.check,800);//}
 
 if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
 

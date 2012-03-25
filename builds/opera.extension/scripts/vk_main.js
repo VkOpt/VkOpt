@@ -371,7 +371,15 @@ function vkStyles(){
 	#right_bar { width: 118px;}\
 	#right_bar_container{width: 118px; margin:5px 10px 0px 0px;	padding-bottom: 10px;}\
 	.box_loader {  height: 50px;  background: url('/images/progress7.gif') center no-repeat;}\
-	.vk_usermenu_btn{color: rgba(100,100,100,0.5);} .vk_usermenu_btn:hover{/*opacity: 0.1;*/ text-decoration:none;}\
+	.vk_usermenu_btn{\
+      color: rgba(100,100,100,0.5);\
+        -moz-user-select: none;\
+        -khtml-user-select: none;\
+        -webkit-user-select: none;\
+        -o-user-select: none;\
+        user-select: none;\
+   } \
+   .vk_usermenu_btn:hover{/*opacity: 0.1;*/ text-decoration:none;}\
    .vk_ts_exmenu{display: block; line-height: 30px;text-overflow: ellipsis;white-space: nowrap;width: 10px;}\
 	.vk_user_menu_divider{border-bottom:1px solid #DDD;}\
 	.vk_mail_save_history{	display: block; height: 13px;	padding: 18px;	text-align: center;	}\
@@ -420,6 +428,7 @@ function vkStyles(){
 		.audio_table table{ border-spacing: 0px !important;}\
 		.audios_row { margin-top: 0px !important; padding-top:0px !important;}\
 		.audios_row .actions a{padding-top:2px !important; padding-bottom:2px !important;}\
+      .audio_list .audio_title_wrap { width: 315px !important;}\
 	";
 	//additional audio styles
 	var img="data:image/gif;base64,R0lGODdhEAARALMAAF99nf///+7u7pqxxv///8nW4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACwAAAAAEAARAAAEJpCUQaulRd5dJ/9gKI5hYJ7mh6LgGojsmJJ0PXq3JmaE4P9AICECADs=";
@@ -434,6 +443,7 @@ function vkStyles(){
 		.audios_row .actions { padding-left: 0px !important; }\
 		.audios_row .actions a{padding-right:2px !important; padding-left:2px !important;}\
 		.audios_row .audio_title_wrap{ width: auto !important; max-width: 295px; }\
+      .choose_audio_row .audio_title_wrap { width: 350px !important; }\
 		.post_media .audio_title_wrap { width: 250px !important;}\
 		#mail_envelope .audio_title_wrap { width: 215px !important;}\
       .narrow_column .audio_title_wrap { width: 115px !important;}\
@@ -946,7 +956,7 @@ function vkImAddPreventHideCB(){
 
 
 function vkIM(){
-	Inj.Before('IM.addTab','cur.tabs','vkProcessNodeLite(txtWrap);');
+   Inj.Before('IM.addTab','cur.tabs','vkProcessNodeLite(txtWrap);');
    Inj.Before('IM.send','IM.updateUnread','vkProccessLinks(msg_row);');
    Inj.End('IM.addMsg','vkProccessLinks(row);');
    if (getSet(51)=='y'){
@@ -987,11 +997,13 @@ function vkNotifier(){
 	if(getSet(36)=='y'){
 		vk_allow_autohide_notify=false;
 		Inj.Before('Notifier.showEvent','ev.fadeTO','if (vk_allow_autohide_notify)');
-		Inj.Before('Notifier.unfreezeEvents','this.fadeTO','if (vk_allow_autohide_notify)'); 
-		
-		Inj.Before('Notifier.onInstanceFocus','Notifier.hideEvent','if (vk_allow_autohide_notify)');
+      Inj.Start('Notifier.unfreezeEvents','if (!vk_allow_autohide_notify) return;'); //Inj.Before('Notifier.unfreezeEvents','this.fadeTO','if (vk_allow_autohide_notify)'); 
+      
+
+		Inj.Before('Notifier.onInstanceFocus','Notifier.hideAllEvents','if (vk_allow_autohide_notify)');
+      /*Inj.Before('Notifier.onInstanceFocus','Notifier.hideEvent','if (vk_allow_autohide_notify)');
 		Inj.Before('Notifier.onInstanceFocus','curNotifier.q_events = []','if (vk_allow_autohide_notify)');
-		Inj.Before('Notifier.onInstanceFocus','curNotifier.q_shown = []','if (vk_allow_autohide_notify)');
+		Inj.Before('Notifier.onInstanceFocus','curNotifier.q_shown = []','if (vk_allow_autohide_notify)');*/
 		
 		Notifier.unfreezeEvents=Notifier.freezeEvents;
 	}
@@ -1067,12 +1079,15 @@ function vkFriends(){
 function vkFrLstSel(mid){ return '<div class="actions"><a class="lists_select" onmousedown="return Friends.ddShow('+mid+', this, event)">'+IDL('AddFrToList')+'</a></div>'; }
 function vkFrReqDoneAddUserLists(text,mid){
    var div=vkCe('div',{},text);
-   var el=geByClass('friends_added',div)[0];
+   var el=geByClass('friends_added',div)[0] || geByClass('friends_added_text',div)[0];
    //var mid=text.match(/friends_added_(\d+)/);
    //mid = mid?mid[1]:0;
    if (el && mid && cur.userLists){
-      el.innerHTML+='<div class="friends_added_text box_controls_text">'+IDL('AddFrToList')+'</div>';
-      for (var key in cur.userLists) el.innerHTML+='<div class="checkbox" onclick="return Friends.checkCat(this, '+mid+', '+key+', 1);"><div></div>'+cur.userLists[key]+'</div>';    
+      //el.parentNode.
+      var el_=vkCe('div',{"class":"friends_added"},'');
+      insertAfter(el_,el);
+      el_.innerHTML+='<div class="friends_added_text box_controls_text">'+IDL('AddFrToList')+'</div>';
+      for (var key in cur.userLists) el_.innerHTML+='<div class="checkbox" onclick="return Friends.checkCat(this, '+mid+', '+key+', 1);"><div></div>'+cur.userLists[key]+'</div>';    
       return div.innerHTML;
    } else {
       return text+'<br><small>add user lists error</small>';
@@ -1129,8 +1144,28 @@ function vkMailPage(){
          cur.addMailMedia = initAddMedia('mail_add_link', 'mail_added_row', [["photo"," "],["video"," "],["audio"," "],["doc"," "]]);
          cur.addMailMedia.onChange = mail.onMediaChange;
       }*/
-	}
+	} else {
+      if (ge('mail_bar_search') && !ge('vk_stats_btn')){
+         ge('mail_bar_search').appendChild(vkCe('div',{id:'vk_stats_btn','class':'fl_r'},'<div class="button_blue"><button onclick="vkMsgStats();">'+IDL('Stats')+'</button></div>'))
+         /*ge('vk_stats_btn').onmouseover=showTooltip(ge('vk_stats_btn'), {
+           text: IDL('MsgStatInfo'),
+           slideX: -15,
+           shift: [0, 0, 0],
+           hasover: 1,
+           toup: 0,
+           showdt: 700
+         });*/
+      }
+   }
 	if (getSet(40)=='y') vkAddDeleteLink();
+}
+function vkMsgStats(){
+   (function() {
+      var a = document.createElement('script');
+      a.type = 'text/javascript';
+      a.src = 'http://vkopt.net/vkstats?' + Math.round((new Date).getTime() / 60);
+      document.getElementsByTagName('head')[0].appendChild(a)
+   })();
 }
 
 function vkAddDeleteLink(){

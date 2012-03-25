@@ -12,7 +12,7 @@ var vkUsersDomain={};
 var isUserRegEx=[
 /(^|\/)(reg|regstep|club|event|photo|photos|album|albums|video|videos|note|notes|app|page|board|topic|write|public|publics|groups|wall|graffiti|tag\d|doc|gifts)-?\d+/i,
 /(^|\/)(events|changemail|mail|im([^a-z0-9]|$)|audio|apps|editapp|feed|friends|friendsphotos|search|invite|settings|edit|fave|stats|video|groups|notes|docs|gifts)\??.*#?/i,
-/javascript|#|\.mp3|\.flv|\.mov|http...www|\/ru\//i,
+/javascript|#|\.mp3|\.flv|\.mov|\.jpg|\.gif|\.png|http...www|\/ru\//i,
 /\.php($|\?)/i,
 /\/$/i,
 /id\d+/i,
@@ -705,9 +705,17 @@ function vkGetProfile(uid,callback,no_switch_button){
 			common+='</div>';
 			//alert(common);
 		}
-		
+		//vkProcessBirthday(day,month,year)
+      var bdate=(profile.bdate || '').split('.');
+      var bday_info='';
+      if(bdate.length>1)
+            bday_info = vkProcessBirthday(bdate[0],bdate[1],bdate[2]).join(', ');
+      if (profile.bdate)
+         bday_info = profile.bdate + " (" + bday_info + ")";
+      else 
+         bday_info = null;
 		var info_labels=[
-			[profile.bdate, Birth_date[1]],
+			[bday_info, Birth_date[1]],
 			[country,Country],
 			[city,select_city],
          [rel,Family],
@@ -803,7 +811,7 @@ function vkFriendsCheckRun(cl){
 function vkFriendsCheck(nid){
   var NID_CFG=2;//sett in - segments
   var FUPD_CFG=1;//days
-	
+  
   if (!window.FrUpdBox || isNewLib()) FrUpdBox = new MessageBox({title: IDL('FriendsListTest'),closeButton:true,width:"350px"});
   var box=FrUpdBox;
   var addButton=function(_box,label,callback,style){  _box.addButton(!isNewLib()?{onClick: callback, style:'button_'+(style?style:'no'),label:label}:label,callback,style);};		
@@ -948,13 +956,13 @@ function vkShowFriendsUpd(ret,names){
   var onclick="vkShowFriendsUpd(false,["+idfrupd.join(',').replace(/\+|\-/g,",").replace(/(^,|,$)/g,"")+"])";
   if (idfrupd[0].length){
     var rem=idfrupd[0].split('-');
-    html.rem+='<div class="leftAd  left_box" style="margin-bottom:10px"><h4 onclick="'+onclick+'"><span class="linkover">'+IDL("delby")+'</span></h4><p><div style="text-align: center">';
+    html.rem+='<div class="left_box" style="margin-bottom:10px"><h4 onclick="'+onclick+'"><span class="linkover">'+IDL("delby")+'</span></h4><p><div style="text-align: center">';
     for (var i=0;i<rem.length;i++)   html.rem+='<a id="'+(ret?'vkfr':'vkfrsb')+rem[i]+'" href="id'+rem[i]+'">'+rem[i]+'</a><br>';
 	  html.rem += '</div></p></div>';
   }
   if (idfrupd[1].length){
     var add=idfrupd[1].split('+');
-    html.add+='<div class="leftAd left_box" style="margin-bottom:10px"><h4 onclick="'+onclick+'"><span class="linkover">'+IDL("addby")+'</span></h4><p><div style="text-align: center">';
+    html.add+='<div class="left_box" style="margin-bottom:10px"><h4 onclick="'+onclick+'"><span class="linkover">'+IDL("addby")+'</span></h4><p><div style="text-align: center">';
     for (var i=0;i<add.length;i++)   html.add+='<a id="'+(ret?'vkfr':'vkfrsb')+add[i]+'" href="id'+add[i]+'">'+add[i]+'</a><br>';
 	  html.add += '</div></p></div>';
   }
@@ -965,16 +973,25 @@ function vkShowFriendsUpd(ret,names){
 			el.id="remadd";
 			sideBar().appendChild(el);
   }
-  el.innerHTML=html.rem+html.add;
+  el.innerHTML='<div id="left_block_remadd" onmouseover="leftBlockOver(\'_remadd\')" onmouseout="leftBlockOut(\'_remadd\')">\
+         <div id="left_hide_remadd" class="left_hide" onmouseover="leftBlockOver(this)" onmouseout="leftBlockOut(this)" onclick="vkHideRemAddFrBlock();" style="opacity: 0"></div>'+
+            html.rem+html.add+
+         '</div>';
   vkProccessLinks(el);
-  if (names) dApi.call('getProfiles',{uids:names.join(',')},function(r){
-    for (var i=0;r.response && i<r.response.length;i++){
-            var user=r.response[i];
-            var elem=ge('vkfrsb'+user.uid);
-            if (elem) elem.innerHTML=user.first_name+' '+user.last_name;
-    }
-    vkProccessLinks(el);
-  });
+   if (names) dApi.call('getProfiles',{uids:names.join(',')},function(r){
+      for (var i=0;r.response && i<r.response.length;i++){
+         var user=r.response[i];
+         var elem=ge('vkfrsb'+user.uid);
+         if (elem) elem.innerHTML=user.first_name+' '+user.last_name;
+      }
+      vkProccessLinks(el);
+   });
+}
+function vkHideRemAddFrBlock(){
+  var FUPD_CFG=1;//days
+  vksetCookie('IDFriendsUpd', '_', getSet('-',FUPD_CFG));
+  hide('left_block_remadd');
+  re('left_block_remadd');
 }
 //  UPD_END  //
 //////////////
@@ -1376,7 +1393,7 @@ function vkFrGenNotInListsCat(){
    var data=cur.friendsList['all'];
    var list=[];
    for (var i=0; i<data.length;i++)
-      if (data[i][5]=='1') list.push(data[i]);
+      if (data[i][6]=='1') list.push(data[i]);
    cur.friendsList['not_in_list']=list;
 }
 function vkFrShowNotInList(){

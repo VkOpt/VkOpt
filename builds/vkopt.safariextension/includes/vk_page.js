@@ -18,16 +18,18 @@ function vkProfilePage(){
 	ge('profile_info').appendChild(vkCe('input',{type:'hidden',id:'vk_profile_inited'}));
 	if (getSet(24) == 'y') vkAvkoNav();
 	if (getSet(25) == 'y') status_icq(ge('profile_full_info'));
-	if (getSet(26) == 'y') VkCalcAge();
+	if (getSet(26) == 'y') vkProcessProfileBday(); //VkCalcAge();
 	vkPrepareProfileInfo();
 	addFakeGraffItem();
    //vkWallAddPreventHideCB();
 	vkUpdWallBtn(); //Update wall button
    vkWallNotesLink();
+   if (cur.oid!=vk.id) vkWallTatLink();
    if (remixmid()==cur.oid && getSet(50)=='y' && !ge('profile_fave')) vkFaveProfileBlock(); 
    if (getSet(60) == 'y') vkProfileMoveAudioBlock(); 
    if (getSet(61) == 'y') vkProfileGroupBlock();   
 	if (MOD_PROFILE_BLOCKS) vkFrProfile();
+   //if (getSet(65)=='y') vkShowLastActivity()
 	if (getSet(46) == 'n') vkFriends_get('online');
 	if (getSet(47) == 'n') vkFriends_get('common');
    
@@ -48,7 +50,59 @@ function vkProfile(){
 	Inj.End('profile.init','setTimeout("vkOnNewLocation();",2);');
 }
 
+function vkWallTatLink(){
+   if (ge('vk_wall_tat_link')) return;
+   if (isVisible('page_wall_switch'))  ge('page_wall_header').appendChild(vkCe('span',{"class":'fl_r right_link divide'},'|'))
+   var href=ge('page_wall_header').getAttribute('href');
+   ge('page_wall_header').appendChild(vkCe('a',{
+               "class":'fl_r right_link', 
+               id:'vk_wall_tat_link',
+               href:'/wall'+cur.oid+'?with='+vk.id,
+               onclick:"cancelEvent(event); return nav.go(this, event);",
+               onmouseover:"this.parentNode.href='/wall"+cur.oid+"?with="+vk.id+"';",
+               onmouseout:"this.parentNode.href='"+href+"';"
+            },IDL('T-a-T',1)))
+}
+function vkWallNotesLink(get_count){
+   if (get_count){
+         dApi.call('notes.get',{uid:cur.oid, count:1},function(r){ 
+            ge('pr_notes_count').innerHTML=(r.response || [0]).shift()
+         });
+   }
+   
+   /*
+   if (ge('vk_wall_notes_link')) return;
+   if (isVisible('page_wall_switch'))  ge('page_wall_header').appendChild(vkCe('span',{"class":'fl_r right_link divide'},'|'))
+   var href=ge('page_wall_header').getAttribute('href');
+   ge('page_wall_header').appendChild(vkCe('a',{
+               "class":'fl_r right_link', 
+               id:'vk_wall_notes_link',
+               href:'/notes'+cur.oid,
+               onclick:"cancelEvent(event); return nav.go(this, event);",
+               onmouseover:"this.parentNode.href='/notes"+cur.oid+"';",
+               onmouseout:"this.parentNode.href='"+href+"';"
+            },IDL('clNo',1)))*/
+   html='<a class="notes" onclick="return nav.go(this, event);" href="/notes'+cur.oid+'" onmouseover="vkWallNotesLink(true);">\
+   <span class="fl_r thumb"></span><span class="fl_r" id="pr_notes_count"></span>'+IDL('clNo',1)+'</a>';
+   if (ge('profile_counts') && !ge('pr_notes_count')){
+      ge('profile_counts').appendChild(vkCe('div',{},html));
+   }         
+  
+}
 
+function vkLastActivity(uid,callback){
+   ajax.post('al_im.php', {act: 'a_history', peer: uid, offset: 0, whole: 0}, {
+      onDone: function (html, msgs, all_shown, newmsg, data) {callback(data?data.lastact:null)}
+   });
+}
+function vkShowLastActivity(){
+   if (!ge('vk_profile_online_la')) 
+      ge('title').appendChild(vkCe('b',{id:"vk_profile_online_la", "class":"fl_r", "onclick":"vkShowLastActivity();"}));
+   ge('vk_profile_online_la').innerHTML = "";   
+   vkLastActivity(cur.oid,function(info){
+      if (info) ge('vk_profile_online_la').innerHTML = info;
+   });
+}
 function vkHighlightGroups(){
 	var common=(getSet(39) == 'y');
 	if (ge('profile_groups') && geByClass('module_body',ge('profile_groups'))[0]){
@@ -159,6 +213,102 @@ function checkAgeFunc(_this,_id,_day,_month){
   }
 }
 
+
+function vkProcessBirthday(day,month,year){
+   var zodiac_cfg=[20,19,20,20,21,21,22,23,23,23,22,21];// days
+   //'zodiac_signs':['Козерог','Водолей','Рыбы','Овен','Телец','Близнецы','Рак','Лев','Дева','Весы','Скорпион','Стрелец']
+   var info=[];
+   
+   if (day && month && year){
+      var date=new Date(year, month-1, day);
+      var cur_date = new Date().getTime();  
+      var age= (new Date(cur_date-date)).getFullYear()-1970; 
+      info.push(langNumeric(age, vk_lang["vk_year"]));
+   }
+  
+   if (day && month){
+      var zodiacs=vk_lang['zodiac_signs'];
+      var idx = day>zodiac_cfg[month-1]?(month) % 12:(month-1);
+		var zodiac = zodiacs[idx];
+      info.push(zodiac);
+   }
+   return info;
+}
+function vkProcessProfileBday(node){
+   node = node ||  ge('profile_info');//"profile_full_info"
+   
+   var rmd=/c(?:%5B|\[)bday(?:%5D|\])=(\d+).+c(?:%5B|\[)bmonth(?:%5D|\])=(\d+)/;
+   var ryr=/c(?:%5B|\[)byear(?:%5D|\])=(\d+)/;
+   
+   var h = node.innerHTML;
+   var md=h.match(rmd); 
+   var yr=h.match(ryr);
+   var info=vkProcessBirthday(md?md[1]:null,md?md[2]:null,yr?yr[1]:null);
+   
+   if (info.length>0){
+      info = ' ('+info.join(', ')+')';
+      var links=node.getElementsByTagName('a');
+      for (var i=0;i<links.length;i++){
+         if (links[i].href && links[i].href.match(rmd)) 
+            links[i].parentNode.appendChild(vkCe('span',{"class":"vk_bday_info"},info));
+      }
+      if (cur.options.info) {
+         var r1 = /(c\[byear\]=[^>]+>[^<>]+<\/a>)/;
+         r1 = cur.options.info[0].match(r1) ? r1 : /(c\[bmonth\]=[^>]+>[^<>]+<\/a>)/;
+         cur.options.info[0] = cur.options.info[0].replace(r1, "$1" + info);
+         cur.options.info[1] = cur.options.info[1].replace(r1, "$1" + info);
+      }     
+   }
+}
+
+function vkProcessBirthday(day,month,year){
+   var zodiac_cfg=[20,19,20,20,21,21,22,23,23,23,22,21];// days
+   //'zodiac_signs':['Козерог','Водолей','Рыбы','Овен','Телец','Близнецы','Рак','Лев','Дева','Весы','Скорпион','Стрелец']
+   var info=[];
+   
+   if (day && month && year){
+      var date=new Date(year, month-1, day);
+      var cur_date = new Date().getTime();  
+      var age= (new Date(cur_date-date)).getFullYear()-1970; 
+      info.push(langNumeric(age, vk_lang["vk_year"]));
+   }
+  
+   if (day && month){
+      var zodiacs=vk_lang['zodiac_signs'];
+      var idx = day>zodiac_cfg[month-1]?(month) % 12:(month-1);
+		var zodiac = zodiacs[idx];
+      info.push(zodiac);
+   }
+   return info;
+}
+function vkProcessProfileBday(node){
+   node = node ||  ge('profile_info');//"profile_full_info"
+   
+   var rmd=/c(?:%5B|\[)bday(?:%5D|\])=(\d+).+c(?:%5B|\[)bmonth(?:%5D|\])=(\d+)/;
+   var ryr=/c(?:%5B|\[)byear(?:%5D|\])=(\d+)/;
+   
+   var h = node.innerHTML;
+   var md=h.match(rmd); 
+   var yr=h.match(ryr);
+   var info=vkProcessBirthday(md?md[1]:null,md?md[2]:null,yr?yr[1]:null);
+   
+   if (info.length>0){
+      info = ' ('+info.join(', ')+')';
+      var links=node.getElementsByTagName('a');
+      for (var i=0;i<links.length;i++){
+         if (links[i].href && links[i].href.match(rmd)) 
+            links[i].parentNode.appendChild(vkCe('span',{"class":"vk_bday_info"},info));
+      }
+      if (cur.options.info) {
+         var r1 = /(c\[byear\]=[^>]+>[^<>]+<\/a>)/;
+         r1 = cur.options.info[0].match(r1) ? r1 : /(c\[bmonth\]=[^>]+>[^<>]+<\/a>)/;
+         cur.options.info[0] = cur.options.info[0].replace(r1, "$1" + info);
+         cur.options.info[1] = cur.options.info[1].replace(r1, "$1" + info);
+      }     
+   }
+}
+
+/*
 // @name Vkontakte Calculate Age
 // @namespace http://polkila.googlecode.com
 // @author Васютинский Олег http://vasyutinskiy.ru
@@ -170,12 +320,7 @@ if (!t) return;
   var bdate = /c[\[%5B]{1,3}bday[\]%5D]{1,3}=([0-9]{1,2})[&amp;]{1,5}c[\[%5B]{1,3}bmonth[\]%5D]{1,3}=([0-9]{1,2})/.exec(t.innerHTML);
   var _href='';
   var date_info='';
-   /*if(!byear && bdate && bdate[1] && bdate[2]){
-   if(ge('profile_other_acts') && ge('profile_other_acts').innerHTML.indexOf('remove_box')!=-1){
-      _href='<span id="checkAge"><a id="checkAgeLink" href="#" onClick="checkAgeFunc(this,'+cur.oid+', '+bdate[1]+', '+bdate[2]+'); return false;">'+IDL('UznatVozrast')+'</a></span>';
-    }
-  }*/
-  
+ 
   //if (!byear) return;
   //alert (bdate[1]+'\n'+bdate[2]+'\n'+byear[1]);
   var lang = parseInt(vkgetCookie('remixlang')), _sign_ = '', now = new Date();
@@ -199,19 +344,7 @@ if (!t) return;
   
   
   var alinks=document.getElementsByTagName('a');
-/*
-  if (_sign_)
-		if(bdate!=null && byear==null){
-			var dloc=document.location.href;
-			var IdForMyPageInYear=remixmid();//ge('myprofile').getElementsByTagName('a')[1].href.split('/id')[1];
-			var vkuid=cur.oid;//ge('mid').value;//(dloc.match(/id(\d+)/i))?dloc.match(/id(\d+)/i)[1]:((dloc.match(/profile\.php\?id=(\d+)/i))?dloc.match(/profile\.php\?id=(\d+)/i)[1]:false);
-			if(IdForMyPageInYear!=vkuid && !ge('profile_actions').innerHTML.match('profile.addFriendBox()')){
-				GsearthIDDay=bdate[1];
-				GsearthIDMonth=bdate[2];
-				_sign_+=" <span id='dateYear'><a onclick='SeartchDate("+bdate[2]+");'>"+IDL('UznatVozrast')+"</a></span>";
-			}
-			//      alert(bdate[1]+" "+bdate[2]);
-		}*/
+
   var rhdr='/search?c[section]=people&c[bday]=';
   var total=2;
   for(i = 0; i<alinks.length; i++ ){
@@ -223,8 +356,8 @@ if (!t) return;
     }
     if (!total) break;
   }
-  /*vk.com/search?c[section]=people&c[bday]=28&c[bmonth]=4
-  vk.com/search?c[section]=people&c[byear]=1991*/
+  //vk.com/search?c[section]=people&c[bday]=28&c[bmonth]=4
+  //vk.com/search?c[section]=people&c[byear]=1991
   if (cur.options.info){
     //alert(cur.options.info[0].match(/(c\[byear\]=[^>]+>[^<>]+<\/a>)/));//http://vk.com/search?c[section]=people&c[bday]=6&c[bmonth]=5
 	var r1=/(c\[byear\]=[^>]+>[^<>]+<\/a>)/;
@@ -238,7 +371,7 @@ if (!t) return;
       else if (getSet(27)=='y') Inj.Wait('window.vk_cur && vk_cur.vk_calEvents',ge('checkAgeLink').onclick);
    }
 }
-
+//*/
 
 function status_icq(node) { //add image-link 'check status in ICQ'
   var t,i,icq,skype=null;
@@ -989,6 +1122,9 @@ function vkModGroupBlocks(){
 function vkAudioBlock(load_audios,oid){
    if (ge('group_audios')) return; 
    oid = oid || cur.oid;
+   var mini_tpl='<a href="/audio?id='+cur.oid+'" onclick="return nav.go(this, event);" class="module_header"><div class="header_top clear_fix">'+
+                     IDL('clAu',1)+
+                  '</div></a>';
    var block_tpl='\
      <a href="/audio?id='+cur.oid+'" onclick="return nav.go(this, event);" class="module_header">\
      <div class="header_top clear_fix">'+IDL('clAu',1)+'</div>\
@@ -1033,13 +1169,15 @@ function vkAudioBlock(load_audios,oid){
    
    var p=ge('group_photos') || ge('group_wide_topics');
    if (p && !ge('vk_group_audios')){
-      var div=vkCe('div',{"class":"module clear audios_module",id:"vk_group_audios"},block_tpl);
+      var div=vkCe('div',{"class":"module clear audios_module",id:"vk_group_audios", style:"margin-bottom:3px;"},mini_tpl);//block_tpl
       insertAfter(div,p);
-      addClass(div,'empty');
-      ge('vk_audio_content').innerHTML='<a href="#" onclick="vkAudioBlock(true); return false;">'+IDL('GetAudiosList')+'</a>';
+      geByClass('header_top',div)[0].innerHTML+='<a class="fl_r right_link"  href="#" onclick="cancelEvent(event); vkAudioBlock(true); return false;">'+IDL('GetAudiosList')+'</a>';
+      //addClass(div,'empty');
+      //ge('vk_audio_content').innerHTML='<a href="#" onclick="vkAudioBlock(true); return false;">'+IDL('GetAudiosList')+'</a>';
    }
    
    if (!load_audios) return;
+   ge('vk_group_audios').innerHTML=block_tpl;
    var div=ge('vk_group_audios');
    addClass(div,'empty');
    ge('vk_audio_content').innerHTML=vkBigLdrImg;   

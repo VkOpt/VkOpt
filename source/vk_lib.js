@@ -5,6 +5,7 @@
 // @description   Vkontakte Optimizer 2.x
 // @include       *vkontakte.ru*
 // @include       *vk.com*
+// @include       *userapi.com*
 // @include       *vkadre.ru*
 // @include       *durov.ru*
 // @include       *youtube.com*
@@ -413,7 +414,10 @@ var vkMozExtension = {
 		return res;
 	}
    function vkCleanFileName(s){   return s.replace(/[\\\/\:\*\?\"\<\>\|]/g,'_').substr(0,200);   }
-   
+   function vkEncodeFileName(s){
+      // [^A-Za-zА-Яа-я]
+      return s.replace(/([^A-Za-z\u0410-\u042f\u0430-\u044f])/g,function (str, p1, offset, s) {return encodeURIComponent(p1) });
+   }
    
    function num_to_text(s){
       s+='';

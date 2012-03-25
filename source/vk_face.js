@@ -125,8 +125,9 @@ function vkMenu(){//vkExLeftMenu
   
 
   var vkmenu_css1='\
-         #nav a IMG, #side_bar ol a IMG{margin-right:1px; height:'+vkMenuIconSize+'px;}\
-         #nav a .vkicon, #side_bar ol a .vkicon{float:left; width:13px; height:13px; margin-right:3px; /*background:#DDD;*/}\
+         #nav a IMG, #side_bar ol a IMG{margin-right:3px; height:'+vkMenuIconSize+'px;}\
+         #side_bar {width:125px !important;}\
+         #nav a .vkicon, #side_bar ol a .vkicon{float:left; width:13px; height:13px; margin-right:1px; /*background:#DDD;*/}\
          .vkico_friends, .vkico_profile, .vkico_albums,\
          .vkico_video,.vkico_audio,.vkico_mail,.vkico_im,\
          .vkico_notes,.vkico_groups,.vkico_events,\
@@ -338,7 +339,7 @@ function vkMenu(){//vkExLeftMenu
             '<a href="javascript: vkHighlightCounters();" style="float:right;">^</a>'+'<a href="javascript:UpdateCounters();">- '+IDL('updateLMenu')+'</a>'+
             '<a href="javascript: vkSwitchHost();" class="vk_published_by">'+(document.location.href.substr(7,6)=="vk.com"?'vkontakte.ru':'vk.com')+'</a>'+
             (vk_DEBUG?'<a href="javascript:if (window.vk_updmenu_timeout) clearTimeout(vk_updmenu_timeout);">- <b>Stop Upd Menu</b></a>':'')+
-            '<a href="http://vkopt.net/forum/">- <b>VkOpt Forum</b></a>'
+            '<a href="http://vkopt.net/">- <b>VkOpt Forum</b></a>'
             //+'<a href="/id13391307">- <b>Bkontakte</b></a>'
             //+'<a href="/catalog.php">- <b>VK USERS</b></a>'
           :''    

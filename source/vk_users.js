@@ -1393,7 +1393,7 @@ function vkFrGenNotInListsCat(){
    var data=cur.friendsList['all'];
    var list=[];
    for (var i=0; i<data.length;i++)
-      if (data[i][5]=='1') list.push(data[i]);
+      if (data[i][6]=='1') list.push(data[i]);
    cur.friendsList['not_in_list']=list;
 }
 function vkFrShowNotInList(){

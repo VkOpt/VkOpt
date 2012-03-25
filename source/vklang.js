@@ -1177,8 +1177,8 @@ vk_lang_en={ //by Hzy
 };
 
 
-vk_lang_ua={//by Vall (id3476823) and vall_gorr
-'LangAuthor':'<a href="/id3476823">by Vall</a>',
+vk_lang_ua={//by Vall (id3476823) and 
+'LangAuthor':'<a href="/id3476823">by Vall</a> & <a href="/vall_gorr">Vall_gorr</a>',
 'LinksGet':'\u041e\u0442\u0440\u0438\u043c\u0430\u0442\u0438 \u043f\u043e\u0441\u0438\u043b\u0430\u043d\u043d\u044f',
 'Error':'\u041f\u043e\u043c\u0438\u043b\u043a\u0430',
 'download':'[ \u0417\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0438\u0442\u0438 ]',

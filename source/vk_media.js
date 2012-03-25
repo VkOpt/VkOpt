@@ -468,7 +468,7 @@ function vkYTVideoLinks(link){
          //'<a href="'+vidurl+'" onmouseover="vkGetVideoSize(this);">'+IDL("download")+'<small class="fl_r divide" url="'+vidurl+'"></small></a>';
       ge('vkyoutubelinks').innerHTML='<a id="vkyoutubelinks_show" href="javascript: toggle(\'vkyoutubelinks_list\');">'+IDL('download')+'</a><span id="vkyoutubelinks_list" style="display:none;">'+html+'</span>';      
    });
-   return '<span id="vkyoutubelinks"></span>';
+   return '<span id="vkyoutube"></span>';
 }
 /*END OF YOUTUBE FUNCTIONS */
 
@@ -769,7 +769,7 @@ function vkAudioNode(node){
 
 		     var name=el.parentNode.getElementsByTagName('b')[0].innerText+' - '+(span_title || ge('title'+id) || spans[1] || spans[0]).innerText;
            name=vkCleanFileName(name);
-		     if (smartlink) {url+='?'+vkDownloadPostfix()+'&/'+name+'.mp3';};//normal name
+		     if (smartlink) {url+='?'+vkDownloadPostfix()+'&/'+vkEncodeFileName(name)+'.mp3';};//normal name
 		     if (SearchLink && el){el.innerHTML=vkAudioDurSearchBtn(el.innerText,name,id);/* "<a href='/search?c[section]=audio&c[q]="+name+"'>"+el.innerText+"</a>";*/}
          if (download){ 
             divs[i].setAttribute('style','width:17px;'); 
@@ -1074,7 +1074,7 @@ function vkAudioPlayList(add_button){
 			pls+='Title'+(i+1)+'='+winToUtf(itm.artist+" - "+itm.title)+'\n';
 			pls+='Length'+(i+1)+'='+itm.duration+'\n\n';
 			
-			links.push(itm.url+"?/"+(itm.artist+" - "+itm.title)+".mp3");
+			links.push(itm.url+"?/"+vkEncodeFileName(vkCleanFileName(itm.artist+" - "+itm.title))+".mp3");
 		}
 		pls+='\nNumberOfEntries='+list.length+'\n\nVersion=2'
 

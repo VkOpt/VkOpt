@@ -576,6 +576,7 @@ function vkInitSettings(){
       {id:50, text:IDL("seFavOnline")+'<span style="padding-left:10px;">'+vkCheckboxSetting(57,IDL("seOnRightPart"))+'</span>',info:'infoUseNetTrafic'},
       {id:51, text:IDL("seFavToTopIm")},
       {id:52, text:IDL("seFaveOnline"),info:'infoUseNetTrafic'}
+      //{id:65, text:IDL("seShowLastActivity"),info:'infoUseNetTrafic'}
     ],
 
     Messages:[
@@ -593,7 +594,7 @@ function vkInitSettings(){
       {id:12, text:IDL("seMenu")},
       {id:20, text:IDL("seAutoUpdMenu"),info:'infoUseNetTrafic'},
       {id:14, text:IDL("seLoadFrCats")},  
-      {id:15, header:IDL("seLMenuH") , text:IDL("seLMenuO"),ops:[0,1,2,3]},
+      {id:15, header:IDL("seLMenuH") , text:IDL("seLMenuO"),ops:[0,1,2]},
       {id:29, text:IDL("seLMenuWallLink")},
       {id:22, text:IDL("seGInCol")},
       {id:13, header:IDL("seMyFrLink") , text:IDL("seMyFrLnkOps"),ops:[0,1,2]},
@@ -630,7 +631,7 @@ function vkInitSettings(){
 		{id:34, text:IDL("seSwichTextChr")}	
     ]
   };	  
-	//LAST 64
+	//LAST 65
 	
 	vkSetsType={
       "on"  :[IDL('on'),'y'],
