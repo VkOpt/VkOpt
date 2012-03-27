@@ -337,7 +337,7 @@ function vkMenu(){//vkExLeftMenu
 	],	
     'vkopt':['[VKopt]',(!window.Vk_NoMnuLinks)?
             '<a href="javascript: vkHighlightCounters();" style="float:right;">^</a>'+'<a href="javascript:UpdateCounters();">- '+IDL('updateLMenu')+'</a>'+
-            '<a href="javascript: vkSwitchHost();" class="vk_published_by">'+(document.location.href.substr(7,6)=="vk.com"?'vkontakte.ru':'vk.com')+'</a>'+
+            //'<a href="javascript: vkSwitchHost();" class="vk_published_by">'+(document.location.href.substr(7,6)=="vk.com"?'vkontakte.ru':'vk.com')+'</a>'+
             (vk_DEBUG?'<a href="javascript:if (window.vk_updmenu_timeout) clearTimeout(vk_updmenu_timeout);">- <b>Stop Upd Menu</b></a>':'')+
             '<a href="http://vkopt.net/">- <b>VkOpt Forum</b></a>'
             //+'<a href="/id13391307">- <b>Bkontakte</b></a>'

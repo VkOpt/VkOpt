@@ -386,6 +386,8 @@ function vkStyles(){
 	.vk_mail_save_history_block{	display: block; float:right; text-align: center; /*width: 200px;*/	}\
 	.vk_mail_save_history_block IMG{margin-top:13px;}\
 	.vk_mail_save_history_block .cfg{height: 11px; width: 15px; margin-top:2px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -60px;}\
+   #vk_stats_btn{position: absolute; float:left}\
+   #vk_stats_btn .button_blue{position: absolute; right: 0px;}\
 	.lskey{padding-left: 5px; float:left; width:140px; overflow:hidden; height:20px; line-height:20px; font-weight:bold;}\
     .lsval{height:20px; overflow:hidden; line-height:20px;}\
     .lsrow{border:1px solid #FFF; border-bottom:1px solid #DDD;}\
@@ -1146,7 +1148,7 @@ function vkMailPage(){
       }*/
 	} else {
       if (ge('mail_bar_search') && !ge('vk_stats_btn')){
-         ge('mail_bar_search').appendChild(vkCe('div',{id:'vk_stats_btn','class':'fl_r'},'<div class="button_blue"><button onclick="vkMsgStats();">'+IDL('Stats')+'</button></div>'))
+         ge('mail_bar_search').insertBefore(vkCe('div',{id:'vk_stats_btn','class':'fl_l'},'<div class="button_blue"><button onclick="vkMsgStats();">'+IDL('Stats')+'</button></div>'),ge('mail_bar_search').firstChild);
          /*ge('vk_stats_btn').onmouseover=showTooltip(ge('vk_stats_btn'), {
            text: IDL('MsgStatInfo'),
            slideX: -15,
