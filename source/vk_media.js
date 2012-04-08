@@ -303,7 +303,7 @@ function vkVidDownloadLinks(vars){
    var vidname=winToUtf(mvcur.mvData.title).replace(/\?/g,'%3F').replace(/\&/g,'%26');
    vidname=vkCleanFileName(vidname);
    var vname=vidname;
-   vidname='?'+vkDownloadPostfix()+'&/'+vidname;
+   vidname='?'+vkDownloadPostfix()+'&/'+vkEncodeFileName(vidname);//
    //(smartlink?vidname+'.mov')
 	if (!vars) return '';
 	var vuid=function (uid) { var s = "" + uid; while (s.length < 5) {s = "0" + s;}  return s; }
@@ -1466,6 +1466,7 @@ if (!window.vkopt_plugins) vkopt_plugins={};
    #vk_lastfm_icon{cursor:pointer; height:16px; width:16px; margin-left: 5px; background:url("'+vkLastFM.res.last_fm+'") 50% 50% no-repeat;}\
    #vk_lastfm_icon.disabled{opacity:0.5;}\
    #vk_lastfm_small_icons{position:absolute; margin-left:-16px;}\
+   #gp.reverse #vk_lastfm_small_icons{margin-left: 133px;}\
    #vk_lastfm_icons{position:absolute; margin-left:-40px; height:16px; width:40px;}\
    .vk_lastfm_playing_icon{float:left; height:16px; width:11px; background:url("'+vkLastFM.res.playing_icon_white+'") 50% 50% no-repeat;}\
    .vk_lastfm_paused_icon{float:left; height:16px; width:11px; background:url("'+vkLastFM.res.paused_icon_white+'") 50% 50% no-repeat;}\

@@ -90,7 +90,7 @@ function vkFixedMenu(){
 	var el=ge('pageHeader') || ge('pageHeader1') || ge('page_header');
 	var side_bar=(ge('sideBar') || ge('side_bar'));
 	var right_bar=ge('right_bar');
-	var h=getSize(el)[1];
+	var h=getSize(el)[1]+getXY(el)[1];
 	vkaddcss("#sideBar,#side_bar"+(cfg_r=='y'?", #right_bar":'')+"{ position: fixed;z-index: 101; top: "+h+"px } #page_wrap{overflow: visible !important;");
 	var onscroll=function(){
 		removeEvent(window, 'scroll', onscroll);
@@ -284,9 +284,9 @@ function vkMenu(){//vkExLeftMenu
 	'fave':[
         ["fave?section=users",IDL("mFaV")],
         ["fave?section=links",IDL("mFaL")],
-        ["fave?filter=photo&section=likes",IDL("mFaP")],
-        ["fave?filter=video&section=likes",IDL("mFaVI")],
-        ["fave?filter=posts&section=likes",IDL("mFaPO")]       
+        ["fave?section=likes_photo",IDL("mFaP")],
+        ["fave?section=likes_video",IDL("mFaVI")],
+        ["fave?section=likes_posts",IDL("mFaPO")]       
     ],
     'settings':[
         ['settings',IDL("mSeO")],
