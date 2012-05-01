@@ -11,6 +11,7 @@
 function vkPhotoViewer(){
   //main inj
   //Inj.End('photoview.receiveComms','vkProcessNode(comms);');
+  
   Inj.Before('photoview.doShow','cur.pvNarrow','ph.comments=vkModAsNode(ph.comments,vkProcessNode); if(ph.tagshtml) ph.tagshtml=vkModAsNode(ph.tagshtml,vkProcessNode);');
   Inj.Before('photoview.doShow','var likeop','vkProcessNode(cur.pvNarrow);');
   Inj.Before('photoview.doShow','+ (ph.actions.del','+ vkPVLinks(ph) + vk_plugins.photoview_actions(ph) ');
@@ -20,11 +21,16 @@ function vkPhotoViewer(){
   
   Inj.Before('photoview.onResize','cur.pvCurrent.height * c >','vkPVNoCheckHeight() && ');
   Inj.Before('photoview.doShow','h * c > ','vkPVNoCheckHeight() && ');
+  
+  
   Inj.End('photoview.afterShow','vkPVAfterShow();');
   
+  //*
   if (nav.strLoc.match(/photo-?\d+_\d+/))  { 
-    setTimeout(photoview.doShow,70);
-  }
+    setTimeout(function(){
+      if (!isVisible(cur.pvAlbumsWrap)) photoview.doShow();
+    },70);
+  }//*/
 }
 
 function vkPVAfterShow(){
