@@ -1410,8 +1410,9 @@ function vkMakeMsgHistory(uid,show_format){
 				msg=msgs[i];
 				var date=(new Date(msg.date*1000)).format(date_fmt);
 				var user=(msg.from_id==mid?user2:user1);
-				var text=vkCe('div',{},msg.body).innerText;// no comments....
-				text=text.replace(/\n/g,'\r\n');
+				var text=vkCe('div',{},(msg.body || '').replace(/<br>/g,"%{br}%")).innerText.replace(/%{br}%/g,'\r\n');// no comments....
+				//text=text.replace(/\n/g,'\r\n');
+            
 				res+=msg_pattern
                  .replace(/%username%/g,user) //msg.from_id
                  .replace(/%date%/g,    date)
