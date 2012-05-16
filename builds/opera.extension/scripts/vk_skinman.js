@@ -10,6 +10,38 @@
 
 var VK_CSS_CATALOG_BASE_URL='http://vkopt.net/css/vk_css_list.js';
 var VK_THEMES_ON_PAGE=30;
+
+var VK_BASE_BG_SIZES=[// sorted by squares
+   [800,600],
+   [1024,768],
+   [1280,720],
+   [1152,864],
+   [1280,800],
+   [1366,768],
+   [1280,960],
+   [1440,900],
+   [1280,1024],
+   [1600,900],
+   [1400,1050],
+   [1680,1050],
+   [1600,1200],
+   [1920,1080],
+   [1920,1200],
+   [2560,1440],
+   [2560,1600]
+];
+/*
+VK_BASE_BG_SIZES.sort(function(i1,i2){
+   var s1=i1[0]*i1[1]; var s2=i2[0]*i2[1];
+   if (s1<s2) return -1; else 
+   if (s1>s2) return 1;
+   else       return 0;
+});
+
+*/
+
+
+
 function vkLocalStoreReady(){
   if (window.localStorage || window.GM_SetValue || window.sessionStorage) {
     return true;
@@ -55,21 +87,25 @@ VkStyleMainInit();
 
 if (!window.ge) ge=function(q) {return document.getElementById(q);}
 
+
 function vkSetBodyScrResolution(){
-      var vbody=document.getElementsByTagName('body')[0];
-      if (vbody){
-        vbody.setAttribute('scrwidth',window.screen.width);
-        vbody.setAttribute('scrheight',window.screen.height);
-      }  else  {
-        var vksetsrc=setInterval(function(){                                            
-          vbody=document.getElementsByTagName('body')[0];
-          if (vbody){
-            clearInterval(vksetsrc);
-            vbody.setAttribute('scrwidth',window.screen.width);
-            vbody.setAttribute('scrheight',window.screen.height);
-          }
-        },2);
+      var bg_info = VK_BASE_BG_SIZES[VK_BASE_BG_SIZES.length-1][0]+'x'+VK_BASE_BG_SIZES[VK_BASE_BG_SIZES.length-1][1];// max size as default
+      for (var i=0;i<VK_BASE_BG_SIZES.length;i++)
+         if (VK_BASE_BG_SIZES[i][0]>=window.screen.width &&  VK_BASE_BG_SIZES[i][1]>=window.screen.height){
+            bg_info = VK_BASE_BG_SIZES[i][0]+"x"+VK_BASE_BG_SIZES[i][1];
+            break;
+         }
+      var add_scr_info=function(){
+         var vbody=document.getElementsByTagName('body')[0];
+         if (vbody){
+           vbody.setAttribute('scrwidth',window.screen.width);
+           vbody.setAttribute('scrheight',window.screen.height);
+           vbody.setAttribute('need_background',bg_info);
+         } else {
+            setTimeout(add_scr_info,2);
+         }
       }
+      add_scr_info();
 }
 
 function vkStyle(url){ if (ge("vkStyleCSS")) ge("vkStyleCSS").href=url; }

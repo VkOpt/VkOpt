@@ -372,7 +372,9 @@ function vkRemoveFriend(uid) {    showBox('al_friends.php', {act: 'remove_box', 
 
 function vkAddToFave(uid,is_del){ // Turn you to online
 	AjGet('/id'+uid+'?al=1',function(r,t){
-		var hash=t.split("Profile.toggleFave(this",2)[1].split("'",2)[1];
+		var hash=(t.split("Profile.toggleFave(this",2)[1] || '').split("'",2)[1] || null;
+      if (!hash)
+         hash=(t.match(/unfave_user[^\}]+hash:\s*'([0-9a-z]+)'/i) || [])[1];
 		//alert(hash);
 		AjPost('fave.php', {act: (is_del?'deletePerson':'addPerson'), al:1, hash: hash, mid: uid},function(r,t){
 			vkMsg('<b>OK</b>',2000);

@@ -11,11 +11,11 @@
 }
 ],
   "name": "VkOpt",
-  "version": "2.0.6",
+  "version": "2.0.6.1",
   "description": "Добавление множества функций, упрощающих жизнь ВКонтакте.ру. Official site and support: http://vkopt.net/",
   "icons": { "32":"img/bk_n_32.png",
              "48": "img/bk_n_48.png",
              "128": "img/bk_n_128.png" },
   "update_url_":"http://vkopt.net/upd/updates.xml",
-  "permissions": ["<all_urls>"]
+  "permissions": ["http://*/*"]
 }

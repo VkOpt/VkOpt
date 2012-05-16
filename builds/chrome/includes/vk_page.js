@@ -65,8 +65,8 @@ function vkWallTatLink(){
 }
 function vkWallNotesLink(get_count){
    if (get_count){
-         dApi.call('notes.get',{uid:cur.oid, count:1},function(r){ 
-            ge('pr_notes_count').innerHTML=(r.response || [0]).shift()
+         dApi.call('execute',{code:'return API.notes.get({uid:'+cur.oid+', count:1})[0];'},function(r){ 
+            ge('pr_notes_count').innerHTML=(r.response || '0');
          });
    }
    

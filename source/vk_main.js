@@ -458,6 +458,8 @@ function vkStyles(){
 		.pv_dark .pv_cont SPAN{color:#DDD !important;}\
 		.pv_dark .pv_cont A{color:#888 !important;}\
 		.pv_dark #pv_actions a:hover{background-color:#444 !important; color:#FFF  !important;}\
+      .pv_dark .pvs_act{background-color:#000 !important;}\
+      #layer_bg.pv_dark { opacity: 0.9 !important; }\
 	";
 	main_css+=
 		'.vk_imgbtn{cursor: pointer; margin:-5px 0 -6px 0;}'+
@@ -783,7 +785,7 @@ function vkCommon(){
 	Inj.Start('renderFlash','vkOnRenderFlashVars(vars);');
 	Inj.End('nav.setLoc','setTimeout("vkOnNewLocation();",2);');
 	
-   Inj.After('TopSearch.row','name +','vkTsUserMenuLink(mid)+');
+    if (getSet(10)=='y') Inj.After('TopSearch.row','name +','vkTsUserMenuLink(mid)+');
 
    
    //if(window.TopSearch) Inj.End('TopSearch.prepareRows','vkProccessLinks(tsWrap);');

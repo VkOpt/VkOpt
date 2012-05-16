@@ -5,7 +5,7 @@
     <em:type>2</em:type>
     <em:unpack>true</em:unpack>
     <em:name>VkOpt</em:name>
-    <em:version>2.0.6.120325</em:version>
+    <em:version>2.0.6.120513</em:version>
     <em:creator>KiberПсих</em:creator>
     <em:contributor></em:contributor>
 	<em:iconURL>chrome://VkOptExtension/skin/icon.png</em:iconURL>
@@ -14,11 +14,19 @@
     <em:updateKey>MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDKoFvysLtbyghFmQk/J9CLnLEzkULcQUTxFvhXUwyVozynqLmv3+WMoOur8DaSUvzQdHAvKxvzFKkFWYCCPJO83rJ76r6xhssGXa1i8ShfElBiPaW8CAj8W4EmSWnGnrGMsaonf0C3YX3iLgIbZTTz6ovnOH1tUPsOE3A8V4ohmwIDAQAB</em:updateKey>
     <em:description>Добавление множества функций для сайта ВКонтакте.ру</em:description>
     <em:targetApplication>
-      <Description>
+      <!-- FireFox -->
+      <Description> 
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id> <!-- Firefox -->
-        <em:minVersion>3.0</em:minVersion>
+        <em:minVersion>4.0</em:minVersion>
         <em:maxVersion>20.*</em:maxVersion>
       </Description>
+      <!-- Fennec -->
+      <Description>
+         <em:id>{a23983c0-fd0e-11dc-95ff-0800200c9a66}</em:id>
+         <em:minVersion>4.0</em:minVersion>
+         <em:maxVersion>20.*</em:maxVersion>
+      </Description>
+      
     </em:targetApplication>
   </Description>
 </RDF>

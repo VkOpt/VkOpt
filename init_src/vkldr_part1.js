@@ -1,13 +1,8 @@
-function VkOpt_Loader(){
-        var appcontent = document.getElementById("content");
-		if(appcontent){
-          appcontent.addEventListener("DOMContentLoaded",  function(e){
-              if (isVKDomain(e.originalTarget.domain))
-               VkLoadScripts(e.originalTarget);
-          }, true);
-        }
-}
+function InjectScripts(e){
+     if (isVKDomain(e.originalTarget.domain))
+      VkLoadScripts(e.originalTarget);
 
+}
 function Js2Doc(doc){
   for (var i=1;i<arguments.length;i++){  
     var js = doc.createElement('script');

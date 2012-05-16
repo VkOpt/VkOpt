@@ -1173,7 +1173,7 @@ vk_lang_en={ //by Hzy
 'seMoveMBlog':'Put microblog in bottom',
 'Links':'[ Links ]',
 'seOldStatusHistory':'Show old status history at profile',
-'zodiac_signs': ["Goat-horned", "Water-Bearer", "Fish", "Ram", "Bull", "Twins", "Crab", "Lion", "Maiden", "Scales", "Scorpion", "Archer"]
+'zodiac_signs': ["Capricorn", "Aquarius", "Pisces", "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius"]
 };
 
 

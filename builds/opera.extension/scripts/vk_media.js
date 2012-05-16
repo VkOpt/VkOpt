@@ -11,6 +11,7 @@
 function vkPhotoViewer(){
   //main inj
   //Inj.End('photoview.receiveComms','vkProcessNode(comms);');
+  
   Inj.Before('photoview.doShow','cur.pvNarrow','ph.comments=vkModAsNode(ph.comments,vkProcessNode); if(ph.tagshtml) ph.tagshtml=vkModAsNode(ph.tagshtml,vkProcessNode);');
   Inj.Before('photoview.doShow','var likeop','vkProcessNode(cur.pvNarrow);');
   Inj.Before('photoview.doShow','+ (ph.actions.del','+ vkPVLinks(ph) + vk_plugins.photoview_actions(ph) ');
@@ -20,11 +21,16 @@ function vkPhotoViewer(){
   
   Inj.Before('photoview.onResize','cur.pvCurrent.height * c >','vkPVNoCheckHeight() && ');
   Inj.Before('photoview.doShow','h * c > ','vkPVNoCheckHeight() && ');
+  
+  
   Inj.End('photoview.afterShow','vkPVAfterShow();');
   
+  //*
   if (nav.strLoc.match(/photo-?\d+_\d+/))  { 
-    setTimeout(photoview.doShow,70);
-  }
+    setTimeout(function(){
+      if (!isVisible(cur.pvAlbumsWrap)) photoview.doShow();
+    },70);
+  }//*/
 }
 
 function vkPVAfterShow(){
@@ -276,7 +282,7 @@ function vkPhotoUrlUpload(url){
       "lang.button_upload":IDL('puUploadImageBtn'),
       "lang.choice_album":IDL('puChoiceAlbum'),
       "lang.loading_info":IDL('puLoadingInfoWait')
-			//,"lang.button_upload":'Загрузить фотографию'
+			//,"lang.button_upload":'Р—Р°РіСЂСѓР·РёС‚СЊ С„РѕС‚РѕРіСЂР°С„РёСЋ'
 		};
 		var params={width:260, height:345, allowscriptaccess: 'always',"wmode":"transparent","preventhide":"1","scale":"noScale"};
 		renderFlash('prucontainer',
@@ -303,7 +309,7 @@ function vkVidDownloadLinks(vars){
    var vidname=winToUtf(mvcur.mvData.title).replace(/\?/g,'%3F').replace(/\&/g,'%26');
    vidname=vkCleanFileName(vidname);
    var vname=vidname;
-   vidname='?'+vkDownloadPostfix()+'&/'+vidname;
+   vidname='?'+vkDownloadPostfix()+'&/'+vkEncodeFileName(vidname);//
    //(smartlink?vidname+'.mov')
 	if (!vars) return '';
 	var vuid=function (uid) { var s = "" + uid; while (s.length < 5) {s = "0" + s;}  return s; }
@@ -439,7 +445,7 @@ function vkGetYoutubeLinks(vid, callback) {
   var url = 'http://www.youtube.com/get_video_info?video_id=' + vid +
             '&asv=3&eurl=' + 
             encodeURIComponent(location.href) + '&el=embedded';
-
+   
    XFR.post(url,{},function(t){   
       var obj=YTDataDecode(t);
       //alert(JSON.Str(obj));
@@ -468,7 +474,7 @@ function vkYTVideoLinks(link){
          //'<a href="'+vidurl+'" onmouseover="vkGetVideoSize(this);">'+IDL("download")+'<small class="fl_r divide" url="'+vidurl+'"></small></a>';
       ge('vkyoutubelinks').innerHTML='<a id="vkyoutubelinks_show" href="javascript: toggle(\'vkyoutubelinks_list\');">'+IDL('download')+'</a><span id="vkyoutubelinks_list" style="display:none;">'+html+'</span>';      
    });
-   return '<span id="vkyoutube"></span>';
+   return '<span id="vkyoutubelinks"></span>';
 }
 /*END OF YOUTUBE FUNCTIONS */
 
@@ -1025,9 +1031,9 @@ function vkGetAudioSize(id,el){
 function vkDownloadPostfix(){
 	return '';
 	/*!
-	активация функции контакта изменяющая загловок ответа, 
-	для скачивания файла минуя плагины типа QuickTime. 
-	но есть вероятность оказаться на виду у разработчиков контакта и спалиться за скачиванием музыки
+	Р°РєС‚РёРІР°С†РёСЏ С„СѓРЅРєС†РёРё РєРѕРЅС‚Р°РєС‚Р° РёР·РјРµРЅСЏСЋС‰Р°СЏ Р·Р°РіР»РѕРІРѕРє РѕС‚РІРµС‚Р°, 
+	РґР»СЏ СЃРєР°С‡РёРІР°РЅРёСЏ С„Р°Р№Р»Р° РјРёРЅСѓСЏ РїР»Р°РіРёРЅС‹ С‚РёРїР° QuickTime. 
+	РЅРѕ РµСЃС‚СЊ РІРµСЂРѕСЏС‚РЅРѕСЃС‚СЊ РѕРєР°Р·Р°С‚СЊСЃСЏ РЅР° РІРёРґСѓ Сѓ СЂР°Р·СЂР°Р±РѕС‚С‡РёРєРѕРІ РєРѕРЅС‚Р°РєС‚Р° Рё СЃРїР°Р»РёС‚СЊСЃСЏ Р·Р° СЃРєР°С‡РёРІР°РЅРёРµРј РјСѓР·С‹РєРё
 	*/	
 	return 'dl=1';
 }
@@ -1209,16 +1215,16 @@ vkLastFM={
    auth:function(callback){
       var fm=vkLastFM;
       fm.lastfm.auth.getSession({token: fm.token}, {success: function(data){
-         fm.username = data.session.name;    // имя пользователя.
-         fm.session_key = data.session.key;  // ключ
+         fm.username = data.session.name;    // РёРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
+         fm.session_key = data.session.key;  // РєР»СЋС‡
          localStorage['lastfm_username'] = fm.username;
          localStorage['lastfm_session_key'] = fm.session_key;
          if (callback) callback();
       }, error: function(code, message){
-         if (code == 4)// токен сдох
+         if (code == 4)// С‚РѕРєРµРЅ СЃРґРѕС…
             vkAlertBox(IDL('AuthBoxTitle'), IDL('AuthBoxText'), function(){
                var url = 'http://www.last.fm/api/auth/?api_key=' + fm.api_key + '&cb=' + encodeURIComponent('http://' + location.host + '/settings?act=vkscrobbler');
-               window.open(url,'…','…');
+               window.open(url,'вЂ¦','вЂ¦');
                //location.href = url;
             }, true);
       }});
@@ -1247,7 +1253,7 @@ vkLastFM={
          return;
       }
 
-      // отправляем last.fm
+      // РѕС‚РїСЂР°РІР»СЏРµРј last.fm
       fm.lastfm.track.scrobble({ 
          artist: audio_info.artist,
          track: audio_info.title,
@@ -1297,12 +1303,12 @@ vkLastFM={
       if (fm.s_timer){ 
          fm.s_timer.pause();
          fm.s_timer.kill();
-      }// отключение несработавшего таймера
+      }// РѕС‚РєР»СЋС‡РµРЅРёРµ РЅРµСЃСЂР°Р±РѕС‚Р°РІС€РµРіРѕ С‚Р°Р№РјРµСЂР°
       if (audio_info.duration>30){ // The track must be longer than 30 seconds.
          var delay = Math.min(240,audio_info.duration/2)*1000; //And the track has been played for at least half its duration, or for 4 minutes (whichever occurs earlier.)
          var ts=fm.get_time();
          fm.s_timer = new fm.timer(function(){
-            fm.scrobble(audio_info,ts); // скробблим при срабатывании таймера
+            fm.scrobble(audio_info,ts); // СЃРєСЂРѕР±Р±Р»РёРј РїСЂРё СЃСЂР°Р±Р°С‚С‹РІР°РЅРёРё С‚Р°Р№РјРµСЂР°
          },delay);
       }      
    },
@@ -1466,6 +1472,7 @@ if (!window.vkopt_plugins) vkopt_plugins={};
    #vk_lastfm_icon{cursor:pointer; height:16px; width:16px; margin-left: 5px; background:url("'+vkLastFM.res.last_fm+'") 50% 50% no-repeat;}\
    #vk_lastfm_icon.disabled{opacity:0.5;}\
    #vk_lastfm_small_icons{position:absolute; margin-left:-16px;}\
+   #gp.reverse #vk_lastfm_small_icons{margin-left: 133px;}\
    #vk_lastfm_icons{position:absolute; margin-left:-40px; height:16px; width:40px;}\
    .vk_lastfm_playing_icon{float:left; height:16px; width:11px; background:url("'+vkLastFM.res.playing_icon_white+'") 50% 50% no-repeat;}\
    .vk_lastfm_paused_icon{float:left; height:16px; width:11px; background:url("'+vkLastFM.res.paused_icon_white+'") 50% 50% no-repeat;}\
@@ -1477,18 +1484,9 @@ if (!window.vkopt_plugins) vkopt_plugins={};
    vkopt_plugins[PLUGIN_ID]={
       Name:PLUGIN_NAME,
       css:ADDITIONAL_CSS,
-   // FUNCTIONS
-      init:             vkLastFM.init,           // function();                        //run on connect plugin to vkopt
-      onLocation:       vkLastFM.on_location,    // function(nav_obj,cur_module_name); //On new location
-      onLibFiles:       vkLastFM.onLibFiles,     // function(file_name);               //On connect new vk script
-      onStorage :       null,                    // function(command_id,command_obj);
-      processLinks:     null,                    // function(link);
-      processNode:      null,                    // function(node);
-      pvActions:        null,                    // function(photo_data); ||  String    //PHOTOVIEWER_ACTIONS
-      albumActions:     null,                    // function(oid,aid); || Array with items. Example  [{l:'Link1', onClick:Link1Func},{l:'Link2', onClick:Link2Func}]
-      vidActLinks:      null,                    // function(video_data,links_array); ||  String.   video_data may contain iframe url
-      onResponseAnswer: null,                    // function(answer,url,params); 'answer' is array. modify only array items
-      UserMenuItems:    null                     // function(uid) || string
+      init:             vkLastFM.init,
+      onLocation:       vkLastFM.on_location,
+      onLibFiles:       vkLastFM.onLibFiles
    };
    if (window.vkopt_ready) vkopt_plugin_run(PLUGIN_ID);
 })();
