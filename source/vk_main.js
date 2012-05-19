@@ -308,6 +308,7 @@ function vkStyles(){
 		.vk_username{font-weight:bold;}\
 		.vk_username a{color:#FFF;}\
 		.vk_profile_online_status{text-shadow:1px 1px 1px #668ab3;  color: #222;}\
+      .vk_last_seen{margin-top: -5px;line-height: 9px;}\
 		.vk_profile_left{width: 200px;}\
 		.vk_profile_ava{text-align: center;}\
 		.vk_profile_header{width:236px; background:#5b7b9f; border:1px solid #45688e; color:#FFF;  padding:5px; text-shadow:1px 1px 1px #111; }\
@@ -457,7 +458,8 @@ function vkStyles(){
 		.pv_dark .pv_cont #pv_box DIV{border-color:#444 !important;}\
 		.pv_dark .pv_cont SPAN{color:#DDD !important;}\
 		.pv_dark .pv_cont A{color:#888 !important;}\
-		.pv_dark #pv_actions a:hover{background-color:#444 !important; color:#FFF  !important;}\
+      .pv_dark #pv_comments_header{background-color:#222 !important; color:#AAA  !important;}\
+		.pv_dark #pv_actions a:hover {background-color:#444 !important; color:#FFF  !important;}\
       .pv_dark .pvs_act{background-color:#000 !important;}\
       #layer_bg.pv_dark { opacity: 0.9 !important; }\
 	";

@@ -329,7 +329,9 @@ function vkonDOMReady(fn, ctx){
     var ready, timer;
     var __=true;
     var onChange = function(e){
-		if(e && e.type == "DOMContentLoaded"){
+		if (document.getElementById('footer') || document.getElementById('footer_wrap')) {
+         fireDOMReady();
+      } else if(e && e.type == "DOMContentLoaded"){
             fireDOMReady();
         }else if(e && e.type == "load"){
             fireDOMReady();
@@ -366,7 +368,6 @@ function vkonDOMReady(fn, ctx){
       window.onload = onChange;
     }
 };
-
 /////////////////////////////////
 function vkOpt_toogle(){
   var off=(vkgetCookie('vkopt_disable')=='1');

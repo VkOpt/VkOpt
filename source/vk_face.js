@@ -279,6 +279,7 @@ function vkMenu(){//vkExLeftMenu
         ['feed?section=mentions',IDL("mNeMe")],
         ['feed?section=recommended',IDL("mNeR")],
         ['feed?section=comments',IDL("mNeB")],
+        ['feed?section=articles',IDL("mNeArticles")],
         ['tag'+vkmid+'?act=comments',IDL("mNeFW")]       
     ],
 	'fave':[

@@ -87,7 +87,7 @@ function vkPhotosPage(){
 	if (nav.objLoc[0].indexOf('albums')!=-1){
       vkAddAlbumCommentsLinks();
       if (cur.oid<0) vkPhotosWallAlbum();
-   } else if (nav.objLoc[0].indexOf('album')!=-1 || nav.objLoc[0].indexOf('tag')!=-1){
+   } else if (nav.objLoc[0].indexOf('album')!=-1 || nav.objLoc[0].indexOf('tag')!=-1 || nav.objLoc[0].indexOf('photos')!=-1){
 		
       var m=nav.objLoc[0].match(/album(-?\d+)_(\d+)/);
 		var oid=null;
@@ -96,11 +96,11 @@ function vkPhotosPage(){
 			oid=m[1];
 			aid=m[2];
       } else {
-         m=nav.objLoc[0].match(/tag(-?\d+)/);
+         m=nav.objLoc[0].match(/(tag|photos)(-?\d+)/);
          if (m){
-           oid=m[1];
-           aid='tag';
-         }        
+           oid=m[2];
+           aid=m[1];
+         }      
       }
 		if(m){	
 			/*oid=m[1];
@@ -323,8 +323,8 @@ function vkVidDownloadLinks(vars){
 	var pathToHD=function(res) {
 		var s = (vars.host.substr(0, 4) == 'http')
 		  ? vars.host
-		  : 'http://cs' + vars.host + '.' + (vk.intnat ? 'vk.com' : 'vkontakte.ru') + '/';
-		return s + 'u' + vars.uid + '/video/' + vars.vtag + '.' + res + '.mov';
+		  : 'http://cs' + vars.host + '.' + 'vk.com' + '/';//(vk.intnat ? 'vk.com' : 'vkontakte.ru') 
+		return s + 'u' + vars.uid + '/video/' + vars.vtag + '.' + res + '.mp4';//'.mov'
 	};
 	var generateHDLinks=function(){
 		var s="";
@@ -335,13 +335,13 @@ function vkVidDownloadLinks(vars){
 			var res = "360";
 			switch(i){case 2:{res = "480"; break;}  case 3:{  res = "720"; break;}}
 			vidHDurl=pathToHD(res);
-			s += (vidHDurl)?'<a href="'+vidHDurl+(smartlink?vidname+'.mov':'')+'" download="'+vname+'.mov" onclick="return vkDownloadFile(this);" onmouseover="vkGetVideoSize(this); vkDragOutFile(this);">'+IDL("downloadHD")+' '+res+'p<small class="fl_r divide" url="'+vidHDurl+'"></small></a>':"";   
+			s += (vidHDurl)?'<a href="'+vidHDurl+(smartlink?vidname+'.mp4':'')+'" download="'+vname+'.mp4" onclick="return vkDownloadFile(this);" onmouseover="vkGetVideoSize(this); vkDragOutFile(this);">'+IDL("downloadHD")+' '+res+'p<small class="fl_r divide" url="'+vidHDurl+'"></small></a>':"";   
 		  }
 		  return s;
 	}
 
-   vidurl=(vars.no_flv=='1')?pathToHD('240')+(smartlink?vidname+'.mov':''):(get_flv()+(smartlink?vidname+'.flv':''));
-    vidurl =  '<a href="'+vidurl+'" download="'+vname+(vars.no_flv=='1'?'.mov':'.flv')+'" onclick="return vkDownloadFile(this);" onmouseover="vkGetVideoSize(this); vkDragOutFile(this);">'+IDL("download")+'<small class="fl_r divide" url="'+vidurl+'"></small></a>';
+   vidurl=(vars.no_flv=='1')?pathToHD('240')+(smartlink?vidname+'.mp4':''):(get_flv()+(smartlink?vidname+'.flv':''));
+    vidurl =  '<a href="'+vidurl+'" download="'+vname+(vars.no_flv=='1'?'.mp4':'.flv')+'" onclick="return vkDownloadFile(this);" onmouseover="vkGetVideoSize(this); vkDragOutFile(this);">'+IDL("download")+'<small class="fl_r divide" url="'+vidurl+'"></small></a>';
     vidurl += generateHDLinks();
     //vidname
 	return vidurl;
@@ -358,8 +358,8 @@ function vkVidDownloadLinksArray(vars){
 		return vars.host + "u" + vuid(vars.uid) + "/video/" + vars.vtag + ".flv";
 	}
 	var pathToHD=function(res) {
-		var s = (vars.host.substr(0, 4) == 'http') ? vars.host : 'http://cs' + vars.host + '.' + (vk.intnat ? 'vk.com' : 'vkontakte.ru') + '/';
-		return s + 'u' + vars.uid + '/video/' + vars.vtag + '.' + res + '.mov';
+		var s = (vars.host.substr(0, 4) == 'http') ? vars.host : 'http://cs' + vars.host + '.' + 'vk.com' + '/';//(vk.intnat ? 'vk.com' : 'vkontakte.ru') 
+		return s + 'u' + vars.uid + '/video/' + vars.vtag + '.' + res + '.mp4';
 	};
 	var generateHDLinks=function(){
 		var s="";
@@ -1144,6 +1144,7 @@ vkLastFM={
         paused=true;
       };
       this.resume = function() {
+        if (!paused) return;
         start = new Date();
         if (timerId) window.clearTimeout(timerId);
         timerId = window.setTimeout(callback, remaining);
@@ -1161,6 +1162,7 @@ vkLastFM={
          window.clearTimeout(timerId);
          callback=null;
       }
+      paused=true;
       this.resume();
    },
    get_time:function(){
