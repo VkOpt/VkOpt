@@ -564,7 +564,7 @@ function vkInitSettings(){
          '</td></tr></table>'},      
       {id:8, text:IDL("seZoomPhoto")},// {id:8, header:IDL("seZoomPhoto") , text:IDL("seZoomPhHelp"),ops:[0,1,2]},
       //{id 23 - store "is expland" profile} 
-      {id:24, text:IDL("seAvaArrows")},
+      //{id:24, text:IDL("seAvaArrows")},
       {id:25, text:IDL("seICQico")},
       {id:26, text:IDL("seCalcAge")},
       {id:39, text:IDL("seGrCom")},

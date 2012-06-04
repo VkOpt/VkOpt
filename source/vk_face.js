@@ -133,7 +133,7 @@ function vkMenu(){//vkExLeftMenu
          .vkico_notes,.vkico_groups,.vkico_events,\
          .vkico_feed, .vkico_newsfeed,.vkico_fave,\
          .vkico_settings,.vkico_apps,.vkico_docs,\
-         .vkico_wall,.vkico_gifts,.vkico_vkplug,.vkico_app{background:url("http://vk.com/images/icons/mono_iconset.gif") no-repeat;}\
+         .vkico_wall,.vkico_gifts,.vkico_vkplug,.vkico_vkopt,.vkico_app{background:url("http://vk.com/images/icons/mono_iconset.gif") no-repeat;}\
          .left_row  .vkicon{margin: 4px 3px -4px 0px;}\
          \
          .vkico_profile{background-position:0 0px;}\
@@ -146,7 +146,7 @@ function vkMenu(){//vkExLeftMenu
          .vkico_groups{background-position:0 -177px;}\
          .vkico_feed, .vkico_newsfeed{background-position:0 -163px;}\
          .vkico_fave{background-position:0 -118px;}\
-         .vkico_settings,.vkico_vkplug{background-position:0 -58px;}\
+         .vkico_settings,.vkico_vkplug, .vkico_vkopt{background-position:0 -58px;}\
          .vkico_apps, .vkico_app{background-position:0 -104px;/-207px*/}\
          .vkico_docs{background-position:0 -148px;}\
          .vkico_wall{background-position:0 -44px;}\
@@ -336,17 +336,18 @@ function vkMenu(){//vkExLeftMenu
       ['notes?act=new',IDL("mNoN")],
       ['notes?act=comments',IDL("mNoC")]
 	],	
-    'vkopt':['[VKopt]',(!window.Vk_NoMnuLinks)?
-            '<a href="javascript: vkHighlightCounters();" style="float:right;">^</a>'+'<a href="javascript:UpdateCounters();">- '+IDL('updateLMenu')+'</a>'+
-            //'<a href="javascript: vkSwitchHost();" class="vk_published_by">'+(document.location.href.substr(7,6)=="vk.com"?'vkontakte.ru':'vk.com')+'</a>'+
-            (vk_DEBUG?'<a href="javascript:if (window.vk_updmenu_timeout) clearTimeout(vk_updmenu_timeout);">- <b>Stop Upd Menu</b></a>':'')+
-            '<a href="http://vkopt.net/">- <b>VkOpt Forum</b></a>'
-            //+'<a href="/id13391307">- <b>Bkontakte</b></a>'
-            //+'<a href="/catalog.php">- <b>VK USERS</b></a>'
-          :''    
+    'vkopt':[
+         [["#","UpdateCounters(); return false;"],IDL("updateLMenu")],
+         ["http://vkopt.net/",'<b>VkOpt Forum</b>']
     ]
   };
   ExMenu['im']=ExMenu['mail'];
+  if (vk_DEBUG) ExMenu['vkopt'].push([["#","if (window.vk_updmenu_timeout) clearTimeout(vk_updmenu_timeout); return false;"],'<b>Stop Upd Menu</b>']);
+  /*
+  ExMenu['vkopt']=[];
+  ExMenu['vkopt'].push(["javascript: vkHighlightCounters();",IDL("updateLMenu")]); 
+  ExMenu['vkopt'].push(["http://vkopt.net/",'<b>VkOpt Forum</b>']);
+  */
   
   vkMenuCurrentSub=null;
   vkMenuHider=null;
@@ -372,6 +373,15 @@ function vkMenu(){//vkExLeftMenu
 	if (md) insertAfter(li,md) 
 	else nav.appendChild(li);
   }
+  //*
+  var div=document.createElement('div');
+  div.className='moreDiv more_div';
+  nav.appendChild(div);
+  var li=vkCe('li',{id:"frOpt"},'<a href="settings?act=vkopt" onclick="vkShowSettings(true); return false;">'+IDL('VKopt',1)+'<span></span></a>');
+  nav.appendChild(li);
+  //*/
+  
+  
   var ass=nav.getElementsByTagName('a');
   var items=[];
   for (var i=0; i<ass.length;i++) items.push(ass[i]);
@@ -381,6 +391,8 @@ function vkMenu(){//vkExLeftMenu
 	//vklog(page);
     if (item.className=='hasedit' || item.className=='hasedit fl_l')
       page='profile';
+    else if (item.href.indexOf('act=vkopt')!=-1)
+      page='vkopt';
     else 
       page=(page)?page[1]:'';
     
@@ -436,10 +448,10 @@ function vkMenu(){//vkExLeftMenu
   }
   var nav=(ge('sideBar') || ge('side_bar')).getElementsByTagName('ol')[0];
   //var nav=ge('nav');
-  var div=document.createElement('div');
+  /*var div=document.createElement('div');
   div.className='moreDiv more_div';
   nav.appendChild(div);
-  /*if (window.vkNavLinks){
+  if (window.vkNavLinks){
         var li=document.createElement('li');
         var html='';
         for (var i=0;i<vkNavLinks.length; i++)  html+='<a href="'+vkNavLinks[i][1]+'" '+(vkNavLinks[i][2]?vkNavLinks[i][2]:'')+'>'+vkNavLinks[i][0]+'</a>';
@@ -447,13 +459,13 @@ function vkMenu(){//vkExLeftMenu
         li.innerHTML=html;
         nav.appendChild(li);  
   }*/
-  var li=document.createElement('li');
+  /*var li=document.createElement('li');
   var html="";
   for (var i=0;window.vkNavLinks && i<vkNavLinks.length; i++)  html+='<a href="'+vkNavLinks[i][1]+'" '+(vkNavLinks[i][2]?vkNavLinks[i][2]:'')+'>'+vkNavLinks[i][0]+'</a>';
-  html+='<a href="settings?act=vkopt" '+setActions()+' onclick="vkShowSettings(true); return false;">'+ExMenu.vkopt[0]+'</a><ul '+setActions()+'>'/*+IDFrOpt()*/+ExMenu.vkopt[1]+'</ul>';
+  html+='<a href="settings?act=vkopt" '+setActions()+' onclick="vkShowSettings(true); return false;">'+ExMenu.vkopt[0]+'</a><ul '+setActions()+'>'+ExMenu.vkopt[1]+'</ul>';
   li.id='frOpt';
   li.innerHTML=html;
-  nav.appendChild(li);
+  nav.appendChild(li);*/
   if (window.vkLinks && vkLinks.length>1){
         var li=document.createElement('li');
         var html='<a href="#" '+setActions()+' onclick="return false;">'+vkLinks[0]+'</a><ul '+setActions()+'>';//

@@ -63,6 +63,7 @@ function vkProcessNode(node){
 		vkSmiles(node);
 		vkPrepareTxtPanels(node);
 		vkAudioNode(node);
+      vkVidAddGetLink(node);
 		vk_plugins.processnode(node);
 	// }  catch (e) { topMsg('vkProcessNode error',2)}
 	}
@@ -77,6 +78,7 @@ function vkProcessNodeLite(node){
   try{
 	vkProccessLinks(node);
 	vkAudioNode(node);
+   vkVidAddGetLink(node);
 	vkPrepareTxtPanels(node);
 	vk_plugins.processnode(node,true);
    if (getSet(63)=='y') vkSmiles(node);
@@ -197,6 +199,8 @@ function VkOptMainInit(){
   vkPrepareTxtPanels();  
   vkSkinManInit();
   vkClock();
+  vkVidAddGetLink();
+  
   if (getSet(34)=='y' && !window.setkev){ InpTexSetEvents(); setkev=true;}
   if (getSet(27)=='y') vkGetCalendar();
   if (getSet(20) == 'y') vk_updmenu_timeout=setTimeout("UpdateCounters();",vk_upd_menu_timeout);
@@ -452,6 +456,23 @@ function vkStyles(){
       .narrow_column .audio_title_wrap { width: 115px !important;}\
       #profile_audios .audio_title_wrap { width: auto;}\
 	';
+   //video downloads styles
+   main_css+="\
+     .vk_down_icon{\
+        background: #E1E7ED url('/images/icons/darr.gif') 6px 7px no-repeat;\
+        height: 17px;\
+        border-radius: 3px;\
+        -moz-border-radius: 3px;\
+        color: #6A839E;\
+        padding: 3px 0px 0px 17px;\
+        display: inline-block;\
+        margin:1px 2px 1px 2px;\
+     }\
+     .video div.vk_vid_download_t{right:auto; bottom:auto;}\
+     .video div.vk_vid_download_t a{color:#FFF; background-color:rgba(0,0,0,0.5)}\
+     .video div.vk_vid_download_t img{height:auto; weight:auto;}\
+     .wall_module .page_media_thumb.page_media_video{height:auto;}\
+   ";
 	  //extend switch color in viewer
 	if (MoreDarkPV=='y') main_css+="\
 		.pv_dark .pv_cont #pv_box,.pv_dark .info{background:#000 !important; color: #FFF !important;} \
@@ -517,7 +538,7 @@ function vkStyles(){
 	"; 
 	
 	var shut='\
-		.shut .module_body {	display: none !important;}\
+		.shut .module_body, .shut #profile_photos_upload_wrap{	display: none !important;}\
 		.shut { padding-bottom: 3px !important; }\
       .vk_shut_btn{ display:block; background:url("http://vkontakte.ru/images/flex_arrow_open.gif") no-repeat -6px 2px; width:20px; height:20px; margin:-4px 0; }\
       .shut .vk_shut_btn{ background-image:url("http://vkontakte.ru/images/flex_arrow_shut.gif");}\
@@ -934,7 +955,7 @@ function vkProcessIMDateLink(node){
       var inp=vkNextEl(node); 
       var ts=0;
       var fmt=(node.parentNode && node.parentNode.parentNode && hasClass(node.parentNode.parentNode,'im_add_row'))?'HH:MM:ss':'d.mm.yy HH:MM:ss';
-      if (inp && (ts=parseInt(inp.value)))  node.innerHTML=(new Date(ts*1000)).format(fmt); 
+      if (inp && (ts=parseInt(inp.value)))  node.innerHTML=(new Date((ts-vk.dt)*1000)).format(fmt); 
    }
 }
 
