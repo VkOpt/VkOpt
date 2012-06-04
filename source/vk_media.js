@@ -359,6 +359,7 @@ function vkVidGetLinkBtn(vid){//for cur.videoTpl
    return '<div class="download_cont"><a href="#" onclick="vkVidLoadLinks('+vid[0]+','+vid[1]+',this.parentNode); return false;">'+IDL('download')+'</a></div>';
 }
 function vkVidAddGetLink(node){
+   if (getSet(2)!='y') return;
    var vre=/(-?\d+)_(\d+)/;
    var els=geByClass('video_row_cont',node);
    for (var i=0; i<els.length; i++){
