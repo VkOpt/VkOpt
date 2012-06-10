@@ -124,12 +124,13 @@ function vkOnNewLocation(startup){
 			case 'photos' :vkPhotosPage(); break;
 			case 'audio'  :vkAudioPage(); break;
 			case 'audio_edit'  :vkAudioEditPage(); break;
-         case 'video'  :vkVideoPage(); break;
-			case 'notes'  :vkNotesPage(); break;
-			case 'board'  :vkBoardPage(); break;
+         case 'video'   :vkVideoPage(); break;
+			case 'notes'   :vkNotesPage(); break;
+			case 'board'   :vkBoardPage(); break;
 			case 'search'  :vkSearchPage(); break;
          case 'fave'    :vkFavePage(); break;
-         case 'im': vkImPage(); break;
+         case 'im'      :vkImPage(); break;
+         case 'pages'   :vkWikiPages(); break;
 		}
 		if (startup && window.Fave) Fave.init();	
 	}

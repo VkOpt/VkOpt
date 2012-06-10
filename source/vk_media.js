@@ -36,7 +36,7 @@ function vkPhotoViewer(){
 function vkPVAfterShow(){
 	vkPVChangeView=function(){
 		window.PVShowFullHeight=!window.PVShowFullHeight;
-		photoview.onResize();
+      Photoview.doShow();
 	}
 	if (ge('pv_summary')) ge('pv_summary').setAttribute('onclick','vkPVChangeView()');
 }
@@ -386,12 +386,12 @@ function vkVidAddGetLink(node){
       if (!p){
          //<div style="right:auto; bottom:auto; "></div>
          p=geByClass('info',el)[1] || geByClass('info',el)[0];
-         var div=vkCe('div',{"class":"vk_vid_download_t"},'<span class="fl_l"><a href="#" onclick="vkVidLoadLinks('+vid[1]+','+vid[2]+',this.parentNode'+(vid[3]?", '"+vid[3]+"'":'')+'); cancelEvent(event); return false;">'+IDL('Download')+'</a></span>');
+         var div=vkCe('div',{"class":"vk_vid_download_t"},'<span class="fl_l"><a href="#" onclick="vkVidLoadLinks('+vid[1]+','+vid[2]+',this.parentNode'+(vid[3]?", '"+vid[3]+"'":'')+'); cancelEvent(event); return false;">'+IDL('download')+'</a></span>');
          if (p) p.appendChild(div);
          else v.parentNode.appendChild(div);//v.insertBefore(div,v.firstChild);
          return;
       }
-      p.appendChild(vkCe('span',{'class':"download_cont"},'<a href="#" onclick="vkVidLoadLinks('+vid[1]+','+vid[2]+',this.parentNode'+(vid[3]?", '"+vid[3]+"'":'')+'); return false;">'+IDL('Download')+'</a>'));     
+      p.appendChild(vkCe('span',{'class':"download_cont"},'<a href="#" onclick="vkVidLoadLinks('+vid[1]+','+vid[2]+',this.parentNode'+(vid[3]?", '"+vid[3]+"'":'')+'); return false;">'+IDL('download')+'</a>'));     
    };
    els=geByClass('page_media_video',node);
    for (var i=0; i<els.length; i++) addlink(els[i]);
@@ -561,7 +561,9 @@ function vkGetYoutubeLinks(vid, callback) {
       var links=[];
       for (var i=0;i<map.length;i++){
          var format=YT_video_itag_formats[map[i].itag];
+         
          var info=(map[i].type+'').split(';')[0]+' '+(obj.fmt_list[i]+'').split('/')[1];
+         if (!format) vklog('<b>YT '+map[i].itag+'</b>: \n'+(map[i].stereo3d?'3D/':'')+info,1);
          format=(map[i].stereo3d?'3D/':'')+(format?format:info);
          links.push([map[i].url+(obj.title?'&title='+encodeURIComponent(obj.title):''), format,info]);
       }

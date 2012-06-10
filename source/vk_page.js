@@ -1062,8 +1062,9 @@ function addFakeGraffItem() {
 	vkAddScript('/js/lib/swfobject.js');
     var a=document.createElement('a');
     a.setAttribute("onfocus","this.blur()");
+    a.setAttribute("class"," add_media_item");
     a.setAttribute("id","vk_wall_post_type0");
-    a.setAttribute("style","background-image: url(/images/icons/wall_icons.gif); background-position: 0px 0px;");
+    a.setAttribute("style","background-image: url(/images/icons/attach_icons.gif); background-position: 3px -152px");
     a.setAttribute("href","/graffiti.php?act=draw&"+((location.href.match(/club\d+/))?"group_id=":"to_id=")+mid);
     a.setAttribute("onclick","vkShowFakeGraffLoader("+mid+");return false;");
     a.innerHTML=IDL('LoadGraffiti');
@@ -1215,6 +1216,24 @@ function vkAudioBlock(load_audios,oid){
    */
 }
 
+
+function vkWikiPages(){
+   if (ge('pages_right_link') && !ge('vk_add_wiki_page')){
+      ge('pages_right_link').parentNode.appendChild(
+         vkCe('a',{
+            "class":"fl_r pages_right_link",
+            "id":"vk_add_wiki_page",
+            "href":"#",
+            "onclick":"vkWikiNew(); return false;"
+         },IDL('Add')+'<span class="divide">|</span>')
+      );
+   }
+}
+function vkWikiNew(){
+   var title=prompt(IDL("Title"));
+   if (title)
+      nav.go("pages?act=edit&oid="+cur.oid+"&p="+encodeURIComponent(title));
+}
 
 function vkToTopBackLink(){
    window._stlMousedown = function (e) {

@@ -342,8 +342,11 @@ function vkMenu(){//vkExLeftMenu
     ]
   };
   ExMenu['im']=ExMenu['mail'];
-  if (vk_DEBUG) ExMenu['vkopt'].push([["#","if (window.vk_updmenu_timeout) clearTimeout(vk_updmenu_timeout); return false;"],'<b>Stop Upd Menu</b>']);
-  /*
+  if (vk_DEBUG){
+   ExMenu['vkopt'].push([["#","if (window.vk_updmenu_timeout) clearTimeout(vk_updmenu_timeout); return false;"],'<b>Stop Upd Menu</b>']);
+   ExMenu['vkopt'].push([["#","vkPhotoUrlUpload(prompt('Image URL:')); return false;"],'UploadImg']);
+  }
+  /* 
   ExMenu['vkopt']=[];
   ExMenu['vkopt'].push(["javascript: vkHighlightCounters();",IDL("updateLMenu")]); 
   ExMenu['vkopt'].push(["http://vkopt.net/",'<b>VkOpt Forum</b>']);

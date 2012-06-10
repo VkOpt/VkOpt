@@ -84,6 +84,7 @@ var YT_video_itag_formats={
      '34': '360p.flv',
      '35': '480p.flv',   
      
+     '36': '240p.3gp',
      '13': '.3gp (small)',
      '17': '.3gp (medium)',
      
