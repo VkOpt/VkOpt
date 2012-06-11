@@ -401,7 +401,7 @@ function vkSkinManInit(){
           break;
         }
   }
-  if (getSet(32)=='n' || location.href.match(/widget_.+php/) || vkbrowser.mozilla) return;
+  if (getSet(32)=='n' || location.href.match(/widget_.+php/)) return;
   var body = document.getElementsByTagName('body')[0];
   div=document.createElement('div');
   div.id='chStyle';

@@ -608,7 +608,7 @@ function vkInitSettings(){
       {id:30, header:IDL("seClockH") , text:IDL("seClockO"),ops:[0,1,2,3]},
       {id:31, text:IDL("seRightBar")+vkCheckboxSetting(37,IDL("seRightBarFixAsSideBar"),true)},
       {id:35, text:IDL("seBlocksToRightBar")},
-      {id:32, text:IDL("seSkinManBtn"), hide: (vkbrowser.mozilla)},
+      {id:32, text:IDL("seSkinManBtn") /*, hide: (vkbrowser.mozilla)*/},
       {id:33, text:IDL("seSmiles")+vkCheckboxSetting(63,IDL("seSmilesAlwaysShow"),true),warn:'seSmilesAlwaysShowWarning'},
       {id:36, text:IDL("sePreventHideNotifications")},
       {id:42, text:IDL("seSortFeedPhotos")},

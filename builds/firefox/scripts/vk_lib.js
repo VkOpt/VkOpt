@@ -1709,7 +1709,7 @@ vkApis={
 		dApi.call('photos.get',params,callback);
 	},
 	photos_hd:function(oid,aid,callback,progress){
-		var listId=(aid=='tag') ? 'tag'+oid : "album"+oid+"_"+aid;
+		var listId=(aid=='tag' || aid=='photos') ?  aid+oid : "album"+oid+"_"+aid;
 		var PER_REQ=10;
 		var cur=0;
 		var count=0;

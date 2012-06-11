@@ -36,7 +36,7 @@ function vkPhotoViewer(){
 function vkPVAfterShow(){
 	vkPVChangeView=function(){
 		window.PVShowFullHeight=!window.PVShowFullHeight;
-		photoview.onResize();
+      Photoview.doShow();
 	}
 	if (ge('pv_summary')) ge('pv_summary').setAttribute('onclick','vkPVChangeView()');
 }
@@ -87,7 +87,7 @@ function vkPhotosPage(){
 	if (nav.objLoc[0].indexOf('albums')!=-1){
       vkAddAlbumCommentsLinks();
       if (cur.oid<0) vkPhotosWallAlbum();
-   } else if (nav.objLoc[0].indexOf('album')!=-1 || nav.objLoc[0].indexOf('tag')!=-1){
+   } else if (nav.objLoc[0].indexOf('album')!=-1 || nav.objLoc[0].indexOf('tag')!=-1 || nav.objLoc[0].indexOf('photos')!=-1){
 		
       var m=nav.objLoc[0].match(/album(-?\d+)_(\d+)/);
 		var oid=null;
@@ -96,11 +96,11 @@ function vkPhotosPage(){
 			oid=m[1];
 			aid=m[2];
       } else {
-         m=nav.objLoc[0].match(/tag(-?\d+)/);
+         m=nav.objLoc[0].match(/(tag|photos)(-?\d+)/);
          if (m){
-           oid=m[1];
-           aid='tag';
-         }        
+           oid=m[2];
+           aid=m[1];
+         }      
       }
 		if(m){	
 			/*oid=m[1];
@@ -294,7 +294,13 @@ function vkPhotoUrlUpload(url){
 //vkPhotoUrlUpload('http://cs9543.vk.com/u3457516/124935920/w_5603bf45.jpg')
 
 /* VIDEO */
-function vkVideoPage(){}
+function vkVideoPage(){
+   if (getSet(2)=='y'){
+		if (cur.videoTpl){ 
+         Inj.After('cur.videoTpl','sign,','vkVidGetLinkBtn(v),');// or move this to 'vkInj'?
+      }
+   }
+}
 
 function vkVideoViewer(){
 	vkVidVarsGet();
@@ -323,8 +329,8 @@ function vkVidDownloadLinks(vars){
 	var pathToHD=function(res) {
 		var s = (vars.host.substr(0, 4) == 'http')
 		  ? vars.host
-		  : 'http://cs' + vars.host + '.' + (vk.intnat ? 'vk.com' : 'vkontakte.ru') + '/';
-		return s + 'u' + vars.uid + '/video/' + vars.vtag + '.' + res + '.mov';
+		  : 'http://cs' + vars.host + '.' + 'vk.com' + '/';//(vk.intnat ? 'vk.com' : 'vkontakte.ru') 
+		return s + 'u' + vars.uid + '/video/' + vars.vtag + '.' + res + '.mp4';//'.mov'
 	};
 	var generateHDLinks=function(){
 		var s="";
@@ -335,16 +341,117 @@ function vkVidDownloadLinks(vars){
 			var res = "360";
 			switch(i){case 2:{res = "480"; break;}  case 3:{  res = "720"; break;}}
 			vidHDurl=pathToHD(res);
-			s += (vidHDurl)?'<a href="'+vidHDurl+(smartlink?vidname+'.mov':'')+'" download="'+vname+'.mov" onclick="return vkDownloadFile(this);" onmouseover="vkGetVideoSize(this); vkDragOutFile(this);">'+IDL("downloadHD")+' '+res+'p<small class="fl_r divide" url="'+vidHDurl+'"></small></a>':"";   
+			s += (vidHDurl)?'<a href="'+vidHDurl+(smartlink?vidname+'.mp4':'')+'" download="'+vname+'.mp4" onclick="return vkDownloadFile(this);" onmouseover="vkGetVideoSize(this); vkDragOutFile(this);">'+IDL("downloadHD")+' '+res+'p<small class="fl_r divide" url="'+vidHDurl+'"></small></a>':"";   
 		  }
 		  return s;
 	}
 
-   vidurl=(vars.no_flv=='1')?pathToHD('240')+(smartlink?vidname+'.mov':''):(get_flv()+(smartlink?vidname+'.flv':''));
-    vidurl =  '<a href="'+vidurl+'" download="'+vname+(vars.no_flv=='1'?'.mov':'.flv')+'" onclick="return vkDownloadFile(this);" onmouseover="vkGetVideoSize(this); vkDragOutFile(this);">'+IDL("download")+'<small class="fl_r divide" url="'+vidurl+'"></small></a>';
+   vidurl=(vars.no_flv=='1')?pathToHD('240')+(smartlink?vidname+'.mp4':''):(get_flv()+(smartlink?vidname+'.flv':''));
+    vidurl =  '<a href="'+vidurl+'" download="'+vname+(vars.no_flv=='1'?'.mp4':'.flv')+'" onclick="return vkDownloadFile(this);" onmouseover="vkGetVideoSize(this); vkDragOutFile(this);">'+IDL("download")+'<small class="fl_r divide" url="'+vidurl+'"></small></a>';
     vidurl += generateHDLinks();
     //vidname
 	return vidurl;
+}
+
+
+function vkVidGetLinkBtn(vid){//for cur.videoTpl
+   if (!vid) return '';
+   return '<div class="download_cont"><a href="#" onclick="vkVidLoadLinks('+vid[0]+','+vid[1]+',this.parentNode); return false;">'+IDL('download')+'</a></div>';
+}
+function vkVidAddGetLink(node){
+   if (getSet(2)!='y') return;
+   var vre=/(-?\d+)_(\d+)/;
+   var els=geByClass('video_row_cont',node);
+   for (var i=0; i<els.length; i++){
+      var el=els[i];
+      var vid=(el.id || '').match(vre);
+      var p=geByClass('video_info_cont',el)[0];
+      if (!vid || !p) continue;
+      p.appendChild(vkCe('div',{'class':"download_cont"},'<a href="#" onclick="vkVidLoadLinks('+vid[1]+','+vid[2]+',this.parentNode); return false;">'+IDL('download')+'</a>'));  
+   }
+    
+   var addlink=function(el){
+      if (geByClass('video_row',el)[0]) return;
+      var v=geByClass('video',el)[0] || geByClass('image_div',el)[0];
+      if (!v) return;
+      if (v.innerHTML.indexOf('vkVidLoadLinks')!=-1) return;
+      var vid=(v.href || '').match(vre);
+      if (!vid || !vid[3]) {
+         if (!vid) vid=(v.getAttribute("onclick") || '').match(vre);
+         if (vid && (v.href || '').indexOf('youtube.com')!=-1) 
+            vid[3]=(v.href.split(/watch(?:\?v\=|%3Fv%3D)/)[1] || '').split('&')[0];         
+      }   
+      var p=geByClass('media_desc',el.parentNode)[0];
+      if (!vid) return;
+      if (!p){
+         //<div style="right:auto; bottom:auto; "></div>
+         p=geByClass('info',el)[1] || geByClass('info',el)[0];
+         var div=vkCe('div',{"class":"vk_vid_download_t"},'<span class="fl_l"><a href="#" onclick="vkVidLoadLinks('+vid[1]+','+vid[2]+',this.parentNode'+(vid[3]?", '"+vid[3]+"'":'')+'); cancelEvent(event); return false;">'+IDL('download')+'</a></span>');
+         if (p) p.appendChild(div);
+         else v.parentNode.appendChild(div);//v.insertBefore(div,v.firstChild);
+         return;
+      }
+      p.appendChild(vkCe('span',{'class':"download_cont"},'<a href="#" onclick="vkVidLoadLinks('+vid[1]+','+vid[2]+',this.parentNode'+(vid[3]?", '"+vid[3]+"'":'')+'); return false;">'+IDL('download')+'</a>'));     
+   };
+   els=geByClass('page_media_video',node);
+   for (var i=0; i<els.length; i++) addlink(els[i]);
+   els=geByClass('page_media_full_video',node);
+   for (var i=0; i<els.length; i++) addlink(els[i]);
+   els=geByClass('video_row',node);
+   for (var i=0; i<els.length; i++) addlink(els[i]); 
+   
+   els=geByClass('videos_row',node);
+   for (var i=0; i<els.length; i++) addlink(els[i]); 
+
+}
+function vkVidLoadLinks(oid,vid,el,yid){
+    var smartlink=true;//(getSet(1) == 'y')?true:false;
+    var fmt=['240p','360p','480p','720p'];
+    el=ge(el);
+    el.innerHTML=vkLdrImg;
+    AjGet('/video.php?act=a_flash_vars&vid='+oid+'_'+vid,function(r,t){
+      //console.log(t);
+      // if (t=='NO_ACCESS')
+      var getyt=function(youid){
+         var html='<a href="http://youtube.com/watch?v='+youid+'">YouTube</a>';
+            vkGetYoutubeLinks(youid,function(r){
+               if (!r) return;
+               for (var i=0;i<r.length;i++)
+                  html+='<a class="vk_down_icon" href="'+r[i][0]+'" title="'+r[i][2]+'"  class="clear_fix" onmouseover="vkGetVideoSize(this);">'+r[i][1]+'<small class="divide" url="'+r[i][0]+'"></small></a>';
+               el.innerHTML=html;      
+            });
+      }
+      if (yid){
+         getyt(yid);
+      } else if(t=='NO_ACCESS'){
+         el.innerHTML='<small class="divide" >'+IDL('NO_ACCESS')+'</small>';
+      } else {
+         var obj=JSON.parse(t);
+         if (obj.extra=="21"){
+            getyt(obj.extra_data);            
+         } else if (!obj.extra){
+            var html='';
+            var arr=vkVidDownloadLinksArray(obj);
+            for (var i=0; i<arr.length; i++){
+               var vidext=arr[i].substr(arr[i].lastIndexOf('.'));   
+               var vidname=vkCleanFileName(decodeURI(obj.title || obj.md_title)).replace(/\+/g,' ');
+               var vname=vidname;
+
+               vidname='?'+vkDownloadPostfix()+'&/'+vidname;
+               var vidurl=arr[i]+(smartlink?vidname+vidext:'')
+               html+='<a class="vk_down_icon" href="'+vidurl+'" download="'+vname+vidext+'" onclick="return vkDownloadFile(this);" onmouseover="vkGetVideoSize(this); vkDragOutFile(this);">'+fmt[i]+'<small class="divide" url="'+vidurl+'"></small></a>'; 
+            }
+            el.innerHTML=html;
+         } else {
+            el.innerHTML='<small class="divide" >'+IDL('NA')+'</small>';
+         }
+      }
+    });
+    // /video.php?act=a_flash_vars&vid=39226536_159441582
+    /*
+    extra":"21",//youtube
+    "extra_data":"JGRAtRzGWlw" //vid
+    */
 }
 
 function vkVidDownloadLinksArray(vars){
@@ -358,8 +465,8 @@ function vkVidDownloadLinksArray(vars){
 		return vars.host + "u" + vuid(vars.uid) + "/video/" + vars.vtag + ".flv";
 	}
 	var pathToHD=function(res) {
-		var s = (vars.host.substr(0, 4) == 'http') ? vars.host : 'http://cs' + vars.host + '.' + (vk.intnat ? 'vk.com' : 'vkontakte.ru') + '/';
-		return s + 'u' + vars.uid + '/video/' + vars.vtag + '.' + res + '.mov';
+		var s = (vars.host.substr(0, 4) == 'http') ? vars.host : 'http://cs' + vars.host + '.' + 'vk.com' + '/';//(vk.intnat ? 'vk.com' : 'vkontakte.ru') 
+		return s + 'u' + vars.uid + '/video/' + vars.vtag + '.' + res + '.mp4';
 	};
 	var generateHDLinks=function(){
 		var s="";
@@ -454,7 +561,9 @@ function vkGetYoutubeLinks(vid, callback) {
       var links=[];
       for (var i=0;i<map.length;i++){
          var format=YT_video_itag_formats[map[i].itag];
+         
          var info=(map[i].type+'').split(';')[0]+' '+(obj.fmt_list[i]+'').split('/')[1];
+         if (!format) vklog('<b>YT '+map[i].itag+'</b>: \n'+(map[i].stereo3d?'3D/':'')+info,1);
          format=(map[i].stereo3d?'3D/':'')+(format?format:info);
          links.push([map[i].url+(obj.title?'&title='+encodeURIComponent(obj.title):''), format,info]);
       }
@@ -1144,6 +1253,7 @@ vkLastFM={
         paused=true;
       };
       this.resume = function() {
+        if (!paused) return;
         start = new Date();
         if (timerId) window.clearTimeout(timerId);
         timerId = window.setTimeout(callback, remaining);
@@ -1161,6 +1271,7 @@ vkLastFM={
          window.clearTimeout(timerId);
          callback=null;
       }
+      paused=true;
       this.resume();
    },
    get_time:function(){

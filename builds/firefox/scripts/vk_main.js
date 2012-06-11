@@ -63,6 +63,7 @@ function vkProcessNode(node){
 		vkSmiles(node);
 		vkPrepareTxtPanels(node);
 		vkAudioNode(node);
+      vkVidAddGetLink(node);
 		vk_plugins.processnode(node);
 	// }  catch (e) { topMsg('vkProcessNode error',2)}
 	}
@@ -77,6 +78,7 @@ function vkProcessNodeLite(node){
   try{
 	vkProccessLinks(node);
 	vkAudioNode(node);
+   vkVidAddGetLink(node);
 	vkPrepareTxtPanels(node);
 	vk_plugins.processnode(node,true);
    if (getSet(63)=='y') vkSmiles(node);
@@ -122,12 +124,13 @@ function vkOnNewLocation(startup){
 			case 'photos' :vkPhotosPage(); break;
 			case 'audio'  :vkAudioPage(); break;
 			case 'audio_edit'  :vkAudioEditPage(); break;
-         case 'video'  :vkVideoPage(); break;
-			case 'notes'  :vkNotesPage(); break;
-			case 'board'  :vkBoardPage(); break;
+         case 'video'   :vkVideoPage(); break;
+			case 'notes'   :vkNotesPage(); break;
+			case 'board'   :vkBoardPage(); break;
 			case 'search'  :vkSearchPage(); break;
          case 'fave'    :vkFavePage(); break;
-         case 'im': vkImPage(); break;
+         case 'im'      :vkImPage(); break;
+         case 'pages'   :vkWikiPages(); break;
 		}
 		if (startup && window.Fave) Fave.init();	
 	}
@@ -197,6 +200,8 @@ function VkOptMainInit(){
   vkPrepareTxtPanels();  
   vkSkinManInit();
   vkClock();
+  vkVidAddGetLink();
+  
   if (getSet(34)=='y' && !window.setkev){ InpTexSetEvents(); setkev=true;}
   if (getSet(27)=='y') vkGetCalendar();
   if (getSet(20) == 'y') vk_updmenu_timeout=setTimeout("UpdateCounters();",vk_upd_menu_timeout);
@@ -308,6 +313,7 @@ function vkStyles(){
 		.vk_username{font-weight:bold;}\
 		.vk_username a{color:#FFF;}\
 		.vk_profile_online_status{text-shadow:1px 1px 1px #668ab3;  color: #222;}\
+      .vk_last_seen{margin-top: -5px;line-height: 9px;}\
 		.vk_profile_left{width: 200px;}\
 		.vk_profile_ava{text-align: center;}\
 		.vk_profile_header{width:236px; background:#5b7b9f; border:1px solid #45688e; color:#FFF;  padding:5px; text-shadow:1px 1px 1px #111; }\
@@ -451,13 +457,33 @@ function vkStyles(){
       .narrow_column .audio_title_wrap { width: 115px !important;}\
       #profile_audios .audio_title_wrap { width: auto;}\
 	';
+   //video downloads styles
+   main_css+="\
+     .vk_down_icon{\
+        background: #E1E7ED url('/images/icons/darr.gif') 6px 7px no-repeat;\
+        height: 17px;\
+        border-radius: 3px;\
+        -moz-border-radius: 3px;\
+        color: #6A839E;\
+        padding: 3px 0px 0px 17px;\
+        display: inline-block;\
+        margin:1px 2px 1px 2px;\
+     }\
+     .video div.vk_vid_download_t{right:auto; bottom:auto;}\
+     .video div.vk_vid_download_t a{color:#FFF; background-color:rgba(0,0,0,0.5)}\
+     .video div.vk_vid_download_t img{height:auto; weight:auto;}\
+     .wall_module .page_media_thumb.page_media_video{height:auto;}\
+   ";
 	  //extend switch color in viewer
 	if (MoreDarkPV=='y') main_css+="\
 		.pv_dark .pv_cont #pv_box,.pv_dark .info{background:#000 !important; color: #FFF !important;} \
 		.pv_dark .pv_cont #pv_box DIV{border-color:#444 !important;}\
 		.pv_dark .pv_cont SPAN{color:#DDD !important;}\
 		.pv_dark .pv_cont A{color:#888 !important;}\
-		.pv_dark #pv_actions a:hover{background-color:#444 !important; color:#FFF  !important;}\
+      .pv_dark #pv_comments_header{background-color:#222 !important; color:#AAA  !important;}\
+		.pv_dark #pv_actions a:hover {background-color:#444 !important; color:#FFF  !important;}\
+      .pv_dark .pvs_act{background-color:#000 !important;}\
+      #layer_bg.pv_dark { opacity: 0.9 !important; }\
 	";
 	main_css+=
 		'.vk_imgbtn{cursor: pointer; margin:-5px 0 -6px 0;}'+
@@ -513,7 +539,7 @@ function vkStyles(){
 	"; 
 	
 	var shut='\
-		.shut .module_body {	display: none !important;}\
+		.shut .module_body, .shut #profile_photos_upload_wrap{	display: none !important;}\
 		.shut { padding-bottom: 3px !important; }\
       .vk_shut_btn{ display:block; background:url("http://vkontakte.ru/images/flex_arrow_open.gif") no-repeat -6px 2px; width:20px; height:20px; margin:-4px 0; }\
       .shut .vk_shut_btn{ background-image:url("http://vkontakte.ru/images/flex_arrow_shut.gif");}\
@@ -783,7 +809,7 @@ function vkCommon(){
 	Inj.Start('renderFlash','vkOnRenderFlashVars(vars);');
 	Inj.End('nav.setLoc','setTimeout("vkOnNewLocation();",2);');
 	
-   Inj.After('TopSearch.row','name +','vkTsUserMenuLink(mid)+');
+    if (getSet(10)=='y') Inj.After('TopSearch.row','name +','vkTsUserMenuLink(mid)+');
 
    
    //if(window.TopSearch) Inj.End('TopSearch.prepareRows','vkProccessLinks(tsWrap);');
@@ -930,7 +956,7 @@ function vkProcessIMDateLink(node){
       var inp=vkNextEl(node); 
       var ts=0;
       var fmt=(node.parentNode && node.parentNode.parentNode && hasClass(node.parentNode.parentNode,'im_add_row'))?'HH:MM:ss':'d.mm.yy HH:MM:ss';
-      if (inp && (ts=parseInt(inp.value)))  node.innerHTML=(new Date(ts*1000)).format(fmt); 
+      if (inp && (ts=parseInt(inp.value)))  node.innerHTML=(new Date((ts-vk.dt)*1000)).format(fmt); 
    }
 }
 

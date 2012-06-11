@@ -84,6 +84,7 @@ var YT_video_itag_formats={
      '34': '360p.flv',
      '35': '480p.flv',   
      
+     '36': '240p.3gp',
      '13': '.3gp (small)',
      '17': '.3gp (medium)',
      
@@ -329,7 +330,9 @@ function vkonDOMReady(fn, ctx){
     var ready, timer;
     var __=true;
     var onChange = function(e){
-		if(e && e.type == "DOMContentLoaded"){
+		if (document.getElementById('footer') || document.getElementById('footer_wrap')) {
+         fireDOMReady();
+      } else if(e && e.type == "DOMContentLoaded"){
             fireDOMReady();
         }else if(e && e.type == "load"){
             fireDOMReady();
@@ -366,7 +369,6 @@ function vkonDOMReady(fn, ctx){
       window.onload = onChange;
     }
 };
-
 /////////////////////////////////
 function vkOpt_toogle(){
   var off=(vkgetCookie('vkopt_disable')=='1');

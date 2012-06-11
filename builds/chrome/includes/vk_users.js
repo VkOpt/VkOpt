@@ -215,10 +215,9 @@ function vkProcessUserLink(link){
 }
 function vkTsUserMenuLink(mid){
    var mev=(getSet(11)=='y')?'onclick':'onmouseover';
-   return '</span>'+
-            '<span class="fl_l vk_ts_exmenu vk_usermenu_btn" onmousedown="cancelEvent(event);" '+
+   return  '<span class="fl_r vk_ts_exmenu vk_usermenu_btn" onmousedown="cancelEvent(event);" '+
             mev+'="cancelEvent(event); pupShow(event,\'ts_vkm'+mid+'\',\'id'+mid+'\',this); return false;">'+
-            USERMENU_SYMBOL;//+'</span>';
+            USERMENU_SYMBOL+'</span>';
 }
 function vkAddUserMenu(el){
 	el=(el || ge('content'));
@@ -689,7 +688,8 @@ function vkGetProfile(uid,callback,no_switch_button){
 		
 		var username='<a href="/id'+uid+'" onclick="return nav.go(this, event);">'+profile.first_name+' '+profile.nickname+' '+profile.last_name+'</a>';
 		var ava_url=profile.photo_big;
-		var online=profile.online?'Online':'';//'Offline';
+      var last_seen=(profile.last_seen || {}).time;
+		var online=profile.online?'Online':(last_seen?'<div class="vk_last_seen">'+(new Date(last_seen*1000)).format("HH:MM:ss<br>dd.mm.yy")+'</div>':'');//'Offline';
 		var rate=make_rate(profile.rate);
       
       var relation=profile.relation;
@@ -753,7 +753,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 	  else {
 		  var code = '';
         //code  += 'var activity=API.status.get({uid:"'+uid+'"});';
-		  code += 'var profile=API.getProfiles({uids:"'+uid+'",fields:"relation,sex,nickname,activity,photo_big,online,rate,bdate,city,country,contacts,education,can_post,can_write_private_message"})[0];';
+		  code += 'var profile=API.getProfiles({uids:"'+uid+'",fields:"relation,sex,nickname,activity,photo_big,online,last_seen,rate,bdate,city,country,contacts,education,can_post,can_write_private_message"})[0];';
 		  code += 'var commonfr=API.friends.getMutual({target_uid:"'+uid+'"});';
 		  code += 'var commons=API.getProfiles({uids:commonfr,fields:"online"});';
 		  code += 'return {';

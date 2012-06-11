@@ -564,7 +564,7 @@ function vkInitSettings(){
          '</td></tr></table>'},      
       {id:8, text:IDL("seZoomPhoto")},// {id:8, header:IDL("seZoomPhoto") , text:IDL("seZoomPhHelp"),ops:[0,1,2]},
       //{id 23 - store "is expland" profile} 
-      {id:24, text:IDL("seAvaArrows")},
+      //{id:24, text:IDL("seAvaArrows")},
       {id:25, text:IDL("seICQico")},
       {id:26, text:IDL("seCalcAge")},
       {id:39, text:IDL("seGrCom")},
@@ -608,7 +608,7 @@ function vkInitSettings(){
       {id:30, header:IDL("seClockH") , text:IDL("seClockO"),ops:[0,1,2,3]},
       {id:31, text:IDL("seRightBar")+vkCheckboxSetting(37,IDL("seRightBarFixAsSideBar"),true)},
       {id:35, text:IDL("seBlocksToRightBar")},
-      {id:32, text:IDL("seSkinManBtn"), hide: (vkbrowser.mozilla)},
+      {id:32, text:IDL("seSkinManBtn") /*, hide: (vkbrowser.mozilla)*/},
       {id:33, text:IDL("seSmiles")+vkCheckboxSetting(63,IDL("seSmilesAlwaysShow"),true),warn:'seSmilesAlwaysShowWarning'},
       {id:36, text:IDL("sePreventHideNotifications")},
       {id:42, text:IDL("seSortFeedPhotos")},
