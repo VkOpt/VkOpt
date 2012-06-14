@@ -278,8 +278,8 @@ function vkMenu(){//vkExLeftMenu
         ['feed?section=photos',IDL("clPh")],
         ['feed?section=mentions',IDL("mNeMe")],
         ['feed?section=recommended',IDL("mNeR")],
-        ['feed?section=comments',IDL("mNeB")],
         ['feed?section=articles',IDL("mNeArticles")],
+        ['feed?section=comments',IDL("mNeB")],
         ['tag'+vkmid+'?act=comments',IDL("mNeFW")]       
     ],
 	'fave':[
@@ -287,7 +287,8 @@ function vkMenu(){//vkExLeftMenu
         ["fave?section=links",IDL("mFaL")],
         ["fave?section=likes_photo",IDL("mFaP")],
         ["fave?section=likes_video",IDL("mFaVI")],
-        ["fave?section=likes_posts",IDL("mFaPO")]       
+        ["fave?section=likes_posts",IDL("mFaPO")],
+        ["cc",IDL("vk_cc")],
     ],
     'settings':[
         ['settings',IDL("mSeO")],

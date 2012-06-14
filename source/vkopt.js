@@ -26,7 +26,7 @@ var MENU_HIGHLIGHT_DELAY=2000;      //(ms) yellow highlight in menu on changed c
 var SIDEBAR_ITEM_HIGHLIGHT_COLOR = "#fcf78a";
 var CHECK_FAV_ONLINE_DELAY = 20000; //(ms)  delay for check online statuses of faved users
 var FAVE_ONLINE_BLOCK_SHOW_COUNT=6;
-var SHOW_POPUP_PROFILE_DELAY=400;//ms 
+var SHOW_POPUP_PROFILE_DELAY=800;//ms 
 
 /* Save messages history config */
 var SAVE_MSG_HISTORY_PATTERN="%username% (%date%):\r\n%message%\r\n\r\n"; //Save Messages history file format (one record)

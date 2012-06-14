@@ -1152,7 +1152,8 @@ return '<small class="duration fl_r" id="vk_asize'+audio[0]+'_'+audio[1]+'" url=
 
 function vkAudioDownBtn(audio){
 	var names=(getSet(1) == 'y')?true:false;
-	return '<a href="'+audio[2]+'?'+vkDownloadPostfix()+(names?'&/'+audio[5]+' - '+audio[6]+'.mp3':'')+'"  onclick="return vkDownloadFile(this);"  onmouseover="vkDragOutFile(this);"><div class="play_new down_btn" id="down'+audio[0]+'_'+audio[1]+'"></div></a>'; 
+   var name=vkCleanFileName(audio[5]+' - '+audio[6])+'.mp3';
+	return '<a href="'+audio[2]+(names?'?'+vkDownloadPostfix()+'&/'+name:'')+'" download="'+name+'" onclick="return vkDownloadFile(this);"  onmouseover="vkDragOutFile(this);"><div class="play_new down_btn" id="down'+audio[0]+'_'+audio[1]+'"></div></a>'; 
 }
 
 function vkAudioDurSearchBtn(audio,fullname,id){

@@ -30,20 +30,21 @@ function vkInjCheck(files){
 
 function vkInj(file){
  switch (file){
-    case 'photoview.js':    vkPhotoViewer();	break;
-	case 'videoview.js':	vkVideoViewer();	break;
-	case 'audio.js':		vkAudios();		break;
-   case 'new_player.js':		vkAudioPlayer();		break;
+    case 'photoview.js':   vkPhotoViewer();	break;
+	case 'videoview.js':	   vkVideoViewer();	break;
+	case 'audio.js':		   vkAudios();		break;
+   case 'new_player.js':	vkAudioPlayer();		break;
 	case 'feed.js':			vkFeed();		break;
-	case 'search.js':		vkSearch();		break;
+	case 'search.js':		   vkSearch();		break;
 	case 'profile.js':		vkProfile();	break;
 	case 'wall.js':			vkWall();		break;		
 	case 'page.js':			vkPage();		break;
 	case 'friends.js':		vkFriends();	break;
-	case 'notifier.js': 	vkNotifier(); 	break;
+	case 'notifier.js': 	   vkNotifier(); 	break;
 	case 'common.js': 		vkCommon(); 	break;
-	case 'im.js': 			vkIM(); 	break;
+	case 'im.js': 			   vkIM(); 	break;
    case 'mail.js': 			vkMail(); 	break;
+   case 'groups_list.js':  vkGroupsList(); break;
   }
   vk_plugins.onjs(file); 
 }
@@ -105,8 +106,9 @@ function vkOnNewLocation(startup){
 
 	switch(nav.objLoc[0]){
 		case 'settings':vkSettingsPage(); break;
-		case 'mail': vkMailPage(); break;
-		case 'feed': vkFeedPage(); break;
+		case 'mail':   vkMailPage(); break;
+		case 'feed':   vkFeedPage(); break;
+      case 'groups': vkGroupsListPage();  break;
       default:
          if (nav.objLoc[0].match(/write\d+/)) vkMailPage();
 	}
@@ -131,6 +133,7 @@ function vkOnNewLocation(startup){
          case 'fave'    :vkFavePage(); break;
          case 'im'      :vkImPage(); break;
          case 'pages'   :vkWikiPages(); break;
+         //case 'groups_list': vkGroupsListPage(); break;
 		}
 		if (startup && window.Fave) Fave.init();	
 	}

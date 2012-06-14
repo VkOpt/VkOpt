@@ -492,12 +492,19 @@ function ProcessUserPhotoLink(node){
 
 allowHidePhoto=setTimeout(null,null);
 allowShowPhotoTimer=setTimeout(null,null);
+cur_popup_idx=0;
+cur_popup_url=null;
 function vkPopupAvatar(id,el,in_box){
     if (id==null) return;
     if (!window.LoadedProfiles) LoadedProfiles={};
     if (typeof allowShowPhoto =='undefined') allowShowPhoto=true;
     allowShowPhoto=true;
+    if (cur_popup_url!=id)
+      cur_popup_idx++;
+    cur_popup_url=id; 
+    var z=cur_popup_idx;
     getGidUid(id,function(id,gid){
+      if (z!=cur_popup_idx) return;
       if (in_box){
          var box=vkAlertBox('',vkBigLdrImg);
          vkGetProfile(id,function(html,uid){
@@ -508,19 +515,26 @@ function vkPopupAvatar(id,el,in_box){
          },true);
          
       }else  if (LoadedProfiles[id]){
-         allowShowPhotoTimer=setTimeout(function(){vkShowProfile(el,LoadedProfiles[id],id);},SHOW_POPUP_PROFILE_DELAY);
+         allowShowPhotoTimer=setTimeout(function(){
+            if (z!=cur_popup_idx) return;
+            vkShowProfile(el,LoadedProfiles[id],id);
+         },SHOW_POPUP_PROFILE_DELAY);
        } else {
+         var tstart=unixtime();
          vkGetProfile(id,function(html,uid){
+            if (z!=cur_popup_idx) return;
+            var t=unixtime()-tstart;
             LoadedProfiles[id]=html;
             allowShowPhotoTimer=setTimeout(function(){
                vkShowProfile(el,html,uid);
-            },SHOW_POPUP_PROFILE_DELAY);
+            },Math.max(0,SHOW_POPUP_PROFILE_DELAY-t));
          });
        }
     });
 }
 function vkShowProfile(el,html,uid,right){
-	clearTimeout(allowHidePhoto);
+	//if 
+   clearTimeout(allowHidePhoto);
     if (!ge("vkbigPhoto")) {
             var ht = '<div id="vkbigPhoto" onmousemove="clearTimeout(allowHidePhoto);" onmouseout="vkHidePhoto()" style="z-index:1000;display:none;position:absolute;background:transparent;"></div>';
             div = document.createElement('div');

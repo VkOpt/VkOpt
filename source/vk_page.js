@@ -1235,6 +1235,73 @@ function vkWikiNew(){
       nav.go("pages?act=edit&oid="+cur.oid+"&p="+encodeURIComponent(title));
 }
 
+
+function vkGroupsList(){
+   Inj.Before('GroupsList.showMore','var name','if (vkGroupsListCheckRow(row)) continue;');
+}
+
+function vkGroupsListPage(){
+	vkGrLstFilter();
+}
+
+function vkGroupsListCheckRow(row){
+   var val=parseInt((ge('vk_grlst_filter') || {}).value || '0');
+   if (val==0) return false;
+   var type=row[6];
+   
+   /*
+   type:
+      3: public
+      10+: event
+      0: group open
+      1: group closed
+      2: group private
+   */
+   var isEvent = (type >= 10);
+   var isPublic = (type==3);
+   var isGroup = (type>=0 && type <=2);
+   /*
+      groups - hide events & publics
+      events - hide groups & publics
+      groups & pub - hide events
+      publics - hide events & groups
+  
+   */
+   if (val==1 && (isEvent || isPublic)) return true;// hide events and publics
+   if (val==2 && (isGroup || isPublic)) return true;// hide groups and publics
+   if (val==3 &&  isEvent) return true;             // hide events
+   if (val==4 && (isGroup || isEvent)) return true; // hide events and groups
+   return false;
+}
+
+function vkGrLstFilter(){
+   var p=ge('groups_list_tabs'); 
+   if (ge('vk_gr_filter')){
+      (nav.objLoc['tab']=='admin'?hide:show)('vk_gr_filter');
+   }
+   if ((ge('vk_gr_filter') && cur.vkGrLstMenu) || !p) return;
+   
+   if (!ge('vk_gr_filter')) p.appendChild(vkCe('li',{id:'vk_gr_filter'},'<input type="hidden" id="vk_grlst_filter">'));
+   //*   
+   stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
+      vkaddcss('ul.t0 .result_list ul li{float:none}');
+      cur.vkGrLstMenu = new Dropdown(ge('vk_grlst_filter'),[[0,IDL("SelectGRFilter")],[1,IDL("Groups")],[2,IDL("Events")],[3,IDL("GroupsAndPublics")],[4,IDL("Publics")]], {//
+        target: ge('vk_gr_filter'),
+        resultField:'vk_grlst_filter',
+        width:160,
+        onChange: function(val){
+            //alert(val);
+            cur.scrollList.offset=0;
+            var cont = ge(cur.scrollList.prefix + cur.scrollList.tab);
+            cont.innerHTML='';
+            GroupsList.showMore();
+        }
+      });
+      (nav.objLoc['tab']=='admin'?hide:show)('vk_gr_filter');
+	});	
+   //*/
+}
+
 function vkToTopBackLink(){
    window._stlMousedown = function (e) {
      e = e || window.event;
