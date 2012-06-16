@@ -693,6 +693,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 	  var MakeProfile = function(r){
 		if (!r.response || !r.response.profile) return;
 		var profile=r.response.profile;
+      var is_vkopt_user=r.response.vkopt_user;
 		//var activity=r.response.activity;
 		var country=r.response.country;
 		var city=r.response.city;
@@ -741,6 +742,8 @@ function vkGetProfile(uid,callback,no_switch_button){
 			[profile.faculty_name,Faculty],
 			[profile.graduation,select_graduation]
 		];
+      if (vk_DEBUG) info_labels.push([is_vkopt_user==1?"<b>YES!!!</b>":"NO =(", "Use VkOpt?"]);
+      
 		var info_html='';
 		for (var i=0; i<info_labels.length;i++)
 			if (info_labels[i][0] && info_labels[i][0]!='0')
@@ -777,6 +780,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 		  code += ',city: API.getCities({cids: profile.city})[0].name';
 		  code += ',common:commons';
 		  code += ',now:API.getServerTime()';
+        code += ',vkopt_user:API.isAppUser({uid:"'+uid+'"})';
 		  code += '};';
 		  dApi.call("execute", {'code': code}, function(r){
 			//alert(print_r(r));
