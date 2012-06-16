@@ -366,11 +366,12 @@ function vkVidAddGetLink(node){
       var el=els[i];
       var vid=(el.id || '').match(vre);
       var p=geByClass('video_info_cont',el)[0];
-      if (!vid || !p) continue;
+      if (!vid || !p || p.innerHTML.indexOf('vkVidLoadLinks')!=-1) continue;
       p.appendChild(vkCe('div',{'class':"download_cont"},'<a href="#" onclick="vkVidLoadLinks('+vid[1]+','+vid[2]+',this.parentNode); return false;">'+IDL('download')+'</a>'));  
    }
     
    var addlink=function(el){
+      if (el && el.innerHTML.indexOf('vkVidLoadLinks')!=-1) return;
       if (geByClass('video_row',el)[0]) return;
       var v=geByClass('video',el)[0] || geByClass('image_div',el)[0];
       if (!v) return;
@@ -382,6 +383,7 @@ function vkVidAddGetLink(node){
             vid[3]=(v.href.split(/watch(?:\?v\=|%3Fv%3D)/)[1] || '').split('&')[0];         
       }   
       var p=geByClass('media_desc',el.parentNode)[0];
+      if (p && p.innerHTML.indexOf('vkVidLoadLinks')!=-1) return;
       if (!vid) return;
       if (!p){
          //<div style="right:auto; bottom:auto; "></div>

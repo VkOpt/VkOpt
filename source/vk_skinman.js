@@ -110,7 +110,7 @@ function vkSetBodyScrResolution(){
 
 function vkStyle(url){ if (ge("vkStyleCSS")) ge("vkStyleCSS").href=url; }
 function vkStyleJS(url){ 
-   if (window.vkStyleOnDisable) vkStyleOnDisable();
+   if (window.vkThemeOnDisable) vkThemeOnDisable();
    if (ge("vkStyleCSSJS")) ge("vkStyleCSSJS").src=url; 
 }
 
@@ -247,7 +247,7 @@ function vkMakeCatMenu(cats){
 		name:'Ripped v1.1',
 		author:'<a href="/id13391307">KiberInfinity</a>',
 		url:'http://vkopt.net/css/vk_ripped.css',
-		cat:'Категории',
+		cat:'РљР°С‚РµРіРѕСЂРёРё',
 		thumb:'http://ipic.su/img/img6/tn/kiss_307kb.1338032185.png',
 		screen:'http://ipic.su/img/img6/fs/kiss_307kb.1338032185.png',
       skinman_ver:2,
@@ -258,7 +258,8 @@ function vkMakeCatMenu(cats){
 function vkOnSkinList(Skins){
   var arr=[];
   for (var i=0; i<Skins.length; i++){
-      if (Skins[i].skinman_ver==null || Skins[i].skinman_ver<=VK_SKINMAN_VER)
+      var smv=parseInt(Skins[i].skinman_ver) || 0;
+      if (smv<=VK_SKINMAN_VER)
          arr.push(Skins[i]);   
   }
   VK_STYLE_LIST=arr;//Skins;
@@ -371,7 +372,7 @@ function vkShowSkinMan(filter,page){
           .thumbimg img:hover {  border: solid 1px #45688E; } \
           .current_skin{border: 1px solid #DDD; background-color: #EEF;} \
           .noselected_skin{border: 0px; background-color: transparent;} \
-          .zoombg{background: url(http:\/\/xmages.net/storage/10/1/0/1/7/upload/080c5ec3.png) 4px 0px no-repeat;} \
+          .zoombg{background: url('"+zoom_img+"') 4px 0px no-repeat;} \
           .smaximize {  border-bottom: 1px solid #DAE1E8;  height: 19px;  line-height: 19px;  background-color: transparent; display: block;  clear: both;  padding: 3px; padding-left:25px;  border-bottom: solid 1px #CCD3DA; } \
           .smaximize:hover {  background-color: #DAE1E8;} \
           .smaximizeoff {  opacity: 0.5; color: #2b587a; border-bottom: 1px solid #DAE1E8;  height: 19px;  line-height: 19px;  background-color: transparent; display: block;  clear: both;  padding: 3px; padding-left:25px; border-bottom: solid 1px #CCD3DA; } \
