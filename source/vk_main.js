@@ -101,6 +101,10 @@ function vkOnStorage(id,cmd){
 }
 function vkOnNewLocation(startup){
 	if (!(window.nav && nav.objLoc)) return;
+   if (!cur.module){
+      setTimeout(vkOnNewLocation,10);
+      return;
+   }
 	vklog('Navigate:'+print_r(nav.objLoc).replace(/\n/g,','));
 	var tstart=unixtime();
 
@@ -112,7 +116,12 @@ function vkOnNewLocation(startup){
       default:
          if (nav.objLoc[0].match(/write\d+/)) vkMailPage();
 	}
-   
+   /*
+   if (!cur.module){
+      if(nav.objLoc[0].match(/wall-?\d+/)) 
+         cur.module='wall';
+   }
+   */
 	
 	if (cur.module){	
 		vklog(cur.module+'|'+print_r(nav.objLoc).replace(/\n/g,','));

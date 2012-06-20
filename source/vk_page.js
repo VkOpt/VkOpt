@@ -141,6 +141,16 @@ function vkWallPage(){
    //vkWallAddPreventHideCB();
 	vkAddCleanWallLink();
 	vkAddDelWallCommentsLink();
+   vkWallPhotosLinks();
+}
+function vkWallPhotosLinks(){
+   var el=geByClass('fw_post_info')[1];
+   //alert(cur.oid +'\n'+ cur.pid +'\n'+ el +'\n'+ !ge('vk_wall_ph_links') +'\n'+ geByClass('page_media_full_photo')[0]);
+   if (cur.oid && cur.pid && el && !ge('vk_wall_ph_links') && geByClass('page_media_full_photo')[0]){
+      var listId='wall'+cur.oid+'_'+cur.pid;
+      el.insertBefore(vkCe('a',{id:'vk_wall_ph_links', "class":"fl_r","onclick":"vkGetLinksToPhotos('"+listId+"')"},IDL('Links')),el.firstChild);
+      //vkGetLinksToPhotos();
+   }
 }
 
 function vkWall(){

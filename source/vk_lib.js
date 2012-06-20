@@ -1722,6 +1722,7 @@ vkApis={
 	},
 	photos_hd:function(oid,aid,callback,progress){
 		var listId=(aid=='tag' || aid=='photos') ?  aid+oid : "album"+oid+"_"+aid;
+      if (aid==null) listId=oid;
 		var PER_REQ=10;
 		var cur=0;
 		var count=0;

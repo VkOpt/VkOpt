@@ -139,7 +139,9 @@ function vkPhotosPage(){
 		}
 	}
 }
+
 //javascript: vkGetPageWithPhotos(13391307,42748479); void(0);
+////javascript: vkGetPageWithPhotos(13391307,42748479); void(0);
 function vkGetLinksToPhotos(oid,aid){  
 	var MakeLinksList=function(phot){
 		var parr=[]; 
@@ -149,20 +151,31 @@ function vkGetLinksToPhotos(oid,aid){
 	}
 	if (!ge('vk_links_container')){
 		var div=vkCe('div',{id:"vk_links_container","class":"clear_fix",style:"padding:10px;"},'<center>'+vkBigLdrImg+'</center>');
-		var ref=ge('photos_container')
-		ref.parentNode.insertBefore(div,ref);
+		var ref=ge('photos_container');
+      if (ref)
+         ref.parentNode.insertBefore(div,ref);
+      else 
+         div=null;
 	} else var div=ge('vk_links_container');
+   var box=null;
+   if (!div) {
+      box=vkAlertBox(IDL('Links'),'<div id="vk_links_container"></div>');
+      box.setOptions({width:"640px"});
+      div=ge('vk_links_container');
+   }
 	vkApis.photos_hd(oid,aid,function(r){
-		div.innerHTML=MakeLinksList(r).join('<br>')+
+		var html=MakeLinksList(r).join('<br>');
+      div.innerHTML=html+(box?'':
 				'<div class="vk_hide_links" style="text-align:center; padding:20px;">\
 					<a href="#" onclick="re(\'vk_links_container\'); return false;">'+IDL('Hide')+'</a>\
-				</div>';
+				</div>');
 	},function(c,f){
 		if (!f) f=1;
 		ge('vk_links_container').innerHTML=vkProgressBar(c,f,600);
 		//document.title=c+"/"+f
 	});
 }
+
 
 function vkGetPageWithPhotos(oid,aid){  
   var MakeImgsList=function(phot){
