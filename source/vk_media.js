@@ -382,7 +382,7 @@ function vkVidAddGetLink(node){
          if (vid && (v.href || '').indexOf('youtube.com')!=-1) 
             vid[3]=(v.href.split(/watch(?:\?v\=|%3Fv%3D)/)[1] || '').split('&')[0];         
       }   
-      var p=geByClass('media_desc',el.parentNode)[0];
+      var p=(el.nextElementSibling || {}).className=='media_desc'?el.nextElementSibling:null;//geByClass('media_desc',el.parentNode)[0];
       if (p && p.innerHTML.indexOf('vkVidLoadLinks')!=-1) return;
       if (!vid) return;
       if (!p){
