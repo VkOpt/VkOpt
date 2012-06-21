@@ -155,6 +155,7 @@ function vkOnNewLocation(startup){
       vkWallAddBtnOnError();
 	}
 	vk_plugins.onloc();
+   stManager.add(['page.js']);
 	vklog('OnLocation time:' + (unixtime()-tstart) +'ms');
 }
 
