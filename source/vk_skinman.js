@@ -364,6 +364,7 @@ function vkShowSkinMan(filter,page){
   document.title=IDL("SkinMan")+(filter?" | "+filter:"")+" | [vkOpt]";
   //addCss("css/photos2.css");
   vkaddcss("\
+          .vk_cssjs_ico{background-image:url('"+skinman_cssjs+"'); cursor:pointer; display: block; height: 16px; width: 16px; float:right;}\
           .skin_table{text-align: left; padding: 0 5px 0;} \
           .current_skin,.noselected_skin {display:inline-block; margin:8px 8px 0; text-align: center; padding:3px;} \
           .current_skin DIV, .noselected_skin DIV {display:block;} \
@@ -406,9 +407,12 @@ function vkShowSkinMan(filter,page){
      var Author=(vkMyStyles[i].author)?vkMyStyles[i].author:"N/A";
      var CssUrl=(vkMyStyles[i].url)?vkMyStyles[i].url:"";
      var CssJsUrl=(vkMyStyles[i].script_url)?vkMyStyles[i].script_url:"";
+     var CssDesc=(vkMyStyles[i].description)?vkMyStyles[i].description:"";
+     
+     var mouseover = ' onmouseover="vkSkinManInfo(this,\''+(CssDesc!=""?CssDesc:IDL('WarnCSSJSTheme'))+'\');" ';
      html +=""+
           '<div class="'+(vkGetVal("VK_CURRENT_CSS_URL")==CssUrl?'current_skin':'noselected_skin')+'">'+
-            '<div><h4 onclick="return vkSwichStyle(\''+CssUrl+'\',this,\''+CssJsUrl+'\');" style="cursor:hand;">'+Name+'</h4></div>'+
+            '<div><h4 onclick="return vkSwichStyle(\''+CssUrl+'\',this,\''+CssJsUrl+'\');" style="cursor:hand;">'+Name+(CssJsUrl!=""?'<span class="vk_cssjs_ico" '+mouseover+'></span>':"")+'</h4></div>'+
             
             '<div align=center class="thumbimg">'+
               '<a href="#" onclick="return vkSwichStyle(\''+CssUrl+'\',this,\''+CssJsUrl+'\');"><img width="160px" alt="'+Name+'" src="' + Thumb + '"/></a>'+
@@ -426,6 +430,17 @@ function vkShowSkinMan(filter,page){
   return false;
 }
 
+function vkSkinManInfo(el,text,hasover){
+	showTooltip(el, {
+		  hasover:hasover,
+		  text:text,
+		  slide: 15,
+		  //shift: [0, -3, 0],
+		  showdt: 100,
+		  hidedt: 200,
+        width:70
+	});
+}
 
 function vkSkinManInit(){
   if (window.icoNode){
