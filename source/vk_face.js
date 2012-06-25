@@ -277,7 +277,8 @@ function vkMenu(){//vkExLeftMenu
         ['feed?section=notifications',IDL("mNeNotif")],
         ['feed?section=photos',IDL("clPh")],
         ['feed?section=mentions',IDL("mNeMe")],
-        ['feed?section=recommended',IDL("mNeR")],
+        ['feed?section=recommended',IDL("mNeR")+' 1'],
+        ['feed?section=suggested',IDL("mNeR")+' 2'],
         ['feed?section=articles',IDL("mNeArticles")],
         ['feed?section=comments',IDL("mNeB")],
         ['tag'+vkmid+'?act=comments',IDL("mNeFW")]       
