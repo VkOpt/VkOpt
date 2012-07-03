@@ -7,7 +7,7 @@
 // (c) All Rights Reserved. VkOpt.
 //
 
-
+var VK_SKINMAN_VER=2;
 var VK_CSS_CATALOG_BASE_URL='http://vkopt.net/css/vk_css_list.js';
 var VK_THEMES_ON_PAGE=30;
 
@@ -109,12 +109,17 @@ function vkSetBodyScrResolution(){
 }
 
 function vkStyle(url){ if (ge("vkStyleCSS")) ge("vkStyleCSS").href=url; }
+function vkStyleJS(url){ 
+   if (window.vkThemeOnDisable) vkThemeOnDisable();
+   if (ge("vkStyleCSSJS")) ge("vkStyleCSSJS").src=url; 
+}
 
 function vkSkinnerInit(){
   //var lsredy=vkLocalStoreReady();
   if (EnableSetStyle && !ge('vkStyleCSS')) {                                                           
     VK_CURRENT_CSS_URL=vkGetVal("VK_CURRENT_CSS_URL") || "";//vk_LSGetVal - only localstore; vkGetVal- localstore && cookie 
     VK_CURRENT_CSS_CODE=vk_LSGetVal('VK_CURRENT_CSS_CODE') || "";
+    VK_CURRENT_CSSJS_URL=vk_LSGetVal('VK_CURRENT_CSSJS_URL') || "";
     
       vkSetBodyScrResolution();
       var vkcssNode = document.createElement('link');
@@ -129,7 +134,12 @@ function vkSkinnerInit(){
       styleElement.id="vkStyleNode";
       styleElement.appendChild(document.createTextNode(VK_CURRENT_CSS_CODE));
       
-    
+
+      var  scriptElement = document.createElement("script");
+      scriptElement.type = "text/javascript";
+      scriptElement.id="vkStyleCSSJS";
+      if (!VK_CURRENT_CSSJS_URL=="") scriptElement.src=VK_CURRENT_CSSJS_URL;
+      
       var appendTo='head';//"body";
       var headID = document.getElementsByTagName(appendTo)[0];
 	  //var link = document.getElementsByTagName('link')[0];
@@ -137,6 +147,7 @@ function vkSkinnerInit(){
         headID.appendChild(document.createElement('link'));//fix
         headID.appendChild(vkcssNode);
         headID.appendChild(styleElement);
+        headID.appendChild(scriptElement);
       } else {
         var vkcsload=setInterval(function(){                                            
           if (document.getElementsByTagName(appendTo)[0]){
@@ -145,6 +156,7 @@ function vkSkinnerInit(){
             //headID.appendChild(document.createElement('link'));//fix
             headID.appendChild(vkcssNode);
             headID.appendChild(styleElement);
+            headID.appendChild(scriptElement);
           }
         },2);
     }
@@ -157,9 +169,13 @@ function vkSwichCSS(code){
   ge('vkStyleNode').innerHTML=code;
 }
 
-function vkSwichStyle(url,el){
+function vkSwichStyle(url,el,js){
   vkStyle(url);
   vkSetVal('VK_CURRENT_CSS_URL',url);
+  
+  vkStyleJS(js || "");
+  vkSetVal('VK_CURRENT_CSSJS_URL',js);
+  
   if (!window.geByClass) return true;
   var nodes=geByClass('current_skin');
   for (var i=0;i<nodes.length;i++){ nodes[i].setAttribute("class","noselected_skin"); };  
@@ -221,13 +237,32 @@ function vkMakeCatMenu(cats){
     for (var cat in cats)  if(cat!='SkinsCount') html+='<li><a href=# category="'+cat+'" onclick="return vkCatNavigate(this);">'+cat+'<span>'+cats[cat]+'</span></a></li>';
     html+='<div class="moreDiv"></div>';
 	hide(vkNavigationMenu);
-	el.parentNode.insertBefore(vkCe('ol',{id:'vk_cat_skins_menu'},html),el)
-    //el.innerHTML=html;
+	el.parentNode.insertBefore(vkCe('ol',{id:'vk_cat_skins_menu'},html),el);
   }
 }
+
+/*
+
+	{
+		name:'Ripped v1.1',
+		author:'<a href="/id13391307">KiberInfinity</a>',
+		url:'http://vkopt.net/css/vk_ripped.css',
+		cat:'Категории',
+		thumb:'http://ipic.su/img/img6/tn/kiss_307kb.1338032185.png',
+		screen:'http://ipic.su/img/img6/fs/kiss_307kb.1338032185.png',
+      skinman_ver:2,
+      script_url:'http://vk.cc/myscript.js'
+	},
+
+*/
 function vkOnSkinList(Skins){
-  //alert("");
-  VK_STYLE_LIST=Skins;
+  var arr=[];
+  for (var i=0; i<Skins.length; i++){
+      var smv=parseInt(Skins[i].skinman_ver) || 0;
+      if (smv<=VK_SKINMAN_VER)
+         arr.push(Skins[i]);   
+  }
+  VK_STYLE_LIST=arr;//Skins;
   if (ge('content')) vkShowSkinMan();
 }
 
@@ -329,6 +364,7 @@ function vkShowSkinMan(filter,page){
   document.title=IDL("SkinMan")+(filter?" | "+filter:"")+" | [vkOpt]";
   //addCss("css/photos2.css");
   vkaddcss("\
+          .vk_cssjs_ico{background-image:url('"+skinman_cssjs+"'); cursor:pointer; display: block; height: 16px; width: 16px; float:right;}\
           .skin_table{text-align: left; padding: 0 5px 0;} \
           .current_skin,.noselected_skin {display:inline-block; margin:8px 8px 0; text-align: center; padding:3px;} \
           .current_skin DIV, .noselected_skin DIV {display:block;} \
@@ -337,7 +373,7 @@ function vkShowSkinMan(filter,page){
           .thumbimg img:hover {  border: solid 1px #45688E; } \
           .current_skin{border: 1px solid #DDD; background-color: #EEF;} \
           .noselected_skin{border: 0px; background-color: transparent;} \
-          .zoombg{background: url(http:\/\/xmages.net/storage/10/1/0/1/7/upload/080c5ec3.png) 4px 0px no-repeat;} \
+          .zoombg{background: url('"+zoom_img+"') 4px 0px no-repeat;} \
           .smaximize {  border-bottom: 1px solid #DAE1E8;  height: 19px;  line-height: 19px;  background-color: transparent; display: block;  clear: both;  padding: 3px; padding-left:25px;  border-bottom: solid 1px #CCD3DA; } \
           .smaximize:hover {  background-color: #DAE1E8;} \
           .smaximizeoff {  opacity: 0.5; color: #2b587a; border-bottom: 1px solid #DAE1E8;  height: 19px;  line-height: 19px;  background-color: transparent; display: block;  clear: both;  padding: 3px; padding-left:25px; border-bottom: solid 1px #CCD3DA; } \
@@ -370,12 +406,16 @@ function vkShowSkinMan(filter,page){
      var Name=(vkMyStyles[i].name)?vkMyStyles[i].name:IDL("Noname");
      var Author=(vkMyStyles[i].author)?vkMyStyles[i].author:"N/A";
      var CssUrl=(vkMyStyles[i].url)?vkMyStyles[i].url:"";
+     var CssJsUrl=(vkMyStyles[i].script_url)?vkMyStyles[i].script_url:"";
+     var CssDesc=(vkMyStyles[i].description)?vkMyStyles[i].description:"";
+     
+     var mouseover = ' onmouseover="vkSkinManInfo(this,\''+(CssDesc!=""?CssDesc:IDL('WarnCSSJSTheme'))+'\');" ';
      html +=""+
           '<div class="'+(vkGetVal("VK_CURRENT_CSS_URL")==CssUrl?'current_skin':'noselected_skin')+'">'+
-            '<div><h4 onclick="return vkSwichStyle(\''+CssUrl+'\',this);" style="cursor:hand;">'+Name+'</h4></div>'+
+            '<div><h4 onclick="return vkSwichStyle(\''+CssUrl+'\',this,\''+CssJsUrl+'\');" style="cursor:hand;">'+Name+(CssJsUrl!=""?'<span class="vk_cssjs_ico" '+mouseover+'></span>':"")+'</h4></div>'+
             
             '<div align=center class="thumbimg">'+
-              '<a href="#" onclick="return vkSwichStyle(\''+CssUrl+'\',this);"><img width="160px" alt="'+Name+'" src="' + Thumb + '"/></a>'+
+              '<a href="#" onclick="return vkSwichStyle(\''+CssUrl+'\',this,\''+CssJsUrl+'\');"><img width="160px" alt="'+Name+'" src="' + Thumb + '"/></a>'+
             '</div>' + 
             '<div><h4>'+IDL("Author")+": "+Author+'</h4></div>'+
             '<div>'+((Screen)?'<a class="smaximize zoombg" href="'+Screen+'" onclick="return vkShowScreen(\''+Screen+'\')">'+IDL("Zoom")+'</a>':
@@ -390,6 +430,17 @@ function vkShowSkinMan(filter,page){
   return false;
 }
 
+function vkSkinManInfo(el,text,hasover){
+	showTooltip(el, {
+		  hasover:hasover,
+		  text:text,
+		  slide: 15,
+		  //shift: [0, -3, 0],
+		  showdt: 100,
+		  hidedt: 200,
+        width:70
+	});
+}
 
 function vkSkinManInit(){
   if (window.icoNode){

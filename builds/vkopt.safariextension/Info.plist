@@ -5,7 +5,7 @@
 	<key>Author</key>
 	<string>KiberПсих</string>
 	<key>Builder Version</key>
-	<string>534.54.16</string>
+	<string>534.57.2</string>
 	<key>CFBundleDisplayName</key>
 	<string>VkOpt</string>
 	<key>CFBundleIdentifier</key>
@@ -13,9 +13,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.0.6.1</string>
+	<string>2.0.7.0</string>
 	<key>CFBundleVersion</key>
-	<string>2.0.6.1</string>
+	<string>2.0.7.0</string>
 	<key>Chrome</key>
 	<dict/>
 	<key>Content</key>
@@ -54,7 +54,7 @@
 		</dict>
 	</dict>
 	<key>Update Manifest URL</key>
-	<string>http://vkopt.net/safari_upd.xml</string>
+	<string>http://vkopt.net/upd/safari_upd.xml</string>
 	<key>Website</key>
 	<string>http://vkopt.net/</string>
 </dict>

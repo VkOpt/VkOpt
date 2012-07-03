@@ -310,6 +310,7 @@ function ExGroupItems(gid,el){
 	uitems+=mkExItem(i++,'<a href="/photos-%GID">'+IDL('clPhBrowse')+'</a>');
 	uitems+=mkExItem(i++,'<a href="/apps?gid=%GID">'+IDL('clAp')+'</a>');
 	uitems+=mkExItem(i++,'<a href="/search?c[section]=people&c[group]=%GID">'+IDL('clGu')+'</a>');
+   uitems+=mkExItem(i++,'<a href="/club%GID?act=edit">'+IDL('mGrAdmin')+'</a>');
 	return uitems;
 }
 function ExUserItems(id,el){
@@ -492,12 +493,19 @@ function ProcessUserPhotoLink(node){
 
 allowHidePhoto=setTimeout(null,null);
 allowShowPhotoTimer=setTimeout(null,null);
+cur_popup_idx=0;
+cur_popup_url=null;
 function vkPopupAvatar(id,el,in_box){
     if (id==null) return;
     if (!window.LoadedProfiles) LoadedProfiles={};
     if (typeof allowShowPhoto =='undefined') allowShowPhoto=true;
     allowShowPhoto=true;
+    if (cur_popup_url!=id)
+      cur_popup_idx++;
+    cur_popup_url=id; 
+    var z=cur_popup_idx;
     getGidUid(id,function(id,gid){
+      if (z!=cur_popup_idx) return;
       if (in_box){
          var box=vkAlertBox('',vkBigLdrImg);
          vkGetProfile(id,function(html,uid){
@@ -508,19 +516,26 @@ function vkPopupAvatar(id,el,in_box){
          },true);
          
       }else  if (LoadedProfiles[id]){
-         allowShowPhotoTimer=setTimeout(function(){vkShowProfile(el,LoadedProfiles[id],id);},SHOW_POPUP_PROFILE_DELAY);
+         allowShowPhotoTimer=setTimeout(function(){
+            if (z!=cur_popup_idx) return;
+            vkShowProfile(el,LoadedProfiles[id],id);
+         },SHOW_POPUP_PROFILE_DELAY);
        } else {
+         var tstart=unixtime();
          vkGetProfile(id,function(html,uid){
+            if (z!=cur_popup_idx) return;
+            var t=unixtime()-tstart;
             LoadedProfiles[id]=html;
             allowShowPhotoTimer=setTimeout(function(){
                vkShowProfile(el,html,uid);
-            },SHOW_POPUP_PROFILE_DELAY);
+            },Math.max(0,SHOW_POPUP_PROFILE_DELAY-t));
          });
        }
     });
 }
 function vkShowProfile(el,html,uid,right){
-	clearTimeout(allowHidePhoto);
+	//if 
+   clearTimeout(allowHidePhoto);
     if (!ge("vkbigPhoto")) {
             var ht = '<div id="vkbigPhoto" onmousemove="clearTimeout(allowHidePhoto);" onmouseout="vkHidePhoto()" style="z-index:1000;display:none;position:absolute;background:transparent;"></div>';
             div = document.createElement('div');
@@ -679,6 +694,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 	  var MakeProfile = function(r){
 		if (!r.response || !r.response.profile) return;
 		var profile=r.response.profile;
+      var is_vkopt_user=r.response.vkopt_user;
 		//var activity=r.response.activity;
 		var country=r.response.country;
 		var city=r.response.city;
@@ -727,6 +743,8 @@ function vkGetProfile(uid,callback,no_switch_button){
 			[profile.faculty_name,Faculty],
 			[profile.graduation,select_graduation]
 		];
+      if (vk_DEBUG) info_labels.push([is_vkopt_user==1?"<b>YES!!!</b>":"NO =(", "Use VkOpt?"]);
+      
 		var info_html='';
 		for (var i=0; i<info_labels.length;i++)
 			if (info_labels[i][0] && info_labels[i][0]!='0')
@@ -763,6 +781,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 		  code += ',city: API.getCities({cids: profile.city})[0].name';
 		  code += ',common:commons';
 		  code += ',now:API.getServerTime()';
+        code += ',vkopt_user:API.isAppUser({uid:"'+uid+'"})';
 		  code += '};';
 		  dApi.call("execute", {'code': code}, function(r){
 			//alert(print_r(r));

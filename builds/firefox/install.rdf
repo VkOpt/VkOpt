@@ -5,28 +5,45 @@
     <em:type>2</em:type>
     <em:unpack>true</em:unpack>
     <em:name>VkOpt</em:name>
-    <em:version>2.0.6.120513</em:version>
+    <em:version>2.0.7.120701</em:version>
     <em:creator>KiberПсих</em:creator>
     <em:contributor></em:contributor>
 	<em:iconURL>chrome://VkOptExtension/skin/icon.png</em:iconURL>
 	<em:homepageURL>http://vkopt.net/</em:homepageURL>
     <em:updateURL>http://vkopt.net/upd/update.rdf</em:updateURL>
     <em:updateKey>MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDKoFvysLtbyghFmQk/J9CLnLEzkULcQUTxFvhXUwyVozynqLmv3+WMoOur8DaSUvzQdHAvKxvzFKkFWYCCPJO83rJ76r6xhssGXa1i8ShfElBiPaW8CAj8W4EmSWnGnrGMsaonf0C3YX3iLgIbZTTz6ovnOH1tUPsOE3A8V4ohmwIDAQAB</em:updateKey>
-    <em:description>Добавление множества функций для сайта ВКонтакте.ру</em:description>
+    <em:description>Добавление множества функций для сайта ВКонтакте.ру</em:description> 
     <em:targetApplication>
-      <!-- FireFox -->
-      <Description> 
-        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id> <!-- Firefox -->
-        <em:minVersion>4.0</em:minVersion>
-        <em:maxVersion>20.*</em:maxVersion>
-      </Description>
-      <!-- Fennec -->
       <Description>
-         <em:id>{a23983c0-fd0e-11dc-95ff-0800200c9a66}</em:id>
-         <em:minVersion>4.0</em:minVersion>
-         <em:maxVersion>20.*</em:maxVersion>
+        <!-- fennec -->
+        <em:id>{a23983c0-fd0e-11dc-95ff-0800200c9a66}</em:id>
+        <em:minVersion>4.0</em:minVersion>
+        <em:maxVersion>40.*</em:maxVersion>
       </Description>
-      
+    </em:targetApplication>
+    <em:targetApplication>
+      <Description>
+        <!-- fennec2 -->
+        <em:id>{aa3c5121-dab2-40e2-81ca-7ea25febc110}</em:id>
+        <em:minVersion>4.0</em:minVersion>
+        <em:maxVersion>40.*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+    <em:targetApplication>
+      <Description>
+        <!-- firefox -->
+        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+        <em:minVersion>4.0</em:minVersion>
+        <em:maxVersion>40.*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+    <em:targetApplication>
+      <Description>
+        <!-- seamonkey -->
+        <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
+        <em:minVersion>2.5</em:minVersion>
+        <em:maxVersion>40.*</em:maxVersion>
+      </Description>
     </em:targetApplication>
   </Description>
 </RDF>

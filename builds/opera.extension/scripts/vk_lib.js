@@ -1532,7 +1532,13 @@ var dApi = {
 				src: '/login.php?app=' + appId + '&layout=popup&type=browser&settings=' + settings
 				}, {position: 'relative', width: '530px', height: '400px', border:'0px'});
 			
-			dApi.auth_frame.onload=function() { dApi.onAuth(callback);}
+         
+         window.addEventListener("message", function(event) {
+               if (event.data=='dapi_login_success')
+                  dApi.onAuth(callback);
+            },false);
+         
+			//dApi.auth_frame.onload=function() { dApi.onAuth(callback);}
 			
 			var onHideBox=function(){
 				var fr=dApi.auth_frame;
@@ -1549,6 +1555,12 @@ var dApi = {
 		}	
 		AjPost('/login.php?app=' + dApi.API_ID + '&layout=popup&type=browser&settings=' + dApi.SETTINGS,{},oncheck);	
 	},
+   Check: function(){
+      var dloc=document.location.href;
+      if (dloc.match("login_success\.html")){		
+            parent.window.postMessage("dapi_login_success","*");	
+      }
+   },
 
 	onAuth: function(callback) {
 		var onlogin=function(r,t) {
@@ -1710,6 +1722,7 @@ vkApis={
 	},
 	photos_hd:function(oid,aid,callback,progress){
 		var listId=(aid=='tag' || aid=='photos') ?  aid+oid : "album"+oid+"_"+aid;
+      if (aid==null) listId=oid;
 		var PER_REQ=10;
 		var cur=0;
 		var count=0;
@@ -2566,6 +2579,8 @@ if (!window.geByTag) geByTag=function(searchTag, node) {return (node || document
 if (!window.geByTag1) geByTag1=function(searchTag, node) {return geByTag(searchTag, node)[0];}
 
 var dloc=document.location.href.split('/')[2] || '';
+
+setTimeout(dApi.Check,10);
 if(!(dloc.indexOf('vk.com')!=-1 || dloc.indexOf('vkontakte.ru')!=-1)) {setTimeout(XFR.check,800);}
 /*if(!(dloc.indexOf('vk.com')!=-1 || dloc.indexOf('vkontakte.ru')!=-1)) {*/setTimeout(XFR2.check,800);//}
 

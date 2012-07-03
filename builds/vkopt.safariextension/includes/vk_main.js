@@ -30,25 +30,25 @@ function vkInjCheck(files){
 
 function vkInj(file){
  switch (file){
-    case 'photoview.js':    vkPhotoViewer();	break;
-	case 'videoview.js':	vkVideoViewer();	break;
-	case 'audio.js':		vkAudios();		break;
-   case 'new_player.js':		vkAudioPlayer();		break;
+    case 'photoview.js':   vkPhotoViewer();	break;
+	case 'videoview.js':	   vkVideoViewer();	break;
+	case 'audio.js':		   vkAudios();		break;
+   case 'new_player.js':	vkAudioPlayer();		break;
 	case 'feed.js':			vkFeed();		break;
-	case 'search.js':		vkSearch();		break;
+	case 'search.js':		   vkSearch();		break;
 	case 'profile.js':		vkProfile();	break;
 	case 'wall.js':			vkWall();		break;		
 	case 'page.js':			vkPage();		break;
 	case 'friends.js':		vkFriends();	break;
-	case 'notifier.js': 	vkNotifier(); 	break;
+	case 'notifier.js': 	   vkNotifier(); 	break;
 	case 'common.js': 		vkCommon(); 	break;
-	case 'im.js': 			vkIM(); 	break;
+	case 'im.js': 			   vkIM(); 	break;
    case 'mail.js': 			vkMail(); 	break;
+   case 'groups_list.js':  vkGroupsList(); break;
   }
   vk_plugins.onjs(file); 
 }
-
-
+ 
    
 function vkOnRenderFlashVars(vars){
 	if (vars.vid) vkVidVars=vars;
@@ -100,17 +100,27 @@ function vkOnStorage(id,cmd){
 }
 function vkOnNewLocation(startup){
 	if (!(window.nav && nav.objLoc)) return;
+   if (!cur.module){
+      setTimeout(vkOnNewLocation,10);
+      return;
+   }
 	vklog('Navigate:'+print_r(nav.objLoc).replace(/\n/g,','));
 	var tstart=unixtime();
 
 	switch(nav.objLoc[0]){
 		case 'settings':vkSettingsPage(); break;
-		case 'mail': vkMailPage(); break;
-		case 'feed': vkFeedPage(); break;
+		case 'mail':   vkMailPage(); break;
+		case 'feed':   vkFeedPage(); break;
+      case 'groups': vkGroupsListPage();  break;
       default:
          if (nav.objLoc[0].match(/write\d+/)) vkMailPage();
 	}
-   
+   /*
+   if (!cur.module){
+      if(nav.objLoc[0].match(/wall-?\d+/)) 
+         cur.module='wall';
+   }
+   */
 	
 	if (cur.module){	
 		vklog(cur.module+'|'+print_r(nav.objLoc).replace(/\n/g,','));
@@ -131,6 +141,7 @@ function vkOnNewLocation(startup){
          case 'fave'    :vkFavePage(); break;
          case 'im'      :vkImPage(); break;
          case 'pages'   :vkWikiPages(); break;
+         //case 'groups_list': vkGroupsListPage(); break;
 		}
 		if (startup && window.Fave) Fave.init();	
 	}
@@ -143,6 +154,7 @@ function vkOnNewLocation(startup){
       vkWallAddBtnOnError();
 	}
 	vk_plugins.onloc();
+   stManager.add(['page.js']);
 	vklog('OnLocation time:' + (unixtime()-tstart) +'ms');
 }
 

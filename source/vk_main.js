@@ -48,8 +48,7 @@ function vkInj(file){
   }
   vk_plugins.onjs(file); 
 }
-
-
+ 
    
 function vkOnRenderFlashVars(vars){
 	if (vars.vid) vkVidVars=vars;
