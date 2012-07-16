@@ -313,6 +313,23 @@ function vkVideoPage(){
          Inj.After('cur.videoTpl','sign,','vkVidGetLinkBtn(v),');// or move this to 'vkInj'?
       }
    }
+   vkVideoNullAlbum();
+}
+
+
+function vkVideoNullAlbum(){
+   var p=ge('video_albums_list');
+   if (p && !ge('video_section_album_0')){
+      var attrs={
+         'id':"video_section_album_0",
+         'class':"side_filter",
+         'onmousedown':"return nav.change({section:'album_0'});",
+         'onmouseover':"addClass(this, 'side_filter_over');",
+         'onmouseout':"removeClass(this, 'side_filter_over');"      
+      };
+      
+      p.insertBefore(vkCe('div',attrs,IDL('NotInAlbums')),p.firstChild);
+   }
 }
 
 function vkVideoViewer(){
@@ -369,7 +386,13 @@ function vkVidDownloadLinks(vars){
 
 function vkVidGetLinkBtn(vid){//for cur.videoTpl
    if (!vid) return '';
-   return '<div class="download_cont"><a href="#" onclick="vkVidLoadLinks('+vid[0]+','+vid[1]+',this.parentNode); return false;">'+IDL('download')+'</a></div>';
+   var oid=parseInt(vid[0]);
+   var cur_oid=(window.cur && cur.oid)?cur.oid:((window.nav && nav.objLoc) ? nav.objLoc[0].match(/-?\d+/):null);
+   var href=(oid<0?'club':'id')+Math.abs(oid);
+      
+   var s=(cur_oid==oid?'':'<small class="fl_r owner_cont"><a href="/'+href+'" onmouseover="vkVidShowOwnerName('+oid+',this)">'+href+'</a></small>');
+   
+   return s+'<div class="download_cont"><a href="#" onclick="vkVidLoadLinks('+vid[0]+','+vid[1]+',this.parentNode); return false;">'+IDL('download')+'</a></div>';
 }
 function vkVidAddGetLink(node){
    if (getSet(2)!='y') return;
@@ -380,10 +403,20 @@ function vkVidAddGetLink(node){
       var vid=(el.id || '').match(vre);
       var p=geByClass('video_info_cont',el)[0];
       if (!vid || !p || p.innerHTML.indexOf('vkVidLoadLinks')!=-1) continue;
-      p.appendChild(vkCe('div',{'class':"download_cont"},'<a href="#" onclick="vkVidLoadLinks('+vid[1]+','+vid[2]+',this.parentNode); return false;">'+IDL('download')+'</a>'));  
+
+      var div=vkCe('div',{'class':"download_cont"},'<a href="#" onclick="vkVidLoadLinks('+vid[1]+','+vid[2]+',this.parentNode); return false;">'+IDL('download')+'</a>');
+      
+      var oid=parseInt(vid[1]);
+      var href=(oid<0?'club':'id')+Math.abs(oid);
+      var cur_oid=nav.objLoc[0].match(/-?\d+/);
+      //alert((cur_oid!=oid)+'\n'+cur_oid+'\n'+oid);
+      if (cur_oid!=oid)
+         p.appendChild(vkCe('small',{'class':'fl_r owner_cont'},'<a href="/'+href+'" onmouseover="vkVidShowOwnerName('+oid+',this)">'+href+'</a>'),div.firstChild);
+ 
+      p.appendChild(div);  
    }
     
-   var addlink=function(el){
+   var addlink=function(el,class_name){
       if (el && el.innerHTML.indexOf('vkVidLoadLinks')!=-1) return;
       if (geByClass('video_row',el)[0]) return;
       var v=geByClass('video',el)[0] || geByClass('image_div',el)[0];
@@ -394,31 +427,33 @@ function vkVidAddGetLink(node){
          if (!vid) vid=(v.getAttribute("onclick") || '').match(vre);
          if (vid && (v.href || '').indexOf('youtube.com')!=-1) 
             vid[3]=(v.href.split(/watch(?:\?v\=|%3Fv%3D)/)[1] || '').split('&')[0];         
-      }   
+      } 
       var p=(el.nextElementSibling || {}).className=='media_desc'?el.nextElementSibling:null;//geByClass('media_desc',el.parentNode)[0];
       if (p && p.innerHTML.indexOf('vkVidLoadLinks')!=-1) return;
       if (!vid) return;
       if (!p){
          //<div style="right:auto; bottom:auto; "></div>
          p=geByClass('info',el)[1] || geByClass('info',el)[0];
-         var div=vkCe('div',{"class":"vk_vid_download_t"},'<span class="fl_l"><a href="#" onclick="vkVidLoadLinks('+vid[1]+','+vid[2]+',this.parentNode'+(vid[3]?", '"+vid[3]+"'":'')+'); cancelEvent(event); return false;">'+IDL('download')+'</a></span>');
+         var div=vkCe('div',{"class":"vk_vid_download_t"},'<span class="fl_l"><a href="#" onclick="vkVidLoadLinks('+vid[1]+','+vid[2]+',this.parentNode'+(vid[3]?", '"+vid[3]+"'":'')+'); cancelEvent(event); return false;">'+IDL('download')+'</a></span>');         
          if (p) p.appendChild(div);
          else v.parentNode.appendChild(div);//v.insertBefore(div,v.firstChild);
          return;
       }
-      p.appendChild(vkCe('span',{'class':"download_cont"},'<a href="#" onclick="vkVidLoadLinks('+vid[1]+','+vid[2]+',this.parentNode'+(vid[3]?", '"+vid[3]+"'":'')+'); return false;">'+IDL('download')+'</a>'));     
+      var div=vkCe('span',{'class':"download_cont"},'<a href="#" onclick="vkVidLoadLinks('+vid[1]+','+vid[2]+',this.parentNode'+(vid[3]?", '"+vid[3]+"'":'')+'); return false;">'+IDL('download')+'</a>');
+      p.appendChild(div);              
    };
    els=geByClass('page_media_video',node);
    for (var i=0; i<els.length; i++) addlink(els[i]);
    els=geByClass('page_media_full_video',node);
    for (var i=0; i<els.length; i++) addlink(els[i]);
    els=geByClass('video_row',node);
-   for (var i=0; i<els.length; i++) addlink(els[i]); 
+   for (var i=0; i<els.length; i++) addlink(els[i],'video_row'); 
    
    els=geByClass('videos_row',node);
    for (var i=0; i<els.length; i++) addlink(els[i]); 
 
 }
+
 function vkVidLoadLinks(oid,vid,el,yid){
     var smartlink=true;//(getSet(1) == 'y')?true:false;
     var fmt=['240p','360p','480p','720p'];
@@ -521,6 +556,31 @@ function vkGetVideoSize(el){
 			
 		},true);	
 	}
+}
+
+var vk_oid_names={};
+function vkVidShowOwnerName(oid,el){
+   //el=el.getElementsByTagName('span')[0] || el;
+   if (el && !el.hasAttribute('ok')){
+      el.innerHTML=vkLdrMiniImg;
+      var code='';
+      if (oid>0){
+         code='var u=API.users.get({uids:'+oid+'}); return u[0].first_name+" "+u[0].last_name;';
+      } else{
+         code='var g=API.groups.getById({gid:'+Math.abs(oid)+'}); return g[0].name;';
+      }
+      var view=function(){
+         el.innerHTML=vk_oid_names[""+oid];
+         el.setAttribute('ok',true); 
+      }
+      if (vk_oid_names[""+oid])
+         view();
+      else
+         dApi.call('execute',{code:code},function(r){
+            vk_oid_names[""+oid]=r.response
+            view();
+         });
+   }
 }
 
 vkVidVars=null;
@@ -682,6 +742,13 @@ function vkAudios(){
 function vkAudioPage(){
 	vkAudioPlayList(true);
 	vkAudioDelDup(true);
+   vkAudioRefreshFriends();
+}
+
+function vkAudioRefreshFriends(){
+   var p=ge('audio_more_friends');
+   if (!p || ge('vk_audio_fr_refresh')) return;
+   p.parentNode.insertBefore(vkCe('a',{id:'vk_audio_fr_refresh', onclick:"cur.shownFriends=[]; Audio.showMoreFriends(); return false;"},'&#8635;'),p);   
 }
 function vkAudioEditPage(){
 	vkCleanAudioLink();
