@@ -403,7 +403,7 @@ function vkStyles(){
 	.vk_mail_save_history{	display: block; height: 13px;	padding: 18px;	text-align: center;	}\
 	.vk_mail_save_history_block{	display: block; float:right; text-align: center; /*width: 200px;*/	}\
 	.vk_mail_save_history_block IMG{margin-top:13px;}\
-	.vk_mail_save_history_block .cfg{height: 11px; width: 15px; margin-top:2px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -60px;}\
+	.vk_mail_save_history_block .cfg, .save_msgs_link .cfg{height: 11px; width: 15px; margin-top:2px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -60px;}\
    #vk_stats_btn{position: absolute; float:left}\
    #vk_stats_btn .button_blue{position: absolute; right: 0px;}\
 	.lskey{padding-left: 5px; float:left; width:140px; overflow:hidden; height:20px; line-height:20px; font-weight:bold;}\
@@ -459,7 +459,7 @@ function vkStyles(){
 		.audio .down_btn { background-image: url("'+img+'") !important;}\
 		.audio_table .audio td.info { width: 340px !important;}\
 		.audio_table .audio td { padding-left: 0px; }\
-		.audio_table .audio .title_wrap {width: 315px !important;}\
+		.audio_table .audio .title_wrap, .audio_list .audio_title_wrap {width: 315px !important;}\
 		.audios_row .actions { padding-left: 0px !important; }\
 		.audios_row .actions a{padding-right:2px !important; padding-left:2px !important;}\
 		.audios_row .audio_title_wrap{ width: auto !important; max-width: 295px; }\
@@ -999,11 +999,14 @@ function vkImAddPreventHideCB(){
 function vkIM(){
    Inj.Before('IM.addTab','cur.tabs','vkProcessNodeLite(txtWrap);');
    Inj.Before('IM.send','IM.updateUnread','vkProccessLinks(msg_row);');
-   Inj.End('IM.addMsg','vkProccessLinks(row);');
+   Inj.End('IM.addMsg','vkProcessNode(row);');
    if (getSet(51)=='y'){
       Inj.Replace('IM.wrapFriends',/text\.push\(/g,'vkIMwrapFrMod(text,');
       Inj.Replace('IM.wrapFriends','text.join(','vkIMwrapFrModSort(text,');   
    }
+   
+   Inj.Before('IM.applyPeer','cur.actionsMenu.setItems','vkIMModActMenu(types,peer,user);');
+   if (window.cur && cur.tabs) IM.applyPeer();
 }
 
 function vkIMwrapFrModSort(text){
@@ -1031,6 +1034,23 @@ function vkIMwrapFrMod(){
    } else {
       text.push(arguments[1]);
    }
+}
+
+function vkIMModActMenu(types,peer,user){
+   if (!types || !peer || !user) return;
+   if (/*peer > 0 && peer < 2e9 &&*/ user.msg_count){
+      //console.log(user);      
+      types.push(['save_history', IDL('SaveHistory'), '3px -41px', vkIMSaveHistoryBox.pbind(peer)]);//  [id, name, bg-position, onclick, href, bg-url, customStyle]
+   }
+}
+function vkIMSaveHistoryBox(peer){
+   var t='\
+   <div id="saveldr" style="display:none; padding:8px; padding-top: 14px; text-align:center; width:360px;"><img src="/images/upload.gif"></div>\
+   <div id="save_btn_text">\
+      <div class="button_blue"><button href="#" onclick="vkMakeMsgHistory('+peer+'); return false;">'+IDL('SaveHistory')+'</button></div>\
+      <div class="button_gray"><button href="#" onclick="vkMakeMsgHistory('+peer+',true); return false;">'+IDL('SaveHistoryCfg')+'</button></div>\
+   </div>';
+   var box=vkAlertBox(IDL('SaveHistory'), t);
 }
 
 /* NOTIFIER */
@@ -1423,6 +1443,7 @@ function vkAddSaveMsgLink(){
 	ref.parentNode.insertBefore(btn,ref);
   }
 }
+
 function vkMakeMsgHistory(uid,show_format){
 	//vkInitDataSaver();
 	if (!uid) uid=cur.thread.id;
@@ -1433,13 +1454,16 @@ function vkMakeMsgHistory(uid,show_format){
 	var mid=remixmid();
 	var msg_pattern=vkGetVal('VK_SAVE_MSG_HISTORY_PATTERN') || SAVE_MSG_HISTORY_PATTERN;
 	var date_fmt=vkGetVal('VK_SAVE_MSG_HISTORY_DATE_FORMAT') || SAVE_MSG_HISTORY_DATE_FORMAT;
+   var users={};
+   var users_ids=[];
 	var collect=function(callback){
 		hide('save_btn_text');
 		show('saveldr');
 		//document.title='offset:'+offset;
-		if (offset==0) ge('saveldr').innerHTML=vkProgressBar(offset,10,125);		
+      var w=getSize(ge('saveldr'),true)[0];
+		if (offset==0) ge('saveldr').innerHTML=vkProgressBar(offset,10,w);		
 		dApi.call('messages.getHistory',{uid:uid,offset:offset,count:100},function(r){
-			ge('saveldr').innerHTML=vkProgressBar(offset,r.response[0],125);
+			ge('saveldr').innerHTML=vkProgressBar(offset,r.response[0],w);
 			var msgs=r.response;
 			var count=msgs.shift();
 			msgs.reverse();
@@ -1447,8 +1471,13 @@ function vkMakeMsgHistory(uid,show_format){
 			var res=''
 			for (var i=0;i<msgs.length;i++){
 				msg=msgs[i];
+            if (!users['%'+msg.from_id+'%']){
+               users['%'+msg.from_id+'%']='id'+msg.from_id+' DELETED';
+               users_ids.push(msg.from_id);
+            }
+            //console.log(msg.from_id);
 				var date=(new Date(msg.date*1000)).format(date_fmt);
-				var user=(msg.from_id==mid?user2:user1);
+				var user='%'+msg.from_id+'%';//(msg.from_id==mid?user2:user1);
 				var text=vkCe('div',{},(msg.body || '').replace(/<br>/g,"%{br}%")).innerText.replace(/%{br}%/g,'\r\n');// no comments....
 				//text=text.replace(/\n/g,'\r\n');
             
@@ -1467,17 +1496,24 @@ function vkMakeMsgHistory(uid,show_format){
 			}
 		});
 	}
-	var run=function(){
-		dApi.call('getProfiles',{uids:remixmid()+','+uid},function(r){
-			user2=r.response[0].first_name+" "+r.response[0].last_name;
-			user1=r.response[1]?r.response[1].first_name+" "+r.response[1].last_name:'DELETED';
+	var run=function(){     
 			collect(function(t){
-				show('save_btn_text');
-				hide('saveldr');
-				vkSaveText(t,"messages_"+user1+"("+uid+").txt");
-				//alert(t);
+            dApi.call('getProfiles',{uids:users_ids.join(',')/*remixmid()+','+uid*/},function(r){
+               for (var i=0;i<r.response.length;i++){
+                  var u=r.response[i];
+                  users['%'+u.uid+'%']=u.first_name+" "+u.last_name;
+               }
+               for (var key in users)
+                  t=t.split(key).join(users[key]);
+               
+               show('save_btn_text');
+               hide('saveldr');
+               //alert(t);
+               vkSaveText(t,"messages_"+user1+"("+uid+").txt");
+               
+            });            
 			});
-		});	
+	
 	}
 	
 	if (show_format){

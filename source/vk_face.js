@@ -56,7 +56,7 @@ function vkMoveSuggFrBox(){
 function vkFrCat2Menu(ret){
   var str='';
   if (window.vkFrCatList){
-  for (var key in vkFrCatList){ str+='<li><a href="friends?section=list'+key+'">-- '+vkFrCatList[key]+'</a></li>\n';}
+  for (var key in vkFrCatList){ str+='<li><a class="left_row" href="friends?section=list'+key+'"><span class="left_label inl_bl">-- '+vkFrCatList[key]+'</span></a></li>\n';}
   } else {
     vkLoadFiendsGroups();
   }
@@ -156,9 +156,9 @@ function vkMenu(){//vkExLeftMenu
 
   var vkmid=remixmid();//#nav li:hover ul{display:block;}\
   vkaddcss(vkmenu_css1+"\
-      #nav li ul, #side_bar li ul{display:none;}\
-      #nav li ul, #side_bar li ul{position:absolute; z-index:999; /*background:#FFF;*/ width:130px; margin-left:70px;padding-left:0px; border:1px solid #AAA; }\
-      #nav ul li, #side_bar li ul{list-style:none;}\
+      #nav li ul, #side_bar li ul, #sideBar li ul{display:none;}\
+      #nav li ul, #side_bar li ul, #sideBar li ul{position:absolute; z-index:999; /*background:#FFF;*/ width:130px; margin-left:70px;padding-left:0px; border:1px solid #AAA; }\
+      #nav ul li, #side_bar li ul, #sideBar li ul{list-style:none;}\
       #side_bar ol li#myprofile ul a { display: block;  padding: 4px 3px 4px 6px; }\
 	  #stl_side { z-index: 0 !important;}\
   ");
@@ -474,8 +474,8 @@ function vkMenu(){//vkExLeftMenu
   nav.appendChild(li);*/
   if (window.vkLinks && vkLinks.length>1){
         var li=document.createElement('li');
-        var html='<a href="#" '+setActions()+' onclick="return false;">'+vkLinks[0]+'</a><ul '+setActions()+'>';//
-        for (var i=1; i<vkLinks.length; i++)  html+='<a href="'+vkLinks[i][1]+'">'+vkLinks[i][0]+'</a>';
+        var html='<a class="left_row" href="#" '+setActions()+' onclick="return false;"><span class="left_label inl_bl">'+vkLinks[0]+'</span></a><ul '+setActions()+'>';//
+        for (var i=1; i<vkLinks.length; i++)  html+='<a  class="left_row" href="'+vkLinks[i][1]+'"><span class="left_label inl_bl">'+vkLinks[i][0]+'</span></a>';
         li.id='frLinks';
         li.innerHTML=html+'</ul>';
         nav.appendChild(li);  
@@ -510,7 +510,7 @@ function vkCheckNewMessages(data){
 			p=ge('vk_msg_list');
 			var html='';
 			for (var i=0;i<msg_list.length;i++)
-				html+='<a href="/mail?act=show&id='+msg_list[i][0]+'" onclick="return nav.go(this, event);">-- '+msg_list[i][1]+'</a>';
+				html+='<a class="left_row" href="/mail?act=show&id='+msg_list[i][0]+'" onclick="return nav.go(this, event);"><span class="left_label inl_bl">-- '+msg_list[i][1]+'</span></a>';
 			p.innerHTML=html;
 		}
 	}
