@@ -11,7 +11,7 @@
 //
 /* VERSION INFO */
 var vVersion	= 207;
-var vBuild = 120717;
+var vBuild = 120730;
 var vPostfix = ' ';
 if (!window.vk_DEBUG) var vk_DEBUG=0;
 
@@ -29,7 +29,7 @@ var FAVE_ONLINE_BLOCK_SHOW_COUNT=6;
 var SHOW_POPUP_PROFILE_DELAY=800;//ms 
 
 /* Save messages history config */
-var SAVE_MSG_HISTORY_PATTERN="%username% (%date%):\r\n%message%\r\n\r\n"; //Save Messages history file format (one record)
+var SAVE_MSG_HISTORY_PATTERN="%username% (%date%):\r\n%message%\r\n%attachments%\r\n\r\n"; //Save Messages history file format (one record)
 var SAVE_MSG_HISTORY_DATE_FORMAT="HH:MM:ss  dd/mm/yyyy";
 
 /* Delete messages config */

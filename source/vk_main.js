@@ -1475,7 +1475,40 @@ function vkMakeMsgHistory(uid,show_format){
                users['%'+msg.from_id+'%']='id'+msg.from_id+' DELETED';
                users_ids.push(msg.from_id);
             }
-            //console.log(msg.from_id);
+            
+            var attach_text="";
+            for (var j=0; msg.attachments && j<msg.attachments.length;j++){
+               var attach=msg.attachments[j];
+               switch(attach.type){
+                  case  "photo":
+                     var a=attach.photo;
+                     var src=a.src_xxxbig || a.src_xxbig || a.src_xbig || a.src_big || a.src || a.src_small;
+                     var link="vk.com/photo"+a.owner_id+'_'+a.pid;
+                     attach_text+=link+" : "+src+"\r\n"+(a.text?a.text+"\r\n":"");
+                     break;
+                  case  "video":
+                     var a=attach.video;
+                     var link="vk.com/video"+a.owner_id+'_'+a.vid;
+                     attach_text+=link+" : "+(a.title?a.title+"\r\n":"")+"\r\n"+(a.description?a.description+"\r\n":"");
+                     
+                     break;
+                  case  "audio":
+                     var a=attach.audio;
+                     var link="vk.com/audio?id="+a.owner_id+'&audio_id='+a.aid;
+                     attach_text+=link+" : "+(a.performer || "")+" - "+(a.title || "")+"\r\n";
+                     break;
+                  case  "doc":
+                     var a=attach.doc;
+                     attach_text+=a.url+" ("+vkFileSize(a.size)+"): "+a.title+"\r\n";
+                     break; 
+                  /*
+                  case  "wall":
+                  
+                     break;*/
+               }
+               
+            }
+            //console.log(msg);
 				var date=(new Date(msg.date*1000)).format(date_fmt);
 				var user='%'+msg.from_id+'%';//(msg.from_id==mid?user2:user1);
 				var text=vkCe('div',{},(msg.body || '').replace(/<br>/g,"%{br}%")).innerText.replace(/%{br}%/g,'\r\n');// no comments....
@@ -1484,7 +1517,8 @@ function vkMakeMsgHistory(uid,show_format){
 				res+=msg_pattern
                  .replace(/%username%/g,user) //msg.from_id
                  .replace(/%date%/g,    date)
-                 .replace(/%message%/g, text);
+                 .replace(/%message%/g, text)
+                 .replace(/%attachments%/g, (attach_text!=""?"Attachments:[\r\n"+attach_text+"]":""));
 			}
 			result=res+result;
 			if (offset<count){
