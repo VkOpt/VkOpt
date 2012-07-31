@@ -449,6 +449,14 @@ function vkStyles(){
 		.audios_row { margin-top: 0px !important; padding-top:0px !important;}\
 		.audios_row .actions a{padding-top:2px !important; padding-bottom:2px !important;}\
       .audio_list .audio_title_wrap { width: 315px !important;}\
+      #audio.new .audio_edit_wrap, #audio.new .audio_add_wrap, #audio.new .audio_remove_wrap { \
+         margin-bottom: 0px !important;\
+         margin-top: 0px !important;\
+      }\
+      #audio.new .audio .play_btn_wrap,#audio.new .audio .title_wrap,#audio.new .duration{\
+         padding-bottom: 2px !important;\
+         padding-top:2px !important;\
+      }\
 	";
 	//additional audio styles
 	var img="data:image/gif;base64,R0lGODdhEAARALMAAF99nf///+7u7pqxxv///8nW4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACwAAAAAEAARAAAEJpCUQaulRd5dJ/9gKI5hYJ7mh6LgGojsmJJ0PXq3JmaE4P9AICECADs=";
@@ -463,8 +471,12 @@ function vkStyles(){
 		.audios_row .actions { padding-left: 0px !important; }\
 		.audios_row .actions a{padding-right:2px !important; padding-left:2px !important;}\
 		.audios_row .audio_title_wrap{ width: auto !important; max-width: 295px; }\
+      div.results .audios_row .audio_title_wrap{width: auto !important; max-width: 490px; }\
       .choose_audio_row .audio_title_wrap { width: 350px !important; }\
 		.post_media .audio_title_wrap { width: 250px !important;}\
+      \
+      #audio.new .audio .info { width: 360px !important;}\
+      \
 		#mail_envelope .audio_title_wrap { width: 215px !important;}\
       .narrow_column .audio_title_wrap { width: 115px !important;}\
       #profile_audios .audio_title_wrap { width: auto;}\
