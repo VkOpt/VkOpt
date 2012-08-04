@@ -403,7 +403,7 @@ function vkStyles(){
 	.vk_mail_save_history{	display: block; height: 13px;	padding: 18px;	text-align: center;	}\
 	.vk_mail_save_history_block{	display: block; float:right; text-align: center; /*width: 200px;*/	}\
 	.vk_mail_save_history_block IMG{margin-top:13px;}\
-	.vk_mail_save_history_block .cfg{height: 11px; width: 15px; margin-top:2px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -60px;}\
+	.vk_mail_save_history_block .cfg, .save_msgs_link .cfg{height: 11px; width: 15px; margin-top:2px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -60px;}\
    #vk_stats_btn{position: absolute; float:left}\
    #vk_stats_btn .button_blue{position: absolute; right: 0px;}\
 	.lskey{padding-left: 5px; float:left; width:140px; overflow:hidden; height:20px; line-height:20px; font-weight:bold;}\
@@ -449,6 +449,14 @@ function vkStyles(){
 		.audios_row { margin-top: 0px !important; padding-top:0px !important;}\
 		.audios_row .actions a{padding-top:2px !important; padding-bottom:2px !important;}\
       .audio_list .audio_title_wrap { width: 315px !important;}\
+      #audio.new .audio_edit_wrap, #audio.new .audio_add_wrap, #audio.new .audio_remove_wrap { \
+         margin-bottom: 0px !important;\
+         margin-top: 0px !important;\
+      }\
+      #audio.new .audio .play_btn_wrap,#audio.new .audio .title_wrap,#audio.new .duration{\
+         padding-bottom: 2px !important;\
+         padding-top:2px !important;\
+      }\
 	";
 	//additional audio styles
 	var img="data:image/gif;base64,R0lGODdhEAARALMAAF99nf///+7u7pqxxv///8nW4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACwAAAAAEAARAAAEJpCUQaulRd5dJ/9gKI5hYJ7mh6LgGojsmJJ0PXq3JmaE4P9AICECADs=";
@@ -456,18 +464,31 @@ function vkStyles(){
 		.play_new{float:left; width: 17px !important;}\
 		.vkaudio_down{border-spacing: 0px;}\
 		.audio_table .audio td.play_btn {width: 40px !important;}\
-		.audio .down_btn { background-image: url("'+img+'") !important;}\
+		.audio .down_btn { \
+         background-image: url("'+img+'") !important; \
+         background-position:0 0 !important;\
+         border-radius:3px;\
+         width: 16px !important;\
+      }\
 		.audio_table .audio td.info { width: 340px !important;}\
 		.audio_table .audio td { padding-left: 0px; }\
-		.audio_table .audio .title_wrap {width: 315px !important;}\
+		.audio_table .audio .title_wrap, .audio_list .audio_title_wrap {width: 315px !important;}\
 		.audios_row .actions { padding-left: 0px !important; }\
 		.audios_row .actions a{padding-right:2px !important; padding-left:2px !important;}\
 		.audios_row .audio_title_wrap{ width: auto !important; max-width: 295px; }\
+      div.results .audios_row .audio_title_wrap{width: auto !important; max-width: 490px; }\
       .choose_audio_row .audio_title_wrap { width: 350px !important; }\
 		.post_media .audio_title_wrap { width: 250px !important;}\
+      \
+      #audio.new .audio .title_wrap{white-space: normal !important;}\
+      #audio.new .audio .info { width: 360px !important;}\
+      #pad_playlist .audio .info {width: 435px !important;}\
+      #pad_playlist .audio .title_wrap {width: auto !important; }\
+      \
 		#mail_envelope .audio_title_wrap { width: 215px !important;}\
       .narrow_column .audio_title_wrap { width: 115px !important;}\
       #profile_audios .audio_title_wrap { width: auto;}\
+      #vk_audio_fr_refresh{float:right; font-size:19px; border-left:1px solid #DDD; padding:0 5px;}\
 	';
    //video downloads styles
    main_css+="\
@@ -852,6 +873,7 @@ function vkResponseChecker(answer,url,q){// detect HTML in response and prosessi
 
 function vkProcessResponse(answer,url,q){
   if (url=='/photos.php' && q.act=="a_choose_photo_box") vkPhChooseProcess(answer,url,q);
+  if (url=='/al_photos.php' && q.act=="choose_photo") vkPhChooseProcess(answer,url,q);
   if (url=='/video.php' && q.act=="a_choose_video_box") vkVidChooseProcess(answer,url,q);
   if ((url=='/audio' || url=='/audio.php') && q.act=="a_choose_audio_box") vkAudioChooseProcess(answer,url,q);
   if (url=='/al_friends.php' && q.act=='add_box') answer[1]=answer[1].replace('"friends_add_block" style="display: none;"','"friends_add_block"');
@@ -876,22 +898,42 @@ function vkPhChooseProcess(answer,url,q){
     }
     unlockButton(btn);
   };
-  if (answer[1].indexOf('vk_link_to_photo')==-1){
-  var div=vkCe('div',{},answer[1]);
-  var ref=geByClass('summary',div)[0];
-  if (ref){
-    var node=vkCe('div',{"class":'ta_r','style':"height: 25px; padding-left:10px; padding-top:4px;"},'\
-    <div class="fl_l">\
-        '+IDL('EnterLinkToPhoto')+': \
-      <span><input id="vk_link_to_photo" type="text"  style="width:230px"></span>\
-      <div id="vk_link_to_photo_button" class="button_blue"><button onclick="vkCheckPhotoLinkToMedia();">'+IDL('OK')+'</button></div>\
-    </div>\
-    ');
-    ref.parentNode.insertBefore(node,ref);
-    ref.parentNode.insertBefore(vkCe('h4'),ref);
-    answer[1]=div.innerHTML;
-  }
-  }
+  //if (q.act=="a_choose_photo_box"){
+     if (answer[1].indexOf('vk_link_to_photo')==-1){
+        var div=vkCe('div',{},answer[1]);
+        var ref=q.act=="a_choose_photo_box"?geByClass('summary',div)[0]:geByClass('photos_choose_rows',div)[0];
+        if (ref){
+          var node=vkCe('div',{"class":'ta_r','style':"height: 25px; padding-left:10px; padding-top:4px;"},'\
+          <div class="fl_l">\
+              '+IDL('EnterLinkToPhoto')+': \
+            <span><input id="vk_link_to_photo" type="text"  style="width:230px"></span>\
+            <div id="vk_link_to_photo_button" class="button_blue"><button onclick="vkCheckPhotoLinkToMedia();">'+IDL('OK')+'</button></div>\
+          </div>\
+          ');
+          ref.parentNode.insertBefore(node,ref);
+          ref.parentNode.insertBefore(vkCe('h4'),ref);
+          answer[1]=div.innerHTML;
+        }
+     }
+  /*} else {
+      var div=vkCe('div',{},answer[1]);
+      var ref=geByClass('photos_choose_rows',div)[0];
+      if (ref){
+         var node=vkCe('div',{"class":'ta_r','style':"height: 25px; padding-left:10px; padding-top:4px;"},'\
+             <div class="fl_l">\
+                 '+IDL('EnterLinkToPhoto')+': \
+               <span><input id="vk_link_to_photo" type="text"  style="width:230px"></span>\
+               <div id="vk_link_to_photo_button" class="button_blue"><button onclick="vkCheckPhotoLinkToMedia();">'+IDL('OK')+'</button></div>\
+             </div>\
+             ');
+         ref.parentNode.insertBefore(node,ref);
+         answer[1]=div.innerHTML;
+      }
+      //answer[1]
+      
+      
+      //console.log(answer);
+  }*/
 //*/  
 }
 
@@ -998,11 +1040,14 @@ function vkImAddPreventHideCB(){
 function vkIM(){
    Inj.Before('IM.addTab','cur.tabs','vkProcessNodeLite(txtWrap);');
    Inj.Before('IM.send','IM.updateUnread','vkProccessLinks(msg_row);');
-   Inj.End('IM.addMsg','vkProccessLinks(row);');
+   Inj.End('IM.addMsg','vkProcessNode(row);');
    if (getSet(51)=='y'){
       Inj.Replace('IM.wrapFriends',/text\.push\(/g,'vkIMwrapFrMod(text,');
       Inj.Replace('IM.wrapFriends','text.join(','vkIMwrapFrModSort(text,');   
    }
+   
+   Inj.Before('IM.applyPeer','cur.actionsMenu.setItems','vkIMModActMenu(types,peer,user);');
+   if (window.cur && cur.tabs) IM.applyPeer();
 }
 
 function vkIMwrapFrModSort(text){
@@ -1030,6 +1075,23 @@ function vkIMwrapFrMod(){
    } else {
       text.push(arguments[1]);
    }
+}
+
+function vkIMModActMenu(types,peer,user){
+   if (!types || !peer || !user) return;
+   if (/*peer > 0 && peer < 2e9 &&*/ user.msg_count){
+      //console.log(user);      
+      types.push(['save_history', IDL('SaveHistory'), '3px -41px', vkIMSaveHistoryBox.pbind(peer)]);//  [id, name, bg-position, onclick, href, bg-url, customStyle]
+   }
+}
+function vkIMSaveHistoryBox(peer){
+   var t='\
+   <div id="saveldr" style="display:none; padding:8px; padding-top: 14px; text-align:center; width:360px;"><img src="/images/upload.gif"></div>\
+   <div id="save_btn_text">\
+      <div class="button_blue"><button href="#" onclick="vkMakeMsgHistory('+peer+'); return false;">'+IDL('SaveHistory')+'</button></div>\
+      <div class="button_gray"><button href="#" onclick="vkMakeMsgHistory('+peer+',true); return false;">'+IDL('SaveHistoryCfg')+'</button></div>\
+   </div>';
+   var box=vkAlertBox(IDL('SaveHistory'), t);
 }
 
 /* NOTIFIER */
@@ -1422,6 +1484,7 @@ function vkAddSaveMsgLink(){
 	ref.parentNode.insertBefore(btn,ref);
   }
 }
+
 function vkMakeMsgHistory(uid,show_format){
 	//vkInitDataSaver();
 	if (!uid) uid=cur.thread.id;
@@ -1432,13 +1495,16 @@ function vkMakeMsgHistory(uid,show_format){
 	var mid=remixmid();
 	var msg_pattern=vkGetVal('VK_SAVE_MSG_HISTORY_PATTERN') || SAVE_MSG_HISTORY_PATTERN;
 	var date_fmt=vkGetVal('VK_SAVE_MSG_HISTORY_DATE_FORMAT') || SAVE_MSG_HISTORY_DATE_FORMAT;
+   var users={};
+   var users_ids=[];
 	var collect=function(callback){
 		hide('save_btn_text');
 		show('saveldr');
 		//document.title='offset:'+offset;
-		if (offset==0) ge('saveldr').innerHTML=vkProgressBar(offset,10,125);		
+      var w=getSize(ge('saveldr'),true)[0];
+		if (offset==0) ge('saveldr').innerHTML=vkProgressBar(offset,10,w);		
 		dApi.call('messages.getHistory',{uid:uid,offset:offset,count:100},function(r){
-			ge('saveldr').innerHTML=vkProgressBar(offset,r.response[0],125);
+			ge('saveldr').innerHTML=vkProgressBar(offset,r.response[0],w);
 			var msgs=r.response;
 			var count=msgs.shift();
 			msgs.reverse();
@@ -1446,15 +1512,54 @@ function vkMakeMsgHistory(uid,show_format){
 			var res=''
 			for (var i=0;i<msgs.length;i++){
 				msg=msgs[i];
+            if (!users['%'+msg.from_id+'%']){
+               users['%'+msg.from_id+'%']='id'+msg.from_id+' DELETED';
+               users_ids.push(msg.from_id);
+            }
+            
+            var attach_text="";
+            for (var j=0; msg.attachments && j<msg.attachments.length;j++){
+               var attach=msg.attachments[j];
+               switch(attach.type){
+                  case  "photo":
+                     var a=attach.photo;
+                     var src=a.src_xxxbig || a.src_xxbig || a.src_xbig || a.src_big || a.src || a.src_small;
+                     var link="vk.com/photo"+a.owner_id+'_'+a.pid;
+                     attach_text+=link+" : "+src+"\r\n"+(a.text?a.text+"\r\n":"");
+                     break;
+                  case  "video":
+                     var a=attach.video;
+                     var link="vk.com/video"+a.owner_id+'_'+a.vid;
+                     attach_text+=link+" : "+(a.title?a.title+"\r\n":"")+"\r\n"+(a.description?a.description+"\r\n":"");
+                     
+                     break;
+                  case  "audio":
+                     var a=attach.audio;
+                     var link="vk.com/audio?id="+a.owner_id+'&audio_id='+a.aid;
+                     attach_text+=link+" : "+(a.performer || "")+" - "+(a.title || "")+"\r\n";
+                     break;
+                  case  "doc":
+                     var a=attach.doc;
+                     attach_text+=a.url+" ("+vkFileSize(a.size)+"): "+a.title+"\r\n";
+                     break; 
+                  /*
+                  case  "wall":
+                  
+                     break;*/
+               }
+               
+            }
+            //console.log(msg);
 				var date=(new Date(msg.date*1000)).format(date_fmt);
-				var user=(msg.from_id==mid?user2:user1);
+				var user='%'+msg.from_id+'%';//(msg.from_id==mid?user2:user1);
 				var text=vkCe('div',{},(msg.body || '').replace(/<br>/g,"%{br}%")).innerText.replace(/%{br}%/g,'\r\n');// no comments....
 				//text=text.replace(/\n/g,'\r\n');
             
 				res+=msg_pattern
                  .replace(/%username%/g,user) //msg.from_id
                  .replace(/%date%/g,    date)
-                 .replace(/%message%/g, text);
+                 .replace(/%message%/g, text)
+                 .replace(/%attachments%/g, (attach_text!=""?"Attachments:[\r\n"+attach_text+"]":""));
 			}
 			result=res+result;
 			if (offset<count){
@@ -1466,17 +1571,24 @@ function vkMakeMsgHistory(uid,show_format){
 			}
 		});
 	}
-	var run=function(){
-		dApi.call('getProfiles',{uids:remixmid()+','+uid},function(r){
-			user2=r.response[0].first_name+" "+r.response[0].last_name;
-			user1=r.response[1]?r.response[1].first_name+" "+r.response[1].last_name:'DELETED';
+	var run=function(){     
 			collect(function(t){
-				show('save_btn_text');
-				hide('saveldr');
-				vkSaveText(t,"messages_"+user1+"("+uid+").txt");
-				//alert(t);
+            dApi.call('getProfiles',{uids:users_ids.join(',')/*remixmid()+','+uid*/},function(r){
+               for (var i=0;i<r.response.length;i++){
+                  var u=r.response[i];
+                  users['%'+u.uid+'%']=u.first_name+" "+u.last_name;
+               }
+               for (var key in users)
+                  t=t.split(key).join(users[key]);
+               
+               show('save_btn_text');
+               hide('saveldr');
+               //alert(t);
+               vkSaveText(t,"messages_"+user1+"("+uid+").txt");
+               
+            });            
 			});
-		});	
+	
 	}
 	
 	if (show_format){

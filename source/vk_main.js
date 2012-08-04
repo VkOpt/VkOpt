@@ -480,7 +480,10 @@ function vkStyles(){
       .choose_audio_row .audio_title_wrap { width: 350px !important; }\
 		.post_media .audio_title_wrap { width: 250px !important;}\
       \
+      #audio.new .audio .title_wrap{white-space: normal !important;}\
       #audio.new .audio .info { width: 360px !important;}\
+      #pad_playlist .audio .info {width: 435px !important;}\
+      #pad_playlist .audio .title_wrap {width: auto !important; }\
       \
 		#mail_envelope .audio_title_wrap { width: 215px !important;}\
       .narrow_column .audio_title_wrap { width: 115px !important;}\

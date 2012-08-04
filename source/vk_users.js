@@ -114,10 +114,19 @@ function getGidUid(url,callback){ //callback(uid,gid)
 function ExtractUserID(link){
     if (!link) return null;
 	var tmp2=link.match(/\/id(\d+)$/);
-    if (!tmp2 && isUserLink(link)) {  tmp2=link.split('/'); tmp2=(tmp2[tmp2.length-1])?["",tmp2[tmp2.length-1]]:[];  }
+    if (!tmp2 && isUserLink(link)) {  
+            tmp2=link.split('/'); 
+            var n=tmp2.pop();
+            var d=tmp2.pop();
+            if (d && d.indexOf(location.hostname)==-1) 
+               tmp2=[]; 
+            else 
+               tmp2=["",n]; 
+    }
     if (tmp2 && tmp2[1]) tmp2=(tmp2[1].indexOf("#")>0)?false:tmp2;
     return (tmp2)?tmp2[1]:null;
 }
+
 // <a href=# onclick="vkGoToLink('albums%id','kiberinfinity'); return false;">
 function vkGoToLink(link,mid){
   getUserID(mid,function(uid){

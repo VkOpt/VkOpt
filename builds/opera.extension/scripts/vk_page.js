@@ -983,7 +983,7 @@ if (!masks[id]) return;
 	   ge('profile_full_link') ? null : geByClass('profile_info_link')[0].id='profile_full_link';
 	   ge('profile_full_link').setAttribute('title','show');
   }	else { 
-     removeClass(c,"shut"); profile.showFull();
+     removeClass(c,"shut"); profile.showFull(cur.oid);
 	   ge('profile_full_link') ? null : geByClass('profile_info_link')[0].id='profile_full_link';
 	   ge('profile_full_link').setAttribute('title','hide');
   }

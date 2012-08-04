@@ -114,10 +114,19 @@ function getGidUid(url,callback){ //callback(uid,gid)
 function ExtractUserID(link){
     if (!link) return null;
 	var tmp2=link.match(/\/id(\d+)$/);
-    if (!tmp2 && isUserLink(link)) {  tmp2=link.split('/'); tmp2=(tmp2[tmp2.length-1])?["",tmp2[tmp2.length-1]]:[];  }
+    if (!tmp2 && isUserLink(link)) {  
+            tmp2=link.split('/'); 
+            var n=tmp2.pop();
+            var d=tmp2.pop();
+            if (d && d.indexOf(location.hostname)==-1) 
+               tmp2=[]; 
+            else 
+               tmp2=["",n]; 
+    }
     if (tmp2 && tmp2[1]) tmp2=(tmp2[1].indexOf("#")>0)?false:tmp2;
     return (tmp2)?tmp2[1]:null;
 }
+
 // <a href=# onclick="vkGoToLink('albums%id','kiberinfinity'); return false;">
 function vkGoToLink(link,mid){
   getUserID(mid,function(uid){
@@ -145,6 +154,7 @@ function GetUserMenuSett() {
     var ItemNames = [
                      IDL("Page"),
                      IDL('txMessage'), 
+                     IDL('Dialog'), 
                      IDL("clWa"), 
                      IDL("clPhW"), 
                      IDL("clViW"), 
@@ -325,7 +335,7 @@ function ExUserItems(id,el){
 	if (uitems!='') uitems+='<li><div class="vk_user_menu_divider"></div></li>';
 	var fl_pr='<a href="#" onclick_="return false;" onclick="vkPopupAvatar(\'%uid\',this,true); return false;" onmouseout="vkHidePhoto();" class="fl_r">&gt;</a>';
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,fl_pr+'<a href="/id%uid" onclick="return nav.go(this, event);">'+IDL('Page')+'</a>'):i++;// onclick="AlternativeProfile(\'%uid\'); return false;"
-	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/write%uid" onclick="return showWriteMessageBox(event, %uid);">'+IDL('txMessage')+'</a>'):i++;
+	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="#" class="fl_r" onclick="TopSearch.writeBox(%uid); return false;">'+IDL("Chat")+'</a><a class="fl_r" href="/im?sel=%uid" onclick="return nav.go(this, event);">'+IDL('Dialog')+'</a><a href="/write%uid" onclick="return showWriteMessageBox(event, %uid);">'+IDL('txMessage')+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/wall%uid" onclick="return nav.go(this, event);">'+IDL("clWa")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/tag%uid" onclick="return nav.go(this, event);">'+IDL("clPhW")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/video?id=%uid&section=tagged" onclick="return nav.go(this, event);">'+IDL("clViW")+'</a>'):i++;
@@ -712,6 +722,8 @@ function vkGetProfile(uid,callback,no_switch_button){
       var sex=profile.sex;
       var rel=IDL((sex==1?'profile_relation_f_':'profile_relation_m_')+relation);
       rel=relation?rel:'';
+
+
       
 		if (r.response.common){
 			var fr=r.response.common;
@@ -732,8 +744,9 @@ function vkGetProfile(uid,callback,no_switch_button){
          bday_info = profile.bdate + " (" + bday_info + ")";
       else 
          bday_info = null;
-		var info_labels=[
+      var info_labels=[
 			[bday_info, Birth_date[1]],
+         [(sex==1?Sex_fm:Sex_m), Sex],
 			[country,Country],
 			[city,select_city],
          [rel,Family],

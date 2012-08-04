@@ -24,6 +24,10 @@ function InstallRelease(){
   
   if (vbuild && vbuild<vBuild) vkCheckSettLength();
   
+  if (vbuild<120730){
+      vkSetVal('VK_SAVE_MSG_HISTORY_PATTERN',SAVE_MSG_HISTORY_PATTERN);
+  }
+  
   if ((!window.IDBit || window.IDBit=='') && (!vver || vver<vVersion)){
   if (!vver || vver<200) vksetCookie('remixbit',DefSetBits);
 	  vksetCookie('vkOVer',String(vVersion));
