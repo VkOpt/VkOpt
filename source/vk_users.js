@@ -713,6 +713,8 @@ function vkGetProfile(uid,callback,no_switch_button){
       var sex=profile.sex;
       var rel=IDL((sex==1?'profile_relation_f_':'profile_relation_m_')+relation);
       rel=relation?rel:'';
+
+
       
 		if (r.response.common){
 			var fr=r.response.common;
@@ -733,8 +735,9 @@ function vkGetProfile(uid,callback,no_switch_button){
          bday_info = profile.bdate + " (" + bday_info + ")";
       else 
          bday_info = null;
-		var info_labels=[
+      var info_labels=[
 			[bday_info, Birth_date[1]],
+         [(sex==1?Sex_fm:Sex_m), Sex],
 			[country,Country],
 			[city,select_city],
          [rel,Family],

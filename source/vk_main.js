@@ -464,7 +464,12 @@ function vkStyles(){
 		.play_new{float:left; width: 17px !important;}\
 		.vkaudio_down{border-spacing: 0px;}\
 		.audio_table .audio td.play_btn {width: 40px !important;}\
-		.audio .down_btn { background-image: url("'+img+'") !important;}\
+		.audio .down_btn { \
+         background-image: url("'+img+'") !important; \
+         background-position:0 0 !important;\
+         border-radius:3px;\
+         width: 16px !important;\
+      }\
 		.audio_table .audio td.info { width: 340px !important;}\
 		.audio_table .audio td { padding-left: 0px; }\
 		.audio_table .audio .title_wrap, .audio_list .audio_title_wrap {width: 315px !important;}\
@@ -865,6 +870,7 @@ function vkResponseChecker(answer,url,q){// detect HTML in response and prosessi
 
 function vkProcessResponse(answer,url,q){
   if (url=='/photos.php' && q.act=="a_choose_photo_box") vkPhChooseProcess(answer,url,q);
+  if (url=='/al_photos.php' && q.act=="choose_photo") vkPhChooseProcess(answer,url,q);
   if (url=='/video.php' && q.act=="a_choose_video_box") vkVidChooseProcess(answer,url,q);
   if ((url=='/audio' || url=='/audio.php') && q.act=="a_choose_audio_box") vkAudioChooseProcess(answer,url,q);
   if (url=='/al_friends.php' && q.act=='add_box') answer[1]=answer[1].replace('"friends_add_block" style="display: none;"','"friends_add_block"');
@@ -889,22 +895,42 @@ function vkPhChooseProcess(answer,url,q){
     }
     unlockButton(btn);
   };
-  if (answer[1].indexOf('vk_link_to_photo')==-1){
-  var div=vkCe('div',{},answer[1]);
-  var ref=geByClass('summary',div)[0];
-  if (ref){
-    var node=vkCe('div',{"class":'ta_r','style':"height: 25px; padding-left:10px; padding-top:4px;"},'\
-    <div class="fl_l">\
-        '+IDL('EnterLinkToPhoto')+': \
-      <span><input id="vk_link_to_photo" type="text"  style="width:230px"></span>\
-      <div id="vk_link_to_photo_button" class="button_blue"><button onclick="vkCheckPhotoLinkToMedia();">'+IDL('OK')+'</button></div>\
-    </div>\
-    ');
-    ref.parentNode.insertBefore(node,ref);
-    ref.parentNode.insertBefore(vkCe('h4'),ref);
-    answer[1]=div.innerHTML;
-  }
-  }
+  //if (q.act=="a_choose_photo_box"){
+     if (answer[1].indexOf('vk_link_to_photo')==-1){
+        var div=vkCe('div',{},answer[1]);
+        var ref=q.act=="a_choose_photo_box"?geByClass('summary',div)[0]:geByClass('photos_choose_rows',div)[0];
+        if (ref){
+          var node=vkCe('div',{"class":'ta_r','style':"height: 25px; padding-left:10px; padding-top:4px;"},'\
+          <div class="fl_l">\
+              '+IDL('EnterLinkToPhoto')+': \
+            <span><input id="vk_link_to_photo" type="text"  style="width:230px"></span>\
+            <div id="vk_link_to_photo_button" class="button_blue"><button onclick="vkCheckPhotoLinkToMedia();">'+IDL('OK')+'</button></div>\
+          </div>\
+          ');
+          ref.parentNode.insertBefore(node,ref);
+          ref.parentNode.insertBefore(vkCe('h4'),ref);
+          answer[1]=div.innerHTML;
+        }
+     }
+  /*} else {
+      var div=vkCe('div',{},answer[1]);
+      var ref=geByClass('photos_choose_rows',div)[0];
+      if (ref){
+         var node=vkCe('div',{"class":'ta_r','style':"height: 25px; padding-left:10px; padding-top:4px;"},'\
+             <div class="fl_l">\
+                 '+IDL('EnterLinkToPhoto')+': \
+               <span><input id="vk_link_to_photo" type="text"  style="width:230px"></span>\
+               <div id="vk_link_to_photo_button" class="button_blue"><button onclick="vkCheckPhotoLinkToMedia();">'+IDL('OK')+'</button></div>\
+             </div>\
+             ');
+         ref.parentNode.insertBefore(node,ref);
+         answer[1]=div.innerHTML;
+      }
+      //answer[1]
+      
+      
+      //console.log(answer);
+  }*/
 //*/  
 }
 

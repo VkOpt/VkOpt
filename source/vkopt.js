@@ -11,7 +11,7 @@
 //
 /* VERSION INFO */
 var vVersion	= 207;
-var vBuild = 120731;
+var vBuild = 120804;
 var vPostfix = ' ';
 if (!window.vk_DEBUG) var vk_DEBUG=0;
 
@@ -47,7 +47,7 @@ var MOD_PROFILE_BLOCKS=true;
 var CUT_VKOPT_BRACKET=false;     // true - убирает из надписей вкопта скобки "[" и "]"
 var MAIL_BLOCK_UNREAD_REQ=false; // true - отключает отсылку отчёта о прочтении сообщения, при его открытии из /mail
 var MAIL_SHOWMSG_FIX=true;
-var vkNewSettings=[59,60,61, 53,62]; //"new" label on settings item
+var vkNewSettings=[]; //"new" label on settings item
 var SetsOnLocalStore={
   'vkOVer':'c',
   'remixbit':'c',
