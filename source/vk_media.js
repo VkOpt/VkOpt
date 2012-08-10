@@ -1221,6 +1221,9 @@ function vkGetAudioSize(id,el){
 			} else {
 				el.innerHTML='o_O';
 			}
+         /* костыли с педалями и тормозами */
+         if (window.sorter && sorter.update && ge('audio'+id) && (ge('audio'+id).parentNode || {}).sorter)
+            sorter.update(ge('audio'+id));
 			
 		},true);	
 	}
@@ -1534,8 +1537,8 @@ vkLastFM={
    },
    audio_info:function(){
       var fm=vkLastFM;
-      if (!(window.audioPlayer || audioPlayer.lastSong)) return;
-      var a = audioPlayer.lastSong;
+      if (!(window.audioPlayer && audioPlayer.lastSong)) return;
+      var a = audioPlayer.lastSong || [];
       return {
          title    :fm.clean(a[6]),
          artist   :fm.clean(a[5]),
@@ -1805,6 +1808,12 @@ if (!window.vkopt_plugins) vkopt_plugins={};
    .vk_lastfm_paused_icon{float:left; height:16px; width:11px; background:url("'+vkLastFM.res.blue.paused_icon+'") 50% 50% no-repeat;}\
    .vk_lastfm_ok_icon{float:left; height:16px; width:8px; background:url("'+vkLastFM.res.blue.scrobble_ok+'") 0 50% no-repeat;}\
    .vk_lastfm_fail_icon{float:left; height:16px; width:8px; background:url("'+vkLastFM.res.blue.scrobble_fail+'") 0 50% no-repeat;}\
+   \
+   #gp .active .vk_lastfm_icon{background-image:url("'+vkLastFM.res.white.last_fm+'");}\
+   #gp .active .vk_lastfm_playing_icon{background-image:url("'+vkLastFM.res.white.playing_icon+'");}\
+   #gp .active .vk_lastfm_paused_icon{background-image:url("'+vkLastFM.res.white.paused_icon+'");}\
+   #gp .active .vk_lastfm_ok_icon{background-image:url("'+vkLastFM.res.white.scrobble_ok+'");}\
+   #gp .active .vk_lastfm_fail_icon{background-image:url("'+vkLastFM.res.white.scrobble_fail+'");}\
    \
    .lastfm_ac .vk_lastfm_icon, .lastfm_pd .vk_lastfm_icon{background-image:url("'+vkLastFM.res.blue.last_fm+'");}\
    .lastfm_ac .vk_lastfm_playing_icon, .lastfm_pd .vk_lastfm_playing_icon{background-image:url("'+vkLastFM.res.blue.playing_icon+'");}\

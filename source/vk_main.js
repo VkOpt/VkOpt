@@ -453,10 +453,13 @@ function vkStyles(){
          margin-bottom: 0px !important;\
          margin-top: 0px !important;\
       }\
-      #audio.new .audio .play_btn_wrap,#audio.new .audio .title_wrap,#audio.new .duration{\
+      .audio .play_btn_wrap, .audio .title_wrap, .duration{\
          padding-bottom: 2px !important;\
          padding-top:2px !important;\
       }\
+      .audio .area {margin-bottom: 0px !important;}\
+      .choose_audio_row {height:auto !important;}\
+      .choose_audio_row a.choose{margin-top: 0px !important; padding-bottom: 2px !important; padding-top:2px !important;}\
 	";
 	//additional audio styles
 	var img="data:image/gif;base64,R0lGODdhEAARALMAAF99nf///+7u7pqxxv///8nW4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACwAAAAAEAARAAAEJpCUQaulRd5dJ/9gKI5hYJ7mh6LgGojsmJJ0PXq3JmaE4P9AICECADs=";
@@ -470,6 +473,7 @@ function vkStyles(){
          border-radius:3px;\
          width: 16px !important;\
       }\
+      .audio .title_wrap{white-space: normal !important; width: 245px; !important; }\
 		.audio_table .audio td.info { width: 340px !important;}\
 		.audio_table .audio td { padding-left: 0px; }\
 		.audio_table .audio .title_wrap, .audio_list .audio_title_wrap {width: 315px !important;}\
@@ -480,7 +484,6 @@ function vkStyles(){
       .choose_audio_row .audio_title_wrap { width: 350px !important; }\
 		.post_media .audio_title_wrap { width: 250px !important;}\
       \
-      #audio.new .audio .title_wrap{white-space: normal !important;}\
       #audio.new .audio .info { width: 360px !important;}\
       #pad_playlist .audio .info {width: 435px !important;}\
       #pad_playlist .audio .title_wrap {width: auto !important; }\
@@ -886,7 +889,6 @@ function vkProcessResponse(answer,url,q){
 }
 
 function vkPhChooseProcess(answer,url,q){
-//*
   vkCheckPhotoLinkToMedia=function(){
     var btn=ge('vk_link_to_photo_button');
     var val=ge('vk_link_to_photo').value.match(/photo(-?\d+)_(\d+)/);
@@ -898,43 +900,22 @@ function vkPhChooseProcess(answer,url,q){
     }
     unlockButton(btn);
   };
-  //if (q.act=="a_choose_photo_box"){
-     if (answer[1].indexOf('vk_link_to_photo')==-1){
-        var div=vkCe('div',{},answer[1]);
-        var ref=q.act=="a_choose_photo_box"?geByClass('summary',div)[0]:geByClass('photos_choose_rows',div)[0];
-        if (ref){
-          var node=vkCe('div',{"class":'ta_r','style':"height: 25px; padding-left:10px; padding-top:4px;"},'\
-          <div class="fl_l">\
-              '+IDL('EnterLinkToPhoto')+': \
-            <span><input id="vk_link_to_photo" type="text"  style="width:230px"></span>\
-            <div id="vk_link_to_photo_button" class="button_blue"><button onclick="vkCheckPhotoLinkToMedia();">'+IDL('OK')+'</button></div>\
-          </div>\
-          ');
-          ref.parentNode.insertBefore(node,ref);
-          ref.parentNode.insertBefore(vkCe('h4'),ref);
-          answer[1]=div.innerHTML;
-        }
+  if (answer[1] && answer[1].indexOf && answer[1].indexOf('vk_link_to_photo')==-1){
+     var div=vkCe('div',{},answer[1]);
+     var ref=q.act=="a_choose_photo_box"?geByClass('summary',div)[0]:geByClass('photos_choose_rows',div)[0];
+     if (ref){
+       var node=vkCe('div',{"class":'ta_r','style':"height: 25px; padding-left:10px; padding-top:4px;"},'\
+       <div class="fl_l">\
+           '+IDL('EnterLinkToPhoto')+': \
+         <span><input id="vk_link_to_photo" type="text"  style="width:230px"></span>\
+         <div id="vk_link_to_photo_button" class="button_blue"><button onclick="vkCheckPhotoLinkToMedia();">'+IDL('OK')+'</button></div>\
+       </div>\
+       ');
+       ref.parentNode.insertBefore(node,ref);
+       ref.parentNode.insertBefore(vkCe('h4'),ref);
+       answer[1]=div.innerHTML;
      }
-  /*} else {
-      var div=vkCe('div',{},answer[1]);
-      var ref=geByClass('photos_choose_rows',div)[0];
-      if (ref){
-         var node=vkCe('div',{"class":'ta_r','style':"height: 25px; padding-left:10px; padding-top:4px;"},'\
-             <div class="fl_l">\
-                 '+IDL('EnterLinkToPhoto')+': \
-               <span><input id="vk_link_to_photo" type="text"  style="width:230px"></span>\
-               <div id="vk_link_to_photo_button" class="button_blue"><button onclick="vkCheckPhotoLinkToMedia();">'+IDL('OK')+'</button></div>\
-             </div>\
-             ');
-         ref.parentNode.insertBefore(node,ref);
-         answer[1]=div.innerHTML;
-      }
-      //answer[1]
-      
-      
-      //console.log(answer);
-  }*/
-//*/  
+  }
 }
 
 function vkVidChooseProcess(answer,url,q){

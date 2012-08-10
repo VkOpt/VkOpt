@@ -115,11 +115,11 @@ function vkStyleJS(url){
 }
 
 function vkSkinnerInit(){
-  //var lsredy=vkLocalStoreReady();
+  //var lsready=vkLocalStoreReady();
   if (EnableSetStyle && !ge('vkStyleCSS')) {                                                           
     VK_CURRENT_CSS_URL=vkGetVal("VK_CURRENT_CSS_URL") || "";//vk_LSGetVal - only localstore; vkGetVal- localstore && cookie 
     VK_CURRENT_CSS_CODE=vk_LSGetVal('VK_CURRENT_CSS_CODE') || "";
-    VK_CURRENT_CSSJS_URL=vk_LSGetVal('VK_CURRENT_CSSJS_URL') || "";
+    VK_CURRENT_CSSJS_URL=vkGetVal('VK_CURRENT_CSSJS_URL') || "";
     
       vkSetBodyScrResolution();
       var vkcssNode = document.createElement('link');
