@@ -749,6 +749,7 @@ function vkDocImageInlineView(el,href,e){
    var a=el.parentNode.parentNode;
    var img=a.getElementsByTagName('img')[0];
    if (img) img.src=href;
+   hide(el);
    addClass(a,'doc_gif_anim');
 }
 function ProcessAwayLink(node){
