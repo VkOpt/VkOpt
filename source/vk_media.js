@@ -748,6 +748,7 @@ function vkAudios(){
 }
 function vkAudioPage(){
 	vkAudioPlayList(true);
+   vkAudioBtns();
 	vkAudioDelDup(true);
    vkAudioRefreshFriends();
 }
@@ -814,14 +815,17 @@ function vkCleanAudios(){
 		});
 	};
 	var run=function(){
-		box=new MessageBox({title: IDL('DelAudios'),closeButton:true,width:"350px"});
+		
+      box=new MessageBox({title: IDL('DelAudios'),closeButton:true,width:"350px"});
 		box.removeButtons();
 		box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no');
-		var html='<div id="vk_del_msg" style="padding-bottom:10px;"></div><div id="vk_scan_msg"></div>';
+		var html='</br><div id="vk_del_msg" style="padding-bottom:10px;"></div><div id="vk_scan_msg"></div>';
 		box.content(html).show();	
 		scan();
 	};
-	vkAlertBox(IDL('DelAudios'),IDL('DelAllAutiosConfirm'),run,true);
+  
+   var owner=(cur.oid>0?"id":"club")+Math.abs(cur.oid);
+	vkAlertBox(IDL('DelAudios'),'<b><a href="/'+owner+'">'+owner+'</a></b><br>'+IDL('DelAllAutiosConfirm'),run,true);
 }
 vkAudioEd = {
    Delete:function(id,aid,el){
@@ -1257,9 +1261,53 @@ function vkAudioDurSearchBtn(audio,fullname,id){
 	return '<a href="/search?c[q]='+sq+'&c[section]=audio" onmouseover="vkGetAudioSize(\''+id+'\',this)" onclick="if (checkEvent(event)) return; Audio.selectPerformer(event, \''+sq+'\'); return false">'+dur+'</a>';
 }
 
+function vkAudioBtns(){
+      if (ge('vkcleanaudios_btn')){
+         var allow_show=cur.canEdit && !(nav.objLoc['act']=='recommendations' || nav.objLoc['act']=='popular' || nav.objLoc['friend']);
+         (allow_show?show:hide)('vkcleanaudios_btn');
+      }      
+      if (cur.canEdit && !ge('vkcleanaudios_btn')){
+         var p=ge('album_filters');
+         
+         var btn=vkCe("div",{
+               id:"vkcleanaudios_btn",
+               "class":"audio_filter",
+               onmouseover:"if (Audio.listOver) Audio.listOver(this)",
+               onmouseout:"if (Audio.listOut) Audio.listOut(this)",
+               onclick:"vkCleanAudios();"
+            },'<div class="label">'+IDL('DelAll')+'</div>');
+         p.insertBefore(btn,p.firstChild);
+      }	
+      
+      p=ge('audio_albums_wrap');
+      if (p && !ge('albumNoSort')){
+         var btn=vkCe("div",{
+               id:"albumNoSort",
+               "class":"audio_filter",
+               stopsort:"1",
+               onmouseover:"if (Audio.listOver) Audio.listOver(this)",
+               onmouseout:"if (Audio.listOut) Audio.listOut(this)",
+               onclick:"vkAudioLoadAlbum('NoSort')"
+            },'<div class="label">'+IDL('NotInAlbums')+'</div>');
+         p.insertBefore(btn,p.firstChild);
+      }
+}
+
+function vkAudioLoadAlbum(albumid){
+   if (albumid=='NoSort'){
+      var audios=cur.audiosList['all'];
+      cur.audiosList['albumNoSort']=[];
+      for (var i=0; i<audios.length; i++){
+         if (audios[i][8]=="0")
+            cur.audiosList['albumNoSort'].push(audios[i]);
+      }
+   }
+   Audio.loadAlbum(albumid);
+}
+
 function vkAudioPlayList(add_button){
 	if(add_button){
-		if (ge('vkmp3links') || nav.objLoc['act']=='recommendations' || nav.objLoc['act']=='popular') return;
+      if (ge('vkmp3links') || nav.objLoc['act']=='recommendations' || nav.objLoc['act']=='popular') return;
 		var p=ge('album_filters');
       var btn=vkCe("div",{
             id:"vkmp3links",

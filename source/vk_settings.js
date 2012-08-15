@@ -622,7 +622,7 @@ function vkInitSettings(){
       {id:59, text:IDL("seExplandGroupNews")},
       {id:60, text:IDL("seProfileMoveAudioBlock")},
       {id:61, text:IDL("seProfileGroups"),info:'infoUseNetTrafic'},
-      {id:64, text:IDL("seToTopOld")}
+      //{id:64, text:IDL("seToTopOld")}
     ],
 	Sounds:[
 	  {id:48, text:IDL("ReplaceVkSounds")}	

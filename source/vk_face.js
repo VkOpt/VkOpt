@@ -93,6 +93,8 @@ function vkFixedMenu(){
 	var right_bar=ge('right_bar');
 	var h=getSize(el)[1]+getXY(el)[1];
 	vkaddcss("#sideBar,#side_bar"+(cfg_r=='y'?", #right_bar":'')+"{ position: fixed;z-index: 101; top: "+h+"px }\
+         .audio_fixed_nav #side_bar, .im_fixed_nav #side_bar"
+         +(cfg_r=='y'?", .audio_fixed_nav #right_bar, .im_fixed_nav #right_bar":'')+"{top: "+h+"px !important; }\
          #page_wrap{overflow: visible !important;}\
          #fmenu{display:none !important;}\
          #stl_side { z-index: 0 !important;}");
@@ -136,7 +138,7 @@ function vkMenu(){//vkExLeftMenu
          .vkico_notes,.vkico_groups,.vkico_events,\
          .vkico_feed, .vkico_newsfeed,.vkico_fave,\
          .vkico_settings,.vkico_apps,.vkico_docs,\
-         .vkico_wall,.vkico_gifts,.vkico_vkplug,.vkico_vkopt,.vkico_app{background:url("http://vk.com/images/icons/mono_iconset.gif") no-repeat;}\
+         .vkico_wall,.vkico_gifts,.vkico_vkplug,.vkico_vkopt,.vkico_app,.vkico_ads,.vkico_pages{background:url("http://vk.com/images/icons/mono_iconset.gif") no-repeat;}\
          .left_row  .vkicon{margin: 4px 3px -4px 0px;}\
          \
          .vkico_profile{background-position:0 0px;}\
@@ -153,6 +155,9 @@ function vkMenu(){//vkExLeftMenu
          .vkico_apps, .vkico_app{background-position:0 -104px;/-207px*/}\
          .vkico_docs{background-position:0 -148px;}\
          .vkico_wall{background-position:0 -44px;}\
+         \
+         .vkico_ads{background-position:0 -235px;}\
+         .vkico_pages{background-position:0 -133px;}\
          \
          /*.vkico_events{background-position:0 -168px;}*/\
          /*.vkico_gifts{background-position:0 -104px;}*/\
