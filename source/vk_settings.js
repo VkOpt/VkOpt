@@ -554,11 +554,12 @@ function vkInitSettings(){
 
   vkoptSets={
     Media:[
-      {id:0, text:IDL("seLinkAu")},
-      {id:1, text:IDL("seAudioDownloadName")},
+      {id:0,  text:IDL("seLinkAu")},
+      {id:1,  text:IDL("seAudioDownloadName")},
       {id:43, text:IDL("seAudioSize")},
-      {id:2, text:IDL("seLinkVi")},
-      {id:7, text:IDL("seScroolPhoto")}
+      {id:2,  text:IDL("seLinkVi")},
+      {id:66, text:IDL("seVidDownloadLinks")},
+      {id:7,  text:IDL("seScroolPhoto")}
     ],
     Users:[
       {id:10, text:IDL("seExUserMenu")+'<br><a href="#" onclick="toggle(\'vkExUMenuCFG\'); return false;">[<b> '+IDL("Settings")+' </b>]</a><span id="vkExUMenuCFG" style="display:none">'+GetUserMenuSett()+'</span>'},
@@ -635,7 +636,7 @@ function vkInitSettings(){
 		{id:34, text:IDL("seSwichTextChr")}	
     ]
   };	  
-	//LAST 65
+	//LAST 66
 	
 	vkSetsType={
       "on"  :[IDL('on'),'y'],

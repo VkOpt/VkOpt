@@ -385,7 +385,7 @@ function vkVidDownloadLinks(vars){
 
 
 function vkVidGetLinkBtn(vid){//for cur.videoTpl
-   if (!vid) return '';
+   if (!vid || getSet(66)=='n') return '';
    var oid=parseInt(vid[0]);
    var cur_oid=(window.cur && cur.oid)?cur.oid:((window.nav && nav.objLoc) ? nav.objLoc[0].match(/-?\d+/):null);
    var href=(oid<0?'club':'id')+Math.abs(oid);
@@ -395,7 +395,7 @@ function vkVidGetLinkBtn(vid){//for cur.videoTpl
    return s+'<div class="download_cont"><a href="#" onclick="vkVidLoadLinks('+vid[0]+','+vid[1]+',this.parentNode); return false;">'+IDL('download')+'</a></div>';
 }
 function vkVidAddGetLink(node){
-   if (getSet(2)!='y') return;
+   if (getSet(2)!='y' ||  getSet(66)=='n') return;
    var vre=/(-?\d+)_(\d+)/;
    var els=geByClass('video_row_cont',node);
    for (var i=0; i<els.length; i++){

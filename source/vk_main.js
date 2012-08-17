@@ -778,6 +778,7 @@ function vkFriendsPage(){
 function vkPublicPage(){
 	addFakeGraffItem();
    vkWallAlbumLink();
+   vkSwitchPublicToGroup();
    //vkModGroupBlocks();
 }
 /* EVENTS */
@@ -793,6 +794,14 @@ function vkGroupPage(){
    vkAudioBlock();
    vkWallAlbumLink();
    
+}
+
+function vkSwitchPublicToGroup(){
+   var p=ge('page_actions');
+   if (!ge('vkpubtogroup') && p && p.innerHTML.indexOf('?act=edit')!=-1){
+      var a=vkCe('a',{id:'vkpubtogroup', onclick:"showBox('al_public.php', {act:'a_switch_to_group_box',gid:Math.abs(cur.oid)}); return false;"},IDL('PublicToGroup'));
+      p.appendChild(a);
+   }
 }
 function vkGetGid(){
 	if (!window.cur || cur.oid>0) return false;
