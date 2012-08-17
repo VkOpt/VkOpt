@@ -43,6 +43,7 @@ function vkMakeRightBar(){
       if (b && b.parentNode && (b.parentNode.id || "").match(/left_block\d+_\d+/)) b = b.parentNode;
 		if (b) bar.appendChild(b);
 	}
+   updSideTopLink(true);
 }
 //if (getSet(44)=='y') vkMoveSuggFrBox();
 function vkMoveSuggFrBox(){
@@ -90,8 +91,13 @@ function vkFixedMenu(){
 	var el=ge('pageHeader') || ge('pageHeader1') || ge('page_header');
 	var side_bar=(ge('sideBar') || ge('side_bar'));
 	var right_bar=ge('right_bar');
-	var h=getSize(el)[1]+getXY(el)[1];
-	vkaddcss("#sideBar,#side_bar"+(cfg_r=='y'?", #right_bar":'')+"{ position: fixed;z-index: 101; top: "+h+"px } #page_wrap{overflow: visible !important;");
+	var h=getSize(el,true)[1]+getXY(el)[1];
+	vkaddcss("#sideBar,#side_bar"+(cfg_r=='y'?", #right_bar":'')+"{ position: fixed;z-index: 101; top: "+h+"px }\
+         .audio_fixed_nav #side_bar, .im_fixed_nav #side_bar"
+         +(cfg_r=='y'?", .audio_fixed_nav #right_bar, .im_fixed_nav #right_bar":'')+"{top: "+h+"px !important; }\
+         #page_wrap{overflow: visible !important;}\
+         #fmenu{display:none !important;}\
+         #stl_side { z-index: 0 !important;}");
 	var onscroll=function(){
 		removeEvent(window, 'scroll', onscroll);
 		var ntop=h-getScrollTop();
@@ -132,7 +138,7 @@ function vkMenu(){//vkExLeftMenu
          .vkico_notes,.vkico_groups,.vkico_events,\
          .vkico_feed, .vkico_newsfeed,.vkico_fave,\
          .vkico_settings,.vkico_apps,.vkico_docs,\
-         .vkico_wall,.vkico_gifts,.vkico_vkplug,.vkico_vkopt,.vkico_app{background:url("http://vk.com/images/icons/mono_iconset.gif") no-repeat;}\
+         .vkico_wall,.vkico_gifts,.vkico_vkplug,.vkico_vkopt,.vkico_app,.vkico_ads,.vkico_pages{background:url("http://vk.com/images/icons/mono_iconset.gif") no-repeat;}\
          .left_row  .vkicon{margin: 4px 3px -4px 0px;}\
          \
          .vkico_profile{background-position:0 0px;}\
@@ -150,6 +156,9 @@ function vkMenu(){//vkExLeftMenu
          .vkico_docs{background-position:0 -148px;}\
          .vkico_wall{background-position:0 -44px;}\
          \
+         .vkico_ads{background-position:0 -235px;}\
+         .vkico_pages{background-position:0 -133px;}\
+         \
          /*.vkico_events{background-position:0 -168px;}*/\
          /*.vkico_gifts{background-position:0 -104px;}*/\
    ';//float:left; 
@@ -160,7 +169,7 @@ function vkMenu(){//vkExLeftMenu
       #nav li ul, #side_bar li ul, #sideBar li ul{position:absolute; z-index:999; /*background:#FFF;*/ width:130px; margin-left:70px;padding-left:0px; border:1px solid #AAA; }\
       #nav ul li, #side_bar li ul, #sideBar li ul{list-style:none;}\
       #side_bar ol li#myprofile ul a { display: block;  padding: 4px 3px 4px 6px; }\
-	  #stl_side { z-index: 0 !important;}\
+	   /*#stl_side { z-index: 0 !important;}*/\
   ");
   
   var icon_url='http://vkoptimizer.narod.ru/icons/';

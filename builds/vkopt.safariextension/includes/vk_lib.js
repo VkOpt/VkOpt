@@ -199,7 +199,7 @@ function isNewLib(){return window.showWriteMessageBox?true:false}
 /* CROSS */
 var _ua_ = window.navigator.userAgent.toLowerCase();
 var vkbrowser = {
-  version: (_ua_.match( /.+(?:me|ox|on|rv|it|ra|ie)[\/: ]([\d.]+)/ ) || [0,'0'])[1],
+  version: (_ua_.match( /.+(?:me|ox|on|rv|it|era|ie)[\/: ]([\d.]+)/ ) || [0,'0'])[1],
   opera: /opera/i.test(_ua_),
   msie: (/msie/i.test(_ua_) && !/opera/i.test(_ua_)),
   msie6: (/msie 6/i.test(_ua_) && !/opera/i.test(_ua_)),
@@ -214,9 +214,13 @@ var vkbrowser = {
   iphone4: /iphone.*OS 4/i.test(_ua_),
   ipod4: /ipod.*OS 4/i.test(_ua_),
   ipad: /ipad/i.test(_ua_),
+  android: /android/i.test(_ua_),
+  bada: /bada/i.test(_ua_),
+  mobile: /iphone|ipod|ipad|opera mini|opera mobi|iemobile/i.test(_ua_),
+  msie_mobile: /iemobile/i.test(_ua_),
   safari_mobile: /iphone|ipod|ipad/i.test(_ua_),
   opera_mobile: /opera mini|opera mobi/i.test(_ua_),
-  mobile: /iphone|ipod|ipad|opera mini|opera mobi/i.test(_ua_),
+  opera_mini: /opera mini/i.test(_ua_),
   mac: /mac/i.test(_ua_)
 }
 if (window.opera) {vkbrowser.mozilla=false; vkbrowser.opera=true;}
@@ -706,7 +710,7 @@ var vkMozExtension = {
 			var fn=eval('window.'+func);
 			if (!fn) vklog('Inj_Error: "'+func+'" not found',1);
 			var res=fn?String(fn).match(Inj.FRegEx):['','',''];
-			if (vkbrowser.mozilla){res[2]=res[2].replace(/\r?\n/g," ");}
+			if (Inj.need_porno()){res[2]=res[2].replace(/\r?\n/g," ");}
 			return res;
 		},
 		Make:function(func,arg,code,args){
@@ -715,11 +719,16 @@ var vkMozExtension = {
 			if (code.indexOf(hs)!=-1) return;
 			var ac='\n_inj_label="'+hs+'";\n'
 			//try{
+         console.log(func+'=function('+arg+'){'+ac+code+'}');
 			eval(func+'=function('+arg+'){'+ac+code+'}');
+         
 			//} catch(e){	vklog('Inj_Error: '+func+'=function('+arg+'){'+ac+code+'}',1);	}
 		},
+      need_porno:function(){
+         return vkbrowser.mozilla && !(vkbrowser.mozilla && parseInt(vkbrowser.version)>=17);
+      },
 		toRE:function(s,m){
-			if (vkbrowser.mozilla && (typeof s)=='string' && (s.indexOf("+'")!=-1 ||s.indexOf("'+")!=-1 || s.indexOf('"+')!=-1)){
+			if (Inj.need_porno() && (typeof s)=='string' && (s.indexOf("+'")!=-1 ||s.indexOf("'+")!=-1 || s.indexOf('"+')!=-1)){
 				/* this is Porno! */
 				s=s.replace(/([\(\)\[\]\\\/\.\^\$\|\?\+])/g,"\\$1");
 				s=s.replace(/(["']\\\+)/g,"\\\\?[\"']\\s*\\+\\s*");
@@ -729,7 +738,7 @@ var vkMozExtension = {
 			} else return s;
 		},
 		mc:function(s){
-			if (vkbrowser.mozilla){
+			if (Inj.need_porno()){
 				if (s.substr(0,2)=="'+") s='"+'+s.substr(2);
 				if (s.substr(-2)=="+'") s=s.substr(0,s.length-2)+'+"';
 				return s;
@@ -2145,7 +2154,7 @@ function vkSwitchHost(){
    location.assign(location.href.split(v?vko:vk).join(v?vk:vko));
 }
 function vkDisableAjax(){
-  if (window.nav && nav.go) Inj.Before('nav.go',"var _a = window.audioPlayer;","{ location.href='/'+strLoc; return true;};");
+  if (window.nav && nav.go) Inj.Before('nav.go',"var _a = window.audioPlayer","{ location.href='/'+strLoc; return true;};");
 }
 
 

@@ -748,6 +748,7 @@ function vkAudios(){
 }
 function vkAudioPage(){
 	vkAudioPlayList(true);
+   vkAudioBtns();
 	vkAudioDelDup(true);
    vkAudioRefreshFriends();
 }
@@ -814,14 +815,17 @@ function vkCleanAudios(){
 		});
 	};
 	var run=function(){
-		box=new MessageBox({title: IDL('DelAudios'),closeButton:true,width:"350px"});
+		
+      box=new MessageBox({title: IDL('DelAudios'),closeButton:true,width:"350px"});
 		box.removeButtons();
 		box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no');
-		var html='<div id="vk_del_msg" style="padding-bottom:10px;"></div><div id="vk_scan_msg"></div>';
+		var html='</br><div id="vk_del_msg" style="padding-bottom:10px;"></div><div id="vk_scan_msg"></div>';
 		box.content(html).show();	
 		scan();
 	};
-	vkAlertBox(IDL('DelAudios'),IDL('DelAllAutiosConfirm'),run,true);
+  
+   var owner=(cur.oid>0?"id":"club")+Math.abs(cur.oid);
+	vkAlertBox(IDL('DelAudios'),'<b><a href="/'+owner+'">'+owner+'</a></b><br>'+IDL('DelAllAutiosConfirm'),run,true);
 }
 vkAudioEd = {
    Delete:function(id,aid,el){
@@ -1221,6 +1225,9 @@ function vkGetAudioSize(id,el){
 			} else {
 				el.innerHTML='o_O';
 			}
+         /* костыли с педалями и тормозами */
+         if (window.sorter && sorter.update && ge('audio'+id) && (ge('audio'+id).parentNode || {}).sorter)
+            sorter.update(ge('audio'+id));
 			
 		},true);	
 	}
@@ -1254,9 +1261,53 @@ function vkAudioDurSearchBtn(audio,fullname,id){
 	return '<a href="/search?c[q]='+sq+'&c[section]=audio" onmouseover="vkGetAudioSize(\''+id+'\',this)" onclick="if (checkEvent(event)) return; Audio.selectPerformer(event, \''+sq+'\'); return false">'+dur+'</a>';
 }
 
+function vkAudioBtns(){
+      if (ge('vkcleanaudios_btn')){
+         var allow_show=cur.canEdit && !(nav.objLoc['act']=='recommendations' || nav.objLoc['act']=='popular' || nav.objLoc['friend']);
+         (allow_show?show:hide)('vkcleanaudios_btn');
+      }      
+      if (cur.canEdit && !ge('vkcleanaudios_btn')){
+         var p=ge('album_filters');
+         
+         var btn=vkCe("div",{
+               id:"vkcleanaudios_btn",
+               "class":"audio_filter",
+               onmouseover:"if (Audio.listOver) Audio.listOver(this)",
+               onmouseout:"if (Audio.listOut) Audio.listOut(this)",
+               onclick:"vkCleanAudios();"
+            },'<div class="label">'+IDL('DelAll')+'</div>');
+         p.insertBefore(btn,p.firstChild);
+      }	
+      
+      p=ge('audio_albums_wrap');
+      if (p && !ge('albumNoSort')){
+         var btn=vkCe("div",{
+               id:"albumNoSort",
+               "class":"audio_filter",
+               stopsort:"1",
+               onmouseover:"if (Audio.listOver) Audio.listOver(this)",
+               onmouseout:"if (Audio.listOut) Audio.listOut(this)",
+               onclick:"vkAudioLoadAlbum('NoSort')"
+            },'<div class="label">'+IDL('NotInAlbums')+'</div>');
+         p.insertBefore(btn,p.firstChild);
+      }
+}
+
+function vkAudioLoadAlbum(albumid){
+   if (albumid=='NoSort'){
+      var audios=cur.audiosList['all'];
+      cur.audiosList['albumNoSort']=[];
+      for (var i=0; i<audios.length; i++){
+         if (audios[i][8]=="0")
+            cur.audiosList['albumNoSort'].push(audios[i]);
+      }
+   }
+   Audio.loadAlbum(albumid);
+}
+
 function vkAudioPlayList(add_button){
 	if(add_button){
-		if (ge('vkmp3links') || nav.objLoc['act']=='recommendations' || nav.objLoc['act']=='popular') return;
+      if (ge('vkmp3links') || nav.objLoc['act']=='recommendations' || nav.objLoc['act']=='popular') return;
 		var p=ge('album_filters');
       var btn=vkCe("div",{
             id:"vkmp3links",
@@ -1534,8 +1585,8 @@ vkLastFM={
    },
    audio_info:function(){
       var fm=vkLastFM;
-      if (!(window.audioPlayer || audioPlayer.lastSong)) return;
-      var a = audioPlayer.lastSong;
+      if (!(window.audioPlayer && audioPlayer.lastSong)) return;
+      var a = audioPlayer.lastSong || [];
       return {
          title    :fm.clean(a[6]),
          artist   :fm.clean(a[5]),
@@ -1805,6 +1856,12 @@ if (!window.vkopt_plugins) vkopt_plugins={};
    .vk_lastfm_paused_icon{float:left; height:16px; width:11px; background:url("'+vkLastFM.res.blue.paused_icon+'") 50% 50% no-repeat;}\
    .vk_lastfm_ok_icon{float:left; height:16px; width:8px; background:url("'+vkLastFM.res.blue.scrobble_ok+'") 0 50% no-repeat;}\
    .vk_lastfm_fail_icon{float:left; height:16px; width:8px; background:url("'+vkLastFM.res.blue.scrobble_fail+'") 0 50% no-repeat;}\
+   \
+   #gp .active .vk_lastfm_icon{background-image:url("'+vkLastFM.res.white.last_fm+'");}\
+   #gp .active .vk_lastfm_playing_icon{background-image:url("'+vkLastFM.res.white.playing_icon+'");}\
+   #gp .active .vk_lastfm_paused_icon{background-image:url("'+vkLastFM.res.white.paused_icon+'");}\
+   #gp .active .vk_lastfm_ok_icon{background-image:url("'+vkLastFM.res.white.scrobble_ok+'");}\
+   #gp .active .vk_lastfm_fail_icon{background-image:url("'+vkLastFM.res.white.scrobble_fail+'");}\
    \
    .lastfm_ac .vk_lastfm_icon, .lastfm_pd .vk_lastfm_icon{background-image:url("'+vkLastFM.res.blue.last_fm+'");}\
    .lastfm_ac .vk_lastfm_playing_icon, .lastfm_pd .vk_lastfm_playing_icon{background-image:url("'+vkLastFM.res.blue.playing_icon+'");}\

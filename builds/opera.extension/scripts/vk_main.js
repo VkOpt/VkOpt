@@ -453,10 +453,13 @@ function vkStyles(){
          margin-bottom: 0px !important;\
          margin-top: 0px !important;\
       }\
-      #audio.new .audio .play_btn_wrap,#audio.new .audio .title_wrap,#audio.new .duration{\
+      .audio .play_btn_wrap, .audio .title_wrap, .duration{\
          padding-bottom: 2px !important;\
          padding-top:2px !important;\
       }\
+      .audio .area {margin-bottom: 0px !important;}\
+      .choose_audio_row {height:auto !important;}\
+      .choose_audio_row a.choose{margin-top: 0px !important; padding-bottom: 2px !important; padding-top:2px !important;}\
 	";
 	//additional audio styles
 	var img="data:image/gif;base64,R0lGODdhEAARALMAAF99nf///+7u7pqxxv///8nW4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACwAAAAAEAARAAAEJpCUQaulRd5dJ/9gKI5hYJ7mh6LgGojsmJJ0PXq3JmaE4P9AICECADs=";
@@ -470,6 +473,10 @@ function vkStyles(){
          border-radius:3px;\
          width: 16px !important;\
       }\
+      /* Display full audio names*/\
+      .audio .title_wrap{white-space: normal !important; width: 245px; !important; }\
+      .audio .title_wrap b{white-space: normal !important; display: inline !important;}\
+      \
 		.audio_table .audio td.info { width: 340px !important;}\
 		.audio_table .audio td { padding-left: 0px; }\
 		.audio_table .audio .title_wrap, .audio_list .audio_title_wrap {width: 315px !important;}\
@@ -480,7 +487,6 @@ function vkStyles(){
       .choose_audio_row .audio_title_wrap { width: 350px !important; }\
 		.post_media .audio_title_wrap { width: 250px !important;}\
       \
-      #audio.new .audio .title_wrap{white-space: normal !important;}\
       #audio.new .audio .info { width: 360px !important;}\
       #pad_playlist .audio .info {width: 435px !important;}\
       #pad_playlist .audio .title_wrap {width: auto !important; }\
@@ -662,6 +668,21 @@ function vkStyles(){
          .vk_slider_scale {  cursor: pointer;  padding-top: 3px; }\
          .vk_slider_line {  cursor: pointer;  border-bottom: 1px solid #5F7D9D; }\
          .vk_slider {  cursor: pointer;  background: #5F7D9D;  width: 11px;  height: 4px; }\
+         .zoom_ico_white{\
+            width:14px; \
+            height:14px; \
+            background:url('http://st0.userapi.com/images/icons/photo_icons.png') 0 -62px;\
+            opacity:0.75;\
+            -webkit-transition: opacity 100ms linear;\
+            -moz-transition: opacity 100ms linear;\
+            -o-transition: opacity 100ms linear;\
+            transition: opacity 100ms linear;\
+         }\
+         .zoom_ico_white:hover{opacity:1;}\
+         .doc_gif_anim .page_doc_photo{width: auto !important;}\
+         .doc_gif_anim .page_doc_photo img{max-height:none !important;}\
+         .wall_module .doc_gif_anim img { max-width: 320px;}\
+         .wide_wall_module .doc_gif_anim img {max-width: 500px !important;}\
 	";
 	main_css+=vk_plugins.css();
 
@@ -699,19 +720,38 @@ function vkProccessLinks(el){
  el=(el)?el:ge('content');//document
     var nodes=el.getElementsByTagName('a'); 
     for (var i=0;i<nodes.length;i++){  
-      if (getSet(10)=='y') vkProcessUserLink(nodes[i]);
+     if (getSet(10)=='y') vkProcessUserLink(nodes[i]);
 	  if (getSet(8)=='y')  ProcessUserPhotoLink(nodes[i]);
 	  if (getSet(6)=='y')  ProcessAwayLink(nodes[i]);
 	  if (getSet(38)=='y') ProcessHighlightFriendLink(nodes[i]);
      if (getSet(55)=='y') vkProcessIMDateLink(nodes[i]);
      if (getSet(58)=='y') vkProcessTopicLink(nodes[i]);
+     vkProcessDocPhotoLink(nodes[i]);
 	  vk_plugins.processlink(nodes[i]);
     }
  vklog('ProcessLinks time:' + (unixtime()-tstart) +'ms');
 }
 
 
-
+function vkProcessDocPhotoLink(node){
+   if (hasClass(node,'page_doc_photo_href') && !node.getAttribute('zoombtn')){
+      var h=geByClass('page_doc_photo_hint',node)[0];
+      if (h && h.innerHTML.toLowerCase().indexOf('.gif')!=-1){
+         var btn=vkCe('div',{'class':'fl_l zoom_ico_white',onclick:"vkDocImageInlineView(this,'"+node.href+"',event);"});//<div class="fl_l zoom_ico_white"></div>
+         h.appendChild(btn);
+         node.setAttribute('zoombtn',1);
+      }
+   }
+   
+}
+function vkDocImageInlineView(el,href,e){
+   cancelEvent(e);
+   var a=el.parentNode.parentNode;
+   var img=a.getElementsByTagName('img')[0];
+   if (img) img.src=href;
+   hide(el);
+   addClass(a,'doc_gif_anim');
+}
 function ProcessAwayLink(node){
   if (node.href && node.href.indexOf('away.php?')!=-1){ 
 	var lnk=vkLinksUnescapeCyr(node.href).split('?to=')[1];
@@ -818,6 +858,9 @@ function vkAjaxNavDisabler(strLoc){
 	}
 }
 function vkAllowPost(url, q, options){
+   if (SUPPORT_STEALTH_MOD && q && q.audio_html && q.audio_orig){
+      q.audio_html=q.audio_orig;
+   }
    if (MAIL_BLOCK_UNREAD_REQ){
       if (url=='al_mail.php' && q.act=='show') return false;
       if (url=='al_im.php' && q.act=='a_mark_read') return false;
@@ -848,7 +891,7 @@ function vkCommon(){
    //if(window.TopSearch) Inj.End('TopSearch.prepareRows','vkProccessLinks(tsWrap);');
 	//if (window.setFavIcon) Inj.Try('setFavIcon');
    
-   if (getSet(64)=='y')vkToTopBackLink();
+   //if (getSet(64)=='y') vkToTopBackLink();
 
 }
 
@@ -878,15 +921,14 @@ function vkProcessResponse(answer,url,q){
   if ((url=='/audio' || url=='/audio.php') && q.act=="a_choose_audio_box") vkAudioChooseProcess(answer,url,q);
   if (url=='/al_friends.php' && q.act=='add_box') answer[1]=answer[1].replace('"friends_add_block" style="display: none;"','"friends_add_block"');
   if(url=='/al_groups.php' && q.act=='people_silent') {
-   if(answer[0].members)  answer[0].members = vkModAsNode(answer[0].members,vkProcessNodeLite,url,q);
-   if(answer[0].requests) answer[0].requests = vkModAsNode(answer[0].requests,vkProcessNodeLite,url,q);
-  if(answer[0].invites) answer[0].invites = vkModAsNode(answer[0].invites,vkProcessNodeLite,url,q);
-  if(answer[0].admins) answer[0].admins = vkModAsNode(answer[0].admins,vkProcessNodeLite,url,q);
+      if(answer[0].members)  answer[0].members = vkModAsNode(answer[0].members,vkProcessNodeLite,url,q);
+      if(answer[0].requests) answer[0].requests = vkModAsNode(answer[0].requests,vkProcessNodeLite,url,q);
+      if(answer[0].invites) answer[0].invites = vkModAsNode(answer[0].invites,vkProcessNodeLite,url,q);
+      if(answer[0].admins) answer[0].admins = vkModAsNode(answer[0].admins,vkProcessNodeLite,url,q);
   }
 }
 
 function vkPhChooseProcess(answer,url,q){
-//*
   vkCheckPhotoLinkToMedia=function(){
     var btn=ge('vk_link_to_photo_button');
     var val=ge('vk_link_to_photo').value.match(/photo(-?\d+)_(\d+)/);
@@ -898,43 +940,22 @@ function vkPhChooseProcess(answer,url,q){
     }
     unlockButton(btn);
   };
-  //if (q.act=="a_choose_photo_box"){
-     if (answer[1].indexOf('vk_link_to_photo')==-1){
-        var div=vkCe('div',{},answer[1]);
-        var ref=q.act=="a_choose_photo_box"?geByClass('summary',div)[0]:geByClass('photos_choose_rows',div)[0];
-        if (ref){
-          var node=vkCe('div',{"class":'ta_r','style':"height: 25px; padding-left:10px; padding-top:4px;"},'\
-          <div class="fl_l">\
-              '+IDL('EnterLinkToPhoto')+': \
-            <span><input id="vk_link_to_photo" type="text"  style="width:230px"></span>\
-            <div id="vk_link_to_photo_button" class="button_blue"><button onclick="vkCheckPhotoLinkToMedia();">'+IDL('OK')+'</button></div>\
-          </div>\
-          ');
-          ref.parentNode.insertBefore(node,ref);
-          ref.parentNode.insertBefore(vkCe('h4'),ref);
-          answer[1]=div.innerHTML;
-        }
+  if (answer[1] && answer[1].indexOf && answer[1].indexOf('vk_link_to_photo')==-1){
+     var div=vkCe('div',{},answer[1]);
+     var ref=q.act=="a_choose_photo_box"?geByClass('summary',div)[0]:geByClass('photos_choose_rows',div)[0];
+     if (ref){
+       var node=vkCe('div',{"class":'ta_r','style':"height: 25px; padding-left:10px; padding-top:4px;"},'\
+       <div class="fl_l">\
+           '+IDL('EnterLinkToPhoto')+': \
+         <span><input id="vk_link_to_photo" type="text"  style="width:230px"></span>\
+         <div id="vk_link_to_photo_button" class="button_blue"><button onclick="vkCheckPhotoLinkToMedia();">'+IDL('OK')+'</button></div>\
+       </div>\
+       ');
+       ref.parentNode.insertBefore(node,ref);
+       ref.parentNode.insertBefore(vkCe('h4'),ref);
+       answer[1]=div.innerHTML;
      }
-  /*} else {
-      var div=vkCe('div',{},answer[1]);
-      var ref=geByClass('photos_choose_rows',div)[0];
-      if (ref){
-         var node=vkCe('div',{"class":'ta_r','style':"height: 25px; padding-left:10px; padding-top:4px;"},'\
-             <div class="fl_l">\
-                 '+IDL('EnterLinkToPhoto')+': \
-               <span><input id="vk_link_to_photo" type="text"  style="width:230px"></span>\
-               <div id="vk_link_to_photo_button" class="button_blue"><button onclick="vkCheckPhotoLinkToMedia();">'+IDL('OK')+'</button></div>\
-             </div>\
-             ');
-         ref.parentNode.insertBefore(node,ref);
-         answer[1]=div.innerHTML;
-      }
-      //answer[1]
-      
-      
-      //console.log(answer);
-  }*/
-//*/  
+  }
 }
 
 function vkVidChooseProcess(answer,url,q){
@@ -1332,6 +1353,64 @@ function vkDeleteMessages_(is_out){// step 1: scan all; step 2: delete; This fun
 		scan();
 	}
 	vkAlertBox(IDL('DeleteMessages'),IDL('msgdelconfirm'),run,true);
+}
+
+function vkRestoreMessages(is_out){// step 1: scan all; step 2: delete; This function not used
+	var MARK_ACT='del';// 'del'		'read'		'new'
+	var box=null;
+	var mids=[];
+	var del_offset=0;
+	var cur_offset=0;
+	var abort=false;	
+   var restored=[];
+	
+   var restore=function(){	
+		maxmid=Math.max.apply(this,mids);
+      var deleted=[];
+      for (var i=0; i<maxmid; i++){
+         var ok=false;
+         for (var j=0; j<mids.length; j++)
+            if (mids[j]==i) ok=true;
+         if (ok) deleted.push(i);
+      }
+      //alert(deleted.join(','));
+      
+      //*
+      if (abort) return;
+		var del_count=deleted.length;
+		ge('vk_scan_msg').innerHTML=vkProgressBar(del_offset,del_count,310,IDL('msgrestore')+' %');
+		var ids_part=deleted.slice(del_offset,del_offset+1);
+		if (ids_part.length==0){	alert(restored.join(', ')); box.hide();		vkMsg(IDL('DeleteMessagesDone'),3000);	} 
+		else 
+      dApi.call('messages.restore',{mid:ids_part.join(',')},function(r){
+         if (r.response=='1'){
+            restored.push(ids_part.join(',')+' - ok');
+         } else {
+            restored.push(ids_part.join(',')+' - fail');
+         }
+         del_offset+=1;
+         setTimeout(restore,MSG_DEL_REQ_DELAY);
+      });
+	};
+	var scan=function(){
+		if (cur_offset==0) ge('vk_scan_msg').innerHTML=vkProgressBar(cur_offset,2,310,IDL('msgreq')+' %');
+		dApi.call('messages.get',{out:is_out?1:0,count:100,offset:cur_offset,preview_length:1},function(r){
+			if (abort) return;
+			var ms=r.response;
+			if (!ms[0]){ restore();	return;	}
+			var msg_count=ms.shift();
+			ge('vk_scan_msg').innerHTML=vkProgressBar(cur_offset,msg_count,310,IDL('msgreq')+' %');
+			for (var i=0;i<ms.length;i++) mids.push(ms[i].mid);
+			if (cur_offset<msg_count){	cur_offset+=100; setTimeout(scan,MSG_SCAN_REQ_DELAY);} else restore();
+		});
+	};
+	var run=function(){
+		box=new MessageBox({title: IDL('ScanMessages'),closeButton:true,width:"350px"});
+		box.removeButtons(); box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no'); 
+		var html='<div id="vk_scan_msg"></div>'; box.content(html).show();	
+		scan();
+	}
+	vkAlertBox(IDL('ScanMessages'),IDL('msgscanconfirm'),run,true);
 }
 
 function vkDeleteMessages(is_out){

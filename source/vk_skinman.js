@@ -111,7 +111,17 @@ function vkSetBodyScrResolution(){
 function vkStyle(url){ if (ge("vkStyleCSS")) ge("vkStyleCSS").href=url; }
 function vkStyleJS(url){ 
    if (window.vkThemeOnDisable) vkThemeOnDisable();
-   if (ge("vkStyleCSSJS")) ge("vkStyleCSSJS").src=url; 
+   
+   var js=ge("vkStyleCSSJS");
+   if (js)  js.parentNode.removeChild(js);
+   
+   var  scriptElement = document.createElement("script");
+   scriptElement.type = "text/javascript";
+   scriptElement.id="vkStyleCSSJS";
+   scriptElement.src=url;
+   document.getElementsByTagName('head')[0].appendChild(scriptElement);
+   
+   //if (ge("vkStyleCSSJS")) ge("vkStyleCSSJS").src=url; 
 }
 
 function vkSkinnerInit(){

@@ -231,56 +231,10 @@ function vkProcessBirthday(day,month,year){
    
    if (day && month && year){
       var date=new Date(year, month-1, day);
-      var cur_date = new Date().getTime();  
-      var age= (new Date(cur_date-date)).getFullYear()-1970; 
-      info.push(langNumeric(age, vk_lang["vk_year"]));
-   }
-  
-   if (day && month){
-      var zodiacs=vk_lang['zodiac_signs'];
-      var idx = day>zodiac_cfg[month-1]?(month) % 12:(month-1);
-		var zodiac = zodiacs[idx];
-      info.push(zodiac);
-   }
-   return info;
-}
-function vkProcessProfileBday(node){
-   node = node ||  ge('profile_info');//"profile_full_info"
-   
-   var rmd=/c(?:%5B|\[)bday(?:%5D|\])=(\d+).+c(?:%5B|\[)bmonth(?:%5D|\])=(\d+)/;
-   var ryr=/c(?:%5B|\[)byear(?:%5D|\])=(\d+)/;
-   
-   var h = node.innerHTML;
-   var md=h.match(rmd); 
-   var yr=h.match(ryr);
-   var info=vkProcessBirthday(md?md[1]:null,md?md[2]:null,yr?yr[1]:null);
-   
-   if (info.length>0){
-      info = ' ('+info.join(', ')+')';
-      var links=node.getElementsByTagName('a');
-      for (var i=0;i<links.length;i++){
-         if (links[i].href && links[i].href.match(rmd)) 
-            links[i].parentNode.appendChild(vkCe('span',{"class":"vk_bday_info"},info));
-      }
-      if (cur.options.info) {
-         var r1 = /(c\[byear\]=[^>]+>[^<>]+<\/a>)/;
-         r1 = cur.options.info[0].match(r1) ? r1 : /(c\[bmonth\]=[^>]+>[^<>]+<\/a>)/;
-         cur.options.info[0] = cur.options.info[0].replace(r1, "$1" + info);
-         cur.options.info[1] = cur.options.info[1].replace(r1, "$1" + info);
-      }     
-   }
-}
-
-function vkProcessBirthday(day,month,year){
-   var zodiac_cfg=[20,19,20,20,21,21,22,23,23,23,22,21];// days
-   //'zodiac_signs':['Козерог','Водолей','Рыбы','Овен','Телец','Близнецы','Рак','Лев','Дева','Весы','Скорпион','Стрелец']
-   var info=[];
-   
-   if (day && month && year){
-      var date=new Date(year, month-1, day);
-      var cur_date = new Date().getTime();  
-      var age= (new Date(cur_date-date)).getFullYear()-1970; 
-      info.push(langNumeric(age, vk_lang["vk_year"]));
+      var cur_date = new Date();  
+      var bDay = new Date(cur_date.getFullYear(), date.getMonth(), date.getDate());
+      var years = cur_date.getFullYear() - date.getFullYear() - (bDay > cur_date?1:0);
+      info.push(langNumeric(years, vk_lang["vk_year"]));
    }
   
    if (day && month){
