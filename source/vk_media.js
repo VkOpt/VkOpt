@@ -315,6 +315,9 @@ function vkVideoPage(){
    }
    vkVideoNullAlbum();
 }
+function vkVideoEditPage(){
+   vkVidEditAlbumTitle(null,true);
+}
 
 
 function vkVideoNullAlbum(){
@@ -331,6 +334,56 @@ function vkVideoNullAlbum(){
       p.insertBefore(vkCe('div',attrs,IDL('NotInAlbums')),p.firstChild);
    }
 }
+
+function vkVidEditAlbumTitle(album_id,add_buttons){
+   if (cur.editmode && cur.albums){
+      if (add_buttons){
+         for (var aid in cur.albums){
+            var el=ge('video_section_album_'+aid);
+            
+            var text=el.innerHTML;
+            if (text.indexOf('album_title_'+aid)!=-1) continue;
+            el.innerHTML='<span id="album_title_'+aid+'">'+text+'</span><div class="fl_r vk_edit_ico" onclick="vkVidEditAlbumTitle('+aid+');" onmousedown="cancelEvent(event);"> </div>';
+         }
+         return;
+      }
+          
+      var aBox = new MessageBox({title: 'Edit Album Title'});
+      aBox.removeButtons();
+      
+      var edit_done=function(){  
+            var val=ge('albumedit_'+album_id).value;
+            var params={
+               title:val,
+               album_id:album_id
+            };
+            if (cur.oid<0) 
+               params['gid'] = Math.abs(cur.oid);
+               
+            dApi.call('video.editAlbum',params,function(r){
+               if (r.response==1)
+                  ge('album_title_'+album_id).innerHTML=val;
+               else
+                  alert('Rename error');
+            });
+            aBox.hide();            
+      }      
+      aBox.addButton(getLang('box_cancel'),aBox.hide, 'no')
+      aBox.addButton(getLang('box_save'),edit_done,'yes');
+      var html='<input type="text" id="albumedit_'+album_id+'" style="width:380px"/>';
+      aBox.content(html);
+      aBox.show();
+      ge('albumedit_'+album_id).onkeydown=function(ev){
+         ev = ev || window.event;
+         if (ev.keyCode == 10 || ev.keyCode == 13) {
+            edit_done();
+            cancelEvent(ev);
+         }         
+      }
+      ge('albumedit_'+album_id).value=cur.albums[album_id];
+   } 
+}
+
 
 function vkVideoViewer(){
 	vkVidVarsGet();

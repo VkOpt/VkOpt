@@ -133,8 +133,9 @@ function vkOnNewLocation(startup){
 			case 'friends':vkFriendsPage(); break;
 			case 'photos' :vkPhotosPage(); break;
 			case 'audio'  :vkAudioPage(); break;
-			case 'audio_edit'  :vkAudioEditPage(); break;
-         case 'video'   :vkVideoPage(); break;
+			case 'audio_edit' :vkAudioEditPage(); break;
+         case 'video'      :vkVideoPage(); break;
+         case 'video_edit' :vkVideoEditPage(); break;
 			case 'notes'   :vkNotesPage(); break;
 			case 'board'   :vkBoardPage(); break;
 			case 'search'  :vkSearchPage(); break;
@@ -683,6 +684,15 @@ function vkStyles(){
          .doc_gif_anim .page_doc_photo img{max-height:none !important;}\
          .wall_module .doc_gif_anim img { max-width: 320px;}\
          .wide_wall_module .doc_gif_anim img {max-width: 500px !important;}\
+         \
+         .vk_edit_ico {\
+           background: url(/images/icons/audio_icons.png?2) -136px -51px no-repeat;\
+           height: 13px; width: 13px;\
+           opacity:0.5\
+         }\
+         .vk_edit_ico:hover {opacity:1}\
+         .cur_section .vk_edit_ico{       background-position: -151px -51px; }\
+         \
 	";
 	main_css+=vk_plugins.css();
 
