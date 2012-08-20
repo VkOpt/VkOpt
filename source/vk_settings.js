@@ -559,6 +559,7 @@ function vkInitSettings(){
       {id:43, text:IDL("seAudioSize")},
       {id:2,  text:IDL("seLinkVi")},
       {id:66, text:IDL("seVidDownloadLinks")},
+      
       {id:7,  text:IDL("seScroolPhoto")}
     ],
     Users:[
@@ -623,6 +624,7 @@ function vkInitSettings(){
       {id:59, text:IDL("seExplandGroupNews")},
       {id:60, text:IDL("seProfileMoveAudioBlock")},
       {id:61, text:IDL("seProfileGroups"),info:'infoUseNetTrafic'},
+      {id:67, text:IDL("seHideLeftFrendsBlock")}
       //{id:64, text:IDL("seToTopOld")}
     ],
 	Sounds:[

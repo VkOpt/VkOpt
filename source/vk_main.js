@@ -407,6 +407,7 @@ function vkStyles(){
 	.vk_mail_save_history_block .cfg, .save_msgs_link .cfg{height: 11px; width: 15px; margin-top:2px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -60px;}\
    #vk_stats_btn{position: absolute; float:left}\
    #vk_stats_btn .button_blue{position: absolute; right: 0px;}\
+   #vk_stats_im_btn{margin-right:3px;}\
 	.lskey{padding-left: 5px; float:left; width:140px; overflow:hidden; height:20px; line-height:20px; font-weight:bold;}\
     .lsval{height:20px; overflow:hidden; line-height:20px;}\
     .lsrow{border:1px solid #FFF; border-bottom:1px solid #DDD;}\
@@ -607,6 +608,10 @@ function vkStyles(){
 	'.vkLinksList a {  margin: 0px;  padding: 3px;  display: inline-block; width:123px;  background: transparent;  border-bottom: solid 1px #CCD3DA; }'+
 	'.vkLinksList a:hover {  text-decoration: none;  background-color: #DAE1E8; }  ';
 
+   
+   if (getSet(67)=='y') 
+      main_css+='#left_friends{display:none !important;}';
+      
 	main_css+=vkmnustyle + gr_in_col+ shut +"\
 			#vkWarnMessage, .vkWarnMessage {border: 1px solid #d4bc4c;background-color: #f9f6e7;padding: 8px 11px;font-weight: 700;font-size: 11px;margin: 0px 10px 10px;}\
 			span.htitle span.hider{display:none} span.htitle:hover span.hider{display:inline}\
@@ -1043,6 +1048,7 @@ function vkAudioChooseProcess(answer,url,q){
 /* IM */
 function vkImPage(){
    vkImAddPreventHideCB();
+   vkMsgStatsBtn();
 }
 
 function vkProcessIMDateLink(node){
@@ -1287,19 +1293,20 @@ function vkMailPage(){
          cur.addMailMedia.onChange = mail.onMediaChange;
       }*/
 	} else {
-      if (ge('mail_bar_search') && !ge('vk_stats_btn')){
+      vkMsgStatsBtn();
+      /*if (ge('mail_bar_search') && !ge('vk_stats_btn')){
          ge('mail_bar_search').insertBefore(vkCe('div',{id:'vk_stats_btn','class':'fl_l'},'<div class="button_blue"><button onclick="vkMsgStats();">'+IDL('Stats')+'</button></div>'),ge('mail_bar_search').firstChild);
-         /*ge('vk_stats_btn').onmouseover=showTooltip(ge('vk_stats_btn'), {
-           text: IDL('MsgStatInfo'),
-           slideX: -15,
-           shift: [0, 0, 0],
-           hasover: 1,
-           toup: 0,
-           showdt: 700
-         });*/
-      }
+      }*/
    }
 	if (getSet(40)=='y') vkAddDeleteLink();
+}
+function vkMsgStatsBtn(){
+   if (ge('mail_bar_search') && !ge('vk_stats_btn')){
+      ge('mail_bar_search').insertBefore(vkCe('div',{id:'vk_stats_btn','class':'fl_l'},'<div class="button_blue"><button onclick="vkMsgStats();">'+IDL('Stats')+'</button></div>'),ge('mail_bar_search').firstChild);
+   }
+   if (ge('im_filter_out') && !ge('vk_stats_im_btn')){
+      ge('im_filter_out').appendChild(vkCe('div',{id:'vk_stats_im_btn','class':'fl_r'},'<div class="button_blue"><button onclick="vkMsgStats();">'+IDL('Stats')+'</button></div>'));
+   }
 }
 function vkMsgStats(){
    (function() {
