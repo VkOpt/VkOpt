@@ -1332,7 +1332,7 @@ function vkAudioBtns(){
          p.insertBefore(btn,p.firstChild);
       }	
       
-      p=ge('audio_albums_wrap');
+      p=ge('audio_albums');//audio_albums_wrap
       if (p && !ge('albumNoSort')){
          var btn=vkCe("div",{
                id:"albumNoSort",
@@ -1546,11 +1546,15 @@ vkLastFM={
          if (callback) callback();
       }, error: function(code, message){
          if (code == 4)// токен сдох
-            vkAlertBox(IDL('AuthBoxTitle'), IDL('AuthBoxText'), function(){
-               var url = 'http://www.last.fm/api/auth/?api_key=' + fm.api_key + '&cb=' + encodeURIComponent('http://' + location.host + '/settings?act=vkscrobbler');
-               window.open(url,'…','…');
-               //location.href = url;
-            }, true);
+            if (!fm.connect_box || !fm.connect_box.isVisible()){
+               fm.connect_box=vkAlertBox(IDL('AuthBoxTitle'), IDL('AuthBoxText'), function(){
+                  var url = 'http://www.last.fm/api/auth/?api_key=' + fm.api_key + '&cb=' + encodeURIComponent('http://' + location.host + '/settings?act=vkscrobbler');
+                  window.open(url,'…','…');
+                  //location.href = url;
+               }, function(){
+                  if (fm.enable_scrobbling) fm.toggle(true);
+               });
+            }
       }});
    },
    logout:function(){
@@ -1718,7 +1722,7 @@ vkLastFM={
          
      }
    },
-   toggle:function(){
+   toggle:function(hide_tooltip){
       var fm=vkLastFM;
       /*
       if (fm.enable_scrobbling){
@@ -1743,7 +1747,7 @@ vkLastFM={
       }
       localStorage['lastfm_enable_scrobbling']=fm.enable_scrobbling;
       fm.set_icon(); 
-      for (var i=0; i<els.length;i++){
+      for (var i=0; i<els.length && !hide_tooltip ;i++){
          els[i].onmouseover();
       }
    },

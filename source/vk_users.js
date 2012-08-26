@@ -127,12 +127,25 @@ function ExtractUserID(link){
     return (tmp2)?tmp2[1]:null;
 }
 
+_vk_users_info={};
+function vkGetUserInfo(uid,callback){
+   if (_vk_users_info[uid]) 
+      callback(_vk_users_info[uid]);
+   else 
+      dApi.call('users.get',{uids:uid,fields:'photo, photo_medium, photo_big, photo_rec, screen_name'},function(r){
+         _vk_users_info[uid]=r.response[0];
+         _vk_users_info[uid].name= r.response[0].first_name+' '+r.response[0].last_name;
+         callback(_vk_users_info[uid])
+      });
+}
+
 // <a href=# onclick="vkGoToLink('albums%id','kiberinfinity'); return false;">
 function vkGoToLink(link,mid){
   getUserID(mid,function(uid){
     document.location.href=link.replace(/%id/g,uid);
   });
 }
+
 
 //////////////////////////////////
 // ExUserMenu by KiberInfinity //

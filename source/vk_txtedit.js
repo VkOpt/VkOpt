@@ -23,6 +23,7 @@ function vkInsertToField(field,text,html){
 		obj.setValue((obj2.innerHTML || obj.value)+' '+text);//appenChild(vkCe('span'),{},html);
 	}
 }
+/*
 function GetSelectedLength(obj){
 obj.focus();
  if (document.selection){
@@ -59,6 +60,69 @@ function replaceSelectedText(obj,cbFunc){
      obj.setSelectionRange(end,end);
    }
    return true;
+ }
+ return false;
+}//*/
+function GetSelectedLength(obj){
+obj.focus();
+ if (document.selection){
+  var s = document.selection.createRange();
+  return s.text.length;
+ }
+ else if (typeof(obj.selectionStart)=="number") {
+   if (obj.selectionStart!=obj.selectionEnd){
+     var start = obj.selectionStart;
+     var end = obj.selectionEnd;
+     var len=end-start;
+     return len;
+   }
+ } else if (obj.contentEditable=="true"){
+   var sel=window.getSelection(); 
+   var r=sel.getRangeAt(0);  
+   el=r.commonAncestorContainer;
+   while(el && el.contentEditable!="true") {
+        el = el.parentNode;
+   }
+   if (el && el.contentEditable=="true"){
+     var text = document.getSelection()+'';
+     return text.length;
+   }
+ }
+ return 0;
+}
+
+function replaceSelectedText(obj,cbFunc){
+ obj.focus();
+ if (document.selection){
+   var s = document.selection.createRange();
+   if (s.text){
+	eval("s.text="+cbFunc+"(s.text);");
+	s.select();
+	return true;
+   }
+ }
+ else if (typeof(obj.selectionStart)=="number"){
+   if (obj.selectionStart!=obj.selectionEnd){
+     var start = obj.selectionStart;
+     var end = obj.selectionEnd;
+     eval("var rs = "+cbFunc+"(obj.value.substr(start,end-start));");
+     obj.value = obj.value.substr(0,start)+rs+obj.value.substr(end);
+     obj.setSelectionRange(end,end);
+   }
+   return true;
+ } else if (obj.contentEditable=="true"){
+   var sel=window.getSelection(); 
+   var r=sel.getRangeAt(0);
+   el=r.commonAncestorContainer;
+   while(el && el.contentEditable!="true") {
+        el = el.parentNode;
+   }   
+   if (el && el.contentEditable=="true"){
+     var text = document.getSelection()+'';
+     eval("var rs = "+cbFunc+"(text);");
+     document.execCommand('insertHTML', false, rs);
+     //return text.length;
+   }
  }
  return false;
 }

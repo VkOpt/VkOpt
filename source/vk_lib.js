@@ -2291,7 +2291,7 @@ function vkDownloadFile(el,ignore) {
 
 /* NOTIFY TOOLS */
 function vkNotifyCustomSInit(){
-      vkNotifierSound = function(sound){   if (typeof sound == 'string') (new Sound2(sound)).play();};
+      vkNotifierSound = function(sound){   if (typeof sound == 'string' && sound!='none') (new Sound2(sound)).play();};
       Inj.Before('Notifier.pushEvents','curNotifier.sound.play();','if (arguments[2]) vkNotifierSound(arguments[2]); else ');
       Inj.After('Notifier.lcRecv','!data.full',', data.sound');
 }
@@ -2318,6 +2318,55 @@ function vkShowNotify(params){
       Notifier.pushEvents([notify.join('<!>')],null,params.sound);
    });
 }
+
+//*
+_vk_notifiers={};
+function vkShowEvent(obj){ // vkShowEvent({id:'vk_typing_123',title:'%USERNAME%', text:'Typing...',author_photo:'http://cs9994.userapi.com/u39226536/e_62b2fd31.jpg'})
+   obj=obj || {};
+   var vk_nf_id=unixtime()+vkRand();
+   var id=obj.id || 'vk_nf_id_'+vk_nf_id;
+ 
+   Inj.Wait('curNotifier.version',function(){
+      
+      if (_vk_notifiers[id]){
+         Notifier.lcSend('hide', {event_id: id+_vk_notifiers[id]});
+         Notifier.onEventHide(id+_vk_notifiers[id]);
+      }
+      if (!_vk_notifiers[id]) _vk_notifiers[id]=0;
+      _vk_notifiers[id]++;
+      id=id+_vk_notifiers[id];
+      
+      var msg=[
+         curNotifier.version,
+         obj.type || 'vkcustomnotifier',
+         obj.title || "",
+         obj.author_photo || "",
+         obj.author_link || "",
+         obj.text,
+         obj.add_photo || "",
+         obj.link,
+         obj.onclick,
+         obj.add,
+         id,
+         obj.author_id || "",
+         obj.custom || "" // script >-> ev.custom = eval('('+msg[12]+')');
+      ];
+      //console.log(msg.join('<!>'));
+      events=[msg.join('<!>')];
+      
+      //Notifier.lcSend('feed', extend({full: curNotifier.idle_manager && curNotifier.idle_manager.is_idle && !this.canNotifyUi(), key: curNotifier.key}, response));
+      //Notifier.pushEvents(events);
+      //*
+      var response={events:events,sound:obj.sound};
+      Notifier.lcSend('feed',extend({full: curNotifier.idle_manager && curNotifier.idle_manager.is_idle && !Notifier.canNotifyUi(), key: curNotifier.key}, response));
+      curNotifier.timestamp = vkNow();
+      Notifier.pushEvents(events,null,obj.sound);
+      //console.log(response);
+      //*/
+      //Notifier.lpChecked({ts:vkNow(),key:curNotifier.key,events:events,sound:obj.sound});
+   });
+}//*/
+
 //vkShowNotify({sound:'On',title:'TestTitle',text:'QazQwe',author_photo:'http://cs10781.vk.com/u17115308/e_ceb5c84f.jpg',author_link:'mail',link:'audio',onclick:'nav.go(this)'}); //,
 //setInterval(function(){vkShowNotify({sound:'On',title:'TestTitle',text:'QazQwe',author_photo:'http://cs10781.vk.com/u17115308/e_ceb5c84f.jpg',author_link:'mail',link:'audio',onclick:'nav.go(this)'});},500)
 
