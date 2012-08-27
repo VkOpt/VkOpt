@@ -689,7 +689,7 @@ var vkMozExtension = {
 		}
 	}
 	/* Injection to JsFunctions Lib  */
-	Inj={// KiberInfinity's JS_InjToFunc_Lib v1.5
+	Inj={// KiberInfinity's JS_InjToFunc_Lib v1.6
 		FRegEx:new RegExp("function.*\\((.*)\\)[\\s\\S]{0,1}{([\\s\\S]+)}$","im"),
 		DisableHistrory:false,
 		History:{},
@@ -719,9 +719,7 @@ var vkMozExtension = {
 			if (code.indexOf(hs)!=-1) return;
 			var ac='\n_inj_label="'+hs+'";\n'
 			//try{
-         console.log(func+'=function('+arg+'){'+ac+code+'}');
-			eval(func+'=function('+arg+'){'+ac+code+'}');
-         
+         eval(func+'=function('+arg+'){'+ac+code+'}');        
 			//} catch(e){	vklog('Inj_Error: '+func+'=function('+arg+'){'+ac+code+'}',1);	}
 		},
       need_porno:function(){

@@ -2357,10 +2357,16 @@ function vkShowEvent(obj){ // vkShowEvent({id:'vk_typing_123',title:'%USERNAME%'
       //Notifier.lcSend('feed', extend({full: curNotifier.idle_manager && curNotifier.idle_manager.is_idle && !this.canNotifyUi(), key: curNotifier.key}, response));
       //Notifier.pushEvents(events);
       //*
+      
       var response={events:events,sound:obj.sound};
-      Notifier.lcSend('feed',extend({full: curNotifier.idle_manager && curNotifier.idle_manager.is_idle && !Notifier.canNotifyUi(), key: curNotifier.key}, response));
+      Notifier.lcSend('feed',extend({
+                                       full: curNotifier.idle_manager && curNotifier.idle_manager.is_idle && !Notifier.canNotifyUi(), 
+                                       key: curNotifier.key
+                                    }, response));
       curNotifier.timestamp = vkNow();
-      Notifier.pushEvents(events,null,obj.sound);
+      if (!obj.hide_in_current_tab){
+         Notifier.pushEvents(events,null,obj.sound);
+      }
       //console.log(response);
       //*/
       //Notifier.lpChecked({ts:vkNow(),key:curNotifier.key,events:events,sound:obj.sound});

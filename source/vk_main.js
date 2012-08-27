@@ -296,12 +296,13 @@ function vkPublicPage(){
 	addFakeGraffItem();
    vkWallAlbumLink();
    vkSwitchPublicToGroup();
-   //vkModGroupBlocks();
+   vkWikiPagesList(true);
 }
 /* EVENTS */
 function vkEventPage(){
 	addFakeGraffItem();
    vkWallAlbumLink();
+   //vkWikiPagesList(true);
 }
 /* GROUPS */
 function vkGroupPage(){
@@ -310,9 +311,31 @@ function vkGroupPage(){
    vkModGroupBlocks();
    vkAudioBlock();
    vkWallAlbumLink();
-   
+   vkWikiPagesList(true);
 }
-
+function vkWikiPagesList(add_btn){
+   if (add_btn){
+      var p=ge('page_actions');
+      if (p && !ge('vk_wiki_pages_list')){
+         var a=vkCe('a',{id:'vk_wiki_pages_list', onclick:"vkWikiPagesList(); return false;"},IDL('WikiPagesList')+'<span class="fl_r" id="vk_wiki_pages_list_loader" style="display:none;">'+vkLdrImg+'</span>');
+         p.appendChild(a);
+      }
+      return;
+   }
+   var ldr=ge('vk_wiki_pages_list_loader');
+   if (ldr) show(ldr);
+   dApi.call('pages.getTitles',{gid: Math.abs(cur.oid)},function(r){
+      if (ldr) hide(ldr);
+      var t='';
+      var x=(r.response || []).map(function(obj,a2){
+         console.log(obj);
+         var page='page-'+obj.group_id+'_'+obj.pid;
+         t+='<a href="/'+page+'">'+page+'</a>   <b>'+obj.title+'</b>  (creator:'+obj.creator_name+')<br>';
+      });
+      var box=vkAlertBox('Wiki Pages','<h3>Owner: '+(cur.oid && cur.oid<0?'club':'id')+Math.abs(cur.oid || vk.id)+'</h3><br>'+t);
+      box.setOptions({width:'680px'});
+   });
+}
 function vkSwitchPublicToGroup(){
    var p=ge('page_actions');
    if (!ge('vkpubtogroup') && p && p.innerHTML.indexOf('?act=edit')!=-1){
@@ -612,28 +635,31 @@ function vkImEvents(response){
             peer = intval(update[3]);
 
         if (code == 61 || code == 62) { // peer or chat peer is typing
-          vkImTypingEvent(code,msg_id,flags)
-          //console.log(ts,update,code,msg_id,peer);
-          // Popup msg_id
+          vkImTypingEvent(msg_id);
           /*
-          if (code == 62) { // 62 chat
-            if (cur.peer == 2e9 + flags) {
+          if (code == 62) { // 62 chat     cur.peer == 2e9 + flags
               IM.onTyping(2e9 + flags, msg_id); //cur.tabs[cur.peer].data.members[msg_id]);
-            }
           } else if (cur.peer == msg_id) {// 61 user
             IM.onTyping(msg_id);
-          }
-          continue;*/
+          }*/
         }
 
       }
    }
 }
 
-function vkImTypingEvent(code,uid,flags){
-   if (cur.peer!=uid)
+_vk_im_typings={};
+function vkImTypingEvent(uid){
+   if (getSet(68)=='n') return;
+   
+   var NOTIFY_TIMEOUT= 15000; // 15sec
+ 
+   //if (cur.peer!=uid)
    setTimeout(function(){
       vkGetUserInfo(uid,function(info){
+         if (_vk_im_typings[uid] && (_vk_im_typings[uid]+NOTIFY_TIMEOUT)>vkNow())
+            return;
+         _vk_im_typings[uid]=vkNow();
          var tm=(new Date).format('isoTime');
          var time='<div class="fl_r">'+tm+'</div>';
          var text=IDL('Typing');
@@ -644,7 +670,7 @@ function vkImTypingEvent(code,uid,flags){
          '<a href="/write%uid" onclick="return showWriteMessageBox(event, %uid);">'+IDL('txMessage')+'</a></b>';
          text=text.replace(/%uid/g,uid);
          text+=time;
-         vkShowEvent({sound:'none', id:'vk_typing_'+uid,title:info.name, text:text,author_photo:info.photo_rec});
+         vkShowEvent({sound:'none', hide_in_current_tab:cur.peer==uid ,id:'vk_typing_'+uid,title:info.name, text:text,author_photo:info.photo_rec});
       });
    },1);
 }
@@ -719,8 +745,8 @@ function vkNotifier(){
    
    
    //Inj.Before('FastChat.clistRender','if (lastMid','html.sort(vkFastChatSortUsers);');
-  
    //Inj.Before('FastChat.clistRender','FastChat.clistUpdateTitle','vkProccessLinks(curFastChat.el.clist);');
+   
    Inj.Before('Notifier.lpCheck','var response','if (!text || text=="") return;'); //error fix?
 	 /* delay for hide notify msg
 	  vk_notifier_show_timeout=20000;
@@ -730,8 +756,29 @@ function vkNotifier(){
 	  */
      
     if (getSet(62)=='y')  FastChat.selectPeer=function(mid,e){return showWriteMessageBox(e, mid)}
-     
+    Inj.Start('FastChat.imChecked','vkFcEvents(response);');    
 }
+
+function vkFcEvents(response){
+   if (!response || !isArray(response.events) || !response.events.length) {
+      return;
+   }
+   each(response.events, function (){
+      var ev = this.split('<!>'),
+         evVer = ev[0],
+         evType = ev[1],
+         peer = ev[2];
+      if (evType=='typing' && peer) {
+         var uid = peer<2e9?peer:ev[3];
+         vkImTypingEvent(uid);
+         /* console.log(ev);
+            Array ["23", "typing", "13391307", "1", "10116"] // dialog
+            Array ["23", "typing", "2000000003", "13391307", "1", "10116"] // Chat!
+         */
+      }
+   });   
+}
+
 
 /* PAGES.JS */
 function vkPage(){
