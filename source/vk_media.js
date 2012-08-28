@@ -78,11 +78,45 @@ function vkPVLinks(ph){
         (ph.w_src?'<a href="'+ph.w_src+'" class="fl_r">HD3</a>':'')+
     '</div><div class="clear"></div>';
   } 
-  html+='<a href="#" onclick="vkPhotoUrlUpload(\''+(ph.w_src || ph.z_src || ph.y_src || ph.x_src)+'\'); return false;">'+IDL('Add')+'</a>'
+  html+='<a href="#" onclick="vkPhotoUrlUpload(\''+(ph.w_src || ph.z_src || ph.y_src || ph.x_src)+'\'); return false;">'+IDL('Add')+'</a>';
+  if ((ph.tags || [])[0]>0){
+      html+='<a href="#" onclick="vkPVShowTagsInfo(); return false;">'+IDL('TagsInfo')+'</a>';
+  }
+  
   html+=ph.x_src?'<a target="_blank" href="http://www.tineye.com/search?url='+(ph.w_src || ph.z_src || ph.y_src || ph.x_src)+'">'+IDL('TinEyeSearch')+'</a>':'';
   return html;
 }
-
+function vkPVShowTagsInfo(){
+   var pid=cur.pvCurPhoto.id.split('_');
+   var code='\
+      var tags=API.photos.getTags({owner_id:'+pid[0]+',pid:'+pid[1]+'});\
+      var placers=API.getProfiles({"uids":tags@.placer_id});\
+      return {tags:tags, placers:placers};\
+   ';
+    dApi.call('execute',{code:code},function(r){
+      var data=r.response;
+      var html='Not Avaliable';
+      if (data && data.placers && data.tags){
+         var users={};
+         for (var i=0; i<data.placers.length; i++) 
+            users[data.placers[i].uid]=data.placers[i].first_name+' '+data.placers[i].last_name;
+         html='<table class="wk_table"><tr>\
+            <td><b>'+IDL('Tag')+'</b></td>\
+            <td><b>'+IDL('TagPlacer')+'</b></td>\
+            <td><b>'+IDL('Date')+'</b></td>\
+            </tr>';//'<h3>'+IDL('TagsInfo')+'</h3><br>';
+         for (var i=0; i<data.tags.length; i++){
+            var t=data.tags[i];
+            var date= (new Date(t.date*1000)).format(" yyyy-mm-dd HH:MM");
+            html+='<tr><td><a href="/id'+t.uid+'">'+t.tagged_name+'</a></td><td><a href="/id'+t.placer_id+'">'+users[t.placer_id]+'</a></td><td>'+date+'</td></tr>';
+         }
+         html+='</table>';
+         vkAlertBox(IDL('TagsInfo'),html);
+         stManager.add('wk.css');
+      }
+    });
+}
+ 
 function vkPhotosPage(){
 	if (nav.objLoc[0].indexOf('albums')!=-1){
       vkAddAlbumCommentsLinks();
