@@ -662,13 +662,14 @@ function vkImTypingEvent(uid){
    if (getSet(68)=='n') return;
    
    var NOTIFY_TIMEOUT= 15000; // 15sec
- 
+   
+   if (_vk_im_typings[uid] && (_vk_im_typings[uid]+NOTIFY_TIMEOUT)>vkNow())
+      return;
+   _vk_im_typings[uid]=vkNow();
+   
    //if (cur.peer!=uid)
    setTimeout(function(){
       vkGetUserInfo(uid,function(info){
-         if (_vk_im_typings[uid] && (_vk_im_typings[uid]+NOTIFY_TIMEOUT)>vkNow())
-            return;
-         _vk_im_typings[uid]=vkNow();
          var tm=(new Date).format('isoTime');
          var time='<div class="fl_r">'+tm+'</div>';
          var text=IDL('Typing');
