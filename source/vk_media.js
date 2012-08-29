@@ -107,8 +107,9 @@ function vkPVShowTagsInfo(){
             </tr>';//'<h3>'+IDL('TagsInfo')+'</h3><br>';
          for (var i=0; i<data.tags.length; i++){
             var t=data.tags[i];
-            var date= (new Date(t.date*1000)).format(" yyyy-mm-dd HH:MM");
-            html+='<tr><td><a href="/id'+t.uid+'">'+t.tagged_name+'</a></td><td><a href="/id'+t.placer_id+'">'+users[t.placer_id]+'</a></td><td>'+date+'</td></tr>';
+            var date= (new Date(t.date*1000)).format("yyyy-mm-dd HH:MM");
+            var tagged = t.uid>0 ? '<a href="/id'+t.uid+'">'+t.tagged_name+'</a>' : t.tagged_name;
+            html+='<tr><td>'+(i+1)+') '+tagged+'</td><td><a href="/id'+t.placer_id+'">'+users[t.placer_id]+'</a></td><td>'+date+'</td></tr>';
          }
          html+='</table>';
          vkAlertBox(IDL('TagsInfo'),html);

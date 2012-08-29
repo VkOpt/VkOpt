@@ -315,7 +315,7 @@ function vkGroupPage(){
 }
 function vkWikiPagesList(add_btn){
    if (add_btn){
-      var p=ge('page_actions');
+      var p=ge('page_actions') || ge('subscribe');
       if (p && !ge('vk_wiki_pages_list')){
          var a=vkCe('a',{id:'vk_wiki_pages_list', onclick:"vkWikiPagesList(); return false;"},IDL('WikiPagesList')+'<span class="fl_r" id="vk_wiki_pages_list_loader" style="display:none;">'+vkLdrImg+'</span>');
          p.appendChild(a);
