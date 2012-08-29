@@ -321,6 +321,7 @@ function vkWikiPagesList(add_btn){
             return vkCe('a',{id:id, onclick:"vkWikiPagesList(); return false;"},IDL('WikiPagesList')+'<span class="fl_r" id="vk_wiki_pages_list_loader" style="display:none;">'+vkLdrImg+'</span>')
          };
          var a=wklink('vk_wiki_pages_list');
+         if (p==ge('unsubscribe')) p.appendChild(vkCe('br'));
          p.appendChild(a);
          if (p==ge('unsubscribe') && ge('subscribe')){
             p=ge('subscribe');
