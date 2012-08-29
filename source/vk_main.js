@@ -315,10 +315,18 @@ function vkGroupPage(){
 }
 function vkWikiPagesList(add_btn){
    if (add_btn){
-      var p=ge('page_actions') || ge('subscribe');
+      var p=ge('page_actions') || ge('unsubscribe');
       if (p && !ge('vk_wiki_pages_list')){
-         var a=vkCe('a',{id:'vk_wiki_pages_list', onclick:"vkWikiPagesList(); return false;"},IDL('WikiPagesList')+'<span class="fl_r" id="vk_wiki_pages_list_loader" style="display:none;">'+vkLdrImg+'</span>');
+         var wklink=function(id){
+            return vkCe('a',{id:id, onclick:"vkWikiPagesList(); return false;"},IDL('WikiPagesList')+'<span class="fl_r" id="vk_wiki_pages_list_loader" style="display:none;">'+vkLdrImg+'</span>')
+         };
+         var a=wklink('vk_wiki_pages_list');
          p.appendChild(a);
+         if (p==ge('unsubscribe') && ge('subscribe')){
+            p=ge('subscribe');
+            a=wklink('vk_wiki_pages_list');
+            p.appendChild(a);
+         }
       }
       return;
    }
