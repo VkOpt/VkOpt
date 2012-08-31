@@ -83,7 +83,12 @@ function vkPVLinks(ph){
       html+='<a href="#" onclick="vkPVShowTagsInfo(); return false;">'+IDL('TagsInfo')+'</a>';
   }
   
-  html+=ph.x_src?'<a target="_blank" href="http://www.tineye.com/search?url='+(ph.w_src || ph.z_src || ph.y_src || ph.x_src)+'">'+IDL('TinEyeSearch')+'</a>':'';
+  if (ph.x_src){
+      var src=(ph.w_src || ph.z_src || ph.y_src || ph.x_src);
+      html+='<a target="_blank" href="http://www.tineye.com/search?url='+src+'">'+IDL('TinEyeSearch')+'</a>';
+      html+='<a target="_blank" href="https://www.google.ru/searchbyimage?image_url='+src+'">'+IDL('GoogleImgSearch')+'</a>';
+  }
+  
   return html;
 }
 function vkPVShowTagsInfo(){

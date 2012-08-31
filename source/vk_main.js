@@ -438,7 +438,7 @@ function vkCommon(){
 	Inj.Before('ajax._post','o.onDone.apply','vkResponseChecker(answer,url,q);');// если это будет пахать нормально, то можно снести часть инъекций в другие модули.
 	Inj.Start('ajax.post','if (vkAllowPost(url, query, options)==false) return;');
    
-	Inj.Before('nav.go',"var _a = window.audioPlayer;","if (strLoc) if(vkAjaxNavDisabler(strLoc)){return true;}");
+	Inj.Before('nav.go',"var _a = window.audioPlayer","if (strLoc) if(vkAjaxNavDisabler(strLoc)){return true;}");
 	
 	Inj.Start('renderFlash','vkOnRenderFlashVars(vars);');
 	Inj.End('nav.setLoc','setTimeout("vkOnNewLocation();",2);');
