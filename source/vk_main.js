@@ -297,6 +297,7 @@ function vkPublicPage(){
    vkWallAlbumLink();
    vkSwitchPublicToGroup();
    vkWikiPagesList(true);
+   vkGroupStatsBtn();
 }
 /* EVENTS */
 function vkEventPage(){
@@ -312,6 +313,24 @@ function vkGroupPage(){
    vkAudioBlock();
    vkWallAlbumLink();
    vkWikiPagesList(true);
+   vkGroupStatsBtn();
+}
+
+function vkGroupStatsBtn(){
+      var p=ge('page_actions') || ge('unsubscribe');
+      if (p && !ge('vk_stats_list') && !(ge('page_actions') && ge('page_actions').innerHTML.match(/stats\?gid\=/))){
+         var wklink=function(id){
+            return vkCe('a',{id:id, onclick:"return nav.go(this, event)", href:"/stats?gid="+Math.abs(cur.oid)},IDL('Stats',1))
+         };
+         var a=wklink('vk_stats_list');
+         if (p==ge('unsubscribe')) p.appendChild(vkCe('br'));
+         p.appendChild(a);
+         if (p==ge('unsubscribe') && ge('subscribe')){
+            p=ge('subscribe');
+            a=wklink('vk_stats_list_2');
+            p.appendChild(a);
+         }
+      }
 }
 function vkWikiPagesList(add_btn){
    if (add_btn){
@@ -680,6 +699,7 @@ function vkImTypingEvent(uid){
          '<a href="/write%uid" onclick="return showWriteMessageBox(event, %uid);">'+IDL('txMessage')+'</a></b>';
          text=text.replace(/%uid/g,uid);
          text+=time;
+         if (vk_DEBUG) text+='<br>'+document.title;
          vkShowEvent({sound:'none', hide_in_current_tab:cur.peer==uid ,id:'vk_typing_'+uid,title:info.name, text:text,author_photo:info.photo_rec});
       });
    },1);
