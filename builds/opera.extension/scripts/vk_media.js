@@ -78,11 +78,51 @@ function vkPVLinks(ph){
         (ph.w_src?'<a href="'+ph.w_src+'" class="fl_r">HD3</a>':'')+
     '</div><div class="clear"></div>';
   } 
-  html+='<a href="#" onclick="vkPhotoUrlUpload(\''+(ph.w_src || ph.z_src || ph.y_src || ph.x_src)+'\'); return false;">'+IDL('Add')+'</a>'
-  html+=ph.x_src?'<a target="_blank" href="http://www.tineye.com/search?url='+(ph.w_src || ph.z_src || ph.y_src || ph.x_src)+'">'+IDL('TinEyeSearch')+'</a>':'';
+  html+='<a href="#" onclick="vkPhotoUrlUpload(\''+(ph.w_src || ph.z_src || ph.y_src || ph.x_src)+'\'); return false;">'+IDL('Add')+'</a>';
+  if ((ph.tags || [])[0]>0){
+      html+='<a href="#" onclick="vkPVShowTagsInfo(); return false;">'+IDL('TagsInfo')+'</a>';
+  }
+  
+  if (ph.x_src){
+      var src=(ph.w_src || ph.z_src || ph.y_src || ph.x_src);
+      html+='<a target="_blank" href="http://www.tineye.com/search?url='+src+'">'+IDL('TinEyeSearch')+'</a>';
+      html+='<a target="_blank" href="https://www.google.ru/searchbyimage?image_url='+src+'">'+IDL('GoogleImgSearch')+'</a>';
+  }
+  
   return html;
 }
-
+function vkPVShowTagsInfo(){
+   var pid=cur.pvCurPhoto.id.split('_');
+   var code='\
+      var tags=API.photos.getTags({owner_id:'+pid[0]+',pid:'+pid[1]+'});\
+      var placers=API.getProfiles({"uids":tags@.placer_id});\
+      return {tags:tags, placers:placers};\
+   ';
+    dApi.call('execute',{code:code},function(r){
+      var data=r.response;
+      var html='Not Avaliable';
+      if (data && data.placers && data.tags){
+         var users={};
+         for (var i=0; i<data.placers.length; i++) 
+            users[data.placers[i].uid]=data.placers[i].first_name+' '+data.placers[i].last_name;
+         html='<table class="wk_table"><tr>\
+            <td><b>'+IDL('Tag')+'</b></td>\
+            <td><b>'+IDL('TagPlacer')+'</b></td>\
+            <td><b>'+IDL('Date')+'</b></td>\
+            </tr>';//'<h3>'+IDL('TagsInfo')+'</h3><br>';
+         for (var i=0; i<data.tags.length; i++){
+            var t=data.tags[i];
+            var date= (new Date(t.date*1000)).format("yyyy-mm-dd HH:MM");
+            var tagged = t.uid>0 ? '<a href="/id'+t.uid+'">'+t.tagged_name+'</a>' : t.tagged_name;
+            html+='<tr><td>'+(i+1)+') '+tagged+'</td><td><a href="/id'+t.placer_id+'">'+users[t.placer_id]+'</a></td><td>'+date+'</td></tr>';
+         }
+         html+='</table>';
+         vkAlertBox(IDL('TagsInfo'),html);
+         stManager.add('wk.css');
+      }
+    });
+}
+ 
 function vkPhotosPage(){
 	if (nav.objLoc[0].indexOf('albums')!=-1){
       vkAddAlbumCommentsLinks();
@@ -476,10 +516,17 @@ function vkVidAddGetLink(node){
       if (!v) return;
       if (v.innerHTML.indexOf('vkVidLoadLinks')!=-1) return;
       var vid=(v.href || '').match(vre);
+      var type='';
       if (!vid || !vid[3]) {
          if (!vid) vid=(v.getAttribute("onclick") || '').match(vre);
-         if (vid && (v.href || '').indexOf('youtube.com')!=-1) 
-            vid[3]=(v.href.split(/watch(?:\?v\=|%3Fv%3D)/)[1] || '').split('&')[0];         
+         if (vid && (v.href || '').indexOf('youtube.com')!=-1){
+            type='youtube';
+            vid[3]=(v.href.split(/watch(?:\?v\=|%3Fv%3D)/)[1] || '').split('&')[0];
+         }
+         if (vid && (v.href || '').indexOf('vimeo.com')!=-1){
+            type='vimeo';
+            vid[3]=(v.href.split(/\/(\d+)/)[1] || '');  
+         }
       } 
       var p=(el.nextElementSibling || {}).className=='media_desc'?el.nextElementSibling:null;//geByClass('media_desc',el.parentNode)[0];
       if (p && p.innerHTML.indexOf('vkVidLoadLinks')!=-1) return;
@@ -487,12 +534,12 @@ function vkVidAddGetLink(node){
       if (!p){
          //<div style="right:auto; bottom:auto; "></div>
          p=geByClass('info',el)[1] || geByClass('info',el)[0];
-         var div=vkCe('div',{"class":"vk_vid_download_t"},'<span class="fl_l"><a href="#" onclick="vkVidLoadLinks('+vid[1]+','+vid[2]+',this.parentNode'+(vid[3]?", '"+vid[3]+"'":'')+'); cancelEvent(event); return false;">'+IDL('download')+'</a></span>');         
+         var div=vkCe('div',{"class":"vk_vid_download_t"},'<span class="fl_l"><a href="#" onclick="vkVidLoadLinks('+vid[1]+','+vid[2]+',this.parentNode'+(vid[3]?", '"+vid[3]+"','"+type+"'":'')+'); cancelEvent(event); return false;">'+IDL('download')+'</a></span>');         
          if (p) p.appendChild(div);
          else v.parentNode.appendChild(div);//v.insertBefore(div,v.firstChild);
          return;
       }
-      var div=vkCe('span',{'class':"download_cont"},'<a href="#" onclick="vkVidLoadLinks('+vid[1]+','+vid[2]+',this.parentNode'+(vid[3]?", '"+vid[3]+"'":'')+'); return false;">'+IDL('download')+'</a>');
+      var div=vkCe('span',{'class':"download_cont"},'<a href="#" onclick="vkVidLoadLinks('+vid[1]+','+vid[2]+',this.parentNode'+(vid[3]?", '"+vid[3]+"','"+type+"'":'')+'); return false;">'+IDL('download')+'</a>');
       p.appendChild(div);              
    };
    els=geByClass('page_media_video',node);
@@ -507,7 +554,7 @@ function vkVidAddGetLink(node){
 
 }
 
-function vkVidLoadLinks(oid,vid,el,yid){
+function vkVidLoadLinks(oid,vid,el,yid,type){
     var smartlink=true;//(getSet(1) == 'y')?true:false;
     var fmt=['240p','360p','480p','720p'];
     el=ge(el);
@@ -520,18 +567,32 @@ function vkVidLoadLinks(oid,vid,el,yid){
             vkGetYoutubeLinks(youid,function(r){
                if (!r) return;
                for (var i=0;i<r.length;i++)
-                  html+='<a class="vk_down_icon" href="'+r[i][0]+'" title="'+r[i][2]+'"  class="clear_fix" onmouseover="vkGetVideoSize(this);">'+r[i][1]+'<small class="divide" url="'+r[i][0]+'"></small></a>';
+                  html+='<a class="vk_down_icon" href="'+r[i][0]+'" title="'+r[i][2]+'" onmouseover="vkGetVideoSize(this);">'+r[i][1]+'<small class="divide" url="'+r[i][0]+'"></small></a>';
                el.innerHTML=html;      
             });
       }
-      if (yid){
+      var getvimeo=function(vimeoid){
+         vkGetVimeoLinks(vimeoid,function(r){
+            if (!r) return;
+            var html='<a href="http://vimeo.com/'+vimeoid+'">Vimeo</a>'; 
+            //alert(html);
+            for (var i=0;i<r.length;i++)
+               html+='<a href="'+r[i][0]+'" title="'+r[i][2]+'"  class="vk_down_icon">'+r[i][1]+'<small class="divide">'+r[i][2]+'</small></a>';
+            el.innerHTML=html;
+         });  
+      }
+      if (yid && (!type || type=='youtube')){
          getyt(yid);
-      } else if(t=='NO_ACCESS'){
+      } else if (yid && type=='vimeo'){ 
+         getvimeo(yid)
+      }else if(t=='NO_ACCESS'){
          el.innerHTML='<small class="divide" >'+IDL('NO_ACCESS')+'</small>';
       } else {
          var obj=JSON.parse(t);
          if (obj.extra=="21"){
             getyt(obj.extra_data);            
+         } else if (obj.extra=="22"){
+            getvimeo(obj.extra_data);
          } else if (!obj.extra){
             var html='';
             var arr=vkVidDownloadLinksArray(obj);
@@ -715,6 +776,54 @@ function vkYTVideoLinks(link){
 }
 /*END OF YOUTUBE FUNCTIONS */
 
+/* VIMEO FUNCTIONS */
+function vkGetVimeoLinks(vid, callback) {
+   XFR.post('http://player.vimeo.com/video/'+vid, {}, function(t) {
+      
+      var r = t.match(/clip\d+_\d+\s*=\s*(\{[^;]+\});/);
+      var params = eval('(' + r[1] + ')');
+      
+      var config = params.config;
+      var links = [];
+      //alert(JSON.stringify(config.video.files));
+      for (var key in config.video.files) {
+         var data = config.video.files[key];
+         for (var i = 0; i < data.length; i++) {
+            var quality = data[i];
+            var q = [
+               "clip_id=" + config.video.id, 
+               "sig=" + config.request.signature, 
+               "time=" + config.request.timestamp, 
+               "quality=" + quality, 
+               "codecs=H264,VP8,VP6", 
+               "type=moogaloop", 
+               "embed_location=" + location.href
+            ];
+            links.push([
+               'http://player.vimeo.com/play_redirect?'+q.join('&'), 
+               quality, 
+               key
+            ]);
+         } 
+      }
+      callback(links);
+   }); 
+}
+
+function vkVimeoVideoLinks(link){
+   if (String(link).indexOf('vimeo.com')==-1) return;
+   var vid=String(link).split('?')[0].split('/').pop();
+   vkGetVimeoLinks(vid,function(r){
+      if (!r) return;
+      var html=''; 
+      for (var i=0;i<r.length;i++)
+         html+='<a href="'+r[i][0]+'" title="'+r[i][2]+'"  class="clear_fix">'+IDL("download")+' ['+r[i][1]+']</a>';
+      ge('vkyoutubelinks').innerHTML='<a id="vkyoutubelinks_show" href="javascript: toggle(\'vkyoutubelinks_list\');">'+IDL('download')+'</a><span id="vkyoutubelinks_list" style="display:none;">'+html+'</span>';      
+   });
+   return '<span id="vkyoutubelinks"></span>';
+}
+/*END OF VIMEO FUNCTIONS */
+
 function vkVidLinks(data){	
 	if (ge('mv_actions')){
       if (ge('video_player') && ge('video_player').tagName.toUpperCase()=='IFRAME'){
@@ -724,6 +833,18 @@ function vkVidLinks(data){
             var link=vlink.split('?')[0].replace('embed/','watch?v=');
             ge('mv_actions').innerHTML+='<a href="'+link+'" id="vk_youtube_video_link">'+IDL('YouTube',1)+'</a>';/*savefrom_link_tpl.replace('%URL%',link).replace('%CLASS%','fl_l')+*/ 
             ge('mv_actions').innerHTML+=vkYTVideoLinks(vlink);
+            /*
+               http://www.youtube.com/embed/jfKVHD3hCS0?autoplay=0
+               http://www.youtube.com/watch?v=jfKVHD3hCS0
+            */
+            
+         }
+         if (vlink && vlink.indexOf('vimeo')!=-1){
+            if (ge('vk_youtube_video_link')) return;
+            //var link=vlink.split('?')[0].replace('embed/','watch?v=');
+            var link='http://vimeo.com/'+String(vlink).split('?')[0].split('/').pop();
+            ge('mv_actions').innerHTML+='<a href="'+link+'" id="vk_youtube_video_link">'+IDL('Vimeo',1)+'</a>';/*savefrom_link_tpl.replace('%URL%',link).replace('%CLASS%','fl_l')+*/ 
+            ge('mv_actions').innerHTML+=vkVimeoVideoLinks(vlink);
             /*
                http://www.youtube.com/embed/jfKVHD3hCS0?autoplay=0
                http://www.youtube.com/watch?v=jfKVHD3hCS0
@@ -1332,7 +1453,7 @@ function vkAudioBtns(){
          p.insertBefore(btn,p.firstChild);
       }	
       
-      p=ge('audio_albums_wrap');
+      p=ge('audio_albums');//audio_albums_wrap
       if (p && !ge('albumNoSort')){
          var btn=vkCe("div",{
                id:"albumNoSort",
@@ -1546,11 +1667,15 @@ vkLastFM={
          if (callback) callback();
       }, error: function(code, message){
          if (code == 4)// токен сдох
-            vkAlertBox(IDL('AuthBoxTitle'), IDL('AuthBoxText'), function(){
-               var url = 'http://www.last.fm/api/auth/?api_key=' + fm.api_key + '&cb=' + encodeURIComponent('http://' + location.host + '/settings?act=vkscrobbler');
-               window.open(url,'…','…');
-               //location.href = url;
-            }, true);
+            if (!fm.connect_box || !fm.connect_box.isVisible()){
+               fm.connect_box=vkAlertBox(IDL('AuthBoxTitle'), IDL('AuthBoxText'), function(){
+                  var url = 'http://www.last.fm/api/auth/?api_key=' + fm.api_key + '&cb=' + encodeURIComponent('http://' + location.host + '/settings?act=vkscrobbler');
+                  window.open(url,'…','…');
+                  //location.href = url;
+               }, function(){
+                  if (fm.enable_scrobbling) fm.toggle(true);
+               });
+            }
       }});
    },
    logout:function(){
@@ -1718,7 +1843,7 @@ vkLastFM={
          
      }
    },
-   toggle:function(){
+   toggle:function(hide_tooltip){
       var fm=vkLastFM;
       /*
       if (fm.enable_scrobbling){
@@ -1743,7 +1868,7 @@ vkLastFM={
       }
       localStorage['lastfm_enable_scrobbling']=fm.enable_scrobbling;
       fm.set_icon(); 
-      for (var i=0; i<els.length;i++){
+      for (var i=0; i<els.length && !hide_tooltip ;i++){
          els[i].onmouseover();
       }
    },

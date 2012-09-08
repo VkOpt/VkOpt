@@ -48,6 +48,8 @@
 				<string>*.youtube.com</string>
 				<string>userapi.com</string>
 				<string>*.userapi.com</string>
+            <string>vimeo.com</string>
+				<string>*.vimeo.com</string>
 			</array>
 			<key>Level</key>
 			<string>Some</string>

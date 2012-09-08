@@ -61,7 +61,7 @@ function vkProcessNode(node){
 		vkProccessLinks(node);
 		vkSortFeedPhotos(node);
 		vkSmiles(node);
-		vkPrepareTxtPanels(node);
+		//vkPrepareTxtPanels(node);
 		vkAudioNode(node);
       vkVidAddGetLink(node);
 		vk_plugins.processnode(node);
@@ -79,7 +79,7 @@ function vkProcessNodeLite(node){
 	vkProccessLinks(node);
 	vkAudioNode(node);
    vkVidAddGetLink(node);
-	vkPrepareTxtPanels(node);
+	//vkPrepareTxtPanels(node);
 	vk_plugins.processnode(node,true);
    if (getSet(63)=='y') vkSmiles(node);
   }  catch (e) {
@@ -190,13 +190,14 @@ function VkOptMainInit(){
   });//*/
   vkStyles();
   if (!ge('content')) return;
+  if (getSet(69)=='n') vkopt_disabled_ad=true;
   if (getSet(31)=='y' || getSet(35)=='y') vkMakeRightBar();
   if (vk_DEBUG) vkInitDebugBox();
   vkInitSettings();
   vkBroadcast.Init(vkOnStorage);
   window.vkopt_ready=true;
   vk_plugins.init();
-
+  addEvent(document, 'mouseup', vkOnDocumentClick);
   if (location.href.match('act=vkopt'))	vkShowSettings();
   if (window.topMsg){
 	vkStManHook();
@@ -210,7 +211,7 @@ function VkOptMainInit(){
   vkMenu();
   vkOnNewLocation(true);//Inj.Wait('window.nav', vkOnNewLocation,50);  
   vkSmiles();
-  vkPrepareTxtPanels();  
+  //vkPrepareTxtPanels();  
   vkSkinManInit();
   vkClock();
   vkVidAddGetLink();
@@ -229,7 +230,11 @@ function VkOptMainInit(){
   
 }
 
-
+function vkOnDocumentClick(e) {
+   var el=document.activeElement;
+   if ((el.contentEditable=="true" || el.tagName=='TEXTAREA'))
+      vkAddSmilePanel(el);
+}
 
 /* USERS */
 function vkProccessLinks(el){
@@ -310,7 +315,7 @@ function vkGroupPage(){
 	addFakeGraffItem();
 	vkCheckGroupAdmin();
    vkModGroupBlocks();
-   vkAudioBlock();
+   //vkAudioBlock();
    vkWallAlbumLink();
    vkWikiPagesList(true);
    vkGroupStatsBtn();
@@ -1508,7 +1513,7 @@ function vkProcessTopicLink(link){
    var id=href.match(/topic(-?\d+)_(\d+)/);
    var post=href.match(/post=(\d+)/);
    if (!id) return;
-   if(!link.hasAttribute('onmouseover')) link.setAttribute('onmouseover', "vkTopicTooltip(this, "+id[1]+","+id[2]+","+(post?post[1]:null)+");");
+   if(!link.hasAttribute('onmouseover') && !hasClass(link,'bp_date')) link.setAttribute('onmouseover', "vkTopicTooltip(this, "+id[1]+","+id[2]+","+(post?post[1]:null)+");");
 }
 function vkTopicTooltip(el,gid,topic,post){
     var post_id=post?(gid+'_'+post):(gid+'_topic'+topic);

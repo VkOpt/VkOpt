@@ -352,6 +352,8 @@ function vkStyles(){
 						  border-bottom_: solid 1px #CCD3DA; }\
 		#vkTestSounds a:hover {  text-decoration: none;  background-color: #DAE1E8; }\
       #vk_sound_vol{text-align:center; width:200px; margin:0 auto;}\
+      #wmdonate .sett_block{width:96%; height:110px;}\
+      #wmdonate .sett_block .stext{width: 190px;}\
 	"; 
 	
 	var shut='\
@@ -776,13 +778,13 @@ function vkMenu(){//vkExLeftMenu
     'feed':[
         ['feed',IDL("mNeP")],
         ['feed?section=updates',IDL("mNeU")],
-        ['feed?section=friends',IDL("mNeF")],
+        //['feed?section=friends',IDL("mNeF")],
         ['feed?section=groups',IDL("mNeG")],
         ['feed?section=notifications',IDL("mNeNotif")],
         ['feed?section=photos',IDL("clPh")],
         ['feed?section=mentions',IDL("mNeMe")],
-        ['feed?section=recommended',IDL("mNeR")+' 1'],
-        ['feed?section=suggested',IDL("mNeR")+' 2'],
+        ['feed?section=recommended',IDL("mNeR")],
+        //['feed?section=suggested',IDL("mNeR")+' 2'],
         ['feed?section=articles',IDL("mNeArticles")],
         ['feed?section=comments',IDL("mNeB")],
         ['tag'+vkmid+'?act=comments',IDL("mNeFW")]       

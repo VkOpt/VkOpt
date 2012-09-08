@@ -151,7 +151,12 @@ var vkSmilesLinks={
 "smile":"http://img-fotki.yandex.ru/get/4604/kiberinfinity.0/0_4b4ec_4b007e83_XS",
 "sorry":"http://img-fotki.yandex.ru/get/4401/kiberinfinity.0/0_4b4ed_93f046f0_XS",
 "spam":"http://img-fotki.yandex.ru/get/4701/kiberinfinity.0/0_4b4ee_a18e6891_M",
-"unknown":"http://img-fotki.yandex.ru/get/4602/kiberinfinity.0/0_4b4ef_73767cbe_XS"
+"unknown":"http://img-fotki.yandex.ru/get/4602/kiberinfinity.0/0_4b4ef_73767cbe_XS",
+"opera":"http://img-fotki.yandex.ru/get/6407/50997776.1/0_85792_82ac7d04_XS",
+"firefox":"http://img-fotki.yandex.ru/get/6509/50997776.1/0_85791_ae5ebac7_XS",
+"chrome":"http://img-fotki.yandex.ru/get/6407/50997776.1/0_85790_a2dfe390_XS",
+"windows":"http://img-fotki.yandex.ru/get/6606/50997776.1/0_85794_50f3fe55_XS",
+"linux":"http://img-fotki.yandex.ru/get/6608/50997776.1/0_85793_bcef5184_XS"
 }
 
 var shuffle_img='data:image/gif;base64,R0lGODlhFAAUALMAAAAAAP///4mft6O0x7XD0srU31d3mGyIpfH09+Lo7QAAAAAAAAAAAAAAAAAAAAAAACwAAAAAFAAUAAAEiDDISau9uKIhuv8fgQTIcYBodxhCMBiJFFvIGBBwJxuDdsqHgu5mMBAmCIHhABS2XEVDQaJcxhLBoWAlsBFWsADWKUtsbQVjYjQeSkpBXG/SfiLBc3rWLsFtDzNNbgFpR3A2YnsUAnklgQlSOAU1CGuUlzUva0omnZ6fPG8FBKSlpqZTGaqrqxEAOx==';

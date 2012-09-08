@@ -7,7 +7,8 @@
         "matches": ["http://vk.com/*","http://*.vk.com/*","http://vkontakte.ru/*","http://*.vkontakte.ru/*",
                     "http://userapi.com/*","http://*.userapi.com/*",
                     "http://durov.ru/*",
-                    "http://youtube.com/*","http://*.youtube.com/*"],
+                    "http://youtube.com/*","http://*.youtube.com/*",
+                    "http://vimeo.com/*","http://*.vimeo.com/*"],
         "all_frames": true
       }
    ],

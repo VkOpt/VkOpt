@@ -631,6 +631,9 @@ function vkInitSettings(){
 	Sounds:[
 	  {id:48, text:IDL("ReplaceVkSounds")}	
 	],
+   Help:[
+     {id:69, text:IDL("HelpAds")}
+   ],
     Others:[
 		{id:9,  header:IDL("seTestFr"), text:IDL("seRefList"), sub:{id:1, text:'<br>'+IDL("now")+': <b>%cur</b> '+IDL("day")+'<br>'+IDL("set")+': %sets'+
             '<br><a onClick="javascript:vkFriendsCheck();" style="cursor: hand;">'+IDL('seCreList')+'</a>',
@@ -639,7 +642,7 @@ function vkInitSettings(){
 		{id:34, text:IDL("seSwichTextChr")}	
     ]
   };	  
-	//LAST 68
+	//LAST 69
 	
 	vkSetsType={
       "on"  :[IDL('on'),'y'],
@@ -775,7 +778,7 @@ function vkMakeSettings(el){
   var tabs=[];
   for (var cat in vkoptSets){
     //alert(vkGetSettings(vkoptSets[cat],allsett));
-	if (cat!='Sounds') tabs.push({name:IDL(cat),content:'<div class="sett_cat_header">'+IDL(cat)+'</div>'+vkGetSettings(vkoptSets[cat],allsett)});
+	if (cat!='Sounds' && cat!='Help') tabs.push({name:IDL(cat),content:'<div class="sett_cat_header">'+IDL(cat)+'</div>'+vkGetSettings(vkoptSets[cat],allsett)});
     //html+='<div class="sett_container"><div class="sett_header" onclick="toggle(this.nextSibling);">'+IDL(cat)+'</div><div id="sett'+cat+'">'+vkGetSettings(vkoptSets[cat],allsett)+'</div></div>';
   }
   //*
@@ -814,7 +817,6 @@ function vkMakeSettings(el){
 	'<div class="vk_sounds_settrings">'+'<div class="sett_cat_header">'+IDL('Sounds')+'</div>'+
 	'<table><tr><td>'+vkGetSettings(vkoptSets['Sounds'],allsett)+'</td><td>'+s_preview+'</td></tr></table>'+
 	'</div>'+
-	
     '<div style_="padding: 0px 20px 0px 20px">'+
 	//s_preview+
 	'<div style="clear:both" align="center"><br><h4>'+IDL('SoundsThemeLoadClear')+'</h4><br>'+
@@ -823,9 +825,10 @@ function vkMakeSettings(el){
     '</div>';
     tabs.push({name:IDL('Sounds'),content:sounds});
   }//*/
+  window.vkopt_add_cfg=vkGetSettings(vkoptSets['Help'],allsett);
   var CfgArea='<input type="hidden" id="TxtEditDiv_remixbitset" /><textarea id="remixbitset" rows=1 style="border: 1px double #999999; overflow: hidden; width: 100%;" type="text" readonly onmouseover="this.value=vkRemixBitS()" onClick="this.focus();this.select();">DefSetBits=\''+vkgetCookie('remixbit')+'\';</textarea>'; 
   tabs.push({name:IDL('all'),content:'all'});
-  tabs.push({name:IDL('Help'),content:'<table style="width:100%; border-bottom:1px solid #DDD; padding:10px;"><tr><td colspan="2" style="text-align:center; font-weight:bold; text-decoration:underline;">'+IDL('Donations')+'</td></tr><tr><td width="50%"><div>'+IDL("DevRekv")+'</div><div>'+WMPursesList('wmdonate')+'</div></td><td><div id="wmdonate">'+WMDonateForm(30,'R255120081922')+'</div></td></tr></table>'+
+  tabs.push({name:IDL('Help'),content:'<table style="width:100%; border-bottom:1px solid #DDD; padding:10px;"><tr><td colspan="2" style="text-align:center; font-weight:bold; text-decoration:underline;">'+IDL('Donations')+'</td></tr><tr><td width="50%"><div>'+IDL("DevRekv")+'</div><div>'+WMPursesList('wmdonate')+'</div></td><td><div id="wmdonate" class="clear_fix">'+WMDonateForm(30,'R255120081922')+'</div></td></tr></table>'+
     '<div id="vkcurcfg">'+
     (vkbrowser.opera?'<br>'+IDL('SettsNotSaved')+'<b align="center">'+IDL('addVkopsSets')+'<br>'+CfgArea+'</b>'+
     '<br><b align="center">'+IDL('seAttent')+'</b>':'<b align="center">Config:<br>'+CfgArea+'</b>')+

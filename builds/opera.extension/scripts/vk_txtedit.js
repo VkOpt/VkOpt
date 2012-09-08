@@ -9,6 +9,7 @@
 
 
 /* TEXTAREAS FUNCTIONS */
+/*
 function vkInsertToField(field,text,html){
 	var obj=ge(field);
 	if (!obj.setValue){
@@ -22,7 +23,25 @@ function vkInsertToField(field,text,html){
 		var obj2=geByClass('mention_rich_ta',obj.parentNode)[0] || obj;
 		obj.setValue((obj2.innerHTML || obj.value)+' '+text);//appenChild(vkCe('span'),{},html);
 	}
+}*/
+function vkInsertToField(field,text,html){
+	var obj=ge(field);
+   if (obj && obj.contentEditable=="true"){
+      var s=document.getSelection()+"";
+      if (s=="")
+         obj.appendChild(document.createTextNode(text));
+      else
+         document.execCommand('insertHTML', false, text);
+   } else {
+		obj.focus();
+		if (typeof(obj.selectionStart)=="number") {
+			var s=obj.value;
+			s=s.substring(0,obj.selectionStart)+' '+text+' '+s.substring(obj.selectionStart);
+			obj.value=s;
+		} else obj.value+=' '+text;
+	}
 }
+
 /*
 function GetSelectedLength(obj){
 obj.focus();
@@ -172,6 +191,7 @@ function vkTxtPanelButtons(eid){
 	//el.getElementsByTagName('div').innerHTML=AddSmileBtn(eid);
 	return el;//'<a class="vk_edit_btn smile_btn" href="#"><div class="vk_edit_sub_panel">'+AddSmileBtn(eid)+'</div></a>';
 }
+/*
 function vkPrepareTxtPanels(node){
 	if (getSet(33)!='y') return;
 	var tstart=unixtime();
@@ -180,10 +200,77 @@ function vkPrepareTxtPanels(node){
 	var touts={};
 	if (!window.txtareas_events) txtareas_events=[];
 	
+   var add_panel=function(ta){
+		if ((ta.getAttribute('onfocus') && ta.getAttribute('onfocus').indexOf('showEditPost')!=-1) || ta.getAttribute('vk_edit_btns')) 
+         return;//continue;//ge('edit_btns_'+ta.id)
+		var panel=vkCe('div',{id:'edit_btns_'+ta.id,"class":'vk_textedit_panel'},
+						//vkTxtPanelButtons(ta.id)+
+						'<div style="float:left; font-size:7px; margin-top:-10px; margin-right:3px;" onclick="fadeOut(\''+'edit_btns_'+ta.id+'\');">x</div>');
+		panel.appendChild(vkTxtPanelButtons(ta.id));				
+		//alert(panel.innerHTML);
+		ta.parentNode.insertBefore(panel,ta);
+		hide(panel);
+		var show_panel=function(e){
+			var pid='edit_btns_'+e.target.id;
+			var panel=ge(pid);
+			clearTimeout(touts[pid]);
+			if (!isVisible(panel))fadeIn(panel);
+		};
+		var hide_panel=function(e){
+			var pid='edit_btns_'+e.target.id;
+			var panel=ge(pid);
+			clearTimeout(touts[pid]);
+			touts[pid]=setTimeout(function(){fadeOut(panel)},400);
+		};
+		var panel_mousemove=function(e){
+			var pid=e.target.id;
+			var panel=ge(pid);
+			clearTimeout(touts[pid]);
+		};
+		txtareas_events.push(panel_mousemove);
+		panel.setAttribute('onmousemove','txtareas_events['+(txtareas_events.length-1)+'](event);');
+		panel.setAttribute('onclick','txtareas_events['+(txtareas_events.length-1)+'](event);');
+		txtareas_events.push([show_panel,hide_panel]);
+		var feid=(txtareas_events.length-1);
+		var onclick_area=function(e,el,idx){
+			if (!el.vk_txt_panel_enabled){
+				addEvent(el, 'focus', txtareas_events[idx][0]);//show_panel
+				addEvent(el, 'click', txtareas_events[idx][0]);
+				addEvent(el, 'blur', txtareas_events[idx][1]);//hide_panel
+				txtareas_events[idx][0](e);
+				el.vk_txt_panel_enabled=true;
+			}
+		};
+		if (!ta.getAttribute('onmousemove')){//onclick
+			txtareas_events.push(onclick_area);
+			ta.setAttribute('onmousemove','txtareas_events['+(txtareas_events.length-1)+'](event,this,'+feid+');');
+		}
+		addEvent(ta, 'focus', show_panel);
+		addEvent(ta, 'click', show_panel);
+		addEvent(ta, 'blur', hide_panel);
+		ta.vk_txt_panel_enabled=true;
+		ta.setAttribute('vk_edit_btns', true);   
+   };
 	for (var i=0;i<tas.length;i++){
 		var ta=tas[i];
-		if ((ta.getAttribute('onfocus') && ta.getAttribute('onfocus').indexOf('showEditPost')!=-1) || ta.getAttribute('vk_edit_btns')) continue;//ge('edit_btns_'+ta.id)
-		var panel=vkCe('div',{id:'edit_btns_'+ta.id,"class":'vk_textedit_panel'},
+      add_panel(ta);
+	}
+	vklog('PrepareTxtPanels time:' + (unixtime()-tstart) +'ms');
+}*/
+
+function vkAddSmilePanel(el){
+	if (getSet(33)!='y') return;
+	var tstart=unixtime();
+	var te_btn_count=0;
+	var touts={};
+	if (!window.txtareas_events) txtareas_events=[];
+   //if (!window.txtareas_ids) txtareas_ids=0;
+	
+   var add_panel=function(ta){
+		if ((ta.getAttribute('onfocus') && ta.getAttribute('onfocus').indexOf('showEditPost')!=-1) || ta.getAttribute('vk_edit_btns') || !ta.id) 
+         return;//continue;//ge('edit_btns_'+ta.id)
+		//if (!ta.id) ta.id='vktextfield_'+(txtareas_ids++);
+      var panel=vkCe('div',{id:'edit_btns_'+ta.id,"class":'vk_textedit_panel'},
 						//vkTxtPanelButtons(ta.id)+
 						'<div style="float:left; font-size:7px; margin-top:-10px; margin-right:3px;" onclick="fadeOut(\''+'edit_btns_'+ta.id+'\');">x</div>');
 		panel.appendChild(vkTxtPanelButtons(ta.id));				
@@ -231,10 +318,10 @@ function vkPrepareTxtPanels(node){
 		addEvent(ta, 'click', show_panel);
 		addEvent(ta, 'blur', hide_panel);
 		ta.vk_txt_panel_enabled=true;
-		ta.setAttribute('vk_edit_btns', true);
-		
-	}
-	vklog('PrepareTxtPanels time:' + (unixtime()-tstart) +'ms');
+		ta.setAttribute('vk_edit_btns', true);   
+   };
+   add_panel(el);
+	vklog('PreparePanel time:' + (unixtime()-tstart) +'ms');
 }
 
 
@@ -260,7 +347,7 @@ function SwichKeybText(str){
 		    }
 		  message=message+messer;
 	}	
-return message;
+   return message;
 }
 
 var vk_EnableSwichText=true;

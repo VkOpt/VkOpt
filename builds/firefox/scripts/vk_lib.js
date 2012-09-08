@@ -1868,6 +1868,7 @@ var XFR={
 	post:function(url,data,callback,only_head){
 		var domain='http://'+url.split('/')[2];
       if (domain.indexOf('youtube.com')!=-1) domain+='/embed/';
+      if (domain.indexOf('player.vimeo.com')!=-1) domain+='/video/';
 		data=data || {};
 		var req_id=this.reqs++;
 		var frame_url=domain+'?xfr_query='+escape(JSON.Str([url,data,req_id,only_head?1:0]));
@@ -2291,7 +2292,7 @@ function vkDownloadFile(el,ignore) {
 
 /* NOTIFY TOOLS */
 function vkNotifyCustomSInit(){
-      vkNotifierSound = function(sound){   if (typeof sound == 'string') (new Sound2(sound)).play();};
+      vkNotifierSound = function(sound){   if (typeof sound == 'string' && sound!='none') (new Sound2(sound)).play();};
       Inj.Before('Notifier.pushEvents','curNotifier.sound.play();','if (arguments[2]) vkNotifierSound(arguments[2]); else ');
       Inj.After('Notifier.lcRecv','!data.full',', data.sound');
 }
@@ -2318,6 +2319,61 @@ function vkShowNotify(params){
       Notifier.pushEvents([notify.join('<!>')],null,params.sound);
    });
 }
+
+//*
+_vk_notifiers={};
+function vkShowEvent(obj){ // vkShowEvent({id:'vk_typing_123',title:'%USERNAME%', text:'Typing...',author_photo:'http://cs9994.userapi.com/u39226536/e_62b2fd31.jpg'})
+   obj=obj || {};
+   var vk_nf_id=unixtime()+vkRand();
+   var id=obj.id || 'vk_nf_id_'+vk_nf_id;
+ 
+   Inj.Wait('curNotifier.version',function(){
+      
+      if (_vk_notifiers[id]){
+         Notifier.lcSend('hide', {event_id: id+_vk_notifiers[id]});
+         Notifier.onEventHide(id+_vk_notifiers[id]);
+      }
+      if (!_vk_notifiers[id]) _vk_notifiers[id]=0;
+      _vk_notifiers[id]++;
+      id=id+_vk_notifiers[id];
+      
+      var msg=[
+         curNotifier.version,
+         obj.type || 'vkcustomnotifier',
+         obj.title || "",
+         obj.author_photo || "",
+         obj.author_link || "",
+         obj.text,
+         obj.add_photo || "",
+         obj.link,
+         obj.onclick,
+         obj.add,
+         id,
+         obj.author_id || "",
+         obj.custom || "" // script >-> ev.custom = eval('('+msg[12]+')');
+      ];
+      //console.log(msg.join('<!>'));
+      events=[msg.join('<!>')];
+      
+      //Notifier.lcSend('feed', extend({full: curNotifier.idle_manager && curNotifier.idle_manager.is_idle && !this.canNotifyUi(), key: curNotifier.key}, response));
+      //Notifier.pushEvents(events);
+      //*
+      
+      var response={events:events,sound:obj.sound};
+      Notifier.lcSend('feed',extend({
+                                       full: curNotifier.idle_manager && curNotifier.idle_manager.is_idle && !Notifier.canNotifyUi(), 
+                                       key: curNotifier.key
+                                    }, response));
+      curNotifier.timestamp = vkNow();
+      if (!obj.hide_in_current_tab){
+         Notifier.pushEvents(events,null,obj.sound);
+      }
+      //console.log(response);
+      //*/
+      //Notifier.lpChecked({ts:vkNow(),key:curNotifier.key,events:events,sound:obj.sound});
+   });
+}//*/
+
 //vkShowNotify({sound:'On',title:'TestTitle',text:'QazQwe',author_photo:'http://cs10781.vk.com/u17115308/e_ceb5c84f.jpg',author_link:'mail',link:'audio',onclick:'nav.go(this)'}); //,
 //setInterval(function(){vkShowNotify({sound:'On',title:'TestTitle',text:'QazQwe',author_photo:'http://cs10781.vk.com/u17115308/e_ceb5c84f.jpg',author_link:'mail',link:'audio',onclick:'nav.go(this)'});},500)
 
@@ -2524,6 +2580,7 @@ return html;
 }
 /* Yandex Money */
 function YMDonateForm(Amount,purse_id,submit_text){
+  if(ge('purse_ad_link')) show('purse_ad_link');
  submit_text=submit_text?submit_text:IDL('Donate');
  var html=
  '<div style="margin:0 auto; display: table;">\
@@ -2552,6 +2609,10 @@ function YM5DonateForm(purse_id,submit_text){
 return html;
 }
 
+function AdDonateForm(){
+   return vkopt_add_cfg;
+}
+
 // YM & WM purses list
 
 function WMPursesList(result_el){
@@ -2561,7 +2622,8 @@ function WMPursesList(result_el){
 	.purse_link:hover,.purse_yad_link:hover{border:1px solid #DDD;text-decoration:none;}\
 	.purse_yad_link{margin-right: 5px; padding:2px 3px 3px 0px; display:block; border:1px solid transparent; width:208px;}\
 	.purse_yad_link_img{float:left; background-image: url("data:image/gif;base64,R0lGODlhDQAPAPcAABANC5LeNslOAAN3wmaZM/jzscaIUFXO8A1Gi63P6ZVDBn224P8AAMfSst+sebWdSFktXyDA6+Tp8m2CmK2urf87O3R0dKPQZkp4Ct+SWJmZmVSBw8d8M1mu17jT609ngOPi30hfdE1NTOD5/7m6uvSlGMTFxeDOXX6v/PV6H7W1tff4+UKN0oeGhjMzM7CIYqi6zPvbw/nTjY5vH2OX65nM/+tRGv58O+/gQv+IOdTU1IisVOd/JPD157iqoCxUuBSl5dKtkOWpPs+6Xf/MAP3V1szMzO2TQ0uGrpK85JXh9TddBLPp+Yttj2ChBVub1iFbjf+ZmT1pyf9mZnmPpON5Qoecsf+uXvBtGY+Pj2aEPNLHe7huMjep5unXyOFsEaTE7F6s/P/3iNeIN22m/aZeKcu9zaWjoWZmZvrbIP7dXby0ftvZ3efn5+Dt+LfRk8TL0i6Nx/abXofC/f/2+6yWr5ythj+Uy1B9wERxtiid3VuN4/C8fXCm3Jiuzf7BQ/ODLtbm9fy1MPSWSvlnK/3YbMbT69lkDK9zQZCkuEl41T1qr4u8RPnt6aRQC3HW8u+Hbe7u7uWITIzE+lKD2/8ZGWN5kMrX49vmy76yv9nLmf7lWl2q+H2cUlWi93WyH/6LR+O+mP/UTmu3/bbE0cGVacPm/efx2fr03LzL2WWEvqvC3OytcxeU0abL/vP5/lCIAPeOKvrAwM67d+u0fvpZINXK17bDouKiav/keeHm6vPQrcPolL1xJLPT/v/IDLy8vP6hQ6DR+e5/Mv7sRo+raEe579NHFOCWLC5boOPt9uZ1GYqHdZXB/fRuNiJPkDyh1v727vi/h2Wz/4e4/pHC+fzp2fvkyv3tW6i6jc7s/t/d3qvZ/fXnN9jh6nfGCzR+rf759venguzVW7yysvSTGPinYsXd9f+ZM/TBneRMEe+GJ02U1f///5Z2JXK//9bx//RiDtjFZfzx6iJpn9u5nyBLiqLY8Zy65z5/rvN9KvJzFPqucfz/8eBgCv///yH5BAEAAP8ALAAAAAANAA8AAAhrAP8JHPjPmrQVBAkaTJEiRkKB0gAxbJgwhsQUFx0KjCHnYgo5DDX+8wgI0IqQcuT8m8iwZEiJK1mytJgipkyG1hjalCnHGkyZgOTEWOGz5kRA0qzFkAZSJ0ZpHC96HMmSpE6lMbJq1WrtX0AAOw=="); background-position: 0px 0px;height: 15px;margin-right: 5px;width: 12px; display:block}\
-	#wmdonate{border:1px solid #AAA; border-radius:5px;}\
+	.purse_ad_link_img{float:left;height: 15px;margin-right: 5px;width: 12px; display:block}\
+   #wmdonate{border:1px solid #AAA; border-radius:5px;}\
 	</style><div class="purses_block">';
 	for (var i=0; i<purses.length; i++){
 		var type=purses[i][0].match(/(\w)(\d+)/)[1].toLowerCase();
@@ -2571,6 +2633,7 @@ function WMPursesList(result_el){
 		else 
 			html+='<a href=# class="purse_yad_link" onclick="ge(\''+result_el+'\').innerHTML=YMDonateForm('+purses[i][1]+',\''+yad+'\'); return false"><div class="purse_yad_link_img" ></div>'+yad+'<span style="float:right">\u042f\u043d\u0434\u0435\u043a\u0441.\u0414\u0435\u043d\u044c\u0433\u0438</span></a>';	 
 	}
+   html+='<a href=# class="purse_ad_link" id="purse_ad_link" style="display:none;" onclick="ge(\''+result_el+'\').innerHTML=AdDonateForm(); return false"><div class="purse_ad_link_img" ></div>\u0420\u0435\u043a\u043b\u0430\u043c\u0430</a>'
 	html+='</div>';
 	return html;
 }
