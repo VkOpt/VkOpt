@@ -9,6 +9,7 @@
 // @include       *vkadre.ru*
 // @include       *durov.ru*
 // @include       *youtube.com*
+// @include       *vimeo.com*
 // ==/UserScript==
 //*
 
@@ -1352,219 +1353,49 @@ var uApi = {
 
 DAPI_APP_ID=2168679;
 //javascript: dApi.call('notes.get',{},uApi.show)
-/*
-var dApi = {
-  api_id: DAPI_APP_ID,
-  reauth_count:0,
-  wait_sett:3000,
-  sett_visible:false,
-  auth_frame:null,
-  login_url:"/login.php?app="+DAPI_APP_ID+"&layout=popup&type=browser&settings=15615",//touch popup
-  onLogin:function(){
-	var dloc=document.location.href;
-	if (dloc.indexOf("login.php?app="+DAPI_APP_ID)!=-1){		
-		Inj.Wait("ge('connect_button').onclick",function(){
-			ge('connect_button').onclick();
-			setTimeout(function(){
-				parent.window.postMessage("SHOWFRAME","*");
-			},dApi.wait_sett);		
-		});	
-	}
-	//alert('check');
-	if (dloc.match("login_success\.html")){
-		var _ua = navigator.userAgent;
-		var locDomain = location.host.toString().match(/[a-zA-Z]+\.[a-zA-Z]+\.?$/)[0];
-		if (/opera/i.test(_ua) || !/msie 6/i.test(_ua) || document.domain != locDomain) {
-		  document.domain = locDomain;
-		}
-		var sess=document.location.hash.split('session=')[1];
-		sess=unescape(sess);
-		if (sess.match(/^[{}":,\sa-z\d]+$/)){
-			//parent.apiLoginDone(sess);
-			parent.window.postMessage(sess,"*");
-			return true;
-		} else alert('login_error');
-	}	 
-  },
-  show_error:function(r){
-	    var text=r.error.error_msg+'<br>error_code: '+r.error.error_code;
-       if (r.error.error_code == 3) vklog(text);
-       else topError(text,{dt:2});
-  },
-  call: function(method, inputParams, callback, captcha) {
-	if (arguments.length == 2) {    callback=inputParams;     inputParams={};   }
-	if (!remixmid()) {
-			vklog('API Error. user id not found');
-			return;
-	}
-   if (dApi.captcha_visible && !captcha){
-		setTimeout(function(){
-			dApi.call(method, inputParams, callback);
-		},300);
-		return;
-	}
-	var mid=vkgetCookie('dapi_mid');
-	var sid=vkgetCookie('dapi_sid');
-	var sec=vkgetCookie('dapi_secret');
-	//var sig=vkgetCookie('dapi_sig');
-	var apiLoginDone=function(event){
-		var sess=event.data;
-		if (sess=='SHOWFRAME'){
-			if (!dApi.auth_frame || dApi.sett_visible) return;
-			dApi.sett_box=vkAlertBox('VkOpt Desktop API','<div id="vk_dapi_auth"></div>');
-			var fr=dApi.auth_frame;
-			fr.setAttribute('style',"width:530px; height:400px; display:block; border:1px solid #DDD;");
-			ge('vk_dapi_auth').appendChild(fr);
-			dApi.sett_box.setOptions({width:"560px"});
-			dApi.sett_visible=true;
-		} else if (sess.match(/^[{}":,\sa-z\d]+$/)){
-			var r=eval('('+sess+')');
-			//alert(print_r(r));
-			//vksetCookie('dapi_sig',r.sig);
-			if (!r.mid || !r.sid || !r.secret) return;
-			vksetCookie('dapi_mid',r.mid);
-			vksetCookie('dapi_sid',r.sid);
-			vksetCookie('dapi_secret',r.secret);
-			
-			dApi.sett_visible=false;
-			if (dApi.sett_box) dApi.sett_box.hide();
-			if (dApi.auth_frame) re(dApi.auth_frame);
-			dApi.auth_frame=null;
-			
-			dApi.call(method, inputParams, callback);
-		}
-	}	
-	var apiReAuth=function(){
-		if (!remixmid()) {
-			vklog('API Error. user id not found');
-			return;
-		}
-		if (!dApi.sett_visible && !dApi.auth_frame){
-			dApi.reauth_count++;
-			window.addEventListener("message", apiLoginDone,false);
-			dApi.auth_frame = vkCe('div',{"class":"vk_dapi_auth_div",style:"visibility:hidden; position:absolute; display:none;"});
-			dApi.auth_frame.appendChild(vkCe('iframe', {src: dApi.login_url,style:"border:0px; width:100%; height:100%;" }));
-			document.body.appendChild(dApi.auth_frame);	
-		} else {
-			Inj.Wait('(!dApi.sett_visible && !dApi.auth_frame)',function(){
-				//alert(JSON.Str([method,inputParams]))
-				dApi.call(method, inputParams, callback);
-			},2000);
-		}
-	}
-
-	if (remixmid()!='' && mid!=remixmid()){
-		apiReAuth();		
-		return;
-	}
-	var params = {  
-		api_id: dApi.api_id,
-		method: method,
-		v: '3.0',       
-		format: 'json' 
-	}
-    if (inputParams) for (var i in inputParams) params[i] = inputParams[i];  
-    var lParams=[];
-    for (i in params) {  lParams.push([i,params[i]]);   }
-  
-    function sName(i, ii) {    if (i[0] > ii[0]) return 1;  else if (i[0] < ii[0]) return -1;   else  return 0;  }
-    lParams.sort(sName);
-    //dApi.viewer_id=remixmid();
-    var sig = mid;
-    for (i in lParams) sig+=lParams[i][0]+'='+lParams[i][1];
-    sig+=sec;
-    
-    function pass() {
-      params['sig']=vkMD5(sig);
-	  params['sid']=sid;
-      vklog('VK.desktop.api: '+method);
-      AjPost("/api.php", params,function(obj, text) {
-        if (text=='') text='{}';
-		var response = eval("("+text+")");
-        if (response.error){
-			if (response.error.error_code == 6){
-				setTimeout(function(){
-					dApi.call(method, inputParams, callback);
-				},500);
-			} else if (response.error.error_code == 4 || ((response.error.error_code == 3 || response.error.error_code == 7)  && dApi.reauth_count==0)){
-				
-            apiReAuth();				
-			} else if(response.error.error_code == 14) { // Captcha needed
-				dApi.captcha_visible=true;
-				vkShowCaptcha(response.error.captcha_sid, response.error.captcha_img, function(sid, value) {
-					inputParams['captcha_sid'] = sid;  inputParams['captcha_key'] = value;
-					dApi.call(method, inputParams, callback, true);
-				}, false, function() { callback(response); });
-			}else {
-				dApi.show_error(response); 
-				if (captcha) vk_captchaBox.setOptions({onHide: function(){dApi.captcha_visible=false}}).hide();  
-				callback(response,response.response,response.error);  
-			} 
-		} else { 
-			dApi.reauth_count=0; 
-			if (captcha) vk_captchaBox.setOptions({onHide: function(){dApi.captcha_visible=false;}}).hide();  
-			callback(response);  
-		}
-      });
-    }
-    pass();
-  }
-};
-//*/
-
-
 var dApi = {
 	API_ID: DAPI_APP_ID,
-	SETTINGS: 15615, /* FULL: 15615 + 131072;   Don't use NOT_USED_SETTING */
+	SETTINGS: 15614, /* FULL: 15615 + 131072;   Don't use NOT_USED_SETTING */
 	NOT_USED_SETTING: 99999999, //32768, /* need for get auth dialog when all settings allowed */
 	allow_call:true,
 	auth_frame:null,
 	log: function(s){vklog('API: '+s)},
    captcha_visible:false,
    onLogin:function(){},
-	Auth: function(callback) {
-		var appId=dApi.API_ID;
-		var settings=dApi.SETTINGS;
-		
-		var oncheck=function(r,t) {
-			if (t.indexOf('Login success')!=-1) dApi.onAuth(callback);
-			else frame_auth();
-		}
-		var frame_auth=function(){
-			if (dApi.auth_frame) {
-				setTimeout(function(){dApi.Auth(callback);},2000);
-				return;
-			}
-			dApi.auth_frame = ce("iframe", {
-				src: '/login.php?app=' + appId + '&layout=popup&type=browser&settings=' + settings
-				}, {position: 'relative', width: '530px', height: '400px', border:'0px'});
-			
-         
-         window.addEventListener("message", function(event) {
-               if (event.data=='dapi_login_success')
-                  dApi.onAuth(callback);
+   Auth: function(callback) {
+      var appId=dApi.API_ID;
+		var settings=dApi.SETTINGS;// scope=notify,friends,photos,audio,video,docs,notes,pages,status,wall,groups,messages,stats,nohttps
+      var auth_url='http://oauth.vk.com/authorize?client_id=' + appId + 
+                                                '&scope=' + settings + 
+                                                '&redirect_uri=http://oauth.vk.com/blank.html'+
+                                                '&display=popup'+
+                                                '&response_type=token';
+      XFR.post(auth_url,{},function(t){
+         var g=t.match(/https:\/\/oauth\.vk\.com\/grant_access\?[^"]+&response_type=token&state=&token_type=0/);
+         console.log('VkOpt API Auth :',g);
+         if (g){
+            dApi.auth_frame = ce("iframe", {
+               //src: '/login.php?app=' + appId + '&layout=popup&type=browser&settings=' + settings
+               src:g
+               }, {position: 'absolute', width: '1px', height: '1px', top:'1px', left:'1px', border:'0px'});
+            document.getElementsByTagName('body')[0].appendChild(dApi.auth_frame);
+            
+            window.addEventListener("message", function(event) {
+                  if (event.data=='dapi_login_success'){
+                     if (dApi.auth_frame) {
+                        dApi.auth_frame.parentNode.removeChild(dApi.auth_frame);
+                        dApi.auth_frame=null;
+                     }
+                     dApi.onAuth(callback);
+                  }
             },false);
-         
-			//dApi.auth_frame.onload=function() { dApi.onAuth(callback);}
-			
-			var onHideBox=function(){
-				var fr=dApi.auth_frame;
-				dApi.auth_frame=null;
-				re(fr);	
-			};
-			dApi.aBox = new MessageBox({title: 0,width:"560px",onHide:onHideBox});
-			var aBox=dApi.aBox;
-			aBox.removeButtons();
-			aBox.addButton(getLang('box_close'),aBox.hide);  
-			aBox.content('<div id="vk_api_auth"></div>');
-			aBox.show();
-			ge('vk_api_auth').appendChild(dApi.auth_frame);
-		}	
-		AjPost('/login.php?app=' + dApi.API_ID + '&layout=popup&type=browser&settings=' + dApi.SETTINGS,{},oncheck);	
-	},
+         }
+         //https://oauth.vk.com/grant_access?hash=da03c1672da446bbf6&client_id=2168679&settings=15614&redirect_uri=blank.html&response_type=token&state=&token_type=0
+      });
+   },
    Check: function(){
       var dloc=document.location.href;
-      if (dloc.match("login_success\.html")){		
+      if (dloc.match("login_success\.html") || dloc.match("blank\.html")){		
             parent.window.postMessage("dapi_login_success","*");	
       }
    },
@@ -1720,6 +1551,17 @@ var dApi = {
 		key.focus();
 	}
 };
+
+function vkApiCall(method,params,callback){
+   params = params || {};
+   params['oauth'] = 1;
+   params['method'] = method;
+   AjPost('api.php',params,function(r,t){
+      var res = eval('('+t+')');
+      if (callback) callback(res);
+   });
+}
+
 vkApis={
 	photos:function(oid,aid,callback){
 		var params={aid:aid};

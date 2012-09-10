@@ -1134,7 +1134,8 @@ function ProcessHighlightFriendLink(link){
 }
 function vkHighlightFriends(){
 	var check_time=1;//hour
-	var fr=vkGetVal('vk_friends_ids');
+   var uid=vk.id || 0;
+	var fr=vkGetVal('vk_friends_ids'+uid);
 	var load_friends=function(callback){
 		var vkFr=[];
 		dApi.call('friends.get',{fields:'domain'},function(r){	
@@ -1145,7 +1146,7 @@ function vkHighlightFriends(){
 			}
 			vk_friends_id_list=vkFr.join(',');
 			var result=unixtime()+','+remixmid()+'|'+vk_friends_id_list;
-			vkSetVal('vk_friends_ids',result);
+			vkSetVal('vk_friends_ids'+uid,result);
 			vklog('friends loaded from API. highlighting...');
 			highlight();
 		});
