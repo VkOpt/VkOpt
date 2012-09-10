@@ -363,12 +363,36 @@ function vkWikiPagesList(add_btn){
       var x=(r.response || []).map(function(obj,a2){
          console.log(obj);
          var page='page-'+obj.group_id+'_'+obj.pid;
-         t+='<a href="/'+page+'">'+page+'</a>   <b>'+obj.title+'</b>  (creator:'+obj.creator_name+')<br>';
+         t+='<a href="/'+page+'">'+page+'</a><span class="divider">|</span>'+
+            '<a href="#" onclick="return vkGetWikiCode('+obj.pid+','+obj.group_id+');">'+IDL('Code')+'</a><span class="divider">|</span>'+
+            '   <b>'+obj.title+'</b>  (creator:'+obj.creator_name+')<br>';
       });
       var box=vkAlertBox('Wiki Pages','<h3>Owner: '+(cur.oid && cur.oid<0?'club':'id')+Math.abs(cur.oid || vk.id)+'</h3><br>'+t);
       box.setOptions({width:'680px'});
    });
 }
+
+/* WIKI GET CODE*/ //NOT USED
+function vkGetWikiCode(pid,gid){
+	//var dloc=document.location.href;
+	//var gid=dloc.match(/o=-(\d+)/);
+	//gid=gid?gid[1]:null;
+	dApi.call('pages.get',{pid:pid,gid:gid},function(r){
+      var data=r.response;
+      if (!data.source) {
+         alert('Nothing...');
+         return;
+      }
+      var code=(data.source || "").replace(/<br>/gi,'\r\n');
+      var box=vkAlertBox('Wiki-code','<h2>'+data.title+'</h2><textarea id="vk_wikicode_area" style="width:460px; height:300px;">'+code+'</textarea>');
+      box.setOptions({width:'500px'});
+      //ge('vk_wikicode_area').value=data.source;
+   });
+   
+   return false;
+}
+
+
 function vkSwitchPublicToGroup(){
    var p=ge('page_actions');
    if (!ge('vkpubtogroup') && p && p.innerHTML.indexOf('?act=edit')!=-1){
@@ -903,13 +927,7 @@ function vkFavePage(){
    vkFavUsersList(true);
 }
 
-/* WIKI GET CODE*/ //NOT USED
-function vkGetWikiCode(){
-	var dloc=document.location.href;
-	var gid=dloc.match(/o=-(\d+)/);
-	gid=gid?gid[1]:null;
-	dApi.call('pages.get',{title:geByClass('wikiTitle')[0].innerHTML,gid:24011636,},uApi.show);
-}
+
 
 /* MAIL */
 function vkMail(){
