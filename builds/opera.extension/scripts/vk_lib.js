@@ -9,6 +9,7 @@
 // @include       *vkadre.ru*
 // @include       *durov.ru*
 // @include       *youtube.com*
+// @include       *vimeo.com*
 // ==/UserScript==
 //*
 
@@ -1371,14 +1372,13 @@ var dApi = {
                                                 '&response_type=token';
       XFR.post(auth_url,{},function(t){
          var g=t.match(/https:\/\/oauth\.vk\.com\/grant_access\?[^"]+&response_type=token&state=&token_type=0/);
-         console.log('VkOpt API Auth :',g);
          if (g){
+            console.log('VkOpt API Auth :',g);
             dApi.auth_frame = ce("iframe", {
                //src: '/login.php?app=' + appId + '&layout=popup&type=browser&settings=' + settings
                src:g
                }, {position: 'absolute', width: '1px', height: '1px', top:'1px', left:'1px', border:'0px'});
             document.getElementsByTagName('body')[0].appendChild(dApi.auth_frame);
-            
             window.addEventListener("message", function(event) {
                   if (event.data=='dapi_login_success'){
                      if (dApi.auth_frame) {
@@ -1387,8 +1387,12 @@ var dApi = {
                      }
                      dApi.onAuth(callback);
                   }
-            },false);
+            },false);            
+         } else {
+            console.log('VkOpt API Auth : may be ok...');
+            dApi.onAuth(callback);
          }
+
          //https://oauth.vk.com/grant_access?hash=da03c1672da446bbf6&client_id=2168679&settings=15614&redirect_uri=blank.html&response_type=token&state=&token_type=0
       });
    },

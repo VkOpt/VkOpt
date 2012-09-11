@@ -35,6 +35,8 @@ function vkStyles(){
    var ShowAllTime=getSet(56);
 	var NotHideSugFr= (getSet(44)=='y');
    var ShowGroupNews=getSet(59);
+   var hideBigLike = getSet(70);
+  
 	var main_css='';
 	if (getSet(28)=='y') main_css+=GetUnReadColorCss();
    main_css+=vkNotifierWrapMove();
@@ -58,7 +60,7 @@ function vkStyles(){
       ';
    }
    if (ShowGroupNews=='y') main_css+='#group .wide_column .group_wiki_wrap .wk_text{display:block}';
-   
+   if (hideBigLike) main_css+="#pv_hh{display:none !important;}";
 	//getSet(38)=='y' 
 	main_css+='.vk_my_friend{color:'+getFrColor()+' !important;}';
 	main_css+='\

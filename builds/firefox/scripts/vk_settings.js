@@ -625,7 +625,9 @@ function vkInitSettings(){
       {id:59, text:IDL("seExplandGroupNews")},
       {id:60, text:IDL("seProfileMoveAudioBlock")},
       {id:61, text:IDL("seProfileGroups"),info:'infoUseNetTrafic'},
-      {id:67, text:IDL("seHideLeftFrendsBlock")}
+      {id:67, text:IDL("seHideLeftFrendsBlock")},
+      {id:70, text:IDL("seHideBigLike")}
+     
       //{id:64, text:IDL("seToTopOld")}
     ],
 	Sounds:[
@@ -642,7 +644,7 @@ function vkInitSettings(){
 		{id:34, text:IDL("seSwichTextChr")}	
     ]
   };	  
-	//LAST 69
+	//LAST 70
 	
 	vkSetsType={
       "on"  :[IDL('on'),'y'],
@@ -901,7 +903,7 @@ function vkSaveSettingsOnServer(check){
    for (var key in cfg)
       code.push(key+':API.storage.set({key:"'+key+'",value:"'+cfg[key]+'"})');
    code="return {"+code.join(',')+"};";
-   alert(code);
+   //alert(code);
    dApi.call('execute',{code:code},function(r){
       ge('cfg_on_serv_info').innerHTML='<div class="vk_cfg_info">'+IDL('seCfgBackupSaved')+'</div>';
       console.log('Store vkopt settings result:',r);

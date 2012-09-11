@@ -35,6 +35,8 @@ function vkStyles(){
    var ShowAllTime=getSet(56);
 	var NotHideSugFr= (getSet(44)=='y');
    var ShowGroupNews=getSet(59);
+   var hideBigLike = getSet(70);
+  
 	var main_css='';
 	if (getSet(28)=='y') main_css+=GetUnReadColorCss();
    main_css+=vkNotifierWrapMove();
@@ -58,7 +60,7 @@ function vkStyles(){
       ';
    }
    if (ShowGroupNews=='y') main_css+='#group .wide_column .group_wiki_wrap .wk_text{display:block}';
-   
+   if (hideBigLike) main_css+="#pv_hh{display:none !important;}";
 	//getSet(38)=='y' 
 	main_css+='.vk_my_friend{color:'+getFrColor()+' !important;}';
 	main_css+='\
@@ -624,7 +626,7 @@ function vkMenu(){//vkExLeftMenu
   var WALL_LINK = (getSet(29)=='y');
   var exm=(getSet(12) == 'y')?true:false; //extended menu
   var nav=(ge('sideBar') || ge('side_bar')).getElementsByTagName('ol')[0];
-  if (cfg > 0) nav.innerHTML=nav.innerHTML.replace(RegExp('(">)(\u041c\u043e\u0439|\u041c\u043e\u044f|\u041c\u043e\u0438|\u041c\u043e\u0457|\u041c\u0430\u044f|\u041c\u0430\u0435|My) ','g'),"$1");
+  if (cfg > 0) nav.innerHTML=nav.innerHTML.replace(RegExp('(">)(\u041c\u043e\u0439|\u041c\u043e\u044f|\u041c\u043e\u0438|\u041c\u043e\u0457|\u041c\u0430\u044f|\u041c\u0430\u0435|\u041c\u043e\u0435|My) ','g'),"$1");
   
   
 
