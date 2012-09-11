@@ -35,7 +35,7 @@ function vkStyles(){
    var ShowAllTime=getSet(56);
 	var NotHideSugFr= (getSet(44)=='y');
    var ShowGroupNews=getSet(59);
-   var hideBigLike = getSet(70);
+   var hideBigLike = getSet(70)=='y';
   
 	var main_css='';
 	if (getSet(28)=='y') main_css+=GetUnReadColorCss();
