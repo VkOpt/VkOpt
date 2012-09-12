@@ -347,7 +347,8 @@ function ExUserItems(id,el){
 		uitems+=mkExItem(0,'<a href="/wall'+cur.oid+'?with=%uid" onclick="return nav.go(this, event)">'+IDL('TetAtet')+'</a>');
 	}
 	if (uitems!='') uitems+='<li><div class="vk_user_menu_divider"></div></li>';
-	var fl_pr='<a href="#" onclick_="return false;" onclick="vkPopupAvatar(\'%uid\',this,true); return false;" onmouseout="vkHidePhoto();" class="fl_r">&gt;</a>';
+
+	var fl_pr='<a href="#" onclick_="return false;" onmouseover_="vkPopupAvatar(\'%uid\',this);" onclick="vkPopupAvatar(\'%uid\',this,true); return false;" onmouseout="vkHidePhoto();" class="fl_r">&gt;</a>';
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,fl_pr+'<a href="/id%uid" onclick="return nav.go(this, event);">'+IDL('Page')+'</a>'):i++;// onclick="AlternativeProfile(\'%uid\'); return false;"
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="#" class="fl_r" onclick="TopSearch.writeBox(%uid); return false;">'+IDL("Chat")+'</a><a class="fl_r" href="/im?sel=%uid" onclick="return nav.go(this, event);">'+IDL('Dialog')+'</a><a href="/write%uid" onclick="return showWriteMessageBox(event, %uid);">'+IDL('txMessage')+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/wall%uid" onclick="return nav.go(this, event);">'+IDL("clWa")+'</a>'):i++;

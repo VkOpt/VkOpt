@@ -24,13 +24,22 @@ function InstallRelease(){
   
   if (vbuild && vbuild<vBuild) vkCheckSettLength();
   
+  if (!vbuild || vbuild<vBuild){
+      dApi.call('getUserSettings',{},function(r){
+         if(r.response!=dApi.SETTINGS){
+            dApi.Auth();
+         }
+      });  
+  }
+  
   if (vbuild<120730){
       vkSetVal('VK_SAVE_MSG_HISTORY_PATTERN',SAVE_MSG_HISTORY_PATTERN);
   }
   
   if ((!window.IDBit || window.IDBit=='') && (!vver || vver<vVersion)){
-  if (!vver || vver<200) vksetCookie('remixbit',DefSetBits);
-	  vksetCookie('vkOVer',String(vVersion));
+     if (!vver || vver<200) vksetCookie('remixbit',DefSetBits);
+     
+	  vksetCookie('vkOVer',vVersion+'_'+vBuild);
 	  vksetCookie('vkplayer','00-0_0');
 	  if (!vkgetCookie('remixbit')) vksetCookie('remixbit',DefSetBits);
 	  vkCheckSettLength();
@@ -43,6 +52,15 @@ function InstallRelease(){
 	  var cont=IDL('YIV')+'<b>'+String(vVersion).split('').join('.')+'</b> (build <b>'+vBuild+'</b>)<br><br>'+IDL('INCD')+'<b>'+IDL('FIS')+'</b>';
 	  //cont='<table><tr><td>'+cont+'</td><td>'+hz_chooselang(true)+'</td></tr></table>'
 	  cont+='<br><br>'+hz_chooselang(true);
+     
+     cont+='<br><br><div id="cfg_on_serv_info" style="text-align:center;"></div>';
+     vkLoadSettingsFromServer(true,function(setts){
+      if (setts){
+         ge('cfg_on_serv_info').innerHTML+='<br>'+vkRoundButton([IDL('LoadFromServer'),'javascript: vkLoadSettingsFromServer();']);
+      }
+     });//check cfg backup
+  
+  
 	  vkMsg_Box.content(cont).show();
 
   }
@@ -147,14 +165,15 @@ function vkLoadVkoptConfigFromFile(){
 }
 
 function vkGetVkoptFullConfig(){
-  var sets={
-	remixbit:vkgetCookie('remixbit'),
-	remixumbit:vkgetCookie('remixumbit'),
-	//AdmGr:vkgetCookie('AdmGr'),
-	FavList:vkGetVal('FavList'),
-	//VK_CURRENT_CSS_URL:vkGetVal('VK_CURRENT_CSS_URL'),
-	WallsID:vkGetVal('WallsID')
-  }
+   var sets={
+      remixbit:vkgetCookie('remixbit'),
+      remixumbit:vkgetCookie('remixumbit'),
+      //AdmGr:vkgetCookie('AdmGr'),
+      FavList:vkGetVal('FavList'),
+      //VK_CURRENT_CSS_URL:vkGetVal('VK_CURRENT_CSS_URL'),
+      WallsID:vkGetVal('WallsID'),
+      vklang:vkgetCookie('vklang')
+   }
   
   var temp=[];
   for (var key in sets) if (sets[key]) temp.push(key+':'+'"'+sets[key]+'"');
@@ -868,6 +887,7 @@ function vkShowSettings(box){
     //box.setOptions({onHide: function(){box.content('');}});
     box.content(html).show();
   }
+  
   vkLoadSettingsFromServer(true);//check cfg backup
   return false;
 }
@@ -891,6 +911,7 @@ function vkSaveSettingsOnServer(check){
    
    var cfg={
       'remixbits':sett,
+      'vklang':vkgetCookie('vklang'),
       //'FavList':vkGetVal('FavList'),
       'VK_CURRENT_CSS_URL':vkGetVal("VK_CURRENT_CSS_URL") || "",
       'VK_CURRENT_CSSJS_URL':vkGetVal('VK_CURRENT_CSSJS_URL') || "",
@@ -898,6 +919,8 @@ function vkSaveSettingsOnServer(check){
    };
    var FavList=vkGetVal('FavList');
    if(FavList && FavList!='') cfg['FavList']=FavList;
+   
+   console.log('vkopt config to server:',cfg);
    
    var code=[];
    for (var key in cfg)
@@ -916,8 +939,8 @@ function vkSaveSettingsOnServer(check){
    if(FavList && FavList!='')  dApi.call('storage.set',{key:'FavList',value:FavList},function(){});  
    */
 }
-function vkLoadSettingsFromServer(check){
-	var params={keys:'remixbits,FavList,VK_CURRENT_CSS_URL,VK_CURRENT_CSSJS_URL,VK_CURRENT_CSS_CODE'};
+function vkLoadSettingsFromServer(check,callback){
+	var params={keys:'remixbits,vklang,FavList,VK_CURRENT_CSS_URL,VK_CURRENT_CSSJS_URL,VK_CURRENT_CSS_CODE'};
    if (check) params={key:'remixbits'};
 
    dApi.call('storage.get',params,function(r){
@@ -927,11 +950,14 @@ function vkLoadSettingsFromServer(check){
 				if (cfg[1] && parseInt(cfg[1])){
 					var date=(new Date(parseInt(cfg[1])*1000)).format("dd.mm.yyyy (HH:MM:ss)");
 					ge('cfg_on_serv_info').innerHTML='<div class="vk_cfg_info">'+IDL('seCfgBackupDate')+' <b>'+date+'</b> </div>';
+               if (callback) callback(true);
 				} else {
 					ge('cfg_on_serv_info').innerHTML='<div class="vk_cfg_warn">'+IDL('seCfgNoBackup')+' #1</div>';
+               if (callback) callback(false);
 				}
 			} else {
 				ge('cfg_on_serv_info').innerHTML='<div class="vk_cfg_warn">'+IDL('seCfgNoBackup')+' #2</div>';
+            if (callback) callback(false);
 			}		
       } else {
 			if (r.response && r.response!=''){
@@ -942,6 +968,9 @@ function vkLoadSettingsFromServer(check){
             // vkopt settings
             var cfg=scfg['remixbits'].split('|');
 				vksetCookie('remixbit', cfg[0]);
+            
+            if (scfg['vklang'])
+               vksetCookie('vklang',scfg['vklang']);
             
             // FavList
             var val=scfg['FavList'];

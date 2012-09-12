@@ -313,7 +313,7 @@ function vkEventPage(){
 /* GROUPS */
 function vkGroupPage(){
 	addFakeGraffItem();
-	vkCheckGroupAdmin();
+	vkCheckGroupsAdmin();
    vkModGroupBlocks();
    //vkAudioBlock();
    vkWallAlbumLink();
@@ -420,6 +420,26 @@ function isGroupAdmin(gid){
 		else return false;
 	} else return false;
 }
+
+function vkCheckGroupsAdmin(){
+   dApi.call('groups.get',{extended:1},function(r){
+      var data=r.response || [0];
+      var count=data.shift();
+      gids=[];
+      for (var i=0; i<data.length; i++){
+         var g=data[i];
+         if (g.is_admin==1){
+           gids.push(-g.gid,g.screen_name);
+         }
+      }
+      if (gids.length>0){
+         var r="vk_adm_gr_"+remixmid();
+         vkSetVal(r,gids.join(','));
+      }
+      //alert(gids.join('\n'));
+   });
+}
+/*
 function vkCheckGroupAdmin(){
 	var r="vk_adm_gr_"+remixmid();
 	var val=vkGetVal(r);
@@ -448,7 +468,9 @@ function vkCheckGroupAdmin(){
 			del(nav.objLoc[0]);
 		}
 	}
-}
+}*/
+
+
 
 /* COMMON.JS */
 
@@ -1531,7 +1553,7 @@ function vkProcessTopicLink(link){
    var id=href.match(/topic(-?\d+)_(\d+)/);
    var post=href.match(/post=(\d+)/);
    if (!id) return;
-   if(!link.hasAttribute('onmouseover') && !hasClass(link,'bp_date')) link.setAttribute('onmouseover', "vkTopicTooltip(this, "+id[1]+","+id[2]+","+(post?post[1]:null)+");");
+   if(!link.hasAttribute('onmouseover') && !hasClass(link,'bp_date') && !hasClass(link.parentNode,'bottom')) link.setAttribute('onmouseover', "vkTopicTooltip(this, "+id[1]+","+id[2]+","+(post?post[1]:null)+");");
 }
 function vkTopicTooltip(el,gid,topic,post){
     var post_id=post?(gid+'_'+post):(gid+'_topic'+topic);
