@@ -64,6 +64,7 @@ function vkProcessNode(node){
 		//vkPrepareTxtPanels(node);
 		vkAudioNode(node);
       vkVidAddGetLink(node);
+      vkPollResultsBtn(node);
 		vk_plugins.processnode(node);
 	// }  catch (e) { topMsg('vkProcessNode error',2)}
 	}
@@ -79,6 +80,7 @@ function vkProcessNodeLite(node){
 	vkProccessLinks(node);
 	vkAudioNode(node);
    vkVidAddGetLink(node);
+   vkPollResultsBtn(node);
 	//vkPrepareTxtPanels(node);
 	vk_plugins.processnode(node,true);
    if (getSet(63)=='y') vkSmiles(node);
@@ -215,6 +217,7 @@ function VkOptMainInit(){
   vkSkinManInit();
   vkClock();
   vkVidAddGetLink();
+  vkPollResultsBtn();
   
   if (getSet(34)=='y' && !window.setkev){ InpTexSetEvents(); setkev=true;}
   if (getSet(27)=='y') vkGetCalendar();

@@ -157,6 +157,97 @@ function vkWall(){
 	Inj.End('FullWall.init','setTimeout("vkOnNewLocation();",2);');
 }
 
+function vkPollResults(post_id,pid){
+   var tpl='\
+       <tr>\
+         <td colspan="2" class="page_poll_text">%TEXT</td>\
+       </tr><tr>\
+         <td class="page_poll_row">\
+         <div class="page_poll_percent" style="width: %WIDTH%"></div><div class="page_poll_row_count">%COUNT</div>\
+         </td><td class="page_poll_row_percent ta_r"><nobr><b>%RATE%</b></nobr></td>\
+       </tr>\
+   '; 
+
+   var view=function(data){
+      var answer=data.answers; //answer[i].rate=12.9; answer[i].text="...."; answer[i].votes=150
+      var max=0;
+      for (var i=0; i<answer.length; i++){
+         max=Math.max(max,answer[i].rate);
+      }
+      
+      var html="";
+      for (var i=0; i<answer.length; i++){
+         var width=Math.round(answer[i].rate*100/max);
+         html+=tpl.replace(/%RATE/g,answer[i].rate).replace(/%TEXT/g,answer[i].text).replace(/%WIDTH/g,width).replace(/%COUNT/g,answer[i].votes);
+      }   
+      html='<table cellspacing="0" cellpadding="0" class="page_media_poll"><tbody>'+html+'</tbody></table>';
+      
+      html='\
+      <div class="page_media_poll_wrap">\
+         <div class="page_media_poll_title">'+data.question+'</div>\
+         <div class="page_media_poll">\
+         '+html+'\
+         </div>\
+      </div>';   
+      
+      var box=vkAlertBox(IDL('ViewResults'),html);   
+   };
+   
+   var code='\
+      var post=API.wall.getById({posts:"'+post_id+'"})[0];\
+      var attachments=post.attachments;\
+      var i=0;\
+      var b=attachments[i];\
+      var pid = 0;\
+      var oid = 0;\
+      var oid2 = 0;\
+      while(i<attachments.length){\
+         if (b.type=="poll"){\
+            pid=b.poll.poll_id;\
+            oid=post.copy_owner_id;\
+            oid2=post.to_id;\
+         };\
+         i = i + 1;\
+         b=attachments[i]; \
+      }\
+      return {oid:oid,oid2:oid2,pid:pid,p:post,poll1:API.polls.getById({owner_id:oid,poll_id:pid}),poll2:API.polls.getById({owner_id:oid2,poll_id:pid})};\
+      ';
+      
+   if (post_id && pid){
+      dApi.call('polls.getById',{owner_id:post_id,poll_id:pid},function(r){
+         var data=r.response;
+         view(data);
+      });
+   } else {
+      dApi.call('execute',{code:code},function(r){
+         var data=r.response;
+         view(data.poll1 || data.poll2);
+      });   
+   }
+   return false;
+}
+
+function vkPollResultsBtn(node){
+   var els=geByClass('page_media_poll',node);
+   for (var i=0; i<els.length; i++){
+      var p=els[i];
+      var el=geByClass('page_poll_options',p)[0];
+      var c=geByClass('page_poll_total',p)[0];
+      
+      if (!el || !c) continue;
+      var id=(el.id || "").match(/(-?\d+)_(\d+)/);
+      if (!id) continue;
+      var oid=id[1];
+      id=id[0];
+      if (c.innerHTML.indexOf('vkPollResults')!=-1) continue;
+      c.insertBefore(vkCe('span',{"class":"divider fl_r"},"|"),c.firstChild);
+      c.insertBefore(vkCe('a',{
+                               "class":"fl_r",
+                               "href":"#",
+                               "onclick":"return vkPollResults('"+id+"');"
+                              },IDL('ViewResults')),c.firstChild);      
+   }
+}
 
 
 /* MAIN CODE */
