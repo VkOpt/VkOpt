@@ -232,7 +232,7 @@ function vkPollResultsBtn(node){
    for (var i=0; i<els.length; i++){
       var p=els[i];
       var el=geByClass('page_poll_options',p)[0];
-      var c=geByClass('page_poll_total',p)[0];
+      var c=geByClass('page_poll_bottom',p)[0];//'page_poll_total'
       
       if (!el || !c) continue;
       var id=(el.id || "").match(/(-?\d+)_(\d+)/);
@@ -439,16 +439,16 @@ function status_icq(node) { //add image-link 'check status in ICQ'
     
   if(icq) {	
 	var el=icq.parentNode.getElementsByTagName('div')[1];//geByClass('dataWrap')[a];
-    t=el.innerHTML;
-    t=t.replace(/\D+/g,'');
+    t=el.innerHTML || '';
+    t=t.replace(/\D+/g,'') || '';
     if(t.length)                                                                                                                                                   // http://kanicq.ru/invisible/favicon.ico
       el.innerHTML+=' <a href="http://kanicq.ru/invisible/'+t+'" title="'+IDL("CheckStatus")+'" target=new><img src="http://status.icq.com/online.gif?img=26&icq='+t+'&'+Math.floor(Math.random()*(100000))+'" alt="'+IDL("CheckStatus")+'"></a>';
   } 
   //*
   if(skype) {	
 	var el=skype.parentNode.getElementsByTagName('div')[1];
-    t=el.innerHTML;
-    t=t.match(/skype\:(.+)\?call/);
+    t=el.innerHTML || '';
+    t=t.match(/skype\:(.+)\?call/) || '';
     if(t.length)                                                                                                                                                   // http://kanicq.ru/invisible/favicon.ico
       el.innerHTML+='<img style="margin-bottom:-3px" src=" http://mystatus.skype.com/smallicon/'+t[1]+'?'+Math.floor(Math.random()*(100000))+'">';
   } //*/
