@@ -876,9 +876,15 @@ function vkPage(){
 }
 
 function vkWallReply(post,toMsgId, toId, event, rf,v,replyName){
+      console.log(post, toMsgId);
       var name=(replyName[1] || '').split(',')[0];
       if ((v||'').indexOf('id'+toId)==-1 && !checkEvent(event)){
-         var new_val=(v?v+'\r\n':'')+'[id'+toId+'|'+name+'], ';
+         var new_val=(v?v+'\r\n':'');
+         if ((post || "").indexOf('topic')!=-1)
+            new_val+='[post'+toMsgId+'|'+name+'], ';
+         else
+            new_val+='[id'+toId+'|'+name+'], ';
+            
          val(rf, new_val);
          if (rf.autosize) 
             rf.autosize.update();
