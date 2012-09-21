@@ -1512,18 +1512,34 @@ var dApi = {
 					dApi.captcha(response.error.captcha_sid, response.error.captcha_img, function(sid, value) {
 						inputParams['captcha_sid'] = sid;  inputParams['captcha_key'] = value;
 						dApi.call(method, inputParams, callback, true);
-					}, false, function() { callback(response); });
+					}, false, function() { 
+                     if (callback.ok){
+                           callback.ok(response,response.response,response.error);  
+                     } else
+                        callback(response,response.response,response.error);  
+               
+               });
 				}else {
-					dApi.show_error(response); 
+					if (!callback || !callback.error) dApi.show_error(response); 
 					if (captcha) {
                   vk_api_captchaBox.setOptions({onHide: function(){dApi.captcha_visible=false}}).hide();  
                   //vk_api_captchaBox.hide();  
                }
-					callback(response,response.response,response.error);  
+               
+               if (callback.error && callback.ok){
+                  if (response.error)
+                     callback.error(response,response.error);
+                  else
+                     callback.ok(response,response.response,response.error);  
+               } else
+                  callback(response,response.response,response.error);  
 				} 
 			} else { 
 				if (captcha) vk_api_captchaBox.setOptions({onHide: function(){dApi.captcha_visible=false}}).hide(); //vk_api_captchaBox.hide();  
-				callback(response);  
+            if (callback.ok){
+                  callback.ok(response,response.response,response.error);  
+            } else
+               callback(response,response.response,response.error);    
 			}
 		  });
 		}

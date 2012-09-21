@@ -869,7 +869,22 @@ function vkPage(){
 	/*if (!window.wall) return;
 	Inj.Before('wall.receive','var current','vkProcessNode(n);');
 	Inj.End('wall._repliesLoaded','vkProcessNode(r);');*/
+   
+   if (getSet(71)=='y') 
+      Inj.Before('wall.replyTo','if (!v','vkWallReply(post,toMsgId, toId, event, rf,v,replyName); if(false) ');
+   
 }
+
+function vkWallReply(post,toMsgId, toId, event, rf,v,replyName){
+      var name=(replyName[1] || '').split(',')[0];
+      if ((v||'').indexOf('id'+toId)==-1 && !checkEvent(event)){
+         var new_val=(v?v+'\r\n':'')+'[id'+toId+'|'+name+'], ';
+         val(rf, new_val);
+         if (rf.autosize) 
+            rf.autosize.update();
+      }
+}
+
 /* FEED */
 function vkFeed(){
 	//Inj.After("feed.showMore",/au.innerHTML.+rows;/,'vkProcessNode(au);');

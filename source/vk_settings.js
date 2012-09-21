@@ -645,8 +645,8 @@ function vkInitSettings(){
       {id:60, text:IDL("seProfileMoveAudioBlock")},
       {id:61, text:IDL("seProfileGroups"),info:'infoUseNetTrafic'},
       {id:67, text:IDL("seHideLeftFrendsBlock")},
-      {id:70, text:IDL("seHideBigLike")}
-     
+      {id:70, text:IDL("seHideBigLike")},
+      {id:71, text:IDL("seWallReplyMod")}
       //{id:64, text:IDL("seToTopOld")}
     ],
 	Sounds:[
@@ -663,7 +663,7 @@ function vkInitSettings(){
 		{id:34, text:IDL("seSwichTextChr")}	
     ]
   };	  
-	//LAST 70
+	//LAST 71
 	
 	vkSetsType={
       "on"  :[IDL('on'),'y'],

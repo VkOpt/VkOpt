@@ -216,6 +216,10 @@ function vkStyles(){
 			#groups .clearFix {height: 100% !important;}":'')+"\
 	";//,, #left_ads
 
+   main_css+='\
+   .im_fixed_nav #stl_side{display:none !important;}\
+   ';
+   
 	//compact audio
 	if (CompactAu=='y')	main_css+="\
 		.audio .playline { padding-top: 0px !important;}\
