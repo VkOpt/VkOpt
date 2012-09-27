@@ -113,7 +113,8 @@ function vkStyles(){
 		.vk_profile_common_fr{width:236px;}\
 		.vk_profile_common_fr a{  margin: 0px;  padding: 1px;  display: inline-block; width:106px;  overflow:hidden; font-size:10px;}\
 		.vk_profile_common_fr a.vk_usermenu_btn{width:10px; padding:0px; font-size:10px;}\
-		/* avka_nav */\
+		.vk_profile_frinfo{   width:235px;   padding-bottom:2px;}\
+      /* avka_nav */\
 		.ui-corner-tl { -moz-border-radius-topleft: 6px; -webkit-border-top-left-radius: 6px; border-top-left-radius: 6px; }\
         .ui-corner-tr { -moz-border-radius-topright: 6px; -webkit-border-top-right-radius: 6px; border-top-right-radius: 6px; }\
         .ui-corner-bl { -moz-border-radius-bottomleft: 6px; -webkit-border-bottom-left-radius: 6px; border-bottom-left-radius: 6px; }\
@@ -185,6 +186,11 @@ function vkStyles(){
    #vk_stats_btn{position: absolute; float:left}\
    #vk_stats_btn .button_blue{position: absolute; right: 0px;}\
    #vk_stats_im_btn{margin-right:3px;}\
+   .vk_photo_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -29px; line-height: 11px; }\
+   .vk_msg_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -193px; line-height: 11px; }\
+   .vk_profile_links a{padding:3px;}\
+   .vk_profile_links a:hover{background-color:#E1E7ED;}\
+   .vk_profile_links{line-height:20px;}\
 	.lskey{padding-left: 5px; float:left; width:140px; overflow:hidden; height:20px; line-height:20px; font-weight:bold;}\
     .lsval{height:20px; overflow:hidden; line-height:20px;}\
     .lsrow{border:1px solid #FFF; border-bottom:1px solid #DDD;}\
@@ -277,6 +283,7 @@ function vkStyles(){
 		#mail_envelope .audio_title_wrap { width: 215px !important;}\
       .narrow_column .audio_title_wrap { width: 115px !important;}\
       #profile_audios .audio_title_wrap { width: auto;}\
+      .audios_module .audio .title_wrap { width: 318px !important;}\
       #vk_audio_fr_refresh{float:right; font-size:19px; border-left:1px solid #DDD; padding:0 5px;}\
 	';
    //video downloads styles
@@ -631,8 +638,6 @@ function vkMenu(){//vkExLeftMenu
   var exm=(getSet(12) == 'y')?true:false; //extended menu
   var nav=(ge('sideBar') || ge('side_bar')).getElementsByTagName('ol')[0];
   if (cfg > 0) nav.innerHTML=nav.innerHTML.replace(RegExp('(">)(\u041c\u043e\u0439|\u041c\u043e\u044f|\u041c\u043e\u0438|\u041c\u043e\u0457|\u041c\u0430\u044f|\u041c\u0430\u0435|\u041c\u043e\u0435|My) ','g'),"$1");
-  
-  
 
   var vkmenu_css1='\
          #nav a IMG, #side_bar ol a IMG{margin-right:3px; height:'+vkMenuIconSize+'px;}\
@@ -1205,7 +1210,9 @@ function UserOnlineStatus(status) {// ADD LAST STATUS
 	} else {
 		dApi.call("getProfiles",{ uid: remixmid(), fields:'online'},function(res) {	
 			if (res.response){
-				var st=res.response?res.response[0].online:null;
+				//res.response[0].online_mobile
+            //res.response[0].online_app
+            var st=res.response?res.response[0].online:null;
 				show_status(st);
 				vkCmd('user_online_status',res.response[0].online);// шлём полученный статус в остальные вкладки
 				//vklog('Online status >> [onStorage] ');
@@ -1241,7 +1248,7 @@ function vkGetCalendar(){
 }
 
 function vkGetCalendarInfo(callback){ //callback(month, year, events, holidays)    
-	AjGet('/al_events.php?act=calendar&al=1',function(r,t){
+	AjGet('/al_events.php?tab=calendar&al=1',function(r,t){//al_events.php?act=calendar&al=1
 		var res=t.split('initCalendar(')[1].split(');')[0];
 		//eval(callback+'('+res+')');
       var args=eval('['+res+']');

@@ -600,7 +600,8 @@ function vkInitSettings(){
       {id:49, text:IDL("seFavOn")},
       {id:50, text:IDL("seFavOnline")+'<span style="padding-left:10px;">'+vkCheckboxSetting(57,IDL("seOnRightPart"))+'</span>',info:'infoUseNetTrafic'},
       {id:51, text:IDL("seFavToTopIm")},
-      {id:52, text:IDL("seFaveOnline"),info:'infoUseNetTrafic'}
+      {id:52, text:IDL("seFaveOnline"),info:'infoUseNetTrafic'},
+      {id:72, text:IDL("seFriendCatsOnProfile")}
       //{id:65, text:IDL("seShowLastActivity"),info:'infoUseNetTrafic'}
     ],
 
@@ -663,7 +664,7 @@ function vkInitSettings(){
 		{id:34, text:IDL("seSwichTextChr")}	
     ]
   };	  
-	//LAST 71
+	//LAST 72
 	
 	vkSetsType={
       "on"  :[IDL('on'),'y'],

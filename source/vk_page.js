@@ -32,11 +32,20 @@ function vkProfilePage(){
    //if (getSet(65)=='y') vkShowLastActivity()
 	if (getSet(46) == 'n') vkFriends_get('online');
 	if (getSet(47) == 'n') vkFriends_get('common');
-   
+   if (getSet(72) == 'y') vkFrCatsOnProfile();
    vkAddCheckBox_OnlyForFriends();
 	vkHighlightGroups();
 }
 
+function vkFrCatsOnProfile(){
+   var el=ge('profile_am_subscribed');
+   if (!el || el.innerHTML.indexOf('section=list')!=-1) return;
+   vkFriendUserInLists(cur.oid,function(html,status){
+      if (html=='') return;
+      if (html=='' || !el || el.innerHTML.indexOf('section=list')!=-1) return;
+      el.innerHTML+='<br>[ '+html+' ]';
+   },true);
+}
 function vkAddCheckBox_OnlyForFriends(){
    if (cur.oid!=remixmid() || ge('friends_only') ) return;
    var p=ge('page_add_media');
@@ -153,9 +162,41 @@ function vkWallPhotosLinks(){
    }
 }
 
+function vkWallReply(post,toMsgId, toId, event, rf,v,replyName){
+      console.log(post, toMsgId);
+      var name=(replyName[1] || '').split(',')[0];
+      if ((v||'').indexOf('id'+toId)==-1 && !checkEvent(event)){
+         var new_val=(v?v+'\r\n':'');
+         if ((post || "").indexOf('topic')!=-1)
+            new_val+='[post'+toMsgId+'|'+name+'], ';
+         else
+            new_val+='[id'+toId+'|'+name+'], ';
+            
+         val(rf, new_val);
+         if (rf.autosize) 
+            rf.autosize.update();
+      }
+}
+
 function vkWall(){
 	Inj.End('FullWall.init','setTimeout("vkOnNewLocation();",2);');
+   if (getSet(71)=='y') 
+      Inj.Before('FullWall.replyTo','if (!v','vkWallReply(post,toMsgId, toId, event, rf,v,replyName); if(false) ');
 }
+
+/* PAGES.JS */
+function vkPage(){
+	/*if (!window.wall) return;
+	Inj.Before('wall.receive','var current','vkProcessNode(n);');
+	Inj.End('wall._repliesLoaded','vkProcessNode(r);');*/
+   
+   if (getSet(71)=='y') 
+      Inj.Before('wall.replyTo','if (!v','vkWallReply(post,toMsgId, toId, event, rf,v,replyName); if(false) ');
+   
+}
+
+
+
 
 function vkPollResults(post_id,pid){
    var tpl='\

@@ -864,32 +864,6 @@ function vkFcEvents(response){
 }
 
 
-/* PAGES.JS */
-function vkPage(){
-	/*if (!window.wall) return;
-	Inj.Before('wall.receive','var current','vkProcessNode(n);');
-	Inj.End('wall._repliesLoaded','vkProcessNode(r);');*/
-   
-   if (getSet(71)=='y') 
-      Inj.Before('wall.replyTo','if (!v','vkWallReply(post,toMsgId, toId, event, rf,v,replyName); if(false) ');
-   
-}
-
-function vkWallReply(post,toMsgId, toId, event, rf,v,replyName){
-      console.log(post, toMsgId);
-      var name=(replyName[1] || '').split(',')[0];
-      if ((v||'').indexOf('id'+toId)==-1 && !checkEvent(event)){
-         var new_val=(v?v+'\r\n':'');
-         if ((post || "").indexOf('topic')!=-1)
-            new_val+='[post'+toMsgId+'|'+name+'], ';
-         else
-            new_val+='[id'+toId+'|'+name+'], ';
-            
-         val(rf, new_val);
-         if (rf.autosize) 
-            rf.autosize.update();
-      }
-}
 
 /* FEED */
 function vkFeed(){

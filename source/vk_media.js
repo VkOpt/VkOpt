@@ -744,7 +744,7 @@ function vkGetYoutubeLinks(vid, callback) {
    
    XFR.post(url,{},function(t){   
       var obj=YTDataDecode(t);
-      //alert(JSON.Str(obj));
+      alert(JSON.Str(obj));
       var map=(obj.fmt_url_map || obj.url_encoded_fmt_stream_map);
       if (!map) return [];
       var links=[];
@@ -754,7 +754,7 @@ function vkGetYoutubeLinks(vid, callback) {
          var info=(map[i].type+'').split(';')[0]+' '+(obj.fmt_list[i]+'').split('/')[1];
          if (!format) vklog('<b>YT '+map[i].itag+'</b>: \n'+(map[i].stereo3d?'3D/':'')+info,1);
          format=(map[i].stereo3d?'3D/':'')+(format?format:info);
-         links.push([map[i].url+(obj.title?'&title='+encodeURIComponent(obj.title):''), format,info]);
+         links.push([map[i].url+'&signature='+map[i].sig+'&quality='+map[i].quality+(obj.title?'&title='+encodeURIComponent(obj.title):''), format,info]);
       }
       callback(links);
    });
