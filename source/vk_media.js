@@ -744,7 +744,7 @@ function vkGetYoutubeLinks(vid, callback) {
    
    XFR.post(url,{},function(t){   
       var obj=YTDataDecode(t);
-      alert(JSON.Str(obj));
+      //alert(JSON.Str(obj));
       var map=(obj.fmt_url_map || obj.url_encoded_fmt_stream_map);
       if (!map) return [];
       var links=[];
