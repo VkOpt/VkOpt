@@ -32,11 +32,20 @@ function vkProfilePage(){
    //if (getSet(65)=='y') vkShowLastActivity()
 	if (getSet(46) == 'n') vkFriends_get('online');
 	if (getSet(47) == 'n') vkFriends_get('common');
-   
+   if (getSet(72) == 'y') vkFrCatsOnProfile();
    vkAddCheckBox_OnlyForFriends();
 	vkHighlightGroups();
 }
 
+function vkFrCatsOnProfile(){
+   var el=ge('profile_am_subscribed');
+   if (!el || el.innerHTML.indexOf('section=list')!=-1) return;
+   vkFriendUserInLists(cur.oid,function(html,status){
+      if (html=='') return;
+      if (html=='' || !el || el.innerHTML.indexOf('section=list')!=-1) return;
+      el.innerHTML+='<br>[ '+html+' ]';
+   },true);
+}
 function vkAddCheckBox_OnlyForFriends(){
    if (cur.oid!=remixmid() || ge('friends_only') ) return;
    var p=ge('page_add_media');
@@ -153,10 +162,134 @@ function vkWallPhotosLinks(){
    }
 }
 
-function vkWall(){
-	Inj.End('FullWall.init','setTimeout("vkOnNewLocation();",2);');
+function vkWallReply(post,toMsgId, toId, event, rf,v,replyName){
+      console.log(post, toMsgId);
+      var name=(replyName[1] || '').split(',')[0];
+      if ((v||'').indexOf('id'+toId)==-1 && !checkEvent(event)){
+         var new_val=(v?v+'\r\n':'');
+         if ((post || "").indexOf('topic')!=-1)
+            new_val+='[post'+toMsgId+'|'+name+'], ';
+         else
+            
+            new_val+='['+(parseInt(toId)<0?'club':'id')+Math.abs(toId)+'|'+name+'], ';
+            
+         val(rf, new_val);
+         if (rf.autosize) 
+            rf.autosize.update();
+      }
 }
 
+function vkWall(){
+	Inj.End('FullWall.init','setTimeout("vkOnNewLocation();",2);');
+   if (getSet(71)=='y') 
+      Inj.Before('FullWall.replyTo','if (!v','vkWallReply(post,toMsgId, toId, event, rf,v,replyName); if(false) ');
+}
+
+/* PAGES.JS */
+function vkPage(){
+	/*if (!window.wall) return;
+	Inj.Before('wall.receive','var current','vkProcessNode(n);');
+	Inj.End('wall._repliesLoaded','vkProcessNode(r);');*/
+   
+   if (getSet(71)=='y') 
+      Inj.Before('wall.replyTo','if (!v','vkWallReply(post,toMsgId, toId, event, rf,v,replyName); if(false) ');
+   
+}
+
+
+
+
+function vkPollResults(post_id,pid){
+   var tpl='\
+       <tr>\
+         <td colspan="2" class="page_poll_text">%TEXT</td>\
+       </tr><tr>\
+         <td class="page_poll_row">\
+         <div class="page_poll_percent" style="width: %WIDTH%"></div><div class="page_poll_row_count">%COUNT</div>\
+         </td><td class="page_poll_row_percent ta_r"><nobr><b>%RATE%</b></nobr></td>\
+       </tr>\
+   '; 
+
+   var view=function(data){
+      var answer=data.answers; //answer[i].rate=12.9; answer[i].text="...."; answer[i].votes=150
+      var max=0;
+      for (var i=0; i<answer.length; i++){
+         max=Math.max(max,answer[i].rate);
+      }
+      
+      var html="";
+      for (var i=0; i<answer.length; i++){
+         var width=Math.round(answer[i].rate*100/max);
+         html+=tpl.replace(/%RATE/g,answer[i].rate).replace(/%TEXT/g,answer[i].text).replace(/%WIDTH/g,width).replace(/%COUNT/g,answer[i].votes);
+      }   
+      html='<table cellspacing="0" cellpadding="0" class="page_media_poll"><tbody>'+html+'</tbody></table>';
+      
+      html='\
+      <div class="page_media_poll_wrap">\
+         <div class="page_media_poll_title">'+data.question+'</div>\
+         <div class="page_media_poll">\
+         '+html+'\
+         </div>\
+      </div>';   
+      
+      var box=vkAlertBox(IDL('ViewResults'),html);   
+   };
+   
+   var code='\
+      var post=API.wall.getById({posts:"'+post_id+'"})[0];\
+      var attachments=post.attachments;\
+      var i=0;\
+      var b=attachments[i];\
+      var pid = 0;\
+      var oid = 0;\
+      var oid2 = 0;\
+      while(i<attachments.length){\
+         if (b.type=="poll"){\
+            pid=b.poll.poll_id;\
+            oid=post.copy_owner_id;\
+            oid2=post.to_id;\
+         };\
+         i = i + 1;\
+         b=attachments[i]; \
+      }\
+      return {oid:oid,oid2:oid2,pid:pid,p:post,poll1:API.polls.getById({owner_id:oid,poll_id:pid}),poll2:API.polls.getById({owner_id:oid2,poll_id:pid})};\
+      ';
+      
+   if (post_id && pid){
+      dApi.call('polls.getById',{owner_id:post_id,poll_id:pid},function(r){
+         var data=r.response;
+         view(data);
+      });
+   } else {
+      dApi.call('execute',{code:code},function(r){
+         var data=r.response;
+         view(data.poll1 || data.poll2);
+      });   
+   }
+   return false;
+}
+
+function vkPollResultsBtn(node){
+   var els=geByClass('page_media_poll',node);
+   for (var i=0; i<els.length; i++){
+      var p=els[i];
+      var el=geByClass('page_poll_options',p)[0];
+      var c=geByClass('page_poll_bottom',p)[0];//'page_poll_total'
+      
+      if (!el || !c) continue;
+      var id=(el.id || "").match(/(-?\d+)_(\d+)/);
+      if (!id) continue;
+      var oid=id[1];
+      id=id[0];
+      if (c.innerHTML.indexOf('vkPollResults')!=-1) continue;
+      c.insertBefore(vkCe('span',{"class":"divider fl_r"},"|"),c.firstChild);
+      c.insertBefore(vkCe('a',{
+                               "class":"fl_r",
+                               "href":"#",
+                               "onclick":"return vkPollResults('"+id+"');"
+                              },IDL('ViewResults')),c.firstChild);      
+   }
+}
 
 
 /* MAIN CODE */
@@ -348,16 +481,16 @@ function status_icq(node) { //add image-link 'check status in ICQ'
     
   if(icq) {	
 	var el=icq.parentNode.getElementsByTagName('div')[1];//geByClass('dataWrap')[a];
-    t=el.innerHTML;
-    t=t.replace(/\D+/g,'');
+    t=el.innerHTML || '';
+    t=t.replace(/\D+/g,'') || '';
     if(t.length)                                                                                                                                                   // http://kanicq.ru/invisible/favicon.ico
       el.innerHTML+=' <a href="http://kanicq.ru/invisible/'+t+'" title="'+IDL("CheckStatus")+'" target=new><img src="http://status.icq.com/online.gif?img=26&icq='+t+'&'+Math.floor(Math.random()*(100000))+'" alt="'+IDL("CheckStatus")+'"></a>';
   } 
   //*
   if(skype) {	
 	var el=skype.parentNode.getElementsByTagName('div')[1];
-    t=el.innerHTML;
-    t=t.match(/skype\:(.+)\?call/);
+    t=el.innerHTML || '';
+    t=t.match(/skype\:(.+)\?call/) || '';
     if(t.length)                                                                                                                                                   // http://kanicq.ru/invisible/favicon.ico
       el.innerHTML+='<img style="margin-bottom:-3px" src=" http://mystatus.skype.com/smallicon/'+t[1]+'?'+Math.floor(Math.random()*(100000))+'">';
   } //*/

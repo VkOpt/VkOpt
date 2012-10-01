@@ -170,7 +170,8 @@ function vkWallReply(post,toMsgId, toId, event, rf,v,replyName){
          if ((post || "").indexOf('topic')!=-1)
             new_val+='[post'+toMsgId+'|'+name+'], ';
          else
-            new_val+='[id'+toId+'|'+name+'], ';
+            
+            new_val+='['+(parseInt(toId)<0?'club':'id')+Math.abs(toId)+'|'+name+'], ';
             
          val(rf, new_val);
          if (rf.autosize) 

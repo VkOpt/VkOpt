@@ -1364,13 +1364,18 @@ var dApi = {
    Auth: function(callback) {
       var appId=dApi.API_ID;
 		var settings=dApi.SETTINGS;// scope=notify,friends,photos,audio,video,docs,notes,pages,status,wall,groups,messages,stats,nohttps
-      var auth_url='http://oauth.vk.com/authorize?client_id=' + appId + 
+      
+      var auth_url=(location.protocol?location.protocol:'http:')+'//oauth.vk.com/authorize?client_id=' + appId + 
                                                 '&scope=' + settings + 
                                                 '&redirect_uri=http://oauth.vk.com/blank.html'+
                                                 '&display=popup'+
                                                 '&response_type=token';
       XFR.post(auth_url,{},function(t){
-         var g=t.match(/https:\/\/oauth\.vk\.com\/grant_access\?[^"]+&response_type=token&state=&token_type=0/);
+         //var g=t.match(/https:\/\/oauth\.vk\.com\/grant_access\?[^"]+&response_type=token&state=&token_type=0/);
+         //console.log('API auth_1',t);
+         var g=t.match(/https:\/\/[^"]+\.vk\.com\/[^"]+grant_access[^"]+/g);
+         g = (g && g[1] && g[1].indexOf('cancel')==-1)?g[1]:(g || [])[0];
+                       // https://login.vk.com/?act=grant_access&client_id=2168679&settings=277758&redirect_uri=http%3A%2F%2Foauth.vk.com%2Fblank.html&response_type=token&direct_hash=f61611898e7ce79d45&token_type=0&state=&display=popup&ip_h=79ac2b5b3e5cbd2cc4&hash=8a38f915a7d7143c7c
          if (g){
             console.log('VkOpt API Auth :',g);
             dApi.auth_frame = ce("iframe", {
@@ -1418,9 +1423,10 @@ var dApi = {
 	
 		}
 		var oncheck=function(r,t) {
-			if (t.indexOf('Login failure')!=-1){
+			//console.log('api oncheck setts',r,t);
+         if (t.indexOf('Login failure')!=-1){
 				vklog('API failed to log on. ');
-			} else if (t.indexOf('Login success')!=-1){	
+			} else if (t=="" || t.indexOf('Login success')!=-1){	
 				if (dApi.aBox) {
 					dApi.aBox.hide();
 					dApi.aBox=null;
@@ -1428,6 +1434,7 @@ var dApi = {
 				AjPost('/login.php?app=' + dApi.API_ID + '&layout=popup&type=browser&settings='+dApi.NOT_USED_SETTING,{},onlogin);					
 			}	
 		}
+      //console.log('api check setts');
 		AjPost('/login.php?app=' + dApi.API_ID + '&layout=popup&type=browser&settings=' + dApi.SETTINGS,{},oncheck)
 	},
 	show_error:function(r){
@@ -1453,6 +1460,7 @@ var dApi = {
 		var apiReAuth=function(){
 			if (!remixmid()) {
             vklog('API Error. user id not found');
+            console.log('API Error. user id not found');
             return;
          }
          dApi.Auth(function(){
@@ -1471,6 +1479,7 @@ var dApi = {
 			apiReAuth();		
 			return;
 		}
+      //console.log('API mid',remixmid());
       if (remixmid()!='' && mid!=remixmid()){
          apiReAuth();		
          return;
@@ -1711,9 +1720,10 @@ function utf8_encode ( str_data ) {
 
 function remixsid() {return vkgetCookie('remixsid');}
 function remixmid() {
-  if (vk.id) return String(vk.id);
+  if (window.vk && vk.id) return String(vk.id);
   var sidebar=(ge('sideBar') || ge('side_bar'));
-  if (typeof im!='undefined') return im.id;
+  if (window.im) return im.id;
+  var tmp=null;
   if (sidebar){ 
 	tmp=sidebar.innerHTML.match(/albums(\d+)/);
 	tmp=tmp?tmp[1]:'';
@@ -1726,7 +1736,7 @@ var XFR={
 	reqs:0,
 	callbacks:[],
 	post:function(url,data,callback,only_head){
-		var domain='http://'+url.split('/')[2];
+		var domain=(location.protocol?location.protocol+'//':'http://')+url.split('/')[2];
       if (domain.indexOf('youtube.com')!=-1) domain+='/embed/';
       if (domain.indexOf('player.vimeo.com')!=-1) domain+='/video/';
 		data=data || {};
@@ -2511,7 +2521,15 @@ if (!window.geByTag1) geByTag1=function(searchTag, node) {return geByTag(searchT
 var dloc=document.location.href.split('/')[2] || '';
 
 setTimeout(dApi.Check,10);
-if(!(dloc.indexOf('vk.com')!=-1 || dloc.indexOf('vkontakte.ru')!=-1)) {setTimeout(XFR.check,800);}
+//if(!(dloc.indexOf('vk.com')!=-1 || dloc.indexOf('vkontakte.ru')!=-1)) {
+(function(){
+   var xfr_delay=800;
+   if (dloc.indexOf('vk.com')!=-1 || dloc.indexOf('vkontakte.ru')!=-1 || dloc.indexOf('userapi.com')!=-1) xfr_delay=0; 
+   setTimeout(XFR.check,xfr_delay);
+})();
+
+
+//}
 /*if(!(dloc.indexOf('vk.com')!=-1 || dloc.indexOf('vkontakte.ru')!=-1)) {*/setTimeout(XFR2.check,800);//}
 
 if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;

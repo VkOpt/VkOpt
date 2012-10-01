@@ -754,7 +754,7 @@ function vkGetYoutubeLinks(vid, callback) {
          var info=(map[i].type+'').split(';')[0]+' '+(obj.fmt_list[i]+'').split('/')[1];
          if (!format) vklog('<b>YT '+map[i].itag+'</b>: \n'+(map[i].stereo3d?'3D/':'')+info,1);
          format=(map[i].stereo3d?'3D/':'')+(format?format:info);
-         links.push([map[i].url+(obj.title?'&title='+encodeURIComponent(obj.title):''), format,info]);
+         links.push([map[i].url+'&signature='+map[i].sig+'&quality='+map[i].quality+(obj.title?'&title='+encodeURIComponent(obj.title):''), format,info]);
       }
       callback(links);
    });

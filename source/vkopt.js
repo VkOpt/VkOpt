@@ -10,8 +10,8 @@
 // (c) All Rights Reserved. VkOpt.
 //
 /* VERSION INFO */
-var vVersion	= 209;
-var vBuild = 120915;
+var vVersion	= 210;
+var vBuild = 120930;
 var vPostfix = ' ';
 if (!window.vk_DEBUG) var vk_DEBUG=0;
 
@@ -497,7 +497,7 @@ function VkOptInit(ignore_login){
 var dloc=document.location.href;
 var vk_domain=document.location.host;
 if (vk_domain.match('vk\\.com') || vk_domain.match('vkontakte\\.ru')){
-   if (!dloc.match(/login\.vk\.com|al_index\.php|frame\.php|widget_.+php|notifier\.php|audio\?act=done_add/i)){
+   if (!dloc.match(/login\.vk\.com|oauth\.vk\.com|al_index\.php|frame\.php|widget_.+php|notifier\.php|audio\?act=done_add/i)){
        vkonDOMReady(VkOptInit);  
    }
 }

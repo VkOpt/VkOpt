@@ -4,8 +4,8 @@
       {
         "js": ["vkinit.js","includes/vk_skinman.js"],
         "run_at": "document_start",
-        "matches": ["http://vk.com/*","http://*.vk.com/*","http://vkontakte.ru/*","http://*.vkontakte.ru/*",
-                    "http://userapi.com/*","http://*.userapi.com/*",
+        "matches": ["*://vk.com/*","*://*.vk.com/*","*://vkontakte.ru/*","*://*.vkontakte.ru/*",
+                    "*://userapi.com/*","*://*.userapi.com/*",
                     "http://durov.ru/*",
                     "http://youtube.com/*","http://*.youtube.com/*",
                     "http://vimeo.com/*","http://*.vimeo.com/*"],
@@ -27,10 +27,10 @@
       "includes/vkopt.js"
    ],
   "name": "VkOpt",
-  "version": "2.0.9.1",
+  "version": "2.1.0.0",
   "description": "Добавление множества функций, упрощающих жизнь ВКонтакте.ру. Official site and support: http://vkopt.net/",
   "icons": { "32":"img/bk_n_32.png",
              "48": "img/bk_n_48.png",
              "128": "img/bk_n_128.png" },
-  "permissions": ["http://*/*"]
+  "permissions": ["http://*/*","*://vk.com/*","*://*.vk.com/*","*://userapi.com/*","*://*.userapi.com/*"]
 }

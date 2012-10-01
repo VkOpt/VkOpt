@@ -347,7 +347,8 @@ function ExUserItems(id,el){
 		uitems+=mkExItem(0,'<a href="/wall'+cur.oid+'?with=%uid" onclick="return nav.go(this, event)">'+IDL('TetAtet')+'</a>');
 	}
 	if (uitems!='') uitems+='<li><div class="vk_user_menu_divider"></div></li>';
-	var fl_pr='<a href="#" onclick_="return false;" onclick="vkPopupAvatar(\'%uid\',this,true); return false;" onmouseout="vkHidePhoto();" class="fl_r">&gt;</a>';
+
+	var fl_pr='<a href="#" onclick_="return false;" onmouseover_="vkPopupAvatar(\'%uid\',this);" onclick="vkPopupAvatar(\'%uid\',this,true); return false;" onmouseout="vkHidePhoto();" class="fl_r">&gt;</a>';
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,fl_pr+'<a href="/id%uid" onclick="return nav.go(this, event);">'+IDL('Page')+'</a>'):i++;// onclick="AlternativeProfile(\'%uid\'); return false;"
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="#" class="fl_r" onclick="TopSearch.writeBox(%uid); return false;">'+IDL("Chat")+'</a><a class="fl_r" href="/im?sel=%uid" onclick="return nav.go(this, event);">'+IDL('Dialog')+'</a><a href="/write%uid" onclick="return showWriteMessageBox(event, %uid);">'+IDL('txMessage')+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/wall%uid" onclick="return nav.go(this, event);">'+IDL("clWa")+'</a>'):i++;
@@ -566,12 +567,17 @@ function vkShowProfile(el,html,uid,right){
             var body = document.getElementsByTagName('body')[0];
             div.innerHTML = ht;
             body.appendChild(div);
-    }
+   }
 	var p = ge('vkbigPhoto');
 	p.innerHTML=html;
 	var pb=ge('vk_profile_block');
 	vkProfileToggle(true);//check expland
 	
+   vkFriendUserInLists(uid,function(html,status){
+      if (!ge('vkfrinfo'+uid)) return;
+      ge('vkfrinfo'+uid).innerHTML=html;
+   });
+   
 	if (allowShowPhoto) fadeIn('vkbigPhoto');//show('vkbigPhoto');
       var xy=getXY(el); 
       var height=getScrollTop()+getScrH();    
@@ -664,7 +670,12 @@ var VK_PROFILE_TPL='\
 		  <div class="vk_profile_info_block">\
 			%PROFILE_INFO%\
 			<div>%RATE%</div>\
-			<div>%COMMON_FR%</div>\
+         <div class="vk_profile_links">\
+            <a href="/albums%UID%" onclick="return nav.change({z: \'albums%UID%\'}, event);"><span class="vk_photo_icon"></span></a>\
+            <a href="/write%UID%" onclick="return showWriteMessageBox(event, %UID%);"><span class="vk_msg_icon"></span></a>\
+			</div>\
+         <div id="vkfrinfo%UID%" class="vk_profile_frinfo"></div>\
+         <div>%COMMON_FR%</div>\
 		  </div>\
 		 <!--<div style="background:#DDD; padding:30px; text-align:center; color:#888; font-weight:bold; font-size:30pt; margin-top:10px;">WTF?</div>-->\
 		</div>\
@@ -722,8 +733,31 @@ function vkGetProfile(uid,callback,no_switch_button){
 		//var activity=r.response.activity;
 		var country=r.response.country;
 		var city=r.response.city;
-
+      //console.log(profile);
+      /*
+         // x[0].uid, x[0].friend_status, x[0].request_message
+         x[0].friend_status: 
+               0 Ц пользователь не €вл€етс€ другом, 
+               1 Ц отправлена за€вка/подписка пользователю, 
+               2 Ц имеетс€ вход€ща€ за€вка/подписка от пользовател€, 
+               3 Ц пользователь €вл€етс€ другом    
          
+               
+         var uid='+uid+';
+         var x=API.friends.areFriends({uids:uid});
+         if (x[0].friend_status==3){
+            var lists=API.friends.getLists();
+            var friends=API.friends.get({fields:'uid,lists'});
+            var i=0;
+            var user_in_lists=null;
+            while (i<friends.length)
+               if (friends[i].uid==uid){
+                     user_in_lists=friends[i].lists
+               }
+            
+         }
+         return {uid:uid,in_lists:user_in_lists,lists:lists}
+      */   
 		var common='';
 		
 		var username='<a href="/id'+uid+'" onclick="return nav.go(this, event);">'+profile.first_name+' '+profile.nickname+' '+profile.last_name+'</a>';
@@ -780,8 +814,8 @@ function vkGetProfile(uid,callback,no_switch_button){
 					  <div class="labeled fl_l">'+info_labels[i][0]+'</div>\n\
 					</div>';
 		var html=VK_PROFILE_TPL.replace("%AVA_SRC%",ava_url)
-							   .replace("%UID%",uid)
-							   .replace("%USERNAME%",username)
+							   .replace(/%UID%/g,uid)
+							   .replace(/%USERNAME%/g,username)
 							   .replace("%ACTIVITY%",profile.activity)
 							   .replace("%RATE%",rate)
 							   .replace("%ONLINE%",online)
@@ -798,7 +832,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 	  else {
 		  var code = '';
         //code  += 'var activity=API.status.get({uid:"'+uid+'"});';
-		  code += 'var profile=API.getProfiles({uids:"'+uid+'",fields:"relation,sex,nickname,activity,photo_big,online,last_seen,rate,bdate,city,country,contacts,education,can_post,can_write_private_message"})[0];';
+		  code += 'var profile=API.getProfiles({uids:"'+uid+'",fields:"relation,sex,nickname,activity,photo_big,online,last_seen,rate,bdate,city,country,contacts,education,can_post,can_write_private_message,lists"})[0];';
 		  code += 'var commonfr=API.friends.getMutual({target_uid:"'+uid+'"});';
 		  code += 'var commons=API.getProfiles({uids:commonfr,fields:"online"});';
 		  code += 'return {';
@@ -816,6 +850,72 @@ function vkGetProfile(uid,callback,no_switch_button){
 			MakeProfile(r);
 		  });
 	  }
+}
+
+function vkFriendUserInLists(uid,callback,only_cats){
+      /*
+      // x[0].uid, x[0].friend_status, x[0].request_message
+         x[0].friend_status: 
+               0 Ц пользователь не €вл€етс€ другом, 
+               1 Ц отправлена за€вка/подписка пользователю, 
+               2 Ц имеетс€ вход€ща€ за€вка/подписка от пользовател€, 
+               3 Ц пользователь €вл€етс€ другом    
+         */
+      var code='\
+         var uid='+uid+';\
+         var x=API.friends.areFriends({uids:uid});\
+         var user_in_lists=null;\
+         var lists=null;\
+         if (x[0].friend_status==3){\
+            lists=API.friends.getLists();\
+            var friends=API.friends.get({fields:"uid,lists"});\
+            var i=0;\
+            \
+            while (i<friends.length){\
+               if (friends[i].uid==uid){\
+                     user_in_lists=friends[i].lists;\
+               }\
+               i = i+1;\
+            }\
+         }\
+         return {uid:uid,status:x[0].friend_status,in_lists:user_in_lists,lists:lists};\
+      ';
+      dApi.call('execute',{code:code},function(r){
+         var x=r.response;
+         var cats=[];
+         var html='';
+         if (x.in_lists && x.lists){
+            var l={};
+            for (var i=0; i<x.lists.length; i++)
+               l[x.lists[i].lid]=x.lists[i].name;
+               
+            for (var i=0; i<x.in_lists.length; i++){
+               var lid=x.in_lists[i];
+               cats.push('<a href="/friends?section=list'+lid+'" onclick="return nav.go(this,event);">'+l[lid]+'</a>'); 
+            }
+         }
+         cats=cats.join(', ');
+
+         switch(x.status){
+            case 0: 
+               html=IDL('NotInFriends');
+               break;
+            case 1:
+               html=IDL('OutFriendRequests');
+               break; 
+            case 2:
+               html=IDL('FriendRequests');
+               break; 
+            case 3:
+               html=IDL('UserInFriend')+''+(cats!=''?': ':'')+cats;
+               break;   
+         }
+         callback(only_cats?cats:html,x.status);
+         //console.log(html);
+         /*
+         x.status
+         x.uid*/
+      });
 }
 
 /////////////////
