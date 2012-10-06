@@ -267,6 +267,7 @@ function vkStyles(){
       #vk_album_info h4{cursor:pointer; min-height:30px; padding:3px 10px}\
       #vk_album_info h4:hover{background-color: rgba(219, 227, 235, 0.5);}\
       #vk_album_info h4 img{max-width:30px;max-height:30px; padding-right:3px;}\
+      #vk_album_info .bio{padding:4px;}\
       .vk_album_thumb{padding:3px;}\
       .vk_album_tracks ul{list-style-type: disc; margin:0px; padding:0px; padding-left:4px; margin-left: 17px; color:#AAA;}\
       \

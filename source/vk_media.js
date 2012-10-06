@@ -1633,6 +1633,7 @@ vkLastFM={
       fm.lastfm = new LastFM({
 					apiKey: fm.api_key,
 					apiSecret: fm.api_secret,
+               apiUrl: location.protocol+'//ws.audioscrobbler.com/2.0/',
 					debug: fm.debug
 				});
       fm.listen_storage();
@@ -2117,21 +2118,32 @@ function vkViewAlbumInfo(artist,track){
          data.artist,
          data.name,
          data.releasedate,
-         data.image[2]['#text'],
+         data.image[1]['#text'],
          tracks
       );
-      for (var i=0; i<tracks.length;i++){
-         var track_name=data.artist+' - '+tracks[i];
-         html+='<li><a href="/search?c[q]='+encodeURIComponent(track_name)+'&c[section]=audio" '+
-            'onclick="if (checkEvent(event)) { event.cancelBubble = true; return}; '+
-               'Audio.selectPerformer(event, \''+track_name.replace(/'/,'\\\'')+'\'); return false">'+tracks[i]+'</a></li>';
+      if (tracks){
+         for (var i=0; i<tracks.length;i++){
+            var track_name=data.artist+' - '+tracks[i];
+            html+='<li><a href="/search?c[q]='+encodeURIComponent(track_name)+'&c[section]=audio" '+
+               'onclick="if (checkEvent(event)) { event.cancelBubble = true; return}; '+
+                  'Audio.selectPerformer(event, \''+track_name.replace(/'/,'\\\'')+'\'); return false">'+tracks[i]+'</a></li>';
+         }
+         html='<ul>'+html+'</ul>';
       }
-      html='<ul>'+html+'</ul>';
-      html=preview_album_info_tpl.replace(/%ALBUM%/g,IDL('Album'))
-                                 .replace(/%NAME%/g,data.name+' ('+(new Date(data.releasedate)).getFullYear()+')')
-                                 .replace(/%ARTIST%/g,data.artist)
-                                 .replace(/%IMG%/g,data.image[1]['#text'] || '/images/question_c.gif')
-                                 .replace(/%TRACKS%/g,html);
+      if (data.act!='artist_info'){
+         var year=(new Date(data.releasedate)).getFullYear();
+         html=preview_album_info_tpl.replace(/%ALBUM%/g,IDL('Album'))
+                                    .replace(/%NAME%/g,data.name+(year?' ('+year+')':''))
+                                    .replace(/%ARTIST%/g,data.artist)
+                                    .replace(/%IMG%/g,data.image[1]['#text'] || '/images/question_c.gif')
+                                    .replace(/%TRACKS%/g,html);
+      } else {
+         html=preview_album_info_tpl.replace(/%ALBUM%/g,IDL('Album'))
+                                    .replace(/%NAME%/g,'')
+                                    .replace(/%ARTIST%/g,'<a href="'+data.url+'" target="_blank">'+data.name+'</a>')
+                                    .replace(/%IMG%/g,data.image[1]['#text'] || '/images/question_c.gif')
+                                    .replace(/%TRACKS%/g,(data.bio.summary?'<div class="bio">'+data.bio.summary+'</div>':''));      
+      }
       ge('vk_album_info').innerHTML=html;
    });
 }
@@ -2157,6 +2169,7 @@ function vkGetAlbumInfo(artist,track,callback){
             autocorrect: 1
          }, {
             success: function(data) {
+                  console.log(data);
                   if (data.track.album) {
                      vkLastFM.lastfm.album.getInfo({
                         mbid: data.track.album.mbid,
@@ -2187,7 +2200,22 @@ function vkGetAlbumInfo(artist,track,callback){
                            /*console.log(data)*/
                         }
                      });
-                  } else console.log('no album info')
+                  } else if (data.track.artist && data.track.artist.mbid){
+                     console.log('no album info... load artist info');
+                     vkLastFM.lastfm.artist.getInfo({
+                        mbid: data.track.artist.mbid,
+                        lang:'ru'
+                     }, {
+                        success: function(data) {
+                          data=data.artist;
+                          data.act='artist_info';
+                          console.log(data);
+                          callback(data,null);
+                          
+                        }
+                     });
+                  }
+                  else console.log('no info')
                }, 
             error: function(code, message) {
                   console.log(code, message)
