@@ -32,6 +32,7 @@ function vkStyles(){
 	var MoreDarkPV=getSet(4);
 	var CompactFave=getSet(17);
 	var RemoveAd=getSet(21);
+   
    var ShowAllTime=getSet(56);
 	var NotHideSugFr= (getSet(44)=='y');
    var ShowGroupNews=getSet(59);
@@ -215,7 +216,7 @@ function vkStyles(){
 	.vk_popupmenu ul li a{display:block; padding:2px 5px;}\
 	.vk_popupmenu ul li a:hover{background:#E1E7ED; text-decoration:none;}\
    .vk_tt_links_list a{display:block; padding:2px 1px;}\
-	"+(RemoveAd=='y'?".ad_box,.ad_help_link, .ad_help_link_new, .ad_box_new, #ad_help_link_new {display: none !important;}\
+	"+(RemoveAd=='y'?".ad_box,.ad_help_link, .ad_help_link_new, .ad_box_new, #ad_help_link_new, #left_ads {display: none !important;}\
 			"+(NotHideSugFr?'.ad_box_friend{display: block !important;} .ad_box_friend + .ad_box_new{display:block !important;}':'')+"\
 			#groups .clearFix {display: block !important;} \
 			#sideBar a[href*=\"help.php\"] {display: none !important;} \
@@ -262,6 +263,13 @@ function vkStyles(){
          border-radius:3px;\
          width: 16px !important;\
       }\
+      #vk_album_info {margin-left: -10px; margin-right: -10px;}\
+      #vk_album_info h4{cursor:pointer; min-height:30px; padding:3px 10px}\
+      #vk_album_info h4:hover{background-color: rgba(219, 227, 235, 0.5);}\
+      #vk_album_info h4 img{max-width:30px;max-height:30px; padding-right:3px;}\
+      .vk_album_thumb{padding:3px;}\
+      .vk_album_tracks ul{list-style-type: disc; margin:0px; padding:0px; padding-left:4px; margin-left: 17px; color:#AAA;}\
+      \
       /* Display full audio names*/\
       .audio .title_wrap{white-space: normal !important; width: 245px; !important; }\
       .audio .title_wrap b{white-space: normal !important; display: inline !important;}\

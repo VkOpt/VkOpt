@@ -734,15 +734,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 		var country=r.response.country;
 		var city=r.response.city;
       //console.log(profile);
-      /*
-         // x[0].uid, x[0].friend_status, x[0].request_message
-         x[0].friend_status: 
-               0 Ц пользователь не €вл€етс€ другом, 
-               1 Ц отправлена за€вка/подписка пользователю, 
-               2 Ц имеетс€ вход€ща€ за€вка/подписка от пользовател€, 
-               3 Ц пользователь €вл€етс€ другом    
-         
-               
+      /*    
          var uid='+uid+';
          var x=API.friends.areFriends({uids:uid});
          if (x[0].friend_status==3){
@@ -853,14 +845,6 @@ function vkGetProfile(uid,callback,no_switch_button){
 }
 
 function vkFriendUserInLists(uid,callback,only_cats){
-      /*
-      // x[0].uid, x[0].friend_status, x[0].request_message
-         x[0].friend_status: 
-               0 Ц пользователь не €вл€етс€ другом, 
-               1 Ц отправлена за€вка/подписка пользователю, 
-               2 Ц имеетс€ вход€ща€ за€вка/подписка от пользовател€, 
-               3 Ц пользователь €вл€етс€ другом    
-         */
       var code='\
          var uid='+uid+';\
          var x=API.friends.areFriends({uids:uid});\
@@ -1542,7 +1526,8 @@ function vkFrGenNotInListsCat(){
    var data=cur.friendsList['all'];
    var list=[];
    for (var i=0; i<data.length;i++)
-      if (data[i][6]=='1') list.push(data[i]);
+      if (data[i][6]=='1') 
+         list.push(data[i]);
    cur.friendsList['not_in_list']=list;
 }
 function vkFrShowNotInList(){

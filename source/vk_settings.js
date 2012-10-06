@@ -12,6 +12,7 @@
 //
 
 function InstallRelease(){
+  if (!window.vk || !vk.id) return;
   var err=[];
   if (window.IDNamesInColsV || window.IDEnterGroup || window.sync_plctrl_timeout || window.SyncPctrls || window.vk100Photos || 
       window.IDNewsObzor || window.AjMsgFormTo || window.IDAddFriend || window.IDAdmDelTopic || window.IDpostMatch || window.IDAppsProf)
@@ -575,11 +576,13 @@ function vkInitSettings(){
     Media:[
       {id:0,  text:IDL("seLinkAu")},
       {id:1,  text:IDL("seAudioDownloadName")},
-      {id:43, text:IDL("seAudioSize")},
+      
       {id:2,  text:IDL("seLinkVi")},
       {id:66, text:IDL("seVidDownloadLinks")},
       
-      {id:7,  text:IDL("seScroolPhoto")}
+      {id:7,  text:IDL("seScroolPhoto")},
+      {id:73, text:IDL("seLoadAudioAlbumInfo")},
+      {id:43, text:IDL("seAudioSize")}
     ],
     Users:[
       {id:10, text:IDL("seExUserMenu")+'<br><a href="#" onclick="toggle(\'vkExUMenuCFG\'); return false;">[<b> '+IDL("Settings")+' </b>]</a><span id="vkExUMenuCFG" style="display:none">'+GetUserMenuSett()+'</span>'},
@@ -664,7 +667,7 @@ function vkInitSettings(){
 		{id:34, text:IDL("seSwichTextChr")}	
     ]
   };	  
-	//LAST 72
+	//LAST 73
 	
 	vkSetsType={
       "on"  :[IDL('on'),'y'],
