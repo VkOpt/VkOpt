@@ -2192,6 +2192,12 @@ function vkShowNotify(params){
 
 //*
 _vk_notifiers={};
+function vkHideEvent(id){
+   if (_vk_notifiers[id]){
+      Notifier.lcSend('hide', {event_id: id+_vk_notifiers[id]});
+      Notifier.onEventHide(id+_vk_notifiers[id]);
+   }
+}
 function vkShowEvent(obj){ // vkShowEvent({id:'vk_typing_123',title:'%USERNAME%', text:'Typing...',author_photo:'http://cs9994.userapi.com/u39226536/e_62b2fd31.jpg'})
    obj=obj || {};
    var vk_nf_id=unixtime()+vkRand();

@@ -715,7 +715,7 @@ function vkImEvents(response){
             msg_id = intval(update[1]),// UID!!!!!! copypaste >_<
             flags = intval(update[2]),
             peer = intval(update[3]);
-
+         console.log(code,msg_id,peer,update);
         if (code == 61 || code == 62) { // peer or chat peer is typing
           vkImTypingEvent(msg_id);
           /*
@@ -725,20 +725,39 @@ function vkImEvents(response){
             IM.onTyping(msg_id);
           }*/
         }
+        if (code == 4) {
+          vkImTypingEvent(msg_id,true);
+        }
 
       }
    }
 }
 
 _vk_im_typings={};
-function vkImTypingEvent(uid){
+function vkImTypingEvent(uid,need_close){
    if (getSet(68)=='n') return;
    
    var NOTIFY_TIMEOUT= 15000; // 15sec
    
+   if (need_close){
+      vkHideEvent('vk_typing_'+uid);
+      return;
+   }
+   
+   _vk_im_typings=JSON.parse(localStorage['vk_typing_notify'] || '{}');
+   
+   
    if (_vk_im_typings[uid] && (_vk_im_typings[uid]+NOTIFY_TIMEOUT)>vkNow())
       return;
    _vk_im_typings[uid]=vkNow();
+   
+   // UPDATE INFO
+   var new_to_store={}
+   for (var key in _vk_im_typings){
+      if ((_vk_im_typings[uid]+NOTIFY_TIMEOUT)>vkNow())
+         new_to_store[key]=_vk_im_typings[key];
+   }
+   localStorage['vk_typing_notify']=JSON.stringify(new_to_store);
    
    //if (cur.peer!=uid)
    setTimeout(function(){
@@ -852,6 +871,7 @@ function vkFcEvents(response){
          evVer = ev[0],
          evType = ev[1],
          peer = ev[2];
+         console.log('fc:',evType,peer,ev);
       if (evType=='typing' && peer) {
          var uid = peer<2e9?peer:ev[3];
          vkImTypingEvent(uid);
@@ -859,6 +879,10 @@ function vkFcEvents(response){
             Array ["23", "typing", "13391307", "1", "10116"] // dialog
             Array ["23", "typing", "2000000003", "13391307", "1", "10116"] // Chat!
          */
+      }
+      if (evType=='new' && peer) {
+         var uid = peer<2e9?peer:ev[3];
+         vkImTypingEvent(uid,true);
       }
    });   
 }
