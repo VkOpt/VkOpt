@@ -418,7 +418,7 @@ var vkMozExtension = {
 		}
 		return res;
 	}
-   function vkCleanFileName(s){   return s.replace(/[\\\/\:\*\?\"\<\>\|]/g,'_').substr(0,200);   }
+   function vkCleanFileName(s){   return trim(s.replace(/[\\\/\:\*\?\"\<\>\|]/g,'_').substr(0,200));   }
    function vkEncodeFileName(s){
       // [^A-Za-zА-Яа-я]
       return s.replace(/([^A-Za-z\u0410-\u042f\u0430-\u044f])/g,function (str, p1, offset, s) {return encodeURIComponent(p1) });
@@ -2356,6 +2356,18 @@ vk_plugins={
 		}	
 		return a;
 	},
+   videos_actions:function(oid,aid){
+		var a=[];
+		for (var key in vkopt_plugins){
+			var p=vkopt_plugins[key];
+			if (p.videosActions) {
+				var tstart=unixtime();
+				a=a.concat(isFunction(p.videosActions)?p.videosActions(oid,aid):p.videosActions);
+				vklog('Plugin "'+key+'" Videos actions items: '+(unixtime()-tstart)+'ms');
+			}
+		}	
+		return a;   
+   },
 	video_links:function(video_data,links_array){
 		var r='';
 		for (var key in vkopt_plugins){
@@ -2425,6 +2437,7 @@ if (!window.vkopt_plugins) vkopt_plugins={};
       processNode:      null,                    // function(node);
       pvActions:        null,                    // function(photo_data); ||  String    //PHOTOVIEWER_ACTIONS
       albumActions:     null,                    // function(oid,aid); || Array with items. Example  [{l:'Link1', onClick:Link1Func},{l:'Link2', onClick:Link2Func}]
+      videosActions:    null,                    // see "albumActions"
       vidActLinks:      null,                    // function(video_data,links_array); ||  String.   video_data may contain iframe url
       onResponseAnswer: null,                    // function(answer,url,params); 'answer' is array. modify only array items
       UserMenuItems:    null                     // function(uid) || string

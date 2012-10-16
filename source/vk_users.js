@@ -1138,6 +1138,7 @@ function vkFriendsIdsGet(callback){
 function vkFriendsBySex(add_link){
 	if (add_link  && !ge('section_slists')){
 		var ref=ge("section_suggestions");
+      if (!ref) return;
 		var sec=vkCe('a',{href:'#', onclick:"vkFriendsBySex();return false;",id:'section_slists',"class":"side_filter"},IDL('FrSexToLists'));
 		ref.parentNode.insertBefore(sec, ref.nextSibling);//
 		return;

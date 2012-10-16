@@ -353,6 +353,7 @@ function vkVideoPage(){
          Inj.After('cur.videoTpl','sign,','vkVidGetLinkBtn(v),');// or move this to 'vkInj'?
       }
    }
+   vkVideoAddOpsBtn();
    vkVideoNullAlbum();
 }
 function vkVideoEditPage(){
@@ -431,6 +432,91 @@ function vkVideoViewer(){
 	if (getSet(2)=='y') Inj.End('videoview.showVideo','setTimeout(vkVidLinks,0);');//Inj.After('videoview.showVideo','innerHTML = info;','setTimeout(vkVidLinks,0);');
 	videoview.enabledResize=function(){return true;}
 }
+
+function vkVideShowAdder(){
+      var els=geByClass('vk_vid_add_hidden');
+      for (var i=els.length-1;i>=0;i--){
+         removeClass(els[i],'vk_vid_add_hidden');
+         window.vk_vid_list_adder=true;
+      }
+}
+var _vk_vid_adm_gr=null;
+var _vk_vid_add_box=null;
+function vkVidAddToGroup(oid,vid,to_gid){
+      if (to_gid){
+         if (_vk_vid_add_box) _vk_vid_add_box.hide();
+         var _vid='http://vk.com/video'+oid+'_'+vid;
+         AjPost('al_search.php',{al:1,"c[q]":_vid,"c[section]":"video","c[sort]":2,"gid":to_gid,"no_adult":0},function(r,t){
+             var params=t.match(/\{act:'a_add'[^\}]+\}/);
+             if (params){
+                params=eval('('+params[0]+')');
+                ajax.post('al_video.php', params, {onDone: function(label) {
+                  //vkMsg('Ololo');
+                  label=label.replace(/color\:\s*#[A-Z0-9]+;?/i,"");
+                  //alert(label);
+                  vkMsg('<b>'+label+'</b><br>'+_vid+' -> club'+to_gid);
+                }});     
+             } else {
+               //document.title('error')
+               alert(_vid);
+             }     
+         });       
+         return false;
+      }
+      
+      var show_box=function(){
+         html='<h4>'+IDL('SelectGroup')+'</h4>';
+         for (var i=0; i<_vk_vid_adm_gr.length;i++){
+            html+='<a href="/'+_vk_vid_adm_gr[i].screen_name+'" onclick="return vkVidAddToGroup('+oid+','+vid+','+_vk_vid_adm_gr[i].gid+');">'+_vk_vid_adm_gr[i].name+'</a><br>';
+         }
+         _vk_vid_add_box=vkAlertBox(IDL('Add'),html);
+      }
+      
+      if (_vk_vid_adm_gr==null){
+      dApi.call('groups.get',{extended:1,filter:'admin'},function(r){
+         //console.log(r)
+         r.response.shift();
+         _vk_vid_adm_gr=r.response;
+         show_box();
+         });
+      } else {
+         show_box();
+      }
+
+   return false;
+}
+
+function vkVideoAddOpsBtn(){
+   var p=ge('video_summary');
+   if (!ge('vk_video_ops')){
+      var oid=cur.oid;
+      var aid=((cur.vSection || "").match(/album_(\d+)/) || [])[1];
+      
+      var btn=vkCe('a',{id:'vk_video_ops', "class":'nobold fl_r'},'[ <img src="http://vk.com/images/icons/help_stest_tick.gif"> ]');
+      p.appendChild(btn);
+      var p_options = [];
+      p_options.push({l:IDL('AddMod'), onClick:vkVideShowAdder});
+      
+      /*
+      p_options.push({l:IDL('Links'), onClick:function(item) {
+            //
+      }});
+      p_options.push({l:IDL('Add'), h:'/album'+oid+'_'+aid+'?act=add'});
+      */
+      
+      p_options=p_options.concat(vk_plugins.videos_actions(oid,aid));
+      stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
+         cur.vkAlbumMenu = new DropdownMenu(p_options, {
+           target: ge('vk_video_ops'),
+           containerClass: 'dd_menu_posts',
+           updateHeader:false,
+           //offsetLeft:-15,
+           showHover:false
+         });
+      });
+   }
+}
+
 function vkVidDownloadLinks(vars){
     // /video.php?act=a_flash_vars&vid=39226536_159441582
     ////
@@ -485,7 +571,10 @@ function vkVidGetLinkBtn(vid){//for cur.videoTpl
       
    var s=(cur_oid==oid?'':'<small class="fl_r owner_cont"><a href="/'+href+'" onmouseover="vkVidShowOwnerName('+oid+',this)">'+href+'</a></small>');
    
-   return s+'<div class="download_cont"><a href="#" onclick="vkVidLoadLinks('+vid[0]+','+vid[1]+',this.parentNode); return false;">'+IDL('download')+'</a></div>';
+   return s+'<div class="download_cont">\
+   <a href="#" onclick="vkVidLoadLinks('+vid[0]+','+vid[1]+',this.parentNode); return false;">'+IDL('download')+'</a>\
+   <span class="fl_r '+(!window.vk_vid_list_adder?'vk_vid_add_hidden':'')+'"><a href="#" onclick="return vkVidAddToGroup('+vid[0]+','+vid[1]+');">'+IDL('AddToGroup')+'</a>'+(cur_oid!=oid?'<span class="divide">|</span>':'')+'</span>\
+   </div>';
 }
 function vkVidAddGetLink(node){
    if (getSet(2)!='y' ||  getSet(66)=='n') return;
@@ -505,7 +594,9 @@ function vkVidAddGetLink(node){
       //alert((cur_oid!=oid)+'\n'+cur_oid+'\n'+oid);
       if (cur_oid!=oid)
          p.appendChild(vkCe('small',{'class':'fl_r owner_cont'},'<a href="/'+href+'" onmouseover="vkVidShowOwnerName('+oid+',this)">'+href+'</a>'),div.firstChild);
- 
+      p.appendChild(vkCe('small',{'class':'fl_r '+(!window.vk_vid_list_adder?'vk_vid_add_hidden':'')},
+            '<a href="#" onclick="return vkVidAddToGroup('+vid[1]+','+vid[2]+');">'+IDL('AddToGroup')+'</a><span class="divide">|</span>'),
+            div.firstChild);
       p.appendChild(div);  
    }
     
@@ -536,6 +627,11 @@ function vkVidAddGetLink(node){
          p=geByClass('info',el)[1] || geByClass('info',el)[0];
          var div=vkCe('div',{"class":"vk_vid_download_t"},'<span class="fl_l"><a href="#" onclick="vkVidLoadLinks('+vid[1]+','+vid[2]+',this.parentNode'+(vid[3]?", '"+vid[3]+"','"+type+"'":'')+'); cancelEvent(event); return false;">'+IDL('download')+'</a></span>');         
          if (p) p.appendChild(div);
+         /*
+         if (geByClass('video_results',node)[0])      
+            p.appendChild(vkCe('small',{'class':'fl_r '+(!window.vk_vid_list_adder?'vk_vid_add_hidden':'')},
+                  '<a href="#" onclick="return vkVidAddToGroup('+vid[1]+','+vid[2]+');">'+IDL('AddToGroup')+'</a><span class="divide">|</span>'),
+                  div.firstChild);*/
          else v.parentNode.appendChild(div);//v.insertBefore(div,v.firstChild);
          return;
       }
@@ -2166,6 +2262,7 @@ function vkGetAlbumInfo(artist,track,callback){
       vkLastFM.lastfm.track.getInfo({
             artist: artist,
             track: track,
+            //username:LastFM_UserName,
             autocorrect: 1
          }, {
             success: function(data) {

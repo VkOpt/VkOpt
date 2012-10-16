@@ -715,7 +715,7 @@ function vkImEvents(response){
             msg_id = intval(update[1]),// UID!!!!!! copypaste >_<
             flags = intval(update[2]),
             peer = intval(update[3]);
-         console.log(code,msg_id,peer,update);
+        // console.log(code,msg_id,peer,update);
         if (code == 61 || code == 62) { // peer or chat peer is typing
           vkImTypingEvent(msg_id);
           /*
@@ -871,7 +871,7 @@ function vkFcEvents(response){
          evVer = ev[0],
          evType = ev[1],
          peer = ev[2];
-         console.log('fc:',evType,peer,ev);
+         //console.log('fc:',evType,peer,ev);
       if (evType=='typing' && peer) {
          var uid = peer<2e9?peer:ev[3];
          vkImTypingEvent(uid);

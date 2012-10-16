@@ -183,7 +183,7 @@ function vkStyles(){
 	.vk_mail_save_history{	display: block; height: 13px;	padding: 18px;	text-align: center;	}\
 	.vk_mail_save_history_block{	display: block; float:right; text-align: center; /*width: 200px;*/	}\
 	.vk_mail_save_history_block IMG{margin-top:13px;}\
-	.vk_mail_save_history_block .cfg, .save_msgs_link .cfg{height: 11px; width: 15px; margin-top:2px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -60px;}\
+	.vk_mail_save_history_block .cfg, .save_msgs_link .cfg, .vk_cfg_icon{height: 11px; width: 15px; margin-top:2px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -60px;}\
    #vk_stats_btn{position: absolute; float:left}\
    #vk_stats_btn .button_blue{position: absolute; right: 0px;}\
    #vk_stats_im_btn{margin-right:3px;}\
@@ -216,6 +216,7 @@ function vkStyles(){
 	.vk_popupmenu ul li a{display:block; padding:2px 5px;}\
 	.vk_popupmenu ul li a:hover{background:#E1E7ED; text-decoration:none;}\
    .vk_tt_links_list a{display:block; padding:2px 1px;}\
+   .nobold{font-weight: normal;}\
 	"+(RemoveAd=='y'?".ad_box,.ad_help_link, .ad_help_link_new, .ad_box_new, #ad_help_link_new, #left_ads {display: none !important;}\
 			"+(NotHideSugFr?'.ad_box_friend{display: block !important;} .ad_box_friend + .ad_box_new{display:block !important;}':'')+"\
 			#groups .clearFix {display: block !important;} \
@@ -311,6 +312,7 @@ function vkStyles(){
      .video div.vk_vid_download_t a{color:#FFF; background-color:rgba(0,0,0,0.5)}\
      .video div.vk_vid_download_t img{height:auto; weight:auto;}\
      .wall_module .page_media_thumb.page_media_video{height:auto;}\
+     .vk_vid_add_hidden{display:none}\
    ";
 	  //extend switch color in viewer
 	if (MoreDarkPV=='y') main_css+="\
