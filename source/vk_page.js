@@ -552,10 +552,17 @@ function vkUpdWallBtn(){
 
 
 function vkAddCleanWallLink(){
-	var allow_clean=(cur.oid==remixmid() || isGroupAdmin(cur.oid));
+	 var rx=nav.objLoc[0].match(/notes(\d+)/);
+    
+    //notes
+   var allow_clean=(cur.oid==remixmid() || isGroupAdmin(cur.oid));
 	if (allow_clean && !ge('vk_clean_wall') && ge('full_wall_filters')){
-		var li=vkCe('li',{"class":'t_r', id:'vk_clean_wall'},'\
-			<a href="#" onclick="vkCleanWall('+cur.oid+'); return false;">'+IDL("wallClear")+'</a><span class="divide">|</span>\
+		
+      var link='<a href="#" onclick="vkCleanWall('+cur.oid+'); return false;">'+IDL("wallClear")+'</a><span class="divide">|</span>';
+      if (rx && rx[1]==remixmid())
+         link='<a href="#" onclick="vkCleanNotes(); return false;">'+IDL('DelAllNotes')+'</a>';
+      var li=vkCe('li',{"class":'t_r', id:'vk_clean_wall'},'\
+			'+link+'\
 		');
 		ge('full_wall_filters').appendChild(li);
 	}

@@ -494,7 +494,8 @@ function vkStyles(){
          .vk_edit_ico {\
            background: url(/images/icons/audio_icons.png?2) -136px -51px no-repeat;\
            height: 13px; width: 13px;\
-           opacity:0.5\
+           opacity:0.5;\
+           cursor:pointer;\
          }\
          .vk_edit_ico:hover {opacity:1}\
          .cur_section .vk_edit_ico{       background-position: -151px -51px; }\

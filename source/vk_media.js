@@ -39,8 +39,96 @@ function vkPVAfterShow(){
       Photoview.doShow();
 	}
 	if (ge('pv_summary')) ge('pv_summary').setAttribute('onclick','vkPVChangeView()');
+   if (ge('pv_album')){
+      vkPVPhotoMover();
+   }
 }
 
+var _vk_albums_list_cache={};
+function vkPVPhotoMover(show_selector){
+   if (!show_selector && cur.pvCurPhoto && (cur.pvCurPhoto.actions || {}).edit && !ge('pv_album').innerHTML.match('vkPVPhotoMover')){
+      ge('pv_album').innerHTML= '<div id="vk_ph_album_info">'+
+                                    ge('pv_album').innerHTML+
+                                    '<div class="fl_r vk_edit_ico" onclick="return vkPVPhotoMover(true);"> </div>'+
+                                 '</div><div id="vk_ph_album_selector"></div>';
+      //appendChild(vkCe('div',{'class':'fl_r', id:'vk_ph_move', onclick:"return vkPVPhotoMover(true);"},'edit'));
+      return;
+   }
+   if (!show_selector) return;
+   /*
+   var albums = [
+      [138034142,"=)"],[92465922,"Mope 2009 №1"],[110245703,"O_o"],[115650991,"[test]"],
+      [159007167,"rc"],[117386025,"Белые и пушистые ^_^"],[92305257,"Картинки всякие"],
+      [134753574,"Кролик суицидник"],[42748479,"Моё заphotoshopленное"],[137964159,"Обои"],
+      [119635156,"Песец"],[136689491,"Тортик от Vkopt Team на.."],[71357281,"Фотки"],
+      [114052940,"Фото для &quot;Трясучки&quot;"],[98569862,"без названия"],[163724290,"всякость"]
+   ];*/
+   var a=(cur.pvCurPhoto.album || "").match(/album(-?\d+)_(\d+)/);
+   if (!a){
+      alert('album detect error');
+      return;
+   }
+   var oid=parseInt(a[1]);
+   var aid=parseInt(a[2]);
+   var pid=parseInt(cur.pvCurPhoto.id.match(/(-?\d+)_(\d+)/)[2]);
+   
+   var params={};
+   params[oid<0?'gid':'uid']=Math.abs(oid);
+   ge('vk_ph_album_selector').innerHTML=vkLdrImg;
+   
+   var sel=function(){
+      stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
+         var albums=_vk_albums_list_cache[''+oid];
+         hide('vk_ph_album_info');
+         var def_aid=aid;
+         cur.vk_pvMoveToAlbum = new Dropdown(ge('vk_ph_album_selector'), albums, {
+           width: 165,
+           selectedItems: [def_aid],
+           autocomplete: (albums.length > 7),
+           onChange: function(val) {
+             if (!intval(val)) {
+               cur.vk_pvMoveToAlbum.val(def_aid);
+             }
+             //alert(cur.vk_pvMoveToAlbum.val());
+             var to_aid=cur.vk_pvMoveToAlbum.val();
+             var to_info=cur.vk_pvMoveToAlbum.val_full();
+             show('vk_ph_album_info');
+             ge('vk_ph_album_info').innerHTML=vkLdrImg;
+             dApi.call('photos.move',{pid:pid,target_aid:to_aid,oid:oid},function(r){
+               hide('vk_ph_album_info');
+               
+               var listId = cur.pvListId, index = cur.pvIndex;
+               var listRow = cur.pvData[listId];
+               var ph = listRow[index];
+               var album='<a href="album'+oid+'_'+to_aid+'" onclick="return nav.go(this, event)">'+to_info[1]+'</a>';
+               if (album) ph.album = album;
+                  ph.moved = (to_aid != def_aid);
+               ge('pv_album').innerHTML=album;
+               vkPVPhotoMover();
+               //r.response
+             })
+             
+           }
+         }); 
+      });
+   }
+   if (_vk_albums_list_cache[''+oid])
+      sel();
+   else
+      dApi.call('photos.getAlbums',params,function(r){
+         var data=r.response;
+         var albums = [];
+         for (var i=0; i<data.length;i++)
+            albums.push([data[i].aid,data[i].title]);
+         _vk_albums_list_cache[''+oid]=albums;
+         sel();
+      }); 
+    
+      
+   
+   
+   return false;
+}
 function vkPVMouseScroll(img){
     vkPVAllowMouseScroll=true;
     var on_scroll=function(is_next,ev){
@@ -493,9 +581,12 @@ function vkVideoAddOpsBtn(){
       var aid=((cur.vSection || "").match(/album_(\d+)/) || [])[1];
       
       var btn=vkCe('a',{id:'vk_video_ops', "class":'nobold fl_r'},'[ <img src="http://vk.com/images/icons/help_stest_tick.gif"> ]');
-      p.appendChild(btn);
+      
       var p_options = [];
-      p_options.push({l:IDL('AddMod'), onClick:vkVideShowAdder});
+      if (getSet(66)=='y'){
+         p_options.push({l:IDL('AddMod'), onClick:vkVideShowAdder}); 
+      }
+      
       
       /*
       p_options.push({l:IDL('Links'), onClick:function(item) {
@@ -504,16 +595,20 @@ function vkVideoAddOpsBtn(){
       p_options.push({l:IDL('Add'), h:'/album'+oid+'_'+aid+'?act=add'});
       */
       
+      
       p_options=p_options.concat(vk_plugins.videos_actions(oid,aid));
-      stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
-         cur.vkAlbumMenu = new DropdownMenu(p_options, {
-           target: ge('vk_video_ops'),
-           containerClass: 'dd_menu_posts',
-           updateHeader:false,
-           //offsetLeft:-15,
-           showHover:false
+      if (p_options.length>0){
+         p.appendChild(btn);
+         stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
+            cur.vkAlbumMenu = new DropdownMenu(p_options, {
+              target: ge('vk_video_ops'),
+              containerClass: 'dd_menu_posts',
+              updateHeader:false,
+              //offsetLeft:-15,
+              showHover:false
+            });
          });
-      });
+      }
    }
 }
 
