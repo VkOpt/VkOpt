@@ -129,6 +129,72 @@ function vkPVPhotoMover(show_selector){
    
    return false;
 }
+
+
+
+function vkPVSaveAndMover(){
+   var a=(cur.pvCurPhoto.album || "").match(/album(-?\d+)_(\d+)/);
+   if (!a){
+      alert('album detect error');
+      return;
+   }
+   var oid=vk.id;
+   var aid=0;
+   var pid=parseInt(cur.pvCurPhoto.id.match(/(-?\d+)_(\d+)/)[2]);
+
+   ge('vk_ph_save_move').innerHTML='<div id="vk_save_selector_label">'+IDL('SelectAlbum')+'</div><div id="vk_save_selector">'+vkLdrImg+'</div>';
+   
+   var sel=function(){
+      stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
+         var albums=_vk_albums_list_cache[''+oid];
+         hide('vk_ph_album_info');
+         var def_aid=aid;
+         cur.vk_pvMoveToAlbum = new Dropdown(ge('vk_save_selector'), albums, {
+           width: 165,
+           selectedItems: [def_aid],
+           autocomplete: (albums.length > 7),
+           onChange: function(val) {
+               if (!intval(val)) {
+                  cur.vk_pvMoveToAlbum.val(def_aid);
+               }
+               //alert(cur.vk_pvMoveToAlbum.val());
+               var to_aid=cur.vk_pvMoveToAlbum.val();
+               var to_info=cur.vk_pvMoveToAlbum.val_full();
+
+               ge('vk_save_selector_label').innerHTML=vkLdrImg;
+
+               var listId = cur.pvListId, index = cur.pvIndex, ph = cur.pvData[listId][index];
+               var needmove=function(t){
+                  t=t.replace(/<a[^<>]+>[^<>]+<\/a>/,'<a href="/album'+oid+'_'+to_aid+'">'+to_info[1]+'</a>');
+                  dApi.call('photos.get',{uid:vk.id,aid:'saved'},function(r){
+                     var ph=r.response.pop();
+                     dApi.call('photos.move',{pid:ph.pid,target_aid:to_aid,oid:oid},function(r){
+                        //ge('vk_save_selector_label').innerHTML=IDL('Add');
+                        ge('vk_ph_save_move').innerHTML='';//'ok - album'+oid+'_'+to_aid;
+                        showDoneBox(t);
+                     })                 
+                  })
+               }
+               ajax.post('al_photos.php', {act: 'save_me', photo: ph.id, list: listId, hash: ph.hash}, {onDone: needmove});
+           }
+         }); 
+      });
+   }
+   if (_vk_albums_list_cache[''+oid])
+      sel();
+   else
+      dApi.call('photos.getAlbums',{uid:vk.id},function(r){
+         var data=r.response;
+         var albums = [];
+         for (var i=0; i<data.length;i++)
+            albums.push([data[i].aid,data[i].title]);
+         _vk_albums_list_cache[''+oid]=albums;
+         sel();
+      }); 
+   return false;
+}
+
+
 function vkPVMouseScroll(img){
     vkPVAllowMouseScroll=true;
     var on_scroll=function(is_next,ev){
@@ -166,7 +232,10 @@ function vkPVLinks(ph){
         (ph.w_src?'<a href="'+ph.w_src+'" class="fl_r">HD3</a>':'')+
     '</div><div class="clear"></div>';
   } 
-  html+='<a href="#" onclick="vkPhotoUrlUpload(\''+(ph.w_src || ph.z_src || ph.y_src || ph.x_src)+'\'); return false;">'+IDL('Add')+'</a>';
+  if (ph.actions.save)  
+      html+='<div id="vk_ph_save_move"><a href="#" onclick="return vkPVSaveAndMover();">'+IDL('Add')+'</a></div>';
+  else 
+      html+='<a href="#" onclick="vkPhotoUrlUpload(\''+(ph.w_src || ph.z_src || ph.y_src || ph.x_src)+'\'); return false;">'+IDL('Add')+'</a>';
   if ((ph.tags || [])[0]>0){
       html+='<a href="#" onclick="vkPVShowTagsInfo(); return false;">'+IDL('TagsInfo')+'</a>';
   }
