@@ -32,10 +32,39 @@ var vkSoundsRes={
 if (!window.Sound2){
   Sound2 = function(sound){
     //alert(sound);
-	var audioObj = vkCe('audio');
-	if (vkbrowser.safari || vkbrowser.chrome) sound+='_mp3';
-	var snd='';
-	if (vkLocalStoreReady() && vkGetVal('sound_'+sound)) snd=vkGetVal('sound_'+sound);
+   //*
+   var audioObj = vkCe('audio');
+   var test_audio = function() {
+      var elem = audioObj, info = null;
+      try {
+         if ( info = !!elem.canPlayType ) {
+            info = {};
+            info.ogg = elem.canPlayType('audio/ogg; codecs="vorbis"');
+            info.mp3 = elem.canPlayType('audio/mpeg;');
+            info.wav = elem.canPlayType('audio/wav; codecs="1"');
+            info.m4a = elem.canPlayType('audio/x-m4a;') || elem.canPlayType('audio/aac;');
+            
+            info.ogg = (info.ogg != "" && info.ogg != "no")?true:false;
+            info.mp3 = (info.mp3 != "" && info.mp3 != "no")?true:false;
+            info.wav = (info.wav != "" && info.wav != "no")?true:false;
+            info.m4a = (info.m4a != "" && info.m4a != "no")?true:false;
+         } 
+      } catch(e) { }
+      return info; 
+   };
+   var f=test_audio();
+   var snd='';
+   if (vkLocalStoreReady()){
+      var mp3=vkGetVal('sound_'+sound+'_mp3');
+      var wav=vkGetVal('sound_'+sound);
+      if (wav && wav!='' && wav.length>40 && f.wav) snd=wav;
+      if (mp3 && mp3!='' && mp3.length>40 && f.mp3) snd=mp3;
+   }
+
+	//if (vkbrowser.safari || vkbrowser.chrome) sound+='_mp3';
+	//var snd='';
+	//if (vkLocalStoreReady() && vkGetVal('sound_'+sound)) snd=vkGetVal('sound_'+sound);
+   
 	if (!snd || snd=='') snd=vkSoundsRes[sound];
 	//var notification = new Audio(snd);
 	if (!audioObj.canPlayType){

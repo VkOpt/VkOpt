@@ -844,37 +844,43 @@ function vkGetProfile(uid,callback,no_switch_button){
 	  }
 }
 
+var _vk_fr_lists_info={};
 function vkFriendUserInLists(uid,callback,only_cats){
       var code='\
          var uid='+uid+';\
          var x=API.friends.areFriends({uids:uid});\
          var user_in_lists=null;\
+         var friends=null;\
          var lists=null;\
-         if (x[0].friend_status==3){\
-            lists=API.friends.getLists();\
-            var friends=API.friends.get({fields:"uid,lists"});\
-            var i=0;\
-            \
-            while (i<friends.length){\
-               if (friends[i].uid==uid){\
-                     user_in_lists=friends[i].lists;\
-               }\
-               i = i+1;\
-            }\
-         }\
-         return {uid:uid,status:x[0].friend_status,in_lists:user_in_lists,lists:lists};\
+         '+(_vk_fr_lists_info.friends && _vk_fr_lists_info.lists ?'':'friends=API.friends.get({fields:"uid,lists"}); lists=API.friends.getLists();')+'\
+         return {uid:uid,status:x[0].friend_status,in_lists:user_in_lists,lists:lists,friends:friends};\
       ';
       dApi.call('execute',{code:code},function(r){
          var x=r.response;
+         if (x.friends && x.lists){
+            _vk_fr_lists_info.friends=x.friends;
+            _vk_fr_lists_info.lists=x.lists;
+         } else {
+            x.friends=_vk_fr_lists_info.friends;
+            x.lists=_vk_fr_lists_info.lists;
+         }
          var cats=[];
          var html='';
-         if (x.in_lists && x.lists){
+         var in_lists=null;
+         var friends=x.friends;
+         for (var i=0; i<friends.length;i++){
+            if (friends[i].uid==uid){
+               in_lists=friends[i].lists;
+            }
+         }
+         
+         if (x.status==3 && in_lists && x.lists){
             var l={};
             for (var i=0; i<x.lists.length; i++)
                l[x.lists[i].lid]=x.lists[i].name;
                
-            for (var i=0; i<x.in_lists.length; i++){
-               var lid=x.in_lists[i];
+            for (var i=0; i<in_lists.length; i++){
+               var lid=in_lists[i];
                cats.push('<a href="/friends?section=list'+lid+'" onclick="return nav.go(this,event);">'+l[lid]+'</a>'); 
             }
          }
