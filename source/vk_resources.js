@@ -31,8 +31,7 @@ var vkSoundsRes={
 
 if (!window.Sound2){
   Sound2 = function(sound){
-    //alert(sound);
-   //*
+   //alert(sound);
    var audioObj = vkCe('audio');
    var test_audio = function() {
       var elem = audioObj, info = null;

@@ -133,11 +133,12 @@ function vkPVPhotoMover(show_selector){
 
 
 function vkPVSaveAndMover(){
+   /*
    var a=(cur.pvCurPhoto.album || "").match(/album(-?\d+)_(\d+)/);
    if (!a){
       alert('album detect error');
       return;
-   }
+   }*/
    var oid=vk.id;
    var aid=0;
    var pid=parseInt(cur.pvCurPhoto.id.match(/(-?\d+)_(\d+)/)[2]);
