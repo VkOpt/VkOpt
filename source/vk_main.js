@@ -772,7 +772,7 @@ function vkImTypingEvent(uid,need_close){
          '<a href="/write%uid" onclick="return showWriteMessageBox(event, %uid);">'+IDL('txMessage')+'</a></b>';
          text=text.replace(/%uid/g,uid);
          text+=time;
-         if (vk_DEBUG) text+='<br>'+document.title;
+         //if (vk_DEBUG) text+='<br>'+document.title;
          vkShowEvent({sound:'none', hide_in_current_tab:cur.peer==uid ,id:'vk_typing_'+uid,title:info.name, text:text,author_photo:info.photo_rec});
       });
    },1);

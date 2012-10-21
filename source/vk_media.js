@@ -999,7 +999,7 @@ function YTDataDecode(qa) {
 }  
 
 function vkGetYoutubeLinks(vid, callback) {
-  var url = 'http://www.youtube.com/get_video_info?video_id=' + vid +
+  var url = location.protocol+'//www.youtube.com/get_video_info?video_id=' + vid +
             '&asv=3&eurl=' + 
             encodeURIComponent(location.href) + '&el=embedded';
    

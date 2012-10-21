@@ -1080,8 +1080,10 @@ vk_hor_slider={
    var percent= value * 100 / max_value;
    vk_hor_slider.sliderUpdate(percent,value,id);
    if (rh){
-      return el.innerHTML;
+      var sr=el.innerHTML;
       el.parentNode.removeChild(el);
+      return sr;
+      
    }
  },
  sliderScaleClick: function (e,el) {
