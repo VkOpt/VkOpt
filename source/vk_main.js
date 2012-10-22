@@ -129,6 +129,7 @@ function vkOnNewLocation(startup){
 		switch(cur.module){
 			case 'profile':vkProfilePage(); break;
 			case 'groups' :vkGroupPage(); break;
+         case 'groups_edit':vkGroupEditPage(); break;
 			case 'event'  :vkEventPage(); break;
 			case 'public' :vkPublicPage(); break;
 			case 'wall'   :vkWallPage(); break;
@@ -217,8 +218,7 @@ function VkOptMainInit(){
   vkSkinManInit();
   vkClock();
   vkVidAddGetLink();
-  vkPollResultsBtn();
-  
+  vkPollResultsBtn();  
   if (getSet(34)=='y' && !window.setkev){ InpTexSetEvents(); setkev=true;}
   if (getSet(27)=='y') vkGetCalendar();
   if (getSet(20) == 'y') vk_updmenu_timeout=setTimeout("UpdateCounters();",vk_upd_menu_timeout);

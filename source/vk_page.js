@@ -1342,12 +1342,47 @@ function vkWikiNew(){
 
 function vkGroupsList(){
    Inj.Before('GroupsList.showMore','var name','if (vkGroupsListCheckRow(row)) continue;');
+   
+   if (getSet(74)=='y')  
+      Inj.Replace('GroupsList.showMore',/html\.join\(['"]+\)/g, "vkModAsNode(html.join(''),vkGroupDecliner)"); 
 }
 
 function vkGroupsListPage(){
 	vkGrLstFilter();
+   if (getSet(74)=='y')
+      vkGroupDecliner();
 }
 
+function vkGroupDecliner(node){// [name, gid, href, thumb, count, type, hash, fr_count, friends, dateText]
+   if (getSet(74)!='y') return;
+   if (cur.scrollList && cur.scrollList.tab=="admin") return;
+   var nodes=geByClass('group_list_row',node);
+   for (var i=0; i<nodes.length; i++){
+      if (!nodes[i].id || nodes[i].innerHTML.match('vkGroupLeave')) continue;
+      var p=geByClass('group_row_info',nodes[i])[0];
+      if (!p) continue;
+      var gid=(nodes[i].id || "").match(/\d+/);
+      var el=vkCe('div',{"class":'fl_r'},'<a href="#" onclick="return vkGroupLeave('+gid+',this);">'+IDL('LeaveGroup')+'</a>');
+      p.appendChild(el);
+      //p.insertBefore(el,p.firstChild);
+      
+      //console.log(nodes[i].id);
+   }
+   //console.log(node);
+}
+
+
+function vkGroupLeave(gid,node){
+   var p = (node || {}).parentNode;
+   if (p) p.innerHTML=vkLdrImg;
+   dApi.call('groups.leave',{gid:gid},function(r){
+      if (r.response==1){
+         if (p) p.innerHTML=IDL('GroupLeft');
+      } else
+         if (p) p.innerHTML='WTF? O_o';
+   })
+   return false;
+}
 function vkGroupsListCheckRow(row){
    var val=parseInt((ge('vk_grlst_filter') || {}).value || '0');
    if (val==0) return false;
@@ -1373,7 +1408,7 @@ function vkGroupsListCheckRow(row){
    */
    if (val==1 && (isEvent || isPublic)) return true;// hide events and publics
    if (val==2 && (isGroup || isPublic)) return true;// hide groups and publics
-   if (val==3 &&  isEvent) return true;             // hide events
+   if (val==3 &&  -isEvent) return true;             // hide events
    if (val==4 && (isGroup || isEvent)) return true; // hide events and groups
    return false;
 }
@@ -1405,6 +1440,95 @@ function vkGrLstFilter(){
 	});	
    //*/
 }
+
+function vkGroupEditPage(){
+   if (nav.objLoc['act']=='people')
+      vkGroupRemoveAllInvitation(true);
+}
+
+function vkGroupRemoveAllInvitation(add_btn){
+	if (add_btn){
+      var btn=ge('vkillinv');
+      if (btn){
+       (nav.objLoc['tab']=='invites'?show:hide)(btn);
+      } else if(nav.objLoc['tab']=='invites') {
+         var p=ge('group_p_section_invites');
+         if (!p) return;
+         btn=vkCe('div',{"class":'button_gray button_wide', id:'vkillinv'},'<button onclick="vkGroupRemoveAllInvitation();"><small>'+IDL('Kill_Invitation')+'</small></button>');
+         insertAfter(btn,p);
+      }
+      
+      return;
+   }
+   
+   var box=null;
+	var ids=[];
+	var del_offset=0;
+	var cur_offset=0;
+	var abort=false;	
+   var restored=[];
+	
+   var process=function(){	    
+      //*
+      //console.log(ids)
+      if (abort) return;
+		var del_count=ids.length;
+      console.log(del_count,del_offset);
+		ge('vk_scan').innerHTML=vkProgressBar(del_offset,del_count,310,IDL('killing... ')+' %');
+		var ids_part=ids[del_offset];//.slice(del_offset,del_offset+1);
+		if (!ids_part){ 
+         box.hide();		
+         vkMsg(IDL('Done'),3000);	
+      } 
+		else 
+         ajax.post('al_page.php', {act: 'a_member_list_action', action: 'cancel_invitation', gid: cur.gid, mid: ids[del_offset][0], hash: ids[del_offset][1], context: 1}, {
+            onDone: function(res) {
+               del_offset++;
+               setTimeout(process,10);         
+            }
+         });  
+
+	};
+   //
+	var scan=function(){
+		if (cur_offset==0) ge('vk_scan').innerHTML=vkProgressBar(2,2,310,' scaning... ');
+		//dApi.call('messages.get',{out:is_out?1:0,count:100,offset:cur_offset,preview_length:1},function(r){
+      ajax.post('al_groups.php', {act: 'people_get', gid: cur.gid, tab: 'invites', offset: cur_offset}, {
+         onDone: function(x, html) {
+            if (abort) return;
+            var ms=[];
+            vkModAsNode(html,function(node){
+               var nodes=geByClass('group_p_row',node);
+               for (var i=0; i<nodes.length; i++){
+                  var info=nodes[i].innerHTML.match(/GroupsEdit.peopleAction\([^\(\)]+,\s*\d+\s*,\s*(\d+)\s*,\s*'([a-f0-9]+)'/i);
+                  ms.push([info[1],info[2]]);
+               }               
+            })
+            
+            
+            //ge('vk_scan').innerHTML=vkProgressBar(1,1,310,' ');
+            for (var i=0;i<ms.length;i++) ids.push(ms[i]);
+            if (!ms[0]){ 
+               process();	
+               return;	
+            } else {
+            	cur_offset+=25; 
+               setTimeout(scan,10);
+            } 
+         }
+      });
+	};
+	var run=function(){
+		box=new MessageBox({title: IDL('deleting'),closeButton:true,width:"350px"});
+		box.removeButtons(); 
+      box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no'); 
+		var html='<div id="vk_scan"></div>'; box.content(html).show();	
+		scan();
+	}
+	vkAlertBox(IDL('Kill_Invitation'),IDL('Kill_Invitation_confirm'),run,true);
+}
+
+
 
 function vkToTopBackLink(){
    window._stlMousedown = function (e) {
