@@ -1129,7 +1129,7 @@ function UpdateCounters(only_msg,data){
 				}
 				VK_LAST_COUNTERS=cnt.join('-');
 				VK_MENU_LAST_HIGHLIGHT=HL;
-				vkHighlightCounters();
+				//vkHighlightCounters();
 				vklog('Menu counters are updated');
 			}
 		}
@@ -1148,13 +1148,17 @@ function UpdateCounters(only_msg,data){
 function vkHighlightCounters(){
 	var vkMenuHighlightEl=function(e){
 		//*
+      
+      /* REPLACE TO CSS ANIMATION
 		var e=vk$(e); 
 		var backcolor=e.css('backgroundColor'); 
 		e.animate({backgroundColor:SIDEBAR_ITEM_HIGHLIGHT_COLOR},700,function(){//rgb(255,255,0)
 			setTimeout(function(){
 				e.animate({backgroundColor:backcolor},700,function(){e.css('backgroundColor',"")});
 			},MENU_HIGHLIGHT_DELAY);
-		});	
+		});*/
+      
+      
 		//*/
 		/*
 		var backcolor=getStyle(e, 'backgroundColor');
