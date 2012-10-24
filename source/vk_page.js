@@ -1168,7 +1168,7 @@ function addFakeGraffItem() {
     a.setAttribute("onfocus","this.blur()");
     a.setAttribute("class"," add_media_item");
     a.setAttribute("id","vk_wall_post_type0");
-    a.setAttribute("style","background-image: url(/images/icons/attach_icons.gif); background-position: 3px -152px");
+    a.setAttribute("style","background-image: url(/images/icons/attach_icons.gif); background-position: 3px -151px");
     a.setAttribute("href","/graffiti.php?act=draw&"+((location.href.match(/club\d+/))?"group_id=":"to_id=")+mid);
     a.setAttribute("onclick","vkShowFakeGraffLoader("+mid+");return false;");
     a.innerHTML=IDL('LoadGraffiti');
