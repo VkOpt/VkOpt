@@ -785,16 +785,16 @@ function vkGetProfile(uid,callback,no_switch_button){
       else 
          bday_info = null;
       var info_labels=[
-			[bday_info, Birth_date[1]],
-         [(sex==1?Sex_fm:Sex_m), Sex],
-			[country,Country],
-			[city,select_city],
-         [rel,Family],
-			[profile.mobile_phone, Contact_mob_tel_abbr],
-			[profile.home_phone, Contact_home_tel_abbr],
-			[profile.university_name,select_university_name],
-			[profile.faculty_name,Faculty],
-			[profile.graduation,select_graduation]
+			[bday_info, IDL('Bithday')],
+         [(sex==1?Sex_fm:Sex_m), IDL('Sex')],
+			[country,IDL('Country')],
+			[city,IDL('City')],
+         [rel,IDL('Relation')],
+			[profile.mobile_phone, IDL('Mob_tel')],
+			[profile.home_phone, IDL('Home_tel')],
+			[profile.university_name,IDL('University_name')],
+			[profile.faculty_name,IDL('Faculty')],
+			[profile.graduation,IDL('Graduation')]
 		];
       if (vk_DEBUG) info_labels.push([is_vkopt_user==1?"<b>YES!!!</b>":"NO =(", "Use VkOpt?"]);
       

@@ -504,6 +504,472 @@ function vkPhotoUrlUpload(url){
 }
 //vkPhotoUrlUpload('http://cs9543.vk.com/u3457516/124935920/w_5603bf45.jpg')
 
+
+function vkAlbumAdminItems(){
+   var a=[];
+   var p=geByClass('photos_tabs')[0];
+	if (p && (p.innerHTML.match(/album-?\d+_\d+\?act=edit/i) || vk_DEBUG)){
+		
+		a.push({l:IDL('paCheckUnik'), onClick:vkAlbumCheckDublicatUser, s:{borderColor:"#DDDDDD", borderTop:"1px", borderTopStyle:"solid"}});
+		a.push({l:IDL('paGetPByUser'), onClick:vkGetPhotoByUserBox});
+		a.push({l:IDL('paDelOld'), onClick:vkOldPhotos});
+		a.push({l:'club337',h:'/club337'});//, IDL('paDevSpecialFor')
+	}
+	return a;
+}
+function vkPVAdminItems(data){
+	//alert(print_r(data));
+	var user=data.author.split('href="')[1].split('"')[0];
+	return (ge('photos_container') && (cur.moreFrom || '').match(/album(-?\d+)_(\d+)/))?'<a href="#" onclick="photoview.hide(); vkGetPhotoByUser(\''+user+'\'); return false;">'+IDL('paAllUserPhotos')+'<span id="vkphloader" style="display:none"><img src="/images/upload.gif"></span></a>':'';
+}
+
+function vkDisableAlbumScroll(){
+    try{
+		hide('photos_load_more');
+		removeEvent(photos.scrollnode, 'scroll', photos.scrollResize);
+		removeEvent(window, 'resize', photos.scrollResize);
+	} catch(e){}
+}
+
+function vkGetPhotoByUserBox() {
+  var vkMsgBox = new MessageBox({title: IDL('paSearchUserPhotos'),width:"250px"});
+  vkMsgBox.removeButtons();
+  vkMsgBox.addButton(IDL('Cancel'),function(){ msgret=vkMsgBox.hide(200);  vkMsgBox.content('');},'no');
+  var onQ=function(){ 
+        var q=ge('byuserlink').value;
+        if (trim(q)=='') {
+         alert(IDL('paEnterUser'));
+        } else {
+          vkGetPhotoByUser(trim(q));
+          vkMsgBox.hide(200); 
+          vkMsgBox.content('');
+        }
+    };
+  vkMsgBox.addButton(IDL('Search'),onQ,'yes');
+  vkMsgBox.content(IDL('paEnterUserLink')+'<br><input type="text" style="width:200px" id="byuserlink"/>').show();
+  ge('byuserlink').onkeydown=function(){if(event.keyCode==13){onQ()}};
+  ge('byuserlink').focus();
+  return false;
+}
+
+function vkOldPhotos(){
+  
+  var aoid=cur.moreFrom.match(/album(-?\d+)_(\d+)/);
+  var aid=aoid[2];
+  var oid=aoid[1]; 
+  var photoSort=function (a, b){
+    var p1=a.pid;//[0].match(/_(\d+)/)[1];
+    var p2=b.pid;//[0].match(/_(\d+)/)[1];
+    if(p1<p2) return -1;
+    if(p1>p2) return 1;
+    return 0;
+  }
+  //AjGet('photos.php?act=a_album&oid='+oid+'&aid='+aid,function(r,t){
+  var count=parseInt(prompt(IDL('paDelCount')));
+  ge('photos_container').innerHTML=vkBigLdrImg;
+  vkDisableAlbumScroll();
+  vkAdmGetPhotosWithUsers(oid,aid,function(r){
+	var list=r.response[0];
+	var users_data=r.response[1];
+ 	var users={};
+	for(var i=0;i<users_data.length;i++){
+		users[users_data[i].uid]=users_data[i].first_name+' '+users_data[i].last_name;
+	}
+    //var list=eval('('+t+')');
+    list=list.sort(photoSort);
+    var html="";
+    var photos_id=[];
+    if (count){
+      for (var i=0;i<count;i++){
+        var pid=oid+'_'+list[i].pid;
+		var src=list[i].src;
+		html+='<td><div id="ph'+pid+'"><a href="/photo'+pid+'"  onclick="if (cur.cancelClick) return (cur.cancelClick = false); return showPhoto(\''+pid+'\', \''+cur.moreFrom+'\', {img: this, root: 1}, event)"><img src="'+src+'" style="max-width: 130px"></a></div></td>'+/*((i % 5 == 0)?'<tr>':'')+*/
+             (( (i+1) % 4 == 0)?'</tr><tr>':'');
+        photos_id[photos_id.length]=pid;
+      }
+      ge("photos_container").innerHTML=vkSubmDelPhotosBox(count,photos_id.join(','))+
+                                    '<h4>'+IDL('paChkOldPhotos')+'</h4>'+
+                                    '<div id="album"><table border="0" cellspacing="0"><tbody><tr>'+
+                                    html+'</tr></tbody></table></div>'+
+                                    '<br><br><h4>'+IDL('paIDCheckedPhotos')+'</h4><br>'+photos_id.join(', ');
+    } else {
+      alert(IDL('paNullCount'));
+    }
+    
+  });
+}
+
+function vkSubmDelPhotosBox(count,photos_list,uid){
+if (!uid) uid=0;
+return '<div id="DelPhotosDialog'+uid+'" style="padding:20px">'+
+    '<h2>'+IDL('paDelPhotos')+'</h2>'+
+    '<p>'+IDL('paSureDelPhoto').replace("{count}",count)+'</p>'+
+          '<a href="#" onclick="vkRunDelPhotosList(this.getAttribute(\'photos_ids\'),\''+uid+'\'); return false;" photos_ids="'+photos_list+'">'+vkButton(IDL('phDel'))+'</a>'+
+'</div>';
+}
+
+
+function vkRunDelPhotosList(list,uid){
+  var plist=list.split(',');
+  ge("DelPhotosDialog"+uid).innerHTML="<h4>"+IDL('paDelStarted')+"</h4>";
+  vkDeletePhotosList(plist,0,uid);
+}
+function vkDeletePhotosList(list,idx,uid){
+  vkDelOnePhoto(list[idx],function(t){  
+    if (idx<list.length){
+      if (t!='FAIL') {
+          //setTimeout(function(){fadeOut(ge('ph'+list[idx]))},500);
+          fadeTo(ge('ph'+list[idx]), 100, 0.1, function(){
+              ge('ph'+list[idx]).innerHTML=t;
+              fadeTo(ge('ph'+list[idx]), 500, 1, function(){
+                  setTimeout(function(){fadeOut(ge('ph'+list[idx]))},500);
+              });
+          });
+      } else {
+        ge('ph'+list[idx]).setAttribute("style","border:2px solid #A00;");
+      }
+	  ge("DelPhotosDialog"+uid).innerHTML=vkProgressBar(idx+1,list.length,550,IDL('paDelProc')+' '+(idx+1)+"/"+list.length);
+      //ge("DelPhotosDialog"+uid).innerHTML="<h4>"+IDL('paDelProc')+(idx+1)+"/"+list.length+"</h4>";
+      setTimeout(function(){vkDeletePhotosList(list,idx+1,uid)},500);
+    } else { 
+		ge("DelPhotosDialog"+uid).innerHTML="<h4>"+IDL('paDelSuc')+"</h4>";
+		//alert(IDL('paDelSuc'));
+	}
+  });
+}
+
+function vkDelOnePhoto(pid, callback) {
+	var q = {act:'a_delete_photo', pid:pid, sure:1};
+	//ajax.post('al_photos.php', {act: 'show', photo: photoId, list: listId}
+	ajax.post('al_photos.php', {act: 'show', photo: pid, list:cur.moreFrom},{ 
+		onDone:function(listId, count, offset, data, opts){
+			//alert(pid+'\n\n'+print_r(data));
+			var hash='';
+			for (var i=0; i<data.length; i++)
+				if (data[i].id==pid){ 
+					hash=data[i].hash;
+					break;
+				}
+			//alert(hash);
+			ajax.post('al_photos.php', {act: 'delete_photo', photo: pid, hash: hash},{ 
+					onDone:function(text){ if (callback) callback(text);}, 
+					onFail:function(res, text){ if (callback) callback('FAIL');}
+			});
+		},
+		onFail:function(res, text){ if (callback) callback('FAIL');}
+	});
+}
+
+function vkGetPhotoByUser(u,oid,aid,toel){
+ge('photos_container').innerHTML=vkBigLdrImg;
+vkDisableAlbumScroll();
+getGidUid(u,function(userid,groupid){
+  userid = userid || groupid;
+  show("vkphloader");
+  var ResultElem=(toel)?toel: ge("photos_container");
+  var aoid=cur.moreFrom.match(/album(-?\d+)_(\d+)/);//nav.objLoc[0]
+  aid=(aid)?aid:aoid[2];
+  oid=(oid)?oid:aoid[1];
+  vkAdmGetPhotosWithUsers(oid,aid,function(r){
+    var list=r.response[0];
+	var users_data=r.response[1];
+ 	var users={};
+	for(var i=0;i<users_data.length;i++){
+		users[users_data[i].uid]=users_data[i].first_name+' '+users_data[i].last_name;
+	}
+    var uids={};
+    var uid;
+    ResultElem.innerHTML="<br>";
+    for (var i=0; i<list.length; i++){
+      uid=list[i].user_id;//owner_id;
+      if (uids[uid]) {
+        uids[uid].count++;
+        uids[uid].ph[uids[uid].ph.length]=list[i];
+      } else {
+        uids[uid]={};
+        uids[uid].count=1;
+        uids[uid].ph=[list[i]];
+      }
+    }
+    var uid_list=[];
+     if (uids[userid]){
+       var del_list=[];
+       uid=userid;
+       uid_list[uid_list.length]=uid;
+
+       var html="";
+       var html_="";
+       
+       html+='<table id="album">';
+       for (var i=0;i<uids[uid].ph.length;i++){
+		   var pid=oid+'_'+uids[uid].ph[i].pid;
+		   var src=uids[uid].ph[i].src;
+		   del_list.push(pid);
+		   html+='<td><div id="ph'+pid+'">'+
+				 '<input type="checkbox" class="vkphcheck" vkphoto="'+pid+'" style="position:absolute;">'+
+				 '<a href="/photo'+pid+'"  onclick="if (cur.cancelClick) return (cur.cancelClick = false); return showPhoto(\''+pid+'\', \''+cur.moreFrom+'\', {img: this, root: 1}, event)"><img src="'+src+'" style="max-width: 130px"></a>'+
+				 '</div></td>'+
+				 (( (i+1) % 4 == 0)?'</tr><tr>':'');
+           html_+='<a href="/photo'+pid+'"  onclick="if (cur.cancelClick) return (cur.cancelClick = false); return showPhoto(\''+pid+'\', \''+cur.moreFrom+'\', {img: this, root: 1}, event)">http://vkontakte.ru/photo'+pid+'</a><br>';
+       }
+       html+='</table>';
+       html='<div style="padding:0px; border:1px solid #808080;" id="photos_container"><b><u><span id="vkusername'+uid+'"><a href="/id'+uid+'">'+users[uid]+'</a></span></u></b> '+
+                '<a id="ban'+uid+'" style="cursor: hand;" onClick="javascript:vkBanUser(\''+uid+'\',\''+oid.match(/\d+/)[0]+'\')">[ '+IDL('banit')+' ]</a>'+
+                '<a id="delBtn'+uid+'" style="cursor: hand;" onClick="ge(\'vkDelUBox'+uid+'\').innerHTML=vkSubmDelPhotosBox('+del_list.length+',\''+del_list.join(',')+'\',\''+uid+'\'); return false;">'+IDL('paDelAllUserPhotos')+'</a>'+
+                '<a id="delchecked" style="cursor: hand;" onClick="vkRunDelCheckedPhotosList(); return false;">'+IDL('paDelChecked')+'</a>'+
+                ':<br>'+'<div id="vkDelUBox'+uid+'"></div>'+html;
+       html+='<br><br></div>';
+       html+='<div><a href="/id'+uid+'">http://vkontakte.ru/id'+uid+'</a> :<br>'+html_+'</div>'
+       ResultElem.innerHTML+=html;
+       
+     }
+  });  
+  
+});
+}
+
+function vkDoCheck(check,className){
+  var ch=geByClass(className);
+  for (var i=0;i<ch.length;i++){
+    switch (check){
+    case 0:  ch[i].checked=false; break;
+    case 1:  ch[i].checked=true; break;
+    case 2:  ch[i].checked=!ch[i].checked; break;
+    }
+  }
+}
+
+
+function vkRunAllBanAndDelPhotos(el,gid){
+  var ch=geByClass("vkphcheck");
+  var list=[];
+  for (var i=0;i<ch.length;i++){
+    list.push(ch[i].getAttribute("vkphoto"));
+  }
+  var photos=[];
+  for (var i=0;i<list.length;i++){
+   photos.push(ge('ph'+list[i]).parentNode.innerHTML);
+  }
+    vkaddcss(".nocheckp input{display:none}");
+    var html='<table id="album" class="nocheckp">';
+    for (var i=0;i<photos.length;i++){
+       html+='<td>'+photos[i]+'</td>'+(( (i+1) % 4 == 0)?'</tr><tr>':'');
+    }
+    html+='</table>';   
+   
+  var idss=ge("banallusers").getAttribute("id_list");
+  if (idss){
+    var ids=idss.split(',');
+    var  users="";
+    for (var i=0;i<ids.length;i++){
+        users+=ge('vkusername'+ids[i]).innerHTML+'<br>';
+    }
+     ge("photos_container").innerHTML=vkSubmBanPhotosBox(ids.length,idss,0,gid,users)+
+                                   vkSubmDelPhotosBox(list.length,list.join(','))+html;
+  }
+}
+
+
+function vkRunDelCheckedPhotosList(){
+  var ch=geByClass("vkphcheck");
+  var list=[];
+  for (var i=0;i<ch.length;i++){
+    if (ch[i].checked) list.push(ch[i].getAttribute("vkphoto"));
+  }
+  //alert(list.join("\n"));
+  var photos=[];
+  for (var i=0;i<list.length;i++){
+   photos.push(ge('ph'+list[i]).parentNode.innerHTML);
+  }
+  //alert(photos[0]);
+    vkaddcss(".nocheckp input{display:none}");
+    var html='<table id="album" class="nocheckp">';
+    for (var i=0;i<photos.length;i++){
+       html+='<td>'+photos[i]+'</td>'+(( (i+1) % 4 == 0)?'</tr><tr>':'');
+    }
+    html+='</table>';
+    ge("photos_container").innerHTML=vkSubmDelPhotosBox(list.length,list.join(','))+html;
+}
+
+
+function vkSubmBanPhotosBox(count,user_list,uid,gid,users){
+if (!uid) uid=0;
+return '<div id="BanDialog'+uid+'" style="padding:20px">'+
+    '<h2>'+IDL('paBanUsers')+'</h2>'+
+    '<p>'+IDL('paSureBanAll').replace("{count}",count)+"<br>"+users+"</p>"+
+          '<a href="#" onclick="vkBanUserList(this.getAttribute(\'user_list\'),\''+gid+'\',\'BanDialog'+uid+'\'); return false;" user_list="'+user_list+'">'+vkButton(IDL('banit'))+'</a>'+
+'</div>';
+}
+
+
+function vkRunBanAll(el,gid){
+  var idss=ge("banallusers").getAttribute("id_list");
+  //alert(idss);
+  if (idss){
+    var ids=idss.split(',');
+    var  users="";
+    for (var i=0;i<ids.length;i++){
+        users+=ge('vkusername'+ids[i]).innerHTML+'<br>';
+    }
+     ge("photos_container").innerHTML=vkSubmBanPhotosBox(ids.length,idss,0,gid,users);
+     //users+'<div id="banProc"></div>';
+    // vkBanUserList(idss,gid,ge("BanDialog0"),users);
+  }
+}
+function vkBanUserList(users,gid,info_el){
+  var idx=0;
+  users=users.split(',');
+  info_el=ge(info_el);
+  /*
+  var BanUser=function(id,gid,callback){
+    info_el.innerHTML="<h4>"+IDL('paBanUsers')+": "+(idx+1)+"/"+users.length+"</h4>";
+    AjGet("/groups_ajax.php?act=a_inv_by_link&b=1&page="+id+"&gid="+gid,function(req){
+      req=req.responseText;
+      req=req.replace('id="invForm"','class="invForm"');
+      var hash = req.match(/"hash".value="(.+)"/i)[1];
+      req=req.replace(hash,decodehash(hash));
+      div = document.createElement('div');
+      div.innerHTML=req;
+      var form = geByClass('invForm', div)[0];
+      var url="/groups_ajax.php?"+ajx2q(serializeForm(form));  
+      AjGet(url,callback);
+    }); 
+  }*/
+  var onDone=function(text){
+    if (idx<users.length){
+      info_el.innerHTML=vkProgressBar(idx+1,users.length,550,IDL('paBanUsers')+": "+(idx+1)+"/"+users.length)+'<br><br>'+text;
+	  //info_el.innerHTML="<h4>"+IDL('paBanUsers')+": "+(idx+1)+"/"+users.length+"</h4>";
+	  vkBanUserFunc('id'+users[idx],gid,onDone);
+    } else {
+		info_el.innerHTML=IDL('Done');
+		alert(IDL('Done'));
+	}
+    idx++;
+  }
+  onDone();
+}
+
+function vkAdmGetPhotosWithUsers(oid,aid,callback){	
+		var code='var a=API.photos.get({'+(oid<0?'gid':'uid')+':'+Math.abs(oid)+',aid:'+aid+'});'+
+		'var p=API.getProfiles({"uids":a@.user_id,fields:"uid,first_name,last_name"});'+
+		'return [a,p];'
+		dApi.call('execute',{code:code},callback);
+}
+function vkAlbumCheckDublicatUser(){//oid,aid
+  ge('photos_container').innerHTML=vkBigLdrImg;
+  vkDisableAlbumScroll();
+  var aoid=cur.moreFrom.match(/album(-?\d+)_(\d+)/);
+  var aid=aoid[2];
+  var oid=aoid[1];
+  var Allow_Count=prompt(IDL('EnterAllowPhotoCount'),'1');
+  if (!Allow_Count) Allow_Count=1;
+  vkAdmGetPhotosWithUsers(oid,aid,function(r){
+    var list=r.response[0];
+	var users_data=r.response[1];
+	var users={}
+	for(var i=0;i<users_data.length;i++){
+		users[users_data[i].uid]=users_data[i].first_name+' '+users_data[i].last_name;
+	}
+	//alert(print_r(list));
+    var uids={};
+    var uid;
+    ge("photos_container").innerHTML='<br>'+
+                                  '<a id="delchecked" style="cursor: hand;" onClick="vkRunDelCheckedPhotosList(); return false;">'+IDL('paDelChecked')+'</a>'+
+                                  '<span class="divider">|</span>'+
+                                  '<a style="cursor: hand;" onClick="vkDoCheck(1,\'vkphcheck\'); return false;">'+IDL('CheckAll')+'</a>'+
+                                  '<span class="divider">|</span>'+
+                                  '<a style="cursor: hand;" onClick="vkDoCheck(0,\'vkphcheck\'); return false;">'+IDL('UncheckAll')+'</a>'+
+                                  '<span class="divider">|</span>'+
+                                  '<a id="banallusers" style="cursor: hand;" onClick="vkRunBanAll(this,'+oid.match(/\d+/)[0]+'); return false;">'+IDL('paBanAll')+'</a>'+
+                                  '<span class="divider">|</span>'+
+                                  '<a id="bandelallusers" style="cursor: hand;" onClick="vkRunAllBanAndDelPhotos(this,'+oid.match(/\d+/)[0]+'); return false;">'+IDL('paBanAllAndDelPhotos')+'</a>'+
+                                  '<br><br>';
+                       
+    for (var i=0; i<list.length; i++){
+      uid=list[i].user_id;//owner_id//[1].match(/u(\d+)/)[1];
+      if (uids[uid]) {
+        uids[uid].count++;
+        uids[uid].ph[uids[uid].ph.length]=list[i];
+      } else {
+        uids[uid]={};
+        uids[uid].count=1;
+        uids[uid].ph=[list[i]];
+      }
+    }
+
+    var uid_list=[];
+    for (uid in uids)
+     if (uids[uid].count>Allow_Count){
+       uid_list[uid_list.length]=uid;
+       var html="";
+       
+       var del_list=[];
+       html+='<table id="album">';
+       for (var i=0;i<uids[uid].ph.length;i++){
+		   var pid=oid+'_'+uids[uid].ph[i].pid;
+		   var src=uids[uid].ph[i].src;
+		   del_list.push(pid);
+		   html+='<td><div id="ph'+pid+'">'+
+				 '<input type="checkbox" class="vkphcheck" vkphoto="'+pid+'" style="position:absolute;">'+
+				 '<a href="/photo'+pid+'" onclick="if (cur.cancelClick) return (cur.cancelClick = false); return showPhoto(\''+pid+'\', \''+cur.moreFrom+'\', {img: this, root: 1}, event)"><img src="'+src+'" style="max-width: 130px"></a>'+
+				 '</div></td>'+
+				 (( (i+1) % 4 == 0)?'</tr><tr>':'');
+       }
+        html+='</table>';
+        //.replace(/^0+/,"")
+        html='<div style="padding:0px; border:1px solid #808080;"><b><u><span style="padding:5px;" id="vkusername'+uid+'"><a href="/id'+uid+'">'+users[uid]+'</a></span></u></b>'+
+             '<a id="ban'+uid+'" style="cursor: hand;" onClick="javascript:vkBanUser(\''+uid+'\',\''+oid.match(/\d+/)[0]+'\'); return false;">[ '+IDL('banit')+' ]</a>'+
+             '<a id="delBtn'+uid+'" style="cursor: hand;" onClick="ge(\'vkDelUBox'+uid+'\').innerHTML=vkSubmDelPhotosBox('+del_list.length+',\''+del_list.join(',')+'\',\''+uid+'\'); return false;">'+IDL('paDelAllUserPhotos')+'</a>'+
+             ':<br>'+
+             '<div id="vkDelUBox'+uid+'"></div>'+html;//vkSubmDelPhotosBox(del_list.length,del_list.join(','));
+        
+       
+       //for (var i=0;i<uids[uid].ph.length;i++){html+='<a href="/photo'+uids[uid].ph[i][0]+'"><img src="'+uids[uid].ph[i][2]+'"></a>  '; }
+       html+='<br><br>';
+       ge("photos_container").innerHTML+=html+'</div>';
+     } 
+    ge("banallusers").setAttribute("id_list",uid_list.join(','));
+  });
+return false;
+}
+
+if (!window.vkopt_plugins) vkopt_plugins={};
+(function(){
+	var PLUGIN_ID = 'vkphadmin';
+	var PLUGIN_NAME = 'vk photo admin module';
+	
+	var ADDITIONAL_CSS='';
+	
+	/* FUNCTIONS */
+	var INIT = null;							// function()
+	var ON_NEW_LOCATION = null;					// function(nav_obj,cur_module_name);
+	var PROCESS_NEW_SCRIPT = null;				// function(file_name);
+	var ON_STORAGE = null; 		  				// function(command_id,command_obj);
+	var PROCESS_LINK_FUNCTION = null;			// function(link);
+	var PROCESS_NODE_FUNCTION = null;			// function(node);
+	var PHOTOVIEWER_ACTIONS	= vkPVAdminItems;	// function(photo_data); ||  String   
+	var ALBUM_ACTIONS = vkAlbumAdminItems;		// function(oid,aid);
+	
+	vkopt_plugins[PLUGIN_ID]={
+		Name:PLUGIN_NAME,
+		css:ADDITIONAL_CSS,
+		init:INIT,
+		onLocation:ON_NEW_LOCATION,
+		onLibFiles:PROCESS_NEW_SCRIPT,
+		onStorage :ON_STORAGE,
+		processLinks:PROCESS_LINK_FUNCTION,
+		processNode:PROCESS_NODE_FUNCTION,
+		pvActions:PHOTOVIEWER_ACTIONS,
+		albumActions:ALBUM_ACTIONS
+	};
+	if (window.vkopt_ready) vkopt_plugin_run(PLUGIN_ID);
+})();
+
+
+
+
+
+
 /* VIDEO */
 function vkVideoPage(){
    if (getSet(2)=='y'){
