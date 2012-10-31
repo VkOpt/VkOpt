@@ -189,6 +189,7 @@ function vkStyles(){
    #vk_stats_im_btn{margin-right:3px;}\
    .vk_photo_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -29px; line-height: 11px; }\
    .vk_msg_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -193px; line-height: 11px; }\
+   .vk_audio_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -221px; line-height: 11px; }\
    .vk_profile_links a{padding:3px;}\
    .vk_profile_links a:hover{background-color:#E1E7ED;}\
    .vk_profile_links{line-height:20px;}\
@@ -267,7 +268,15 @@ function vkStyles(){
       #vk_album_info {margin-left: -10px; margin-right: -10px;}\
       #vk_album_info h4{cursor:pointer; min-height:30px; padding:3px 10px}\
       #vk_album_info h4:hover{background-color: rgba(219, 227, 235, 0.5);}\
-      #vk_album_info h4 img{max-width:30px;max-height:30px; padding-right:3px;}\
+      #vk_album_info h4 img.small{max-width:30px;max-height:30px; margin-right:3px;}\
+      #vk_album_info h4 img:hover{box-shadow: 0px 0px 4px #717171;}\
+      #vk_album_info h4 img.big{max-width:155px;max-height:170px; margin:0 auto; margin-bottom:4px; display:none;}\
+      #vk_album_info.view_big .small{display:none;}\
+      #vk_album_info.view_big .big{display:block;}\
+      #vk_album_info h4 .fix_btn{opacity:0;}\
+      #vk_album_info h4:hover .fix_btn{opacity:0.4;}\
+      #vk_album_info h4 .fix_btn:hover{opacity:0.7;}\
+      #vk_album_info.fixed_album h4 .fix_btn,#vk_album_info.fixed_album h4 .fix_btn:hover{opacity:1;}\
       #vk_album_info .bio{padding:4px;}\
       .vk_album_thumb{padding:3px;}\
       .vk_album_tracks ul{list-style-type: disc; margin:0px; padding:0px; padding-left:4px; margin-left: 17px; color:#AAA;}\
@@ -500,6 +509,7 @@ function vkStyles(){
          .vk_edit_ico:hover {opacity:1}\
          .cur_section .vk_edit_ico{       background-position: -151px -51px; }\
          \
+         .vk_album_done_link  .vk_album_count{display:none;}\
 	";
 	main_css+=vk_plugins.css();
 
@@ -1248,7 +1258,7 @@ function vkGetCalendar(){
 			<div class="calendar_header">\
 			  <div class="right arrow fl_r"><a href="" onclick="vk_cur.vk_calGetMonth(1); return false;"></a></div>\
 			  <div class="left arrow fl_r"><a href="" onclick="vk_cur.vk_calGetMonth(-1); return false;"></a></div>\
-			  <div class="header_month fl_r" id="vk_calendar_header">VkOpt 2011</div>\
+			  <div class="header_month fl_r" id="vk_calendar_header">VkOpt</div>\
 			</div>\
 			<div id="vk_calendar_table_wrap"></div>\
 			<div id="vk_calendar_events" style="display:none"  onmouseover="leftBlockOver(\'_vk_cal\')" onmouseout="leftBlockOut(\'_vk_cal\')">\

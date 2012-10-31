@@ -140,24 +140,17 @@ function vkPVSaveAndMover(){
       return;
    }*/
    var oid=vk.id;
-   var aid=0;
+   var aid=vkGetVal('vk_pru_album') || 0;//0;		
    var pid=parseInt(cur.pvCurPhoto.id.match(/(-?\d+)_(\d+)/)[2]);
 
-   ge('vk_ph_save_move').innerHTML='<div id="vk_save_selector_label">'+IDL('SelectAlbum')+'</div><div id="vk_save_selector">'+vkLdrImg+'</div>';
+   ge('vk_ph_save_move').innerHTML='<div id="vk_save_selector_label">'+IDL('SelectAlbum')+'</div><div id="vk_ph_save_move_ok"></div><div id="vk_save_selector">'+vkLdrImg+'</div>';
    
    var sel=function(){
       stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
          var albums=_vk_albums_list_cache[''+oid];
          hide('vk_ph_album_info');
          var def_aid=aid;
-         cur.vk_pvMoveToAlbum = new Dropdown(ge('vk_save_selector'), albums, {
-           width: 165,
-           selectedItems: [def_aid],
-           autocomplete: (albums.length > 7),
-           onChange: function(val) {
-               if (!intval(val)) {
-                  cur.vk_pvMoveToAlbum.val(def_aid);
-               }
+         var on_change=function(){
                //alert(cur.vk_pvMoveToAlbum.val());
                var to_aid=cur.vk_pvMoveToAlbum.val();
                var to_info=cur.vk_pvMoveToAlbum.val_full();
@@ -166,19 +159,33 @@ function vkPVSaveAndMover(){
 
                var listId = cur.pvListId, index = cur.pvIndex, ph = cur.pvData[listId][index];
                var needmove=function(t){
-                  t=t.replace(/<a[^<>]+>[^<>]+<\/a>/,'<a href="/album'+oid+'_'+to_aid+'">'+to_info[1]+'</a>');
+                  t=t.replace(/<a[^<>]+>[^<>]+<\/a>/,'<a href="/album'+oid+'_'+to_aid+'" class="vk_album_done_link">'+to_info[1]+'</a>');
                   dApi.call('photos.get',{uid:vk.id,aid:'saved'},function(r){
                      var ph=r.response.pop();
                      dApi.call('photos.move',{pid:ph.pid,target_aid:to_aid,oid:oid},function(r){
+                        vkSetVal('vk_pru_album',to_aid);
                         //ge('vk_save_selector_label').innerHTML=IDL('Add');
                         ge('vk_ph_save_move').innerHTML='';//'ok - album'+oid+'_'+to_aid;
                         showDoneBox(t);
                      })                 
                   })
                }
-               ajax.post('al_photos.php', {act: 'save_me', photo: ph.id, list: listId, hash: ph.hash}, {onDone: needmove});
+               ajax.post('al_photos.php', {act: 'save_me', photo: ph.id, list: listId, hash: ph.hash}, {onDone: needmove});         
+         }
+         cur.vk_pvMoveToAlbum = new Dropdown(ge('vk_save_selector'), albums, {
+           width: 125,
+           selectedItems: [def_aid],
+           autocomplete: (albums.length > 7),
+           onChange: function(val) {
+               if (!intval(val)) {
+                  cur.vk_pvMoveToAlbum.val(def_aid);
+               }
+               on_change();
            }
-         }); 
+         });
+         ge('vk_ph_save_move_ok').className="button_gray fl_r";
+         ge('vk_ph_save_move_ok').innerHTML='<button style="padding:3px 4px">OK</button>'
+         ge('vk_ph_save_move_ok').onclick=on_change;         
       });
    }
    if (_vk_albums_list_cache[''+oid])
@@ -187,9 +194,14 @@ function vkPVSaveAndMover(){
       dApi.call('photos.getAlbums',{uid:vk.id},function(r){
          var data=r.response;
          var albums = [];
+         var albums_full=[];
          for (var i=0; i<data.length;i++)
-            albums.push([data[i].aid,data[i].title]);
-         _vk_albums_list_cache[''+oid]=albums;
+            if (data[i].size<501)
+               albums.push([data[i].aid,data[i].title,data[i].size+""]);
+            else
+               albums_full.push([data[i].aid,data[i].title,data[i].size+""]);
+               
+         _vk_albums_list_cache[''+oid]=albums.concat(albums_full);
          sel();
       }); 
    return false;
@@ -1861,7 +1873,7 @@ function vkAudioNode(node){
      if (!divs[i].id || divs[i].hasAttribute('vk_ok')) continue;
      if (divs[i].id.split('play')[1]){
          var id=divs[i].id.split('play')[1];
-		 if (ge('down'+id)) continue;
+		 //if (ge('down'+id)) continue;
          var data = (node?divs[i].parentNode.parentNode.getElementsByTagName('input')[0]:ge('audio_info' + id)).value.split(',');
          var url=data[0];
          if (url.indexOf('/u00000/')!=-1) continue;
@@ -1884,6 +1896,7 @@ function vkAudioNode(node){
 		     //if (SearchLink && el){el.innerHTML=vkAudioDurSearchBtn(el.innerText,name,id);/* "<a href='/search?c[section]=audio&c[q]="+name+"'>"+el.innerText+"</a>";*/}
          if (download){ 
             divs[i].setAttribute('style','width:17px;'); 
+            divs[i].setAttribute('vk_ok','1');
             makedownload(url,divs[i],id,name+'.mp3');
          }    
       }  
@@ -2817,14 +2830,32 @@ if (!window.vkopt_plugins) vkopt_plugins={};
 
 
 var preview_album_info_tpl='<div class="audio_filter_sep"></div>\
-                       <h4 onclick="slideToggle(\'vk_album_full_info\');"><img class="fl_l" src="%IMG%"><span class="divide_"><b>%ARTIST%</b><br>%NAME%</span></h4>\
+                       <h4 onclick="slideToggle(\'vk_album_full_info\');">\
+                           <img onclick="vkViewAlbumThumb(event);" class="big" src="%IMG2%">\
+                           <img onclick="vkViewAlbumThumb(event);" class="small fl_l" src="%IMG%"><span class="divide_">\
+                           <div class="fl_r fix_btn" onclick="vkViewAlbumFix(event)" onmouseover="vkViewAlbumFix(this,true)"><span class="vk_audio_icon"></span></div>\
+                           <b>%ARTIST%</b><br>%NAME%</span>\
+                       </h4>\
                        <div id="vk_album_full_info" style="display:none;">\
                           <!--<img class="fl_r vk_album_thumb" src="%IMG%">-->\
                           <div class="vk_album_tracks">%TRACKS%</div>\
                        </div>\
 ';
 
-var vk_alb_last_track=''
+var vk_alb_last_track='';
+
+function vkViewAlbumFix(e,over){
+   if (over){
+      showTooltip(e, {text: IDL('FixAlbumInfo'), showdt: 0, black: 1, shift: [11, 0, 0]});
+      return;
+   }
+   cancelEvent(e);
+   toggleClass('vk_album_info','fixed_album');
+}
+function vkViewAlbumThumb(ev){
+   cancelEvent(ev);
+   toggleClass('vk_album_info','view_big');
+}
 function vkViewAlbumInfo(artist,track){
    if (getSet(73)!='y') return;
    var p=ge('album_filters');
@@ -2835,6 +2866,7 @@ function vkViewAlbumInfo(artist,track){
    } else if (vk_alb_last_track==artist+'-'+track && ge('vk_album_info').innerHTML!=''){
       return;
    }
+   if (hasClass('vk_album_info','fixed_album')) return;
    ge('vk_album_info').innerHTML='';
    vk_alb_last_track=artist+'-'+track;
    vkGetAlbumInfo(artist,track,function(data,tracks){
@@ -2863,12 +2895,14 @@ function vkViewAlbumInfo(artist,track){
                                     .replace(/%NAME%/g,data.name+(year?' ('+year+')':''))
                                     .replace(/%ARTIST%/g,data.artist)
                                     .replace(/%IMG%/g,data.image[1]['#text'] || '/images/question_c.gif')
+                                    .replace(/%IMG2%/g,data.image[2]['#text'] || '/images/question_c.gif')
                                     .replace(/%TRACKS%/g,html);
       } else {
          html=preview_album_info_tpl.replace(/%ALBUM%/g,IDL('Album'))
                                     .replace(/%NAME%/g,'')
                                     .replace(/%ARTIST%/g,'<a href="'+data.url+'" target="_blank">'+data.name+'</a>')
                                     .replace(/%IMG%/g,data.image[1]['#text'] || '/images/question_c.gif')
+                                    .replace(/%IMG2%/g,data.image[2]['#text'] || '/images/question_c.gif')
                                     .replace(/%TRACKS%/g,(data.bio.summary?'<div class="bio">'+data.bio.summary+'</div>':''));      
       }
       ge('vk_album_info').innerHTML=html;
