@@ -324,7 +324,7 @@ function vkPhotosPage(){
 				geByClass('t0')[0].appendChild(li);
 				
 				var p_options = [];
-				if (!vkbrowser.chrome && !vkbrowser.safari)
+				//if (!vkbrowser.chrome && !vkbrowser.safari)
                p_options.push({l:IDL('SaveAlbumAsHtml'), onClick:function(item) {
                   vkGetPageWithPhotos(oid,aid);
                }});
@@ -516,7 +516,7 @@ function vkPhotoUrlUpload(url){
 }
 //vkPhotoUrlUpload('http://cs9543.vk.com/u3457516/124935920/w_5603bf45.jpg')
 
-
+// ADMIN MODULE
 function vkAlbumAdminItems(){
    var a=[];
    var p=geByClass('photos_tabs')[0];
@@ -862,9 +862,22 @@ function vkBanUserList(users,gid,info_el){
 }
 
 function vkAdmGetPhotosWithUsers(oid,aid,callback){	
-		var code='var a=API.photos.get({'+(oid<0?'gid':'uid')+':'+Math.abs(oid)+',aid:'+aid+'});'+
+		
+      switch(aid){
+         case '0':
+            aid='profile';
+            break;
+         case '00':
+            aid='wall';
+            break;
+         case '000':
+            aid='saved';
+            break;
+      }
+      var code='var a=API.photos.get({'+(oid<0?'gid':'uid')+':'+Math.abs(oid)+',aid:"'+aid+'"});'+
 		'var p=API.getProfiles({"uids":a@.user_id,fields:"uid,first_name,last_name"});'+
 		'return [a,p];'
+      console.log(code);
 		dApi.call('execute',{code:code},callback);
 }
 function vkAlbumCheckDublicatUser(){//oid,aid
