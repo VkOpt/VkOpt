@@ -2589,11 +2589,31 @@ vkLastFM={
       });      
    },
    set_love_icon:function(is_loved){
+      var fm=vkLastFM;
       var els=geByClass('lastfm_fav_icon');
       for (var i=0; i<els.length;i++){ 
-         (is_loved?removeClass:addClass)(els[i],'loved');
+         var el=els[i];
+         (is_loved?removeClass:addClass)(el,'loved');
+         
+         if (el.tt) el.tt.hide();
+         el.onmouseover=function(e){
+            //alert('Qwr');
+            //fm.tip(el, IDL(is_loved?'LastFMAddToLoved':'LastFMRemoveFromLoved'));
+            var el=e.target;
+            var text=IDL(!hasClass(el,'loved')?'LastFMAddToLoved':'LastFMRemoveFromLoved');
+            
+            if (el.tt && el.tt.container) {
+               val(geByClass1('gp_tip_text', el.tt.container), text);
+            }
+            
+            showTooltip(el, {
+               content: '<div class="gp_tip_text">' + text + '</div>',
+               className: 'gp_tip',
+               showdt: 0, black: 1, shift: [11, 0, 0]});
+         }
       }   
    },
+
    on_love_btn:function(el){
       var fm=vkLastFM;
       var is_loved=hasClass(el,'loved');
@@ -2838,7 +2858,7 @@ vkLastFM={
                show(el);
                if (el.tt) el.tt.hide();
                el.onmouseover=function(){
-                  fm.tip(el, IDL('TrackNotScrobbled'));;
+                  fm.tip(el, IDL('TrackNotScrobbled'));
                }
                addClass(el,'vk_lastfm_fail_icon');//el.className='vk_lastfm_fail_icon';
                break;             
