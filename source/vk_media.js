@@ -2548,6 +2548,83 @@ vkLastFM={
          }
       });
 	},
+   love:function(){
+      console.log('last.fm love track');
+      var fm=vkLastFM;
+      var audio_info=fm.audio_info();
+      fm.lastfm.track.love({ 
+            artist: audio_info.artist,
+            track: audio_info.title
+         },
+         {
+            key: fm.session_key
+         },
+         {success: function(data){
+            //showDoneBox('loved',{out:800});
+            //console.log('love done');
+         }, error: function(code, message){
+            if (code==4 || code==9) fm.auth();     
+            vklog('last.fm error ['+code+']:'+message);
+      }}); 
+      
+   },
+   unlove:function(){
+      console.log('last.fm unlove track');
+      var fm=vkLastFM;
+      var audio_info=fm.audio_info();
+      fm.lastfm.track.unlove({ 
+            artist: audio_info.artist,
+            track: audio_info.title
+         },
+         { key: fm.session_key },
+         {
+            success: function(data){
+               //showDoneBox('unlove',{out:800});
+               //console.log('unlove done');
+            }, 
+            error: function(code, message){
+               if (code==4 || code==9) fm.auth();     
+               vklog('last.fm error ['+code+']:'+message);
+            }
+      });      
+   },
+   set_love_icon:function(is_loved){
+      var els=geByClass('lastfm_fav_icon');
+      for (var i=0; i<els.length;i++){ 
+         (is_loved?removeClass:addClass)(els[i],'loved');
+      }   
+   },
+   on_love_btn:function(el){
+      var fm=vkLastFM;
+      var is_loved=hasClass(el,'loved');
+      if (is_loved){
+         fm.unlove();
+      } else {
+         fm.love();
+      }
+      fm.set_love_icon(is_loved);
+   },
+   get_loved:function(){
+      var fm=vkLastFM;
+      var done=function(){
+         var lt=fm.loved_tracks.track;
+      };
+      
+      if (!fm.loved_tracks){
+         fm.lastfm.user.getLovedTracks({user:fm.username,limit:1000},{
+               success: function(data) {
+                  console.log(data);
+                  fm.loved_tracks=data.lovedtracks;
+                  done();
+               },
+               error: function(code, message) {
+                  console.log(code, message)
+               }
+            });
+      } else {
+         done();
+      }
+   },
    scrobble_timer:function(audio_info){
       var fm=vkLastFM;
       if (fm.s_timer){ 
@@ -2611,12 +2688,14 @@ vkLastFM={
       // <span id="_" class="duration_ fl_r" style="width:60px; padding-left:6px;">LastFM</span> before id=ac_duration
       /*
           - top player
+
       */ 
      var fm=vkLastFM;
      var controls=//'<div class="lastfm_status">lastfm</div>';  id_="vk_lastfm_status_icon" id_="vk_lastfm_icon" 
          '<div class="lastfm_status">\
             <div class="fl_l lastfm_status_icon"></div>\
             <div class="fl_r vk_lastfm_icon'+(fm.enable_scrobbling?'':' disabled')+'" onclick="vkLastFM.toggle();"  onmousedown="cancelEvent(event)"></div>\
+            <div class="fl_r lastfm_fav_icon" onclick="vkLastFM.on_love_btn(this);"></div>\
          </div>';
      var gp=ge('gp_small');
      if (gp && !geByClass('lastfm_status',gp)[0]){
@@ -2707,6 +2786,11 @@ vkLastFM={
             }
             func(els[i]);
          }
+         var vis=isVisible(els[0]);
+         var els=geByClass('lastfm_fav_icon');
+         for (var i=0; i<els.length;i++){ 
+            (vis?show:hide)(els[i]);
+         }
       };
             
       //var el=ge('vk_lastfm_status_icon');
@@ -2783,6 +2867,7 @@ vkLastFM={
       switch (act) {
          case 'load':
                if (fm.last_track.aid == info.aid) return;
+               fm.set_love_icon(true);
                fm.last_track=info;
                vkViewAlbumInfo(info.artist,info.title);
                if (fm.s_timer) fm.s_timer.pause();
@@ -2827,11 +2912,14 @@ if (!window.vkopt_plugins) vkopt_plugins={};
    var PLUGIN_ID = 'vklastfm';
    var PLUGIN_NAME = 'LastFM scrobbler';
    var ADDITIONAL_CSS='\
-   #vk_lastfm_icon, .vk_lastfm_icon{cursor:pointer; height:16px; width:16px; margin-left: 5px; background:url("'+vkLastFM.res.blue.last_fm+'") 50% 50% no-repeat;}\
+   #vk_lastfm_icon, .vk_lastfm_icon{cursor:pointer; height:16px; width:16px; margin-left: 2px; background:url("'+vkLastFM.res.blue.last_fm+'") 50% 50% no-repeat;}\
    #vk_lastfm_icon.disabled,.vk_lastfm_icon.disabled{opacity:0.5;}\
    #vk_lastfm_small_icons{position:absolute; margin-left:-16px;}\
    #gp.reverse #vk_lastfm_small_icons{margin-left: 133px;}\
    #vk_lastfm_icons{position:absolute; margin-left:-40px; height:16px; width:40px;}\
+   .lastfm_fav_icon{cursor:pointer; background:url(\'http://vk.com/images/icons/like.gif\'); width:10px; height:10px; margin-top:4px; margin-left:1px; opacity:0.4 }\
+   .lastfm_fav_icon:hover{opacity:0.7;}\
+   .lastfm_fav_icon.loved{opacity:1;}\
    \
    .vk_lastfm_playing_icon{float:left; height:16px; width:11px; background:url("'+vkLastFM.res.blue.playing_icon+'") 50% 50% no-repeat;}\
    .vk_lastfm_paused_icon{float:left; height:16px; width:11px; background:url("'+vkLastFM.res.blue.paused_icon+'") 50% 50% no-repeat;}\
@@ -2843,6 +2931,7 @@ if (!window.vkopt_plugins) vkopt_plugins={};
    #gp .active .vk_lastfm_paused_icon{background-image:url("'+vkLastFM.res.white.paused_icon+'");}\
    #gp .active .vk_lastfm_ok_icon{background-image:url("'+vkLastFM.res.white.scrobble_ok+'");}\
    #gp .active .vk_lastfm_fail_icon{background-image:url("'+vkLastFM.res.white.scrobble_fail+'");}\
+   #gp .active .lastfm_fav_icon{background-position: 0 -10px;}\
    \
    .lastfm_ac .vk_lastfm_icon, .lastfm_pd .vk_lastfm_icon{background-image:url("'+vkLastFM.res.blue.last_fm+'");}\
    .lastfm_ac .vk_lastfm_playing_icon, .lastfm_pd .vk_lastfm_playing_icon{background-image:url("'+vkLastFM.res.blue.playing_icon+'");}\

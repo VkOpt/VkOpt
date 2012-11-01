@@ -11,7 +11,7 @@
 //
 /* VERSION INFO */
 var vVersion	= 211;
-var vBuild = 121031;
+var vBuild = 121101;
 var vPostfix = ' ';
 if (!window.vk_DEBUG) var vk_DEBUG=0;
 
@@ -333,6 +333,24 @@ var TextPasteSmiles={
 	  }
 	}
 
+function vkCheckLoadedScripts(){
+   var obj={
+      "vk_face"      :!!window.SmileNode,
+      "vk_lib"       :!!window.vkApis,
+      "vk_main"      :!!window.vkProcessResponseNode,
+      "vk_media"     :!!window.vkLastFM,
+      "vk_page"      :!!window.vkToTopBackLink,
+      "vk_resources" :!!window.vkSound,
+      "vk_settings"  :!!window.vksettobj,
+      "vk_skinman"   :!!window.vkShowSkinMan,
+      "vk_txtedit"   :!!window.vkAddSmilePanel,
+      "vk_users"     :!!window.ProcessUserPhotoLink,
+      "vklang"       :!!window.vk_lang_en,
+      "vkopt"        :!!window.vkonDOMReady
+   }
+   console.log('result:',obj)
+  //vkLastFM.get_loved
+}
 
 ////////// INIT ////////
 function vkonDOMReady(fn, ctx){
