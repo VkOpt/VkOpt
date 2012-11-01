@@ -1454,7 +1454,7 @@ function vkGroupRemoveAllInvitation(add_btn){
       } else if(nav.objLoc['tab']=='invites') {
          var p=ge('group_p_section_invites');
          if (!p) return;
-         btn=vkCe('div',{"class":'button_gray button_wide', id:'vkillinv'},'<button onclick="vkGroupRemoveAllInvitation();"><small>'+IDL('Kill_Invitation')+'</small></button>');
+         btn=vkCe('div',{"class":'button_gray button_wide', id:'vkillinv'},'<button onmouseover="showTooltip(this, {text: \'max 500 per day\', showdt: 0, black: 1});" onclick="vkGroupRemoveAllInvitation();"><small>'+IDL('Kill_Invitation')+'</small></button>');
          insertAfter(btn,p);
       }
       
@@ -1508,7 +1508,7 @@ function vkGroupRemoveAllInvitation(add_btn){
             
             //ge('vk_scan').innerHTML=vkProgressBar(1,1,310,' ');
             for (var i=0;i<ms.length;i++) ids.push(ms[i]);
-            if (!ms[0]){ 
+            if (!ms[0] || ids.length>=500){ 
                process();	
                return;	
             } else {
