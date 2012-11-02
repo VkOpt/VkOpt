@@ -3144,7 +3144,6 @@ function vkAlbumCollectPlaylist(){
      
       //progressbar
       var name=vk_current_album_info.artist+ '-'+vk_current_album_info.tracks[idx];
-      ge('vk_scan_info').innerHTML+=name+'<br>';
       var query={
                act: "search", offset: 0, sort: 0, performer: 0,
                id     : cur.id, 
@@ -3164,10 +3163,12 @@ function vkAlbumCollectPlaylist(){
                }
                //console.log(info[5],info[6]);
             }
-            if (au)
+            if (au){
+               ge('vk_scan_info').innerHTML+=name+'<br>';
                result.appendChild(au);
-            else 
-               alert('Search failed: '+name);
+            }
+            else
+               ge('vk_scan_info').innerHTML+='<b>Search failed:</b> '+name+'<br>'; 
             idx++;
             get_track();
          }
