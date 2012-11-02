@@ -280,6 +280,7 @@ function vkStyles(){
       #vk_album_info .bio{padding:4px;}\
       .vk_album_thumb{padding:3px;}\
       .vk_album_tracks ul{list-style-type: disc; margin:0px; padding:0px; padding-left:4px; margin-left: 17px; color:#AAA;}\
+      .vk_album_tracks .vk_tracks_search_btn{padding:3px 10px;}\
       \
       /* Display full audio names*/\
       .audio .title_wrap{white-space: normal !important; width: 245px; !important; }\
