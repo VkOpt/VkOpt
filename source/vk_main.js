@@ -33,7 +33,7 @@ function vkInj(file){
     case 'photoview.js':   vkPhotoViewer();	break;
 	case 'videoview.js':	   vkVideoViewer();	break;
 	case 'audio.js':		   vkAudios();		break;
-   case 'new_player.js':	vkAudioPlayer();		break;
+   case 'audioplayer.js':	vkAudioPlayer();		break;
 	case 'feed.js':			vkFeed();		break;
 	case 'search.js':		   vkSearch();		break;
 	case 'profile.js':		vkProfile();	break;

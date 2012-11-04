@@ -1229,7 +1229,11 @@ function vkVidDownloadLinks(vars){
 		if (vars.uid <= 0) {
 			return "http://" + vars.host + "/assets/videos/" + vars.vtag + "" + vars.vkid + ".vk.flv";
 		}
-		return vars.host + "u" + vuid(vars.uid) + "/video/" + vars.vtag + ".flv";
+      var host = (vars.host.substr(0, 4) == 'http')
+		  ? vars.host
+		  : 'http://cs' + vars.host + '.' + 'vk.com' + '/';
+        
+		return host + "u" + vuid(vars.uid) + "/video/" + vars.vtag + ".flv";
 	}
 	var pathToHD=function(res) {
 		var s = (vars.host.substr(0, 4) == 'http')
@@ -1688,12 +1692,36 @@ function vkTagAllFriends(vid,hash){
 
 function vkAudioPlayer(){
    /*
-   if (getSet(0)=='y' && INJ_AUDIOPLAYER_DUR_MOD){
+    && INJ_AUDIOPLAYER_DUR_MOD){
       window.vkAudioDurMod=function(res){   return vkAudioDurSearchBtn(res,audioPlayer.lastSong[5]+' - '+audioPlayer.lastSong[6],audioPlayer.id) }
       Inj.Replace('audioPlayer.setCurTime','dur.innerHTML = res','dur.innerHTML = vkAudioDurMod(res)');
       Inj.Replace('audioPlayer.setGraphics','dur.innerHTML = res','dur.innerHTML = vkAudioDurMod(res)');
    }*/
+   if (getSet(75)=='y') vk_audio_player.gpCtrlsInit();
 }
+
+vk_audio_player={
+   gpCtrlsStyle:'\
+   .vka_ctrl {  background: url(/images/icons/audio_icons.png) no-repeat scroll 0 0 transparent; opacity:0.7; height: 11px;  width: 13px;  margin: 0;  float: left;}\
+   .vka_ctrl:hover{opacity:1;}\
+   .vka_ctrl.prev {  background-position: -3px -52px;}\
+   .vka_ctrl.next {  background-position: -18px -52px;}\
+   .gp_vka_ctrls{position:absolute; width:40px; margin-top:34px; margin-left: 5px; padding:3px; border-radius:0 0 4px 4px; background:rgba(218, 225, 232, 0.702); }\
+   ',
+   gpCtrlsInit:function(){
+      Inj.End('audioPlayer.setGraphics','vk_audio_player.gpCtrls();');
+   },
+   gpCtrls:function(){
+      var p=ge('audio_global');
+      if (!p || p.innerHTML.indexOf('gp_vka_ctrls')!=-1) return;
+      var ctrl=vkCe('div',{'class':'gp_vka_ctrls'},'\
+                     <a class="vka_ctrl prev" onclick="audioPlayer.prevTrack(); return false;"></a>\
+                     <a class="vka_ctrl next" style="float:right" onclick="audioPlayer.nextTrack(); return false;"></a>');
+      p.insertBefore(ctrl,p.firstChild);
+   }
+}
+
+
 function vkAudios(){		
 	if (getSet(0)=='y'){
 		/*

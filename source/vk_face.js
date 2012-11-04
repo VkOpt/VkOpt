@@ -253,6 +253,7 @@ function vkStyles(){
       .choose_audio_row {height:auto !important;}\
       .choose_audio_row a.choose{margin-top: 0px !important; padding-bottom: 2px !important; padding-top:2px !important;}\
 	";
+   
 	//additional audio styles
 	var img="data:image/gif;base64,R0lGODdhEAARALMAAF99nf///+7u7pqxxv///8nW4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACwAAAAAEAARAAAEJpCUQaulRd5dJ/9gKI5hYJ7mh6LgGojsmJJ0PXq3JmaE4P9AICECADs=";
 	main_css+='\
@@ -306,6 +307,8 @@ function vkStyles(){
       /*.audios_module .audio .title_wrap { width: 318px !important;}*/\
       #vk_audio_fr_refresh{float:right; font-size:19px; border-left:1px solid #DDD; padding:0 5px;}\
 	';
+   main_css+=vk_audio_player.gpCtrlsStyle;
+   
    //video downloads styles
    main_css+="\
      .vk_down_icon{\

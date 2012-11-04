@@ -582,6 +582,7 @@ function vkInitSettings(){
       
       {id:7,  text:IDL("seScroolPhoto")},
       {id:73, text:IDL("seLoadAudioAlbumInfo")},
+      {id:75, text:IDL("seAPlayerCtrls")},
       {id:43, text:IDL("seAudioSize")}
     ],
     Users:[
@@ -668,7 +669,7 @@ function vkInitSettings(){
 		{id:34, text:IDL("seSwichTextChr")}	
     ]
   };	  
-	//LAST 74
+	//LAST 75
 	
 	vkSetsType={
       "on"  :[IDL('on'),'y'],
