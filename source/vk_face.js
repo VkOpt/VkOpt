@@ -515,6 +515,8 @@ function vkStyles(){
          \
          .vk_album_done_link  .vk_album_count{display:none;}\
 	";
+   main_css+=vk_board.css;
+   main_css+=vk_photos.css;
 	main_css+=vk_plugins.css();
 
 	vkaddcss(main_css);

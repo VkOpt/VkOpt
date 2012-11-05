@@ -405,71 +405,6 @@ function vkProcessProfileBday(node){
    }
 }
 
-/*
-// @name Vkontakte Calculate Age
-// @namespace http://polkila.googlecode.com
-// @author Васютинский Олег http://vasyutinskiy.ru
-
-function VkCalcAge(){
-var t = ge('profile_info').parentNode;//('rightColumn').childNodes[3];personal
-if (!t) return;
-  var byear = /c[\[%5B]{1,3}byear[\]%5D]{1,3}=([0-9]{4})/.exec(t.innerHTML);
-  var bdate = /c[\[%5B]{1,3}bday[\]%5D]{1,3}=([0-9]{1,2})[&amp;]{1,5}c[\[%5B]{1,3}bmonth[\]%5D]{1,3}=([0-9]{1,2})/.exec(t.innerHTML);
-  var _href='';
-  var date_info='';
- 
-  //if (!byear) return;
-  //alert (bdate[1]+'\n'+bdate[2]+'\n'+byear[1]);
-  var lang = parseInt(vkgetCookie('remixlang')), _sign_ = '', now = new Date();
-  if (byear){
-  var age = now.getFullYear() - byear[1];
-	if (bdate && bdate[2]>now.getMonth()+1) age--;
-	else if (bdate && bdate[2]==now.getMonth()+1 && bdate[1]>now.getDate()) age--;
-
-  date_info+=langNumeric(age, vk_lang["vk_year"]);// age+' '+_years_;
-  }
-
-	if (bdate){
-      var signs = new Array('&#1050;&#1086;&#1079;&#1077;&#1088;&#1086;&#1075;','&#1042;&#1086;&#1076;&#1086;&#1083;&#1077;&#1081;','&#1056;&#1099;&#1073;&#1099;','&#1054;&#1074;&#1077;&#1085;','&#1058;&#1077;&#1083;&#1077;&#1094;','&#1041;&#1083;&#1080;&#1079;&#1085;&#1077;&#1094;&#1099;','&#1056;&#1072;&#1082;','&#1051;&#1077;&#1074;','&#1044;&#1077;&#1074;&#1072;','&#1042;&#1077;&#1089;&#1099;','&#1057;&#1082;&#1086;&#1088;&#1087;&#1080;&#1086;&#1085;','&#1057;&#1090;&#1088;&#1077;&#1083;&#1077;&#1094;');
-		var lastD = new Array(20,19,20,20,21,21,22,23,23,23,22,21);
-		var signN = bdate[2]-1;
-		if (bdate[1]>lastD[signN]) signN = (signN+1) % 12;
-		_sign_ = signs[signN];
-	}
-
-  if (date_info.length>0) date_info+=', '
-  
-  
-  var alinks=document.getElementsByTagName('a');
-
-  var rhdr='/search?c[section]=people&c[bday]=';
-  var total=2;
-  for(i = 0; i<alinks.length; i++ ){
-    var lnk=alinks[i];
-    if(lnk.href && lnk.href.indexOf(rhdr)!=-1) {
-      total--;
-      lnk.parentNode.innerHTML+=' ('+date_info+_sign_.replace(/dateYear/g,'dateYear'+total)+' '+_href+')';
-      // cur.options.info[1]
-    }
-    if (!total) break;
-  }
-  //vk.com/search?c[section]=people&c[bday]=28&c[bmonth]=4
-  //vk.com/search?c[section]=people&c[byear]=1991
-  if (cur.options.info){
-    //alert(cur.options.info[0].match(/(c\[byear\]=[^>]+>[^<>]+<\/a>)/));//http://vk.com/search?c[section]=people&c[bday]=6&c[bmonth]=5
-	var r1=/(c\[byear\]=[^>]+>[^<>]+<\/a>)/;
-	r1=cur.options.info[0].match(r1)?r1:/(c\[bmonth\]=[^>]+>[^<>]+<\/a>)/;
-	cur.options.info[0]=cur.options.info[0].replace(r1,"$1"+' ('+date_info+_sign_.replace(/dateYear/g,'dateYear'+0)+' '+_href+')');
-    cur.options.info[1]=cur.options.info[1].replace(r1,"$1"+' ('+date_info+_sign_.replace(/dateYear/g,'dateYear'+1)+' '+_href+')');
-  }
-
-   if(ge('checkAgeLink')) {
-      if(window.vk_cur && vk_cur.vk_calEvents) ge('checkAgeLink').onclick();
-      else if (getSet(27)=='y') Inj.Wait('window.vk_cur && vk_cur.vk_calEvents',ge('checkAgeLink').onclick);
-   }
-}
-//*/
-
 function status_icq(node) { //add image-link 'check status in ICQ'
   var t,i,icq,skype=null;
   var labels=geByClass('label',node);
@@ -1553,6 +1488,92 @@ function vkToTopBackLink(){
    };
    if (window._stlLeft) extend(_stlLeft, s);
    if (window._stlSide)  extend(_stlSide, s);
+}
+
+
+vk_board={
+   css:'\
+      .vk_bp_other_posts{padding-left:65px;}\
+      .vk_bp_other_posts .bp_post{width: 530px;}',
+   get_user_posts:function(user_href,el){// add cancel btn && fix scroll
+      var start_offset=cur.pgOffset;
+      var cur_offset=start_offset;
+      var user=user_href.split('/').pop();
+      var abort=false;
+      el=ge(el);
+      var p=el;//geByClass('bp_info',el)[0];
+      var rx=/post(-\d+)_(\d+)/;
+      var last_id=parseInt(el.id.match(rx)[2]);
+      var idprogr=el.id+'_progress';
+      var idres=el.id+'_other';el.id+'_results'
+      var idcont=el.id+'_results';
+      var idctrls=el.id+'_ctrls';
+      var panel=ge(idcont);
+      if (panel) re(panel);
+      panel=vkCe('div',{id:idcont,"class":'vk_bp_other_posts'},'<div id="'+idres+'"><div class="vk_bp_separator"></div></div>\
+                     <div id="'+idctrls+'" > <div class="button_blue fl_r"><button>'+IDL('Cancel')+'</button></div> <div id="'+idprogr+'"></div></div>')
+      p.insertBefore(panel,p.firstChild);
+      var btn=geByTag1('button');
+      var status=function(){
+         ge(idprogr).innerHTML=vkProgressBar(start_offset-cur_offset,start_offset,310, 'Scaning... %'); 
+      }
+      var done=function(){
+         hide(idctrls);
+      }
+      var scan=function(){
+         if (cur_offset<=0 || abort){
+            done();
+         } else {
+            ajax.post("/topic"+cur.topic, {local:1,offset:cur_offset}, {
+               onDone: function(count, from, rows, offset, pages, preload) { 
+                  //console.log(arguments);
+                  if (abort){
+                     done();
+                     return;
+                  }
+                  cur_offset-=20;
+                  status();
+                  //alert(rows);
+                  var div=vkCe('div',{},rows);
+                  var result=vkCe('div',{});
+                  var posts=geByClass('bp_post',div);
+                  for (var i=0; i<posts.length; i++){
+                     var a=geByClass('bp_author',posts[i])[0];
+                     var post_id=parseInt(posts[i].id.match(rx)[2]);
+                     if (a && (a.getAttribute('href')||'').indexOf('/'+user)!=-1 && last_id>post_id){
+                        result.appendChild(posts[i].cloneNode(true));
+                     }
+                  }
+                  if (result.innerHTML!=''){
+                     var startST = scrollGetY();
+                     ge(idres).insertBefore(result,ge(idres).firstChild);
+                     var updH=getSize(result)[1];
+                     if (updH && startST > 100) {
+                        scrollToY(startST + updH, 0);
+                     }
+                     //alert(result.innerHTML);
+                  }
+                  scan();
+               }
+            }); 
+         }
+         
+      }
+      btn.onclick=function(){abort=true; done();}
+      status(); 
+      scan();
+      return false;
+   },
+   get_user_posts_btn:function(node){
+      var els=geByClass('bp_post',node);
+      for (var i=0; i<els.length; i++){
+         var p=(geByClass('bp_date',els[i])[0] || {}).parentNode;
+         var a=geByClass('bp_author',els[i])[0];
+         if (!p || !a) continue;
+         p.appendChild(vkCe('span',{"class":"divide"},'|'));
+         p.appendChild(vkCe('a',{"href":"#",onclick:"return vk_board.get_user_posts('"+a.getAttribute('href')+"','"+els[i].getAttribute('id')+"')"},IDL('PrevPosts')));
+      }
+   }
 }
 
 if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;

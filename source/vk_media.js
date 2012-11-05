@@ -45,6 +45,10 @@ function vkPVAfterShow(){
 }
 
 var _vk_albums_list_cache={};
+var vk_photos={
+   css:'#vkmakecover{margin-top:6px; width:164px;}' 
+}
+
 function vkPVPhotoMover(show_selector){
    if (!show_selector && cur.pvCurPhoto && (cur.pvCurPhoto.actions || {}).edit && !ge('pv_album').innerHTML.match('vkPVPhotoMover')){
       ge('pv_album').innerHTML= '<div id="vk_ph_album_info">'+
@@ -75,7 +79,10 @@ function vkPVPhotoMover(show_selector){
    var params={};
    params[oid<0?'gid':'uid']=Math.abs(oid);
    ge('vk_ph_album_selector').innerHTML=vkLdrImg;
+   //var btn=vkCe('div',{'class':'button_gray button_wide',id:'vkmakecover'},'<button>'+IDL('MakeCover')+'</button>');
    
+   //ge('vk_ph_album_selector').appendChild(btn);
+   //<div class="button_gray button_wide" style="margin-top:6px; width:164px;"><button>Сделать обложкой</button></div>
    var sel=function(){
       stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
          var albums=_vk_albums_list_cache[''+oid];
