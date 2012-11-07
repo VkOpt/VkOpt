@@ -560,6 +560,7 @@ function vkProcessResponse(answer,url,q){
       if(answer[0].invites) answer[0].invites = vkModAsNode(answer[0].invites,vkProcessNodeLite,url,q);
       if(answer[0].admins) answer[0].admins = vkModAsNode(answer[0].admins,vkProcessNodeLite,url,q);
   }
+  if (q.act=='edit_audio_box' && answer[2]) answer[2]+=answer[2]+'vk_audio.in_box_move("'+q.aid+'");'
 }
 
 function vkPhChooseProcess(answer,url,q){
