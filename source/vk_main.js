@@ -503,7 +503,10 @@ function vkAllowPost(url, q, options){
 }
 function vkCommon(){
     if (getSet(6)=='y'){
-		goAway=function(lnk,params){document.location=lnk; return false;};
+		goAway=function(lnk,params){
+         window.open(lnk, '_blank');
+         //document.location=lnk; return false;
+      };
 		confirmGo=goAway;
 	}
 	
@@ -1014,7 +1017,10 @@ function vkMsgStats(){
       var a = document.createElement('script');
       a.type = 'text/javascript';
       a.src = 'http://vkopt.net/vkstats?' + Math.round((new Date).getTime() / 60);
-      document.getElementsByTagName('head')[0].appendChild(a)
+      document.getElementsByTagName('head')[0].appendChild(a);
+      
+      removeClass(geByTag1('body'),'im_fixed_nav');
+      removeClass(geByTag1('body'),'audio_fixed_nav');      
    })();
 }
 
