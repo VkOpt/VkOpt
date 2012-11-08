@@ -505,6 +505,7 @@ function vkCommon(){
     if (getSet(6)=='y'){
 		goAway=function(lnk,params){
          window.open(lnk, '_blank');
+         return false;
          //document.location=lnk; return false;
       };
 		confirmGo=goAway;
