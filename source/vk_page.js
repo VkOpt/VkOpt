@@ -1494,7 +1494,17 @@ function vkToTopBackLink(){
 vk_board={
    css:'\
       .vk_bp_other_posts{padding-left:65px;}\
-      .vk_bp_other_posts .bp_post{width: 530px;}',
+      .vk_bp_other_posts .bp_post{width: 530px;}\
+      .vk_bp_other_posts .bp_text{width: 455px;}\
+      .vk_bp_other_posts #bpe_text{width: 450px !important;}\
+      .vk_brd_action{\
+         opacity:0;\
+        -webkit-transition: opacity 100ms linear;\
+        -moz-transition: opacity 100ms linear;\
+        -o-transition: opacity 100ms linear;\
+        transition: opacity 100ms linear;\
+      }\
+      .bp_post:hover .vk_brd_action{opacity:1;}',
    get_user_posts:function(user_href,el){// add cancel btn && fix scroll
       var start_offset=cur.pgOffset;
       var cur_offset=start_offset;
@@ -1570,8 +1580,8 @@ vk_board={
          var p=(geByClass('bp_date',els[i])[0] || {}).parentNode;
          var a=geByClass('bp_author',els[i])[0];
          if (!p || !a) continue;
-         p.appendChild(vkCe('span',{"class":"divide"},'|'));
-         p.appendChild(vkCe('a',{"href":"#",onclick:"return vk_board.get_user_posts('"+a.getAttribute('href')+"','"+els[i].getAttribute('id')+"')"},IDL('PrevPosts')));
+         p.appendChild(vkCe('span',{"class":"divide vk_brd_action"},'|'));
+         p.appendChild(vkCe('a',{"href":"#","class":'vk_brd_action',onclick:"return vk_board.get_user_posts('"+a.getAttribute('href')+"','"+els[i].getAttribute('id')+"')"},IDL('PrevPosts')));
       }
    }
 }

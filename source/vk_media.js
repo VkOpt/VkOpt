@@ -1251,13 +1251,13 @@ function vkVidDownloadLinks(vars){
 		  ? vars.host
 		  : 'http://cs' + vars.host + '.' + 'vk.com' + '/';
         
-		return host + "u" + vuid(vars.uid) + "/video/" + vars.vtag + ".flv";
+		return host + "u" + vuid(vars.uid) + "/videos/" + vars.vtag + ".flv";
 	}
 	var pathToHD=function(res) {
 		var s = (vars.host.substr(0, 4) == 'http')
 		  ? vars.host
 		  : 'http://cs' + vars.host + '.' + 'vk.com' + '/';//(vk.intnat ? 'vk.com' : 'vkontakte.ru') 
-		return s + 'u' + vars.uid + '/video/' + vars.vtag + '.' + res + '.mp4';//'.mov'
+		return s + 'u' + vars.uid + '/videos/' + vars.vtag + '.' + res + '.mp4';//'.mov'
 	};
 	var generateHDLinks=function(){
 		var s="";
@@ -1440,11 +1440,11 @@ function vkVidDownloadLinksArray(vars){
 	var get_flv=function() {
 		if (vars.sd_link != null && vars.sd_link.length > 0) {return vars.sd_link;}
 		if (vars.uid <= 0) return "http://" + vars.host + "/assets/videos/" + vars.vtag + "" + vars.vkid + ".vk.flv";
-		return vars.host + "u" + vuid(vars.uid) + "/video/" + vars.vtag + ".flv";
+		return vars.host + "u" + vuid(vars.uid) + "/videos/" + vars.vtag + ".flv";
 	}
 	var pathToHD=function(res) {
 		var s = (vars.host.substr(0, 4) == 'http') ? vars.host : 'http://cs' + vars.host + '.' + 'vk.com' + '/';//(vk.intnat ? 'vk.com' : 'vkontakte.ru') 
-		return s + 'u' + vars.uid + '/video/' + vars.vtag + '.' + res + '.mp4';
+		return s + 'u' + vars.uid + '/videos/' + vars.vtag + '.' + res + '.mp4';
 	};
 	var generateHDLinks=function(){
 		var s="";
