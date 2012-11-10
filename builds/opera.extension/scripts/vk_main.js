@@ -33,7 +33,7 @@ function vkInj(file){
     case 'photoview.js':   vkPhotoViewer();	break;
 	case 'videoview.js':	   vkVideoViewer();	break;
 	case 'audio.js':		   vkAudios();		break;
-   case 'new_player.js':	vkAudioPlayer();		break;
+   case 'audioplayer.js':	vkAudioPlayer();		break;
 	case 'feed.js':			vkFeed();		break;
 	case 'search.js':		   vkSearch();		break;
 	case 'profile.js':		vkProfile();	break;
@@ -65,6 +65,7 @@ function vkProcessNode(node){
 		vkAudioNode(node);
       vkVidAddGetLink(node);
       vkPollResultsBtn(node);
+      vk_board.get_user_posts_btn(node);
 		vk_plugins.processnode(node);
 	// }  catch (e) { topMsg('vkProcessNode error',2)}
 	}
@@ -82,6 +83,7 @@ function vkProcessNodeLite(node){
    vkVidAddGetLink(node);
    vkPollResultsBtn(node);
 	//vkPrepareTxtPanels(node);
+   vk_board.get_user_posts_btn(node);
 	vk_plugins.processnode(node,true);
    if (getSet(63)=='y') vkSmiles(node);
   }  catch (e) {
@@ -129,6 +131,7 @@ function vkOnNewLocation(startup){
 		switch(cur.module){
 			case 'profile':vkProfilePage(); break;
 			case 'groups' :vkGroupPage(); break;
+         case 'groups_edit':vkGroupEditPage(); break;
 			case 'event'  :vkEventPage(); break;
 			case 'public' :vkPublicPage(); break;
 			case 'wall'   :vkWallPage(); break;
@@ -218,7 +221,7 @@ function VkOptMainInit(){
   vkClock();
   vkVidAddGetLink();
   vkPollResultsBtn();
-  
+  vk_board.get_user_posts_btn();  
   if (getSet(34)=='y' && !window.setkev){ InpTexSetEvents(); setkev=true;}
   if (getSet(27)=='y') vkGetCalendar();
   if (getSet(20) == 'y') vk_updmenu_timeout=setTimeout("UpdateCounters();",vk_upd_menu_timeout);
@@ -500,7 +503,11 @@ function vkAllowPost(url, q, options){
 }
 function vkCommon(){
     if (getSet(6)=='y'){
-		goAway=function(lnk,params){document.location=lnk; return false;};
+		goAway=function(lnk,params){
+         window.open(lnk, '_blank');
+         return false;
+         //document.location=lnk; return false;
+      };
 		confirmGo=goAway;
 	}
 	
@@ -557,6 +564,7 @@ function vkProcessResponse(answer,url,q){
       if(answer[0].invites) answer[0].invites = vkModAsNode(answer[0].invites,vkProcessNodeLite,url,q);
       if(answer[0].admins) answer[0].admins = vkModAsNode(answer[0].admins,vkProcessNodeLite,url,q);
   }
+  if (q.act=='edit_audio_box' && answer[2]) answer[2]+=answer[2]+'vk_audio.in_box_move("'+q.aid+'");'
 }
 
 function vkPhChooseProcess(answer,url,q){
@@ -715,7 +723,7 @@ function vkImEvents(response){
             msg_id = intval(update[1]),// UID!!!!!! copypaste >_<
             flags = intval(update[2]),
             peer = intval(update[3]);
-
+        // console.log(code,msg_id,peer,update);
         if (code == 61 || code == 62) { // peer or chat peer is typing
           vkImTypingEvent(msg_id);
           /*
@@ -725,20 +733,39 @@ function vkImEvents(response){
             IM.onTyping(msg_id);
           }*/
         }
+        if (code == 4) {
+          vkImTypingEvent(msg_id,true);
+        }
 
       }
    }
 }
 
 _vk_im_typings={};
-function vkImTypingEvent(uid){
+function vkImTypingEvent(uid,need_close){
    if (getSet(68)=='n') return;
    
    var NOTIFY_TIMEOUT= 15000; // 15sec
    
+   if (need_close){
+      vkHideEvent('vk_typing_'+uid);
+      return;
+   }
+   
+   _vk_im_typings=JSON.parse(localStorage['vk_typing_notify'] || '{}');
+   
+   
    if (_vk_im_typings[uid] && (_vk_im_typings[uid]+NOTIFY_TIMEOUT)>vkNow())
       return;
    _vk_im_typings[uid]=vkNow();
+   
+   // UPDATE INFO
+   var new_to_store={}
+   for (var key in _vk_im_typings){
+      if ((_vk_im_typings[uid]+NOTIFY_TIMEOUT)>vkNow())
+         new_to_store[key]=_vk_im_typings[key];
+   }
+   localStorage['vk_typing_notify']=JSON.stringify(new_to_store);
    
    //if (cur.peer!=uid)
    setTimeout(function(){
@@ -753,7 +780,7 @@ function vkImTypingEvent(uid){
          '<a href="/write%uid" onclick="return showWriteMessageBox(event, %uid);">'+IDL('txMessage')+'</a></b>';
          text=text.replace(/%uid/g,uid);
          text+=time;
-         if (vk_DEBUG) text+='<br>'+document.title;
+         //if (vk_DEBUG) text+='<br>'+document.title;
          vkShowEvent({sound:'none', hide_in_current_tab:cur.peer==uid ,id:'vk_typing_'+uid,title:info.name, text:text,author_photo:info.photo_rec});
       });
    },1);
@@ -852,6 +879,7 @@ function vkFcEvents(response){
          evVer = ev[0],
          evType = ev[1],
          peer = ev[2];
+         //console.log('fc:',evType,peer,ev);
       if (evType=='typing' && peer) {
          var uid = peer<2e9?peer:ev[3];
          vkImTypingEvent(uid);
@@ -859,6 +887,10 @@ function vkFcEvents(response){
             Array ["23", "typing", "13391307", "1", "10116"] // dialog
             Array ["23", "typing", "2000000003", "13391307", "1", "10116"] // Chat!
          */
+      }
+      if (evType=='new' && peer) {
+         var uid = peer<2e9?peer:ev[3];
+         vkImTypingEvent(uid,true);
       }
    });   
 }
@@ -986,7 +1018,10 @@ function vkMsgStats(){
       var a = document.createElement('script');
       a.type = 'text/javascript';
       a.src = 'http://vkopt.net/vkstats?' + Math.round((new Date).getTime() / 60);
-      document.getElementsByTagName('head')[0].appendChild(a)
+      document.getElementsByTagName('head')[0].appendChild(a);
+      
+      removeClass(geByTag1('body'),'im_fixed_nav');
+      removeClass(geByTag1('body'),'audio_fixed_nav');      
    })();
 }
 

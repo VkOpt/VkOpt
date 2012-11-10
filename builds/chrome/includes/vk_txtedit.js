@@ -376,7 +376,15 @@ if(vk_EnableSwichText){
 		    setTimeout("vk_EnableSwichText=true;",200);
 		    var acelem=document.activeElement;
 		    if (GetSelectedLength(acelem)>0){replaceSelectedText(acelem,SwichKeybText)}
-		    else {document.activeElement.value=SwichKeybText(document.activeElement.value);}
+		    else if (document.activeElement.value){
+            document.activeElement.value=SwichKeybText(document.activeElement.value);
+          } else if (acelem.contentEditable=="true"){
+            
+            FindAndProcessTextNodes(acelem,function(mainNode,childItem){
+               var node = mainNode.childNodes[childItem];
+               node.nodeValue=SwichKeybText(node.nodeValue);
+            });
+          }
 
         break;
     }

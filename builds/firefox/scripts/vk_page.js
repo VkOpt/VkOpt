@@ -405,71 +405,6 @@ function vkProcessProfileBday(node){
    }
 }
 
-/*
-// @name Vkontakte Calculate Age
-// @namespace http://polkila.googlecode.com
-// @author Васютинский Олег http://vasyutinskiy.ru
-
-function VkCalcAge(){
-var t = ge('profile_info').parentNode;//('rightColumn').childNodes[3];personal
-if (!t) return;
-  var byear = /c[\[%5B]{1,3}byear[\]%5D]{1,3}=([0-9]{4})/.exec(t.innerHTML);
-  var bdate = /c[\[%5B]{1,3}bday[\]%5D]{1,3}=([0-9]{1,2})[&amp;]{1,5}c[\[%5B]{1,3}bmonth[\]%5D]{1,3}=([0-9]{1,2})/.exec(t.innerHTML);
-  var _href='';
-  var date_info='';
- 
-  //if (!byear) return;
-  //alert (bdate[1]+'\n'+bdate[2]+'\n'+byear[1]);
-  var lang = parseInt(vkgetCookie('remixlang')), _sign_ = '', now = new Date();
-  if (byear){
-  var age = now.getFullYear() - byear[1];
-	if (bdate && bdate[2]>now.getMonth()+1) age--;
-	else if (bdate && bdate[2]==now.getMonth()+1 && bdate[1]>now.getDate()) age--;
-
-  date_info+=langNumeric(age, vk_lang["vk_year"]);// age+' '+_years_;
-  }
-
-	if (bdate){
-      var signs = new Array('&#1050;&#1086;&#1079;&#1077;&#1088;&#1086;&#1075;','&#1042;&#1086;&#1076;&#1086;&#1083;&#1077;&#1081;','&#1056;&#1099;&#1073;&#1099;','&#1054;&#1074;&#1077;&#1085;','&#1058;&#1077;&#1083;&#1077;&#1094;','&#1041;&#1083;&#1080;&#1079;&#1085;&#1077;&#1094;&#1099;','&#1056;&#1072;&#1082;','&#1051;&#1077;&#1074;','&#1044;&#1077;&#1074;&#1072;','&#1042;&#1077;&#1089;&#1099;','&#1057;&#1082;&#1086;&#1088;&#1087;&#1080;&#1086;&#1085;','&#1057;&#1090;&#1088;&#1077;&#1083;&#1077;&#1094;');
-		var lastD = new Array(20,19,20,20,21,21,22,23,23,23,22,21);
-		var signN = bdate[2]-1;
-		if (bdate[1]>lastD[signN]) signN = (signN+1) % 12;
-		_sign_ = signs[signN];
-	}
-
-  if (date_info.length>0) date_info+=', '
-  
-  
-  var alinks=document.getElementsByTagName('a');
-
-  var rhdr='/search?c[section]=people&c[bday]=';
-  var total=2;
-  for(i = 0; i<alinks.length; i++ ){
-    var lnk=alinks[i];
-    if(lnk.href && lnk.href.indexOf(rhdr)!=-1) {
-      total--;
-      lnk.parentNode.innerHTML+=' ('+date_info+_sign_.replace(/dateYear/g,'dateYear'+total)+' '+_href+')';
-      // cur.options.info[1]
-    }
-    if (!total) break;
-  }
-  //vk.com/search?c[section]=people&c[bday]=28&c[bmonth]=4
-  //vk.com/search?c[section]=people&c[byear]=1991
-  if (cur.options.info){
-    //alert(cur.options.info[0].match(/(c\[byear\]=[^>]+>[^<>]+<\/a>)/));//http://vk.com/search?c[section]=people&c[bday]=6&c[bmonth]=5
-	var r1=/(c\[byear\]=[^>]+>[^<>]+<\/a>)/;
-	r1=cur.options.info[0].match(r1)?r1:/(c\[bmonth\]=[^>]+>[^<>]+<\/a>)/;
-	cur.options.info[0]=cur.options.info[0].replace(r1,"$1"+' ('+date_info+_sign_.replace(/dateYear/g,'dateYear'+0)+' '+_href+')');
-    cur.options.info[1]=cur.options.info[1].replace(r1,"$1"+' ('+date_info+_sign_.replace(/dateYear/g,'dateYear'+1)+' '+_href+')');
-  }
-
-   if(ge('checkAgeLink')) {
-      if(window.vk_cur && vk_cur.vk_calEvents) ge('checkAgeLink').onclick();
-      else if (getSet(27)=='y') Inj.Wait('window.vk_cur && vk_cur.vk_calEvents',ge('checkAgeLink').onclick);
-   }
-}
-//*/
-
 function status_icq(node) { //add image-link 'check status in ICQ'
   var t,i,icq,skype=null;
   var labels=geByClass('label',node);
@@ -552,10 +487,17 @@ function vkUpdWallBtn(){
 
 
 function vkAddCleanWallLink(){
-	var allow_clean=(cur.oid==remixmid() || isGroupAdmin(cur.oid));
+	 var rx=nav.objLoc[0].match(/notes(\d+)/);
+    
+    //notes
+   var allow_clean=(cur.oid==remixmid() || isGroupAdmin(cur.oid));
 	if (allow_clean && !ge('vk_clean_wall') && ge('full_wall_filters')){
-		var li=vkCe('li',{"class":'t_r', id:'vk_clean_wall'},'\
-			<a href="#" onclick="vkCleanWall('+cur.oid+'); return false;">'+IDL("wallClear")+'</a><span class="divide">|</span>\
+		
+      var link='<a href="#" onclick="vkCleanWall('+cur.oid+'); return false;">'+IDL("wallClear")+'</a><span class="divide">|</span>';
+      if (rx && rx[1]==remixmid())
+         link='<a href="#" onclick="vkCleanNotes(); return false;">'+IDL('DelAllNotes')+'</a>';
+      var li=vkCe('li',{"class":'t_r', id:'vk_clean_wall'},'\
+			'+link+'\
 		');
 		ge('full_wall_filters').appendChild(li);
 	}
@@ -1161,7 +1103,7 @@ function addFakeGraffItem() {
     a.setAttribute("onfocus","this.blur()");
     a.setAttribute("class"," add_media_item");
     a.setAttribute("id","vk_wall_post_type0");
-    a.setAttribute("style","background-image: url(/images/icons/attach_icons.gif); background-position: 3px -152px");
+    a.setAttribute("style","background-image: url(/images/icons/attach_icons.gif); background-position: 3px -151px");
     a.setAttribute("href","/graffiti.php?act=draw&"+((location.href.match(/club\d+/))?"group_id=":"to_id=")+mid);
     a.setAttribute("onclick","vkShowFakeGraffLoader("+mid+");return false;");
     a.innerHTML=IDL('LoadGraffiti');
@@ -1335,12 +1277,47 @@ function vkWikiNew(){
 
 function vkGroupsList(){
    Inj.Before('GroupsList.showMore','var name','if (vkGroupsListCheckRow(row)) continue;');
+   
+   if (getSet(74)=='y')  
+      Inj.Replace('GroupsList.showMore',/html\.join\(['"]+\)/g, "vkModAsNode(html.join(''),vkGroupDecliner)"); 
 }
 
 function vkGroupsListPage(){
 	vkGrLstFilter();
+   if (getSet(74)=='y')
+      vkGroupDecliner();
 }
 
+function vkGroupDecliner(node){// [name, gid, href, thumb, count, type, hash, fr_count, friends, dateText]
+   if (getSet(74)!='y') return;
+   if (cur.scrollList && cur.scrollList.tab=="admin") return;
+   var nodes=geByClass('group_list_row',node);
+   for (var i=0; i<nodes.length; i++){
+      if (!nodes[i].id || nodes[i].innerHTML.match('vkGroupLeave')) continue;
+      var p=geByClass('group_row_info',nodes[i])[0];
+      if (!p) continue;
+      var gid=(nodes[i].id || "").match(/\d+/);
+      var el=vkCe('div',{"class":'fl_r'},'<a href="#" onclick="return vkGroupLeave('+gid+',this);">'+IDL('LeaveGroup')+'</a>');
+      p.appendChild(el);
+      //p.insertBefore(el,p.firstChild);
+      
+      //console.log(nodes[i].id);
+   }
+   //console.log(node);
+}
+
+
+function vkGroupLeave(gid,node){
+   var p = (node || {}).parentNode;
+   if (p) p.innerHTML=vkLdrImg;
+   dApi.call('groups.leave',{gid:gid},function(r){
+      if (r.response==1){
+         if (p) p.innerHTML=IDL('GroupLeft');
+      } else
+         if (p) p.innerHTML='WTF? O_o';
+   })
+   return false;
+}
 function vkGroupsListCheckRow(row){
    var val=parseInt((ge('vk_grlst_filter') || {}).value || '0');
    if (val==0) return false;
@@ -1366,7 +1343,7 @@ function vkGroupsListCheckRow(row){
    */
    if (val==1 && (isEvent || isPublic)) return true;// hide events and publics
    if (val==2 && (isGroup || isPublic)) return true;// hide groups and publics
-   if (val==3 &&  isEvent) return true;             // hide events
+   if (val==3 &&  -isEvent) return true;             // hide events
    if (val==4 && (isGroup || isEvent)) return true; // hide events and groups
    return false;
 }
@@ -1399,6 +1376,95 @@ function vkGrLstFilter(){
    //*/
 }
 
+function vkGroupEditPage(){
+   if (nav.objLoc['act']=='people')
+      vkGroupRemoveAllInvitation(true);
+}
+
+function vkGroupRemoveAllInvitation(add_btn){
+	if (add_btn){
+      var btn=ge('vkillinv');
+      if (btn){
+       (nav.objLoc['tab']=='invites'?show:hide)(btn);
+      } else if(nav.objLoc['tab']=='invites') {
+         var p=ge('group_p_section_invites');
+         if (!p) return;
+         btn=vkCe('div',{"class":'button_gray button_wide', id:'vkillinv'},'<button onmouseover="showTooltip(this, {text: \'max 500 per day\', showdt: 0, black: 1});" onclick="vkGroupRemoveAllInvitation();"><small>'+IDL('Kill_Invitation')+'</small></button>');
+         insertAfter(btn,p);
+      }
+      
+      return;
+   }
+   
+   var box=null;
+	var ids=[];
+	var del_offset=0;
+	var cur_offset=0;
+	var abort=false;	
+   var restored=[];
+	
+   var process=function(){	    
+      //*
+      //console.log(ids)
+      if (abort) return;
+		var del_count=ids.length;
+      console.log(del_count,del_offset);
+		ge('vk_scan').innerHTML=vkProgressBar(del_offset,del_count,310,IDL('killing... ')+' %');
+		var ids_part=ids[del_offset];//.slice(del_offset,del_offset+1);
+		if (!ids_part){ 
+         box.hide();		
+         vkMsg(IDL('Done'),3000);	
+      } 
+		else 
+         ajax.post('al_page.php', {act: 'a_member_list_action', action: 'cancel_invitation', gid: cur.gid, mid: ids[del_offset][0], hash: ids[del_offset][1], context: 1}, {
+            onDone: function(res) {
+               del_offset++;
+               setTimeout(process,10);         
+            }
+         });  
+
+	};
+   //
+	var scan=function(){
+		if (cur_offset==0) ge('vk_scan').innerHTML=vkProgressBar(2,2,310,' scaning... ');
+		//dApi.call('messages.get',{out:is_out?1:0,count:100,offset:cur_offset,preview_length:1},function(r){
+      ajax.post('al_groups.php', {act: 'people_get', gid: cur.gid, tab: 'invites', offset: cur_offset}, {
+         onDone: function(x, html) {
+            if (abort) return;
+            var ms=[];
+            vkModAsNode(html,function(node){
+               var nodes=geByClass('group_p_row',node);
+               for (var i=0; i<nodes.length; i++){
+                  var info=nodes[i].innerHTML.match(/GroupsEdit.peopleAction\([^\(\)]+,\s*\d+\s*,\s*(\d+)\s*,\s*'([a-f0-9]+)'/i);
+                  ms.push([info[1],info[2]]);
+               }               
+            })
+            
+            
+            //ge('vk_scan').innerHTML=vkProgressBar(1,1,310,' ');
+            for (var i=0;i<ms.length;i++) ids.push(ms[i]);
+            if (!ms[0] || ids.length>=500){ 
+               process();	
+               return;	
+            } else {
+            	cur_offset+=25; 
+               setTimeout(scan,10);
+            } 
+         }
+      });
+	};
+	var run=function(){
+		box=new MessageBox({title: IDL('deleting'),closeButton:true,width:"350px"});
+		box.removeButtons(); 
+      box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no'); 
+		var html='<div id="vk_scan"></div>'; box.content(html).show();	
+		scan();
+	}
+	vkAlertBox(IDL('Kill_Invitation'),IDL('Kill_Invitation_confirm'),run,true);
+}
+
+
+
 function vkToTopBackLink(){
    window._stlMousedown = function (e) {
      e = e || window.event;
@@ -1422,6 +1488,102 @@ function vkToTopBackLink(){
    };
    if (window._stlLeft) extend(_stlLeft, s);
    if (window._stlSide)  extend(_stlSide, s);
+}
+
+
+vk_board={
+   css:'\
+      .vk_bp_other_posts{padding-left:65px;}\
+      .vk_bp_other_posts .bp_post{width: 530px;}\
+      .vk_bp_other_posts .bp_text{width: 455px;}\
+      .vk_bp_other_posts #bpe_text{width: 450px !important;}\
+      .vk_brd_action{\
+         opacity:0;\
+        -webkit-transition: opacity 100ms linear;\
+        -moz-transition: opacity 100ms linear;\
+        -o-transition: opacity 100ms linear;\
+        transition: opacity 100ms linear;\
+      }\
+      .bp_post:hover .vk_brd_action{opacity:1;}',
+   get_user_posts:function(user_href,el){// add cancel btn && fix scroll
+      var start_offset=cur.pgOffset;
+      var cur_offset=start_offset;
+      var user=user_href.split('/').pop();
+      var abort=false;
+      el=ge(el);
+      var p=el;//geByClass('bp_info',el)[0];
+      var rx=/post(-\d+)_(\d+)/;
+      var last_id=parseInt(el.id.match(rx)[2]);
+      var idprogr=el.id+'_progress';
+      var idres=el.id+'_other';el.id+'_results'
+      var idcont=el.id+'_results';
+      var idctrls=el.id+'_ctrls';
+      var panel=ge(idcont);
+      if (panel) re(panel);
+      panel=vkCe('div',{id:idcont,"class":'vk_bp_other_posts'},'<div id="'+idres+'"><div class="vk_bp_separator"></div></div>\
+                     <div id="'+idctrls+'" > <div class="button_blue fl_r"><button>'+IDL('Cancel')+'</button></div> <div id="'+idprogr+'"></div></div>')
+      p.insertBefore(panel,p.firstChild);
+      var btn=geByTag1('button');
+      var status=function(){
+         ge(idprogr).innerHTML=vkProgressBar(start_offset-cur_offset,start_offset,310, 'Scaning... %'); 
+      }
+      var done=function(){
+         hide(idctrls);
+      }
+      var scan=function(){
+         if (cur_offset<=0 || abort){
+            done();
+         } else {
+            ajax.post("/topic"+cur.topic, {local:1,offset:cur_offset}, {
+               onDone: function(count, from, rows, offset, pages, preload) { 
+                  //console.log(arguments);
+                  if (abort){
+                     done();
+                     return;
+                  }
+                  cur_offset-=20;
+                  status();
+                  //alert(rows);
+                  var div=vkCe('div',{},rows);
+                  var result=vkCe('div',{});
+                  var posts=geByClass('bp_post',div);
+                  for (var i=0; i<posts.length; i++){
+                     var a=geByClass('bp_author',posts[i])[0];
+                     var post_id=parseInt(posts[i].id.match(rx)[2]);
+                     if (a && (a.getAttribute('href')||'').indexOf('/'+user)!=-1 && last_id>post_id){
+                        result.appendChild(posts[i].cloneNode(true));
+                     }
+                  }
+                  if (result.innerHTML!=''){
+                     var startST = scrollGetY();
+                     ge(idres).insertBefore(result,ge(idres).firstChild);
+                     var updH=getSize(result)[1];
+                     if (updH && startST > 100) {
+                        scrollToY(startST + updH, 0);
+                     }
+                     //alert(result.innerHTML);
+                  }
+                  scan();
+               }
+            }); 
+         }
+         
+      }
+      btn.onclick=function(){abort=true; done();}
+      status(); 
+      scan();
+      return false;
+   },
+   get_user_posts_btn:function(node){
+      var els=geByClass('bp_post',node);
+      for (var i=0; i<els.length; i++){
+         var p=(geByClass('bp_date',els[i])[0] || {}).parentNode;
+         var a=geByClass('bp_author',els[i])[0];
+         if (!p || !a) continue;
+         p.appendChild(vkCe('span',{"class":"divide vk_brd_action"},'|'));
+         p.appendChild(vkCe('a',{"href":"#","class":'vk_brd_action',onclick:"return vk_board.get_user_posts('"+a.getAttribute('href')+"','"+els[i].getAttribute('id')+"')"},IDL('PrevPosts')));
+      }
+   }
 }
 
 if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;

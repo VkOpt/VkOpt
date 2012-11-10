@@ -32,6 +32,7 @@ function vkStyles(){
 	var MoreDarkPV=getSet(4);
 	var CompactFave=getSet(17);
 	var RemoveAd=getSet(21);
+   
    var ShowAllTime=getSet(56);
 	var NotHideSugFr= (getSet(44)=='y');
    var ShowGroupNews=getSet(59);
@@ -182,12 +183,13 @@ function vkStyles(){
 	.vk_mail_save_history{	display: block; height: 13px;	padding: 18px;	text-align: center;	}\
 	.vk_mail_save_history_block{	display: block; float:right; text-align: center; /*width: 200px;*/	}\
 	.vk_mail_save_history_block IMG{margin-top:13px;}\
-	.vk_mail_save_history_block .cfg, .save_msgs_link .cfg{height: 11px; width: 15px; margin-top:2px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -60px;}\
+	.vk_mail_save_history_block .cfg, .save_msgs_link .cfg, .vk_cfg_icon{height: 11px; width: 15px; margin-top:2px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -60px;}\
    #vk_stats_btn{position: absolute; float:left}\
    #vk_stats_btn .button_blue{position: absolute; right: 0px;}\
    #vk_stats_im_btn{margin-right:3px;}\
    .vk_photo_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -29px; line-height: 11px; }\
    .vk_msg_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -193px; line-height: 11px; }\
+   .vk_audio_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -221px; line-height: 11px; }\
    .vk_profile_links a{padding:3px;}\
    .vk_profile_links a:hover{background-color:#E1E7ED;}\
    .vk_profile_links{line-height:20px;}\
@@ -215,7 +217,8 @@ function vkStyles(){
 	.vk_popupmenu ul li a{display:block; padding:2px 5px;}\
 	.vk_popupmenu ul li a:hover{background:#E1E7ED; text-decoration:none;}\
    .vk_tt_links_list a{display:block; padding:2px 1px;}\
-	"+(RemoveAd=='y'?".ad_box,.ad_help_link, .ad_help_link_new, .ad_box_new, #ad_help_link_new {display: none !important;}\
+   .nobold{font-weight: normal;}\
+	"+(RemoveAd=='y'?".ad_box,.ad_help_link, .ad_help_link_new, .ad_box_new, #ad_help_link_new, #left_ads {display: none !important;}\
 			"+(NotHideSugFr?'.ad_box_friend{display: block !important;} .ad_box_friend + .ad_box_new{display:block !important;}':'')+"\
 			#groups .clearFix {display: block !important;} \
 			#sideBar a[href*=\"help.php\"] {display: none !important;} \
@@ -250,6 +253,7 @@ function vkStyles(){
       .choose_audio_row {height:auto !important;}\
       .choose_audio_row a.choose{margin-top: 0px !important; padding-bottom: 2px !important; padding-top:2px !important;}\
 	";
+   
 	//additional audio styles
 	var img="data:image/gif;base64,R0lGODdhEAARALMAAF99nf///+7u7pqxxv///8nW4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACwAAAAAEAARAAAEJpCUQaulRd5dJ/9gKI5hYJ7mh6LgGojsmJJ0PXq3JmaE4P9AICECADs=";
 	main_css+='\
@@ -262,6 +266,23 @@ function vkStyles(){
          border-radius:3px;\
          width: 16px !important;\
       }\
+      #vk_album_info {margin-left: -10px; margin-right: -10px;}\
+      #vk_album_info h4{cursor:pointer; min-height:30px; padding:3px 10px}\
+      #vk_album_info h4:hover{background-color: rgba(219, 227, 235, 0.5);}\
+      #vk_album_info h4 img.small{max-width:30px;max-height:30px; margin-right:3px;}\
+      #vk_album_info h4 img:hover{box-shadow: 0px 0px 4px #717171;}\
+      #vk_album_info h4 img.big{max-width:155px;max-height:170px; margin:0 auto; margin-bottom:4px; display:none;}\
+      #vk_album_info.view_big .small{display:none;}\
+      #vk_album_info.view_big .big{display:block;}\
+      #vk_album_info h4 .fix_btn{opacity:0;}\
+      #vk_album_info h4:hover .fix_btn{opacity:0.4;}\
+      #vk_album_info h4 .fix_btn:hover{opacity:0.7;}\
+      #vk_album_info.fixed_album h4 .fix_btn,#vk_album_info.fixed_album h4 .fix_btn:hover{opacity:1;}\
+      #vk_album_info .bio{padding:4px;}\
+      .vk_album_thumb{padding:3px;}\
+      .vk_album_tracks ul{list-style-type: disc; margin:0px; padding:0px; padding-left:4px; margin-left: 17px; color:#AAA;}\
+      .vk_album_tracks .vk_tracks_search_btn{padding:3px 10px;}\
+      \
       /* Display full audio names*/\
       .audio .title_wrap{white-space: normal !important; width: 245px; !important; }\
       .audio .title_wrap b{white-space: normal !important; display: inline !important;}\
@@ -276,16 +297,18 @@ function vkStyles(){
       .choose_audio_row .audio_title_wrap { width: 350px !important; }\
 		.post_media .audio_title_wrap { width: 250px !important;}\
       \
-      #audio.new .audio .info { width: 360px !important;}\
+      #audio.new .audio .info { width: 370px !important;}\
       #pad_playlist .audio .info {width: 435px !important;}\
       #pad_playlist .audio .title_wrap {width: auto !important; }\
       \
 		#mail_envelope .audio_title_wrap { width: 215px !important;}\
       .narrow_column .audio_title_wrap { width: 115px !important;}\
       #profile_audios .audio_title_wrap { width: auto;}\
-      .audios_module .audio .title_wrap { width: 318px !important;}\
+      /*.audios_module .audio .title_wrap { width: 318px !important;}*/\
       #vk_audio_fr_refresh{float:right; font-size:19px; border-left:1px solid #DDD; padding:0 5px;}\
 	';
+   main_css+=vk_audio_player.gpCtrlsStyle;
+   
    //video downloads styles
    main_css+="\
      .vk_down_icon{\
@@ -302,6 +325,7 @@ function vkStyles(){
      .video div.vk_vid_download_t a{color:#FFF; background-color:rgba(0,0,0,0.5)}\
      .video div.vk_vid_download_t img{height:auto; weight:auto;}\
      .wall_module .page_media_thumb.page_media_video{height:auto;}\
+     .vk_vid_add_hidden{display:none}\
    ";
 	  //extend switch color in viewer
 	if (MoreDarkPV=='y') main_css+="\
@@ -483,12 +507,16 @@ function vkStyles(){
          .vk_edit_ico {\
            background: url(/images/icons/audio_icons.png?2) -136px -51px no-repeat;\
            height: 13px; width: 13px;\
-           opacity:0.5\
+           opacity:0.5;\
+           cursor:pointer;\
          }\
          .vk_edit_ico:hover {opacity:1}\
          .cur_section .vk_edit_ico{       background-position: -151px -51px; }\
          \
+         .vk_album_done_link  .vk_album_count{display:none;}\
 	";
+   main_css+=vk_board.css;
+   main_css+=vk_photos.css;
 	main_css+=vk_plugins.css();
 
 	vkaddcss(main_css);
@@ -1117,7 +1145,7 @@ function UpdateCounters(only_msg,data){
 				}
 				VK_LAST_COUNTERS=cnt.join('-');
 				VK_MENU_LAST_HIGHLIGHT=HL;
-				vkHighlightCounters();
+				//vkHighlightCounters();
 				vklog('Menu counters are updated');
 			}
 		}
@@ -1136,13 +1164,17 @@ function UpdateCounters(only_msg,data){
 function vkHighlightCounters(){
 	var vkMenuHighlightEl=function(e){
 		//*
+      
+      /* REPLACE TO CSS ANIMATION
 		var e=vk$(e); 
 		var backcolor=e.css('backgroundColor'); 
 		e.animate({backgroundColor:SIDEBAR_ITEM_HIGHLIGHT_COLOR},700,function(){//rgb(255,255,0)
 			setTimeout(function(){
 				e.animate({backgroundColor:backcolor},700,function(){e.css('backgroundColor',"")});
 			},MENU_HIGHLIGHT_DELAY);
-		});	
+		});*/
+      
+      
 		//*/
 		/*
 		var backcolor=getStyle(e, 'backgroundColor');
@@ -1232,7 +1264,7 @@ function vkGetCalendar(){
 			<div class="calendar_header">\
 			  <div class="right arrow fl_r"><a href="" onclick="vk_cur.vk_calGetMonth(1); return false;"></a></div>\
 			  <div class="left arrow fl_r"><a href="" onclick="vk_cur.vk_calGetMonth(-1); return false;"></a></div>\
-			  <div class="header_month fl_r" id="vk_calendar_header">VkOpt 2011</div>\
+			  <div class="header_month fl_r" id="vk_calendar_header">VkOpt</div>\
 			</div>\
 			<div id="vk_calendar_table_wrap"></div>\
 			<div id="vk_calendar_events" style="display:none"  onmouseover="leftBlockOver(\'_vk_cal\')" onmouseout="leftBlockOut(\'_vk_cal\')">\
@@ -1247,9 +1279,18 @@ function vkGetCalendar(){
    });
 }
 
-function vkGetCalendarInfo(callback){ //callback(month, year, events, holidays)    
-	AjGet('/al_events.php?tab=calendar&al=1',function(r,t){//al_events.php?act=calendar&al=1
-		var res=t.split('initCalendar(')[1].split(');')[0];
+function vkGetCalendarInfo(callback,cnt){ //callback(month, year, events, holidays)    
+	cnt=cnt || 1;
+   AjGet('/al_events.php?tab=calendar&al=1',function(r,t){//al_events.php?act=calendar&al=1
+		var res=t.split('initCalendar(')[1];
+      if (!res){
+         if (cnt<5)
+            setTimeout(function(){vkGetCalendarInfo(callback,cnt+1)},5000);
+         else 
+            console.log('calendar loading failed');
+         return;
+      }
+      res=res.split(');')[0];
 		//eval(callback+'('+res+')');
       var args=eval('['+res+']');
       callback.apply(this,args);

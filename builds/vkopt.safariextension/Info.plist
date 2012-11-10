@@ -13,9 +13,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.1.0.0</string>
+	<string>2.1.2.0</string>
 	<key>CFBundleVersion</key>
-	<string>2.1.0.0</string>
+	<string>2.1.2.0</string>
 	<key>Chrome</key>
 	<dict/>
 	<key>Content</key>
@@ -51,8 +51,6 @@
 				<string>vimeo.com</string>
 				<string>*.vimeo.com</string>
 			</array>
-			<key>Include Secure Pages</key>
-			<true/>
 			<key>Level</key>
 			<string>Some</string>
 		</dict>

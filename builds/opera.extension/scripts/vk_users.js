@@ -734,15 +734,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 		var country=r.response.country;
 		var city=r.response.city;
       //console.log(profile);
-      /*
-         // x[0].uid, x[0].friend_status, x[0].request_message
-         x[0].friend_status: 
-               0 Ц пользователь не €вл€етс€ другом, 
-               1 Ц отправлена за€вка/подписка пользователю, 
-               2 Ц имеетс€ вход€ща€ за€вка/подписка от пользовател€, 
-               3 Ц пользователь €вл€етс€ другом    
-         
-               
+      /*    
          var uid='+uid+';
          var x=API.friends.areFriends({uids:uid});
          if (x[0].friend_status==3){
@@ -793,16 +785,16 @@ function vkGetProfile(uid,callback,no_switch_button){
       else 
          bday_info = null;
       var info_labels=[
-			[bday_info, Birth_date[1]],
-         [(sex==1?Sex_fm:Sex_m), Sex],
-			[country,Country],
-			[city,select_city],
-         [rel,Family],
-			[profile.mobile_phone, Contact_mob_tel_abbr],
-			[profile.home_phone, Contact_home_tel_abbr],
-			[profile.university_name,select_university_name],
-			[profile.faculty_name,Faculty],
-			[profile.graduation,select_graduation]
+			[bday_info, IDL('Bithday')],
+         [(sex==1?Sex_fm:Sex_m), IDL('Sex')],
+			[country,IDL('Country')],
+			[city,IDL('City')],
+         [rel,IDL('Relation')],
+			[profile.mobile_phone, IDL('Mob_tel')],
+			[profile.home_phone, IDL('Home_tel')],
+			[profile.university_name,IDL('University_name')],
+			[profile.faculty_name,IDL('Faculty')],
+			[profile.graduation,IDL('Graduation')]
 		];
       if (vk_DEBUG) info_labels.push([is_vkopt_user==1?"<b>YES!!!</b>":"NO =(", "Use VkOpt?"]);
       
@@ -852,45 +844,43 @@ function vkGetProfile(uid,callback,no_switch_button){
 	  }
 }
 
+var _vk_fr_lists_info={};
 function vkFriendUserInLists(uid,callback,only_cats){
-      /*
-      // x[0].uid, x[0].friend_status, x[0].request_message
-         x[0].friend_status: 
-               0 Ц пользователь не €вл€етс€ другом, 
-               1 Ц отправлена за€вка/подписка пользователю, 
-               2 Ц имеетс€ вход€ща€ за€вка/подписка от пользовател€, 
-               3 Ц пользователь €вл€етс€ другом    
-         */
       var code='\
          var uid='+uid+';\
          var x=API.friends.areFriends({uids:uid});\
          var user_in_lists=null;\
+         var friends=null;\
          var lists=null;\
-         if (x[0].friend_status==3){\
-            lists=API.friends.getLists();\
-            var friends=API.friends.get({fields:"uid,lists"});\
-            var i=0;\
-            \
-            while (i<friends.length){\
-               if (friends[i].uid==uid){\
-                     user_in_lists=friends[i].lists;\
-               }\
-               i = i+1;\
-            }\
-         }\
-         return {uid:uid,status:x[0].friend_status,in_lists:user_in_lists,lists:lists};\
+         '+(_vk_fr_lists_info.friends && _vk_fr_lists_info.lists ?'':'friends=API.friends.get({fields:"uid,lists"}); lists=API.friends.getLists();')+'\
+         return {uid:uid,status:x[0].friend_status,in_lists:user_in_lists,lists:lists,friends:friends};\
       ';
       dApi.call('execute',{code:code},function(r){
          var x=r.response;
+         if (x.friends && x.lists){
+            _vk_fr_lists_info.friends=x.friends;
+            _vk_fr_lists_info.lists=x.lists;
+         } else {
+            x.friends=_vk_fr_lists_info.friends;
+            x.lists=_vk_fr_lists_info.lists;
+         }
          var cats=[];
          var html='';
-         if (x.in_lists && x.lists){
+         var in_lists=null;
+         var friends=x.friends;
+         for (var i=0; i<friends.length;i++){
+            if (friends[i].uid==uid){
+               in_lists=friends[i].lists;
+            }
+         }
+         
+         if (x.status==3 && in_lists && x.lists){
             var l={};
             for (var i=0; i<x.lists.length; i++)
                l[x.lists[i].lid]=x.lists[i].name;
                
-            for (var i=0; i<x.in_lists.length; i++){
-               var lid=x.in_lists[i];
+            for (var i=0; i<in_lists.length; i++){
+               var lid=in_lists[i];
                cats.push('<a href="/friends?section=list'+lid+'" onclick="return nav.go(this,event);">'+l[lid]+'</a>'); 
             }
          }
@@ -1154,6 +1144,7 @@ function vkFriendsIdsGet(callback){
 function vkFriendsBySex(add_link){
 	if (add_link  && !ge('section_slists')){
 		var ref=ge("section_suggestions");
+      if (!ref) return;
 		var sec=vkCe('a',{href:'#', onclick:"vkFriendsBySex();return false;",id:'section_slists',"class":"side_filter"},IDL('FrSexToLists'));
 		ref.parentNode.insertBefore(sec, ref.nextSibling);//
 		return;
@@ -1542,7 +1533,8 @@ function vkFrGenNotInListsCat(){
    var data=cur.friendsList['all'];
    var list=[];
    for (var i=0; i<data.length;i++)
-      if (data[i][6]=='1') list.push(data[i]);
+      if (data[i][6]=='1') 
+         list.push(data[i]);
    cur.friendsList['not_in_list']=list;
 }
 function vkFrShowNotInList(){

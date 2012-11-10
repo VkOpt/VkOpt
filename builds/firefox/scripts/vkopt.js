@@ -10,15 +10,15 @@
 // (c) All Rights Reserved. VkOpt.
 //
 /* VERSION INFO */
-var vVersion	= 210;
-var vBuild = 120930;
+var vVersion	= 212;
+var vBuild = 121109;
 var vPostfix = ' ';
 if (!window.vk_DEBUG) var vk_DEBUG=0;
 
 /* EXT CONFIG */
 if (!window.DefSetBits)
 
-var DefSetBits='ynyynnyyynyyy0n0yy0nnnynyyynyy0nynynnnnyy0yyy1yynnnnny0yynynynnnnyynnynnn-3-0-#c5d9e7-#34a235-1';
+var DefSetBits='ynyynnyyynyyy0n0yy0nnnynyyynyy0nynynnnnyy0yyy1yynnnnny0nynynynnnnyynnynnnyny-3-0-#c5d9e7-#34a235-1';
 var DefExUserMenuCfg='11111110111111111111'; // default user-menu items config
 var vk_upd_menu_timeout=20000;      //(ms) Update left menu timeout
 var vkMenuHideTimeout=400;          //(ms) Hide Menu Popups timeout
@@ -49,7 +49,7 @@ var CUT_VKOPT_BRACKET=false;     // true - убирает из надписей 
 var MAIL_BLOCK_UNREAD_REQ=false; // true - отключает отсылку отчёта о прочтении сообщения, при его открытии из /mail
 var MAIL_SHOWMSG_FIX=true;
 var SUPPORT_STEALTH_MOD=true;    // прикидываемся перед ТП, что у нас не стоит расширение для скачивания.
-var vkNewSettings=[66,67,68,70,71,72]; //"new" label on settings item
+var vkNewSettings=[66,67,68,70,71,72,73,74,75]; //"new" label on settings item
 var SetsOnLocalStore={
   'vkOVer':'c',
   'remixbit':'c',
@@ -333,6 +333,24 @@ var TextPasteSmiles={
 	  }
 	}
 
+function vkCheckLoadedScripts(){
+   var obj={
+      "vk_face"      :!!window.SmileNode,
+      "vk_lib"       :!!window.vkApis,
+      "vk_main"      :!!window.vkProcessResponseNode,
+      "vk_media"     :!!window.vkLastFM,
+      "vk_page"      :!!window.vkToTopBackLink,
+      "vk_resources" :!!window.vkSound,
+      "vk_settings"  :!!window.vksettobj,
+      "vk_skinman"   :!!window.vkShowSkinMan,
+      "vk_txtedit"   :!!window.vkAddSmilePanel,
+      "vk_users"     :!!window.ProcessUserPhotoLink,
+      "vklang"       :!!window.vk_lang_en,
+      "vkopt"        :!!window.vkonDOMReady
+   }
+   console.log('result:',obj)
+  //vkLastFM.get_loved
+}
 
 ////////// INIT ////////
 function vkonDOMReady(fn, ctx){
