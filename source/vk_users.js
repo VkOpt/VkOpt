@@ -946,6 +946,7 @@ function vkFriendsCheckRun(cl){
 			}*/
 		}
 }
+
 function vkFriendsCheck(nid){
   var NID_CFG=2;//sett in - segments
   var FUPD_CFG=1;//days

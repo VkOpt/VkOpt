@@ -1563,7 +1563,7 @@ vk_board={
                      }
                      //alert(result.innerHTML);
                   }
-                  scan();
+                  setTimeout(scan,300);
                }
             }); 
          }
