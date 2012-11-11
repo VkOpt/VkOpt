@@ -977,6 +977,7 @@ function vkSearchPage(){
 /* FAVE */
 function vkFavePage(){
    vkFavUsersList(true);
+   vkFavPhotosMenu();
 }
 
 

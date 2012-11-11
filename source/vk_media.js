@@ -370,6 +370,7 @@ function vkPhotosPage(){
 
 //javascript: vkGetPageWithPhotos(13391307,42748479); void(0);
 ////javascript: vkGetPageWithPhotos(13391307,42748479); void(0);
+
 function vkGetLinksToPhotos(oid,aid){  
 	var MakeLinksList=function(phot){
 		var parr=[]; 
@@ -379,7 +380,7 @@ function vkGetLinksToPhotos(oid,aid){
 	}
 	if (!ge('vk_links_container')){
 		var div=vkCe('div',{id:"vk_links_container","class":"clear_fix",style:"padding:10px;"},'<center>'+vkBigLdrImg+'</center>');
-		var ref=ge('photos_container');
+		var ref=ge('photos_container') || ge('likes_photo_content') ;
       if (ref)
          ref.parentNode.insertBefore(div,ref);
       else 
@@ -403,7 +404,6 @@ function vkGetLinksToPhotos(oid,aid){
 		//document.title=c+"/"+f
 	});
 }
-
 
 function vkGetPageWithPhotos(oid,aid){  
   var MakeImgsList=function(phot){
@@ -433,6 +433,45 @@ function vkGetPageWithPhotos(oid,aid){
 	});
 }
 
+function vkFavPhotosMenu(){
+      var e=ge('fave_likes_tabs');
+      var x=ge('vk_fav_phlinks_btn');
+      if (x) (nav.objLoc['section']=='likes_photo'?show:hide)(x);
+      if (!e || x) return;
+      var p=geByClass('summary_tab',e);
+      p=p[p.length-1];
+      if (!p || nav.objLoc['section']!='likes_photo') return;
+      
+      if (!ge('vk_fav_phlinks_btn')){			
+         var a=vkCe('div',{id:'vk_fav_phlinks_btn',"class":'summary_tab fl_r'},'\
+            <a href="#" onclick="return false;"  id="vk_favph_act_menu" class_="summary_tab2">'+IDL('Actions')+'</a>\
+         ');//<a href="#" onclick="return false;"  id="vk_favph_act_menu" class_="fl_r summary_right">'+IDL('Actions')+'</a>\
+         //geByClass('t0')[0].appendChild(a);
+         insertAfter(a,p)
+         
+         var p_options = [];
+         p_options.push({l:IDL('SaveAlbumAsHtml'), onClick:function(item) {
+            vkGetPageWithPhotos('liked'+vk.id,null);
+         }});
+         p_options.push({l:IDL('Links'), onClick:function(item) {
+               vkGetLinksToPhotos('liked'+vk.id,null);
+         }});
+         
+         
+         //p_options=p_options.concat(vk_plugins.album_actions(oid,aid));
+         stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
+            cur.vkAlbumMenu = new DropdownMenu(p_options, {//
+              target: ge('vk_favph_act_menu'),
+              containerClass: 'dd_menu_posts',
+              updateHeader:false,
+              offsetLeft:-15,
+              showHover:false
+            });
+         });			
+      }
+      
+      return;
+}
 function vkAddAlbumCommentsLinks(node){
    var els=geByClass('album',node);
    for (var i=0;i<els.length;i++){
