@@ -105,8 +105,12 @@ function vkOnStorage(id,cmd){
 function vkOnNewLocation(startup){
 	if (!(window.nav && nav.objLoc)) return;
    if (!cur.module){
-      setTimeout(vkOnNewLocation,10);
-      return;
+      if (cur.gid && nav.objLoc['act']=='blacklist' && (cur.moreParams || {}).act=="blacklist"){
+         cur.module='groups_edit';
+      } else {
+         setTimeout(vkOnNewLocation,10);
+         return;
+      }
    }
 	vklog('Navigate:'+print_r(nav.objLoc).replace(/\n/g,','));
 	var tstart=unixtime();
