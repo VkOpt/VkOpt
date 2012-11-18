@@ -254,7 +254,7 @@ function vkProccessLinks(el){
 	  if (getSet(38)=='y') ProcessHighlightFriendLink(nodes[i]);
      if (getSet(55)=='y') vkProcessIMDateLink(nodes[i]);
      if (getSet(58)=='y') vkProcessTopicLink(nodes[i]);
-     vkProcessDocPhotoLink(nodes[i]);
+     //vkProcessDocPhotoLink(nodes[i]);
 	  vk_plugins.processlink(nodes[i]);
     }
  vklog('ProcessLinks time:' + (unixtime()-tstart) +'ms');

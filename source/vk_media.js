@@ -165,7 +165,7 @@ function vkPVSaveAndMover(){
    
    var sel=function(){
       stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
-         var albums=_vk_albums_list_cache[''+oid];
+         var albums=_vk_albums_list_cache['move'+oid];
          hide('vk_ph_album_info');
          var def_aid=aid;
          var on_change=function(){
@@ -206,7 +206,7 @@ function vkPVSaveAndMover(){
          ge('vk_ph_save_move_ok').onclick=on_change;         
       });
    }
-   if (_vk_albums_list_cache[''+oid])
+   if (_vk_albums_list_cache['move'+oid])
       sel();
    else
       dApi.call('photos.getAlbums',{uid:vk.id},function(r){
@@ -216,10 +216,10 @@ function vkPVSaveAndMover(){
          for (var i=0; i<data.length;i++)
             if (data[i].size<501)
                albums.push([data[i].aid,data[i].title,data[i].size+""]);
-            else
-               albums_full.push([data[i].aid,data[i].title,data[i].size+""]);
+            /*else
+               albums_full.push([data[i].aid,data[i].title,data[i].size+""]);*/
                
-         _vk_albums_list_cache[''+oid]=albums.concat(albums_full);
+         _vk_albums_list_cache['move'+oid]=albums.concat(albums_full);
          sel();
       }); 
    return false;
@@ -1759,11 +1759,12 @@ function vkAudioPlayer(){
 
 vk_audio_player={
    gpCtrlsStyle:'\
-   .vka_ctrl {  background: url(/images/icons/audio_icons.png) no-repeat scroll 0 0 transparent; opacity:0.7; height: 11px;  width: 13px;  margin: 0;  float: left;}\
+   .vka_ctrl {  background: url(/images/icons/audio_icons.png) no-repeat scroll 0 0 transparent; margin:0 5px; opacity:0.7; height: 11px;  width: 13px;  float: left;}\
    .vka_ctrl:hover{opacity:1;}\
    .vka_ctrl.prev {  background-position: -3px -52px;}\
    .vka_ctrl.next {  background-position: -18px -52px;}\
-   .gp_vka_ctrls{position:absolute; width:40px; margin-top:34px; margin-left: 5px; padding:3px; border-radius:0 0 4px 4px; background:rgba(218, 225, 232, 0.702); }\
+   .vka_ctrl.add  {  background-position: -80px -52px;}\
+   .gp_vka_ctrls{position:absolute; width:136px; margin-top:34px; margin-left: 5px; padding:3px; border-radius:0 0 4px 4px; background:rgba(218, 225, 232, 0.702); }\
    ',
    gpCtrlsInit:function(){
       Inj.End('audioPlayer.setGraphics','vk_audio_player.gpCtrls();');
@@ -1771,9 +1772,10 @@ vk_audio_player={
    gpCtrls:function(){
       var p=ge('audio_global');
       if (!p || p.innerHTML.indexOf('gp_vka_ctrls')!=-1) return;
-      var ctrl=vkCe('div',{'class':'gp_vka_ctrls'},'\
+      var ctrl=vkCe('div',{'class':'gp_vka_ctrls', 'id':'gp_vka_ctrls'},'\
                      <a class="vka_ctrl prev" onclick="audioPlayer.prevTrack(); return false;"></a>\
-                     <a class="vka_ctrl next" style="float:right" onclick="audioPlayer.nextTrack(); return false;"></a>');
+                     <a class="vka_ctrl next" onclick="audioPlayer.nextTrack(); return false;"></a>\
+                     <a class="vka_ctrl add" onclick="audioPlayer.addCurrentTrack(); return false;"></a>');
       p.insertBefore(ctrl,p.firstChild);
    }
 }
@@ -2901,10 +2903,16 @@ vkLastFM={
             <div class="fl_r vk_lastfm_icon'+(fm.enable_scrobbling?'':' disabled')+'" onclick="vkLastFM.toggle();"  onmousedown="cancelEvent(event)"></div>\
             <div class="fl_r lastfm_fav_icon" onclick="vkLastFM.on_love_btn(this);"></div>\
          </div>';
-     var gp=ge('gp_small');
+    
+    var gp=ge('gp_vka_ctrls') || ge('gp_small');
      if (gp && !geByClass('lastfm_status',gp)[0]){
-         gp.appendChild(vkCe('div',{'class':'fl_l'},'<div class="lastfm_gp">'+controls+'</div>'));
+      var el=vkCe('div',{'class':'fl_r'},'<div class="lastfm_gp">'+controls+'</div>');
+        if (gp==ge('gp_vka_ctrls'))
+         gp.insertBefore(el,gp.firstChild);
+        else
+         gp.appendChild(el);
      }
+     
      var ac=ge('ac_duration');
      if (ac && !geByClass('lastfm_status',ac.parentNode)[0]){
          ac.parentNode.insertBefore(vkCe('div',{'class':'fl_r lastfm_ac'},controls),ac);
@@ -3137,11 +3145,12 @@ if (!window.vkopt_plugins) vkopt_plugins={};
    #gp .active .vk_lastfm_fail_icon{background-image:url("'+vkLastFM.res.white.scrobble_fail+'");}\
    #gp .active .lastfm_fav_icon{background-position: 0 -10px;}\
    \
-   .lastfm_ac .vk_lastfm_icon, .lastfm_pd .vk_lastfm_icon{background-image:url("'+vkLastFM.res.blue.last_fm+'");}\
-   .lastfm_ac .vk_lastfm_playing_icon, .lastfm_pd .vk_lastfm_playing_icon{background-image:url("'+vkLastFM.res.blue.playing_icon+'");}\
-   .lastfm_ac .vk_lastfm_paused_icon, .lastfm_pd .vk_lastfm_paused_icon{background-image:url("'+vkLastFM.res.blue.paused_icon+'");}\
-   .lastfm_ac .vk_lastfm_ok_icon, .lastfm_pd .vk_lastfm_ok_icon{background-image:url("'+vkLastFM.res.blue.scrobble_ok+'");}\
-   .lastfm_ac .vk_lastfm_fail_icon, .lastfm_pd .vk_lastfm_fail_icon{background-image:url("'+vkLastFM.res.blue.scrobble_fail+'");}\
+   .lastfm_ac .vk_lastfm_icon, .lastfm_pd .vk_lastfm_icon, #gp .gp_vka_ctrls .vk_lastfm_icon{background-image:url("'+vkLastFM.res.blue.last_fm+'");}\
+   .lastfm_ac .vk_lastfm_playing_icon, .lastfm_pd .vk_lastfm_playing_icon, #gp .gp_vka_ctrls .vk_lastfm_playing_icon{background-image:url("'+vkLastFM.res.blue.playing_icon+'");}\
+   .lastfm_ac .vk_lastfm_paused_icon, .lastfm_pd .vk_lastfm_paused_icon, #gp .gp_vka_ctrls .vk_lastfm_paused_icon{background-image:url("'+vkLastFM.res.blue.paused_icon+'");}\
+   .lastfm_ac .vk_lastfm_ok_icon, .lastfm_pd .vk_lastfm_ok_icon, #gp .gp_vka_ctrls .vk_lastfm_ok_icon{background-image:url("'+vkLastFM.res.blue.scrobble_ok+'");}\
+   .lastfm_ac .vk_lastfm_fail_icon, .lastfm_pd .vk_lastfm_fail_icon, #gp .gp_vka_ctrls .vk_lastfm_fail_icon{background-image:url("'+vkLastFM.res.blue.scrobble_fail+'");}\
+   #gp .gp_vka_ctrls .lastfm_fav_icon{background-position: 0 0px;}\
    \
    .gp_tip_text a{color:#FFF}\
    #ac .duration, #pd .duration{margin-right:0px !important;}\
@@ -3152,6 +3161,7 @@ if (!window.vkopt_plugins) vkopt_plugins={};
       margin-left: -45px;\
       width:40px;\
    }\
+   .gp_vka_ctrls .lastfm_gp{margin-top: -2px; padding:0px;}\
    #gp_small:hover lastfm_gp{\
       background-color: rgba(0, 0, 0, 0.3);\
    }\
@@ -3321,6 +3331,7 @@ function vkAlbumCollectPlaylist(){
          show(cur.sContent);
          hide(cur.sShowMore);
          removeClass('audios_list', 'light');
+         Audio.showRows();
          return;
       }
          

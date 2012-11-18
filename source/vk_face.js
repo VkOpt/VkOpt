@@ -241,7 +241,7 @@ function vkStyles(){
 		.audios_row { margin-top: 0px !important; padding-top:0px !important;}\
 		.audios_row .actions a{padding-top:2px !important; padding-bottom:2px !important;}\
       .audio_list .audio_title_wrap { width: 315px !important;}\
-      #audio.new .audio_edit_wrap, #audio.new .audio_add_wrap, #audio.new .audio_remove_wrap { \
+      #audio.new .audio_edit_wrap, #audio.new .audio_add_wrap, #audio.new .audio_remove_wrap, #pad_playlist .audio_add_wrap { \
          margin-bottom: 0px !important;\
          margin-top: 0px !important;\
       }\
@@ -559,13 +559,20 @@ function sideBar(original){
 function vkMakeRightBar(){
 	var page_layout=ge('page_layout');
 	if (!page_layout) return;
-	vkaddcss('#side_bar {width:130px !important;} #main_feed #feed_rate_slider_wrap { right: 152px; } #footer_wrap{ width: 100% !important;}');
+	vkaddcss('\
+      #side_bar {width:130px !important;} \
+      /*#gp{margin-left: 130px !important; }\
+      #gp.reverse{margin-left: 0px !important;}*/\
+      #main_feed #feed_rate_slider_wrap { right: 152px; } \
+      #footer_wrap{ width: 100% !important;}\
+   ');// 
 	vk.width=vk.width+120;
    vk.width_dec=280;
 	Inj.Start('handlePageView','if (params.width) params.width+=120; if (params.width_dec) params.width_dec+=120;');
 	Inj.Replace('handlePageView','791','911');
 	Inj.Replace('handlePageView','160','280');
-	
+   Inj.Before('updGlobalPlayer','var sbw','pbsz[0]+=120;');
+   
 	var new_width=getSize(page_layout)[0]+120;
 	page_layout.style.width=new_width+'px';
 	var bar=vkCe('div',{id:'right_bar',"class":'fl_r'});
