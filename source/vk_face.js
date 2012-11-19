@@ -559,8 +559,12 @@ function sideBar(original){
 function vkMakeRightBar(){
 	var page_layout=ge('page_layout');
 	if (!page_layout) return;
+   var el=ge('pageHeader') || ge('pageHeader1') || ge('page_header');
+	var h=getSize(el,true)[1]+getXY(el)[1];
+   
 	vkaddcss('\
       #side_bar {width:130px !important;} \
+      .audio_fixed_nav #right_bar, .im_fixed_nav #right_bar{position: fixed; z-index: 119; top:'+h+'px;}\
       /*#gp{margin-left: 130px !important; }\
       #gp.reverse{margin-left: 0px !important;}*/\
       #main_feed #feed_rate_slider_wrap { right: 152px; } \
