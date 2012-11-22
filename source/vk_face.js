@@ -54,9 +54,10 @@ function vkStyles(){
    main_css+='\
       #im_rows .im_add_row .im_log_date a.im_date_link{\
          display: block;\
-         font-size: 6pt;\
+         line-height:150%\
+         /*font-size: 6pt;\
          margin-bottom: -5px;\
-         margin-top: -2px;\
+         margin-top: -2px;*/\
       }\
       ';
    }
