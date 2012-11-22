@@ -616,17 +616,18 @@ function vkVidChooseProcess(answer,url,q){
   };
   if (answer[1].indexOf('vk_link_to_video')==-1){
   var div=vkCe('div',{},answer[1]);
-  var ref=geByClass('summary',div)[0];
+  var ref=geByClass('summary',div)[0] || geByClass('search_bar',div)[0];;
   if (ref){
     var node=vkCe('div',{"class":'ta_r','style':"height: 25px; padding-left:10px; padding-top:4px;"},'\
     <div class="fl_l">\
         '+IDL('EnterLinkToVideo')+': \
-      <span><input id="vk_link_to_video" type="text"  style="width:230px"></span>\
-      <div id="vk_link_to_video_button" class="button_blue"><button onclick="vkCheckVideoLinkToMedia();">'+IDL('OK')+'</button></div>\
+      <span><input id="vk_link_to_video" type="text"  style="width:230px" class="s_search text"></span>\
+      <div id="vk_link_to_video_button" class="button_blue fl_r"><button onclick="vkCheckVideoLinkToMedia();">'+IDL('OK')+'</button></div>\
     </div>\
     ');
-    ref.parentNode.insertBefore(node,ref);
-    ref.parentNode.insertBefore(vkCe('h4'),ref);
+    /*ref.parentNode.insertBefore(node,ref);
+    ref.parentNode.insertBefore(vkCe('h4'),ref);*/
+    ref.parentNode.appendChild(node);
     answer[1]=div.innerHTML;
   }
   }
