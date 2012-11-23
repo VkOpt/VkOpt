@@ -711,7 +711,7 @@ function vkProfileToggle(init){
 
 function vkGetProfile(uid,callback,no_switch_button){
       var make_rate=function(rate){
-	   if (rate) return '';
+	   if (!rate) return '';
       var fullwidth=200;
 		var level=Math.ceil(Math.log(rate)/Math.log(10));
 		var lvl_class = level<3?'vk_rate_lvl_0':'vk_rate_lvl_'+level;
