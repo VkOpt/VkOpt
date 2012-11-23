@@ -1096,7 +1096,7 @@ if (!window.vkopt_plugins) vkopt_plugins={};
 function vkVideoPage(){
    if (getSet(2)=='y'){
 		if (cur.videoTpl){ 
-         Inj.After('cur.videoTpl','sign,','vkVidGetLinkBtn(v),');// or move this to 'vkInj'?
+         Inj.Replace('cur.videoTpl','tags,','tags+vkVidGetLinkBtn(v),');// or move this to 'vkInj'?
       }
    }
    vkVideoAddOpsBtn();
@@ -1209,13 +1209,35 @@ function vkVidAddToGroup(oid,vid,to_gid){
          });       
          return false;
       }
-      
       var show_box=function(){
-         html='<h4>'+IDL('SelectGroup')+'</h4>';
+         var html='';
+         html+='<h4>'+IDL('EnterLinkToGroup')+'</h4><div class="clear_fix">\
+           <input id="vidtogrouplink" type="text" placeholder="http://vk.com/club123" class="text fl_l" style="width:336px">\
+           <div class="button_blue fl_l"><button style="padding: 2px 8px;" id="vidtogroup">OK</button></div>\
+         </div><br>';
+         html+='<h4>'+IDL('SelectGroup')+'</h4>';
          for (var i=0; i<_vk_vid_adm_gr.length;i++){
             html+='<a href="/'+_vk_vid_adm_gr[i].screen_name+'" onclick="return vkVidAddToGroup('+oid+','+vid+','+_vk_vid_adm_gr[i].gid+');">'+_vk_vid_adm_gr[i].name+'</a><br>';
          }
          _vk_vid_add_box=vkAlertBox(IDL('Add'),html);
+         var btn=ge('vidtogroup');
+         btn.onclick=function(){
+            var url=ge('vidtogrouplink').value;
+            if (!url || trim(url)=='') {
+               alert('Incorrect link');
+               return;
+            }
+            lockButton(btn);
+            getGidUid(url,function(uid,gid){
+               if (gid){
+                  vkVidAddToGroup(oid,vid,gid);
+               } else {
+                  alert('Incorrect link');
+                  unlockButton(btn);
+               }
+               
+            });
+         }
       }
       
       if (_vk_vid_adm_gr==null){
@@ -1330,7 +1352,7 @@ function vkVidGetLinkBtn(vid){//for cur.videoTpl
    
    return s+'<div class="download_cont">\
    <a href="#" onclick="vkVidLoadLinks('+vid[0]+','+vid[1]+',this.parentNode); return false;">'+IDL('download')+'</a>\
-   <span class="fl_r '+(!window.vk_vid_list_adder?'vk_vid_add_hidden':'')+'"><a href="#" onclick="return vkVidAddToGroup('+vid[0]+','+vid[1]+');">'+IDL('AddToGroup')+'</a>'+(cur_oid!=oid?'<span class="divide">|</span>':'')+'</span>\
+   <small class="fl_r '+(!window.vk_vid_list_adder?'vk_vid_add_hidden':'')+'"><a href="#" onclick="return vkVidAddToGroup('+vid[0]+','+vid[1]+');">'+IDL('AddToGroup')+'</a>'+(cur_oid!=oid?'<span class="divide">|</span>':'')+'</small>\
    </div>';
 }
 function vkVidAddGetLink(node){
@@ -1340,7 +1362,7 @@ function vkVidAddGetLink(node){
    for (var i=0; i<els.length; i++){
       var el=els[i];
       var vid=(el.id || '').match(vre);
-      var p=geByClass('video_info_cont',el)[0];
+      var p=geByClass('video_info_cont',el)[0] || geByClass('info',el)[0] ;
       if (!vid || !p || p.innerHTML.indexOf('vkVidLoadLinks')!=-1) continue;
 
       var div=vkCe('div',{'class':"download_cont"},'<a href="#" onclick="vkVidLoadLinks('+vid[1]+','+vid[2]+',this.parentNode); return false;">'+IDL('download')+'</a>');
@@ -1352,7 +1374,7 @@ function vkVidAddGetLink(node){
       if (cur_oid!=oid)
          p.appendChild(vkCe('small',{'class':'fl_r owner_cont'},'<a href="/'+href+'" onmouseover="vkVidShowOwnerName('+oid+',this)">'+href+'</a>'),div.firstChild);
       p.appendChild(vkCe('small',{'class':'fl_r '+(!window.vk_vid_list_adder?'vk_vid_add_hidden':'')},
-            '<a href="#" onclick="return vkVidAddToGroup('+vid[1]+','+vid[2]+');">'+IDL('AddToGroup')+'</a><span class="divide">|</span>'),
+            '<a href="#" onclick="return vkVidAddToGroup('+vid[1]+','+vid[2]+');">'+IDL('AddToGroup')+'</a>'+(cur_oid!=oid?'<span class="divide">|</span>':'')),
             div.firstChild);
       p.appendChild(div);  
    }

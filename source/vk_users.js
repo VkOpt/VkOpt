@@ -46,7 +46,7 @@ function getGidUid(url,callback){ //callback(uid,gid)
 	if (url.match(/id\d+$/)){callback(url.match(/id(\d+)$/)[1],null);  return;}
 	
 	if (url.match(/^g\d+$/)){callback(null,url.match(/^g(\d+)$/)[1]);  return;}
-	if (url.match(/club\d+$/)){callback(url.match(/club(\d+)$/)[1],null);  return;}
+	if (url.match(/club\d+$/)){callback(null,url.match(/club(\d+)$/)[1]);  return;}
 	
 	if (vkUsersGroupsDomain[url]){callback(vkUsersGroupsDomain[url][0],vkUsersGroupsDomain[url][1]);  return; }
    
@@ -57,6 +57,7 @@ function getGidUid(url,callback){ //callback(uid,gid)
       case 'user': callback(res.object_id);                  break;
       case 'group': callback(null,res.object_id);            break;
       case 'application': callback(null,null,res.object_id); break;
+      default: callback(null,null); break;
      }
    });
 
@@ -710,7 +711,8 @@ function vkProfileToggle(init){
 
 function vkGetProfile(uid,callback,no_switch_button){
       var make_rate=function(rate){
-	    var fullwidth=200;
+	   if (rate) return '';
+      var fullwidth=200;
 		var level=Math.ceil(Math.log(rate)/Math.log(10));
 		var lvl_class = level<3?'vk_rate_lvl_0':'vk_rate_lvl_'+level;
 		if (level>5) lvl_class='vk_rate_lvl_5';
