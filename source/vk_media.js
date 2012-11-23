@@ -1221,6 +1221,8 @@ function vkVidAddToGroup(oid,vid,to_gid){
          }
          _vk_vid_add_box=vkAlertBox(IDL('Add'),html);
          var btn=ge('vidtogroup');
+         var old_val=localStorage['vk_vid_to_group'];
+         if (old_val) ge('vidtogrouplink').value=old_val
          btn.onclick=function(){
             var url=ge('vidtogrouplink').value;
             if (!url || trim(url)=='') {
@@ -1230,6 +1232,7 @@ function vkVidAddToGroup(oid,vid,to_gid){
             lockButton(btn);
             getGidUid(url,function(uid,gid){
                if (gid){
+                  localStorage['vk_vid_to_group']=url;
                   vkVidAddToGroup(oid,vid,gid);
                } else {
                   alert('Incorrect link');
