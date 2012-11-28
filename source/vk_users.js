@@ -743,8 +743,12 @@ function vkOnlineInfo(p){
                break;  
             case '3136627':
                title='Twitter';
-               break;                           
+               break;
+            default:
+               title='Mobile [app'+p.online_app+']';
+               break;
          }
+         // vk.com/app3226016 - vk master
       }
       if (title!='') html=title;
       html+='<a class="vk_mob_ico" href="'+link+'" title="Online"></a>';
