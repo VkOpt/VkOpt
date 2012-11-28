@@ -507,7 +507,7 @@ function ProcessUserPhotoLink(node){
   var hr=node.href;
   if (node.innerHTML.match(/img/i) && !node.innerHTML.match(/showPhoto/i) && !(node.parentNode.id && node.parentNode.id=='myprofile')) { 
   if (hr && isUserLink(hr) && !node.getAttribute("onmouseover")){
-      var uid=node.innerHTML.match(/http.{3}cs.+\/u(\d+)/i);
+      var uid=node.innerHTML.match(/http.{3}cs.+\/u(\d+)\//i);
       if (uid) uid=uid[1];
       if (!uid) uid=ExtractUserID(hr);
       node.setAttribute("onmouseover","vkPopupAvatar('"+uid+"',this)");
@@ -753,13 +753,12 @@ function vkGetProfile(uid,callback,no_switch_button){
          return {uid:uid,in_lists:user_in_lists,lists:lists}
       */   
 		var common='';
-		
+		console.log(profile);
 		var username='<a href="/id'+uid+'" onclick="return nav.go(this, event);">'+profile.first_name+' '+profile.nickname+' '+profile.last_name+'</a>';
 		var ava_url=profile.photo_big;
       var last_seen=(profile.last_seen || {}).time;
 		var online=profile.online?'Online':(last_seen?'<div class="vk_last_seen">'+(new Date(last_seen*1000)).format("HH:MM:ss<br>dd.mm.yy")+'</div>':'');//'Offline';
 		var rate=make_rate(profile.rate);
-      
       var relation=profile.relation;
       var sex=profile.sex;
       var rel=IDL((sex==1?'profile_relation_f_':'profile_relation_m_')+relation);
@@ -794,6 +793,7 @@ function vkGetProfile(uid,callback,no_switch_button){
          [rel,IDL('Relation')],
 			[profile.mobile_phone, IDL('Mob_tel')],
 			[profile.home_phone, IDL('Home_tel')],
+         [profile.skype, IDL('Skype')],
 			[profile.university_name,IDL('University_name')],
 			[profile.faculty_name,IDL('Faculty')],
 			[profile.graduation,IDL('Graduation')]
@@ -826,7 +826,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 	  else {
 		  var code = '';
         //code  += 'var activity=API.status.get({uid:"'+uid+'"});';
-		  code += 'var profile=API.getProfiles({uids:"'+uid+'",fields:"relation,sex,nickname,activity,photo_big,online,last_seen,rate,bdate,city,country,contacts,education,can_post,can_write_private_message,lists"})[0];';
+		  code += 'var profile=API.getProfiles({uids:"'+uid+'",fields:"relation,sex,nickname,activity,photo_big,online,last_seen,rate,bdate,city,country,contacts,connections,education,can_post,can_write_private_message,lists"})[0];';
 		  code += 'var commonfr=API.friends.getMutual({target_uid:"'+uid+'"});';
 		  code += 'var commons=API.getProfiles({uids:commonfr,fields:"online"});';
 		  code += 'return {';

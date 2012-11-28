@@ -2688,7 +2688,7 @@ vkLastFM={
          if (code == 4)// токен сдох
             if (!fm.connect_box || !fm.connect_box.isVisible()){
                fm.connect_box=vkAlertBox(IDL('AuthBoxTitle'), IDL('AuthBoxText'), function(){
-                  var url = 'http://www.last.fm/api/auth/?api_key=' + fm.api_key + '&cb=' + encodeURIComponent('http://' + location.host + '/settings?act=vkscrobbler');
+                  var url = 'http://www.last.fm/api/auth/?api_key=' + fm.api_key + '&cb=' + encodeURIComponent(location.protocol+'//' + location.host + '/settings?act=vkscrobbler');
                   window.open(url,'…','…');
                   //location.href = url;
                }, function(){
@@ -3472,12 +3472,15 @@ function vkGetAlbumInfo(artist,track,callback){
                            /*console.log(data)*/
                         }
                      });
-                  } else if (data.track.artist && data.track.artist.mbid){
+                  } else if (data.track.artist && (data.track.artist.mbid || data.track.artist.name)){//data.track.artist.name
                      console.log('no album info... load artist info');
-                     vkLastFM.lastfm.artist.getInfo({
-                        mbid: data.track.artist.mbid,
-                        lang:'ru'
-                     }, {
+                     var params={lang:'ru'};
+                     if (data.track.artist.mbid)
+                        params['mbid']=data.track.artist.mbid;
+                     else 
+                        params['artist']=data.track.artist.name;
+                        
+                     vkLastFM.lastfm.artist.getInfo(params, {
                         success: function(data) {
                           data=data.artist;
                           data.act='artist_info';
