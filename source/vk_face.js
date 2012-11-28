@@ -514,6 +514,7 @@ function vkStyles(){
          .vk_edit_ico:hover {opacity:1}\
          .cur_section .vk_edit_ico{       background-position: -151px -51px; }\
          \
+         .vk_mob_ico {  background: url(/images/mobile_online.gif) no-repeat transparent; height: 12px;margin-left: 4px;padding-left: 10px;width: 0px;}\
          .vk_album_done_link  .vk_album_count{display:none;}\
 	";
    main_css+=vk_board.css;

@@ -578,6 +578,11 @@ function vkShowProfile(el,html,uid,right){
       if (!ge('vkfrinfo'+uid)) return;
       ge('vkfrinfo'+uid).innerHTML=html;
    });
+   vkProfileUpdOnline(uid,function(html){
+      if (!ge('vkprofonlineinfo'+uid)) return;
+      ge('vkprofonlineinfo'+uid).innerHTML=html;
+   });   
+   
    
 	if (allowShowPhoto) fadeIn('vkbigPhoto');//show('vkbigPhoto');
       var xy=getXY(el); 
@@ -664,7 +669,7 @@ var VK_PROFILE_TPL='\
 		</div>\
 		<div id="vk_profile_right_block" class="vk_profile_right fl_r">\
 		  <div class="vk_profile_header">\
-			<div class="vk_username">%USERNAME%<small class="vk_profile_online_status fl_r">%ONLINE%</small></div>\
+			<div class="vk_username">%USERNAME%<small class="vk_profile_online_status fl_r" id="vkprofonlineinfo%UID%">%ONLINE%</small></div>\
 			<div class="vk_profile_header_divider"></div>\
 			<div><small>%ACTIVITY%</small></div>\
 		  </div>\
@@ -709,6 +714,47 @@ function vkProfileToggle(init){
 	return false;
 }
 
+function vkOnlineInfo(p){
+   /*
+   online: 1
+   online_app: "2274003"// android
+   online_mobile: 1
+   */
+   var html='';
+   if (p.online!=1) return '';
+   html=IDL('Online');
+   if (p.online_mobile){
+      var link='http://m.vk.com/';
+      var title="";
+      if (p.online_app){ 
+         link="/app"+p.online_app;
+         switch (p.online_app){
+            case '2274003':
+               title='Android';
+               break; 
+            case '3136529':
+            case '3140623':
+            case '2847524':
+            case '1998533':
+               title='iPhone';
+               break; 
+            case '3145329':
+               title='iPad';
+               break;  
+            case '3136627':
+               title='Twitter';
+               break;                           
+         }
+      }
+      if (title!='') html=title;
+      html+='<a class="vk_mob_ico" href="'+link+'" title="Online"></a>';
+   } else if (p.online_app){
+      html+=' [app'+p.online_app+']';
+   }
+   return html;
+   //p.online_mobile?'<b class="vk_mob_ico" onmouseover=""></b>'
+   //<a class="vk_mob_ico" href="http://m.vk.com/" onmouseover=""></a>   
+}
 function vkGetProfile(uid,callback,no_switch_button){
       var make_rate=function(rate){
 	   if (!rate) return '';
@@ -757,7 +803,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 		var username='<a href="/id'+uid+'" onclick="return nav.go(this, event);">'+profile.first_name+' '+profile.nickname+' '+profile.last_name+'</a>';
 		var ava_url=profile.photo_big;
       var last_seen=(profile.last_seen || {}).time;
-		var online=profile.online?'Online':(last_seen?'<div class="vk_last_seen">'+(new Date(last_seen*1000)).format("HH:MM:ss<br>dd.mm.yy")+'</div>':'');//'Offline';
+		var online=profile.online?vkOnlineInfo(profile):(last_seen?'<div class="vk_last_seen">'+(new Date(last_seen*1000)).format("HH:MM:ss<br>dd.mm.yy")+'</div>':'');//'Offline';
 		var rate=make_rate(profile.rate);
       var relation=profile.relation;
       var sex=profile.sex;
@@ -844,6 +890,19 @@ function vkGetProfile(uid,callback,no_switch_button){
 			MakeProfile(r);
 		  });
 	  }
+}
+
+function vkProfileUpdOnline(uid,callback){
+   dApi.call('users.get',{uids:uid,fields:'online,last_seen'},function(r){
+      if (r.response && r.response[0]){
+         var profile=r.response[0];
+         var last_seen=(profile.last_seen || {}).time;
+         var online=profile.online?vkOnlineInfo(profile):(last_seen?'<div class="vk_last_seen">'+(new Date(last_seen*1000)).format("HH:MM:ss<br>dd.mm.yy")+'</div>':'');//'Offline';
+         callback(online);
+      } else {
+         callback('');
+      }
+   })
 }
 
 var _vk_fr_lists_info={};
