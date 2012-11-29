@@ -736,13 +736,16 @@ function vkOnlineInfo(p){
             case '3140623':
             case '2847524':
             case '1998533':
-               title='iPhone';
+               title='iPhone';         //vk.com/app2753935  iPhone || FAKE?
                break; 
             case '3145329':
                title='iPad';
                break;  
             case '3136627':
                title='Twitter';
+               break;
+            case '3226016':
+               title='vk master';
                break;
             default:
                title='Mobile [app'+p.online_app+']';

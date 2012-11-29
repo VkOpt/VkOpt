@@ -1229,7 +1229,8 @@ function UserOnlineStatus(status) {// ADD LAST STATUS
 	var show_status=function(stat){
 		//if (!window.vk_last_uonline_status || vk_last_uonline_status!=stat){
 			//vk_last_uonline_status=stat;
-			var online = stat ? '<div class="vkUOnline">Online</div>': '<div class="vkUOffline">Offline</div>';
+         var text=vkOnlineInfo(stat);
+			var online = (text && text!='') ? '<div class="vkUOnline">'+text+'</div>': '<div class="vkUOffline">Offline</div>';
 			if (!ge('vk_online_status')){
 			  var div = document.createElement('div');
 			  var body = document.getElementsByTagName('body')[0];
@@ -1258,9 +1259,16 @@ function UserOnlineStatus(status) {// ADD LAST STATUS
 			if (res.response){
 				//res.response[0].online_mobile
             //res.response[0].online_app
-            var st=res.response?res.response[0].online:null;
+            //var st=res.response?res.response[0].online:null;
+            var p=res.response[0];
+            var st={
+                  online:p.online,
+                  online_app: p.online_app,
+                  online_mobile: p.online_mobile
+             };
+            
 				show_status(st);
-				vkCmd('user_online_status',res.response[0].online);// шлём полученный статус в остальные вкладки
+				vkCmd('user_online_status',st);// /*res.response[0].online*/ шлём полученный статус в остальные вкладки
 				//vklog('Online status >> [onStorage] ');
 			} else {
 				vk_check_online_timeout=setTimeout(UserOnlineStatus,vkGenDelay(vk_upd_menu_timeout));
