@@ -618,12 +618,11 @@ function vkVidChooseProcess(answer,url,q){
   var div=vkCe('div',{},answer[1]);
   var ref=geByClass('summary',div)[0] || geByClass('search_bar',div)[0];;
   if (ref){
-    var node=vkCe('div',{"class":'ta_r','style':"height: 25px; padding-left:10px; padding-top:4px;"},'\
-    <div class="fl_l">\
-        '+IDL('EnterLinkToVideo')+': \
-      <span><input id="vk_link_to_video" type="text"  style="width:230px" class="s_search text"></span>\
+    var node=vkCe('div',{'style':"height: 25px; padding: 4px 20px;"},'\
+    <div class="fl_l">'+IDL('EnterLinkToVideo')+':</div>\
+      <span class="fl_l"><input id="vk_link_to_video" type="text"  style="width:215px" class="s_search text"></span>\
       <div id="vk_link_to_video_button" class="button_blue fl_r"><button onclick="vkCheckVideoLinkToMedia();">'+IDL('OK')+'</button></div>\
-    </div>\
+    \
     ');
     /*ref.parentNode.insertBefore(node,ref);
     ref.parentNode.insertBefore(vkCe('h4'),ref);*/
@@ -650,12 +649,11 @@ function vkAudioChooseProcess(answer,url,q){
   var div=vkCe('div',{},answer[1]);
   var ref=geByClass('summary',div)[0] || geByClass('search_bar',div)[0];
   if (ref){
-    var node=vkCe('div',{"class":'ta_r','style':"height: 25px; padding-left:10px; padding-top:4px;"},'\
-    <div class="fl_l">\
-        '+IDL('EnterLinkToAudio')+': \
-      <span><input id="vk_link_to_audio" type="text" style="width:230px"  class="s_search text"></span>\
+    var node=vkCe('div',{'style':"height: 25px; padding: 4px 20px;"},'\
+    <div class="fl_l">'+IDL('EnterLinkToAudio')+':</div>\
+      <span class="fl_l"><input id="vk_link_to_audio" type="text" style="width:215px"  class="s_search text"></span>\
       <div id="vk_link_to_audio_button" class="button_blue fl_r"><button onclick="vkCheckAudioLinkToMedia();">'+IDL('OK')+'</button></div>\
-    </div>\
+    \
     ');
     //ref.parentNode.insertBefore(node,ref);
     //ref.parentNode.insertBefore(vkCe('h4'),ref);

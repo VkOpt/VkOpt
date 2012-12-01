@@ -1467,6 +1467,7 @@ function vkFavOnlineChecker(on_storage){
                   var tm=(new Date).format('isoTime');
                   var time='<div class="fl_r">'+tm+'</div>';
                   var text='<b><a href="/id'+new_onl[i].uid+'" onclick="nav.go(this);">'+new_onl[i].first_name+' '+new_onl[i].last_name+'</a></b>'+time;
+                  text+='<br>'+vkOnlineInfo(new_onl[i]);
                   // vkNotifyUserCheckAndShow
                   vkShowNotify({sound:'On',title:IDL('UserOnline'),text:text,_time:tm,author_photo:new_onl[i].photo_rec,author_link:'id'+new_onl[i].uid,link:'id'+new_onl[i].uid,onclick:"nav.go('id"+new_onl[i].uid+"')"});
                }
@@ -1581,6 +1582,13 @@ function vkFaveOnlineChecker(on_storage){
                   var tm=(new Date).format('isoTime');
                   var time='<div class="fl_r">'+tm+'</div>';
                   var text='<b><a href="/id'+new_onl[i].id+'" onclick="nav.go(this);">'+new_onl[i].name+'</a></b>'+time;
+                  if (new_onl[i].online>1){
+                     new_onl[i].online_app=""+new_onl[i].online;
+                     new_onl[i].online_mobile=1;
+                     new_onl[i].online=1;
+                  };
+                  text+='<br>'+vkOnlineInfo(new_onl[i]);
+               
                   // vkNotifyUserCheckAndShow
                   vkShowNotify({sound:'On',title:IDL('FaveOnline'),text:text,_time:tm,author_photo:new_onl[i].photo,author_link:'id'+new_onl[i].id,link:'id'+new_onl[i].id,onclick:"nav.go('id"+new_onl[i].id+"')"});
                }
