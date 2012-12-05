@@ -107,6 +107,8 @@ function vkOnNewLocation(startup){
    if (!cur.module){
       if (cur.gid && nav.objLoc['act']=='blacklist' && (cur.moreParams || {}).act=="blacklist"){
          cur.module='groups_edit';
+      }else if (nav.objLoc[0]=='settings'){
+         cur.module='settings';
       } else {
          setTimeout(vkOnNewLocation,10);
          return;

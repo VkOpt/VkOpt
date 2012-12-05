@@ -1101,6 +1101,7 @@ function vkVideoPage(){
    }
    vkVideoAddOpsBtn();
    vkVideoNullAlbum();
+   vkVideoGetLinksBtn();
 }
 function vkVideoEditPage(){
    vkVidEditAlbumTitle(null,true);
@@ -1120,6 +1121,105 @@ function vkVideoNullAlbum(){
       
       p.insertBefore(vkCe('div',attrs,IDL('NotInAlbums')),p.firstChild);
    }
+}
+
+function vkVideoGetLinksBtn(){
+   if (getSet(2)!='y') return;
+   var p=ge('video_albums_list');
+   if (p && !ge('video_get_links')){
+      var attrs={
+         'id':"video_get_links",
+         'class':"side_filter",
+         'onmouseover':"addClass(this, 'side_filter_over');",
+         'onmouseout':"removeClass(this, 'side_filter_over');"      
+      };
+      
+      p.insertBefore(vkCe('div',attrs,IDL('Links')),p.firstChild);
+   }
+   var btn=ge('video_get_links');
+   btn.setAttribute('onclick',"vkVideoGetLinks("+cur.oid+","+((nav.objLoc['section'] || "").match(/\d+/) || 0)+");");
+}
+
+function vkVideoGetLinks(oid,aid){
+//vkApis.videos: function(oid,aid,quality,callback,progress){// quality: 0 - 240p; 1 - 360p;  2 - 480p;  3 - 720p;
+
+   var box=vkAlertBox(IDL('Links'),'<div id="vk_links_container">'+vkBigLdrImg+'</div>');
+   box.setOptions({width:"325px"});
+   div=ge('vk_links_container');
+   var q=3;
+   
+   
+   
+   var run=function(quality){
+      q = quality!=null?quality:3;
+      box.setOptions({width:"640px"});
+      ge('vk_links_container').innerHTML=vkBigLdrImg;
+      vkApis.videos(oid,aid,q,function(r){
+         show_links(r);
+      },function(c,f){
+         if (!f) f=1;
+         ge('vk_links_container').innerHTML=vkProgressBar(c,f,600);
+      });
+      return false;
+   }
+   
+   ge('vk_links_container').innerHTML='\
+   <a class="vk_down_icon" href="#"  id="vk_glinks_max240p">240p<small class="divide">max</small></a>\
+   <a class="vk_down_icon" href="#"  id="vk_glinks_max360p">360p<small class="divide">max</small></a>\
+   <a class="vk_down_icon" href="#"  id="vk_glinks_max480p">480p<small class="divide">max</small></a>\
+   <a class="vk_down_icon" href="#"  id="vk_glinks_max720p">720p<small class="divide">max</small></a>\
+   ';
+   ge('vk_glinks_max240p').onclick=run.pbind(0);
+   ge('vk_glinks_max360p').onclick=run.pbind(1);
+   ge('vk_glinks_max480p').onclick=run.pbind(2);
+   ge('vk_glinks_max720p').onclick=run.pbind(3);
+   
+   var show_links=function(list){
+      vkaddcss('#vk_mp3_links_area, #vk_m3u_playlist_area,#vk_pls_playlist_area{width:520px; height:400px;}');
+         //var res='#EXTM3U\n';
+         //var pls='[playlist]\n\n';
+         var links=[];
+         //var list=r.response;
+         for (var i=0;i<list.length;i++){
+            var itm=list[i];
+            /*res+='#EXTINF:'+itm.duration+','+(winToUtf(itm.artist+" - "+itm.title))+'\n';
+            res+=itm.url+"\n";//+"?/"+(encodeURIComponent(itm.artist+" - "+itm.title))+".mp3"+"\n";
+            
+            pls+='File'+(i+1)+'='+itm.url+'\n';
+            pls+='Title'+(i+1)+'='+winToUtf(itm.artist+" - "+itm.title)+'\n';
+            pls+='Length'+(i+1)+'='+itm.duration+'\n\n';*/
+            
+            links.push(itm);
+         }
+         //pls+='\nNumberOfEntries='+list.length+'\n\nVersion=2'
+
+         box.hide();
+         /*
+            m3u_html='<div class="vk_m3u_playlist">\
+                  <textarea id="vk_m3u_playlist_area">'+res+'</textarea>\
+                  <a href="data:audio/x-mpegurl;base64,' + base64_encode(utf8ToWindows1251(utf8_encode(res))) + '">'+vkButton(IDL('download_M3U'))+'</a>\
+                  <a href="data:audio/x-mpegurl;base64,' + base64_encode(utf8_encode(res)) + '">'+vkButton(IDL('download_M3U')+' (UTF-8)','',1)+'</a>\
+                  </div>';
+            pls_html='<div class="vk_pls_playlist">\
+                  <textarea id="vk_pls_playlist_area">'+pls+'</textarea>\
+                  <a href="data:audio/x-scpls;base64,' + base64_encode(utf8ToWindows1251(utf8_encode(pls))) + '">'+vkButton(IDL('download_PLS'))+'</a>\
+                  <a href="data:audio/x-scpls;base64,' + base64_encode(utf8_encode(pls)) + '">'+vkButton(IDL('download_PLS')+' (UTF-8)','',1)+'</a>\
+                  </div>';
+         */
+         var tabs=[];
+
+         tabs.push({name:IDL('links'),active:true, content:'<div class="vk_mp3_links"><textarea id="vk_mp3_links_area">'+links.join('\n')+'</textarea></div>'});
+         //tabs.push({name:IDL('M3U_Playlist'),content:m3u_html});
+         //tabs.push({name:IDL('PLS_Playlist'),content:pls_html});
+         box=vkAlertBox(IDL('links'),vkMakeContTabs(tabs));
+         box.setOptions({width:"560px"});
+         /*alert(links.join('\n'));
+         alert(res);
+         */
+        
+   }
+   
+   
 }
 
 function vkVidEditAlbumTitle(album_id,add_buttons){
@@ -1488,7 +1588,7 @@ function vkVidLoadLinks(oid,vid,el,yid,type){
 
                vidname='?'+vkDownloadPostfix()+'&/'+vidname;
                var vidurl=arr[i]+(smartlink?vidname+vidext:'')
-               html+='<a class="vk_down_icon" href="'+vidurl+'" download="'+vname+vidext+'"  title="'+vname+vidext+'" onclick="return vkDownloadFile(this);" onmouseover="vkGetVideoSize(this); vkDragOutFile(this);">'+fmt[i]+'<small class="divide" url="'+vidurl+'"></small></a>'; 
+               html+='<a class="vk_down_icon" href="'+vidurl+'" download="'+vname+' ['+fmt[i]+']'+vidext+'"  title="'+vname+' ['+fmt[i]+']'+vidext+'" onclick="return vkDownloadFile(this);" onmouseover="vkGetVideoSize(this); vkDragOutFile(this);">'+fmt[i]+'<small class="divide" url="'+vidurl+'"></small></a>'; 
             }
             el.innerHTML=html;
          } else {
