@@ -203,7 +203,7 @@ function vkPollResults(post_id,pid){
    var tpl='\
        <tr>\
          <td colspan="2" class="page_poll_text">%TEXT</td>\
-       </tr><tr>\
+       </tr><tr onmouseover="Wall.pollOver(this, \'%POLL_ID\', %ANSWER_ID)">\
          <td class="page_poll_row">\
          <div class="page_poll_percent" style="width: %WIDTH%"></div><div class="page_poll_row_count">%COUNT</div>\
          </td><td class="page_poll_row_percent ta_r"><nobr><b>%RATE%</b></nobr></td>\
@@ -220,7 +220,12 @@ function vkPollResults(post_id,pid){
       var html="";
       for (var i=0; i<answer.length; i++){
          var width=Math.round(answer[i].rate*100/max);
-         html+=tpl.replace(/%RATE/g,answer[i].rate).replace(/%TEXT/g,answer[i].text).replace(/%WIDTH/g,width).replace(/%COUNT/g,answer[i].votes);
+         html+=tpl.replace(/%RATE/g,answer[i].rate)
+                  .replace(/%TEXT/g,answer[i].text)
+                  .replace(/%POLL_ID/g,post_id)
+                  .replace(/%ANSWER_ID/g,answer[i].id)
+                  .replace(/%WIDTH/g,width)
+                  .replace(/%COUNT/g,answer[i].votes);
       }   
       html='<table cellspacing="0" cellpadding="0" class="page_media_poll"><tbody>'+html+'</tbody></table>';
       

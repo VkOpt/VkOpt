@@ -519,6 +519,7 @@ function vkStyles(){
 	";
    main_css+=vk_board.css;
    main_css+=vk_photos.css;
+   main_css+=vk_videos.css;
 	main_css+=vk_plugins.css();
 
 	vkaddcss(main_css);

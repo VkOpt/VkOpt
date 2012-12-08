@@ -641,7 +641,7 @@ function vkAudioChooseProcess(answer,url,q){
     var val=ge('vk_link_to_audio').value.match(/audio(-?\d+)_(\d+)/);
     lockButton(btn);
     if (val){
-      cur.chooseMedia('audio', val[1]+'_'+val[2], [val[1], val[2]]);//[artist,name]
+      cur.chooseMedia('audio',  val[1]+'_'+val[2], {performer: val[1], title: val[2], info: ',0', duration: '0:00'});//.chooseMedia('audio', val[1]+'_'+val[2], [val[1], val[2]]);//[artist,name]
     } else {
       alert(IDL('IncorrectAudioLink'))
     }

@@ -1694,7 +1694,7 @@ vkApis={
          var result=[];
          if (aid>0){ 
             for (var i=0; i<vids.length; i++){
-               console.log(vids[i][6]);
+               //console.log(vids[i][6]);
                if (parseInt(vids[i][6])==aid)
                   result.push(vids[i]);
             }
@@ -1703,9 +1703,9 @@ vkApis={
          
          //console.log('List:',result);  
          if (result.length==0 && !api_used) {
-            load_api(function(){
+            load_api(function(res){
                api_used=true;
-               process();
+               process(res);
             })
          } else if (result.length==0 && api_used) {
             alert('Videos not found');

@@ -736,6 +736,7 @@ function vkOnlineInfo(p){
             case '3140623':
             case '2847524':
             case '1998533':
+			case '3087106':
                title='iPhone';         //vk.com/app2753935  iPhone || FAKE?
                break; 
             case '3145329':
