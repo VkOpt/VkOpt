@@ -1097,6 +1097,9 @@ function vkVideoPage(){
    if (getSet(2)=='y'){
 		if (cur.videoTpl){ 
          Inj.Replace('cur.videoTpl','tags,','tags+vkVidGetLinkBtn(v),');// or move this to 'vkInj'?
+         Inj.Replace('cur.videoTpl','return rs(','var res=rs(');
+         Inj.End('cur.videoTpl','res=vkVidGetLinkBtn(v,res); return res;');
+         cur.videoTplHTML=cur.videoTplHTML.replace('<a','%download%<a');
       }
    }
    vkVideoAddOpsBtn();
@@ -1482,14 +1485,21 @@ function vkVidDownloadLinks(vars){
 }
 
 
-function vkVidGetLinkBtn(vid){//for cur.videoTpl
+function vkVidGetLinkBtn(vid,res){//for cur.videoTpl
+   if (res){
+      res=res.replace(/%download%/,'<div class="vk_vid_acts_panel"><div class="download_cont">\
+         <a href="#" onclick="vkVidLoadLinks('+vid[0]+','+vid[1]+',this.parentNode); return false;">'+IDL('download')+'</a>\
+         <small class="fl_r '+(!window.vk_vid_list_adder?'vk_vid_add_hidden':'')+'"><a href="#" onclick="return vkVidAddToGroup('+vid[0]+','+vid[1]+');">'+IDL('AddToGroup')+'</a>'+(cur_oid!=oid?'<span class="divide">|</span>':'')+'</small>\
+         </div></div>');
+      return res;
+   }
    if (!vid || getSet(66)=='n') return '';
    var oid=parseInt(vid[0]);
    var cur_oid=(window.cur && cur.oid)?cur.oid:((window.nav && nav.objLoc) ? nav.objLoc[0].match(/-?\d+/):null);
    var href=(oid<0?'club':'id')+Math.abs(oid);
       
    var s=(cur_oid==oid?'':'<small class="fl_r owner_cont"><a href="/'+href+'" onmouseover="vkVidShowOwnerName('+oid+',this)">'+href+'</a></small>');
-   
+
    return s+'<div class="download_cont">\
    <a href="#" onclick="vkVidLoadLinks('+vid[0]+','+vid[1]+',this.parentNode); return false;">'+IDL('download')+'</a>\
    <small class="fl_r '+(!window.vk_vid_list_adder?'vk_vid_add_hidden':'')+'"><a href="#" onclick="return vkVidAddToGroup('+vid[0]+','+vid[1]+');">'+IDL('AddToGroup')+'</a>'+(cur_oid!=oid?'<span class="divide">|</span>':'')+'</small>\
@@ -1574,7 +1584,7 @@ function vkVidAddGetLink(node){
         var div=vkCe('span',{'class':"download_cont"},'<a href="#" onclick="vkVidLoadLinks('+vid[1]+','+vid[2]+',this.parentNode'+(vid[3]?", '"+vid[3]+"','"+type+"'":'')+'); return false;">'+IDL('download')+'</a>');
         c.appendChild(div);     
         el.insertBefore(c,el.firstChild);
-        // <div class="vk_vid_acts_panel" style="">okoko</div>
+        // <div class="vk_vid_acts_panel">okoko</div>
       }
    }
    
