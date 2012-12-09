@@ -1099,7 +1099,8 @@ function vkVideoPage(){
          Inj.Replace('cur.videoTpl','tags,','tags+vkVidGetLinkBtn(v),');// or move this to 'vkInj'?
          Inj.Replace('cur.videoTpl','return rs(','var res=rs(');
          Inj.End('cur.videoTpl','res=vkVidGetLinkBtn(v,res); return res;');
-         cur.videoTplHTML=cur.videoTplHTML.replace('<a','%download%<a');
+         if (cur.videoTplHTML && cur.videoTplHTML.indexOf('%download%')==-1)
+            cur.videoTplHTML=cur.videoTplHTML.replace('<a','%download%<a');
       }
    }
    vkVideoAddOpsBtn();
@@ -1449,7 +1450,7 @@ function vkVidDownloadLinks(vars){
 	var get_flv=function() {
 		if (vars.sd_link != null && vars.sd_link.length > 0) {return vars.sd_link;}
 		if (vars.uid <= 0) {
-			return "http://" + vars.host + "/assets/videos/" + vars.vtag + "" + vars.vkid + ".vk.flv";
+			return "http://" + vars.host + "/assets/video"+(vars.host.indexOf('vkadre')==-1?'s':'')+"/" + vars.vtag + "" + vars.vkid + ".vk.flv";
 		}
       var host = (vars.host.substr(0, 4) == 'http')
 		  ? vars.host
@@ -1581,7 +1582,10 @@ function vkVidAddGetLink(node){
       if (vid){
         if (v_el.innerHTML.indexOf('vk_vid_acts_panel')!=-1) return;
         var c=vkCe('div',{'class':'vk_vid_acts_panel'});
-        var div=vkCe('span',{'class':"download_cont"},'<a href="#" onclick="vkVidLoadLinks('+vid[1]+','+vid[2]+',this.parentNode'+(vid[3]?", '"+vid[3]+"','"+type+"'":'')+'); return false;">'+IDL('download')+'</a>');
+        var div=vkCe('span',{'class':"download_cont"},
+         '<a href="#" onclick="vkVidLoadLinks('+vid[1]+','+vid[2]+',this.parentNode'+(vid[3]?", '"+vid[3]+"','"+type+"'":'')+'); return false;">'+IDL('download')+'</a>\
+         <small class="fl_r '+(!window.vk_vid_list_adder?'vk_vid_add_hidden':'')+'"><a href="#" onclick="return vkVidAddToGroup('+vid[1]+','+vid[2]+');">'+IDL('AddToGroup')+'</a>'+(cur_oid!=oid?'<span class="divide">|</span>':'')+'</small>\
+         ');
         c.appendChild(div);     
         el.insertBefore(c,el.firstChild);
         // <div class="vk_vid_acts_panel">okoko</div>
@@ -1677,7 +1681,7 @@ function vkVidDownloadLinksArray(vars){
 	var vuid=function (uid) { var s = "" + uid; while (s.length < 5) {s = "0" + s;}  return s; }
 	var get_flv=function() {
 		if (vars.sd_link != null && vars.sd_link.length > 0) {return vars.sd_link;}
-		if (vars.uid <= 0) return "http://" + vars.host + "/assets/videos/" + vars.vtag + "" + vars.vkid + ".vk.flv";
+		if (vars.uid <= 0) return "http://" + vars.host + "/assets/video"+(vars.host.indexOf('vkadre')==-1?'s':'')+"/" + vars.vtag + "" + vars.vkid + ".vk.flv";
 		return vars.host + "u" + vuid(vars.uid) + "/videos/" + vars.vtag + ".flv";
 	}
 	var pathToHD=function(res) {
