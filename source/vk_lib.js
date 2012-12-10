@@ -1303,6 +1303,7 @@ vk_v_slider={
    if (cid) vk_v_slider.callbacks[cid](parseInt(ge(id+'_position').value),parseInt(ge(id+'_select').value));
   }
 } 
+
 //vk_v_slider.init('photos_albums_container',100,20,function(){},function(){},100);  
  
 /*END OF VK GUI*/

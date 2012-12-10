@@ -1987,23 +1987,48 @@ vk_audio_player={
       p.insertBefore(ctrl,p.firstChild);
    },
    last_vol:-1,
+   vol_slider:null,
    gpUpdVolSlider:function(){
       var el=ge('gp_vol_panel');
+      var t=null;
       var cur_vol=Math.round(audioPlayer.player.getVolume() * 100);
-      if (vk_audio_player.last_vol<0/*!=cur_vol*/){
+      if (!hasClass(el,'vis') && vk_audio_player.last_vol>-1 && vk_audio_player.last_vol!=cur_vol){
+         vk_audio_player.last_vol=cur_vol;
+         vk_v_slider.sliderUpdate(cur_vol,cur_vol,'gp_vol_panel');
+         vk_v_slider.sliderApply('gp_vol_panel');
+      }
+      if (vk_audio_player.last_vol==-1/*!=cur_vol*/){
          vk_audio_player.last_vol=cur_vol;
          el.innerHTML='';
-         var t=null;
+         
          var set=function(volume){
-            console.log(volume);
-            addClass(el,'vis')
+            //console.log(volume);
+            addClass(el,'vis');
             clearTimeout(t);
             t=setTimeout(function(){
                audioPlayer.player.setVolume(volume / 100);
+               setCookie('audio_vol', Math.round(volume), 365);
+               
+               var _a=audioPlayer;
+               if (_a.controls) {
+                  for (var i in _a.controls) {
+                     var obj = _a.controls[i];
+                     if (obj.volume) setStyle(obj.volume, {width: volume + '%'})
+                  }
+               }
+               var aid = currentAudioId();
+               if (ge('player' + aid)) {
+                  if (ge('audio_vol_line' + aid)) {
+                    setStyle(ge('audio_vol_line' + aid), {width: volume + '%'});
+                  }
+               }
+        
             },10)
          }
-         vk_v_slider.init('gp_vol_panel',100,cur_vol,function(vol){removeClass(el,'vis')},function(vol){ set(vol);  },50);  
+         vk_v_slider.init('gp_vol_panel',100,cur_vol,function(vol){removeClass(el,'vis');},function(vol){ set(vol);  },50); 
+         removeClass(el,'vis');
       }
+      //vk_v_slider.sliderUpdate(vol,vol,'gp_vol_panel');
    }
 }
 
