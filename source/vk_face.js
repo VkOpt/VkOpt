@@ -489,6 +489,13 @@ function vkStyles(){
          .vk_slider_scale {  cursor: pointer;  padding-top: 3px; }\
          .vk_slider_line {  cursor: pointer;  border-bottom: 1px solid #5F7D9D; }\
          .vk_slider {  cursor: pointer;  background: #5F7D9D;  width: 11px;  height: 4px; }\
+         \
+         .vk_vslider_wrap{width:5px;}\
+         .vk_vslider_scale {  cursor: pointer;  padding-top: 3px; }\
+         .vk_vslider_line {  cursor: pointer;  width:4px; background: #BAC7D4; position: absolute; border-radius: 2px; margin-left: 2px;}\
+         .vk_vslider_line_bg { background:#5F7E9E; position:relative; border-radius:2px; }\
+         .vk_vslider {  cursor: pointer;  position:absolute; background: #5F7E9E;  width: 8px;  height: 8px; border-radius:4px; }\
+         \
          .zoom_ico_white{\
             width:14px; \
             height:14px; \

@@ -1158,9 +1158,153 @@ vk_hor_slider={
   sliderApply: function (id) {
    var cid=parseInt(ge(id+'_slider_scale').getAttribute('callback'));
    if (cid) vk_hor_slider.callbacks[cid](parseInt(ge(id+'_position').value),parseInt(ge(id+'_select').value));
-    //vk_hor_slider.switchSection(vk_hor_slider.topPercent == 100 ? 'posts' : 'top');
   }
-}   
+}  
+
+vk_v_slider={
+ default_percent:50,
+ callbacks:[null],
+ upd_callbacks:[null],
+ init:function(id,max_value,value,callback,on_update,height){
+   var el=ge(id);
+   var rh=false;
+   if (!el){ 
+      el=vkCe('div',{id:id, style:"height:"+(height || 100)+"px; opacity:0.01;"});
+      document.getElementsByTagName('body')[0].appendChild(el);
+      rh=true;
+   }
+   var cback='';
+   if (callback){
+      vk_v_slider.callbacks.push(callback);
+      cback=' callback="'+(vk_v_slider.callbacks.length-1)+'" ';
+   }
+   var ucback='';
+   if (on_update){
+      vk_v_slider.upd_callbacks.push(on_update);
+      ucback=' ucallback="'+(vk_v_slider.upd_callbacks.length-1)+'" ';
+   } 
+	var h=(height || getSize(el,true)[1]);
+   var div=vkCe('div',{"id":id+"_slider_wrap",
+                       "class":"vk_vslider_wrap",
+                       "style":"position:relative; height:"+h+"px;"},'\
+         <div id="'+id+'_slider_scale" class="vk_vslider_scale" style="height: '+h+'px;"  onmousedown="vk_v_slider.sliderScaleClick(event,this);" slider_id="'+id+'" max_value="'+max_value+'" '+cback+ucback+'>\
+           <input type="hidden" id="'+id+'_select">\
+           <input type="hidden" id="'+id+'_position">\
+           <div id="'+id+'_slider_line" style="height: '+h+'px;" class="vk_vslider_line">\
+				<div id="'+id+'_slider_line_bg" class="vk_vslider_line_bg"></div>\
+				<!-- -->\
+		   </div>\
+           <div id="'+id+'_slider" class="vk_vslider" onmousedown="vk_v_slider.sliderClick(event,this.parentNode);"><!-- --></div>\
+         </div>\
+         ');
+   el.appendChild(div);
+   max_value = max_value || 100;
+   value=value || 0;
+   var percent= value * 100 / max_value;
+   vk_v_slider.sliderUpdate(percent,value,id);
+   if (rh){
+      var sr=el.innerHTML;
+      el.parentNode.removeChild(el);
+      return sr;
+      
+   }
+ },
+ sliderScaleClick: function (e,el) {
+    var id=el.getAttribute("slider_id");
+    if (checkEvent(e)) return;
+    var slider = ge(id+'_slider'),
+		h = ge(id+'_slider_line').offsetHeight,
+		halfH=(slider.offsetHeight / 2),
+        maxVal=parseInt(el.getAttribute("max_value")) || 0,
+        scale = slider.parentNode,
+        maxY = (scale.clientHeight || 100) /*- slider.offsetHeight*/,
+        margin = Math.max(0, Math.min(maxY, (e.offsetY || e.layerY))),
+        percent = 100 - (margin / maxY * 100),
+        position = Math.max(0,(h-margin)) / maxY * maxVal;
+
+    setStyle(id+'_slider', 'marginTop', margin-halfH);
+	setStyle(id+'_slider_line_bg', {'marginTop': Math.floor(margin), 'height':Math.ceil(h-margin)});
+	// id+'_slider_line_bg' 100px height:70px;  margin-top:30px
+    vk_v_slider.sliderUpdate(percent,position,id);
+    vk_v_slider.sliderClick(e,el);
+  },
+  sliderClick: function (e,el) {
+    var id=el.getAttribute("slider_id");
+    if (checkEvent(e)) return;
+    e.cancelBubble = true;
+    
+    var startY = e.clientY || e.pageY,
+        slider = ge(id+'_slider'),
+		halfH=(slider.offsetHeight / 2),
+        maxVal=parseInt(el.getAttribute("max_value")) || 0,
+        scale = slider.parentNode,
+        startMargin = (slider.offsetTop+halfH) || 0,
+        maxY = (scale.clientHeight || 100) /*- slider.offsetHeight*/,
+        selectEvent = 'mousedown selectstart',
+        defPercent = intval(vk_v_slider.default_percent),
+        margin, percent,position,h;
+
+    var _temp = function (e) {
+      h = ge(id+'_slider_line').offsetHeight;
+	  margin = Math.max(0, Math.min(maxY, startMargin + (e.clientY || e.pageY)- startY));
+      percent = 100 - (margin / maxY * 100);
+      position = Math.max(0,(h-margin)) / maxY * maxVal;
+      if (maxVal<100){
+         percent = Math.round(position)*100/maxVal;
+      }
+      percent = intval(percent);
+      position = Math.round(percent / 100 * maxVal);
+      margin = maxY * (100-percent) / 100;
+      slider.style.marginTop = (margin-halfH) + 'px';
+	  //console.log(percent,position);
+      vk_v_slider.sliderUpdate(percent,position,id);
+      return cancelEvent(e);
+    }, _temp2 = function () {
+      removeEvent(document, 'mousemove', _temp);
+      removeEvent(document, 'mouseup', _temp2);
+      removeEvent(document, selectEvent, cancelEvent);
+      setStyle(bodyNode, 'cursor', '');
+      setStyle(scale, 'cursor', '');
+      vk_v_slider.sliderApply(id);
+    };
+
+    addEvent(document, 'mousemove', _temp);
+    addEvent(document, 'mouseup', _temp2);
+    addEvent(document, selectEvent, cancelEvent);
+    setStyle(bodyNode, 'cursor', 'pointer');
+    setStyle(scale, 'cursor', 'pointer');
+    return false;
+  },
+  sliderSelectChanged: function (id) {
+    var percent = ge(id+'_select').value;
+    var pos=ge(id+'_position').value;
+    vk_v_slider.sliderUpdate(percent,pos,id);
+    vk_v_slider.sliderApply(id);
+  },
+  sliderUpdate: function (percent, val,id) {
+      percent = intval(percent);
+      ge(id+'_select').value=percent;
+      ge(id+'_position').value=val;
+      var maxVal=parseInt(ge(id+'_slider_scale').getAttribute("max_value")) || 0;
+      
+      var slider = ge(id+'_slider'),
+	  halfH =slider.offsetHeight / 2,
+      maxY = (slider.parentNode.clientHeight || 100) - halfH/*- slider.offsetHeight*/,
+      margin= maxY * (100-percent) / 100;
+	  setStyle(id+'_slider', 'marginTop', margin-halfH);
+	  //console.log(percent, val,'\n',margin,halfH, slider.style.marginTop);	  
+	  setStyle(id+'_slider_line_bg', {'marginTop': Math.floor(margin), 'height':Math.ceil(ge(id+'_slider_line').offsetHeight-margin)});
+		// id+'_slider_line_bg' 100px height:70px;  margin-top:30px
+      var cid=parseInt(ge(id+'_slider_scale').getAttribute('ucallback'));
+      if (cid) vk_v_slider.upd_callbacks[cid](parseInt(ge(id+'_position').value),parseInt(ge(id+'_select').value));   
+  },
+  sliderApply: function (id) {
+   var cid=parseInt(ge(id+'_slider_scale').getAttribute('callback'));
+   if (cid) vk_v_slider.callbacks[cid](parseInt(ge(id+'_position').value),parseInt(ge(id+'_select').value));
+  }
+} 
+//vk_v_slider.init('photos_albums_container',100,20,function(){},function(){},100);  
+ 
 /*END OF VK GUI*/
 
 function vkSetMouseScroll(el,next,back){
