@@ -30,9 +30,10 @@ function vkInjCheck(files){
 
 function vkInj(file){
  switch (file){
-    case 'photoview.js':   vkPhotoViewer();	break;
+   case 'photoview.js':    vkPhotoViewer();	break;
 	case 'videoview.js':	   vkVideoViewer();	break;
-	case 'audio.js':		   vkAudios();		break;
+   case 'video.js':	      vkVideo();	      break;
+	case 'audio.js':		   vkAudios();		   break;
    case 'audioplayer.js':	vkAudioPlayer();		break;
 	case 'feed.js':			vkFeed();		break;
 	case 'search.js':		   vkSearch();		break;
@@ -42,8 +43,8 @@ function vkInj(file){
 	case 'friends.js':		vkFriends();	break;
 	case 'notifier.js': 	   vkNotifier(); 	break;
 	case 'common.js': 		vkCommon(); 	break;
-	case 'im.js': 			   vkIM(); 	break;
-   case 'mail.js': 			vkMail(); 	break;
+	case 'im.js': 			   vkIM(); 	      break;
+   case 'mail.js': 			vkMail(); 	   break;
    case 'groups_list.js':  vkGroupsList(); break;
   }
   vk_plugins.onjs(file); 
@@ -227,7 +228,7 @@ function VkOptMainInit(){
   vkClock();
   vkVidAddGetLink();
   vkPollResultsBtn();
-  vk_board.get_user_posts_btn();  
+  vk_board.get_user_posts_btn();   
   if (getSet(34)=='y' && !window.setkev){ InpTexSetEvents(); setkev=true;}
   if (getSet(27)=='y') vkGetCalendar();
   if (getSet(20) == 'y') vk_updmenu_timeout=setTimeout("UpdateCounters();",vk_upd_menu_timeout);
@@ -379,12 +380,12 @@ function vkWikiPagesList(add_btn){
             '<a href="#" onclick="return vkGetWikiCode('+obj.pid+','+obj.group_id+');">'+IDL('Code')+'</a><span class="divider">|</span>'+
             '   <b>'+obj.title+'</b>  (creator:'+obj.creator_name+')<br>';
       });
-      var box=vkAlertBox('Wiki Pages','<h3>Owner: '+(cur.oid && cur.oid<0?'club':'id')+Math.abs(cur.oid || vk.id)+'</h3><br>'+t);
+      var box=vkAlertBox('Wiki Pages','<h3>Owner: '+(cur.oid && cur.oid<0?'club':'id')+Math.abs(cur.oid || vk.id)+'<a class="fl_r" id="vk_add_wiki_page" href="#" onclick="vkWikiNew(); return false;">'+IDL('Add')+'</a>'+'</h3>'+'<br>'+t);
       box.setOptions({width:'680px'});
    });
 }
 
-/* WIKI GET CODE*/ //NOT USED
+/* WIKI GET CODE*/ 
 function vkGetWikiCode(pid,gid){
 	//var dloc=document.location.href;
 	//var gid=dloc.match(/o=-(\d+)/);

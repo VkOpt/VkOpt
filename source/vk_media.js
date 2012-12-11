@@ -1093,11 +1093,18 @@ if (!window.vkopt_plugins) vkopt_plugins={};
 
 
 /* VIDEO */
+function vkVideo(){
+   //Inj.End('Video.onListInit','vk_videos.update_vid_titles();');
+   if (getSet(76)=='y')
+      Inj.Replace('Video.drawVideo','if (v[3]','if (false && v[3]');
+}
+
 function vkVideoPage(){
    if (getSet(2)=='y'){
 		if (cur.videoTpl){ 
          Inj.Replace('cur.videoTpl','tags,','tags+vkVidGetLinkBtn(v),');// or move this to 'vkInj'?
          Inj.Replace('cur.videoTpl','return rs(','var res=rs(');
+         //Inj.Start('cur.videoTpl','console.log(v);');
          Inj.End('cur.videoTpl','res=vkVidGetLinkBtn(v,res); return res;');
          if (cur.videoTplHTML && cur.videoTplHTML.indexOf('%download%')==-1)
             cur.videoTplHTML=cur.videoTplHTML.replace('<a','%download%<a');
@@ -1106,18 +1113,52 @@ function vkVideoPage(){
    vkVideoAddOpsBtn();
    vkVideoNullAlbum();
    vkVideoGetLinksBtn();
+   if (getSet(76)=='y')
+      vk_videos.update_vid_titles();
 }
 function vkVideoEditPage(){
    vkVidEditAlbumTitle(null,true);
 }
 
 vk_videos = {
-   css:'\
+   css:function(){
+      var full_titles=(getSet(76)=='y');
+      var code='\
       .vk_vid_acts_panel{  position:absolute; z-index:20; padding:5px;max-width:288px; border-radius:0 0 6px 0; background:rgba(0,0,0,0.5);  }\
       .video_can_edit .vk_vid_acts_panel{ max-width:230px;}\
       .vk_vid_acts_panel,.vk_vid_acts_panel a{color:#FFF; }\
       .vk_vid_acts_panel .vk_down_icon{box-shadow:0 0 2px #FFF; background-color:rgba(0, 0, 0, 0.5);}\
-      '
+      ';
+      if (full_titles)  code+='.video_album_text { height: auto !important; }'
+      return code;
+   },
+   update_vid_titles:function(){
+      var els=geByClass('video_row_relative');
+      var ids={};
+      for (var i=0; i<els.length; i++){ 
+         var vid=(els[i].id || '').match(/video_row(-?\d+)_(\d+)/);
+         if (vid){
+            ids[vid[1]+'_'+vid[2]]=els[i];
+         }
+      }
+      console.log(ids);
+      var data=cur.videoList['all'];//cur.vSection
+      for (var i=0; i<data.length; i++){ 
+         //data[i][3] title
+         if (ids[data[i][0]+'_'+data[i][1]]){
+            console.log(data[i][3],data[i][0],data[i][1]);
+            var el=geByClass('video_raw_info_name',ids[data[i][0]+'_'+data[i][1]])[0]
+            if (!el) continue;
+            el.innerHTML=data[i][3];
+            /*var el=ge('video_row'+ids[data[i][0]+'_'+data[i][1]]);
+            if (el){
+               el=geByClass('video_raw_info_name',el)[0];
+               if (!el) continue;
+               el.innerHTML=data[i][3];
+            }*/
+         }
+      }
+   }
 }
 
 function vkVideoNullAlbum(){
@@ -1491,7 +1532,7 @@ function vkVidGetLinkBtn(vid,res){//for cur.videoTpl
       res=res.replace(/%download%/,'<div class="vk_vid_acts_panel"><div class="download_cont">\
          <span><a href="#" onclick="vkVidLoadLinks('+vid[0]+','+vid[1]+',this.parentNode); return false;">'+IDL('download')+'</a></span>\
          <small class="fl_r '+(!window.vk_vid_list_adder?'vk_vid_add_hidden':'')+'"><a href="#" onclick="return vkVidAddToGroup('+vid[0]+','+vid[1]+');">'+IDL('AddToGroup')+'</a>'+(cur_oid!=oid?'<span class="divide">|</span>':'')+'</small>\
-         </div></div>');
+         </div></div>');  
       return res;
    }
    if (!vid || getSet(66)=='n') return '';
