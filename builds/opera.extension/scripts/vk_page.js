@@ -203,7 +203,7 @@ function vkPollResults(post_id,pid){
    var tpl='\
        <tr>\
          <td colspan="2" class="page_poll_text">%TEXT</td>\
-       </tr><tr>\
+       </tr><tr onmouseover="Wall.pollOver(this, \'%POLL_ID\', %ANSWER_ID)">\
          <td class="page_poll_row">\
          <div class="page_poll_percent" style="width: %WIDTH%"></div><div class="page_poll_row_count">%COUNT</div>\
          </td><td class="page_poll_row_percent ta_r"><nobr><b>%RATE%</b></nobr></td>\
@@ -220,7 +220,12 @@ function vkPollResults(post_id,pid){
       var html="";
       for (var i=0; i<answer.length; i++){
          var width=Math.round(answer[i].rate*100/max);
-         html+=tpl.replace(/%RATE/g,answer[i].rate).replace(/%TEXT/g,answer[i].text).replace(/%WIDTH/g,width).replace(/%COUNT/g,answer[i].votes);
+         html+=tpl.replace(/%RATE/g,answer[i].rate)
+                  .replace(/%TEXT/g,answer[i].text)
+                  .replace(/%POLL_ID/g,post_id)
+                  .replace(/%ANSWER_ID/g,answer[i].id)
+                  .replace(/%WIDTH/g,width)
+                  .replace(/%COUNT/g,answer[i].votes);
       }   
       html='<table cellspacing="0" cellpadding="0" class="page_media_poll"><tbody>'+html+'</tbody></table>';
       
@@ -1379,6 +1384,8 @@ function vkGrLstFilter(){
 function vkGroupEditPage(){
    if (nav.objLoc['act']=='people')
       vkGroupRemoveAllInvitation(true);
+   if (nav.objLoc['act']=='blacklist') 
+      vkGroupUnbanAll(true);
 }
 
 function vkGroupRemoveAllInvitation(add_btn){
@@ -1464,6 +1471,89 @@ function vkGroupRemoveAllInvitation(add_btn){
 }
 
 
+function vkGroupUnbanAll(add_btn){
+	if (add_btn){
+      var btn=ge('vunbanall');
+      if (btn){
+       //(nav.objLoc['tab']=='invites'?show:hide)(btn);
+      } else if(ge('group_bl_summary')) {//nav.objLoc['tab']=='invites'
+         var p=ge('group_bl_summary');
+         if (!p) return;
+         btn=vkCe('span',{"class":'', id:'vunbanall'},'<a onclick="vkGroupUnbanAll();">'+IDL('UnbanAll')+'</a>');
+         p.parentNode.appendChild(vkCe('span',{"class":'divide'},'|'));
+         p.parentNode.appendChild(btn);//insertAfter(btn,p);
+      }
+      
+      return;
+   }
+   
+   var box=null;
+	var ids=[];
+	var del_offset=0;
+	var cur_offset=0;
+	var abort=false;	
+   var restored=[];
+	
+   var process=function(){	    
+      //*
+      //console.log(ids)
+      if (abort) return;
+		var del_count=ids.length;
+      console.log(del_count,del_offset);
+		ge('vk_scan').innerHTML=vkProgressBar(del_offset,del_count,310,IDL('unban users... ')+' %');
+		var ids_part=ids[del_offset];//.slice(del_offset,del_offset+1);
+		if (!ids_part){ 
+         box.hide();		
+         vkMsg(IDL('Done'),3000);	
+      } 
+		else     
+         ajax.post('al_groups.php', {act: 'bl_user', mid: ids[del_offset][0], gid: cur.gid, hash: cur.hash}, {
+            onDone: function(res) {
+               del_offset++;
+               setTimeout(process,10);         
+            }
+         });  
+
+	};
+   //
+	var scan=function(){
+		if (cur_offset==0) ge('vk_scan').innerHTML=vkProgressBar(2,2,310,' scaning... ');
+		//dApi.call('messages.get',{out:is_out?1:0,count:100,offset:cur_offset,preview_length:1},function(r){
+      ajax.post(nav.objLoc[0], {act:'blacklist',offset: cur_offset, part: 1}, {
+         onDone: function(off,html) {
+            if (abort) return;
+            var ms=[];
+            vkModAsNode(html,function(node){
+               var nodes=geByClass('group_bl_row',node);
+               for (var i=0; i<nodes.length; i++){
+                  var info=nodes[i].innerHTML.match(/GroupsEdit\.toggleBlacklist\((\d+)/i);
+                  ms.push([info[1]]);
+               }               
+            })
+            
+            
+            //ge('vk_scan').innerHTML=vkProgressBar(1,1,310,' ');
+            for (var i=0;i<ms.length;i++) ids.push(ms[i]);
+            if (!ms[0] /*|| ids.length>=500*/){ 
+               process();	
+               return;	
+            } else {
+            	cur_offset+=25; 
+               setTimeout(scan,10);
+            } 
+         }, 
+         onFail: function() {}
+      });
+	};
+	var run=function(){
+		box=new MessageBox({title: IDL('deleting'),closeButton:true,width:"350px"});
+		box.removeButtons(); 
+      box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no'); 
+		var html='<div id="vk_scan"></div>'; box.content(html).show();	
+		scan();
+	}
+	vkAlertBox(IDL('UnbanAll'),IDL('UnbanAll_confirm'),run,true);
+}
 
 function vkToTopBackLink(){
    window._stlMousedown = function (e) {
@@ -1563,7 +1653,7 @@ vk_board={
                      }
                      //alert(result.innerHTML);
                   }
-                  scan();
+                  setTimeout(scan,300);
                }
             }); 
          }

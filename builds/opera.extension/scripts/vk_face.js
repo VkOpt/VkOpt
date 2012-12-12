@@ -54,9 +54,10 @@ function vkStyles(){
    main_css+='\
       #im_rows .im_add_row .im_log_date a.im_date_link{\
          display: block;\
-         font-size: 6pt;\
+         line-height:150%\
+         /*font-size: 6pt;\
          margin-bottom: -5px;\
-         margin-top: -2px;\
+         margin-top: -2px;*/\
       }\
       ';
    }
@@ -241,7 +242,7 @@ function vkStyles(){
 		.audios_row { margin-top: 0px !important; padding-top:0px !important;}\
 		.audios_row .actions a{padding-top:2px !important; padding-bottom:2px !important;}\
       .audio_list .audio_title_wrap { width: 315px !important;}\
-      #audio.new .audio_edit_wrap, #audio.new .audio_add_wrap, #audio.new .audio_remove_wrap { \
+      #audio.new .audio_edit_wrap, #audio.new .audio_add_wrap, #audio.new .audio_remove_wrap, #pad_playlist .audio_add_wrap { \
          margin-bottom: 0px !important;\
          margin-top: 0px !important;\
       }\
@@ -488,6 +489,13 @@ function vkStyles(){
          .vk_slider_scale {  cursor: pointer;  padding-top: 3px; }\
          .vk_slider_line {  cursor: pointer;  border-bottom: 1px solid #5F7D9D; }\
          .vk_slider {  cursor: pointer;  background: #5F7D9D;  width: 11px;  height: 4px; }\
+         \
+         .vk_vslider_wrap{width:5px;}\
+         .vk_vslider_scale {  cursor: pointer;  padding-top: 3px; }\
+         .vk_vslider_line {  cursor: pointer;  width:4px; background: #BAC7D4; position: absolute; border-radius: 2px; margin-left: 2px;}\
+         .vk_vslider_line_bg { background:#5F7E9E; position:relative; border-radius:2px; }\
+         .vk_vslider {  cursor: pointer;  position:absolute; background: #5F7E9E;  width: 8px;  height: 8px; border-radius:4px; }\
+         \
          .zoom_ico_white{\
             width:14px; \
             height:14px; \
@@ -513,10 +521,12 @@ function vkStyles(){
          .vk_edit_ico:hover {opacity:1}\
          .cur_section .vk_edit_ico{       background-position: -151px -51px; }\
          \
+         .vk_mob_ico {  background: url(/images/mobile_online.gif) no-repeat transparent; height: 12px;margin-left: 4px;padding-left: 10px;width: 0px;}\
          .vk_album_done_link  .vk_album_count{display:none;}\
 	";
    main_css+=vk_board.css;
    main_css+=vk_photos.css;
+   main_css+=vk_videos.css();
 	main_css+=vk_plugins.css();
 
 	vkaddcss(main_css);
@@ -559,13 +569,24 @@ function sideBar(original){
 function vkMakeRightBar(){
 	var page_layout=ge('page_layout');
 	if (!page_layout) return;
-	vkaddcss('#side_bar {width:130px !important;} #main_feed #feed_rate_slider_wrap { right: 152px; } #footer_wrap{ width: 100% !important;}');
+   var el=ge('pageHeader') || ge('pageHeader1') || ge('page_header');
+	var h=getSize(el,true)[1]+getXY(el)[1];
+   
+	vkaddcss('\
+      #side_bar {width:130px !important;} \
+      .audio_fixed_nav #right_bar, .im_fixed_nav #right_bar{position: fixed; z-index: 119; top:'+h+'px;}\
+      /*#gp{margin-left: 130px !important; }\
+      #gp.reverse{margin-left: 0px !important;}*/\
+      #main_feed #feed_rate_slider_wrap { right: 152px; } \
+      #footer_wrap{ width: 100% !important;}\
+   ');// 
 	vk.width=vk.width+120;
    vk.width_dec=280;
 	Inj.Start('handlePageView','if (params.width) params.width+=120; if (params.width_dec) params.width_dec+=120;');
 	Inj.Replace('handlePageView','791','911');
 	Inj.Replace('handlePageView','160','280');
-	
+   Inj.Before('updGlobalPlayer','var sbw','pbsz[0]+=120;');
+   
 	var new_width=getSize(page_layout)[0]+120;
 	page_layout.style.width=new_width+'px';
 	var bar=vkCe('div',{id:'right_bar',"class":'fl_r'});
@@ -740,7 +761,8 @@ function vkMenu(){//vkExLeftMenu
     'profile':[
       ['gifts'+vkmid,IDL('clGi')],
       [['fans.php?act=fans&mid='+vkmid,"return !showTabbedBox('al_fans.php', {act: 'show_fans_box', oid: "+vkmid+"}, {cache: 1}, event);"],IDL('clFans')],
-      [['fans.php?act=idols',"return !showTabbedBox('al_fans.php', {act: 'show_publics_box', oid: "+vkmid+"}, {cache: 1}, event);"],IDL('clSubscriptions')]
+      [['fans.php?act=idols',"return !showTabbedBox('al_fans.php', {act: 'show_publics_box', oid: "+vkmid+"}, {cache: 1}, event);"],IDL('clSubscriptions')],
+      [['stats.php?mid='+vkmid,'return;'],IDL('Stats')]
     ],//*/
     /*
     'edit':[
@@ -1215,7 +1237,8 @@ function UserOnlineStatus(status) {// ADD LAST STATUS
 	var show_status=function(stat){
 		//if (!window.vk_last_uonline_status || vk_last_uonline_status!=stat){
 			//vk_last_uonline_status=stat;
-			var online = stat ? '<div class="vkUOnline">Online</div>': '<div class="vkUOffline">Offline</div>';
+         var text=vkOnlineInfo(stat);
+			var online = (text && text!='') ? '<div class="vkUOnline">'+text+'</div>': '<div class="vkUOffline">Offline</div>';
 			if (!ge('vk_online_status')){
 			  var div = document.createElement('div');
 			  var body = document.getElementsByTagName('body')[0];
@@ -1244,9 +1267,16 @@ function UserOnlineStatus(status) {// ADD LAST STATUS
 			if (res.response){
 				//res.response[0].online_mobile
             //res.response[0].online_app
-            var st=res.response?res.response[0].online:null;
+            //var st=res.response?res.response[0].online:null;
+            var p=res.response[0];
+            var st={
+                  online:p.online,
+                  online_app: p.online_app,
+                  online_mobile: p.online_mobile
+             };
+            
 				show_status(st);
-				vkCmd('user_online_status',res.response[0].online);// шлём полученный статус в остальные вкладки
+				vkCmd('user_online_status',st);// /*res.response[0].online*/ шлём полученный статус в остальные вкладки
 				//vklog('Online status >> [onStorage] ');
 			} else {
 				vk_check_online_timeout=setTimeout(UserOnlineStatus,vkGenDelay(vk_upd_menu_timeout));

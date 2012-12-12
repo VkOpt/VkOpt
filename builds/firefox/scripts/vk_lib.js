@@ -1158,9 +1158,154 @@ vk_hor_slider={
   sliderApply: function (id) {
    var cid=parseInt(ge(id+'_slider_scale').getAttribute('callback'));
    if (cid) vk_hor_slider.callbacks[cid](parseInt(ge(id+'_position').value),parseInt(ge(id+'_select').value));
-    //vk_hor_slider.switchSection(vk_hor_slider.topPercent == 100 ? 'posts' : 'top');
   }
-}   
+}  
+
+vk_v_slider={
+ default_percent:50,
+ callbacks:[null],
+ upd_callbacks:[null],
+ init:function(id,max_value,value,callback,on_update,height){
+   var el=ge(id);
+   var rh=false;
+   if (!el){ 
+      el=vkCe('div',{id:id, style:"height:"+(height || 100)+"px; opacity:0.01;"});
+      document.getElementsByTagName('body')[0].appendChild(el);
+      rh=true;
+   }
+   var cback='';
+   if (callback){
+      vk_v_slider.callbacks.push(callback);
+      cback=' callback="'+(vk_v_slider.callbacks.length-1)+'" ';
+   }
+   var ucback='';
+   if (on_update){
+      vk_v_slider.upd_callbacks.push(on_update);
+      ucback=' ucallback="'+(vk_v_slider.upd_callbacks.length-1)+'" ';
+   } 
+	var h=(height || getSize(el,true)[1]);
+   var div=vkCe('div',{"id":id+"_slider_wrap",
+                       "class":"vk_vslider_wrap",
+                       "style":"position:relative; height:"+h+"px;"},'\
+         <div id="'+id+'_slider_scale" class="vk_vslider_scale" style="height: '+h+'px;"  onmousedown="vk_v_slider.sliderScaleClick(event,this);" slider_id="'+id+'" max_value="'+max_value+'" '+cback+ucback+'>\
+           <input type="hidden" id="'+id+'_select">\
+           <input type="hidden" id="'+id+'_position">\
+           <div id="'+id+'_slider_line" style="height: '+h+'px;" class="vk_vslider_line">\
+				<div id="'+id+'_slider_line_bg" class="vk_vslider_line_bg"></div>\
+				<!-- -->\
+		   </div>\
+           <div id="'+id+'_slider" class="vk_vslider" onmousedown="vk_v_slider.sliderClick(event,this.parentNode);"><!-- --></div>\
+         </div>\
+         ');
+   el.appendChild(div);
+   max_value = max_value || 100;
+   value=value || 0;
+   var percent= value * 100 / max_value;
+   vk_v_slider.sliderUpdate(percent,value,id);
+   if (rh){
+      var sr=el.innerHTML;
+      el.parentNode.removeChild(el);
+      return sr;
+      
+   }
+ },
+ sliderScaleClick: function (e,el) {
+    var id=el.getAttribute("slider_id");
+    if (checkEvent(e)) return;
+    var slider = ge(id+'_slider'),
+		h = ge(id+'_slider_line').offsetHeight,
+		halfH=(slider.offsetHeight / 2),
+        maxVal=parseInt(el.getAttribute("max_value")) || 0,
+        scale = slider.parentNode,
+        maxY = (scale.clientHeight || 100) /*- slider.offsetHeight*/,
+        margin = Math.max(0, Math.min(maxY, (e.offsetY || e.layerY))),
+        percent = 100 - (margin / maxY * 100),
+        position = Math.max(0,(h-margin)) / maxY * maxVal;
+
+    setStyle(id+'_slider', 'marginTop', margin-halfH);
+	setStyle(id+'_slider_line_bg', {'marginTop': Math.floor(margin), 'height':Math.ceil(h-margin)});
+	// id+'_slider_line_bg' 100px height:70px;  margin-top:30px
+    vk_v_slider.sliderUpdate(percent,position,id);
+    vk_v_slider.sliderClick(e,el);
+  },
+  sliderClick: function (e,el) {
+    var id=el.getAttribute("slider_id");
+    if (checkEvent(e)) return;
+    e.cancelBubble = true;
+    
+    var startY = e.clientY || e.pageY,
+        slider = ge(id+'_slider'),
+		halfH=(slider.offsetHeight / 2),
+        maxVal=parseInt(el.getAttribute("max_value")) || 0,
+        scale = slider.parentNode,
+        startMargin = (slider.offsetTop+halfH) || 0,
+        maxY = (scale.clientHeight || 100) /*- slider.offsetHeight*/,
+        selectEvent = 'mousedown selectstart',
+        defPercent = intval(vk_v_slider.default_percent),
+        margin, percent,position,h;
+
+    var _temp = function (e) {
+      h = ge(id+'_slider_line').offsetHeight;
+	  margin = Math.max(0, Math.min(maxY, startMargin + (e.clientY || e.pageY)- startY));
+      percent = 100 - (margin / maxY * 100);
+      position = Math.max(0,(h-margin)) / maxY * maxVal;
+      if (maxVal<100){
+         percent = Math.round(position)*100/maxVal;
+      }
+      percent = intval(percent);
+      position = Math.round(percent / 100 * maxVal);
+      margin = maxY * (100-percent) / 100;
+      slider.style.marginTop = (margin-halfH) + 'px';
+	  //console.log(percent,position);
+      vk_v_slider.sliderUpdate(percent,position,id);
+      return cancelEvent(e);
+    }, _temp2 = function () {
+      removeEvent(document, 'mousemove', _temp);
+      removeEvent(document, 'mouseup', _temp2);
+      removeEvent(document, selectEvent, cancelEvent);
+      setStyle(bodyNode, 'cursor', '');
+      setStyle(scale, 'cursor', '');
+      vk_v_slider.sliderApply(id);
+    };
+
+    addEvent(document, 'mousemove', _temp);
+    addEvent(document, 'mouseup', _temp2);
+    addEvent(document, selectEvent, cancelEvent);
+    setStyle(bodyNode, 'cursor', 'pointer');
+    setStyle(scale, 'cursor', 'pointer');
+    return false;
+  },
+  sliderSelectChanged: function (id) {
+    var percent = ge(id+'_select').value;
+    var pos=ge(id+'_position').value;
+    vk_v_slider.sliderUpdate(percent,pos,id);
+    vk_v_slider.sliderApply(id);
+  },
+  sliderUpdate: function (percent, val,id) {
+      percent = intval(percent);
+      ge(id+'_select').value=percent;
+      ge(id+'_position').value=val;
+      var maxVal=parseInt(ge(id+'_slider_scale').getAttribute("max_value")) || 0;
+      
+      var slider = ge(id+'_slider'),
+	  halfH =slider.offsetHeight / 2,
+      maxY = (slider.parentNode.clientHeight || 100) - halfH/*- slider.offsetHeight*/,
+      margin= maxY * (100-percent) / 100;
+	  setStyle(id+'_slider', 'marginTop', margin-halfH);
+	  //console.log(percent, val,'\n',margin,halfH, slider.style.marginTop);	  
+	  setStyle(id+'_slider_line_bg', {'marginTop': Math.floor(margin), 'height':Math.ceil(ge(id+'_slider_line').offsetHeight-margin)});
+		// id+'_slider_line_bg' 100px height:70px;  margin-top:30px
+      var cid=parseInt(ge(id+'_slider_scale').getAttribute('ucallback'));
+      if (cid) vk_v_slider.upd_callbacks[cid](parseInt(ge(id+'_position').value),parseInt(ge(id+'_select').value));   
+  },
+  sliderApply: function (id) {
+   var cid=parseInt(ge(id+'_slider_scale').getAttribute('callback'));
+   if (cid) vk_v_slider.callbacks[cid](parseInt(ge(id+'_position').value),parseInt(ge(id+'_select').value));
+  }
+} 
+
+//vk_v_slider.init('photos_albums_container',100,20,function(){},function(){},100);  
+ 
 /*END OF VK GUI*/
 
 function vkSetMouseScroll(el,next,back){
@@ -1604,6 +1749,123 @@ vkApis={
 		}
 		get();
 	},
+   videos: function(oid,aid,quality,callback,progress){// quality: 0 - 240p; 1 - 360p;  2 - 480p;  3 - 720p;
+      aid = parseInt(aid) || 0;
+      quality = quality || 3;
+      var smartlink=true;
+      //*
+      var load=function(cback){
+         ajax.post('al_video.php', {act: 'load_videos_silent', oid: oid, offset: 0}, {
+            onDone: function(_list) {
+               var list = eval('('+_list+')')['all'];
+               cback(list);
+            }
+         });
+      }//*/
+      
+      var load_api=function(cback){
+         var album_list=[];
+         var cur_offset=0;
+         var scan=function(){
+            var params={aid:aid,count:200,offset:cur_offset}
+            params[oid>0?'uid':'gid']=Math.abs(oid);
+            dApi.call('video.get',params,function(r){
+               var data=r.response;
+               if (data.length>1){
+                  var count=data.shift();
+                  for (var i=0; i<data.length; i++){
+                     var v=data[i];
+                     album_list.push([v.owner_id,v.vid,v.image,v.title,v.description,'',v.album,0,0,v.duration,'']);
+                  }
+                  cur_offset+=200;
+                  scan();
+                  //[oid,vid,thumb,title,descr,"",aid,0,0,dur,"3"]
+               } else {
+                  cback(album_list);
+               }
+            });
+         }
+         scan();
+      }
+      
+      var fmt=['240p','360p','480p','720p'];
+      var videos=[];
+      var get_links = function(vids_info,idx){
+            idx = idx || 0;
+            var next=function(){
+               idx++;
+               if (progress) progress(idx,vids_info.length);
+               if (idx<vids_info.length)
+                  setTimeout(function(){get_links(vids_info,idx)},50);
+               else 
+                  callback(videos);
+            }
+            var _oid=vids_info[idx][0];
+            var _vid=vids_info[idx][1];
+            AjGet('/video.php?act=a_flash_vars&vid='+_oid+'_'+_vid,function(r,t){
+               if(!t || t=='NO_ACCESS'){
+                  next();
+               } else {
+                  var obj=JSON.parse(t);
+                  if (!obj.extra){
+                        //var html='';
+                        var arr=vkVidDownloadLinksArray(obj);
+                        
+                        var i=arr[quality]?quality:arr.length-1;
+                        //for (var i=0; i<arr.length; i++){
+                           var v=arr[i];
+                           var vidext=v.substr(v.lastIndexOf('.'));   
+                           var vidname=vkCleanFileName(decodeURI(obj.title || obj.md_title)).replace(/\+/g,' ');
+                           var vname=vidname;
+
+                           vidname='?'+vkDownloadPostfix()+'&/'+vidname;
+                           var vidurl=v+(smartlink?vidname+' ['+fmt[i]+']'+vidext:'');
+                           videos.push(vidurl);
+                           
+                           //html+='<a class="vk_down_icon" href="'+vidurl+'" download="'+vname+vidext+'"  title="'+vname+vidext+'" onclick="return vkDownloadFile(this);" onmouseover="vkGetVideoSize(this); vkDragOutFile(this);">'+fmt[i]+'<small class="divide" url="'+vidurl+'"></small></a>'; 
+                        //}
+                        //el.innerHTML=html;      
+                  } else {
+                    //not vk video
+                  }
+                  next();
+               }         
+            });   
+      }    
+      
+      var api_used=false;
+      var process=function(vids){
+         //console.log('aid:',aid,'  oid:',oid,' quality:',quality/*,' vids:',vids*/);  
+         var result=[];
+         if (aid>0){ 
+            for (var i=0; i<vids.length; i++){
+               //console.log(vids[i][6]);
+               if (parseInt(vids[i][6])==aid)
+                  result.push(vids[i]);
+            }
+         } else 
+            result=vids; 
+         
+         //console.log('List:',result);  
+         if (result.length==0 && !api_used) {
+            load_api(function(res){
+               api_used=true;
+               process(res);
+            })
+         } else if (result.length==0 && api_used) {
+            alert('Videos not found');
+         } else {
+            get_links(result);
+         }         
+      }
+      
+      /*if (cur.oid==oid && cur.videoList && cur.videoList['all'] || false){
+         process(cur.videoList['all']);
+      } else*/ {
+         load(process);
+      }
+
+   },
    faves:function(callback){
       AjGet('/fave?section=users&al=1',function(r,t){
          var r=t.match(/"faveUsers"\s*:\s*(\[[^\]]+\])/);

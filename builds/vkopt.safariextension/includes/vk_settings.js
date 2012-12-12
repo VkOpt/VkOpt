@@ -583,7 +583,8 @@ function vkInitSettings(){
       {id:7,  text:IDL("seScroolPhoto")},
       {id:73, text:IDL("seLoadAudioAlbumInfo")},
       {id:75, text:IDL("seAPlayerCtrls")},
-      {id:43, text:IDL("seAudioSize")}
+      {id:43, text:IDL("seAudioSize")},
+      {id:76, text:IDL("seVideoFullTitles")}
     ],
     Users:[
       {id:10, text:IDL("seExUserMenu")+'<br><a href="#" onclick="toggle(\'vkExUMenuCFG\'); return false;">[<b> '+IDL("Settings")+' </b>]</a><span id="vkExUMenuCFG" style="display:none">'+GetUserMenuSett()+'</span>'},
@@ -669,7 +670,7 @@ function vkInitSettings(){
 		{id:34, text:IDL("seSwichTextChr")}	
     ]
   };	  
-	//LAST 75
+	//LAST 76
 	
 	vkSetsType={
       "on"  :[IDL('on'),'y'],

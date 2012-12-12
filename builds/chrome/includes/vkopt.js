@@ -10,15 +10,15 @@
 // (c) All Rights Reserved. VkOpt.
 //
 /* VERSION INFO */
-var vVersion	= 212;
-var vBuild = 121109;
+var vVersion	= 213;
+var vBuild = 121212;
 var vPostfix = ' ';
 if (!window.vk_DEBUG) var vk_DEBUG=0;
 
 /* EXT CONFIG */
 if (!window.DefSetBits)
 
-var DefSetBits='ynyynnyyynyyy0n0yy0nnnynyyynyy0nynynnnnyy0yyy1yynnnnny0nynynynnnnyynnynnnyny-3-0-#c5d9e7-#34a235-1';
+var DefSetBits='ynyynnyyynyyy0n0yy0nnnynyyynyy0nynynnnnyy0yyy1yynnnnny0nynynynnnnyynnynnnynyy-3-0-#c5d9e7-#34a235-1';
 var DefExUserMenuCfg='11111110111111111111'; // default user-menu items config
 var vk_upd_menu_timeout=20000;      //(ms) Update left menu timeout
 var vkMenuHideTimeout=400;          //(ms) Hide Menu Popups timeout
@@ -49,7 +49,7 @@ var CUT_VKOPT_BRACKET=false;     // true - убирает из надписей 
 var MAIL_BLOCK_UNREAD_REQ=false; // true - отключает отсылку отчёта о прочтении сообщения, при его открытии из /mail
 var MAIL_SHOWMSG_FIX=true;
 var SUPPORT_STEALTH_MOD=true;    // прикидываемся перед ТП, что у нас не стоит расширение для скачивания.
-var vkNewSettings=[66,67,68,70,71,72,73,74,75]; //"new" label on settings item
+var vkNewSettings=[73,74,75,76]; //"new" label on settings item
 var SetsOnLocalStore={
   'vkOVer':'c',
   'remixbit':'c',
@@ -190,16 +190,16 @@ var TextPasteSmiles={
 'blum1':'=P',
 'cool':' 8-)',
 'biggrin':'=D',
-'blush':";\\'>",
+'blush':";\'>",
 'shok':'O_o',
 'diablo':']:->',
-'cray':":-\\'(",
-'mocking':'8P',
+'cray':":-\'(",
+'mocking':'*JOKINGLY*',
 'give_rose':'@}->--',
 'music':'[:-}',
 'kiss':':-*',
 'bad':':-!',
-'wacko1':'%)',
+'wacko1':'%-)',
 'crazy':'*CRAZY*',
 'mad':':-/',
 'lol':'*LOL*', 
@@ -207,11 +207,9 @@ var TextPasteSmiles={
 'nea':'*NO*',
 'yes':'*YES*',
 'sorry':'*SORRY*',
-//'hi':'*HI*',
 'bye2':'*BYE*',
-'mocking': '*JOKINGLY*', 
-'crazy':'%-)',
-'mad': ':-/', 
+'mad': ':-/',
+'pardon':'=]',
 'mamba': ['=[]','big_madhouse'],
 'hang1':['-:(','big_madhouse'],
 'greeting':['*HI*','big_standart'],
@@ -220,7 +218,7 @@ var TextPasteSmiles={
 'scratch_one-s_head':[':-I','big_standart'],
 'fool': [':-|','big_standart'],
 'bomb': '@=',
-'new_russian':['\\\\m\/','big_standart'],
+'new_russian':['\\\m\/','big_standart'],
 'scare3':[':-@','big_standart'],
 'acute':[';D','big_standart'],
 'heart':['<3','light_skin'],
@@ -229,8 +227,12 @@ var TextPasteSmiles={
 'dash1':['X-|','big_madhouse'],
 'facepalm':'*FACEPALM*',
 'help':['!HELP!','big_standart'],
-//'spam':['!SPAM!','other',true],
-'flood':['!FLOOD!','other']
+//'flood':['!FLOOD!','other'],
+'opera':"*Opera*",
+'firefox':"*Fifefox",
+'chrome':"*Chrome*",
+'windows':"*Windows*",
+'linux':"*Linux*"
 }
 
 

@@ -30,9 +30,10 @@ function vkInjCheck(files){
 
 function vkInj(file){
  switch (file){
-    case 'photoview.js':   vkPhotoViewer();	break;
+   case 'photoview.js':    vkPhotoViewer();	break;
 	case 'videoview.js':	   vkVideoViewer();	break;
-	case 'audio.js':		   vkAudios();		break;
+   case 'video.js':	      vkVideo();	      break;
+	case 'audio.js':		   vkAudios();		   break;
    case 'audioplayer.js':	vkAudioPlayer();		break;
 	case 'feed.js':			vkFeed();		break;
 	case 'search.js':		   vkSearch();		break;
@@ -42,8 +43,8 @@ function vkInj(file){
 	case 'friends.js':		vkFriends();	break;
 	case 'notifier.js': 	   vkNotifier(); 	break;
 	case 'common.js': 		vkCommon(); 	break;
-	case 'im.js': 			   vkIM(); 	break;
-   case 'mail.js': 			vkMail(); 	break;
+	case 'im.js': 			   vkIM(); 	      break;
+   case 'mail.js': 			vkMail(); 	   break;
    case 'groups_list.js':  vkGroupsList(); break;
   }
   vk_plugins.onjs(file); 
@@ -105,8 +106,14 @@ function vkOnStorage(id,cmd){
 function vkOnNewLocation(startup){
 	if (!(window.nav && nav.objLoc)) return;
    if (!cur.module){
-      setTimeout(vkOnNewLocation,10);
-      return;
+      if (cur.gid && nav.objLoc['act']=='blacklist' && (cur.moreParams || {}).act=="blacklist"){
+         cur.module='groups_edit';
+      }else if (nav.objLoc[0]=='settings'){
+         cur.module='settings';
+      } else {
+         setTimeout(vkOnNewLocation,10);
+         return;
+      }
    }
 	vklog('Navigate:'+print_r(nav.objLoc).replace(/\n/g,','));
 	var tstart=unixtime();
@@ -221,7 +228,7 @@ function VkOptMainInit(){
   vkClock();
   vkVidAddGetLink();
   vkPollResultsBtn();
-  vk_board.get_user_posts_btn();  
+  vk_board.get_user_posts_btn();   
   if (getSet(34)=='y' && !window.setkev){ InpTexSetEvents(); setkev=true;}
   if (getSet(27)=='y') vkGetCalendar();
   if (getSet(20) == 'y') vk_updmenu_timeout=setTimeout("UpdateCounters();",vk_upd_menu_timeout);
@@ -254,7 +261,7 @@ function vkProccessLinks(el){
 	  if (getSet(38)=='y') ProcessHighlightFriendLink(nodes[i]);
      if (getSet(55)=='y') vkProcessIMDateLink(nodes[i]);
      if (getSet(58)=='y') vkProcessTopicLink(nodes[i]);
-     vkProcessDocPhotoLink(nodes[i]);
+     //vkProcessDocPhotoLink(nodes[i]);
 	  vk_plugins.processlink(nodes[i]);
     }
  vklog('ProcessLinks time:' + (unixtime()-tstart) +'ms');
@@ -373,12 +380,12 @@ function vkWikiPagesList(add_btn){
             '<a href="#" onclick="return vkGetWikiCode('+obj.pid+','+obj.group_id+');">'+IDL('Code')+'</a><span class="divider">|</span>'+
             '   <b>'+obj.title+'</b>  (creator:'+obj.creator_name+')<br>';
       });
-      var box=vkAlertBox('Wiki Pages','<h3>Owner: '+(cur.oid && cur.oid<0?'club':'id')+Math.abs(cur.oid || vk.id)+'</h3><br>'+t);
+      var box=vkAlertBox('Wiki Pages','<h3>Owner: '+(cur.oid && cur.oid<0?'club':'id')+Math.abs(cur.oid || vk.id)+'<a class="fl_r" id="vk_add_wiki_page" href="#" onclick="vkWikiNew(); return false;">'+IDL('Add')+'</a>'+'</h3>'+'<br>'+t);
       box.setOptions({width:'680px'});
    });
 }
 
-/* WIKI GET CODE*/ //NOT USED
+/* WIKI GET CODE*/ 
 function vkGetWikiCode(pid,gid){
 	//var dloc=document.location.href;
 	//var gid=dloc.match(/o=-(\d+)/);
@@ -564,7 +571,7 @@ function vkProcessResponse(answer,url,q){
       if(answer[0].invites) answer[0].invites = vkModAsNode(answer[0].invites,vkProcessNodeLite,url,q);
       if(answer[0].admins) answer[0].admins = vkModAsNode(answer[0].admins,vkProcessNodeLite,url,q);
   }
-  if (q.act=='edit_audio_box' && answer[2]) answer[2]+=answer[2]+'vk_audio.in_box_move("'+q.aid+'");'
+  if (q.act=='edit_audio_box' && answer[2]) answer[2]=answer[2]+'vk_audio.in_box_move("'+q.aid+'");'
 }
 
 function vkPhChooseProcess(answer,url,q){
@@ -612,17 +619,17 @@ function vkVidChooseProcess(answer,url,q){
   };
   if (answer[1].indexOf('vk_link_to_video')==-1){
   var div=vkCe('div',{},answer[1]);
-  var ref=geByClass('summary',div)[0];
+  var ref=geByClass('summary',div)[0] || geByClass('search_bar',div)[0];;
   if (ref){
-    var node=vkCe('div',{"class":'ta_r','style':"height: 25px; padding-left:10px; padding-top:4px;"},'\
-    <div class="fl_l">\
-        '+IDL('EnterLinkToVideo')+': \
-      <span><input id="vk_link_to_video" type="text"  style="width:230px"></span>\
-      <div id="vk_link_to_video_button" class="button_blue"><button onclick="vkCheckVideoLinkToMedia();">'+IDL('OK')+'</button></div>\
-    </div>\
+    var node=vkCe('div',{'style':"height: 25px; padding: 4px 20px;"},'\
+    <div class="fl_l">'+IDL('EnterLinkToVideo')+':</div>\
+      <span class="fl_l"><input id="vk_link_to_video" type="text"  style="width:215px" class="s_search text"></span>\
+      <div id="vk_link_to_video_button" class="button_blue fl_r"><button onclick="vkCheckVideoLinkToMedia();">'+IDL('OK')+'</button></div>\
+    \
     ');
-    ref.parentNode.insertBefore(node,ref);
-    ref.parentNode.insertBefore(vkCe('h4'),ref);
+    /*ref.parentNode.insertBefore(node,ref);
+    ref.parentNode.insertBefore(vkCe('h4'),ref);*/
+    ref.parentNode.appendChild(node);
     answer[1]=div.innerHTML;
   }
   }
@@ -635,7 +642,7 @@ function vkAudioChooseProcess(answer,url,q){
     var val=ge('vk_link_to_audio').value.match(/audio(-?\d+)_(\d+)/);
     lockButton(btn);
     if (val){
-      cur.chooseMedia('audio', val[1]+'_'+val[2], [val[1], val[2]]);//[artist,name]
+      cur.chooseMedia('audio',  val[1]+'_'+val[2], {performer: val[1], title: val[2], info: ',0', duration: '0:00'});//.chooseMedia('audio', val[1]+'_'+val[2], [val[1], val[2]]);//[artist,name]
     } else {
       alert(IDL('IncorrectAudioLink'))
     }
@@ -643,17 +650,17 @@ function vkAudioChooseProcess(answer,url,q){
   };
   if (answer[1].indexOf('vk_link_to_audio')==-1){
   var div=vkCe('div',{},answer[1]);
-  var ref=geByClass('summary',div)[0];
+  var ref=geByClass('summary',div)[0] || geByClass('search_bar',div)[0];
   if (ref){
-    var node=vkCe('div',{"class":'ta_r','style':"height: 25px; padding-left:10px; padding-top:4px;"},'\
-    <div class="fl_l">\
-        '+IDL('EnterLinkToAudio')+': \
-      <span><input id="vk_link_to_audio" type="text"  style="width:230px"></span>\
-      <div id="vk_link_to_audio_button" class="button_blue"><button onclick="vkCheckAudioLinkToMedia();">'+IDL('OK')+'</button></div>\
-    </div>\
+    var node=vkCe('div',{'style':"height: 25px; padding: 4px 20px;"},'\
+    <div class="fl_l">'+IDL('EnterLinkToAudio')+':</div>\
+      <span class="fl_l"><input id="vk_link_to_audio" type="text" style="width:215px"  class="s_search text"></span>\
+      <div id="vk_link_to_audio_button" class="button_blue fl_r"><button onclick="vkCheckAudioLinkToMedia();">'+IDL('OK')+'</button></div>\
+    \
     ');
-    ref.parentNode.insertBefore(node,ref);
-    ref.parentNode.insertBefore(vkCe('h4'),ref);
+    //ref.parentNode.insertBefore(node,ref);
+    //ref.parentNode.insertBefore(vkCe('h4'),ref);
+    ref.parentNode.appendChild(node);
     answer[1]=div.innerHTML;
   }
   }  
@@ -977,6 +984,7 @@ function vkSearchPage(){
 /* FAVE */
 function vkFavePage(){
    vkFavUsersList(true);
+   vkFavPhotosMenu();
 }
 
 

@@ -168,7 +168,7 @@ function AddSmileBtn(rfield){
 		 for (key in smiles){
 		  i++;
 		  DivCode+=GetSmileItem(smiles,key,rfield);
-		  if (i % 15 == 0) DivCode+='<br>';
+		  //if (i % 15 == 0) DivCode+='<br>';
 		 }
 		DivCode+= '</div></div>';
 		return DivCode;

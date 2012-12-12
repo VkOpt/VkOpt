@@ -46,7 +46,7 @@ function getGidUid(url,callback){ //callback(uid,gid)
 	if (url.match(/id\d+$/)){callback(url.match(/id(\d+)$/)[1],null);  return;}
 	
 	if (url.match(/^g\d+$/)){callback(null,url.match(/^g(\d+)$/)[1]);  return;}
-	if (url.match(/club\d+$/)){callback(url.match(/club(\d+)$/)[1],null);  return;}
+	if (url.match(/club\d+$/)){callback(null,url.match(/club(\d+)$/)[1]);  return;}
 	
 	if (vkUsersGroupsDomain[url]){callback(vkUsersGroupsDomain[url][0],vkUsersGroupsDomain[url][1]);  return; }
    
@@ -57,6 +57,7 @@ function getGidUid(url,callback){ //callback(uid,gid)
       case 'user': callback(res.object_id);                  break;
       case 'group': callback(null,res.object_id);            break;
       case 'application': callback(null,null,res.object_id); break;
+      default: callback(null,null); break;
      }
    });
 
@@ -506,7 +507,7 @@ function ProcessUserPhotoLink(node){
   var hr=node.href;
   if (node.innerHTML.match(/img/i) && !node.innerHTML.match(/showPhoto/i) && !(node.parentNode.id && node.parentNode.id=='myprofile')) { 
   if (hr && isUserLink(hr) && !node.getAttribute("onmouseover")){
-      var uid=node.innerHTML.match(/http.{3}cs.+\/u(\d+)/i);
+      var uid=node.innerHTML.match(/http.{3}cs.+\/u(\d+)\//i);
       if (uid) uid=uid[1];
       if (!uid) uid=ExtractUserID(hr);
       node.setAttribute("onmouseover","vkPopupAvatar('"+uid+"',this)");
@@ -577,6 +578,11 @@ function vkShowProfile(el,html,uid,right){
       if (!ge('vkfrinfo'+uid)) return;
       ge('vkfrinfo'+uid).innerHTML=html;
    });
+   vkProfileUpdOnline(uid,function(html){
+      if (!ge('vkprofonlineinfo'+uid)) return;
+      ge('vkprofonlineinfo'+uid).innerHTML=html;
+   });   
+   
    
 	if (allowShowPhoto) fadeIn('vkbigPhoto');//show('vkbigPhoto');
       var xy=getXY(el); 
@@ -663,7 +669,7 @@ var VK_PROFILE_TPL='\
 		</div>\
 		<div id="vk_profile_right_block" class="vk_profile_right fl_r">\
 		  <div class="vk_profile_header">\
-			<div class="vk_username">%USERNAME%<small class="vk_profile_online_status fl_r">%ONLINE%</small></div>\
+			<div class="vk_username">%USERNAME%<small class="vk_profile_online_status fl_r" id="vkprofonlineinfo%UID%">%ONLINE%</small></div>\
 			<div class="vk_profile_header_divider"></div>\
 			<div><small>%ACTIVITY%</small></div>\
 		  </div>\
@@ -708,9 +714,62 @@ function vkProfileToggle(init){
 	return false;
 }
 
+function vkOnlineInfo(p){
+   /*
+   online: 1
+   online_app: "2274003"// android
+   online_mobile: 1
+   */
+   var html='';
+   if (p.online!=1) return '';
+   html=IDL('Online');
+   if (p.online_mobile){
+      var link='http://m.vk.com/';
+      var title="";
+      if (p.online_app){ 
+         link="/app"+p.online_app;
+         switch (p.online_app){
+            case '2274003':
+               title='Android';
+               break; 
+            case '3136529':
+            case '3140623':
+            case '2847524':
+            case '1998533':
+            case '3087106':
+               title='iPhone';         //vk.com/app2753935  iPhone || FAKE?
+               break; 
+            case '3145329':
+               title='iPad';
+               break;  
+            case '2424737':
+               title='Windows Phone';
+               break; 
+            case '3136627':
+               title='Twitter';
+               break;
+            case '3226016':
+               title='vk master';
+               break;
+            default:
+               title='Mobile [app'+p.online_app+']';
+               break;
+         }
+         // vk.com/app3226016 - vk master
+      }
+      if (title!='') html=title;
+      html+='<a class="vk_mob_ico" href="'+link+'" title="Online"></a>';
+   } else if (p.online_app){
+      html+=' [app'+p.online_app+']';
+   }
+   return html;
+   //p.online_mobile?'<b class="vk_mob_ico" onmouseover=""></b>'
+   //<a class="vk_mob_ico" href="http://m.vk.com/" onmouseover=""></a>   
+}
 function vkGetProfile(uid,callback,no_switch_button){
       var make_rate=function(rate){
-	    var fullwidth=200;
+	   if (!rate) return '';
+      var fullwidth=200;
 		var level=Math.ceil(Math.log(rate)/Math.log(10));
 		var lvl_class = level<3?'vk_rate_lvl_0':'vk_rate_lvl_'+level;
 		if (level>5) lvl_class='vk_rate_lvl_5';
@@ -751,13 +810,12 @@ function vkGetProfile(uid,callback,no_switch_button){
          return {uid:uid,in_lists:user_in_lists,lists:lists}
       */   
 		var common='';
-		
+		console.log(profile);
 		var username='<a href="/id'+uid+'" onclick="return nav.go(this, event);">'+profile.first_name+' '+profile.nickname+' '+profile.last_name+'</a>';
 		var ava_url=profile.photo_big;
       var last_seen=(profile.last_seen || {}).time;
-		var online=profile.online?'Online':(last_seen?'<div class="vk_last_seen">'+(new Date(last_seen*1000)).format("HH:MM:ss<br>dd.mm.yy")+'</div>':'');//'Offline';
+		var online=profile.online?vkOnlineInfo(profile):(last_seen?'<div class="vk_last_seen">'+(new Date(last_seen*1000)).format("HH:MM:ss<br>dd.mm.yy")+'</div>':'');//'Offline';
 		var rate=make_rate(profile.rate);
-      
       var relation=profile.relation;
       var sex=profile.sex;
       var rel=IDL((sex==1?'profile_relation_f_':'profile_relation_m_')+relation);
@@ -792,6 +850,7 @@ function vkGetProfile(uid,callback,no_switch_button){
          [rel,IDL('Relation')],
 			[profile.mobile_phone, IDL('Mob_tel')],
 			[profile.home_phone, IDL('Home_tel')],
+         [profile.skype, IDL('Skype')],
 			[profile.university_name,IDL('University_name')],
 			[profile.faculty_name,IDL('Faculty')],
 			[profile.graduation,IDL('Graduation')]
@@ -824,7 +883,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 	  else {
 		  var code = '';
         //code  += 'var activity=API.status.get({uid:"'+uid+'"});';
-		  code += 'var profile=API.getProfiles({uids:"'+uid+'",fields:"relation,sex,nickname,activity,photo_big,online,last_seen,rate,bdate,city,country,contacts,education,can_post,can_write_private_message,lists"})[0];';
+		  code += 'var profile=API.getProfiles({uids:"'+uid+'",fields:"relation,sex,nickname,activity,photo_big,online,last_seen,rate,bdate,city,country,contacts,connections,education,can_post,can_write_private_message,lists"})[0];';
 		  code += 'var commonfr=API.friends.getMutual({target_uid:"'+uid+'"});';
 		  code += 'var commons=API.getProfiles({uids:commonfr,fields:"online"});';
 		  code += 'return {';
@@ -842,6 +901,19 @@ function vkGetProfile(uid,callback,no_switch_button){
 			MakeProfile(r);
 		  });
 	  }
+}
+
+function vkProfileUpdOnline(uid,callback){
+   dApi.call('users.get',{uids:uid,fields:'online,last_seen'},function(r){
+      if (r.response && r.response[0]){
+         var profile=r.response[0];
+         var last_seen=(profile.last_seen || {}).time;
+         var online=profile.online?vkOnlineInfo(profile):(last_seen?'<div class="vk_last_seen">'+(new Date(last_seen*1000)).format("HH:MM:ss<br>dd.mm.yy")+'</div>':'');//'Offline';
+         callback(online);
+      } else {
+         callback('');
+      }
+   })
 }
 
 var _vk_fr_lists_info={};
@@ -946,6 +1018,7 @@ function vkFriendsCheckRun(cl){
 			}*/
 		}
 }
+
 function vkFriendsCheck(nid){
   var NID_CFG=2;//sett in - segments
   var FUPD_CFG=1;//days
@@ -1398,6 +1471,7 @@ function vkFavOnlineChecker(on_storage){
                   var tm=(new Date).format('isoTime');
                   var time='<div class="fl_r">'+tm+'</div>';
                   var text='<b><a href="/id'+new_onl[i].uid+'" onclick="nav.go(this);">'+new_onl[i].first_name+' '+new_onl[i].last_name+'</a></b>'+time;
+                  text+='<br>'+vkOnlineInfo(new_onl[i]);
                   // vkNotifyUserCheckAndShow
                   vkShowNotify({sound:'On',title:IDL('UserOnline'),text:text,_time:tm,author_photo:new_onl[i].photo_rec,author_link:'id'+new_onl[i].uid,link:'id'+new_onl[i].uid,onclick:"nav.go('id"+new_onl[i].uid+"')"});
                }
@@ -1512,6 +1586,13 @@ function vkFaveOnlineChecker(on_storage){
                   var tm=(new Date).format('isoTime');
                   var time='<div class="fl_r">'+tm+'</div>';
                   var text='<b><a href="/id'+new_onl[i].id+'" onclick="nav.go(this);">'+new_onl[i].name+'</a></b>'+time;
+                  if (new_onl[i].online>1){
+                     new_onl[i].online_app=""+new_onl[i].online;
+                     new_onl[i].online_mobile=1;
+                     new_onl[i].online=1;
+                  };
+                  text+='<br>'+vkOnlineInfo(new_onl[i]);
+               
                   // vkNotifyUserCheckAndShow
                   vkShowNotify({sound:'On',title:IDL('FaveOnline'),text:text,_time:tm,author_photo:new_onl[i].photo,author_link:'id'+new_onl[i].id,link:'id'+new_onl[i].id,onclick:"nav.go('id"+new_onl[i].id+"')"});
                }
