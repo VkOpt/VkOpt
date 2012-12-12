@@ -2012,6 +2012,7 @@ vk_audio_player={
    .vka_ctrl.vol .vol_panel { display:none; position:absolute; background-color: #D9E0E8; border-radius: 3px; width:8px; height:57px; padding: 5px;}\
    .vka_ctrl.vol .vol_panel.vis{ display:block; }\
    .vka_ctrl.vol:hover .vol_panel { display:block;}\
+   #gp.reverse .vka_ctrl.vol .vol_panel{margin-top: -54px;}\
    .gp_vka_ctrls{position:absolute; width:137px; margin-top:34px; margin-left: 5px; padding:3px; border-radius:0 0 4px 4px; background:rgba(218, 225, 232, 0.702); }\
    ',
    gpCtrlsInit:function(){
@@ -2949,8 +2950,8 @@ vkLastFM={
          if (code == 4)// токен сдох
             if (!fm.connect_box || !fm.connect_box.isVisible()){
                fm.connect_box=vkAlertBox(IDL('AuthBoxTitle'), IDL('AuthBoxText'), function(){
-                  var url = 'http://www.last.fm/api/auth/?api_key=' + fm.api_key + '&cb=' + encodeURIComponent(location.protocol+'//' + location.host + '/settings?act=vkscrobbler');
-                  window.open(url,'…','…');
+                  var url = 'http://www.last.fm/api/auth?api_key=' + fm.api_key + '&cb=' + encodeURIComponent(location.protocol+'//' + location.host + '/settings?act=vkscrobbler');
+                  window.open(url,'_blank','');
                   //location.href = url;
                }, function(){
                   if (fm.enable_scrobbling) fm.toggle(true);
