@@ -718,6 +718,13 @@ function vkIM(){
    
    Inj.Before('IM.applyPeer','cur.actionsMenu.setItems','vkIMModActMenu(types,peer,user);');
    if (window.cur && cur.tabs) IM.applyPeer();
+   
+   if (getSet(48)=='y' && window.Sound){
+		Inj.Wait('window.cur && window.cur.sound',function(){
+			cur.sound=new Sound2('Msg');
+		});
+      vkNotifyCustomSInit();
+	}
 }
 
 
