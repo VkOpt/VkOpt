@@ -1704,7 +1704,8 @@ vk_board={
       for (var i=0; i<els.length; i++){
          var p=(geByClass('bp_date',els[i])[0] || {}).parentNode;
          var a=geByClass('bp_author',els[i])[0];
-         if (!p || !a) continue;
+         var z=geByClass('vk_brd_action',els[i])[0];
+         if (!p || !a || z) continue;
          p.appendChild(vkCe('span',{"class":"divide vk_brd_action"},'|'));
          p.appendChild(vkCe('a',{"href":"#","class":'vk_brd_action',onclick:"return vk_board.get_user_posts('"+a.getAttribute('href')+"','"+els[i].getAttribute('id')+"')"},IDL('PrevPosts')));
       }

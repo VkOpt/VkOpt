@@ -370,7 +370,9 @@ function vkWikiPagesList(add_btn){
    }
    var ldr=ge('vk_wiki_pages_list_loader');
    if (ldr) show(ldr);
-   dApi.call('pages.getTitles',{gid: Math.abs(cur.oid)},function(r){
+   var gid=Math.abs(cur.oid);
+   //if (gid==1) gid=-1; 
+   dApi.call('pages.getTitles',{gid: gid},function(r){
       if (ldr) hide(ldr);
       var t='';
       var x=(r.response || []).map(function(obj,a2){

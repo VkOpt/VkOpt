@@ -1211,6 +1211,10 @@ vk_v_slider={
  },
  sliderScaleClick: function (e,el) {
     var id=el.getAttribute("slider_id");
+    disableSelectText(el);
+    disableSelectText(ge(id+'_slider'));
+    disableSelectText(ge(id+'_slider_line'));
+    
     if (checkEvent(e)) return;
     var slider = ge(id+'_slider'),
 		h = ge(id+'_slider_line').offsetHeight,
