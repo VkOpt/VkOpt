@@ -1214,6 +1214,7 @@ vk_v_slider={
     disableSelectText(el);
     disableSelectText(ge(id+'_slider'));
     disableSelectText(ge(id+'_slider_line'));
+    disableSelectText(ge(id+'_slider_line_bg'));
     
     if (checkEvent(e)) return;
     var slider = ge(id+'_slider'),
