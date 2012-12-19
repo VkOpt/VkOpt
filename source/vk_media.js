@@ -45,8 +45,72 @@ function vkPVAfterShow(){
 }
 
 var _vk_albums_list_cache={};
-var vk_photos={
-   css:'#vkmakecover{margin-top:6px; width:164px;}' 
+var vk_photos = {
+   css:'\
+      #vkmakecover{margin-top:6px; width:164px;}\
+      .c_album{position:relative; cursor:pointer;}\
+      .c_title{background:rgba(0,0,0,0.5); position:absolute; bottom:0px; left:0px; right:0px; color:#FFF; text-align: left; padding:2px 0px 2px 6px;}\
+   ',
+   choose_album:function(){
+      stManager.add('photoview.css');
+      dApi.call('photos.getAlbums',{need_covers:1},function(r){
+         var albums=r.response;
+         var html=''
+         for (var i=0; i<albums.length; i++){
+            var a=albums[i];
+            html+='\
+                  <div class="photos_choose_row fl_l c_album" onclick="return vk_photos.choose_album_photo('+a.owner_id+','+a.aid+');">\
+                    <a href="#" onclick="return false"><img class="photo_row_img" src="'+a.thumb_src+'"></a>\
+                    <div class="c_title">\
+                      '+a.title+'<div class="pva_camera fl_r">'+a.size+'</div>\
+                    </div>\
+                  </div>';
+            /*
+            a.aid
+            a.owner_id
+            a.thumb_src
+            a.title
+             
+            '<div class="pva_camera fl_r">'+a.size+'</div>'*/
+         }
+         html+='<div class="clear_fix"></div>';
+         ge('photos_choose_rows').innerHTML=html;
+         //console.log(r)
+      });
+      //*
+      ge('photos_choose_rows').innerHTML=vkBigLdrImg;//albums;
+      hide('photos_choose_more');
+      //*/
+      return false;
+   },
+   choose_album_photo:function(oid,aid){
+      ge('photos_choose_rows').innerHTML=vkBigLdrImg;
+      var params={aid:aid};
+      params[oid<0?'gid':'uid']=Math.abs(oid);
+      dApi.call('photos.get',params,function(r){
+         var photos=r.response;
+         var html=''
+         for (var i=0; i<photos.length; i++){
+            var ph=photos[i];
+            /*ph.aid 119635156
+            ph.owner_id 13391307
+            ph.pid 186767072
+            ph.src "http://cs435.userapi.com/u13391307/119635156/m_863dc4c9.jpg"*/
+            html+='\
+                  <div class="photos_choose_row fl_l">\
+                    <a href="photo'+ph.owner_id+'_'+ph.pid+'" onclick="return cur.chooseMedia(\'photo\', \''+ph.owner_id+'_'+ph.pid+'\', [\''+ph.src+'\', \''+ph.src_small+'\', \'\',  \'{temp: {}, big: 1}\']);">\
+                      <img class="photo_row_img" src="'+ph.src+'">\
+                    </a>\
+                  </div>';
+         }
+         
+         html+='<div class="clear_fix"></div>';
+         ge('photos_choose_rows').innerHTML=html;
+         //console.log(r)
+         
+      })
+      return false;
+   }
 }
 
 function vkPVPhotoMover(show_selector){
@@ -518,6 +582,8 @@ function vkWallAlbumLink(){
 
 
 var VKPRU_SWF_LINK='http://cs4320.vk.com/u13391307/ac8f5bbe4ce7a8.zip';
+var VKPRU_SWF_HTTPS_LINK='https://pp.userapi.com/c4320/u13391307/ac8f5bbe4ce7a8.zip';
+
 function vkPhotoUrlUpload(url){
 	PRUBox = new MessageBox({title: IDL('PhotoUpload'),width:"290px"});
 	var Box = PRUBox;
@@ -564,9 +630,10 @@ function vkPhotoUrlUpload(url){
       "lang.loading_info":IDL('puLoadingInfoWait')
 			//,"lang.button_upload":'Загрузить фотографию'
 		};
+      var swf=location.protocol=='https:'?VKPRU_SWF_HTTPS_LINK:VKPRU_SWF_LINK;
 		var params={width:260, height:345, allowscriptaccess: 'always',"wmode":"transparent","preventhide":"1","scale":"noScale"};
 		renderFlash('prucontainer',
-			{url:VKPRU_SWF_LINK,id:"vkphoto_reuploader"},
+			{url:swf,id:"vkphoto_reuploader"},
 			params,flashvars
 		); 
 	});

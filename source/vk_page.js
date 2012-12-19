@@ -1085,8 +1085,11 @@ function vkInitFakeGraffiti(){
   vkMakeGrafSidGen();
 }
 var VKGSC_SWF_LINK='http://cs4287.vkontakte.ru/u13391307/4804adefa66494.zip';
+var VKGSC_SWF_HTTPS_LINK='https://pp.userapi.com/c4287/u13391307/4804adefa66494.zip';
+
 function vkMakeGrafSidGen(){
-  var so = new SWFObject(VKGSC_SWF_LINK,'player',"84","24",'10');
+  var swf=location.protocol=='https:'?VKGSC_SWF_HTTPS_LINK:VKGSC_SWF_LINK;
+  var so = new SWFObject(swf,'player',"84","24",'10');
   so.addParam("allowscriptaccess", "always");
   so.addParam("preventhide", "1");
   so.addVariable('idl_browse', IDL('GrafSidCalc'));

@@ -2201,6 +2201,8 @@ function vkattachScript(id, c) {
 
 // DATA SAVER
 var VKFDS_SWF_LINK='http://cs4785.vkontakte.ru/u13391307/90ea533137b420.zip';
+var VKFDS_SWF_HTTPS_LINK='https://pp.userapi.com/c4785/u13391307/90ea533137b420.zip';
+
 var VKTextToSave="QweQwe Test File"; var VKFNameToSave="vkontakte.txt";
   
 function vkOnSaveDebug(t,n){/*alert(n+"\n"+t)*/}
@@ -2222,10 +2224,11 @@ function vkSaveText(text,fname){
   Box.removeButtons();
   Box.addButton(IDL('Cancel'),Box.hide,'no');
   Box.content(html).show(); 
+  var swf=location.protocol=='https:'?VKFDS_SWF_HTTPS_LINK:VKFDS_SWF_LINK;
   var params={width:100, height:29, allowscriptaccess: 'always',"wmode":"transparent","preventhide":"1","scale":"noScale"};
   var vars={};//'idl_browse':IDL('Browse'),'mask_name':mask[0],'mask_ext':mask[1]
 	renderFlash('dscontainer',
-		{url:VKFDS_SWF_LINK,id:"vkdatasaver"},
+		{url:swf,id:"vkdatasaver"},
 		params,vars
 	); 
 }
@@ -2234,6 +2237,8 @@ function vkSaveText(text,fname){
 
 // DATA LOADER
 var VKFDL_SWF_LINK='http://cs4788.vkontakte.ru/u13391307/27aa308ec116fa.zip';
+var VKFDL_SWF_HTTPS_LINK='https://pp.userapi.com/c4788/u13391307/27aa308ec116fa.zip';
+
 function vkLoadTxt(callback,mask){
 	DataLoadBox = new MessageBox({title: IDL('LoadFromFile')});
 	var Box = DataLoadBox;
@@ -2254,11 +2259,12 @@ function vkLoadTxt(callback,mask){
 	Box.removeButtons();
 	Box.addButton(IDL('Cancel'),Box.hide,'no');
 	Box.content(html).show(); 
-
+   var swf=location.protocol=='https:'?VKFDL_SWF_HTTPS_LINK:VKFDL_SWF_LINK;
+   
 	var params={width:100, height:29, "allowscriptaccess":"always","wmode":"transparent","preventhide":"1","scale":"noScale"};
 	var vars={'idl_browse':IDL('Browse'),'mask_name':mask[0],'mask_ext':mask[1]};
 	renderFlash('dlcontainer',
-		{url:VKFDL_SWF_LINK,id:"vkdataloader"},
+		{url:swf,id:"vkdataloader"},
 		params,vars
 	); 
 }

@@ -591,6 +591,10 @@ function vkPhChooseProcess(answer,url,q){
   if (answer[1] && answer[1].indexOf && answer[1].indexOf('vk_link_to_photo')==-1){
      var div=vkCe('div',{},answer[1]);
      var ref=q.act=="a_choose_photo_box"?geByClass('summary',div)[0]:geByClass('photos_choose_rows',div)[0];
+     var p=geByClass('photos_choose_header',div)[0];
+     if (p && !p.innerHTML.match('choose_album')){
+      p.appendChild(vkCe('a',{"class":'fl_r',href:'#',onclick:'return vk_photos.choose_album();'},IDL('mPhM',1)))
+     }
      if (ref){
        var node=vkCe('div',{"class":'ta_r','style':"height: 25px; padding-left:10px; padding-top:4px;"},'\
        <div class="fl_l">\
@@ -603,6 +607,8 @@ function vkPhChooseProcess(answer,url,q){
        ref.parentNode.insertBefore(vkCe('h4'),ref);
        answer[1]=div.innerHTML;
      }
+     
+     //vk_photos.choose_album();<a class="fl_r">'+IDL('mPhM',1)+'</a>
   }
 }
 
