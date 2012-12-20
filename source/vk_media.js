@@ -48,12 +48,17 @@ var _vk_albums_list_cache={};
 var vk_photos = {
    css:'\
       #vkmakecover{margin-top:6px; width:164px;}\
-      .c_album{position:relative; cursor:pointer;}\
+      .photos_choose_row.c_album{position:relative; cursor:pointer; height: 100px; width: 178px;}\
+      .c_album .photo_row_img{ max-width: 178px;}\
       .c_title{background:rgba(0,0,0,0.5); position:absolute; bottom:0px; left:0px; right:0px; color:#FFF; text-align: left; padding:2px 0px 2px 6px;}\
    ',
-   choose_album:function(){
+   choose_album:function(oid){
       stManager.add('photoview.css');
-      dApi.call('photos.getAlbums',{need_covers:1},function(r){
+      var params={need_covers:1};
+      if (oid){
+         params[oid<0?'gid':'uid']=Math.abs(oid);
+      }
+      dApi.call('photos.getAlbums',params,function(r){
          var albums=r.response;
          var html=''
          for (var i=0; i<albums.length; i++){
@@ -73,7 +78,7 @@ var vk_photos = {
              
             '<div class="pva_camera fl_r">'+a.size+'</div>'*/
          }
-         html+='<div class="clear_fix"></div>';
+         html+='<br id="photos_choose_clear" class="clear">';
          ge('photos_choose_rows').innerHTML=html;
          //console.log(r)
       });
@@ -83,19 +88,44 @@ var vk_photos = {
       //*/
       return false;
    },
-   choose_album_photo:function(oid,aid){
+   choose_album_photo:function(oid,aid,offset){
+      var PER_PAGE=20;
+      //vkMakePageList(0,100,'#','return page(%%);',PER_PAGE,true)
       ge('photos_choose_rows').innerHTML=vkBigLdrImg;
       var params={aid:aid};
       params[oid<0?'gid':'uid']=Math.abs(oid);
+     
+     var photos=null;
+     var photos_reverse=null;
+     var cur_photos=null;
+      
       dApi.call('photos.get',params,function(r){
-         var photos=r.response;
+         photos=r.response;
+         photos_reverse=[];
+         for (var i=photos.length-1; i>=0; i--)
+            photos_reverse.push(photos[i]);
+         
+         cur_photos=photos;
+         page(0);
+         //console.log(r)
+         
+      });
+      
+      var page=function(offset,rev){
+         if (rev){
+            cur_photos=(cur_photos==photos)?photos_reverse:photos;
+         }
+         var pages=Math.floor(cur_photos.length/PER_PAGE);
          var html=''
-         for (var i=0; i<photos.length; i++){
-            var ph=photos[i];
-            /*ph.aid 119635156
-            ph.owner_id 13391307
-            ph.pid 186767072
-            ph.src "http://cs435.userapi.com/u13391307/119635156/m_863dc4c9.jpg"*/
+         var pages_html='<div class="clear clear_fix ">\
+            <a class="fl_l sort_rev_icon" href="#" onclick="return vk_photos._choose_album_photo_page(0,true);"></a>\
+            <ul class="page_list fl_r">'+vkMakePageList(offset/PER_PAGE,pages,'#','return vk_photos._choose_album_photo_page(%%);',1,true)+'</ul>\
+         </div>';
+         html+=pages_html;
+         
+         var max_offset=Math.min(offset+PER_PAGE,cur_photos.length);
+         for (var i=offset; i<max_offset; i++){
+            var ph=cur_photos[i];
             html+='\
                   <div class="photos_choose_row fl_l">\
                     <a href="photo'+ph.owner_id+'_'+ph.pid+'" onclick="return cur.chooseMedia(\'photo\', \''+ph.owner_id+'_'+ph.pid+'\', [\''+ph.src+'\', \''+ph.src_small+'\', \'\',  \'{temp: {}, big: 1}\']);">\
@@ -103,12 +133,14 @@ var vk_photos = {
                     </a>\
                   </div>';
          }
-         
-         html+='<div class="clear_fix"></div>';
-         ge('photos_choose_rows').innerHTML=html;
-         //console.log(r)
-         
-      })
+         html+=pages_html;
+         html+='<br id="photos_choose_clear" class="clear">';
+         ge('photos_choose_rows').innerHTML=html; 
+         return false;
+      }
+      vk_photos._choose_album_photo_page=function(_offset,rev){
+         page(_offset*PER_PAGE,rev);
+      };
       return false;
    }
 }

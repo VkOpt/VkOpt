@@ -933,11 +933,12 @@ String.prototype.leftPad = function (l, c) {
 	function vkButton(caption,onclick_attr,gray){
 		return '<div class="button_'+(gray?'gray':'blue')+'"><button onclick="' + (onclick_attr?onclick_attr:'') + '">'+caption+'</button></div>';
 	}
+
 	function vkMakePageList(cur,end,href,onclick,step,without_ul){
 	 var after=2;
 	 var before=2;
 	 if (!step) step=1;
-	 var html=(!without_ul)?'<ul class="pageList">':'';
+	 var html=(!without_ul)?'<ul class="page_list">':'';
 		if (cur>before) html+='<li><a href="'+href.replace(/%%/g,0)+'" onclick="'+onclick.replace(/%%/g,0)+'">&laquo;</a></li>';
 		var from=Math.max(0,cur-before);
 		var to=Math.min(end,cur+after);
