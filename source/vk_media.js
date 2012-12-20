@@ -60,11 +60,22 @@ var vk_photos = {
       }
       dApi.call('photos.getAlbums',params,function(r){
          var albums=r.response;
+         if (albums[0]) oid=albums[0].owner_id;
+         else oid=oid?oid:vk.id;
+         albums=[{
+            aid:"wall",
+            thumb_src:'http://vk.com/images/m_noalbum.png',
+            owner_id:oid,
+            title:IDL('photos_on_wall'),
+            size:'-',
+            description:"", created:"0", updated:"0"
+         }].concat(albums);
+
          var html=''
          for (var i=0; i<albums.length; i++){
             var a=albums[i];
             html+='\
-                  <div class="photos_choose_row fl_l c_album" onclick="return vk_photos.choose_album_photo('+a.owner_id+','+a.aid+');">\
+                  <div class="photos_choose_row fl_l c_album" onclick="return vk_photos.choose_album_photo('+a.owner_id+',\''+a.aid+'\');">\
                     <a href="#" onclick="return false"><img class="photo_row_img" src="'+a.thumb_src+'"></a>\
                     <div class="c_title">\
                       '+a.title+'<div class="pva_camera fl_r">'+a.size+'</div>\
