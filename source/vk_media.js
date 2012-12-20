@@ -139,7 +139,7 @@ var vk_photos = {
          return false;
       }
       vk_photos._choose_album_photo_page=function(_offset,rev){
-         page(_offset*PER_PAGE,rev);
+         return page(_offset*PER_PAGE,rev);
       };
       return false;
    }
