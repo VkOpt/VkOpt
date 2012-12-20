@@ -58,8 +58,12 @@ var vk_photos = {
       if (oid){
          params[oid<0?'gid':'uid']=Math.abs(oid);
       }
-      dApi.call('photos.getAlbums',params,function(r){
-         var albums=r.response;
+      
+      
+      var on_done=function(r){
+         var albums=(r.error && r.error.error_code==15)?[]:r.response;
+         //console.log(r,albums);
+         if (r.error) dApi.show_error(r);
          if (albums[0]) oid=albums[0].owner_id;
          else oid=oid?oid:vk.id;
          albums=[{
@@ -92,7 +96,9 @@ var vk_photos = {
          html+='<br id="photos_choose_clear" class="clear">';
          ge('photos_choose_rows').innerHTML=html;
          //console.log(r)
-      });
+      }
+      dApi.call('photos.getAlbums',params,{ok:on_done,error:on_done});
+      
       //*
       ge('photos_choose_rows').innerHTML=vkBigLdrImg;//albums;
       hide('photos_choose_more');

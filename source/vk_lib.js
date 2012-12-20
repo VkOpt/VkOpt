@@ -1640,7 +1640,12 @@ var dApi = {
         dApi.log(method);
 		  AjPost("/api.php", params,function(obj, text) {
 			if (text=='') text='{}';
-			var response = eval("("+text+")");
+         var response = {error:{error_code:666,error_msg:'VK API EpicFail'}};
+         try{
+            response = eval("("+text+")");
+         } catch (e) {
+         
+         }
 			if (response.error){
 				if (response.error.error_code == 6){
 					setTimeout(function(){
