@@ -252,7 +252,7 @@ function vkStyles(){
       }\
       .audio .area {margin-bottom: 0px !important;}\
       .choose_audio_row {height:auto !important;}\
-      .choose_audio_row a.choose{margin-top: 0px !important; padding-bottom: 2px !important; padding-top:2px !important;}\
+      .choose_audio_row a.choose{margin-top: 0px !important; padding-bottom: 2px !important; padding-top:2px !important; height: auto !important; line-height: normal !important;}\
 	";
    
 	//additional audio styles
@@ -526,6 +526,7 @@ function vkStyles(){
 	";
    main_css+=vk_board.css;
    main_css+=vk_photos.css;
+   main_css+=vk_audio.css;
    main_css+=vk_videos.css();
 	main_css+=vk_plugins.css();
 

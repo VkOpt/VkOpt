@@ -43,7 +43,12 @@ function vkPVAfterShow(){
       vkPVPhotoMover();
    }
 }
-
+/*
+var orig_cur_chooseMedia=cur.chooseMedia;
+cur.chooseMedia=function(type, media, data, url, noboxhide){
+   return orig_cur_chooseMedia(type, media, data, url, true);
+}
+*/
 var _vk_albums_list_cache={};
 var vk_photos = {
    css:'\
@@ -79,7 +84,7 @@ var vk_photos = {
          for (var i=0; i<albums.length; i++){
             var a=albums[i];
             html+='\
-                  <div class="photos_choose_row fl_l c_album" onclick="return vk_photos.choose_album_photo('+a.owner_id+',\''+a.aid+'\');">\
+                  <div class="photos_choose_row fl_l c_album" onclick="return vk_photos.choose_album_item('+a.owner_id+',\''+a.aid+'\');">\
                     <a href="#" onclick="return false"><img class="photo_row_img" src="'+a.thumb_src+'"></a>\
                     <div class="c_title">\
                       '+a.title+'<div class="pva_camera fl_r">'+a.size+'</div>\
@@ -105,7 +110,7 @@ var vk_photos = {
       //*/
       return false;
    },
-   choose_album_photo:function(oid,aid,offset){
+   choose_album_item:function(oid,aid,offset){
       var PER_PAGE=20;
       //vkMakePageList(0,100,'#','return page(%%);',PER_PAGE,true)
       ge('photos_choose_rows').innerHTML=vkBigLdrImg;
@@ -115,6 +120,7 @@ var vk_photos = {
      var photos=null;
      var photos_reverse=null;
      var cur_photos=null;
+     var count=null;
       
       dApi.call('photos.get',params,function(r){
          photos=r.response;
@@ -127,7 +133,30 @@ var vk_photos = {
          //console.log(r)
          
       });
+      // 
+      /*
+         if(aid=='wall') aid='00'
+         if (count==null){
+         
+         ajax.post('/album'+oid+'_'+aid, {offset: 0}, {
+            onDone: function(b,html,script,vk) {
+               var temp=script.match(/count:\s*(\d+)/);
+               if (temp) count=parseInt(temp[1]);
+            }
+         });           
+         
+         }
       
+         var opts={};
+         if (rev) opts['rev']=1;
+         ajax.post('/album'+oid+'_'+aid, extend({offset: offset, part: 1}, opts || {}), {
+            cache: 1, 
+            onDone: function() {
+            
+            }
+         });      
+      */
+
       var page=function(offset,rev){
          if (rev){
             cur_photos=(cur_photos==photos)?photos_reverse:photos;
@@ -135,8 +164,8 @@ var vk_photos = {
          var pages=Math.floor(cur_photos.length/PER_PAGE);
          var html=''
          var pages_html='<div class="clear clear_fix ">\
-            <a class="fl_l sort_rev_icon" href="#" onclick="return vk_photos._choose_album_photo_page(0,true);"></a>\
-            <ul class="page_list fl_r">'+vkMakePageList(offset/PER_PAGE,pages,'#','return vk_photos._choose_album_photo_page(%%);',1,true)+'</ul>\
+            <a class="fl_l sort_rev_icon" href="#" onclick="return vk_photos._choose_album_item_page(0,true);"></a>\
+            <ul class="page_list fl_r">'+vkMakePageList(offset/PER_PAGE,pages,'#','return vk_photos._choose_album_item_page(%%);',1,true)+'</ul>\
          </div>';
          html+=pages_html;
          
@@ -155,7 +184,7 @@ var vk_photos = {
          ge('photos_choose_rows').innerHTML=html; 
          return false;
       }
-      vk_photos._choose_album_photo_page=function(_offset,rev){
+      vk_photos._choose_album_item_page=function(_offset,rev){
          return page(_offset*PER_PAGE,rev);
       };
       return false;
@@ -2222,6 +2251,9 @@ function vkAudioPage(){
 }
 
 vk_audio={
+   css:'\
+      .album_choose{display: block;float: left; padding: 6px 10px; min-width: 175px;}\
+   ',
    album_cache:{},
    in_box_move:function(full_aid){
       //return;
@@ -2317,6 +2349,126 @@ vk_audio={
          
       });
       //alert(full_aid);
+   },
+   tpl:'<div class="choose_audio_row clear_fix">\
+     <div class="audio_content fl_l">\
+       <div class="audio" id="audio%oid_%aid_choose" onmouseover="addClass(this, \'over\');" onmouseout="removeClass(this, \'over\');">\
+     <a name="%oid_%aid_choose"></a>\
+     <div class="area clear_fix" onclick="if (cur.cancelClick){ cur.cancelClick = false; return false;} playAudioNew(\'%oid_%aid_choose\')">\
+       <table cellspacing="0" cellpadding="0" width="100%"><tr><td>\
+             <div class="play_btn_wrap"><div class="play_new" id="play%oid_%aid_choose"></div></div>\
+             <input type="hidden" id="audio_info%oid_%aid_choose" value="%url,%duration" />\
+           </td><td class="info">\
+             <div class="title_wrap fl_l" onmouseover="setTitle(this)"><b>%artist</b> &ndash; <span class="title" id="title%oid_%aid_choose">%title</span></div>\
+             <div class="duration fl_r" onmousedown="if (window.audioPlayer) audioPlayer.switchTimeFormat(\'%oid_%aid_choose\', event);" onclick="cancelEvent(event)">%dur</div>\
+       </td></tr></table>\
+       <div id="player%oid_%aid_choose" class="player" ondragstart="return false;" onselectstart="return false;" onclick="event.cancelBubble = true;">\
+         <table cellspacing="0" cellpadding="0" border="0" width="100%"><tbody><tr><td style="width: 100%;">\
+               <div id="audio_pr%oid_%aid_choose" class="audio_pr" onmouseover="addClass(this, \'over\')" onmouseout="removeClass(this, \'over\'); removeClass(this, \'down\')" onmousedown="addClass(this, \'down\'); audioPlayer.prClick(event);" onmouseup="removeClass(this, \'down\')">\
+                 <div id="audio_white_line%oid_%aid_choose" class="audio_white_line" onmousedown="audioPlayer.prClick(event);"></div>\
+                 <div id="audio_back_line%oid_%aid_choose" class="audio_back_line" onmousedown="audioPlayer.prClick(event);"><!-- --></div>\
+                 <div id="audio_load_line%oid_%aid_choose" class="audio_load_line" onmousedown="audioPlayer.prClick(event);"><!-- --></div>\
+                 <div id="audio_pr_line%oid_%aid_choose" class="audio_progress_line" onmousedown="audioPlayer.prClick(event);">\
+                   <div id="audio_pr_slider%oid_%aid_choose" class="audio_slider"><!-- --></div>\
+                 </div>\
+               </div>\
+             </td><td>\
+               <div id="audio_vol%oid_%aid_choose" class="audio_vol" onmouseover="addClass(this, \'over\')" onmouseout="removeClass(this, \'over\'); removeClass(this, \'down\')" onmousedown="addClass(this, \'down\'); audioPlayer.volClick(event)" onmouseup="removeClass(this, \'down\')">\
+                 <div id="audio_vol_white_line%oid_%aid_choose" class="audio_vol_white_line" onmousedown="audioPlayer.volClick(event);"><!-- --></div>\
+                 <div id="audio_vol_back_line%oid_%aid_choose" class="audio_load_line" onmousedown="audioPlayer.volClick(event);"><!-- --></div>\
+                 <div id="audio_vol_line%oid_%aid_choose" class="audio_progress_line" onmousedown="audioPlayer.volClick(event);">\
+                   <div id="audio_vol_slider%oid_%aid_choose" class="audio_slider" onmousedown="audioPlayer.volClick(event);"><!-- --></div>\
+                 </div>\
+               </div>\
+             </td></tr></tbody></table>\
+       </div>\
+     </div>\
+   </div>\
+     </div>\
+     <div class="fl_r">\
+       <a class="choose" onclick="cur.chooseMedia(\'audio\', \'%oid_%aid\', {performer: \'%artist\', title: \'%title\', info: val(\'audio_info%oid_%aid_choose\'), duration: \'%dur\'})">%add</a>\
+     </div>\
+   </div>\
+   ',
+   choose_album:function(oid){
+      var PER_PAGE=100;
+      var albums=[];
+      var scan=function(offset){
+         var params={count:PER_PAGE,offset:offset};
+         if (oid){
+            params[oid<0?'gid':'uid']=Math.abs(oid);
+         }
+         dApi.call('audio.getAlbums',params,function(r){
+            var _albums=(r.error && r.error.error_code==15)?[0]:r.response;
+            if (r.error) dApi.show_error(r);
+            var count=_albums.shift();
+            albums=albums.concat(_albums);
+            if (albums.length<count){
+               scan(offset+PER_PAGE)
+            } else {
+               var html=''
+               for (var i=0; i<albums.length; i++){
+                  var a=albums[i];
+                  html+='<a class="album_choose" href="#" onclick="return vk_audio.choose_album_item('+a.owner_id+',\''+a.album_id+'\');">'+a.title+'</a>';
+               }
+               html+='<br class="clear">';
+                ge('choose_audio_rows').innerHTML=html;
+            }
+            //// done?
+            //console.log(r)
+         });
+      }
+      scan(0);
+      //*
+      ge('choose_audio_rows').innerHTML=vkBigLdrImg;//albums;
+      hide('audio_choose_more');
+      //*/
+      return false;
+   },
+   choose_album_item:function(oid,aid,offset){
+      var PER_PAGE=20;
+      //vkMakePageList(0,100,'#','return page(%%);',PER_PAGE,true)
+      ge('choose_audio_rows').innerHTML=vkBigLdrImg;
+      var params={album_id:aid};// count, offset
+      params[oid<0?'gid':'uid']=Math.abs(oid);
+     
+     var items=null;
+     var count=null;
+
+      dApi.call('audio.get',params,function(r){
+         items=r.response;
+         page(0);         
+      });
+
+      var page=function(offset){
+         var pages=Math.floor(items.length/PER_PAGE);
+         var html=''
+         var pages_html='<div class="clear clear_fix ">\
+            <ul class="page_list fl_r">'+vkMakePageList(offset/PER_PAGE,pages,'#','return vk_audio._choose_album_item_page(%%);',1,true)+'</ul>\
+         </div>';
+         html+=pages_html;
+         
+         var max_offset=Math.min(offset+PER_PAGE,items.length);
+         for (var i=offset; i<max_offset; i++){
+            var au=items[i];            
+            html+=vk_audio.tpl.replace(/%add/g,IDL('Add'))
+                              .replace(/%oid/g,au.owner_id)
+                              .replace(/%aid/g,au.aid)
+                              .replace(/%artist/g,au.artist)
+                              .replace(/%title/g,au.title)
+                              .replace(/%dur/g,vkFormatTime(au.duration))//formated
+                              .replace(/%duration/g,au.duration)// raw
+                              .replace(/%url/g,au.url);
+         }
+         html+=pages_html;
+         html+='<br class="clear">';
+         ge('choose_audio_rows').innerHTML=html; 
+         return false;
+      }
+      vk_audio._choose_album_item_page=function(_offset,rev){
+         return page(_offset*PER_PAGE,rev);
+      };
+      return false;
    }
 }
 

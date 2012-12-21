@@ -664,6 +664,17 @@ function vkAudioChooseProcess(answer,url,q){
   if (answer[1].indexOf('vk_link_to_audio')==-1){
   var div=vkCe('div',{},answer[1]);
   var ref=geByClass('summary',div)[0] || geByClass('search_bar',div)[0];
+   var p=geByClass('choose_close',div)[0];
+   if (p && !p.innerHTML.match('choose_album')){
+         p.insertBefore(vkCe('span',{"class":'divide'},'|'),p.firstChild)
+         p.insertBefore(vkCe('a',{"class":'',href:'#',onclick:'return vk_audio.choose_album();'},IDL('mPhM',1)),p.firstChild);
+         //console.log(q);
+      if (q.to_id && q.to_id<0){
+         p.insertBefore(vkCe('span',{"class":'divide'},'|'),p.firstChild)
+         p.insertBefore(vkCe('a',{"class":'',href:'#',onclick:'return vk_audio.choose_album('+q.to_id+');'},IDL('GroupAlbums',1)),p.firstChild)
+      }
+   }
+  
   if (ref){
     var node=vkCe('div',{'style':"height: 25px; padding: 4px 20px;"},'\
     <div class="fl_l">'+IDL('EnterLinkToAudio')+':</div>\
