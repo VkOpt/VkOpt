@@ -191,6 +191,7 @@ function vkStyles(){
    .vk_photo_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -29px; line-height: 11px; }\
    .vk_msg_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -193px; line-height: 11px; }\
    .vk_audio_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -221px; line-height: 11px; }\
+   .vk_video_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -75px; line-height: 11px; }\
    .vk_profile_links a{padding:3px;}\
    .vk_profile_links a:hover{background-color:#E1E7ED;}\
    .vk_profile_links{line-height:20px;}\

@@ -1305,6 +1305,93 @@ vk_videos = {
             }*/
          }
       }
+   },
+   tpl:'\
+      <a class="choose_video_row fl_l" href="/video%oid_%vid" onclick="return cur.chooseMedia(\'video\', \'%oid_%vid\', \'%thumb\')">\
+        <div class="img"><img src="%thumb"><div class="duration">%dur</div></div>\
+        <div class="label">%title</div>\
+      </a>\
+   ',
+   choose_album:function(oid){
+      var PER_PAGE=100;
+      var albums=[];
+      var scan=function(offset){
+         var params={count:PER_PAGE,offset:offset};
+         if (oid){
+            params[oid<0?'gid':'uid']=Math.abs(oid);
+         }
+         dApi.call('video.getAlbums',params,function(r){
+            var _albums=(r.error && r.error.error_code==15)?[0]:r.response;
+            if (r.error) dApi.show_error(r);
+            var count=_albums.shift();
+            albums=albums.concat(_albums);
+            if (albums.length<count){
+               scan(offset+PER_PAGE)
+            } else {
+               var html=''
+               for (var i=0; i<albums.length; i++){
+                  var a=albums[i];
+                  html+='<a class="album_choose" href="#" onclick="return vk_videos.choose_album_item('+a.owner_id+',\''+a.album_id+'\');"><b class="vk_video_icon"></b>'+a.title+'</a>';
+               }
+               html+='<br class="clear">';
+                ge('choose_video_rows').innerHTML=html;
+            }
+         });
+      }
+      scan(0);
+      //*
+      ge('choose_video_rows').innerHTML=vkBigLdrImg;//albums;
+      hide('video_choose_more');
+      //*/
+      return false;
+   },
+   choose_album_item:function(oid,aid,offset){
+      var PER_PAGE=12;
+      //vkMakePageList(0,100,'#','return page(%%);',PER_PAGE,true)
+
+
+      var page=function(offset){
+         
+         ge('choose_video_rows').innerHTML=vkBigLdrImg;
+         var params={aid:aid,width:130,count:PER_PAGE,offset:offset};// count, offset
+         params[oid<0?'gid':'uid']=Math.abs(oid);
+        
+        var items=null;
+        var count=null;
+
+         dApi.call('video.get',params,function(r){
+            items=r.response;
+            var count=items.shift();
+                     
+            var pages=Math.floor(count/PER_PAGE);
+            var html=''
+            var pages_html='<div class="clear clear_fix ">\
+               <ul class="page_list fl_r">'+vkMakePageList(offset/PER_PAGE,pages,'#','return vk_videos._choose_album_item_page(%%);',1,true)+'</ul>\
+            </div>';
+            html+=pages_html;
+            
+            var max_offset=Math.min(offset+PER_PAGE,count);
+            for (var i=0; i<items.length; i++){
+               var v=items[i];                
+               html+=vk_videos.tpl.replace(/%oid/g,v.owner_id)
+                                 .replace(/%vid/g,v.vid)
+                                 .replace(/%title/g,v.title)
+                                 .replace(/%dur/g,vkFormatTime(v.duration))//formated
+                                 .replace(/%thumb/g,v.image);
+            }
+            html+=pages_html;
+            html+='<br class="clear">';
+            ge('choose_video_rows').innerHTML=html; 
+         }); 
+         return false;
+      }
+      
+      page(0);
+      
+      vk_videos._choose_album_item_page=function(_offset,rev){
+         return page(_offset*PER_PAGE,rev);
+      };
+      return false;
    }
 }
 
@@ -2409,7 +2496,7 @@ vk_audio={
                var html=''
                for (var i=0; i<albums.length; i++){
                   var a=albums[i];
-                  html+='<a class="album_choose" href="#" onclick="return vk_audio.choose_album_item('+a.owner_id+',\''+a.album_id+'\');">'+a.title+'</a>';
+                  html+='<a class="album_choose" href="#" onclick="return vk_audio.choose_album_item('+a.owner_id+',\''+a.album_id+'\');"><b class="vk_audio_icon"></b> '+a.title+'</a>';
                }
                html+='<br class="clear">';
                 ge('choose_audio_rows').innerHTML=html;
