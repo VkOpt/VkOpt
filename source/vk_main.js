@@ -380,6 +380,7 @@ function vkWikiPagesList(add_btn){
          console.log(obj);
          var page='page-'+obj.group_id+'_'+obj.pid;
          t+='<a href="/'+page+'">'+page+'</a><span class="divider">|</span>'+
+            '<a href="/pages.php?oid=-'+obj.group_id+'&p='+encodeURIComponent(obj.title)+'&act=history" target="_blank">'+IDL('History')+'</a><span class="divider">|</span>'+
             '<a href="#" onclick="return vkGetWikiCode('+obj.pid+','+obj.group_id+');">'+IDL('Code')+'</a><span class="divider">|</span>'+
             '   <b>'+obj.title+'</b>  (creator:'+obj.creator_name+')<br>';
       });
