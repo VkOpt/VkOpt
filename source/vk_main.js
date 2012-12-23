@@ -1376,11 +1376,12 @@ function vkMakeMsgHistory(uid,show_format){
 			msgs.reverse();
 			var msg=null;
 			var res=''
-			for (var i=0;i<msgs.length;i++){
-				msg=msgs[i];
-            if (!users['%'+msg.from_id+'%']){
-               users['%'+msg.from_id+'%']='id'+msg.from_id+' DELETED';
-               users_ids.push(msg.from_id);
+         var make_msg=function(msg,level){
+            level=level || 0;
+            var from_id= msg.from_id || msg.uid
+            if (!users['%'+from_id+'%']){
+               users['%'+from_id+'%']='id'+from_id+' DELETED';
+               users_ids.push(from_id);
             }
             
             var attach_text="";
@@ -1417,15 +1418,25 @@ function vkMakeMsgHistory(uid,show_format){
             }
             //console.log(msg);
 				var date=(new Date(msg.date*1000)).format(date_fmt);
-				var user='%'+msg.from_id+'%';//(msg.from_id==mid?user2:user1);
+				var user='%'+from_id+'%';//(msg.from_id==mid?user2:user1);
 				var text=vkCe('div',{},(msg.body || '').replace(/<br>/g,"%{br}%")).innerText.replace(/%{br}%/g,'\r\n');// no comments....
 				//text=text.replace(/\n/g,'\r\n');
             
-				res+=msg_pattern
+				var ret=msg_pattern
                  .replace(/%username%/g,user) //msg.from_id
                  .replace(/%date%/g,    date)
                  .replace(/%message%/g, text)
                  .replace(/%attachments%/g, (attach_text!=""?"Attachments:[\r\n"+attach_text+"]":""));
+            var tab='\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t';
+            ret=ret.replace(/^.+$/mg,tab.substr(0,level)+"$&");
+            if (msg.fwd_messages) 
+            for (var i=0; i<msg.fwd_messages.length; i++)
+               ret+=make_msg(msg.fwd_messages[i],level+1);
+            return ret;
+         }
+			for (var i=0;i<msgs.length;i++){
+				msg=msgs[i];
+            res+=make_msg(msg);
 			}
 			result=res+result;
 			if (offset<count){
@@ -1481,6 +1492,7 @@ function vkMakeMsgHistory(uid,show_format){
 		autosizeSetup('vk_msg_date_fmt',{});
 	} else run();
 }
+
 
 // END OF SAVE HISTORY TO FILE
 

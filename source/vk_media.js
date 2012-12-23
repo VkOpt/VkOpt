@@ -2559,9 +2559,16 @@ vk_audio={
          return page(_offset*PER_PAGE,rev);
       };
       return false;
+   },
+   links_to_audio_on_page:function(){
+      var links=[]; 
+      each(geByClass('vkaudio_down'),function(i,el){
+         links.push(geByTag('a',el)[0].href)
+      }); 
+     vkAlertBox('Links','<textarea style="width:560px; height:300px;">'+links.join('\n')+'</textarea>').setOptions({width:'600px'})
    }
 }
-
+//vk_audio.links_to_audio_on_page();
 function vkAudioRefreshFriends(){
    var p=ge('audio_more_friends');
    if (!p || ge('vk_audio_fr_refresh')) return;
@@ -3963,6 +3970,7 @@ function vkAlbumCollectPlaylist(){
    if (!vk_current_album_info) return;
    var result=vkCe('div',{});
    var box=null;
+   // <div class="button_gray button_wide"><button onclick="vk_audio.links_to_audio_on_page();return false;">'+IDL('Links')+'</button></div>
    var abort=false;
    var idx=0;
    var get_track=function(){
