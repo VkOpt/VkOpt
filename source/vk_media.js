@@ -2077,7 +2077,10 @@ function vkGetYoutubeLinks(vid, callback) {
       var obj=YTDataDecode(t);
       //alert(JSON.Str(obj));
       var map=(obj.fmt_url_map || obj.url_encoded_fmt_stream_map);
-      if (!map) return [];
+      if (!map) {
+         callback([]);
+         return [];
+      }
       var links=[];
       for (var i=0;i<map.length;i++){
          var format=YT_video_itag_formats[map[i].itag];
