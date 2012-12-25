@@ -194,6 +194,11 @@ function vkLocationCheck(){
 function VkOptMainInit(){
   if (vkLocationCheck()) return;
   if (InstallRelease()) return;
+  
+  if (isNewLib() && !window.lastWindowWidth){
+      setTimeout(VkOptMainInit,50);
+      return;
+  }
   /* Get lang data:
    javascript:x=[];for (var key in vk_lang_ru) x.push("'"+key+"': '"+(typeof vk_lang_ru[key] == 'string'?(IDL(key)==key?'':IDL(key)):JSON.Str(vk_lang_ru[key]))+"'"); alert(x.join(',\n'));
  
