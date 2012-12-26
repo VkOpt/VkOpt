@@ -678,7 +678,7 @@ var VK_PROFILE_TPL='\
 			<div>%RATE%</div>\
          <div class="vk_profile_links">\
             <a href="/albums%UID%" onclick="return nav.change({z: \'albums%UID%\'}, event);"><span class="vk_photo_icon"></span></a>\
-            <a href="/write%UID%" onclick="return showWriteMessageBox(event, %UID%);"><span class="vk_msg_icon"></span></a>\
+            <a href="/write%UID%" onclick="return showWriteMessageBox(event, %UID%);"><span class="vk_msg_icon"><small class="divide">%MSG_COUNT%</small></span></a>\
 			</div>\
          <div id="vkfrinfo%UID%" class="vk_profile_frinfo"></div>\
          <div>%COMMON_FR%</div>\
@@ -792,6 +792,8 @@ function vkGetProfile(uid,callback,no_switch_button){
 		//var activity=r.response.activity;
 		var country=r.response.country;
 		var city=r.response.city;
+      var msg_count=r.response.msg_count;
+      
       //console.log(profile);
       /*    
          var uid='+uid+';
@@ -871,7 +873,8 @@ function vkGetProfile(uid,callback,no_switch_button){
 							   .replace("%RATE%",rate)
 							   .replace("%ONLINE%",online)
 							   .replace("%PROFILE_INFO%",info_html)
-							   .replace("%COMMON_FR%",common);
+							   .replace("%COMMON_FR%",common)
+                        .replace("%MSG_COUNT%",msg_count || '');
 		if (no_switch_button) html=html.replace(/%nb%/g,'_'); else html=html.replace(/%nb%/g,'');
 		html=vkModAsNode(html,vkAddUserMenu);
 		callback(html,uid);
@@ -886,13 +889,14 @@ function vkGetProfile(uid,callback,no_switch_button){
 		  code += 'var profile=API.getProfiles({uids:"'+uid+'",fields:"relation,sex,nickname,activity,photo_big,online,last_seen,rate,bdate,city,country,contacts,connections,education,can_post,can_write_private_message,lists"})[0];';
 		  code += 'var commonfr=API.friends.getMutual({target_uid:"'+uid+'"});';
 		  code += 'var commons=API.getProfiles({uids:commonfr,fields:"online"});';
+        code += 'var msg_count=API.messages.getHistory({count:1,uid:'+uid+'})[0];';
 		  code += 'return {';
 		  code += 'profile:profile';
 		  //code += ',activity:activity.text';
 		  code += ',country: API.getCountries({cids: profile.country})[0].name';
 		  code += ',city: API.getCities({cids: profile.city})[0].name';
 		  code += ',common:commons';
-		  code += ',now:API.getServerTime()';
+		  code += ',msg_count:msg_count';
         code += ',vkopt_user:API.isAppUser({uid:"'+uid+'"})';
 		  code += '};';
 		  dApi.call("execute", {'code': code}, function(r){

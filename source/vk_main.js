@@ -242,7 +242,7 @@ function VkOptMainInit(){
   vkFaveOnlineChecker();
   vkMoneyBoxAddHide();
   vkCheckUpdates();
-  vkFriendsCheckRun();
+  setTimeout(vkFriendsCheckRun,2000);
   setTimeout(vkVidLinks,0);
   if (vkgetCookie('IDFriendsUpd') && (vkgetCookie('IDFriendsUpd') != '_')) {	vkShowFriendsUpd();  }
   

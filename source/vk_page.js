@@ -519,9 +519,9 @@ function vkAvkoNav(){
 
 function vkUpdWallBtn(){
 	var el=ge('page_wall_posts_count');
-	if (!el) return;
+	if (!el || ge('wall_upd_btn')) return;
 	var span=document.createElement('span');
-	span.innerHTML='<a href="#" onclick="cancelEvent(event); wall.showMore(0); return false;">&#8635;</a>';/*&uarr;&darr;*/
+	span.innerHTML='<a href="#" id="wall_upd_btn" onclick="cancelEvent(event); wall.showMore(0); return false;">&#8635;</a>';/*&uarr;&darr;*/
 	insertAfter(span,el);
 }
 

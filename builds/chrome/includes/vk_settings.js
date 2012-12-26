@@ -579,12 +579,15 @@ function vkInitSettings(){
       
       {id:2,  text:IDL("seLinkVi")},
       {id:66, text:IDL("seVidDownloadLinks")},
-      
-      {id:7,  text:IDL("seScroolPhoto")},
+      {id:76, text:IDL("seVideoFullTitles")},
+      {id:3, text:IDL("seCompactAudio")},
       {id:73, text:IDL("seLoadAudioAlbumInfo")},
       {id:75, text:IDL("seAPlayerCtrls")},
-      {id:43, text:IDL("seAudioSize")},
-      {id:76, text:IDL("seVideoFullTitles")}
+      {id:43, text:IDL("seAudioSize")},      
+      {id:4, text:IDL("seMoreDarkViewer")},      
+      {id:7,  text:IDL("seScroolPhoto")}
+
+      
     ],
     Users:[
       {id:10, text:IDL("seExUserMenu")+'<br><a href="#" onclick="toggle(\'vkExUMenuCFG\'); return false;">[<b> '+IDL("Settings")+' </b>]</a><span id="vkExUMenuCFG" style="display:none">'+GetUserMenuSett()+'</span>'},
@@ -630,8 +633,6 @@ function vkInitSettings(){
       {id:29, text:IDL("seLMenuWallLink")},
       {id:22, text:IDL("seGInCol")},
       {id:13, header:IDL("seMyFrLink") , text:IDL("seMyFrLnkOps"),ops:[0,1,2]},
-      {id:3, text:IDL("seCompactAudio")},
-      {id:4, text:IDL("seMoreDarkViewer")},
       {id:5, text:IDL("seDisableAjaxNav"),warn:true},
       {id:17, text:IDL("seCompactFave")},
       {id:16, text:IDL("seOnlineStatus"),info:'infoUseNetTrafic'},

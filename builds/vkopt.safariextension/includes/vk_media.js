@@ -43,10 +43,152 @@ function vkPVAfterShow(){
       vkPVPhotoMover();
    }
 }
-
+/*
+var orig_cur_chooseMedia=cur.chooseMedia;
+cur.chooseMedia=function(type, media, data, url, noboxhide){
+   return orig_cur_chooseMedia(type, media, data, url, true);
+}
+*/
 var _vk_albums_list_cache={};
-var vk_photos={
-   css:'#vkmakecover{margin-top:6px; width:164px;}' 
+var vk_photos = {
+   css:'\
+      #vkmakecover{margin-top:6px; width:164px;}\
+      .photos_choose_row.c_album{position:relative; cursor:pointer; height: 100px; width: 178px;}\
+      .c_album .photo_row_img{ max-width: 178px;}\
+      .c_title{background:rgba(0,0,0,0.5); position:absolute; bottom:0px; left:0px; right:0px; color:#FFF; text-align: left; padding:2px 0px 2px 6px;}\
+   ',
+   choose_album:function(oid){
+      stManager.add('photoview.css');
+      var params={need_covers:1};
+      if (oid){
+         params[oid<0?'gid':'uid']=Math.abs(oid);
+      }
+      
+      
+      var on_done=function(r){
+         var albums=(r.error && r.error.error_code==15)?[]:r.response;
+         //console.log(r,albums);
+         if (r.error) dApi.show_error(r);
+         if (albums[0]) oid=albums[0].owner_id;
+         else oid=oid?oid:vk.id;
+         albums=[{
+            aid:"wall",
+            thumb_src:'http://vk.com/images/m_noalbum.png',
+            owner_id:oid,
+            title:IDL('photos_on_wall'),
+            size:'-',
+            description:"", created:"0", updated:"0"
+         }].concat(albums);
+
+         var html=''
+         for (var i=0; i<albums.length; i++){
+            var a=albums[i];
+            html+='\
+                  <div class="photos_choose_row fl_l c_album" onclick="return vk_photos.choose_album_item('+a.owner_id+',\''+a.aid+'\');">\
+                    <a href="#" onclick="return false"><img class="photo_row_img" src="'+a.thumb_src+'"></a>\
+                    <div class="c_title">\
+                      '+a.title+'<div class="pva_camera fl_r">'+a.size+'</div>\
+                    </div>\
+                  </div>';
+            /*
+            a.aid
+            a.owner_id
+            a.thumb_src
+            a.title
+             
+            '<div class="pva_camera fl_r">'+a.size+'</div>'*/
+         }
+         html+='<br id="photos_choose_clear" class="clear">';
+         ge('photos_choose_rows').innerHTML=html;
+         //console.log(r)
+      }
+      dApi.call('photos.getAlbums',params,{ok:on_done,error:on_done});
+      
+      //*
+      ge('photos_choose_rows').innerHTML=vkBigLdrImg;//albums;
+      hide('photos_choose_more');
+      //*/
+      return false;
+   },
+   choose_album_item:function(oid,aid,offset){
+      var PER_PAGE=20;
+      //vkMakePageList(0,100,'#','return page(%%);',PER_PAGE,true)
+      ge('photos_choose_rows').innerHTML=vkBigLdrImg;
+      var params={aid:aid};
+      params[oid<0?'gid':'uid']=Math.abs(oid);
+     
+     var photos=null;
+     var photos_reverse=null;
+     var cur_photos=null;
+     var count=null;
+      
+      dApi.call('photos.get',params,function(r){
+         photos=r.response;
+         photos_reverse=[];
+         for (var i=photos.length-1; i>=0; i--)
+            photos_reverse.push(photos[i]);
+         
+         cur_photos=photos;
+         page(0);
+         //console.log(r)
+         
+      });
+      // 
+      /*
+         if(aid=='wall') aid='00'
+         if (count==null){
+         
+         ajax.post('/album'+oid+'_'+aid, {offset: 0}, {
+            onDone: function(b,html,script,vk) {
+               var temp=script.match(/count:\s*(\d+)/);
+               if (temp) count=parseInt(temp[1]);
+            }
+         });           
+         
+         }
+      
+         var opts={};
+         if (rev) opts['rev']=1;
+         ajax.post('/album'+oid+'_'+aid, extend({offset: offset, part: 1}, opts || {}), {
+            cache: 1, 
+            onDone: function() {
+            
+            }
+         });      
+      */
+
+      var page=function(offset,rev){
+         if (rev){
+            cur_photos=(cur_photos==photos)?photos_reverse:photos;
+         }
+         var pages=Math.floor(cur_photos.length/PER_PAGE);
+         var html=''
+         var pages_html='<div class="clear clear_fix ">\
+            <a class="fl_l sort_rev_icon" href="#" onclick="return vk_photos._choose_album_item_page(0,true);"></a>\
+            <ul class="page_list fl_r">'+vkMakePageList(offset/PER_PAGE,pages,'#','return vk_photos._choose_album_item_page(%%);',1,true)+'</ul>\
+         </div>';
+         html+=pages_html;
+         
+         var max_offset=Math.min(offset+PER_PAGE,cur_photos.length);
+         for (var i=offset; i<max_offset; i++){
+            var ph=cur_photos[i];
+            html+='\
+                  <div class="photos_choose_row fl_l">\
+                    <a href="photo'+ph.owner_id+'_'+ph.pid+'" onclick="return cur.chooseMedia(\'photo\', \''+ph.owner_id+'_'+ph.pid+'\', [\''+ph.src+'\', \''+ph.src_small+'\', \'\',  \'{temp: {}, big: 1}\']);">\
+                      <img class="photo_row_img" src="'+ph.src+'">\
+                    </a>\
+                  </div>';
+         }
+         html+=pages_html;
+         html+='<br id="photos_choose_clear" class="clear">';
+         ge('photos_choose_rows').innerHTML=html; 
+         return false;
+      }
+      vk_photos._choose_album_item_page=function(_offset,rev){
+         return page(_offset*PER_PAGE,rev);
+      };
+      return false;
+   }
 }
 
 function vkPVPhotoMover(show_selector){
@@ -518,6 +660,8 @@ function vkWallAlbumLink(){
 
 
 var VKPRU_SWF_LINK='http://cs4320.vk.com/u13391307/ac8f5bbe4ce7a8.zip';
+var VKPRU_SWF_HTTPS_LINK='https://pp.userapi.com/c4320/u13391307/ac8f5bbe4ce7a8.zip';
+
 function vkPhotoUrlUpload(url){
 	PRUBox = new MessageBox({title: IDL('PhotoUpload'),width:"290px"});
 	var Box = PRUBox;
@@ -564,9 +708,10 @@ function vkPhotoUrlUpload(url){
       "lang.loading_info":IDL('puLoadingInfoWait')
 			//,"lang.button_upload":'Загрузить фотографию'
 		};
+      var swf=location.protocol=='https:'?VKPRU_SWF_HTTPS_LINK:VKPRU_SWF_LINK;
 		var params={width:260, height:345, allowscriptaccess: 'always',"wmode":"transparent","preventhide":"1","scale":"noScale"};
 		renderFlash('prucontainer',
-			{url:VKPRU_SWF_LINK,id:"vkphoto_reuploader"},
+			{url:swf,id:"vkphoto_reuploader"},
 			params,flashvars
 		); 
 	});
@@ -1095,8 +1240,8 @@ if (!window.vkopt_plugins) vkopt_plugins={};
 /* VIDEO */
 function vkVideo(){
    //Inj.End('Video.onListInit','vk_videos.update_vid_titles();');
-   if (getSet(76)=='y')
-      Inj.Replace('Video.drawVideo','if (v[3]','if (false && v[3]');
+   /*if (getSet(76)=='y')
+      Inj.Replace('Video.drawVideo','if (v[3]','if (false && v[3]');*/
 }
 
 function vkVideoPage(){
@@ -1113,8 +1258,8 @@ function vkVideoPage(){
    vkVideoAddOpsBtn();
    vkVideoNullAlbum();
    vkVideoGetLinksBtn();
-   if (getSet(76)=='y')
-      vk_videos.update_vid_titles();
+   /*if (getSet(76)=='y')
+      vk_videos.update_vid_titles();*/
 }
 function vkVideoEditPage(){
    vkVidEditAlbumTitle(null,true);
@@ -1129,7 +1274,9 @@ vk_videos = {
       .vk_vid_acts_panel,.vk_vid_acts_panel a{color:#FFF; }\
       .vk_vid_acts_panel .vk_down_icon{box-shadow:0 0 2px #FFF; background-color:rgba(0, 0, 0, 0.5);}\
       ';
-      if (full_titles)  code+='.video_album_text { height: auto !important; }'
+      if (full_titles)  code+='\
+      .video_album_text { height: auto !important; }\
+      .video_raw_info_name, .video_row_info_line {height: auto !important; white-space: normal !important;}';
       return code;
    },
    update_vid_titles:function(){
@@ -1158,6 +1305,93 @@ vk_videos = {
             }*/
          }
       }
+   },
+   tpl:'\
+      <a class="choose_video_row fl_l" href="/video%oid_%vid" onclick="return cur.chooseMedia(\'video\', \'%oid_%vid\', \'%thumb\')">\
+        <div class="img"><img src="%thumb"><div class="duration">%dur</div></div>\
+        <div class="label">%title</div>\
+      </a>\
+   ',
+   choose_album:function(oid){
+      var PER_PAGE=100;
+      var albums=[];
+      var scan=function(offset){
+         var params={count:PER_PAGE,offset:offset};
+         if (oid){
+            params[oid<0?'gid':'uid']=Math.abs(oid);
+         }
+         dApi.call('video.getAlbums',params,function(r){
+            var _albums=(r.error && r.error.error_code==15)?[0]:r.response;
+            if (r.error) dApi.show_error(r);
+            var count=_albums.shift();
+            albums=albums.concat(_albums);
+            if (albums.length<count){
+               scan(offset+PER_PAGE)
+            } else {
+               var html=''
+               for (var i=0; i<albums.length; i++){
+                  var a=albums[i];
+                  html+='<a class="album_choose" href="#" onclick="return vk_videos.choose_album_item('+a.owner_id+',\''+a.album_id+'\');"><b class="vk_video_icon"></b>'+a.title+'</a>';
+               }
+               html+='<br class="clear">';
+                ge('choose_video_rows').innerHTML=html;
+            }
+         });
+      }
+      scan(0);
+      //*
+      ge('choose_video_rows').innerHTML=vkBigLdrImg;//albums;
+      hide('video_choose_more');
+      //*/
+      return false;
+   },
+   choose_album_item:function(oid,aid,offset){
+      var PER_PAGE=12;
+      //vkMakePageList(0,100,'#','return page(%%);',PER_PAGE,true)
+
+
+      var page=function(offset){
+         
+         ge('choose_video_rows').innerHTML=vkBigLdrImg;
+         var params={aid:aid,width:130,count:PER_PAGE,offset:offset};// count, offset
+         params[oid<0?'gid':'uid']=Math.abs(oid);
+        
+        var items=null;
+        var count=null;
+
+         dApi.call('video.get',params,function(r){
+            items=r.response;
+            var count=items.shift();
+                     
+            var pages=Math.floor(count/PER_PAGE);
+            var html=''
+            var pages_html='<div class="clear clear_fix ">\
+               <ul class="page_list fl_r">'+vkMakePageList(offset/PER_PAGE,pages,'#','return vk_videos._choose_album_item_page(%%);',1,true)+'</ul>\
+            </div>';
+            html+=pages_html;
+            
+            var max_offset=Math.min(offset+PER_PAGE,count);
+            for (var i=0; i<items.length; i++){
+               var v=items[i];                
+               html+=vk_videos.tpl.replace(/%oid/g,v.owner_id)
+                                 .replace(/%vid/g,v.vid)
+                                 .replace(/%title/g,v.title)
+                                 .replace(/%dur/g,vkFormatTime(v.duration))//formated
+                                 .replace(/%thumb/g,v.image);
+            }
+            html+=pages_html;
+            html+='<br class="clear">';
+            ge('choose_video_rows').innerHTML=html; 
+         }); 
+         return false;
+      }
+      
+      page(0);
+      
+      vk_videos._choose_album_item_page=function(_offset,rev){
+         return page(_offset*PER_PAGE,rev);
+      };
+      return false;
    }
 }
 
@@ -1843,7 +2077,10 @@ function vkGetYoutubeLinks(vid, callback) {
       var obj=YTDataDecode(t);
       //alert(JSON.Str(obj));
       var map=(obj.fmt_url_map || obj.url_encoded_fmt_stream_map);
-      if (!map) return [];
+      if (!map) {
+         callback([]);
+         return [];
+      }
       var links=[];
       for (var i=0;i<map.length;i++){
          var format=YT_video_itag_formats[map[i].itag];
@@ -2012,6 +2249,7 @@ vk_audio_player={
    .vka_ctrl.vol .vol_panel { display:none; position:absolute; background-color: #D9E0E8; border-radius: 3px; width:8px; height:57px; padding: 5px;}\
    .vka_ctrl.vol .vol_panel.vis{ display:block; }\
    .vka_ctrl.vol:hover .vol_panel { display:block;}\
+   #gp.reverse .vka_ctrl.vol .vol_panel{margin-top: -54px;}\
    .gp_vka_ctrls{position:absolute; width:137px; margin-top:34px; margin-left: 5px; padding:3px; border-radius:0 0 4px 4px; background:rgba(218, 225, 232, 0.702); }\
    ',
    gpCtrlsInit:function(){
@@ -2031,6 +2269,7 @@ vk_audio_player={
    vol_slider:null,
    gpUpdVolSlider:function(){
       var el=ge('gp_vol_panel');
+      disableSelectText(el);
       var t=null;
       var cur_vol=Math.round(audioPlayer.player.getVolume() * 100);
       if (!hasClass(el,'vis') && vk_audio_player.last_vol>-1 && vk_audio_player.last_vol!=cur_vol){
@@ -2102,6 +2341,9 @@ function vkAudioPage(){
 }
 
 vk_audio={
+   css:'\
+      .album_choose{display: block;float: left; padding: 6px 10px; min-width: 175px;}\
+   ',
    album_cache:{},
    in_box_move:function(full_aid){
       //return;
@@ -2197,9 +2439,136 @@ vk_audio={
          
       });
       //alert(full_aid);
+   },
+   tpl:'<div class="choose_audio_row clear_fix">\
+     <div class="audio_content fl_l">\
+       <div class="audio" id="audio%oid_%aid_choose" onmouseover="addClass(this, \'over\');" onmouseout="removeClass(this, \'over\');">\
+     <a name="%oid_%aid_choose"></a>\
+     <div class="area clear_fix" onclick="if (cur.cancelClick){ cur.cancelClick = false; return false;} playAudioNew(\'%oid_%aid_choose\')">\
+       <table cellspacing="0" cellpadding="0" width="100%"><tr><td>\
+             <div class="play_btn_wrap"><div class="play_new" id="play%oid_%aid_choose"></div></div>\
+             <input type="hidden" id="audio_info%oid_%aid_choose" value="%url,%duration" />\
+           </td><td class="info">\
+             <div class="title_wrap fl_l" onmouseover="setTitle(this)"><b>%artist</b> &ndash; <span class="title" id="title%oid_%aid_choose">%title</span></div>\
+             <div class="duration fl_r" onmousedown="if (window.audioPlayer) audioPlayer.switchTimeFormat(\'%oid_%aid_choose\', event);" onclick="cancelEvent(event)">%dur</div>\
+       </td></tr></table>\
+       <div id="player%oid_%aid_choose" class="player" ondragstart="return false;" onselectstart="return false;" onclick="event.cancelBubble = true;">\
+         <table cellspacing="0" cellpadding="0" border="0" width="100%"><tbody><tr><td style="width: 100%;">\
+               <div id="audio_pr%oid_%aid_choose" class="audio_pr" onmouseover="addClass(this, \'over\')" onmouseout="removeClass(this, \'over\'); removeClass(this, \'down\')" onmousedown="addClass(this, \'down\'); audioPlayer.prClick(event);" onmouseup="removeClass(this, \'down\')">\
+                 <div id="audio_white_line%oid_%aid_choose" class="audio_white_line" onmousedown="audioPlayer.prClick(event);"></div>\
+                 <div id="audio_back_line%oid_%aid_choose" class="audio_back_line" onmousedown="audioPlayer.prClick(event);"><!-- --></div>\
+                 <div id="audio_load_line%oid_%aid_choose" class="audio_load_line" onmousedown="audioPlayer.prClick(event);"><!-- --></div>\
+                 <div id="audio_pr_line%oid_%aid_choose" class="audio_progress_line" onmousedown="audioPlayer.prClick(event);">\
+                   <div id="audio_pr_slider%oid_%aid_choose" class="audio_slider"><!-- --></div>\
+                 </div>\
+               </div>\
+             </td><td>\
+               <div id="audio_vol%oid_%aid_choose" class="audio_vol" onmouseover="addClass(this, \'over\')" onmouseout="removeClass(this, \'over\'); removeClass(this, \'down\')" onmousedown="addClass(this, \'down\'); audioPlayer.volClick(event)" onmouseup="removeClass(this, \'down\')">\
+                 <div id="audio_vol_white_line%oid_%aid_choose" class="audio_vol_white_line" onmousedown="audioPlayer.volClick(event);"><!-- --></div>\
+                 <div id="audio_vol_back_line%oid_%aid_choose" class="audio_load_line" onmousedown="audioPlayer.volClick(event);"><!-- --></div>\
+                 <div id="audio_vol_line%oid_%aid_choose" class="audio_progress_line" onmousedown="audioPlayer.volClick(event);">\
+                   <div id="audio_vol_slider%oid_%aid_choose" class="audio_slider" onmousedown="audioPlayer.volClick(event);"><!-- --></div>\
+                 </div>\
+               </div>\
+             </td></tr></tbody></table>\
+       </div>\
+     </div>\
+   </div>\
+     </div>\
+     <div class="fl_r">\
+       <a class="choose" onclick="cur.chooseMedia(\'audio\', \'%oid_%aid\', {performer: \'%artist\', title: \'%title\', info: val(\'audio_info%oid_%aid_choose\'), duration: \'%dur\'})">%add</a>\
+     </div>\
+   </div>\
+   ',
+   choose_album:function(oid){
+      var PER_PAGE=100;
+      var albums=[];
+      var scan=function(offset){
+         var params={count:PER_PAGE,offset:offset};
+         if (oid){
+            params[oid<0?'gid':'uid']=Math.abs(oid);
+         }
+         dApi.call('audio.getAlbums',params,function(r){
+            var _albums=(r.error && r.error.error_code==15)?[0]:r.response;
+            if (r.error) dApi.show_error(r);
+            var count=_albums.shift();
+            albums=albums.concat(_albums);
+            if (albums.length<count){
+               scan(offset+PER_PAGE)
+            } else {
+               var html=''
+               for (var i=0; i<albums.length; i++){
+                  var a=albums[i];
+                  html+='<a class="album_choose" href="#" onclick="return vk_audio.choose_album_item('+a.owner_id+',\''+a.album_id+'\');"><b class="vk_audio_icon"></b> '+a.title+'</a>';
+               }
+               html+='<br class="clear">';
+                ge('choose_audio_rows').innerHTML=html;
+            }
+            //// done?
+            //console.log(r)
+         });
+      }
+      scan(0);
+      //*
+      ge('choose_audio_rows').innerHTML=vkBigLdrImg;//albums;
+      hide('audio_choose_more');
+      //*/
+      return false;
+   },
+   choose_album_item:function(oid,aid,offset){
+      var PER_PAGE=20;
+      //vkMakePageList(0,100,'#','return page(%%);',PER_PAGE,true)
+      ge('choose_audio_rows').innerHTML=vkBigLdrImg;
+      var params={album_id:aid};// count, offset
+      params[oid<0?'gid':'uid']=Math.abs(oid);
+     
+     var items=null;
+     var count=null;
+
+      dApi.call('audio.get',params,function(r){
+         items=r.response;
+         page(0);         
+      });
+
+      var page=function(offset){
+         var pages=Math.floor(items.length/PER_PAGE);
+         var html=''
+         var pages_html='<div class="clear clear_fix ">\
+            <ul class="page_list fl_r">'+vkMakePageList(offset/PER_PAGE,pages,'#','return vk_audio._choose_album_item_page(%%);',1,true)+'</ul>\
+         </div>';
+         html+=pages_html;
+         
+         var max_offset=Math.min(offset+PER_PAGE,items.length);
+         for (var i=offset; i<max_offset; i++){
+            var au=items[i];            
+            html+=vk_audio.tpl.replace(/%add/g,IDL('Add'))
+                              .replace(/%oid/g,au.owner_id)
+                              .replace(/%aid/g,au.aid)
+                              .replace(/%artist/g,au.artist)
+                              .replace(/%title/g,au.title)
+                              .replace(/%dur/g,vkFormatTime(au.duration))//formated
+                              .replace(/%duration/g,au.duration)// raw
+                              .replace(/%url/g,au.url);
+         }
+         html+=pages_html;
+         html+='<br class="clear">';
+         ge('choose_audio_rows').innerHTML=html; 
+         return false;
+      }
+      vk_audio._choose_album_item_page=function(_offset,rev){
+         return page(_offset*PER_PAGE,rev);
+      };
+      return false;
+   },
+   links_to_audio_on_page:function(){
+      var links=[]; 
+      each(geByClass('vkaudio_down'),function(i,el){
+         links.push(geByTag('a',el)[0].href)
+      }); 
+     vkAlertBox('Links','<textarea style="width:560px; height:300px;">'+links.join('\n')+'</textarea>').setOptions({width:'600px'})
    }
 }
-
+//vk_audio.links_to_audio_on_page();
 function vkAudioRefreshFriends(){
    var p=ge('audio_more_friends');
    if (!p || ge('vk_audio_fr_refresh')) return;
@@ -3601,6 +3970,7 @@ function vkAlbumCollectPlaylist(){
    if (!vk_current_album_info) return;
    var result=vkCe('div',{});
    var box=null;
+   // <div class="button_gray button_wide"><button onclick="vk_audio.links_to_audio_on_page();return false;">'+IDL('Links')+'</button></div>
    var abort=false;
    var idx=0;
    var get_track=function(){

@@ -208,6 +208,7 @@ function vkPollResults(post_id,pid){
          <div class="page_poll_percent" style="width: %WIDTH%"></div><div class="page_poll_row_count">%COUNT</div>\
          </td><td class="page_poll_row_percent ta_r"><nobr><b>%RATE%</b></nobr></td>\
        </tr>\
+       <tr><td colspan="2"><div id="vk_poll_usrs%ANSWER_ID" class="wk_poll_usrs"></div></td></tr>\
    '; 
 
    var view=function(data){
@@ -237,7 +238,8 @@ function vkPollResults(post_id,pid){
          </div>\
       </div>';   
       
-      var box=vkAlertBox(IDL('ViewResults'),html);   
+      var box=vkAlertBox(IDL('ViewResults'),html);
+      vkPollVoters(data.owner_id,data.poll_id);
    };
    
    var code='\
@@ -268,11 +270,44 @@ function vkPollResults(post_id,pid){
    } else {
       dApi.call('execute',{code:code},function(r){
          var data=r.response;
+         console.log(data);
          view(data.poll1 || data.poll2);
       });   
    }
    return false;
 }
+
+
+
+function vkPollVoters(oid,poll_id){
+   var code='\
+     var oid='+oid+';\
+     var poll_id='+poll_id+';\
+     var poll=API.polls.getById({owner_id:oid,poll_id:poll_id});\
+     var voters=API.polls.getVoters({owner_id:oid,poll_id:poll_id,answer_ids:poll.answers@.id,fields:"first_name,last_name,online,photo_rec",offset:0,count:9});\
+     return {poll:poll,voters:voters,anwers_ids:poll.answers@.id};\
+   ';
+   dApi.call('execute',{code:code},function(r){
+         var data=r.response;
+         console.log(data);
+         if (data.voters){
+            stManager.add('wk.css');
+            var voters=data.voters;
+            for (var j=0; j<voters.length; j++){
+               var el=ge('vk_poll_usrs'+voters[j].answer_id);
+               var users=voters[j].users
+               var html='';
+               for (var i=0; i<users.length; i++){
+                  if (!users[i].uid) continue;
+                  html+='<a class="wk_poll_usr inl_bl" title="'+users[i].first_name+' '+users[i].last_name+'" href="/id'+users[i].uid+'"><img class="wk_poll_usr_photo" src="'+users[i].photo_rec+'" width="30" height="30"></a>'; 
+               }
+               el.innerHTML=html;
+            }
+         }
+   }); 
+   // ge('vk_poll_usrs'+voters[i].answer_id)
+}
+
 
 function vkPollResultsBtn(node){
    var els=geByClass('page_media_poll',node);
@@ -1050,8 +1085,11 @@ function vkInitFakeGraffiti(){
   vkMakeGrafSidGen();
 }
 var VKGSC_SWF_LINK='http://cs4287.vkontakte.ru/u13391307/4804adefa66494.zip';
+var VKGSC_SWF_HTTPS_LINK='https://pp.userapi.com/c4287/u13391307/4804adefa66494.zip';
+
 function vkMakeGrafSidGen(){
-  var so = new SWFObject(VKGSC_SWF_LINK,'player',"84","24",'10');
+  var swf=location.protocol=='https:'?VKGSC_SWF_HTTPS_LINK:VKGSC_SWF_LINK;
+  var so = new SWFObject(swf,'player',"84","24",'10');
   so.addParam("allowscriptaccess", "always");
   so.addParam("preventhide", "1");
   so.addVariable('idl_browse', IDL('GrafSidCalc'));
@@ -1669,7 +1707,8 @@ vk_board={
       for (var i=0; i<els.length; i++){
          var p=(geByClass('bp_date',els[i])[0] || {}).parentNode;
          var a=geByClass('bp_author',els[i])[0];
-         if (!p || !a) continue;
+         var z=geByClass('vk_brd_action',els[i])[0];
+         if (!p || !a || z) continue;
          p.appendChild(vkCe('span',{"class":"divide vk_brd_action"},'|'));
          p.appendChild(vkCe('a',{"href":"#","class":'vk_brd_action',onclick:"return vk_board.get_user_posts('"+a.getAttribute('href')+"','"+els[i].getAttribute('id')+"')"},IDL('PrevPosts')));
       }

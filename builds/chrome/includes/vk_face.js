@@ -191,8 +191,9 @@ function vkStyles(){
    .vk_photo_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -29px; line-height: 11px; }\
    .vk_msg_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -193px; line-height: 11px; }\
    .vk_audio_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -221px; line-height: 11px; }\
+   .vk_video_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -75px; line-height: 11px; }\
    .vk_profile_links a{padding:3px;}\
-   .vk_profile_links a:hover{background-color:#E1E7ED;}\
+   .vk_profile_links a:hover{background-color:#E1E7ED; text-decoration:none;}\
    .vk_profile_links{line-height:20px;}\
 	.lskey{padding-left: 5px; float:left; width:140px; overflow:hidden; height:20px; line-height:20px; font-weight:bold;}\
     .lsval{height:20px; overflow:hidden; line-height:20px;}\
@@ -252,7 +253,7 @@ function vkStyles(){
       }\
       .audio .area {margin-bottom: 0px !important;}\
       .choose_audio_row {height:auto !important;}\
-      .choose_audio_row a.choose{margin-top: 0px !important; padding-bottom: 2px !important; padding-top:2px !important;}\
+      .choose_audio_row a.choose{margin-top: 0px !important; padding-bottom: 2px !important; padding-top:2px !important; height: auto !important; line-height: normal !important;}\
 	";
    
 	//additional audio styles
@@ -526,6 +527,7 @@ function vkStyles(){
 	";
    main_css+=vk_board.css;
    main_css+=vk_photos.css;
+   main_css+=vk_audio.css;
    main_css+=vk_videos.css();
 	main_css+=vk_plugins.css();
 
@@ -762,7 +764,7 @@ function vkMenu(){//vkExLeftMenu
       ['gifts'+vkmid,IDL('clGi')],
       [['fans.php?act=fans&mid='+vkmid,"return !showTabbedBox('al_fans.php', {act: 'show_fans_box', oid: "+vkmid+"}, {cache: 1}, event);"],IDL('clFans')],
       [['fans.php?act=idols',"return !showTabbedBox('al_fans.php', {act: 'show_publics_box', oid: "+vkmid+"}, {cache: 1}, event);"],IDL('clSubscriptions')],
-      [['stats.php?mid='+vkmid,'return;'],IDL('Stats')]
+      [['stats?mid='+vkmid,'return;'],IDL('Stats')]
     ],//*/
     /*
     'edit':[
