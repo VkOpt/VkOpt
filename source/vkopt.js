@@ -229,7 +229,7 @@ var TextPasteSmiles={
 'help':['!HELP!','big_standart'],
 //'flood':['!FLOOD!','other'],
 'opera':"*Opera*",
-'firefox':"*Fifefox",
+'firefox':"*Firefox*",
 'chrome':"*Chrome*",
 'windows':"*Windows*",
 'linux':"*Linux*"
