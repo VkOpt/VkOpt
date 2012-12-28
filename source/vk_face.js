@@ -694,7 +694,6 @@ function vkMenu(){//vkExLeftMenu
   if (cfg > 0) nav.innerHTML=nav.innerHTML.replace(RegExp('(">)(\u041c\u043e\u0439|\u041c\u043e\u044f|\u041c\u043e\u0438|\u041c\u043e\u0457|\u041c\u0430\u044f|\u041c\u0430\u0435|\u041c\u043e\u0435|My) ','g'),"$1");
 
   var vkmenu_css1='\
-         #nav a IMG, #side_bar ol a IMG{margin-right:3px; height:'+vkMenuIconSize+'px;}\
          #nav a .vkicon, #side_bar ol a .vkicon{float:left; width:13px; height:13px; margin-right:1px; /*background:#DDD;*/}\
          .vkico_friends, .vkico_profile, .vkico_albums,\
          .vkico_video,.vkico_audio,.vkico_mail,.vkico_im,\
@@ -1191,8 +1190,10 @@ function UpdateCounters(only_msg,data){
 function vkHighlightCounters(){
 	var vkMenuHighlightEl=function(e){
 		//*
-      
       /* REPLACE TO CSS ANIMATION
+      var MENU_HIGHLIGHT_DELAY=2000;      //(ms) yellow highlight in menu on changed counters
+      var SIDEBAR_ITEM_HIGHLIGHT_COLOR = "#fcf78a";
+      
 		var e=vk$(e); 
 		var backcolor=e.css('backgroundColor'); 
 		e.animate({backgroundColor:SIDEBAR_ITEM_HIGHLIGHT_COLOR},700,function(){//rgb(255,255,0)

@@ -571,7 +571,6 @@ function WallManForm(){
 //end wallmgr
 
 function vkInitSettings(){
-
   vkoptSets={
     Media:[
       {id:0,  text:IDL("seLinkAu")},
@@ -672,7 +671,13 @@ function vkInitSettings(){
     ]
   };	  
 	//LAST 76
-	
+	/*
+      vkoptSets['advanced']=[
+         'vk_upd_menu_timeout','vkMenuHideTimeout','CHECK_FAV_ONLINE_DELAY',
+         'FAVE_ONLINE_BLOCK_SHOW_COUNT','SHOW_POPUP_PROFILE_DELAY','USERMENU_SYMBOL',
+         'MOD_PROFILE_BLOCKS','CUT_VKOPT_BRACKET','MAIL_BLOCK_UNREAD_REQ','SUPPORT_STEALTH_MOD'
+      ];
+   */
 	vkSetsType={
       "on"  :[IDL('on'),'y'],
       "off" :[IDL('of'),'n'],

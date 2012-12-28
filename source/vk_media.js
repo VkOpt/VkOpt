@@ -71,14 +71,24 @@ var vk_photos = {
          if (r.error) dApi.show_error(r);
          if (albums[0]) oid=albums[0].owner_id;
          else oid=oid?oid:vk.id;
-         albums=[{
+         var sys=[{
             aid:"wall",
             thumb_src:'http://vk.com/images/m_noalbum.png',
             owner_id:oid,
             title:IDL('photos_on_wall'),
             size:'-',
             description:"", created:"0", updated:"0"
-         }].concat(albums);
+         }];
+         if (oid>0) 
+            sys.push({
+               aid:"saved",
+               thumb_src:'http://vk.com/images/m_noalbum.png',
+               owner_id:oid,
+               title:IDL('Saved_photos'),
+               size:'-',
+               description:"", created:"0", updated:"0"
+            });
+         albums=sys.concat(albums);
 
          var html=''
          for (var i=0; i<albums.length; i++){
