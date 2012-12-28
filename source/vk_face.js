@@ -1314,7 +1314,7 @@ function vkGetCalendar(){
       vk_cur.vk_calGetMonth(0);
    });
 }
-
+/*
 function vkGetCalendarInfo(callback,cnt){ //callback(month, year, events, holidays)    
 	cnt=cnt || 1;
    AjGet('/al_events.php?tab=calendar&al=1',function(r,t){//al_events.php?act=calendar&al=1
@@ -1331,7 +1331,26 @@ function vkGetCalendarInfo(callback,cnt){ //callback(month, year, events, holida
       var args=eval('['+res+']');
       callback.apply(this,args);
 	});
+}*/
+
+function vkGetCalendarInfo(callback,cnt){ //callback(month, year, events, holidays)    
+	cnt=cnt || 1;
+   AjPost('/wkview.php',{act:'show', al:1, loc:'feed', w:'calendar'},function(r,t){//al_events.php?act=calendar&al=1
+		var res=t.split('Calendar.init(')[1];
+      if (!res){
+         if (cnt<5)
+            setTimeout(function(){vkGetCalendarInfo(callback,cnt+1)},5000);
+         else 
+            console.log('calendar loading failed');
+         return;
+      }
+      res=res.split(');')[0];
+		//eval(callback+'('+res+')');
+      var args=eval('['+res+']');
+      callback.apply(this,args);
+	});
 }
+
 function vk_initCalendar(month, year, events, holidays) {
 
 extend(vk_cur, {
