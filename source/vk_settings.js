@@ -569,7 +569,6 @@ function WallManForm(){
   ge('wallmgr').innerHTML=WallManager();
 }
 //end wallmgr
-
 function vkInitSettings(){
   vkoptSets={
     Media:[
@@ -643,7 +642,7 @@ function vkInitSettings(){
       {id:32, text:IDL("seSkinManBtn") /*, hide: (vkbrowser.mozilla)*/},
       {id:33, text:IDL("seSmiles")+vkCheckboxSetting(63,IDL("seSmilesAlwaysShow"),true),warn:'seSmilesAlwaysShowWarning'},
       {id:36, text:IDL("sePreventHideNotifications")},
-      {id:42, text:IDL("seSortFeedPhotos")},
+      //{id:42, text:IDL("seSortFeedPhotos")},
       {id:53, text:IDL("seShutProfilesBlock")},
       {id:54, header:IDL("seMoveNotifier") , text:IDL("seMoveNotifierText"),ops:[0,1,2,3]},
       {id:58, text:IDL("sePopupBoardInfo")},

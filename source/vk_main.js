@@ -35,7 +35,7 @@ function vkInj(file){
    case 'video.js':	      vkVideo();	      break;
 	case 'audio.js':		   vkAudios();		   break;
    case 'audioplayer.js':	vkAudioPlayer();		break;
-	case 'feed.js':			vkFeed();		break;
+	case 'feed.js':			vk_feed.inj(); break;
 	case 'search.js':		   vkSearch();		break;
 	case 'profile.js':		vkProfile();	break;
 	case 'wall.js':			vkWall();		break;		
@@ -67,6 +67,7 @@ function vkProcessNode(node){
       vkVidAddGetLink(node);
       vkPollResultsBtn(node);
       vk_board.get_user_posts_btn(node);
+      vk_feed.process_node(node);
 		vk_plugins.processnode(node);
 	// }  catch (e) { topMsg('vkProcessNode error',2)}
 	}
@@ -85,6 +86,7 @@ function vkProcessNodeLite(node){
    vkPollResultsBtn(node);
 	//vkPrepareTxtPanels(node);
    vk_board.get_user_posts_btn(node);
+   vk_feed.process_node(node);
 	vk_plugins.processnode(node,true);
    if (getSet(63)=='y') vkSmiles(node);
   }  catch (e) {
@@ -121,7 +123,7 @@ function vkOnNewLocation(startup){
 	switch(nav.objLoc[0]){
 		case 'settings':vkSettingsPage(); break;
 		case 'mail':   vkMailPage(); break;
-		case 'feed':   vkFeedPage(); break;
+		case 'feed':   vk_feed.on_page(); break;
       case 'groups': vkGroupsListPage();  break;
       default:
          if (nav.objLoc[0].match(/write\d+/)) vkMailPage();
@@ -953,39 +955,6 @@ function vkFcEvents(response){
 }
 
 
-
-/* FEED */
-function vkFeed(){
-	//Inj.After("feed.showMore",/au.innerHTML.+rows;/,'vkProcessNode(au);');
-}
-function vkFeedPage(){
-	vkSortFeedPhotos();
-}
-function vkSortFeedPhotos(node){
-	if (getSet(42)!='y' || nav.objLoc[0]!='feed') return;
-	var tstart=unixtime();
-	var fnodes=geByClass('post_media',node);
-	var re=/photo-?\d+_(\d+)/;
-	for (var z=0; z<fnodes.length; z++){
-		var node=fnodes[z];
-		var nodes=geByClass('page_media_thumb',node); 
-		var narr=[];
-		for(var i=0;i<nodes.length;i++){ 
-			var p=nodes[i].getElementsByTagName('a')[0];
-         if (!p || !p.href) continue;
-			var pid=p.href.match(re);
-			if (pid) narr.push([nodes[i],pid[1]]);
-		}
-		var sf=function(a,b){
-			if (a[1]<b[1]) return 1;
-			else if (a[1]>b[1]) return -1;
-			else return 0;
-		}
-		narr.sort(sf);
-		for(var i=0;i<narr.length;i++) node.appendChild(narr[i][0]);
-	}
-	vklog('Sort feed photos time:' + (unixtime()-tstart) +'ms');
-}
 /* FRIENDS */
 function vkFriends(){
 	Inj.Before('Friends.showMore','cur.fContent.appendChild',"html=[vkModAsNode(html.join(''),vkProcessNode)];");

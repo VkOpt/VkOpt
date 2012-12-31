@@ -531,6 +531,7 @@ function vkStyles(){
    main_css+=vk_board.css;
    main_css+=vk_photos.css;
    main_css+=vk_audio.css;
+   main_css+=vk_feed.css;
    main_css+=vk_videos.css();
 	main_css+=vk_plugins.css();
 
@@ -796,7 +797,7 @@ function vkMenu(){//vkExLeftMenu
         ['video',IDL("mViM")],
         ['video?section=tagged',IDL("mViW")],
         ['video?section=comments',IDL("mPhC")],
-        [['#',"showTabbedBox('al_video.php', {act: 'upload_box', oid: cur.oid}, {stat: ['video_edit.css', 'privacy.css', 'privacy.js', 'uploader.js']}); return false;"], IDL("mViN")], //'video.php?act=new'
+        [['#',"stManager.add('video.js',function(){Video.uploadVideoBox();}); return false;"], IDL("mViN")], //'video.php?act=new' //"showTabbedBox('al_video.php', {act: 'upload_box', oid: cur.oid}, {stat: ['video_edit.css', 'privacy.css', 'privacy.js', 'uploader.js']}); return false;"
         ['video?section=tagged',vk_lang["mTags"],true]
     ],
     'audio':[
@@ -1314,24 +1315,6 @@ function vkGetCalendar(){
       vk_cur.vk_calGetMonth(0);
    });
 }
-/*
-function vkGetCalendarInfo(callback,cnt){ //callback(month, year, events, holidays)    
-	cnt=cnt || 1;
-   AjGet('/al_events.php?tab=calendar&al=1',function(r,t){//al_events.php?act=calendar&al=1
-		var res=t.split('initCalendar(')[1];
-      if (!res){
-         if (cnt<5)
-            setTimeout(function(){vkGetCalendarInfo(callback,cnt+1)},5000);
-         else 
-            console.log('calendar loading failed');
-         return;
-      }
-      res=res.split(');')[0];
-		//eval(callback+'('+res+')');
-      var args=eval('['+res+']');
-      callback.apply(this,args);
-	});
-}*/
 
 function vkGetCalendarInfo(callback,cnt){ //callback(month, year, events, holidays)    
 	cnt=cnt || 1;

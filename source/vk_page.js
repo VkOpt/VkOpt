@@ -1738,4 +1738,269 @@ vk_board={
    }
 }
 
+
+vk_feed={
+   css:'\
+      #vk_feed_filter .checkbox_container table, #vk_feed_filter_panel .checkbox_container table{margin: 0px;}\
+      #feed_summary_wrap .divide{padding-top:3px;}\
+      #vk_feed_filter .checkbox_container{width:auto !important;}\
+      .vkf_filter .vk_feed_photo,\
+      .vkf_filter .vk_feed_video,\
+      .vkf_filter .vk_feed_audio,\
+      .vkf_filter .vk_feed_graff,\
+      .vkf_filter .vk_feed_poll, \
+      .vkf_filter .vk_feed_note, \
+      .vkf_filter .vk_feed_text, \
+      .vkf_filter .vk_feed_links,\
+      .vkf_filter .vk_feed_group,\
+      .vkf_filter .vk_feed_friend,\
+      .vkf_filter .vk_feed_repost{display:none !important}\
+      \
+      .vkf_photo .vk_feed_photo,\
+      .vkf_video .vk_feed_video,\
+      .vkf_audio .vk_feed_audio,\
+      .vkf_graff .vk_feed_graff,\
+      .vkf_poll  .vk_feed_poll, \
+      .vkf_note  .vk_feed_note, \
+      .vkf_text  .vk_feed_text, \
+      .vkf_links .vk_feed_links,\
+      .vkf_group .vk_feed_group,\
+      .vkf_friend .vk_feed_friend,\
+      .vkf_repost .vk_feed_repost{display:block !important}\
+      \
+      .vkf_nophoto .vk_feed_photo,\
+      .vkf_novideo .vk_feed_video,\
+      .vkf_noaudio .vk_feed_audio,\
+      .vkf_nograff .vk_feed_graff,\
+      .vkf_nopoll  .vk_feed_poll, \
+      .vkf_nonote  .vk_feed_note, \
+      .vkf_notext  .vk_feed_text, \
+      .vkf_nolinks .vk_feed_links,\
+      .vkf_nogroup .vk_feed_group,\
+      .vkf_nofriend .vk_feed_friend,\
+      .vkf_norepost .vk_feed_repost{display:none !important}\
+   ',
+   inj:function(){
+      Inj.Before('Feed.go','revertLastInlineVideo',"/*console.log('process go',rows);*/ rows=vkModAsNode(rows,vk_feed.process_node);")
+      Inj.Before('Feed.update','var feed_rows','/*console.log("process update",rows);*/ rows=vkModAsNode(rows,vk_feed.process_node);')   
+   },
+   on_page:function(){
+      //vkSortFeedPhotos();
+      vk_feed.filter_init();
+   },
+   process_node:function(node){
+      if (!vk_feed.filter_enabled) return;
+      var nodes=geByClass('feed_row',node);
+      var reprocess=[];
+      var process=function(row){
+         if (hasClass(row,'vk_feed_filter')) return;
+         var inner=row.innerHTML;
+         var types={
+            photo :false,
+            video :false,
+            audio :false,
+            graff :false,
+            poll  :false,
+            note  :false,
+            repost:false,
+            text  :false,
+            links :false,
+            friend:false,
+            group :false
+         };
+         
+         var p=geByClass('post',row)[0];
+         var t=geByClass('wall_post_text',row)[0];
+         if (p){ 
+            var id=p.getAttribute('id');
+            if (id.match(/-\d+/)) 
+               types.group=true;
+            else
+               types.friend=true;
+         }
+         //Photo
+         if (inner.indexOf("showPhoto('")!=-1) 
+            types.photo=true;
+         //Video
+         if (inner.indexOf("showInlineVideo('")!=-1 || inner.indexOf("showVideo('")!=-1) 
+            types.video=true;
+         //Audio
+         if (inner.indexOf("playAudioNew('")!=-1) 
+            types.audio=true;
+         // Graffiti
+         if (inner.indexOf("'graffiti'")!=-1) 
+            types.graff=true;  
+         // Poll
+         if (geByClass('page_media_poll_wrap',row)[0]) 
+            types.poll=true;  
+         // Note
+         if (geByClass('note',row)[0]) 
+            types.note=true;    
+         // Repost
+         if (geByClass('published_by',row)[0]) 
+            types.repost=true;  
+         //Text
+         if (t) 
+            types.text=true;
+         
+         //Links
+         if (t && geByTag('a',t).length>0) 
+            types.links=true;
+         if (geByClass('group_share',row)[0]) // Group Share
+            types.links=true;              
+         var lnk=geByClass('lnk',row)[0];
+         if (lnk){
+            if (!geByClass('video',lnk)[0]) types.links=true;
+         }
+         
+         var b=false;
+         for (var key in types)
+            if (types[key]){
+               addClass(row,'vk_feed_'+key);
+               b=true;
+            }
+         if (b) //console.log(row,row.innerHTML);
+            addClass(row,'vk_feed_filter');
+            //console.log(row.id);
+      }
+      
+      for (var i=0; i<nodes.length; i++){
+         var row=nodes[i];
+         if (!geByClass('post',row)[0]){
+            reprocess.push(row.id);
+            continue;
+         }
+         process(row);
+      } 
+      if (reprocess.length>0){ // Frame loaded parts fix
+         setTimeout(function(){
+            
+            for (var i=0; i<reprocess.length; i++){
+               var row=ge(reprocess[i]);
+               //console.log(reprocess[i],row)
+               if (!row) continue;
+               process(row);
+            }         
+         },2000);
+
+      }
+   },
+   filter_enabled:false,
+   filter_init:function(){
+      vk_feed.process_node();
+      if (ge('vk_feed_filter')) return;
+      var p=ge('feed_progress');
+      var div=vkCe('div',{'class':'fl_r', id:'vk_feed_filter'},'<div id="vkf_filter_chk"></div>'/*'<a href="#" onclick="">'+IDL('Filter')+'</a>'*/);
+      p.parentNode.insertBefore(vkCe('span',{'class':'divide fl_r'},'|'),p);
+      p.parentNode.insertBefore(div,p);
+      
+      
+      p=ge('feed_summary_wrap');
+      var panel=vkCe('div',{id:'vk_feed_filter_panel',style:'display:none;'});
+      p.appendChild(panel);
+      
+      var cfg=(vkGetVal('vk_feed_filter') || '00000000000').split('');
+      var items=[
+         [IDL('with_photo'), 'photo', false],// 0    photo 
+         [IDL('with_video'), 'video', false],// 1    video
+         [IDL('with_audio'), 'audio', false],// 2    audio 
+         [IDL('with_graff'), 'graff', false],// 3    graff 
+         [IDL('with_poll'),  'poll',  false],// 4    poll  
+         [IDL('with_note'),  'note',  false],// 5    note  
+         [IDL('with_repost'),'repost',false],// 6    repost
+         [IDL('with_text'),  'text',  false],// 7    text  
+         [IDL('with_links'), 'links', false],// 8    links 
+         [IDL('from_friend'),'friend',false],// 9    friend
+         [IDL('from_group'), 'group', false] // 10   group 
+      ];
+      for (var i=0; i<items.length; i++){
+         if (cfg[i]=='1') 
+            items[i][2]=true;
+      }
+      
+      var prefix='vkf_no';
+      var fobj='feed_wall';
+      
+      var apply=function(){
+         for (var i=0; i<items.length; i++){
+            (items[i][2]?addClass:removeClass)(ge(fobj),prefix+items[i][1]);
+         }
+      }
+      var disable=function(){
+         for (var i=0; i<items.length; i++)
+            removeClass(ge(fobj),prefix+items[i][1]);
+      }
+      
+      stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
+         vk_feed.filter_enabled=false;
+         var cb = new Checkbox(ge("vkf_filter_chk"), {  
+                     width: 100,  
+                     checked:false,  
+                     label: IDL('Filter'),
+                     onChange: function(state) { 
+                        var checked = (state == 1)?true:false;  
+                        if (checked){
+                           vk_feed.filter_enabled=true;
+                           show(panel);
+                           vk_feed.process_node();
+                           apply();
+                        } else {
+                           vk_feed.filter_enabled=false;
+                           hide(panel);
+                           disable();
+                        }
+                        
+                     } 
+                  });
+                  
+         panel.appendChild(vkCe('h4',{},IDL('HideFeedRows')));
+         for (var i=0; i<items.length; i++){
+            var el=vkCe('span',{'class':'fl_l'},'<div></div>');
+            panel.appendChild(el);
+            var chk=new Checkbox(el.firstChild, {  
+                     width: 200,  
+                     checked:items[i][2],  
+                     label: items[i][0],
+                     onChange: (function(idx){
+                        return function(state){
+                           var checked = (state == 1)?true:false; 
+                           items[idx][2] = checked;
+                           apply();
+                        }
+                     })(i)
+               });
+         }
+                        
+      });
+
+   }
+}
+
+/* FEED */
+function vkSortFeedPhotos(node){
+	if (getSet(42)!='y' || nav.objLoc[0]!='feed') return;
+	var tstart=unixtime();
+	var fnodes=geByClass('post_media',node);
+	var re=/photo-?\d+_(\d+)/;
+	for (var z=0; z<fnodes.length; z++){
+		var node=fnodes[z];
+		var nodes=geByClass('page_media_thumb',node); 
+		var narr=[];
+		for(var i=0;i<nodes.length;i++){ 
+			var p=nodes[i].getElementsByTagName('a')[0];
+         if (!p || !p.href) continue;
+			var pid=p.href.match(re);
+			if (pid) narr.push([nodes[i],pid[1]]);
+		}
+		var sf=function(a,b){
+			if (a[1]<b[1]) return 1;
+			else if (a[1]>b[1]) return -1;
+			else return 0;
+		}
+		narr.sort(sf);
+		for(var i=0;i<narr.length;i++) node.appendChild(narr[i][0]);
+	}
+	vklog('Sort feed photos time:' + (unixtime()-tstart) +'ms');
+}
+
 if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
