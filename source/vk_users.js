@@ -1496,11 +1496,13 @@ function vkFavUsersList(add_button){
    if (add_button){
       var e=ge('fave_likes_tabs');
       var x=ge('vk_fav_users_btn');
-      if (x) (nav.objLoc['section']=='users'?show:hide)(x);
+      console.log(nav.objLoc['section'],cur.section);
+      var users_section=(nav.objLoc['section']=='users' || cur.section=='users');
+      if (x) (users_section?show:hide)(x);
       if (!e || x) return;
       var p=geByClass('summary_tab',e);
       p=p[p.length-1];
-      if (!p || nav.objLoc['section']!='users') return;
+      if (!p || !users_section) return;
       x=vkCe('div',{"class":'fave_more_button fl_r',id:'vk_fav_users_btn'},
             '<div class="button_blue"><button onclick="vkFavUsersList();">'+IDL('FavUsers')+'</button></div>'
             //'<a onclick="return vkFavUsersList();">'+IDL('FavUsers')+'</a>'

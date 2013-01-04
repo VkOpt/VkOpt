@@ -1357,6 +1357,7 @@ function vkGroupsListPage(){
 function vkGroupDecliner(node){// [name, gid, href, thumb, count, type, hash, fr_count, friends, dateText]
    if (getSet(74)!='y') return;
    if (cur.scrollList && cur.scrollList.tab=="admin") return;
+   if (nav.objLoc['id'] && nav.objLoc['id']!=vk.id) return;
    var nodes=geByClass('group_list_row',node);
    for (var i=0; i<nodes.length; i++){
       if (!nodes[i].id || nodes[i].innerHTML.match('vkGroupLeave')) continue;
@@ -1425,6 +1426,7 @@ function vkGrLstFilter(){
    //*   
    stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
       vkaddcss('ul.t0 .result_list ul li{float:none}');
+      if (cur.vkGrLstMenu) return;
       cur.vkGrLstMenu = new Dropdown(ge('vk_grlst_filter'),[[0,IDL("SelectGRFilter")],[1,IDL("Groups")],[2,IDL("Events")],[3,IDL("GroupsAndPublics")],[4,IDL("Publics")]], {//
         target: ge('vk_gr_filter'),
         resultField:'vk_grlst_filter',
