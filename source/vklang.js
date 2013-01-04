@@ -779,7 +779,8 @@ vk_lang_ru={
    'with_text':'\u0441 \u0442\u0435\u043a\u0441\u0442\u043e\u043c',
    'with_links':'\u0441 \u0441\u0441\u044b\u043b\u043a\u0430\u043c\u0438',
    'from_friend':'\u043e\u0442 \u0434\u0440\u0443\u0437\u0435\u0439',
-   'from_group':'\u043e\u0442 \u0433\u0440\u0443\u043f\u043f'
+   'from_group':'\u043e\u0442 \u0433\u0440\u0443\u043f\u043f',
+   'Middle_name':'[ \u041e\u0442\u0447\u0435\u0441\u0442\u0432\u043e: ]'
 };//*/
 
 vk_lang_en={ //by Hzy

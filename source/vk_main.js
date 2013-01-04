@@ -134,11 +134,12 @@ function vkOnNewLocation(startup){
          cur.module='wall';
    }
    */
-	
+
 	if (cur.module){	
 		vklog(cur.module+'|'+print_r(nav.objLoc).replace(/\n/g,','));
 		switch(cur.module){
 			case 'profile':vkProfilePage(); break;
+         case 'profileEdit':vkProfileEditPage(); break;
 			case 'groups' :vkGroupPage(); break;
          case 'groups_edit':vkGroupEditPage(); break;
 			case 'event'  :vkEventPage(); break;

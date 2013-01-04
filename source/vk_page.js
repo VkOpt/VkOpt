@@ -144,6 +144,22 @@ function vkHighlightGroups(){
 	}
 }
 
+
+function vkProfileEditPage(){
+      vkProfileEditMidName();
+}
+function vkProfileEditMidName(){
+   if (!ge('pedit_middle_name')){
+      var p=ge('pedit_maiden_row');
+      if (!p) return;
+      var div=vkCe('div',{'class':'pedit_general_row clear_fix'},'\
+         <div class="pedit_general_label fl_l ta_r">'+IDL('Middle_name')+'</div>\
+         <div class="pedit_general_labeled fl_l"><input type="text" id="pedit_middle_name" class="text" autocomplete="off"></div>\
+     ');
+      p.parentNode.insertBefore(div,p);
+   }
+}
+
 /*WALL*/
 function vkWallPage(){
 	addFakeGraffItem();
