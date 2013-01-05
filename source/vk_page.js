@@ -1659,6 +1659,19 @@ function vkToTopBackLink(){
    if (window._stlSide)  extend(_stlSide, s);
 }
 
+// FAVE
+vk_fave={
+   inj:function(){
+      if (FAVE_ALLOW_EXTERNAL_LINKS)
+         Inj.Before('Fave.newLink','var link','vk_fave.new_link_fix();');   
+   },
+   new_link_fix:function(){
+      var link = ge('fave_new_link').value;
+      if (link.match(/^https?:\/\/[^\/]+\//) && !link.match(/https?:\/\/(vk\.com|vkontakte\.ru)/)){
+         ge('fave_new_link').value='vk.com/away.php?to='+link;
+      }
+   }
+}
 
 vk_board={
    css:'\

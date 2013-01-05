@@ -46,6 +46,7 @@ function vkInj(file){
 	case 'im.js': 			   vkIM(); 	      break;
    case 'mail.js': 			vkMail(); 	   break;
    case 'groups_list.js':  vkGroupsList(); break;
+   case 'fave.js':         vk_fave.inj(); break;
   }
   vk_plugins.onjs(file); 
 }
