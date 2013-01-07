@@ -325,11 +325,13 @@ function vkPublicPage(){
    vkSwitchPublicToGroup();
    vkWikiPagesList(true);
    vkGroupStatsBtn();
+   vkUpdWallBtn();
 }
 /* EVENTS */
 function vkEventPage(){
 	addFakeGraffItem();
    vkWallAlbumLink();
+   vkUpdWallBtn();
    //vkWikiPagesList(true);
 }
 /* GROUPS */
@@ -744,13 +746,57 @@ function vkImAddPreventHideCB(){
                '</div>';
       var id='add_media_type_' +  cur.imMedia.menu.id + '_nohide';
       if (!ge(id)){
+         // ADD WALL POST
+         var a=vkCe('a',{'onclick':'vk_im.attach_wall();','class':'add_media_item','style':"background-image: url('http://vk.com/images/icons/attach_icons.png'); background-position: 3px -130px;"},'<nobr>'+IDL('WallPost')+'</nobr>');
+         p.appendChild(a);
+         
          var a=vkCe('a',{id:id,'style':'border-top:1px solid #DDD; padding:2px; padding-top:4px;'},html);
          p.appendChild(a);
+
       }
       Inj.Before(' cur.imMedia.onChange','boxQueue','if (!window.vk_prevent_addmedia_hide)');
    });
 }
 
+//'EnterLinkToWallPost':'[Ссылка на запись стены вида `wallXXX_YYYYY`]'
+//'IncorrectWallPostLink':'Неправильная ссылка на запись стены',
+vk_im={
+   attach_wall:function(){
+         var add=null;
+         var aBox = new MessageBox({title: IDL('EnterLinkToWallPost')});
+         aBox.removeButtons();
+         aBox.addButton(getLang('box_cancel'),function(){  
+            aBox.hide();	 
+         }, 'no')
+         aBox.addButton('OK',function(){ 
+            add();            
+         },'yes');
+         //event.keyCode == 13
+         aBox.content('<div id="vk_attach_wall"><input type="text" style="width:370px;"></div>');
+         aBox.show();
+
+         var el=ge('vk_attach_wall');
+         var inp=el.getElementsByTagName('input')[0];
+         inp.focus();
+         inp.onkeyup=function(ev){
+            ev = ev || window.event;
+            if (ev.keyCode == 13) {
+               add();
+            }    
+         }
+         
+         add=function(){
+            var val=(inp.value || '').match(/wall(-?\d+_\d+)/);
+            if (val){
+               cur.chooseMedia('wall',val[1],{});
+               aBox.hide();
+            } else {
+               alert(IDL('IncorrectWallPostLink'))
+            }
+         }         
+      return false;
+   }
+}
 
 function vkIM(){
    Inj.Before('IM.addTab','cur.tabs','vkProcessNodeLite(txtWrap);');
