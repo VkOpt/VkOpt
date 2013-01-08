@@ -13,10 +13,15 @@
 
 function InstallRelease(){
   if (!window.vk || !vk.id) return;
+  if (isNewLib() && !window.lastWindowWidth){
+      setTimeout(InstallRelease,50);
+      return;
+  }  
   var err=[];
   if (window.IDNamesInColsV || window.IDEnterGroup || window.sync_plctrl_timeout || window.SyncPctrls || window.vk100Photos || 
       window.IDNewsObzor || window.AjMsgFormTo || window.IDAddFriend || window.IDAdmDelTopic || window.IDpostMatch || window.IDAppsProf)
       err.push(IDL('ErrOldVkoptFound'));
+
   
   var cur_ver=vkgetCookie('vkOVer');
   cur_ver=cur_ver?cur_ver.split('_'):[0,0]; 

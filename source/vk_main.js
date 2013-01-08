@@ -758,8 +758,7 @@ function vkImAddPreventHideCB(){
    });
 }
 
-//'EnterLinkToWallPost':'[Ссылка на запись стены вида `wallXXX_YYYYY`]'
-//'IncorrectWallPostLink':'Неправильная ссылка на запись стены',
+
 vk_im={
    attach_wall:function(){
          var add=null;
