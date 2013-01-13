@@ -27,7 +27,7 @@ var vkMozExtension = {
   
   callback: function(request, sender, callback) {  
     if (request.download) {  
-      vkDownloadFile(request.url,request.name);
+      vkDownloadFile(sender.defaultView,request.url,request.name);
       return setTimeout(function() {  
          callback({ok: 1});  
       }, 1000);  
@@ -37,7 +37,14 @@ var vkMozExtension = {
 }  
 vkMozExtension.listen_request(vkMozExtension.callback); 
 
-function vkDownloadFile(aURL, aDefaultFileName, aContentType, aShouldBypassCache, aFilePickerTitleKey, aSkipPrompt) {
+
+try {// Firefox 18+
+  Cu.import("resource://gre/modules/PrivateBrowsingUtils.jsm");
+} catch (e) {
+  // old Firefox versions (e.g. 3.6) didn't have PrivateBrowsingUtils.
+}
+
+function vkDownloadFile(win,aURL, aDefaultFileName, aContentType, aShouldBypassCache, aFilePickerTitleKey, aSkipPrompt) {
   if (aSkipPrompt == undefined) aSkipPrompt = false;
    var file, fileURL;
    var fileInfo = new FileInfo(aDefaultFileName);
@@ -65,6 +72,17 @@ function vkDownloadFile(aURL, aDefaultFileName, aContentType, aShouldBypassCache
    var persist = makeWebBrowserPersist();
    const nsIWBP = Components.interfaces.nsIWebBrowserPersist;
    const flags = nsIWBP.PERSIST_FLAGS_REPLACE_EXISTING_FILES;
+   
+   if (win && "undefined" != typeof(PrivateBrowsingUtils) && PrivateBrowsingUtils.privacyContextFromWindow) {
+      var privacyContext = PrivateBrowsingUtils.privacyContextFromWindow(win);
+      var isPrivate = privacyContext.usePrivateBrowsing;
+   } else {
+      // older than Firefox 19 or couldn't get window.
+      var privacyContext = null;
+      var isPrivate = false;
+   }
+   
+   
    persist.persistFlags = flags;
    if (aShouldBypassCache) {
       persist.persistFlags |= nsIWBP.PERSIST_FLAGS_BYPASS_CACHE;
@@ -72,7 +90,7 @@ function vkDownloadFile(aURL, aDefaultFileName, aContentType, aShouldBypassCache
    persist.persistFlags |= nsIWBP.PERSIST_FLAGS_AUTODETECT_APPLY_CONVERSION;
    persist.persistFlags |= nsIWBP.PERSIST_FLAGS_DONT_CHANGE_FILENAMES
    var tr = Components.classes["@mozilla.org/transfer;1"].createInstance(Components.interfaces.nsITransfer);
-   tr.init(source, fileURL, "", null, null, null, persist);
+   tr.init(source, fileURL, "", null, null, null, persist, isPrivate);
    persist.progressListener = tr;
-   persist.saveURI(source, null, null, null, null, fileURL);
+   persist.saveURI(source, null, null, null, null, fileURL, privacyContext);
 }
