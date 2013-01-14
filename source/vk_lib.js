@@ -2426,7 +2426,7 @@ function vkDownloadFile(el,ignore) {
    var d = el.getAttribute("download");
    var url=a;
    var name='';
-   if (a.indexOf("&/") != -1) {
+   if (a.indexOf("&/") != -1 || (d && d!='')) {
       a = a.split("&/");
       url=a[0];
       name=d || decodeURI(a[1]);

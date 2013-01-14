@@ -703,7 +703,7 @@ function vkAudioChooseProcess(answer,url,q){
   if (ref){
     var node=vkCe('div',{'style':"height: 25px; padding: 4px 20px;"},'\
     <div class="fl_l">'+IDL('EnterLinkToAudio')+':</div>\
-      <span class="fl_l"><input id="vk_link_to_audio" type="text" style="width:215px"  class="s_search text"></span>\
+      <span class="fl_l"><input id="vk_link_to_audio" type="text" style="width:190px"  class="s_search text"></span>\
       <div id="vk_link_to_audio_button" class="button_blue fl_r"><button onclick="vkCheckAudioLinkToMedia();">'+IDL('OK')+'</button></div>\
     \
     ');
@@ -1476,13 +1476,14 @@ function vkMakeMsgHistory(uid,show_format){
                   var u=r.response[i];
                   users['%'+u.uid+'%']=u.first_name+" "+u.last_name;
                }
-               for (var key in users)
+               for (var key in users){
                   t=t.split(key).join(users[key]);
+               }
                
                show('save_btn_text');
                hide('saveldr');
                //alert(t);
-               vkSaveText(t,"messages_"+user1+"("+uid+").txt");
+               vkSaveText(t,"messages_"+uid+".txt");
                
             });            
 			});
