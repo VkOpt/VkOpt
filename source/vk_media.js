@@ -50,6 +50,7 @@ cur.chooseMedia=function(type, media, data, url, noboxhide){
 }
 */
 var _vk_albums_list_cache={};
+
 var vk_photos = {
    css:'\
       #vkmakecover{margin-top:6px; width:164px;}\
@@ -198,6 +199,35 @@ var vk_photos = {
          return page(_offset*PER_PAGE,rev);
       };
       return false;
+   },
+   url:function(url){
+      if (!url) url=prompt('Image URL');
+      AjGet('http://vk.com/wall'+vk.id+'?offset=100000000',function(r,t){
+         var o=(t.match(/"share":(\{[^}]+\})/)||[])[1];
+         if (!o) {alert('hash error'); return;}
+         o=eval('('+o+')');
+         //alert(o.timehash);
+         re(ge('vk_url_upldr_form'));
+         checkURLForm = ce('div', {url:'vk_url_upldr_form', innerHTML: '<iframe name="vk_url_upldr_form_iframe"></iframe>'});
+         utilsNode.appendChild(checkURLForm);
+         var parseForm = checkURLForm.appendChild(ce('form', {
+           action: 'share.php?act=url_attachment',
+           method: 'post',
+           target: 'vk_url_upldr_form_iframe'
+         }));
+         
+         each({hash: o.timehash || '', index: 1, url: url}, function(i, v) {
+           parseForm.appendChild(ce('input', {type: 'hidden', name: i, value: v}));
+         });
+         
+         window.onUploadDone = function(data){
+            showPhoto(data[1],data[2].list,{});
+            console.log(data);
+         }
+         window.onUploadFail = function(){alert('Upload Fail')}
+
+         parseForm.submit();
+      })
    }
 }
 
@@ -744,8 +774,10 @@ function vkAlbumAdminItems(){
 }
 function vkPVAdminItems(data){
 	//alert(print_r(data));
-	var user=data.author.split('href="')[1].split('"')[0];
-	return (ge('photos_container') && (cur.moreFrom || '').match(/album(-?\d+)_(\d+)/))?'<a href="#" onclick="photoview.hide(); vkGetPhotoByUser(\''+user+'\'); return false;">'+IDL('paAllUserPhotos')+'<span id="vkphloader" style="display:none"><img src="/images/upload.gif"></span></a>':'';
+   if (!(data ||{}).author) return;
+   //console.log(data);
+	var user=(data.author.split('href="')[1] || "").split('"')[0];
+	return (user && user!='' && ge('photos_container') && (cur.moreFrom || '').match(/album(-?\d+)_(\d+)/))?'<a href="#" onclick="photoview.hide(); vkGetPhotoByUser(\''+user+'\'); return false;">'+IDL('paAllUserPhotos')+'<span id="vkphloader" style="display:none"><img src="/images/upload.gif"></span></a>':'';
 }
 
 function vkDisableAlbumScroll(){

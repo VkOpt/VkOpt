@@ -917,8 +917,9 @@ function vkMenu(){//vkExLeftMenu
   };
   ExMenu['im']=ExMenu['mail'];
   if (vk_DEBUG){
-   ExMenu['vkopt'].push([["#","if (window.vk_updmenu_timeout) clearTimeout(vk_updmenu_timeout); return false;"],'<b>Stop Upd Menu</b>']);
-   ExMenu['vkopt'].push([["#","vkPhotoUrlUpload(prompt('Image URL:')); return false;"],'UploadImg']);
+      ExMenu['vkopt'].push([["#","if (window.vk_updmenu_timeout) clearTimeout(vk_updmenu_timeout); return false;"],'<b>Stop Upd Menu</b>']);
+      ExMenu['vkopt'].push([["#","vkPhotoUrlUpload(prompt('Image URL:')); return false;"],'UploadImg']);
+      ExMenu['vkopt'].push([["#","vk_photos.url(prompt('Image URL:')); return false;"],'UploadImg v2']);
   }
   /* 
   ExMenu['vkopt']=[];

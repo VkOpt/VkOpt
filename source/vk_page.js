@@ -1918,8 +1918,10 @@ vk_feed={
    },
    filter_enabled:false,
    filter_init:function(){
+      if (ge('vk_feed_filter'))
+         ((cur.section=="articles")?hide:show)('vk_feed_filter');
       vk_feed.process_node();
-      if (ge('vk_feed_filter')) return;
+      if (ge('vk_feed_filter') || cur.section=="articles") return;
       var p=ge('feed_progress');
       var div=vkCe('div',{'class':'fl_r', id:'vk_feed_filter'},'<div id="vkf_filter_chk"></div>'/*'<a href="#" onclick="">'+IDL('Filter')+'</a>'*/);
       p.parentNode.insertBefore(vkCe('span',{'class':'divide fl_r'},'|'),p);
