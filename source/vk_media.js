@@ -24,6 +24,8 @@ function vkPhotoViewer(){
   
   
   Inj.End('photoview.afterShow','vkPVAfterShow();');
+  Inj.Start('photoview.canFullscreen','return true;');
+  
   
   //*
   if (nav.strLoc.match(/photo-?\d+_\d+/))  { 
@@ -1434,6 +1436,68 @@ vk_videos = {
          return page(_offset*PER_PAGE,rev);
       };
       return false;
+   },
+   clean:function(){
+      var REQ_CNT=200;
+      var DEL_REQ_DELAY=400;
+      var SCAN_REQ_DELAY=400;
+      var box=null;
+      var mids=[];
+      var del_offset=0;
+      var abort=false;	
+      var deldone=function(){
+            box.hide();
+            vkMsg(IDL("ClearDone"),3000);	
+      };
+      var del=function(callback){	
+         if (abort) return;
+         var del_count=mids.length;
+         ge('vk_del_msg').innerHTML=vkProgressBar(del_offset,del_count,310,IDL('deleting')+' %');
+         var item_id=mids[del_offset];
+         if (!item_id){
+            ge('vk_del_msg').innerHTML=vkProgressBar(1,1,310,' ');
+            del_offset=0;
+            callback();
+         } else
+         dApi.call('video.delete', {oid:cur.oid,vid:item_id},function(r,t){
+            del_offset++;
+            setTimeout(function(){del(callback);},DEL_REQ_DELAY);
+         });
+      };
+      
+      var _count=0;
+      var cur_offset=0;
+      var scan=function(){
+         if (cur_offset==0) ge('vk_scan_msg').innerHTML=vkProgressBar(cur_offset,2,310,IDL('listreq')+' %');
+         
+         var params={};
+         params[cur.oid>0?"uid":"gid"]=Math.abs(cur.oid);
+         params['count']=REQ_CNT;
+         params['offset']=cur_offset;
+         
+         dApi.call('video.get',params,function(r){
+            if (abort) return;
+            var ms=r.response;
+            if (!ms[0]){ del(deldone);	return;	}
+            var _count=ms.shift();
+            ge('vk_scan_msg').innerHTML=vkProgressBar(cur_offset,_count,310,IDL('listreq')+' %');
+            for (var i=0;i<ms.length;i++) mids.push(ms[i].vid);
+            if (cur_offset<_count){	cur_offset+=REQ_CNT; setTimeout(scan,SCAN_REQ_DELAY);} else del(deldone);
+         });
+      };
+      
+      var run=function(){
+         
+         box=new MessageBox({title: IDL('DelVideos'),closeButton:true,width:"350px"});
+         box.removeButtons();
+         box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no');
+         var html='</br><div id="vk_del_msg" style="padding-bottom:10px;"></div><div id="vk_scan_msg"></div>';
+         box.content(html).show();	
+         scan();
+      };
+     
+      var owner=(cur.oid>0?"id":"club")+Math.abs(cur.oid);
+      vkAlertBox(IDL('DelVideos'),'<b><a href="/'+owner+'">'+owner+'</a></b><br>'+IDL('DelAllVideosConfirm'),run,true);
    }
 }
 
@@ -1735,7 +1799,8 @@ function vkVideoAddOpsBtn(){
       if (getSet(66)=='y'){
          p_options.push({l:IDL('AddMod'), onClick:vkVideShowAdder}); 
       }
-      
+      if (getSet(77)=='y')
+         p_options.push({l:IDL('DelAll'), onClick:vk_videos.clean}); 
       
       /*
       p_options.push({l:IDL('Links'), onClick:function(item) {
@@ -2636,9 +2701,10 @@ function vkAudioEditPage(){
 }
 
 function vkCleanAudioLink(){
-	if (!ge('vk_clean_audios') && ge('audio_actions')){
-		ge('audio_actions').innerHTML+='<span class="divide">|</span><a id="vk_clean_audios" href="#" onclick="vkCleanAudios(); return false;">'+IDL('DelAll')+'</a>';
-	}
+	if (getSet(77)=='y')
+      if (!ge('vk_clean_audios') && ge('audio_actions')){
+         ge('audio_actions').innerHTML+='<span class="divide">|</span><a id="vk_clean_audios" href="#" onclick="vkCleanAudios(); return false;">'+IDL('DelAll')+'</a>';
+      }
 }
 
 function vkCleanAudios(){
@@ -3140,9 +3206,8 @@ function vkAudioBtns(){
          var allow_show=cur.canEdit && !(nav.objLoc['act']=='recommendations' || nav.objLoc['act']=='popular' || nav.objLoc['friend']);
          (allow_show?show:hide)('vkcleanaudios_btn');
       }      
-      if (cur.canEdit && !ge('vkcleanaudios_btn')){
+      if (getSet(77)=='y' && cur.canEdit && !ge('vkcleanaudios_btn') ){
          var p=ge('album_filters');
-         
          var btn=vkCe("div",{
                id:"vkcleanaudios_btn",
                "class":"audio_filter",

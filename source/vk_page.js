@@ -566,7 +566,8 @@ function vkUpdWallBtn(){
 
 
 function vkAddCleanWallLink(){
-	 var rx=nav.objLoc[0].match(/notes(\d+)/);
+	 if (getSet(77)!='y') return;
+    var rx=nav.objLoc[0].match(/notes(\d+)/);
     
     //notes
    var allow_clean=(cur.oid==remixmid() || isGroupAdmin(cur.oid));
@@ -591,7 +592,8 @@ function vkAddCleanWallLink(){
 }
 
 function vkAddDelWallCommentsLink(node){
-	var allow_clean=(cur.oid==remixmid()  || isGroupAdmin(cur.oid));
+	if (getSet(77)!='y') return;
+   var allow_clean=(cur.oid==remixmid()  || isGroupAdmin(cur.oid));
 	if(allow_clean && (cur.wallType=="full_all"  || cur.wallType=="full_own") && !ge('vk_clean_post_comments_wall')){
 		var p=geByClass('reply_link_wrap',node);
 		for (var i=0;i<p.length;i++){

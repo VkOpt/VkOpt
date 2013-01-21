@@ -671,10 +671,11 @@ function vkInitSettings(){
             '<br><a onClick="javascript:vkFriendsCheck();" style="cursor: hand;">'+IDL('seCreList')+'</a>',
             ops:[1,2,3,4,5,6,7]}},
 		{id:6, text:IDL("seOnAway")},
-		{id:34, text:IDL("seSwichTextChr")}	
+		{id:34, text:IDL("seSwichTextChr")},
+      {id:77, text:IDL("seBatchCleaners")}	
     ]
   };	  
-	//LAST 76
+	//LAST 77
 	/*
       vkoptSets['advanced']=[
          'vk_upd_menu_timeout','vkMenuHideTimeout','CHECK_FAV_ONLINE_DELAY',
