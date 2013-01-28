@@ -55,6 +55,7 @@ var _vk_albums_list_cache={};
 
 var vk_photos = {
    css:'\
+      #vk_ph_save_move{width:160px}\
       #vkmakecover{margin-top:6px; width:164px;}\
       .photos_choose_row.c_album{position:relative; cursor:pointer; height: 100px; width: 178px;}\
       .c_album .photo_row_img{ max-width: 178px;}\
@@ -1317,6 +1318,11 @@ vk_videos = {
       .video_can_edit .vk_vid_acts_panel{ max-width:230px;}\
       .vk_vid_acts_panel,.vk_vid_acts_panel a{color:#FFF; }\
       .vk_vid_acts_panel .vk_down_icon{box-shadow:0 0 2px #FFF; background-color:rgba(0, 0, 0, 0.5);}\
+      .video_raw_info_name .vk_txt_icon{padding-left: 16px; margin-bottom:-2px;}\
+      .vk_full_vid_info{width:auto !important; height:auto !important; display:block;}\
+      .vk_full_vid_info .video_row_inner_cont{float:left}\
+      .vk_full_vid_info .vid_descr{width: 298px;}\
+      .vk_full_vid_info .vk_clr{clear:both;}\
       ';
       if (full_titles)  code+='\
       .video_album_text { height: auto !important; }\
@@ -1498,6 +1504,21 @@ vk_videos = {
      
       var owner=(cur.oid>0?"id":"club")+Math.abs(cur.oid);
       vkAlertBox(IDL('DelVideos'),'<b><a href="/'+owner+'">'+owner+'</a></b><br>'+IDL('DelAllVideosConfirm'),run,true);
+   },
+   get_description:function(oid,vid,el){
+      var p=ge('video_row'+oid+'_'+vid);
+      var cont=ge('video_cont'+oid+'_'+vid);
+      hide(el);
+      dApi.call('video.get',{videos:oid+'_'+vid},function(r){
+         var v=(r.response ||[])[1];
+         if (!v) return;
+         var c=geByClass('video_raw_info_name',p)[0].parentNode;
+         var div=vkCe('div',{'class':'vid_descr fl_r'},v.description);//'video_raw_info_name'
+         addClass(cont,'vk_full_vid_info')
+         cont.appendChild(div);
+         cont.appendChild(vkCe('div',{'class':'vk_clr'}));
+         // c.insertBefore(div,c.firstChild);
+      })
    }
 }
 
@@ -1882,7 +1903,9 @@ function vkVidGetLinkBtn(vid,res){//for cur.videoTpl
       res=res.replace(/%download%/,'<div class="vk_vid_acts_panel"><div class="download_cont">\
          <span><a href="#" onclick="vkVidLoadLinks('+vid[0]+','+vid[1]+',this.parentNode); return false;">'+IDL('download')+'</a></span>\
          <small class="fl_r '+(!window.vk_vid_list_adder?'vk_vid_add_hidden':'vk_vid_add_visible')+'"><a href="#" onclick="return vkVidAddToGroup('+vid[0]+','+vid[1]+');">'+IDL('AddToGroup')+'</a>'+(cur_oid!=oid?'<span class="divide">|</span>':'')+'</small>\
-         </div></div>');  
+         </div></div>'); 
+      res=res.replace(/"video_raw_info_name">/,'"video_raw_info_name"><span class="vk_txt_icon" onclick="cancelEvent(event); vk_videos.get_description('+vid[0]+','+vid[1]+',this);"></span>');
+      //alert(res);
       return res;
    }
    if (!vid || getSet(66)=='n') return '';
@@ -1978,8 +2001,14 @@ function vkVidAddGetLink(node){
          '<span><a href="#" onclick="vkVidLoadLinks('+vid[1]+','+vid[2]+',this.parentNode'+(vid[3]?", '"+vid[3]+"','"+type+"'":'')+'); return false;">'+IDL('download')+'</a></span>\
          <small class="fl_r '+(!window.vk_vid_list_adder?'vk_vid_add_hidden':'vk_vid_add_visible')+'"><a href="#" onclick="return vkVidAddToGroup('+vid[1]+','+vid[2]+');">'+IDL('AddToGroup')+'</a>'+(cur_oid!=oid?'<span class="divide">|</span>':'')+'</small>\
          ');
+         // '<span class="vk_txt_icon" onclick="cancelEvent(event); vk_videos.get_description('+vid[1]+','+vid[2]+',this);"></span>'
         c.appendChild(div);     
         el.insertBefore(c,el.firstChild);
+        if (el.innerHTML.indexOf('get_description')==-1){
+            var c=geByClass('video_raw_info_name',el)[0];
+            if (c) c.innerHTML='<span class="vk_txt_icon" onclick="cancelEvent(event); vk_videos.get_description('+vid[1]+','+vid[2]+',this);"></span>'+
+                                c.innerHTML
+        }
         // <div class="vk_vid_acts_panel">okoko</div>
       }
    }
