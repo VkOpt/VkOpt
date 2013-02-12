@@ -473,9 +473,10 @@ var vkMozExtension = {
 	  while(next_el && next_el.nodeType==3) next_el=next_el.nextSibling
 	  return next_el;
 	}
-	function vkaddcss(addcss) {
+	function vkaddcss(addcss,id) {
 		var styleElement = document.createElement("style");
 		styleElement.type = "text/css";
+      if (id) styleElement.setAttribute('mark',id);
 		styleElement.appendChild(document.createTextNode(addcss));
 		document.getElementsByTagName("head")[0].appendChild(styleElement);
 		addcss='';
@@ -961,7 +962,7 @@ String.prototype.leftPad = function (l, c) {
 		for (var i=from;i<=to;i++){
 		  html+=(i==cur)?'<li class="current">'+(i+1)+'</li>':'<li><a href="'+href.replace(/%%/g,(i*step))+'" onclick="'+onclick.replace(/%%/g,(i*step))+'">'+(i+1)+'</a></li>';
 		}    
-		if (end-cur>after) html+='<li><a href="'+href.replace(/%%/g,end)+'" onclick="'+onclick.replace(/%%/g,end)+'">&raquo;</a></li>';
+		if (end-cur>after) html+='<li><a href="'+href.replace(/%%/g,end*step)+'" onclick="'+onclick.replace(/%%/g,end*step)+'">&raquo;</a></li>';
 	  html+=(!without_ul)?'</ul>':'';
 	  return html; 
 	}
@@ -2426,7 +2427,7 @@ function vkDownloadFile(el,ignore) {
    var d = el.getAttribute("download");
    var url=a;
    var name='';
-   if (a.indexOf("&/") != -1) {
+   if (a.indexOf("&/") != -1 || (d && d!='')) {
       a = a.split("&/");
       url=a[0];
       name=d || decodeURI(a[1]);

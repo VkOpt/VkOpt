@@ -13,10 +13,15 @@
 
 function InstallRelease(){
   if (!window.vk || !vk.id) return;
+  if (isNewLib() && !window.lastWindowWidth){
+      setTimeout(InstallRelease,50);
+      return;
+  }  
   var err=[];
   if (window.IDNamesInColsV || window.IDEnterGroup || window.sync_plctrl_timeout || window.SyncPctrls || window.vk100Photos || 
       window.IDNewsObzor || window.AjMsgFormTo || window.IDAddFriend || window.IDAdmDelTopic || window.IDpostMatch || window.IDAppsProf)
       err.push(IDL('ErrOldVkoptFound'));
+
   
   var cur_ver=vkgetCookie('vkOVer');
   cur_ver=cur_ver?cur_ver.split('_'):[0,0]; 
@@ -569,9 +574,7 @@ function WallManForm(){
   ge('wallmgr').innerHTML=WallManager();
 }
 //end wallmgr
-
 function vkInitSettings(){
-
   vkoptSets={
     Media:[
       {id:0,  text:IDL("seLinkAu")},
@@ -644,7 +647,7 @@ function vkInitSettings(){
       {id:32, text:IDL("seSkinManBtn") /*, hide: (vkbrowser.mozilla)*/},
       {id:33, text:IDL("seSmiles")+vkCheckboxSetting(63,IDL("seSmilesAlwaysShow"),true),warn:'seSmilesAlwaysShowWarning'},
       {id:36, text:IDL("sePreventHideNotifications")},
-      {id:42, text:IDL("seSortFeedPhotos")},
+      //{id:42, text:IDL("seSortFeedPhotos")},
       {id:53, text:IDL("seShutProfilesBlock")},
       {id:54, header:IDL("seMoveNotifier") , text:IDL("seMoveNotifierText"),ops:[0,1,2,3]},
       {id:58, text:IDL("sePopupBoardInfo")},
@@ -668,11 +671,18 @@ function vkInitSettings(){
             '<br><a onClick="javascript:vkFriendsCheck();" style="cursor: hand;">'+IDL('seCreList')+'</a>',
             ops:[1,2,3,4,5,6,7]}},
 		{id:6, text:IDL("seOnAway")},
-		{id:34, text:IDL("seSwichTextChr")}	
+		{id:34, text:IDL("seSwichTextChr")},
+      {id:77, text:IDL("seBatchCleaners")}	
     ]
   };	  
-	//LAST 76
-	
+	//LAST 77
+	/*
+      vkoptSets['advanced']=[
+         'vk_upd_menu_timeout','vkMenuHideTimeout','CHECK_FAV_ONLINE_DELAY',
+         'FAVE_ONLINE_BLOCK_SHOW_COUNT','SHOW_POPUP_PROFILE_DELAY','USERMENU_SYMBOL',
+         'MOD_PROFILE_BLOCKS','CUT_VKOPT_BRACKET','MAIL_BLOCK_UNREAD_REQ','SUPPORT_STEALTH_MOD'
+      ];
+   */
 	vkSetsType={
       "on"  :[IDL('on'),'y'],
       "off" :[IDL('of'),'n'],

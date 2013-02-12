@@ -14,6 +14,7 @@ function vkPhotoViewer(){
   
   Inj.Before('photoview.doShow','cur.pvNarrow','ph.comments=vkModAsNode(ph.comments,vkProcessNode); if(ph.tagshtml) ph.tagshtml=vkModAsNode(ph.tagshtml,vkProcessNode);');
   Inj.Before('photoview.doShow','var likeop','vkProcessNode(cur.pvNarrow);');
+  Inj.End('photoview.doShow','vkProcessNode(cur.pvWide);');
   Inj.Before('photoview.doShow','+ (ph.actions.del','+ vkPVLinks(ph) + vk_plugins.photoview_actions(ph) ');
   if (getSet(7)=='y') Inj.Start('photoview.afterShow','vkPVMouseScroll();');
   
@@ -1858,6 +1859,7 @@ function vkVidDownloadLinks(vars){
    vidname='?'+vkDownloadPostfix()+'&/'+vkEncodeFileName(vidname);//
    //(smartlink?vidname+'.mov')
 	if (!vars) return '';
+   vars.host=vars.host+"";
 	var vuid=function (uid) { var s = "" + uid; while (s.length < 5) {s = "0" + s;}  return s; }
 	var get_flv=function() {
 		if (vars.sd_link != null && vars.sd_link.length > 0) {return vars.sd_link;}
@@ -2929,6 +2931,7 @@ function vkAudioNode(node){
 		 //if (ge('down'+id)) continue;
          var data = (node?divs[i].parentNode.parentNode.getElementsByTagName('input')[0]:ge('audio_info' + id)).value.split(',');
          var url=data[0];
+         //if (url=='') continue;
          if (url.indexOf('/u00000/')!=-1) continue;
          var anode=(node?divs[i].parentNode.parentNode.parentNode:ge('audio'+id));
 			 var el=geByClass("duration",anode )[0];

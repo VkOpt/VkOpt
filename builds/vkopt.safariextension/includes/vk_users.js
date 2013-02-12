@@ -11,7 +11,7 @@
 var vkUsersDomain={}; 
 var isUserRegEx=[
 /(^|\/)(reg|regstep|club|event|photo|photos|album|albums|video|videos|note|notes|app|page|board|topic|write|public|publics|groups|wall|graffiti|tag\d|doc|gifts)-?\d+/i,
-/(^|\/)(events|changemail|mail|im([^a-z0-9]|$)|audio|apps|editapp|feed|friends|friendsphotos|search|invite|settings|edit|fave|stats|video|groups|notes|docs|gifts)\??.*#?/i,
+/(^|\/)(events|changemail|mail|im([^a-z0-9]|$)|audio|apps|editapp|feed|friends|friendsphotos|search|invite|settings|edit|fave|stats|video|groups|notes|docs|gifts|support)\??.*#?/i,
 /javascript|#|\.mp3|\.flv|\.mov|\.jpg|\.gif|\.png|http...www|\/ru\//i,
 /\.php($|\?)/i,
 /\/$/i,
@@ -1496,11 +1496,13 @@ function vkFavUsersList(add_button){
    if (add_button){
       var e=ge('fave_likes_tabs');
       var x=ge('vk_fav_users_btn');
-      if (x) (nav.objLoc['section']=='users'?show:hide)(x);
+      console.log(nav.objLoc['section'],cur.section);
+      var users_section=(nav.objLoc['section']=='users' || cur.section=='users');
+      if (x) (users_section?show:hide)(x);
       if (!e || x) return;
       var p=geByClass('summary_tab',e);
       p=p[p.length-1];
-      if (!p || nav.objLoc['section']!='users') return;
+      if (!p || !users_section) return;
       x=vkCe('div',{"class":'fave_more_button fl_r',id:'vk_fav_users_btn'},
             '<div class="button_blue"><button onclick="vkFavUsersList();">'+IDL('FavUsers')+'</button></div>'
             //'<a onclick="return vkFavUsersList();">'+IDL('FavUsers')+'</a>'

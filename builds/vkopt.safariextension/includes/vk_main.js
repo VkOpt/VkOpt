@@ -35,7 +35,7 @@ function vkInj(file){
    case 'video.js':	      vkVideo();	      break;
 	case 'audio.js':		   vkAudios();		   break;
    case 'audioplayer.js':	vkAudioPlayer();		break;
-	case 'feed.js':			vkFeed();		break;
+	case 'feed.js':			vk_feed.inj(); break;
 	case 'search.js':		   vkSearch();		break;
 	case 'profile.js':		vkProfile();	break;
 	case 'wall.js':			vkWall();		break;		
@@ -46,6 +46,7 @@ function vkInj(file){
 	case 'im.js': 			   vkIM(); 	      break;
    case 'mail.js': 			vkMail(); 	   break;
    case 'groups_list.js':  vkGroupsList(); break;
+   case 'fave.js':         vk_fave.inj(); break;
   }
   vk_plugins.onjs(file); 
 }
@@ -67,6 +68,7 @@ function vkProcessNode(node){
       vkVidAddGetLink(node);
       vkPollResultsBtn(node);
       vk_board.get_user_posts_btn(node);
+      vk_feed.process_node(node);
 		vk_plugins.processnode(node);
 	// }  catch (e) { topMsg('vkProcessNode error',2)}
 	}
@@ -85,6 +87,7 @@ function vkProcessNodeLite(node){
    vkPollResultsBtn(node);
 	//vkPrepareTxtPanels(node);
    vk_board.get_user_posts_btn(node);
+   vk_feed.process_node(node);
 	vk_plugins.processnode(node,true);
    if (getSet(63)=='y') vkSmiles(node);
   }  catch (e) {
@@ -121,7 +124,7 @@ function vkOnNewLocation(startup){
 	switch(nav.objLoc[0]){
 		case 'settings':vkSettingsPage(); break;
 		case 'mail':   vkMailPage(); break;
-		case 'feed':   vkFeedPage(); break;
+		case 'feed':   vk_feed.on_page(); break;
       case 'groups': vkGroupsListPage();  break;
       default:
          if (nav.objLoc[0].match(/write\d+/)) vkMailPage();
@@ -132,11 +135,12 @@ function vkOnNewLocation(startup){
          cur.module='wall';
    }
    */
-	
+
 	if (cur.module){	
 		vklog(cur.module+'|'+print_r(nav.objLoc).replace(/\n/g,','));
 		switch(cur.module){
 			case 'profile':vkProfilePage(); break;
+         case 'profileEdit':vkProfileEditPage(); break;
 			case 'groups' :vkGroupPage(); break;
          case 'groups_edit':vkGroupEditPage(); break;
 			case 'event'  :vkEventPage(); break;
@@ -234,6 +238,7 @@ function VkOptMainInit(){
   vkVidAddGetLink();
   vkPollResultsBtn();
   vk_board.get_user_posts_btn();   
+  vk_plugins.processnode();
   if (getSet(34)=='y' && !window.setkev){ InpTexSetEvents(); setkev=true;}
   if (getSet(27)=='y') vkGetCalendar();
   if (getSet(20) == 'y') vk_updmenu_timeout=setTimeout("UpdateCounters();",vk_upd_menu_timeout);
@@ -321,11 +326,13 @@ function vkPublicPage(){
    vkSwitchPublicToGroup();
    vkWikiPagesList(true);
    vkGroupStatsBtn();
+   vkUpdWallBtn();
 }
 /* EVENTS */
 function vkEventPage(){
 	addFakeGraffItem();
    vkWallAlbumLink();
+   vkUpdWallBtn();
    //vkWikiPagesList(true);
 }
 /* GROUPS */
@@ -697,7 +704,7 @@ function vkAudioChooseProcess(answer,url,q){
   if (ref){
     var node=vkCe('div',{'style':"height: 25px; padding: 4px 20px;"},'\
     <div class="fl_l">'+IDL('EnterLinkToAudio')+':</div>\
-      <span class="fl_l"><input id="vk_link_to_audio" type="text" style="width:215px"  class="s_search text"></span>\
+      <span class="fl_l"><input id="vk_link_to_audio" type="text" style="width:190px"  class="s_search text"></span>\
       <div id="vk_link_to_audio_button" class="button_blue fl_r"><button onclick="vkCheckAudioLinkToMedia();">'+IDL('OK')+'</button></div>\
     \
     ');
@@ -740,13 +747,56 @@ function vkImAddPreventHideCB(){
                '</div>';
       var id='add_media_type_' +  cur.imMedia.menu.id + '_nohide';
       if (!ge(id)){
+         // ADD WALL POST
+         var a=vkCe('a',{'onclick':'vk_im.attach_wall();','class':'add_media_item','style':"background-image: url('http://vk.com/images/icons/attach_icons.png'); background-position: 3px -130px;"},'<nobr>'+IDL('WallPost')+'</nobr>');
+         p.appendChild(a);
+         
          var a=vkCe('a',{id:id,'style':'border-top:1px solid #DDD; padding:2px; padding-top:4px;'},html);
          p.appendChild(a);
+
       }
       Inj.Before(' cur.imMedia.onChange','boxQueue','if (!window.vk_prevent_addmedia_hide)');
    });
 }
 
+
+vk_im={
+   attach_wall:function(){
+         var add=null;
+         var aBox = new MessageBox({title: IDL('EnterLinkToWallPost')});
+         aBox.removeButtons();
+         aBox.addButton(getLang('box_cancel'),function(){  
+            aBox.hide();	 
+         }, 'no')
+         aBox.addButton('OK',function(){ 
+            add();            
+         },'yes');
+         //event.keyCode == 13
+         aBox.content('<div id="vk_attach_wall"><input type="text" style="width:370px;"></div>');
+         aBox.show();
+
+         var el=ge('vk_attach_wall');
+         var inp=el.getElementsByTagName('input')[0];
+         inp.focus();
+         inp.onkeyup=function(ev){
+            ev = ev || window.event;
+            if (ev.keyCode == 13) {
+               add();
+            }    
+         }
+         
+         add=function(){
+            var val=(inp.value || '').match(/wall(-?\d+_\d+)/);
+            if (val){
+               cur.chooseMedia('wall',val[1],{});
+               aBox.hide();
+            } else {
+               alert(IDL('IncorrectWallPostLink'))
+            }
+         }         
+      return false;
+   }
+}
 
 function vkIM(){
    Inj.Before('IM.addTab','cur.tabs','vkProcessNodeLite(txtWrap);');
@@ -953,39 +1003,6 @@ function vkFcEvents(response){
 }
 
 
-
-/* FEED */
-function vkFeed(){
-	//Inj.After("feed.showMore",/au.innerHTML.+rows;/,'vkProcessNode(au);');
-}
-function vkFeedPage(){
-	vkSortFeedPhotos();
-}
-function vkSortFeedPhotos(node){
-	if (getSet(42)!='y' || nav.objLoc[0]!='feed') return;
-	var tstart=unixtime();
-	var fnodes=geByClass('post_media',node);
-	var re=/photo-?\d+_(\d+)/;
-	for (var z=0; z<fnodes.length; z++){
-		var node=fnodes[z];
-		var nodes=geByClass('page_media_thumb',node); 
-		var narr=[];
-		for(var i=0;i<nodes.length;i++){ 
-			var p=nodes[i].getElementsByTagName('a')[0];
-         if (!p || !p.href) continue;
-			var pid=p.href.match(re);
-			if (pid) narr.push([nodes[i],pid[1]]);
-		}
-		var sf=function(a,b){
-			if (a[1]<b[1]) return 1;
-			else if (a[1]>b[1]) return -1;
-			else return 0;
-		}
-		narr.sort(sf);
-		for(var i=0;i<narr.length;i++) node.appendChild(narr[i][0]);
-	}
-	vklog('Sort feed photos time:' + (unixtime()-tstart) +'ms');
-}
 /* FRIENDS */
 function vkFriends(){
 	Inj.Before('Friends.showMore','cur.fContent.appendChild',"html=[vkModAsNode(html.join(''),vkProcessNode)];");
@@ -1460,13 +1477,14 @@ function vkMakeMsgHistory(uid,show_format){
                   var u=r.response[i];
                   users['%'+u.uid+'%']=u.first_name+" "+u.last_name;
                }
-               for (var key in users)
+               for (var key in users){
                   t=t.split(key).join(users[key]);
+               }
                
                show('save_btn_text');
                hide('saveldr');
                //alert(t);
-               vkSaveText(t,"messages_"+user1+"("+uid+").txt");
+               vkSaveText(t,"messages_"+uid+".txt");
                
             });            
 			});

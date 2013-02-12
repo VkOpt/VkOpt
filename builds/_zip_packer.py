@@ -2,10 +2,11 @@
 import os
 import zipfile
 import sys
+import re
 from array import *
 from subprocess import *
 
-def zipdir(dirPath=None, zipFilePath=None, includeDirInZip=True):
+def zipdir(dirPath=None, zipFilePath=None, includeDirInZip=True, regEx=None, exclude_regex=None):
 
     if not zipFilePath:
         zipFilePath = dirPath + ".zip"
@@ -30,6 +31,12 @@ def zipdir(dirPath=None, zipFilePath=None, includeDirInZip=True):
             continue 
         print("Packing dir: "+archiveDirPath)
         for fileName in fileNames:
+            if regEx and not re.match(regEx, fileName):
+               print("Excluded by regex: "+fileName)
+               continue
+            if exclude_regex and re.match(exclude_regex, fileName):
+               print("Excluded by exclude_regex: "+fileName)
+               continue               
             #if fileName[-1] == '~' or (fileName[0] == '.' and fileName != '.htaccess'):
                 #skip backup files and all hidden files except .htaccess
                 #continue
@@ -47,10 +54,16 @@ def zipdir(dirPath=None, zipFilePath=None, includeDirInZip=True):
     outFile.close()
     
 def main():
-    arg0,input,output = sys.argv
+    regex=None
+    exclude_regex=None     
+    if len(sys.argv)>4:
+      arg0,input,output,regex,exclude_regex = sys.argv
+    else:
+      arg0,input,output = sys.argv
+      
     filename = output
     directory = input
-    zipdir(directory, filename, False)
+    zipdir(directory, filename, False,regex,exclude_regex)
     print("Packed: "+filename);
 
 

@@ -10,21 +10,18 @@
 // (c) All Rights Reserved. VkOpt.
 //
 /* VERSION INFO */
-var vVersion	= 214;
-var vBuild = 121225;
+var vVersion	= 215;
+var vBuild = 130212;
 var vPostfix = ' ';
 if (!window.vk_DEBUG) var vk_DEBUG=0;
 
 /* EXT CONFIG */
 if (!window.DefSetBits)
 
-var DefSetBits='ynyynnyyynyyy0n0yy0nnnynyyynyy0nynynnnnyy0yyy1yynnnnny0nynynynnnnyynnynnnynyy-3-0-#c5d9e7-#34a235-1';
+var DefSetBits='ynyynnyyynyyy0n0yy0nnnynyyynyy0nynynnnnyy0yyy1yynnnnny0nynynynnnnyynnynnnynyyy-3-0-#c5d9e7-#34a235-1';
 var DefExUserMenuCfg='11111110111111111111'; // default user-menu items config
 var vk_upd_menu_timeout=20000;      //(ms) Update left menu timeout
 var vkMenuHideTimeout=400;          //(ms) Hide Menu Popups timeout
-var vkMenuIconSize=12;              //(px) max 16px
-var MENU_HIGHLIGHT_DELAY=2000;      //(ms) yellow highlight in menu on changed counters
-var SIDEBAR_ITEM_HIGHLIGHT_COLOR = "#fcf78a";
 var CHECK_FAV_ONLINE_DELAY = 20000; //(ms)  delay for check online statuses of faved users
 var FAVE_ONLINE_BLOCK_SHOW_COUNT=6;
 var SHOW_POPUP_PROFILE_DELAY=800;//ms 
@@ -41,6 +38,8 @@ var MSG_IDS_PER_DEL_REQUEST=25;
 var SEARCH_AUDIO_LYRIC_LINK='http://yandex.ru/yandsearch?text=%AUDIO_NAME%+%28%2Bsite%3Alyrics.mp3s.ru+%7C+%2Bsite%3Alyrics-keeper.com+%7C+%2Bsite%3Aalloflyrics.com++%7C+%2Bsite%3A2song.net++%7C+%2Bsite%3Amegalyrics.ru+%7C+%2Bsite%3Aakkords.ru%29';
 var INJ_AUDIOPLAYER_DUR_MOD=true; //enable JS-injections to player functions, for duration label modification
 /* API SETTINGS PAGE: http://vkontakte.ru/login.php?app=2168679&layout=popup&type=browser&settings=15615 */
+
+var FAVE_ALLOW_EXTERNAL_LINKS=true;
 
 /* Others */
 var USERMENU_SYMBOL='&#9660;&nbsp;';
@@ -190,10 +189,10 @@ var TextPasteSmiles={
 'blum1':'=P',
 'cool':' 8-)',
 'biggrin':'=D',
-'blush':";\'>",
+'blush':";\\\'>",
 'shok':'O_o',
 'diablo':']:->',
-'cray':":-\'(",
+'cray':":-\\\'(",
 'mocking':'*JOKINGLY*',
 'give_rose':'@}->--',
 'music':'[:-}',
@@ -229,7 +228,7 @@ var TextPasteSmiles={
 'help':['!HELP!','big_standart'],
 //'flood':['!FLOOD!','other'],
 'opera':"*Opera*",
-'firefox':"*Fifefox",
+'firefox':"*Firefox*",
 'chrome':"*Chrome*",
 'windows':"*Windows*",
 'linux':"*Linux*"

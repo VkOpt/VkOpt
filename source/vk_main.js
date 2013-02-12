@@ -238,6 +238,7 @@ function VkOptMainInit(){
   vkVidAddGetLink();
   vkPollResultsBtn();
   vk_board.get_user_posts_btn();   
+  vk_plugins.processnode();
   if (getSet(34)=='y' && !window.setkev){ InpTexSetEvents(); setkev=true;}
   if (getSet(27)=='y') vkGetCalendar();
   if (getSet(20) == 'y') vk_updmenu_timeout=setTimeout("UpdateCounters();",vk_upd_menu_timeout);
