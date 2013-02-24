@@ -1078,7 +1078,7 @@ function vkCheckNewMessages(data){
 		}
 		msg_list.sort(sort_msg);
 			
-		var mel=ge('vkm_mail');
+		var mel=ge('vkm_mail') || ge('vkm_im');
 		var p=ge('vk_msg_list');
 		if (mel){ 
 			if (!p) mel.innerHTML+='<li id="vk_msg_list"></li>';
