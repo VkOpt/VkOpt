@@ -2823,7 +2823,7 @@ setTimeout(dApi.Check,10);
 //if(!(dloc.indexOf('vk.com')!=-1 || dloc.indexOf('vkontakte.ru')!=-1)) {
 (function(){
    var xfr_delay=800;
-   if (dloc.indexOf('vk.com')!=-1 || dloc.indexOf('vkontakte.ru')!=-1 || dloc.indexOf('userapi.com')!=-1) xfr_delay=0; 
+   if (dloc.match(/vk\.com|vkontakte\.ru|userapi\.com|vk\.me/)) xfr_delay=0; 
    setTimeout(XFR.check,xfr_delay);
 })();
 

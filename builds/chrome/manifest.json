@@ -6,6 +6,7 @@
         "run_at": "document_start",
         "matches": ["*://vk.com/*","*://*.vk.com/*","*://vkontakte.ru/*","*://*.vkontakte.ru/*",
                     "*://userapi.com/*","*://*.userapi.com/*",
+                    "*://vk.me/*","*://*.vk.me/*",
                     "http://durov.ru/*",
                     "http://youtube.com/*","http://*.youtube.com/*",
                     "https://youtube.com/*","https://*.youtube.com/*",
@@ -29,10 +30,10 @@
       "includes/vkopt.js"
    ],
   "name": "VkOpt",
-  "version": "2.1.5.0",
+  "version": "2.1.6.0",
   "description": "Добавление множества функций, упрощающих жизнь ВКонтакте (vk.com). Official site and support: http://vkopt.net/",
   "icons": { "32":"img/bk_n_32.png",
              "48": "img/bk_n_48.png",
              "128": "img/bk_n_128.png" },
-  "permissions": ["http://*/*","*://vk.com/*","*://*.vk.com/*","*://userapi.com/*","*://*.userapi.com/*"]
+  "permissions": ["http://*/*","*://vk.com/*","*://*.vk.com/*","*://userapi.com/*","*://*.userapi.com/*","*://vk.me/*","*://*.vk.me/*"]
 }

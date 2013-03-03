@@ -1370,6 +1370,78 @@ function vkGroupsListPage(){
 	vkGrLstFilter();
    if (getSet(74)=='y')
       vkGroupDecliner();
+    vk_groups.leave_all_btn();
+}
+
+
+vk_groups = {
+   leave_all_btn:function(){
+      if (getSet(77)!='y') return;
+      if (nav.objLoc['id'] && nav.objLoc['id']!=vk.id) return;
+      var p=ge('groups_list_tabs');
+      if (!p || ge('vk_leave_all')) return;
+      var li=se('<li class="t_r" id="vk_leave_all"><span class="divider">|</span><a onclick="vk_groups.leave_all()">'+IDL('LeaveAll')+'</a></li>');
+      p.appendChild(li);
+   },
+   leave_all:function(){
+      var REQ_CNT=1000;
+      var DEL_REQ_DELAY=400;
+      var SCAN_REQ_DELAY=400;
+      var box=null;
+      var mids=[];
+      var del_offset=0;
+      var abort=false;	
+      var deldone=function(){
+            box.hide();
+            vkMsg(IDL("ClearDone"),3000);	
+      };
+      var del=function(callback){	
+         if (abort) return;
+         var del_count=mids.length;
+         ge('vk_del_msg').innerHTML=vkProgressBar(del_offset,del_count,310,IDL('deleting')+' %');
+         var item_id=mids[del_offset];
+         if (!item_id){
+            ge('vk_del_msg').innerHTML=vkProgressBar(1,1,310,' ');
+            del_offset=0;
+            callback();
+         } else
+         dApi.call('groups.leave', {gid:item_id},function(r,t){
+            del_offset++;
+            setTimeout(function(){del(callback);},DEL_REQ_DELAY);
+         });
+      };
+      
+      var _count=0;
+      var cur_offset=0;
+      var scan=function(){
+         if (cur_offset==0) ge('vk_scan_msg').innerHTML=vkProgressBar(cur_offset,2,310,IDL('listreq')+' %');
+         
+         var params={extended:1};
+         params['count']=REQ_CNT;
+         params['offset']=cur_offset;
+         dApi.call('groups.get',params,function(r){
+            if (abort) return;
+            var ms=r.response;
+            if (!ms[0]){ del(deldone);	return;	}
+            var _count=ms.shift();
+            ge('vk_scan_msg').innerHTML=vkProgressBar(cur_offset,_count,310,IDL('listreq')+' %');
+            for (var i=0;i<ms.length;i++) if (!ms[i].is_admin) mids.push(ms[i].gid);
+            if (cur_offset<_count){	cur_offset+=REQ_CNT; setTimeout(scan,SCAN_REQ_DELAY);} else del(deldone);
+         });
+      };
+      
+      var run=function(){
+         
+         box=new MessageBox({title: IDL('LeaveGroups'),closeButton:true,width:"350px"});
+         box.removeButtons();
+         box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no');
+         var html='</br><div id="vk_del_msg" style="padding-bottom:10px;"></div><div id="vk_scan_msg"></div>';
+         box.content(html).show();	
+         scan();
+      };
+
+      vkAlertBox(IDL('LeaveGroups'),IDL('LeaveAllGroupsConfirm'),run,true);
+   }
 }
 
 function vkGroupDecliner(node){// [name, gid, href, thumb, count, type, hash, fr_count, friends, dateText]

@@ -26,6 +26,8 @@ function VkLoadScripts(doc){
 	"vk_resources.js",	
     "vkopt.js"       );
 }
-function isVKDomain(domain){return (domain.match('vkontakte.ru') || domain.match('vk.com') || domain.match('youtube.com') || domain.match('userapi.com') || domain.match('vimeo.com'));}
+function isVKDomain(domain){
+   return (domain.match(/vk\.com|vkontakte\.ru|userapi\.com|vk\.me|youtube\.com|vimeo\.com/));
+}
 
 addEventListener("DOMContentLoaded", InjectScripts, true); 

@@ -189,7 +189,7 @@ function vkLocationCheck(){
   if (vkCheckInstallCss()) return true;
   XFR.check();
   if (location.href.match('/away')) if (getSet(6) == 'y'){
-	location.href=unescape(vkLinksUnescapeCyr(location.href.split('to=')[1].split(/&h=.{18}/)[0]));
+	location.href=unescape(vkLinksUnescapeCyr(location.href.split('to=')[1].split(/&h=.{18}/)[0]).split('&post=')[0]);
 	return true;
   }
   return false;
@@ -274,6 +274,12 @@ function vkProccessLinks(el){
      //vkProcessDocPhotoLink(nodes[i]);
 	  vk_plugins.processlink(nodes[i]);
     }
+    /*
+    var nodes=el.getElementsByTagName('td'); 
+    for (var i=0;i<nodes.length;i++){  
+      if (getSet(6)=='y')  ProcessAwayLink(nodes[i]);
+    }    
+    */
  vklog('ProcessLinks time:' + (unixtime()-tstart) +'ms');
 }
 
@@ -298,11 +304,13 @@ function vkDocImageInlineView(el,href,e){
    addClass(a,'doc_gif_anim');
 }
 function ProcessAwayLink(node){
-  if (node.href && node.href.indexOf('away.php?')!=-1){ 
-	var lnk=vkLinksUnescapeCyr(node.href).split('?to=')[1];
+  var href=node.getAttribute('href');
+  if (href && href.indexOf('away.php?')!=-1){ 
+	var lnk=vkLinksUnescapeCyr(href).split('?to=')[1];
    if (!lnk) return;
    var lnk=lnk.split('&h=')[0].split('&post=')[0];
-	node.href=unescape(lnk).replace(/&h=[\da-z]{18}/i,'');
+	node.setAttribute('href',unescape(lnk).replace(/&h=[\da-z]{18}/i,''));
+   //node.href=unescape(lnk).replace(/&h=[\da-z]{18}/i,'');
    /*
    lnk.replace(/%26/gi,'&').replace(/%3A/gi,':').
    replace(/%2F/gi,'/').replace(/%25/gi,'%').

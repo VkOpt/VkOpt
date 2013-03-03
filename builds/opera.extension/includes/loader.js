@@ -6,6 +6,7 @@
 // @include       *youtube.com*
 // @include       *vimeo.com*
 // @include       *userapi.com*
+// @include       *vk.me*
 // ==/UserScript==
 
 opera.extension.onmessage = function(event){

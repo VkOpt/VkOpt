@@ -397,7 +397,7 @@ var vkMozExtension = {
 		}
 		return res;
 	}
-   function vkCleanFileName(s){   return trim(s.replace(/[\\\/\:\*\?\"\<\>\|]/g,'_').substr(0,200));   }
+   function vkCleanFileName(s){   return trim(s.replace(/[\\\/\:\*\?\"\<\>\|]/g,'_').replace(/\u2013/g,'-').substr(0,200));   }
    function vkEncodeFileName(s){
       // [^A-Za-zА-Яа-я]
       return s.replace(/([^A-Za-z\u0410-\u042f\u0430-\u044f])/g,function (str, p1, offset, s) {return encodeURIComponent(p1) });
@@ -1354,6 +1354,7 @@ function vkShowCaptcha(sid, img, onClick, onShow, onHide) {
   var key;
   var base_domain = base_domain || "/";
   var onClickHandler = function() {
+    key = ge('captchaKey');
     removeEvent(key, 'keypress');
     onClick(sid, key.value);
     hide('captchaKey');
@@ -1372,7 +1373,7 @@ function vkShowCaptcha(sid, img, onClick, onShow, onHide) {
   if (isFunction(onShow)) onShow();
 
   key = ge('captchaKey');
-  addEvent(key, 'keypress', function(e) { if(e.keyCode==13){ onClickHandler(); }});
+  addEvent(key, 'keypress', function(e) { if(e.keyCode==13 || e.keyCode==10){ onClickHandler(); }});
   addEvent(ge('refreshCaptcha'), 'click', onClickHandler);
   key.focus();
 }
@@ -1709,7 +1710,8 @@ var dApi = {
 		pass();
 	},
 	captcha: function(sid, img, onClick, onShow, onHide) {
-		vk_api_captchaBox = new MessageBox({title: getLang('captcha_enter_code'), width: 300});
+		if (ge('captcha_container')) re('captcha_container');
+      vk_api_captchaBox = new MessageBox({title: getLang('captcha_enter_code'), width: 300});
 		var box = vk_api_captchaBox;
 		box.removeButtons();
 		var key;
@@ -1719,11 +1721,12 @@ var dApi = {
 			onClick(sid, key.value);
 			hide('captchaKey');
 			show('captchaLoader');
+         //box.hide();
 		}
 		box.addButton(getLang('captcha_cancel'), function(){removeEvent(key, 'keypress');box.hide();},'no');
 		box.addButton(getLang('captcha_send'),onClickHandler);
 		box.setOptions({onHide: onHide, bodyStyle: 'padding: 16px 14px'});
-		box.content('<div style="text-align: center; height: 76px"><a href="#" id="refreshCaptcha"><img id="captchaImg" class="captchaImg" src="'+img+ '"/></a><div></div><input id="captchaKey" class="inputText" name="captcha_key" type="text" style="width: 120px; margin: 3px 0px 0px;" maxlength="7"/><img id="captchaLoader" src="'+base_domain+'images/progress7.gif" style="display:none; margin-top: 13px;" /></div>');
+		box.content('<div style="text-align: center; height: 76px" id="captcha_container"><a href="#" id="refreshCaptcha"><img id="captchaImg" class="captchaImg" src="'+img+ '"/></a><div></div><input id="captchaKey" class="inputText" name="captcha_key" type="text" style="width: 120px; margin: 3px 0px 0px;" maxlength="7"/><img id="captchaLoader" src="'+base_domain+'images/progress7.gif" style="display:none; margin-top: 13px;" /></div>');
 		box.show();
 		if (isFunction(onShow)) onShow();
 		key = ge('captchaKey');
@@ -2820,7 +2823,7 @@ setTimeout(dApi.Check,10);
 //if(!(dloc.indexOf('vk.com')!=-1 || dloc.indexOf('vkontakte.ru')!=-1)) {
 (function(){
    var xfr_delay=800;
-   if (dloc.indexOf('vk.com')!=-1 || dloc.indexOf('vkontakte.ru')!=-1 || dloc.indexOf('userapi.com')!=-1) xfr_delay=0; 
+   if (dloc.match(/vk\.com|vkontakte\.ru|userapi\.com|vk\.me/)) xfr_delay=0; 
    setTimeout(XFR.check,xfr_delay);
 })();
 
