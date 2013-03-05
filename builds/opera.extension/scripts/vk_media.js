@@ -1327,7 +1327,8 @@ vk_videos = {
       ';
       if (full_titles)  code+='\
       .video_album_text { height: auto !important; }\
-      .video_raw_info_name, .video_row_info_line {height: auto !important; white-space: normal !important;}';
+      .video_raw_info_name, .video_row_info_line {height: auto !important; white-space: normal !important;}\
+      .video_row_info_line{bottom:0px !important;}';
       return code;
    },
    update_vid_titles:function(){
@@ -3473,7 +3474,7 @@ vkLastFM={
             if (!fm.connect_box || !fm.connect_box.isVisible()){
                fm.connect_box=vkAlertBox(IDL('AuthBoxTitle'), IDL('AuthBoxText'), function(){
                   var url = 'http://www.last.fm/api/auth?api_key=' + fm.api_key + '&cb=' + encodeURIComponent(location.protocol+'//' + location.host + '/settings?act=vkscrobbler');
-                  window(url,'_blank','');
+                  window.open(url,'_blank','');
                   //location.href = url;
                }, function(){
                   if (fm.enable_scrobbling) fm.toggle(true);
