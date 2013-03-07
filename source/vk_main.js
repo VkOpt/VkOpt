@@ -596,6 +596,10 @@ function vkProcessResponse(answer,url,q){
       if(answer[0].admins) answer[0].admins = vkModAsNode(answer[0].admins,vkProcessNodeLite,url,q);
   }
   if (q.act=='edit_audio_box' && answer[2]) answer[2]=answer[2]+'vk_audio.in_box_move("'+q.aid+'");'
+  // 39 - highlight common groups
+  if (getSet(39) == 'y' && url=='/al_profile.php' && q.act=='groups'){
+      answer[1]=vkModAsNode(answer[1],vkHighlightProfileGroups,url,q);
+  }
 }
 
 function vkPhChooseProcess(answer,url,q){

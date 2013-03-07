@@ -35,6 +35,7 @@ function vkProfilePage(){
    if (getSet(72) == 'y') vkFrCatsOnProfile();
    vkAddCheckBox_OnlyForFriends();
 	vkHighlightGroups();
+   vkHighlightProfileGroups();
 }
 
 function vkFrCatsOnProfile(){
@@ -112,6 +113,45 @@ function vkShowLastActivity(){
       if (info) ge('vk_profile_online_la').innerHTML = info;
    });
 }
+
+
+function vkHighlightProfileGroups(node){
+   var common=(getSet(39) == 'y');
+   if (!common) return;
+   var p=node || ge('profile_full_info') ;
+   if (!p) return;
+   var nodes=p.getElementsByTagName('a');
+   
+   var hl=function(){
+      var groups=','+vkGetVal('vk_my_groups')+',';
+      for (var i=0;i<nodes.length;i++){
+         var href=nodes[i].getAttribute('href');
+         if (!href) continue;
+         var gid=href.split('/');
+         gid=gid[gid.length-1];
+         if (cur.oid!=remixmid() && groups.indexOf(','+gid+',')!=-1)	addClass(nodes[i],'vk_common_group');
+         if (isGroupAdmin(gid))	addClass(nodes[i],'vk_adm_group');
+      }	      
+   }
+   var gl=vkGetVal('vk_my_groups');
+   if (!gl || gl==''){
+      dApi.call('groups.get',{extended:1},function(r){
+         var data=r.response;
+         count=data.shift();
+         var mygr=[];
+         for (var i=0;i<data.length;i++){
+            mygr.push(data[i].screen_name);
+         }
+         var groups=mygr.join(',');
+         vkSetVal('vk_my_groups',groups);
+         hl();
+      });
+   } else {
+      hl();
+   }
+   
+}
+
 function vkHighlightGroups(){
 	var common=(getSet(39) == 'y');
 	if (ge('profile_groups') && geByClass('module_body',ge('profile_groups'))[0]){
@@ -143,6 +183,7 @@ function vkHighlightGroups(){
 		}
 	}
 }
+
 
 
 function vkProfileEditPage(){
