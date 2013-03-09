@@ -46,7 +46,12 @@ function vkStyles(){
 		main_css+='\
 		.fave_user_div{height: 110px !important; width: 67px !important;}\
 		.fave_user_div *{width:67px !important;} .fave_user_div a img{width:50px !important;}\
-		.fave_user_image{height: 50px !important;}\
+      .fave_user_div .fave_u_bl_wrap{width: 7px !important;}\
+      .fave_uph_wrap{height: 50px !important;}\
+      .fave_user_div .fave_uph{border-radius: 4px;height: 9px !important; line-height: 9px !important;overflow: hidden;padding-left: 3px !important;width: 16px !important;}\
+      .fave_uph{margin-top:50px !important;}\
+      .fave_uph_wrap:hover .fave_uph{margin-top: 0px !important;}\
+		.fave_user_image{height: 50px !important; text-align: center;}\
 		';
 		//if (window.Fave) Fave.init();
 	}
