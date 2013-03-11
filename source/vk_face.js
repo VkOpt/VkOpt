@@ -42,7 +42,7 @@ function vkStyles(){
 	if (getSet(28)=='y') main_css+=GetUnReadColorCss();
    main_css+=vkNotifierWrapMove();
 	//compact fave
-	if (CompactFave=='y'){
+	if (CompactFave=='y'){//getSet(17)
 		main_css+='\
 		.fave_user_div{height: 110px !important; width: 67px !important;}\
 		.fave_user_div *{width:67px !important;} .fave_user_div a img{width:50px !important;}\
