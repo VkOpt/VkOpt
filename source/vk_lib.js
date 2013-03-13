@@ -6,6 +6,7 @@
 // @include       *vkontakte.ru*
 // @include       *vk.com*
 // @include       *userapi.com*
+// @include       *vk.me*
 // @include       *vkadre.ru*
 // @include       *durov.ru*
 // @include       *youtube.com*

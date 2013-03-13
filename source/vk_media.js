@@ -3301,6 +3301,7 @@ function vkAudioPlayList(add_button){
 	dApi.call('audio.get',params,function(r){
 		var res='#EXTM3U\n';
 		var pls='[playlist]\n\n';
+      var wiki='';
 		var links=[];
 		var list=r.response;
 		for (var i=0;i<list.length;i++){
@@ -3312,6 +3313,8 @@ function vkAudioPlayList(add_button){
 			pls+='Title'+(i+1)+'='+winToUtf(itm.artist+" - "+itm.title)+'\n';
 			pls+='Length'+(i+1)+'='+itm.duration+'\n\n';
 			
+         wiki+='[[audio'+itm.owner_id+'_'+itm.aid+']]\r\n';
+         
 			links.push(itm.url+"?/"+vkEncodeFileName(vkCleanFileName(itm.artist+" - "+itm.title))+".mp3");
 		}
 		pls+='\nNumberOfEntries='+list.length+'\n\nVersion=2'
@@ -3327,12 +3330,18 @@ function vkAudioPlayList(add_button){
 				<a href="data:audio/x-scpls;base64,' + base64_encode(utf8ToWindows1251(utf8_encode(pls))) + '">'+vkButton(IDL('download_PLS'))+'</a>\
 				<a href="data:audio/x-scpls;base64,' + base64_encode(utf8_encode(pls)) + '">'+vkButton(IDL('download_PLS')+' (UTF-8)','',1)+'</a>\
 				</div>';
-
+            
+      links_html='<div class="vk_mp3_links">\
+				<textarea id="vk_mp3_links_area">'+links.join('\n')+'</textarea>\
+				<a href="data:text/plain;base64,' + base64_encode(utf8ToWindows1251(utf8_encode(links.join('\n')))) + '">'+vkButton(IDL('.TXT'))+'</a>\
+				<a href="data:text/plain;base64,' + base64_encode(utf8_encode(links.join('\n'))) + '">'+vkButton(IDL('.TXT')+' (UTF-8)','',1)+'</a>\
+				</div>';
 		var tabs=[];
 
-		tabs.push({name:IDL('links'),active:true, content:'<div class="vk_mp3_links"><textarea id="vk_mp3_links_area">'+links.join('\n')+'</textarea></div>'});
+		tabs.push({name:IDL('links'),active:true, content:links_html/*'<div class="vk_mp3_links"><textarea id="vk_mp3_links_area">'+links.join('\n')+'</textarea></div>'*/});
 		tabs.push({name:IDL('M3U_Playlist'),content:m3u_html});
 		tabs.push({name:IDL('PLS_Playlist'),content:pls_html});
+      tabs.push({name:IDL('Wiki'), content:'<div class="vk_mp3_links"><textarea id="vk_mp3_links_area">'+wiki+'</textarea></div>'});
 		box=vkAlertBox('MP3',vkMakeContTabs(tabs));
 		box.setOptions({width:"560px"});
 		/*alert(links.join('\n'));
@@ -4060,7 +4069,7 @@ function vkViewAlbumInfo(artist,track){
       if (tracks){
          vk_current_album_info=data;
          for (var i=0; i<tracks.length;i++){
-            var track_name=data.artist+' - '+tracks[i];
+            var track_name=(data.artist || data.name)+' - '+tracks[i];
             html+='<li><a href="/search?c[q]='+encodeURIComponent(track_name)+'&c[section]=audio" '+
                'onclick="if (checkEvent(event)) { event.cancelBubble = true; return}; '+
                   'Audio.selectPerformer(event, \''+track_name.replace(/'/,'\\\'')+'\'); return false">'+tracks[i]+'</a></li>';
@@ -4081,7 +4090,7 @@ function vkViewAlbumInfo(artist,track){
                                     .replace(/%ARTIST%/g,'<a href="'+data.url+'" target="_blank">'+data.name+'</a>')
                                     .replace(/%IMG%/g,data.image[1]['#text'] || '/images/question_c.gif')
                                     .replace(/%IMG2%/g,data.image[2]['#text'] || '/images/question_c.gif')
-                                    .replace(/%TRACKS%/g,(data.bio.summary?'<div class="bio">'+data.bio.summary+'</div>':''));      
+                                    .replace(/%TRACKS%/g,html?html:(data.bio.summary?'<div class="bio">'+data.bio.summary+'</div>':''));      
       }
       ge('vk_album_info').innerHTML=html;
    });
@@ -4154,9 +4163,9 @@ function vkAlbumCollectPlaylist(){
       }
          
       ge('vk_scan_msg').innerHTML=vkProgressBar(idx,vk_current_album_info.tracks.length,310, '['+idx+'/'+vk_current_album_info.tracks.length+'] %');  
-     
+
       //progressbar
-      var name=vk_current_album_info.artist+ '-'+vk_current_album_info.tracks[idx];
+      var name=(vk_current_album_info.artist || vk_current_album_info.name)+ '-'+vk_current_album_info.tracks[idx];
       var query={
                act: "search", offset: 0, sort: 0, performer: 0,
                id     : cur.id, 
@@ -4183,7 +4192,8 @@ function vkAlbumCollectPlaylist(){
             else
                ge('vk_scan_info').innerHTML+='<b>Search failed:</b> '+name+'<br>'; 
             idx++;
-            get_track();
+            setTimeout(get_track,(idx%10==0 || !au)?2000:100);
+            //get_track();
          }
       });
    }
@@ -4265,16 +4275,56 @@ function vkGetAlbumInfo(artist,track,callback){
                         params['mbid']=data.track.artist.mbid;
                      else 
                         params['artist']=data.track.artist.name;
-                        
+                     //*  
+                     // GET ARTIST INFO
                      vkLastFM.lastfm.artist.getInfo(params, {
-                        success: function(data) {
-                          data=data.artist;
-                          data.act='artist_info';
-                          console.log(data);
-                          callback(data,null);
+                        success: function(a_data) {
+                          a_data=a_data.artist;
+                          a_data.act='artist_info';
+                          console.log(a_data);
+                          //callback(data,null);
                           
+                          // GET TOP TRACKS INFO
+                          params['limit']=100;
+                           vkLastFM.lastfm.artist.getTopTracks(params, {
+                              success: function(data) {
+                                 //console.log(data);
+                                 data=data.toptracks;
+                                 data.act='top_tracks';
+                                 //a_data.artist
+                                 var tracks=[];
+                                 for (var i=0; i<data.track.length;i++){
+                                    var t=data.track[i];
+                                    tracks.push(t.name);
+                                    if (!in_cache(artist,t.name)){
+                                       vk_album_info_cache.push({
+                                          artist: artist,
+                                          track: t.name, 
+                                          data:data,
+                                          
+                                       });
+                                    }
+                                 }
+                                 vk_album_info_cache.push({
+                                    artist: artist,
+                                    track: track, 
+                                    data:data,
+                                 });
+                                 //data.tracks=tracks;
+                                 a_data.tracks=tracks;
+                                 callback(a_data,tracks);
+                                 /*console.log(data)*/
+                              },
+                              error: function(code, message) {
+                                 console.log(code, message);
+                                 callback(a_data,null);
+                              }
+                           });                          
                         }
-                     });
+                     });//*/
+                     
+                     
+                     
                   }
                   else console.log('no info')
                }, 
