@@ -217,6 +217,11 @@ function GetUserMenuCfg(){
 vkumlnks=0;
 function vkProcessUserLink(link){
 	if (link.hasAttribute('exuser')) return;
+   var cn=link.className || '';
+   if (cn.match(/audio_friend_status/)) return;
+   var cl_name=(link.className.indexOf('fl_r')!=-1?' fl_r':'');
+   if (cn.indexOf('audio_friend_name_now')!=-1) cl_name+=' fl_r';
+   
 	var uid=ExtractUserID(link.getAttribute('href'));
 	var txt=link.innerHTML;
 	if (!uid || uid.indexOf('?')!=-1 || /(href=|src=)/.test(txt)) return;
@@ -224,7 +229,7 @@ function vkProcessUserLink(link){
 	var mev=(getSet(11)=='y')?'onclick':'onmouseover';
 	var inel=document.createElement('a');
 	inel.id="pup"+adid;
-	inel.setAttribute('class','vk_usermenu_btn'+(link.className.indexOf('fl_r')!=-1?' fl_r':''));
+	inel.setAttribute('class','vk_usermenu_btn'+cl_name);
 	inel.setAttribute(mev,'pupShow(event,\''+adid+'\',\''+uid+'\',this); return false;');
 	inel.setAttribute("onmousedown","event.cancelBubble = true;");
 	inel.innerHTML=USERMENU_SYMBOL;
@@ -267,6 +272,7 @@ function pupShow(event,pid,id,el) {
  if (!event)event=window.event;
  pup_menu.style.left=event.pageX+"px";//pageX
  pup_menu.style.top=event.pageY+"px";//pageY
+ cancelEvent(event);
  var str = '<div class="vk_popupmenu"><ul>';//"<table cellpadding=0 cellspacing=0><tr><td class='pupSide'></td><td><div class='pupBody'>";
  str += ExUserItems(id,el)+'%plugins';//pupItems(pid);
  str += '</ul></div>';//"</div><div class='pupBottom'></div><div class='pupBottom2'></div></td><td class='pupSide'></td></tr>";
