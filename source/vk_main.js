@@ -608,7 +608,18 @@ function vkPhChooseProcess(answer,url,q){
     var val=ge('vk_link_to_photo').value.match(/photo(-?\d+)_(\d+)/);
     lockButton(btn);
     if (val){
-      cur.chooseMedia('photo', val[1]+'_'+val[2],['', '', '', '{temp: {x_src: ""}, big: 1}']);//['http://cs5751.vk.com/u13391307/138034142/m_a6b31fd8.jpg', 'http://cs5751.vk.com/u13391307/138034142/s_818dc071.jpg', '9b949405dd303694e1', '{temp: {x_src: "http://cs5751.vk.com/u13391307/138034142/x_c8cae130.jpg"}, big: 1}']
+      cur.chooseMedia('photo', val[1]+'_'+val[2],{"thumb_s": "http://vk.com/images/no_photo.png", "thumb_m": "http://vk.com/images/no_photo.png","view_opts": '{temp:{x_src: "http://vk.com/images/no_photo.png"}}',  "editable": {
+      "sizes": {
+         "s": ["http://vk.com/images/no_photo.png", 57, 43],
+         "m": ["http://vk.com/images/no_photo.png", 115, 87],
+         "x": ["http://vk.com/images/no_photo.png", 575, 435],
+         "o": ["http://vk.com/images/no_photo.png", 115, 87],
+         "p": ["http://vk.com/images/no_photo.png", 230, 174],
+         "q": ["http://vk.com/images/no_photo.png", 345, 261],
+         "r": ["http://vk.com/images/no_photo.png", 575, 435]
+      }
+   }
+});// ['', '', '', '{temp: {x_src: ""}, big: 1}']  ['http://cs5751.vk.com/u13391307/138034142/m_a6b31fd8.jpg', 'http://cs5751.vk.com/u13391307/138034142/s_818dc071.jpg', '9b949405dd303694e1', '{temp: {x_src: "http://cs5751.vk.com/u13391307/138034142/x_c8cae130.jpg"}, big: 1}']
     } else {
       alert(IDL('IncorrectPhotoLink'))
     }
