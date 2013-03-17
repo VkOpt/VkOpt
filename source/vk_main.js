@@ -602,12 +602,56 @@ function vkProcessResponse(answer,url,q){
   }
 }
 
+vk_ch_media={
+   photo:function(id,img,w,h){
+      var sizes=null;
+      
+      img=img || "http://vk.com/images/no_photo.png";
+      if (img){
+         w = w || 115;
+         h = h || 87;
+         var s=w/h;
+         sizes={
+            "s": [img, Math.round(75*(s<1?s:1)), Math.round(75/(s>1?s:1))],
+            "m": [img, Math.round(130*(s<1?s:1)), Math.round(130/(s>1?s:1))],
+            "x": [img, Math.round(604*(s<1?s:1)), Math.round(604/(s>1?s:1))],
+            "o": [img, Math.round(130*(s<1?s:1)), Math.round(130/(s>1?s:1))],
+            "p": [img, Math.round(200*(s<1?s:1)), Math.round(200/(s>1?s:1))],
+            "q": [img, Math.round(320*(s<1?s:1)), Math.round(320/(s>1?s:1))],
+            "r": [img, Math.round(510*(s<1?s:1)), Math.round(510/(s>1?s:1))]
+         } 
+      
+      } else {
+         img="http://vk.com/images/no_photo.png";
+         sizes={
+            "s": [img, 57, 43],
+            "m": [img, 115, 87],
+            "x": [img, 575, 435],
+            "o": [img, 115, 87],
+            "p": [img, 230, 174],
+            "q": [img, 345, 261],
+            "r": [img, 575, 435]
+         }  
+      }
+      
+      cur.chooseMedia('photo', id, {
+         "thumb_s": img, 
+         "thumb_m": img,
+         "view_opts": '{temp:{x_src: "'+img+'"}}',  
+         "editable": {
+            "sizes": sizes
+         }
+      });
+   }
+}
 function vkPhChooseProcess(answer,url,q){
   vkCheckPhotoLinkToMedia=function(){
     var btn=ge('vk_link_to_photo_button');
     var val=ge('vk_link_to_photo').value.match(/photo(-?\d+)_(\d+)/);
     lockButton(btn);
     if (val){
+      vk_ch_media.photo(val[1]+'_'+val[2]);
+      /*
       cur.chooseMedia('photo', val[1]+'_'+val[2],{"thumb_s": "http://vk.com/images/no_photo.png", "thumb_m": "http://vk.com/images/no_photo.png","view_opts": '{temp:{x_src: "http://vk.com/images/no_photo.png"}}',  "editable": {
       "sizes": {
          "s": ["http://vk.com/images/no_photo.png", 57, 43],
@@ -619,7 +663,8 @@ function vkPhChooseProcess(answer,url,q){
          "r": ["http://vk.com/images/no_photo.png", 575, 435]
       }
    }
-});// ['', '', '', '{temp: {x_src: ""}, big: 1}']  ['http://cs5751.vk.com/u13391307/138034142/m_a6b31fd8.jpg', 'http://cs5751.vk.com/u13391307/138034142/s_818dc071.jpg', '9b949405dd303694e1', '{temp: {x_src: "http://cs5751.vk.com/u13391307/138034142/x_c8cae130.jpg"}, big: 1}']
+});//*/
+// ['', '', '', '{temp: {x_src: ""}, big: 1}']  ['http://cs5751.vk.com/u13391307/138034142/m_a6b31fd8.jpg', 'http://cs5751.vk.com/u13391307/138034142/s_818dc071.jpg', '9b949405dd303694e1', '{temp: {x_src: "http://cs5751.vk.com/u13391307/138034142/x_c8cae130.jpg"}, big: 1}']
     } else {
       alert(IDL('IncorrectPhotoLink'))
     }

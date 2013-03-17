@@ -148,6 +148,52 @@ function vkGoToLink(link,mid){
   });
 }
 
+vk_users = {
+   find_age:function(target_uid,callback,ops){
+      var min=12
+      var max=80;
+      ops = ops || {};
+      var age=min;
+      if (!ops.el){
+         box=new MessageBox({title: IDL('Scaning'),closeButton:true,width:"350px"});
+         box.removeButtons();
+         box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no');
+      }
+      var html='<div id="vk_scan_bar" style="padding-bottom:10px;">'+vkBigLdrImg+'</div>';
+      if (!ops.el) box.content(html).show();
+      else ge(ops.el).innerHTML=vkLdrImg;
+      
+      var fid=28702150; 
+      var scan=function(){
+         ge(ops.el || 'vk_scan_bar').innerHTML=vkProgressBar(age-min,max-min,(ops.width || 310),' %');
+         ajax.post('/friends',{act:'filter_friends',al:1,city:0,sex:0,age_from:age,age_to:age,uid:fid},{
+            onDone:function(uids){
+               x=inArr(uids,target_uid);
+               if (x) {
+                  if (!ops.el) box.hide();
+                  callback(age);
+               } else {
+                  age++
+                  if (age>max){
+                     callback(null);
+                  } else {
+                     setTimeout(scan,300);
+                  }
+               }
+            }
+         });
+      } 
+      dApi.call('friends.get',{uid:target_uid,count:1},function(r){
+         if (!r.response || !r.response[0]){
+            alert('Sorry... Mission impossible...');
+            if (!ops.el) box.hide();
+            return;
+         }
+         fid=r.response[0];
+         scan();
+      })
+   }
+}
 
 //////////////////////////////////
 // ExUserMenu by KiberInfinity //

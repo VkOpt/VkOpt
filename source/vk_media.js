@@ -189,10 +189,17 @@ var vk_photos = {
             var ph=cur_photos[i];
             html+='\
                   <div class="photos_choose_row fl_l">\
-                    <a href="photo'+ph.owner_id+'_'+ph.pid+'" onclick="return cur.chooseMedia(\'photo\', \''+ph.owner_id+'_'+ph.pid+'\', [\''+ph.src+'\', \''+ph.src_small+'\', \'\',  \'{temp: {}, big: 1}\']);">\
+                    <a href="photo'+ph.owner_id+'_'+ph.pid+'" onclick="return vk_ch_media.photo(\''+ph.owner_id+'_'+ph.pid+'\',\''+(ph.src_big || ph.src)+'\','+(ph.width || 0)+','+(ph.height || 0)+');">\
                       <img class="photo_row_img" src="'+ph.src+'">\
                     </a>\
                   </div>';
+            /*
+            html+='\
+                  <div class="photos_choose_row fl_l">\
+                    <a href="photo'+ph.owner_id+'_'+ph.pid+'" onclick="return cur.chooseMedia(\'photo\', \''+ph.owner_id+'_'+ph.pid+'\', [\''+ph.src+'\', \''+ph.src_small+'\', \'\',  \'{temp: {}, big: 1}\']);">\
+                      <img class="photo_row_img" src="'+ph.src+'">\
+                    </a>\
+                  </div>';*/
          }
          html+=pages_html;
          html+='<br id="photos_choose_clear" class="clear">';
@@ -2720,6 +2727,16 @@ vk_audio={
       }); 
      vkAlertBox('Links','<textarea style="width:560px; height:300px;">'+links.join('\n')+'</textarea>').setOptions({width:'600px'})
      return false;
+   },
+   search_track:function(event, name){
+      cur.aSearch.setValue(name);
+      cur.forceNoAutoComplete = true;
+      if (event) {
+      cur.searchTypeMenu.value = 0;
+      cur.searchTypeChanged({target: {index: 0}}, true);
+      }
+      Audio.updateList(null, cur.aSearch);
+      if (event) cancelEvent(event);
    }
 }
 //vk_audio.links_to_audio_on_page();
@@ -3231,7 +3248,7 @@ function vkAudioDurSearchBtn(audio,fullname,id){
 	var dur=fullname?audio:audio[4];
 	id = fullname?id:audio[0]+'_'+audio[1];
 	//var onclick='if (checkEvent(event)) return; Audio.selectPerformer(event, \''+sq+'\'); return false';'return nav.go(this, event);'
-	return '<a href="/search?c[q]='+sq+'&c[section]=audio" onmouseover="vkGetAudioSize(\''+id+'\',this)" onclick="if (checkEvent(event)) return; Audio.selectPerformer(event, \''+sq+'\'); return false">'+dur+'</a>';
+	return '<a href="/search?c[q]='+sq+'&c[section]=audio" onmouseover="vkGetAudioSize(\''+id+'\',this)" onclick="if (checkEvent(event)) return; vk_audio.search_track(event, \''+sq+'\'); return false">'+dur+'</a>';
 }
 
 function vkAudioBtns(){
@@ -4072,7 +4089,7 @@ function vkViewAlbumInfo(artist,track){
             var track_name=(data.artist || data.name)+' - '+tracks[i];
             html+='<li><a href="/search?c[q]='+encodeURIComponent(track_name)+'&c[section]=audio" '+
                'onclick="if (checkEvent(event)) { event.cancelBubble = true; return}; '+
-                  'Audio.selectPerformer(event, \''+track_name.replace(/'/,'\\\'')+'\'); return false">'+tracks[i]+'</a></li>';
+                  'vk_audio.search_track(event, \''+track_name.replace(/'/,'\\\'')+'\'); return false">'+tracks[i]+'</a></li>';
          }
          html='<ul>'+html+'</ul><div class="vk_tracks_search_btn"><div class="button_blue button_wide"><button onclick="vkAlbumCollectPlaylist()">'+IDL('SearchAlbumTracks')+'</button></div></div>';
       }

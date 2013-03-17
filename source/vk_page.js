@@ -496,6 +496,17 @@ function vkProcessBirthday(day,month,year){
    }
    return info;
 }
+
+function vkBDYear(uid,el){
+   var _el=ge(el);
+   addClass(_el,'fl_r');
+   vk_users.find_age(uid,function(age){
+      var txt=age?langNumeric(age, vk_lang["vk_year"]):'N/A';
+      removeClass(_el,'fl_r');
+      _el.innerHTML=txt;
+   },{el:el,width:50});
+   return false;
+}
 function vkProcessProfileBday(node){
    node = node ||  ge('profile_info');//"profile_full_info"
    
@@ -508,17 +519,20 @@ function vkProcessProfileBday(node){
    var info=vkProcessBirthday(md?md[1]:null,md?md[2]:null,yr?yr[1]:null);
    
    if (info.length>0){
+      if (!yr)
+         info.push('<span id="%age_el"><a href="#" onclick="return vkBDYear('+cur.oid+',\'%age_el\');">'+langNumeric('?', vk_lang["vk_year"])+'</a></span>');
       info = ' ('+info.join(', ')+')';
+
       var links=node.getElementsByTagName('a');
       for (var i=0;i<links.length;i++){
          if (links[i].href && links[i].href.match(rmd)) 
-            links[i].parentNode.appendChild(vkCe('span',{"class":"vk_bday_info"},info));
+            links[i].parentNode.appendChild(vkCe('span',{"class":"vk_bday_info"},info.replace(/%age_el/g,'vkage0')));
       }
       if (cur.options.info) {
          var r1 = /(c\[byear\]=[^>]+>[^<>]+<\/a>)/;
          r1 = cur.options.info[0].match(r1) ? r1 : /(c\[bmonth\]=[^>]+>[^<>]+<\/a>)/;
-         cur.options.info[0] = cur.options.info[0].replace(r1, "$1" + info);
-         cur.options.info[1] = cur.options.info[1].replace(r1, "$1" + info);
+         cur.options.info[0] = cur.options.info[0].replace(r1, "$1" + info.replace(/%age_el/g,'vkage1'));
+         cur.options.info[1] = cur.options.info[1].replace(r1, "$1" + info.replace(/%age_el/g,'vkage2'));
       }     
    }
 }
