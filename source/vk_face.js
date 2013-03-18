@@ -274,6 +274,7 @@ function vkStyles(){
 		.audio .down_btn { \
          background-image: url("'+img+'") !important; \
          background-position:0 0 !important;\
+         background-size: 16px 17px !important;\
          border-radius:3px;\
          width: 16px !important;\
       }\
@@ -533,6 +534,14 @@ function vkStyles(){
          \
          .vk_mob_ico {  background: url(/images/mobile_online.gif) no-repeat transparent; height: 12px;margin-left: 4px;padding-left: 10px;width: 0px;}\
          .vk_album_done_link  .vk_album_count{display:none;}\
+         .vk_opa2{\
+            opacity:0.2;\
+            -webkit-transition: opacity 100ms linear;\
+            -moz-transition: opacity 100ms linear;\
+            -o-transition: opacity 100ms linear;\
+            transition: opacity 100ms linear;\
+         }\
+         .vk_opa2:hover{opacity:1}\
 	";
    main_css+=vk_board.css;
    main_css+=vk_photos.css;

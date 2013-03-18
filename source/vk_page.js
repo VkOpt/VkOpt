@@ -2079,7 +2079,7 @@ vk_feed={
          if (cfg[i]=='1') 
             items[i][2]=true;
       }
-      
+            
       var prefix='vkf_no';
       var fobj='feed_wall';
       
@@ -2087,6 +2087,11 @@ vk_feed={
          for (var i=0; i<items.length; i++){
             (items[i][2]?addClass:removeClass)(ge(fobj),prefix+items[i][1]);
          }
+         var cfg=[]
+         for (var i=0; i<items.length; i++){
+            cfg.push(items[i][2]?'1':'0');
+         }
+         vkSetVal('vk_feed_filter',cfg.join(''));
       }
       var disable=function(){
          for (var i=0; i<items.length; i++)

@@ -215,6 +215,7 @@ function VkOptMainInit(){
   if (getSet(31)=='y' || getSet(35)=='y') vkMakeRightBar();
   if (vk_DEBUG) vkInitDebugBox();
   vkInitSettings();
+  if (getSet(78)=='n') CUT_VKOPT_BRACKET=true;
   vkBroadcast.Init(vkOnStorage);
   window.vkopt_ready=true;
   vk_plugins.init();
@@ -683,11 +684,11 @@ function vkPhChooseProcess(answer,url,q){
       }
      }
      if (ref){
-       var node=vkCe('div',{"class":'ta_r','style':"height: 25px; padding-left:10px; padding-top:4px;"},'\
+       var node=vkCe('div',{"class":'ta_r vk_opa2','style':"height: 25px; padding-left:10px; padding-top:4px;"},'\
        <div class="fl_l">\
            '+IDL('EnterLinkToPhoto')+': \
-         <span><input id="vk_link_to_photo" type="text"  style="width:230px"></span>\
-         <div id="vk_link_to_photo_button" class="button_blue"><button onclick="vkCheckPhotoLinkToMedia();">'+IDL('OK')+'</button></div>\
+         <span><input id="vk_link_to_photo" type="text"  style="width:230px" class="s_search text"></span>\
+         <div id="vk_link_to_photo_button" class="button_blue" style="vertical-align: middle;"><button onclick="vkCheckPhotoLinkToMedia();">'+IDL('OK')+'</button></div>\
        </div>\
        ');
        ref.parentNode.insertBefore(node,ref);
@@ -728,10 +729,10 @@ function vkVidChooseProcess(answer,url,q){
    } 
   
   if (ref){
-    var node=vkCe('div',{'style':"height: 25px; padding: 4px 20px;"},'\
+    var node=vkCe('div',{'style':"height: 25px; padding: 4px 20px;","class":'vk_opa2'},'\
     <div class="fl_l">'+IDL('EnterLinkToVideo')+':</div>\
       <span class="fl_l"><input id="vk_link_to_video" type="text"  style="width:215px" class="s_search text"></span>\
-      <div id="vk_link_to_video_button" class="button_blue fl_r"><button onclick="vkCheckVideoLinkToMedia();">'+IDL('OK')+'</button></div>\
+      <div id="vk_link_to_video_button" class="button_blue fl_r"  style="vertical-align: middle;"><button onclick="vkCheckVideoLinkToMedia();">'+IDL('OK')+'</button></div>\
     \
     ');
     /*ref.parentNode.insertBefore(node,ref);
@@ -770,10 +771,10 @@ function vkAudioChooseProcess(answer,url,q){
    }
   
   if (ref){
-    var node=vkCe('div',{'style':"height: 25px; padding: 4px 20px;"},'\
+    var node=vkCe('div',{'style':"height: 25px; padding: 4px 20px;","class":'vk_opa2'},'\
     <div class="fl_l">'+IDL('EnterLinkToAudio')+':</div>\
       <span class="fl_l"><input id="vk_link_to_audio" type="text" style="width:190px"  class="s_search text"></span>\
-      <div id="vk_link_to_audio_button" class="button_blue fl_r"><button onclick="vkCheckAudioLinkToMedia();">'+IDL('OK')+'</button></div>\
+      <div id="vk_link_to_audio_button" class="button_blue fl_r"  style="vertical-align: middle;"><button onclick="vkCheckAudioLinkToMedia();">'+IDL('OK')+'</button></div>\
     \
     ');
     //ref.parentNode.insertBefore(node,ref);

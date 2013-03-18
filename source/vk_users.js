@@ -163,7 +163,7 @@ vk_users = {
       if (!ops.el) box.content(html).show();
       else ge(ops.el).innerHTML=vkLdrImg;
       
-      var fid=28702150; 
+      var fid=0; 
       var scan=function(){
          ge(ops.el || 'vk_scan_bar').innerHTML=vkProgressBar(age-min,max-min,(ops.width || 310),' %');
          ajax.post('/friends',{act:'filter_friends',al:1,city:0,sex:0,age_from:age,age_to:age,uid:fid},{
@@ -183,12 +183,13 @@ vk_users = {
             }
          });
       } 
-      dApi.call('friends.get',{uid:target_uid,count:1},function(r){
+      dApi.call('friends.get',{uid:target_uid,count:10},function(r){
          if (!r.response || !r.response[0]){
             alert('Sorry... Mission impossible...');
             if (!ops.el) box.hide();
             return;
          }
+         console.log('fid',r.response[0]);
          fid=r.response[0];
          scan();
       })

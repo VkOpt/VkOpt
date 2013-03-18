@@ -4238,9 +4238,10 @@ function vkGetAlbumInfo(artist,track,callback){
       return false;
    }
    var x=in_cache(artist,track);
-   if (x) 
+   if (x){ 
+      console.log('in cache',x);
       setTimeout(function(){callback(x,x.tracks)},2);
-   else
+   }else
       vkLastFM.lastfm.track.getInfo({
             artist: artist,
             track: track,
@@ -4307,25 +4308,28 @@ function vkGetAlbumInfo(artist,track,callback){
                               success: function(data) {
                                  //console.log(data);
                                  data=data.toptracks;
+                                 //data.image=a_data.image;
+                                 //data.bio=a_data.bio;
                                  data.act='top_tracks';
                                  //a_data.artist
                                  var tracks=[];
                                  for (var i=0; i<data.track.length;i++){
                                     var t=data.track[i];
                                     tracks.push(t.name);
+                                    /*
                                     if (!in_cache(artist,t.name)){
                                        vk_album_info_cache.push({
                                           artist: artist,
                                           track: t.name, 
-                                          data:data,
+                                          data:a_data,
                                           
                                        });
-                                    }
+                                    }*/
                                  }
                                  vk_album_info_cache.push({
                                     artist: artist,
                                     track: track, 
-                                    data:data,
+                                    data:a_data,
                                  });
                                  //data.tracks=tracks;
                                  a_data.tracks=tracks;
