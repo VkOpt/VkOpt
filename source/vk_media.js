@@ -12,7 +12,7 @@ function vkPhotoViewer(){
   //main inj
   //Inj.End('photoview.receiveComms','vkProcessNode(comms);');
   
-  Inj.Before('photoview.doShow','cur.pvNarrow','ph.comments=vkModAsNode(ph.comments,vkProcessNode); if(ph.tagshtml) ph.tagshtml=vkModAsNode(ph.tagshtml,vkProcessNode);');
+  Inj.Before('photoview.doShow','cur.pvNarrow','vk_phviewer.proc1(ph);');
   Inj.Before('photoview.doShow','var likeop','vkProcessNode(cur.pvNarrow);');
   Inj.End('photoview.doShow','vkProcessNode(cur.pvWide);');
   Inj.Before('photoview.doShow','+ (ph.actions.del','+ vkPVLinks(ph) + vk_plugins.photoview_actions(ph) ');
@@ -36,6 +36,16 @@ function vkPhotoViewer(){
   }//*/
 }
 
+vk_phviewer={
+   proc1:function(ph){
+      if (ph.comments)
+         ph.comments=vkModAsNode(ph.comments,vkProcessNode);
+      if (cur.pvCommsLikes && cur.pvCommsLikes[ph.id] && cur.pvCommsLikes[ph.id][0] && !cur.pvCommsLikes[ph.id][0].tagName)
+         cur.pvCommsLikes[ph.id][0]=vkModAsNode(cur.pvCommsLikes[ph.id][0],vkProcessNode);
+      if(ph.tagshtml) 
+         ph.tagshtml=vkModAsNode(ph.tagshtml,vkProcessNode);
+   }
+}
 function vkPVAfterShow(){
 	vkPVChangeView=function(){
 		window.PVShowFullHeight=!window.PVShowFullHeight;

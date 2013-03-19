@@ -42,11 +42,16 @@ function vkStyles(){
 	if (getSet(28)=='y') main_css+=GetUnReadColorCss();
    main_css+=vkNotifierWrapMove();
 	//compact fave
-	if (CompactFave=='y'){
+	if (CompactFave=='y'){//getSet(17)
 		main_css+='\
 		.fave_user_div{height: 110px !important; width: 67px !important;}\
 		.fave_user_div *{width:67px !important;} .fave_user_div a img{width:50px !important;}\
-		.fave_user_image{height: 50px !important;}\
+      .fave_user_div .fave_u_bl_wrap{width: 7px !important;}\
+      .fave_uph_wrap{height: 50px !important;}\
+      .fave_user_div .fave_uph{border-radius: 4px;height: 9px !important; line-height: 9px !important;overflow: hidden;padding-left: 3px !important;width: 16px !important;}\
+      .fave_uph{margin-top:50px !important;}\
+      .fave_uph_wrap:hover .fave_uph{margin-top: 0px !important;}\
+		.fave_user_image{height: 50px !important; text-align: center;}\
 		';
 		//if (window.Fave) Fave.init();
 	}
@@ -269,6 +274,7 @@ function vkStyles(){
 		.audio .down_btn { \
          background-image: url("'+img+'") !important; \
          background-position:0 0 !important;\
+         background-size: 16px 17px !important;\
          border-radius:3px;\
          width: 16px !important;\
       }\
@@ -528,6 +534,14 @@ function vkStyles(){
          \
          .vk_mob_ico {  background: url(/images/mobile_online.gif) no-repeat transparent; height: 12px;margin-left: 4px;padding-left: 10px;width: 0px;}\
          .vk_album_done_link  .vk_album_count{display:none;}\
+         .vk_opa2{\
+            opacity:0.2;\
+            -webkit-transition: opacity 100ms linear;\
+            -moz-transition: opacity 100ms linear;\
+            -o-transition: opacity 100ms linear;\
+            transition: opacity 100ms linear;\
+         }\
+         .vk_opa2:hover{opacity:1}\
 	";
    main_css+=vk_board.css;
    main_css+=vk_photos.css;

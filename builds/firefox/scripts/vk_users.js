@@ -148,6 +148,53 @@ function vkGoToLink(link,mid){
   });
 }
 
+vk_users = {
+   find_age:function(target_uid,callback,ops){
+      var min=12
+      var max=80;
+      ops = ops || {};
+      var age=min;
+      if (!ops.el){
+         box=new MessageBox({title: IDL('Scaning'),closeButton:true,width:"350px"});
+         box.removeButtons();
+         box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no');
+      }
+      var html='<div id="vk_scan_bar" style="padding-bottom:10px;">'+vkBigLdrImg+'</div>';
+      if (!ops.el) box.content(html).show();
+      else ge(ops.el).innerHTML=vkLdrImg;
+      
+      var fid=0; 
+      var scan=function(){
+         ge(ops.el || 'vk_scan_bar').innerHTML=vkProgressBar(age-min,max-min,(ops.width || 310),' %');
+         ajax.post('/friends',{act:'filter_friends',al:1,city:0,sex:0,age_from:age,age_to:age,uid:fid},{
+            onDone:function(uids){
+               x=inArr(uids,target_uid);
+               if (x) {
+                  if (!ops.el) box.hide();
+                  callback(age);
+               } else {
+                  age++
+                  if (age>max){
+                     callback(null);
+                  } else {
+                     setTimeout(scan,300);
+                  }
+               }
+            }
+         });
+      } 
+      dApi.call('friends.get',{uid:target_uid,count:10},function(r){
+         if (!r.response || !r.response[0]){
+            alert('Sorry... Mission impossible...');
+            if (!ops.el) box.hide();
+            return;
+         }
+         console.log('fid',r.response[0]);
+         fid=r.response[0];
+         scan();
+      })
+   }
+}
 
 //////////////////////////////////
 // ExUserMenu by KiberInfinity //
@@ -217,6 +264,11 @@ function GetUserMenuCfg(){
 vkumlnks=0;
 function vkProcessUserLink(link){
 	if (link.hasAttribute('exuser')) return;
+   var cn=link.className || '';
+   if (cn.match(/audio_friend_status/)) return;
+   var cl_name=(link.className.indexOf('fl_r')!=-1?' fl_r':'');
+   if (cn.indexOf('audio_friend_name_now')!=-1) cl_name+=' fl_r';
+   
 	var uid=ExtractUserID(link.getAttribute('href'));
 	var txt=link.innerHTML;
 	if (!uid || uid.indexOf('?')!=-1 || /(href=|src=)/.test(txt)) return;
@@ -224,7 +276,7 @@ function vkProcessUserLink(link){
 	var mev=(getSet(11)=='y')?'onclick':'onmouseover';
 	var inel=document.createElement('a');
 	inel.id="pup"+adid;
-	inel.setAttribute('class','vk_usermenu_btn'+(link.className.indexOf('fl_r')!=-1?' fl_r':''));
+	inel.setAttribute('class','vk_usermenu_btn'+cl_name);
 	inel.setAttribute(mev,'pupShow(event,\''+adid+'\',\''+uid+'\',this); return false;');
 	inel.setAttribute("onmousedown","event.cancelBubble = true;");
 	inel.innerHTML=USERMENU_SYMBOL;
@@ -267,6 +319,7 @@ function pupShow(event,pid,id,el) {
  if (!event)event=window.event;
  pup_menu.style.left=event.pageX+"px";//pageX
  pup_menu.style.top=event.pageY+"px";//pageY
+ cancelEvent(event);
  var str = '<div class="vk_popupmenu"><ul>';//"<table cellpadding=0 cellspacing=0><tr><td class='pupSide'></td><td><div class='pupBody'>";
  str += ExUserItems(id,el)+'%plugins';//pupItems(pid);
  str += '</ul></div>';//"</div><div class='pupBottom'></div><div class='pupBottom2'></div></td><td class='pupSide'></td></tr>";

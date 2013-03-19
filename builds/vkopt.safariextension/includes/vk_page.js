@@ -35,6 +35,7 @@ function vkProfilePage(){
    if (getSet(72) == 'y') vkFrCatsOnProfile();
    vkAddCheckBox_OnlyForFriends();
 	vkHighlightGroups();
+   vkHighlightProfileGroups();
 }
 
 function vkFrCatsOnProfile(){
@@ -112,6 +113,45 @@ function vkShowLastActivity(){
       if (info) ge('vk_profile_online_la').innerHTML = info;
    });
 }
+
+
+function vkHighlightProfileGroups(node){
+   var common=(getSet(39) == 'y');
+   if (!common) return;
+   var p=node || ge('profile_full_info') ;
+   if (!p) return;
+   var nodes=p.getElementsByTagName('a');
+   
+   var hl=function(){
+      var groups=','+vkGetVal('vk_my_groups')+',';
+      for (var i=0;i<nodes.length;i++){
+         var href=nodes[i].getAttribute('href');
+         if (!href) continue;
+         var gid=href.split('/');
+         gid=gid[gid.length-1];
+         if (cur.oid!=remixmid() && groups.indexOf(','+gid+',')!=-1)	addClass(nodes[i],'vk_common_group');
+         if (isGroupAdmin(gid))	addClass(nodes[i],'vk_adm_group');
+      }	      
+   }
+   var gl=vkGetVal('vk_my_groups');
+   if (!gl || gl==''){
+      dApi.call('groups.get',{extended:1},function(r){
+         var data=r.response;
+         count=data.shift();
+         var mygr=[];
+         for (var i=0;i<data.length;i++){
+            mygr.push(data[i].screen_name);
+         }
+         var groups=mygr.join(',');
+         vkSetVal('vk_my_groups',groups);
+         hl();
+      });
+   } else {
+      hl();
+   }
+   
+}
+
 function vkHighlightGroups(){
 	var common=(getSet(39) == 'y');
 	if (ge('profile_groups') && geByClass('module_body',ge('profile_groups'))[0]){
@@ -143,6 +183,7 @@ function vkHighlightGroups(){
 		}
 	}
 }
+
 
 
 function vkProfileEditPage(){
@@ -455,6 +496,17 @@ function vkProcessBirthday(day,month,year){
    }
    return info;
 }
+
+function vkBDYear(uid,el){
+   var _el=ge(el);
+   addClass(_el,'fl_r');
+   vk_users.find_age(uid,function(age){
+      var txt=age?langNumeric(age, vk_lang["vk_year"]):'N/A';
+      removeClass(_el,'fl_r');
+      _el.innerHTML=txt;
+   },{el:el,width:50});
+   return false;
+}
 function vkProcessProfileBday(node){
    node = node ||  ge('profile_info');//"profile_full_info"
    
@@ -467,17 +519,20 @@ function vkProcessProfileBday(node){
    var info=vkProcessBirthday(md?md[1]:null,md?md[2]:null,yr?yr[1]:null);
    
    if (info.length>0){
+      if (!yr)
+         info.push('<span id="%age_el"><a href="#" onclick="return vkBDYear('+cur.oid+',\'%age_el\');">'+langNumeric('?', vk_lang["vk_year"])+'</a></span>');
       info = ' ('+info.join(', ')+')';
+
       var links=node.getElementsByTagName('a');
       for (var i=0;i<links.length;i++){
          if (links[i].href && links[i].href.match(rmd)) 
-            links[i].parentNode.appendChild(vkCe('span',{"class":"vk_bday_info"},info));
+            links[i].parentNode.appendChild(vkCe('span',{"class":"vk_bday_info"},info.replace(/%age_el/g,'vkage0')));
       }
       if (cur.options.info) {
          var r1 = /(c\[byear\]=[^>]+>[^<>]+<\/a>)/;
          r1 = cur.options.info[0].match(r1) ? r1 : /(c\[bmonth\]=[^>]+>[^<>]+<\/a>)/;
-         cur.options.info[0] = cur.options.info[0].replace(r1, "$1" + info);
-         cur.options.info[1] = cur.options.info[1].replace(r1, "$1" + info);
+         cur.options.info[0] = cur.options.info[0].replace(r1, "$1" + info.replace(/%age_el/g,'vkage1'));
+         cur.options.info[1] = cur.options.info[1].replace(r1, "$1" + info.replace(/%age_el/g,'vkage2'));
       }     
    }
 }
@@ -2024,7 +2079,7 @@ vk_feed={
          if (cfg[i]=='1') 
             items[i][2]=true;
       }
-      
+            
       var prefix='vkf_no';
       var fobj='feed_wall';
       
@@ -2032,6 +2087,11 @@ vk_feed={
          for (var i=0; i<items.length; i++){
             (items[i][2]?addClass:removeClass)(ge(fobj),prefix+items[i][1]);
          }
+         var cfg=[]
+         for (var i=0; i<items.length; i++){
+            cfg.push(items[i][2]?'1':'0');
+         }
+         vkSetVal('vk_feed_filter',cfg.join(''));
       }
       var disable=function(){
          for (var i=0; i<items.length; i++)

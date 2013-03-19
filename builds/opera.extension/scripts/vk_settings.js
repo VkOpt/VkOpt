@@ -240,7 +240,7 @@ function hz_chooselang(no_reload){
 
 
 function vkCheckSettLength(){
-  s2=vkgetCookie('remixbit'); 
+  s2=vkgetCookie('remixbit') || ""; 
   s2=s2.split('-'); 
   s1=DefSetBits.split('-'); 
   s2[0]+=s1[0].substr(s2[0].length); 
@@ -672,10 +672,11 @@ function vkInitSettings(){
             ops:[1,2,3,4,5,6,7]}},
 		{id:6, text:IDL("seOnAway")},
 		{id:34, text:IDL("seSwichTextChr")},
-      {id:77, text:IDL("seBatchCleaners")}	
+      {id:77, text:IDL("seBatchCleaners")},
+      {id:78, text:IDL("seCutBracket")}	
     ]
   };	  
-	//LAST 77
+	//LAST 78
 	/*
       vkoptSets['advanced']=[
          'vk_upd_menu_timeout','vkMenuHideTimeout','CHECK_FAV_ONLINE_DELAY',

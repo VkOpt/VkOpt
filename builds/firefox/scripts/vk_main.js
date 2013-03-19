@@ -215,6 +215,7 @@ function VkOptMainInit(){
   if (getSet(31)=='y' || getSet(35)=='y') vkMakeRightBar();
   if (vk_DEBUG) vkInitDebugBox();
   vkInitSettings();
+  if (getSet(78)=='n') CUT_VKOPT_BRACKET=true;
   vkBroadcast.Init(vkOnStorage);
   window.vkopt_ready=true;
   vk_plugins.init();
@@ -596,15 +597,75 @@ function vkProcessResponse(answer,url,q){
       if(answer[0].admins) answer[0].admins = vkModAsNode(answer[0].admins,vkProcessNodeLite,url,q);
   }
   if (q.act=='edit_audio_box' && answer[2]) answer[2]=answer[2]+'vk_audio.in_box_move("'+q.aid+'");'
+  // 39 - highlight common groups
+  if (getSet(39) == 'y' && url=='/al_profile.php' && q.act=='groups'){
+      answer[1]=vkModAsNode(answer[1],vkHighlightProfileGroups,url,q);
+  }
 }
 
+vk_ch_media={
+   photo:function(id,img,w,h){
+      var sizes=null;
+      
+      img=img || "http://vk.com/images/no_photo.png";
+      if (img){
+         w = w || 115;
+         h = h || 87;
+         var s=w/h;
+         sizes={
+            "s": [img, Math.round(75*(s<1?s:1)), Math.round(75/(s>1?s:1))],
+            "m": [img, Math.round(130*(s<1?s:1)), Math.round(130/(s>1?s:1))],
+            "x": [img, Math.round(604*(s<1?s:1)), Math.round(604/(s>1?s:1))],
+            "o": [img, Math.round(130*(s<1?s:1)), Math.round(130/(s>1?s:1))],
+            "p": [img, Math.round(200*(s<1?s:1)), Math.round(200/(s>1?s:1))],
+            "q": [img, Math.round(320*(s<1?s:1)), Math.round(320/(s>1?s:1))],
+            "r": [img, Math.round(510*(s<1?s:1)), Math.round(510/(s>1?s:1))]
+         } 
+      
+      } else {
+         img="http://vk.com/images/no_photo.png";
+         sizes={
+            "s": [img, 57, 43],
+            "m": [img, 115, 87],
+            "x": [img, 575, 435],
+            "o": [img, 115, 87],
+            "p": [img, 230, 174],
+            "q": [img, 345, 261],
+            "r": [img, 575, 435]
+         }  
+      }
+      
+      cur.chooseMedia('photo', id, {
+         "thumb_s": img, 
+         "thumb_m": img,
+         "view_opts": '{temp:{x_src: "'+img+'"}}',  
+         "editable": {
+            "sizes": sizes
+         }
+      });
+   }
+}
 function vkPhChooseProcess(answer,url,q){
   vkCheckPhotoLinkToMedia=function(){
     var btn=ge('vk_link_to_photo_button');
     var val=ge('vk_link_to_photo').value.match(/photo(-?\d+)_(\d+)/);
     lockButton(btn);
     if (val){
-      cur.chooseMedia('photo', val[1]+'_'+val[2],['', '', '', '{temp: {x_src: ""}, big: 1}']);//['http://cs5751.vk.com/u13391307/138034142/m_a6b31fd8.jpg', 'http://cs5751.vk.com/u13391307/138034142/s_818dc071.jpg', '9b949405dd303694e1', '{temp: {x_src: "http://cs5751.vk.com/u13391307/138034142/x_c8cae130.jpg"}, big: 1}']
+      vk_ch_media.photo(val[1]+'_'+val[2]);
+      /*
+      cur.chooseMedia('photo', val[1]+'_'+val[2],{"thumb_s": "http://vk.com/images/no_photo.png", "thumb_m": "http://vk.com/images/no_photo.png","view_opts": '{temp:{x_src: "http://vk.com/images/no_photo.png"}}',  "editable": {
+      "sizes": {
+         "s": ["http://vk.com/images/no_photo.png", 57, 43],
+         "m": ["http://vk.com/images/no_photo.png", 115, 87],
+         "x": ["http://vk.com/images/no_photo.png", 575, 435],
+         "o": ["http://vk.com/images/no_photo.png", 115, 87],
+         "p": ["http://vk.com/images/no_photo.png", 230, 174],
+         "q": ["http://vk.com/images/no_photo.png", 345, 261],
+         "r": ["http://vk.com/images/no_photo.png", 575, 435]
+      }
+   }
+});//*/
+// ['', '', '', '{temp: {x_src: ""}, big: 1}']  ['http://cs5751.vk.com/u13391307/138034142/m_a6b31fd8.jpg', 'http://cs5751.vk.com/u13391307/138034142/s_818dc071.jpg', '9b949405dd303694e1', '{temp: {x_src: "http://cs5751.vk.com/u13391307/138034142/x_c8cae130.jpg"}, big: 1}']
     } else {
       alert(IDL('IncorrectPhotoLink'))
     }
@@ -623,11 +684,11 @@ function vkPhChooseProcess(answer,url,q){
       }
      }
      if (ref){
-       var node=vkCe('div',{"class":'ta_r','style':"height: 25px; padding-left:10px; padding-top:4px;"},'\
+       var node=vkCe('div',{"class":'ta_r vk_opa2','style':"height: 25px; padding-left:10px; padding-top:4px;"},'\
        <div class="fl_l">\
            '+IDL('EnterLinkToPhoto')+': \
-         <span><input id="vk_link_to_photo" type="text"  style="width:230px"></span>\
-         <div id="vk_link_to_photo_button" class="button_blue"><button onclick="vkCheckPhotoLinkToMedia();">'+IDL('OK')+'</button></div>\
+         <span><input id="vk_link_to_photo" type="text"  style="width:230px" class="s_search text"></span>\
+         <div id="vk_link_to_photo_button" class="button_blue" style="vertical-align: middle;"><button onclick="vkCheckPhotoLinkToMedia();">'+IDL('OK')+'</button></div>\
        </div>\
        ');
        ref.parentNode.insertBefore(node,ref);
@@ -668,10 +729,10 @@ function vkVidChooseProcess(answer,url,q){
    } 
   
   if (ref){
-    var node=vkCe('div',{'style':"height: 25px; padding: 4px 20px;"},'\
+    var node=vkCe('div',{'style':"height: 25px; padding: 4px 20px;","class":'vk_opa2'},'\
     <div class="fl_l">'+IDL('EnterLinkToVideo')+':</div>\
       <span class="fl_l"><input id="vk_link_to_video" type="text"  style="width:215px" class="s_search text"></span>\
-      <div id="vk_link_to_video_button" class="button_blue fl_r"><button onclick="vkCheckVideoLinkToMedia();">'+IDL('OK')+'</button></div>\
+      <div id="vk_link_to_video_button" class="button_blue fl_r"  style="vertical-align: middle;"><button onclick="vkCheckVideoLinkToMedia();">'+IDL('OK')+'</button></div>\
     \
     ');
     /*ref.parentNode.insertBefore(node,ref);
@@ -710,10 +771,10 @@ function vkAudioChooseProcess(answer,url,q){
    }
   
   if (ref){
-    var node=vkCe('div',{'style':"height: 25px; padding: 4px 20px;"},'\
+    var node=vkCe('div',{'style':"height: 25px; padding: 4px 20px;","class":'vk_opa2'},'\
     <div class="fl_l">'+IDL('EnterLinkToAudio')+':</div>\
       <span class="fl_l"><input id="vk_link_to_audio" type="text" style="width:190px"  class="s_search text"></span>\
-      <div id="vk_link_to_audio_button" class="button_blue fl_r"><button onclick="vkCheckAudioLinkToMedia();">'+IDL('OK')+'</button></div>\
+      <div id="vk_link_to_audio_button" class="button_blue fl_r"  style="vertical-align: middle;"><button onclick="vkCheckAudioLinkToMedia();">'+IDL('OK')+'</button></div>\
     \
     ');
     //ref.parentNode.insertBefore(node,ref);
@@ -1036,7 +1097,11 @@ function vkFrReqDoneAddUserLists(text,mid){
 }
 
 function vkModAsNode(text,func,url,q){ //url,q - for processing response 
-	var is_table=text.substr(0,3)=='<tr';
+	if (!text || text.tagName){
+      console.log('ModAsNode fail',text,url,q);
+      return;
+   }
+   var is_table=text.substr(0,3)=='<tr';
 	var div=vkCe(is_table?'table':'div');
 	div.innerHTML=text;
 	func(div);
