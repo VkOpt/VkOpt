@@ -507,6 +507,12 @@ function vkStyles(){
          .vk_vslider_line_bg { background:#5F7E9E; position:relative; border-radius:2px; }\
          .vk_vslider {  cursor: pointer;  position:absolute; background: #5F7E9E;  width: 8px;  height: 8px; border-radius:4px; }\
          \
+         .opacity_anim{\
+            -webkit-transition: opacity 200ms linear;\
+            -moz-transition: opacity 200ms linear;\
+            -o-transition: opacity 200ms linear;\
+            transition: opacity 200ms linear;\
+         }\
          .zoom_ico_white{\
             width:14px; \
             height:14px; \
@@ -548,6 +554,7 @@ function vkStyles(){
    main_css+=vk_audio.css;
    main_css+=vk_feed.css;
    main_css+=vk_videos.css();
+   main_css+=vk_im.css();
 	main_css+=vk_plugins.css();
 
 	vkaddcss(main_css);

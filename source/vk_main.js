@@ -67,6 +67,7 @@ function vkProcessNode(node){
 		vkAudioNode(node);
       vkVidAddGetLink(node);
       vkPollResultsBtn(node);
+      vk_im.process_node(node);
       vk_board.get_user_posts_btn(node);
       vk_feed.process_node(node);
 		vk_plugins.processnode(node);
@@ -87,6 +88,7 @@ function vkProcessNodeLite(node){
    vkPollResultsBtn(node);
 	//vkPrepareTxtPanels(node);
    vk_board.get_user_posts_btn(node);
+   vk_im.process_node(node);
    vk_feed.process_node(node);
 	vk_plugins.processnode(node,true);
    if (getSet(63)=='y') vkSmiles(node);
@@ -238,7 +240,8 @@ function VkOptMainInit(){
   vkClock();
   vkVidAddGetLink();
   vkPollResultsBtn();
-  vk_board.get_user_posts_btn();   
+  vk_board.get_user_posts_btn();  
+  vk_im.process_node();  
   vk_plugins.processnode();
   if (getSet(34)=='y' && !window.setkev){ InpTexSetEvents(); setkev=true;}
   if (getSet(27)=='y') vkGetCalendar();
@@ -828,8 +831,16 @@ function vkImAddPreventHideCB(){
    });
 }
 
-
 vk_im={
+   css:function(){
+      return '\
+      .vk_im_reply{opacity:0;}\
+      .im_in:hover .vk_im_reply{opacity:1;}\
+      ';
+   },
+   process_node:function(node){
+      vk_im.reply_btns(node);
+   },
    attach_wall:function(){
          var add=null;
          var aBox = new MessageBox({title: IDL('EnterLinkToWallPost')});
@@ -864,6 +875,84 @@ vk_im={
             }
          }         
       return false;
+   },
+   
+   reply_btns:function(node){
+      var nodes=geByClass('im_log_author_chat_name',node);
+      for (var i=0; i<nodes.length; i++){
+         if (nodes[i].innerHTML.indexOf('vk_im.reply')!=-1) continue;
+         var r=se('<a class="fl_r vk_im_reply opacity_anim" onclick="return vk_im.reply(this,event)">'+IDL('Reply')+'</a>');
+         nodes[i].appendChild(r);
+      }
+   },
+   reply:function(el,ev){
+      ev = ev || window.event; 
+      var ctrl=false;
+      if (ev.ctrlKey) ctrl=true;
+      var a=geByTag('a',el.parentNode)[0];
+      var id=ExtractUserID(a.getAttribute('href'));
+      var name=a.innerHTML;
+      getGidUid(id,function(uid,gid){// getUserID 
+        if (uid){
+            vk_im.paste_code(ctrl?'[id'+uid+'|'+name+'], ':name+', ');
+        }
+        if (gid){// Ну а вдруг однажды можно будет от имени группы переписываться? 
+            vk_im.paste_code(ctrl?'[club'+gid+'|'+name+'], ':name+', ');
+        }
+      });
+   },
+   paste_code:function(code) {
+       cur.emojiFocused = false;
+       if (cur.editable) {
+         var editable = IM.getTxt(cur.peer);
+         var sel = window.getSelection ? window.getSelection() : false;
+         if (sel && sel.rangeCount) {
+           r = sel.getRangeAt(0);
+           if (r.commonAncestorContainer) {
+             var rCont = r.commonAncestorContainer;
+           } else {
+             var rCont = r.parentElement ? r.parentElement() : r.item(0);
+           }
+         } else {
+           var rCont = false;
+         }
+         el = rCont;
+         while(el && el != editable) {
+           el = el.parentNode;
+         }
+         var edLast = (editable.lastChild || {});
+         if (browser.mozilla && edLast.tagName == 'BR' && !edLast.previousSibling) {
+           re(editable.lastChild);
+         }
+         if (!el) {
+           IM.editableFocus(editable, false, true);
+         }
+         if (browser.msie) {
+           var r = document.selection.createRange();
+           if (r.pasteHTML) {
+             r.pasteHTML(code);
+           }
+         } else {
+           document.execCommand('insertHTML', false, code);
+         }
+         if (editable.check) editable.check();
+       } else {
+         var textArea = IM.getTxt();
+         var val = textArea.value;
+
+         var text = code
+         var endIndex, range;
+         if (textArea.selectionStart != undefined && textArea.selectionEnd != undefined) {
+           endIndex = textArea.selectionEnd;
+           textArea.value = val.slice(0, textArea.selectionStart) + text + val.slice(endIndex);
+           textArea.selectionStart = textArea.selectionEnd = endIndex + text.length;
+         } else if (typeof document.selection != 'undefined' && typeof document.selection.createRange != 'undefined') {
+           textArea.focus();
+           range = document.selection.createRange();
+           range.text = text;
+           range.select();
+         }
+       }
    }
 }
 
