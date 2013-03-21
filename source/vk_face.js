@@ -341,7 +341,7 @@ function vkStyles(){
    ";
 	  //extend switch color in viewer
 	if (MoreDarkPV=='y') main_css+="\
-		.pv_dark .pv_cont #pv_box,.pv_dark .info{background:#000 !important; color: #FFF !important;} \
+		.pv_dark .pv_cont #pv_box,.pv_dark .info, .pv_dark .pv_comment,.pv_dark #pv_actions .left, .pv_dark #pv_actions .right{background:#000 !important; color: #FFF !important;} \
 		.pv_dark .pv_cont #pv_box DIV{border-color:#444 !important;}\
 		.pv_dark .pv_cont SPAN{color:#DDD !important;}\
 		.pv_dark .pv_cont A{color:#888 !important;}\

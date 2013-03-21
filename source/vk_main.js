@@ -530,6 +530,12 @@ function vkAllowPost(url, q, options){
    if (SUPPORT_STEALTH_MOD && q && q.audio_html && q.audio_orig){
       q.audio_html=q.audio_orig;
    }
+   
+   if (false){ // attach docs to board as on wall, but can't attach docs from group to topic
+      if (url=='docs.php' && q.act=='a_choose_doc_box' && ((q.to_id || "")+"").indexOf('board')!=-1){
+         q.to_id=(q.to_id+"").replace('board','-');
+      }
+   }
    if (MAIL_BLOCK_UNREAD_REQ){
       if (url=='al_mail.php' && q.act=='show') return false;
       if (url=='al_im.php' && q.act=='a_mark_read') return false;
