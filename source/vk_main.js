@@ -898,14 +898,18 @@ vk_im={
       var a=geByTag('a',el.parentNode)[0];
       var id=ExtractUserID(a.getAttribute('href'));
       var name=a.innerHTML;
-      getGidUid(id,function(uid,gid){// getUserID 
-        if (uid){
-            vk_im.paste_code(ctrl?'[id'+uid+'|'+name+'], ':name+', ');
-        }
-        if (gid){// Ну а вдруг однажды можно будет от имени группы переписываться? 
-            vk_im.paste_code(ctrl?'[club'+gid+'|'+name+'], ':name+', ');
-        }
-      });
+      if (ctrl){
+         getGidUid(id,function(uid,gid){// getUserID 
+           if (uid){
+               vk_im.paste_code('[id'+uid+'|'+name+'], ');
+           }
+           if (gid){// Ну а вдруг однажды можно будет от имени группы переписываться? 
+               vk_im.paste_code('[club'+gid+'|'+name+'], ');
+           }
+         });
+      } else {
+         vk_im.paste_code(name+', ');
+      }
    },
    paste_code:function(code) {
        cur.emojiFocused = false;
