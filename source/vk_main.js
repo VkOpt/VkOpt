@@ -847,6 +847,39 @@ vk_im={
    process_node:function(node){
       vk_im.reply_btns(node);
    },
+   attach:function(type,media,data){
+      if (!isArray(cur.imPeerMedias[cur.peer])) {
+         cur.imPeerMedias[cur.peer] = [];
+         cur.imSortedMedias[cur.peer] = [];
+      }
+      var preview = type+media,
+         postview = '',
+         attrs = '',
+         conts = [
+            ge('im_docs_preview'),
+            ge('im_media_preview'),
+            ge('im_media_dpreview'),
+            ge('im_media_mpreview'),
+            ge('im_sdocs_preview')
+         ], tgl = {}, len = 0, i,
+        progressNode = ge('im_progress_preview'),
+        curPeerMedia = cur.imPeerMedias[cur.peer];
+
+      var contIndex = 0, cont, cls;
+      var ind = curPeerMedia.length,
+          mediaHtml = '<div class="im_preview_' + type + '_wrap im_preview_ind%ind% ' + cls + '"' + attrs + '>' + preview + '<div nosorthandle="1" class="im_media_x inl_bl" '+ (browser.msie ? 'title' : 'tooltip') + '="' + getLang('dont_attach') + '" onmouseover="if (browser.msie) return; showTooltip(this, {text: this.getAttribute(\'tooltip\'), shift: [14, 3, 3], black: 1})" onclick="cur.addMedia[%lnkId%].unchooseMedia(%ind%); return cancelEvent(event);"><div class="im_x" nosorthandle="1"></div></div>' + postview + '</div>',
+          mediaEl = se(rs(mediaHtml, {lnkId: cur.imMedia.lnkId, ind: ind}));
+      if (data.upload_ind !== undefined) re('upload' + data.upload_ind + '_progress_wrap');
+      (cont = conts[contIndex]).appendChild(mediaEl);
+      curPeerMedia.push([type, media, contIndex, mediaHtml]);
+      if (!cur.fileApiUploadStarted || data.upload_ind === undefined) {
+        boxQueue.hideLast();
+      }
+      if (data.upload_ind !== undefined) {
+        delete data.upload_ind;
+      }
+      show(cont);
+   },
    attach_wall:function(){
          var add=null;
          var aBox = new MessageBox({title: IDL('EnterLinkToWallPost')});
@@ -872,9 +905,11 @@ vk_im={
          }
          
          add=function(){
-            var val=(inp.value || '').match(/wall(-?\d+_\d+)/);
+            var val=(inp.value || '').match(/(wall)(-?\d+_\d+)/);// ^\[([^\|\[\]]+)\|([^\|\[\]]+)\]$
+            if (!val) (inp.value || '').match(/^\[([^\|\[\]]+)\|([^\|\[\]]+)\]$/); // format [type|madia_id]
             if (val){
-               cur.chooseMedia('wall',val[1],{});
+               vk_im.attach(val[1],val[2],{});
+               //cur.chooseMedia('wall',val[1],{});
                aBox.hide();
             } else {
                alert(IDL('IncorrectWallPostLink'))
