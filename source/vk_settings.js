@@ -12,6 +12,11 @@
 //
 
 function InstallRelease(){
+  if (window.vkopt_plugins && vkopt_plugins['vkdislikes']){
+      alert('Please uninstall old vkopt dislike plugin');
+      return;
+  }
+  
   if (!window.vk || !vk.id) return;
   if (isNewLib() && !window.lastWindowWidth){
       setTimeout(InstallRelease,50);
@@ -666,7 +671,7 @@ function vkInitSettings(){
    Help:[
      {id:69, text:IDL("HelpAds")}
    ],
-    Others:[
+   Others:[
 		{id:9,  header:IDL("seTestFr"), text:IDL("seRefList"), sub:{id:1, text:'<br>'+IDL("now")+': <b>%cur</b> '+IDL("day")+'<br>'+IDL("set")+': %sets'+
             '<br><a onClick="javascript:vkFriendsCheck();" style="cursor: hand;">'+IDL('seCreList')+'</a>',
             ops:[1,2,3,4,5,6,7]}},
@@ -674,9 +679,17 @@ function vkInitSettings(){
 		{id:34, text:IDL("seSwichTextChr")},
       {id:77, text:IDL("seBatchCleaners")},
       {id:78, text:IDL("seCutBracket")}	
-    ]
-  };	  
-	//LAST 78
+   ],
+   Hidden:[
+      {id:79, text:IDL("seDislikes")}
+   ]
+  };	
+   if (vk_dislike.is_enabled(true)){
+      vkoptSets['vkInterface'].push(vkoptSets['Hidden'][0]);
+      vkoptSets['Hidden']=[];
+   }
+  
+	//LAST 79
 	/*
       vkoptSets['advanced']=[
          'vk_upd_menu_timeout','vkMenuHideTimeout','CHECK_FAV_ONLINE_DELAY',
@@ -816,9 +829,14 @@ function vkMakeSettings(el){
  
   var html="";
   var tabs=[];
+  var excluded={
+   'Sounds':1,
+   'Help':1,
+   'Hidden':1
+  };
   for (var cat in vkoptSets){
     //alert(vkGetSettings(vkoptSets[cat],allsett));
-	if (cat!='Sounds' && cat!='Help') tabs.push({name:IDL(cat),content:'<div class="sett_cat_header">'+IDL(cat)+'</div>'+vkGetSettings(vkoptSets[cat],allsett)});
+	if (!excluded[cat]) tabs.push({name:IDL(cat),content:'<div class="sett_cat_header">'+IDL(cat)+'</div>'+vkGetSettings(vkoptSets[cat],allsett)});
     //html+='<div class="sett_container"><div class="sett_header" onclick="toggle(this.nextSibling);">'+IDL(cat)+'</div><div id="sett'+cat+'">'+vkGetSettings(vkoptSets[cat],allsett)+'</div></div>';
   }
   //*

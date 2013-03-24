@@ -353,9 +353,15 @@ var vkMozExtension = {
 	}
 	function IDL(i,bracket) {
 	  vkLangGet();
-	  if (vk_lang[i]) return vkCutBracket(decodeURI(vk_lang[i]),bracket);
-	  if (vk_lang_ru[i]) return vkCutBracket(decodeURI(vk_lang_ru[i]),bracket);
-	  if (window.vk_lang_add && vk_lang_add[i]) return vkCutBracket(decodeURI(vk_lang_add[i]),bracket);
+     var dec=function(val){
+       try {
+         return decodeURI(val);
+       } catch(e) { }
+       return val;
+     }
+	  if (vk_lang[i]) return vkCutBracket(dec(vk_lang[i]),bracket);
+	  if (vk_lang_ru[i]) return vkCutBracket(dec(vk_lang_ru[i]),bracket);
+	  if (window.vk_lang_add && vk_lang_add[i]) return vkCutBracket(dec(vk_lang_add[i]),bracket);
 	  else return vkCutBracket(i,bracket);
 	}
 
@@ -2572,7 +2578,7 @@ vk_plugins={
 		var css='';
 		for (var key in vkopt_plugins){
 			var p=vkopt_plugins[key];
-			if (p.css) css+=p.css;	
+			if (p.css) css+=(Object.prototype.toString.call(p.css) === '[object Function]')?p.css():p.css;	
 		}
 		return css;
 	},
