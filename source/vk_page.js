@@ -520,7 +520,7 @@ function vkProcessProfileBday(node){
    
    if (info.length>0){
       if (!yr)
-         info.push('<span id="%age_el"><a href="#" onclick="return vkBDYear('+cur.oid+',\'%age_el\');">'+langNumeric('?', vk_lang["vk_year"])+'</a></span>');
+         info.push('<span id="%age_el"><a href="#" onmouseover="showTooltip(this,{center:true,className:\'vk_pr_tt\', text:\''+IDL('CalcAgeWarning')+'\'})" onclick="return vkBDYear('+cur.oid+',\'%age_el\');">'+langNumeric('?', vk_lang["vk_year"])+'</a></span>');
       info = ' ('+info.join(', ')+')';
 
       var links=node.getElementsByTagName('a');
@@ -2981,8 +2981,6 @@ function vk_tag_api(section,url,app_id){
          .mv_comment:hover .no_dislikes.post_dislike_icon{opacity:0.4;}\
          .mv_comment .like_link{display:none !important;}\
          \
-         #mv_wide .post_dislike:hover .post_dislike_icon{ opacity:1;}\
-         #mv_wide .post_dislike{float:left; padding: 1px 6px;}\
          #mv_wide .post_dislike_link {display:inline; font-size:11px; opacity:1; color: #2F5879; }\
          #mv_controls_line .post_dislike .post_dislike_icon, #mv_controls_line .post_dislike_link, #mv_controls_line .post_dislike_count  { opacity:0.4;}\
          #mv_controls_line .post_dislike:hover .post_dislike_icon, #mv_controls_line .post_dislike:hover .post_dislike_link, #mv_controls_line .post_dislike:hover .post_dislike_count { opacity:1;}\
@@ -2990,6 +2988,14 @@ function vk_tag_api(section,url,app_id){
          #mv_controls_line .post_dislike{float:left; padding: 1px 6px; background:transparent;}\
          #mv_controls_line .post_dislike_link, #mv_controls_line .post_dislike_count {display:inline; font-size:11px; color: #FFF; }\
          #mv_controls_line .post_dislike_icon{ background-position:1px -11px;}\
+         \
+         #bt_rows .bp_post .post_dislike{float:right; margin: 0px 1px; padding: 0px 1px;}\
+         #bt_rows .bp_post .post_dislike:hover{background:transparent;}\
+         #bt_rows .bp_post .post_dislike_link{display:none;}\
+         .bp_post .no_dislikes.post_dislike_icon{opacity:0;}\
+         .bp_post:hover .no_dislikes.post_dislike_icon{opacity:0.4;}\
+         .bp_post .like_link{display:none !important;}\
+         #bt_rows .post_dislike:hover .post_dislike_icon{ opacity:1;}\
          ";
       }
    };

@@ -229,6 +229,7 @@ function vkStyles(){
 	.vk_popupmenu ul li a:hover{background:#E1E7ED; text-decoration:none;}\
    .vk_tt_links_list a{display:block; padding:2px 1px;}\
    .nobold{font-weight: normal;}\
+   .vk_pr_tt{width:300px}\
 	"+(RemoveAd=='y'?".ad_box,.ad_help_link, .ad_help_link_new, .ad_box_new, #ad_help_link_new, #left_ads {display: none !important;}\
 			"+(NotHideSugFr?'.ad_box_friend{display: block !important;} .ad_box_friend + .ad_box_new{display:block !important;}':'')+"\
 			#groups .clearFix {display: block !important;} \
