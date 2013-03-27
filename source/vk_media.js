@@ -31,7 +31,7 @@ function vkPhotoViewer(){
   //*
   if (nav.strLoc.match(/photo-?\d+_\d+/))  { 
     setTimeout(function(){
-      if (!isVisible(cur.pvAlbumsWrap)) photoview.doShow();
+      if (!isVisible(cur.pvAlbumsWrap) && !isVisible(cur.pvAlbumWrap)) photoview.doShow();
     },70);
   }//*/
 }

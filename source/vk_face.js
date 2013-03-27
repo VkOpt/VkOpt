@@ -37,10 +37,14 @@ function vkStyles(){
 	var NotHideSugFr= (getSet(44)=='y');
    var ShowGroupNews=getSet(59);
    var hideBigLike = getSet(70)=='y';
+   var SubMenuToRight = getSet(80)=='y';
   
 	var main_css='';
 	if (getSet(28)=='y') main_css+=GetUnReadColorCss();
    main_css+=vkNotifierWrapMove();
+   
+   if (SubMenuToRight) 
+      main_css+='#nav li ul, #side_bar li ul, #sideBar li ul { margin-left: -130px !important; margin-top: -20px  !important;}';
 	//compact fave
 	if (CompactFave=='y'){//getSet(17)
 		main_css+='\
@@ -703,6 +707,21 @@ function vkFixedMenu(){
 		addEvent(window, 'scroll', onscroll);
 	if (right_bar && cfg_r=='y' && (cfg=='y' || cfg=='1'))	  
 		addEvent(window, 'scroll', onscroll_r);
+}
+
+vk_menu={
+   custom_cfg:[
+      ['/dev/methods','API Methods',[
+         ['/dev/datatypes','Types'],
+         ['/dev/api_requests','Requests'],
+         ['/page-1_35457043','Direct API auth']
+      ]],
+   ],
+   custom_settings:function(){
+   
+      return '';
+   }
+
 }
 
 function vkMenu(){//vkExLeftMenu

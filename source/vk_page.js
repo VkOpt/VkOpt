@@ -356,6 +356,53 @@ function vkPollResults(post_id,pid){
 }
 
 
+function vkPollCancelAnswer(post_id,pid){
+   var cancel=function(data){
+      if (data.answer_id==0){
+         alert(IDL('CancelAnswerError'));
+         return;
+      }
+      //board:
+      dApi.call('polls.deleteVote',{owner_id:data.owner_id,poll_id:data.poll_id,answer_id:data.answer_id},function(r){
+         alert(r.response==1?IDL('CancelAnswerSuccess'):IDL('CancelAnswerFail'));
+      });
+   };
+   
+   var code='\
+      var post=API.wall.getById({posts:"'+post_id+'"})[0];\
+      var attachments=post.attachments;\
+      var i=0;\
+      var b=attachments[i];\
+      var pid = 0;\
+      var oid = 0;\
+      var oid2 = 0;\
+      while(i<attachments.length){\
+         if (b.type=="poll"){\
+            pid=b.poll.poll_id;\
+            oid=post.copy_owner_id;\
+            oid2=post.to_id;\
+         };\
+         i = i + 1;\
+         b=attachments[i]; \
+      }\
+      return {oid:oid,oid2:oid2,pid:pid,p:post,poll1:API.polls.getById({owner_id:oid,poll_id:pid}),poll2:API.polls.getById({owner_id:oid2,poll_id:pid})};\
+      ';
+      
+   if (post_id && pid){
+      dApi.call('polls.getById',{owner_id:post_id,poll_id:pid},function(r){
+         var data=r.response;
+         cancel(data);
+      });
+   } else {
+      dApi.call('execute',{code:code},function(r){
+         var data=r.response;
+         console.log(data);
+         cancel(data.poll1 || data.poll2);
+      });   
+   }
+   return false;
+}
+
 
 function vkPollVoters(oid,poll_id){
    var code='\
@@ -394,6 +441,18 @@ function vkPollResultsBtn(node){
       var el=geByClass('page_poll_options',p)[0];
       var c=geByClass('page_poll_bottom',p)[0];//'page_poll_total'
       
+      
+      if (!el && c){
+         var m=p.innerHTML.match(/id="post_poll_raw-?\d+_\d+[^>]+value="(-?\d+)_(\d+)"/);
+         if (c.innerHTML.indexOf('vkPollCancelAnswer')!=-1) continue;
+         c.insertBefore(vkCe('span',{"class":"divider fl_r"},"|"),c.firstChild);
+         c.insertBefore(vkCe('a',{
+                                  "class":"fl_r",
+                                  "href":"#",
+                                  "onclick":"return vkPollCancelAnswer('"+m[1]+"','"+m[2]+"');"
+                                 },IDL('CancelAnswer')),c.firstChild); 
+      }
+
       if (!el || !c) continue;
       var id=(el.id || "").match(/(-?\d+)_(\d+)/);
       if (!id) continue;
@@ -499,6 +558,8 @@ function vkProcessBirthday(day,month,year){
 
 function vkBDYear(uid,el){
    var _el=ge(el);
+   var a=geByTag('a',_el)[0];
+   if (a && a.tt) a.tt.hide();
    addClass(_el,'fl_r');
    vk_users.find_age(uid,function(age){
       var txt=age?langNumeric(age, vk_lang["vk_year"]):'N/A';
