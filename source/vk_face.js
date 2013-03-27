@@ -710,16 +710,44 @@ function vkFixedMenu(){
 }
 
 vk_menu={
+   css:'\
+      .vk_menu_remove_btn{padding:1px; border-radius:2px;}\
+      .vk_menu_remove_btn:hover{background:#DDD; text-decoration:none;}\
+   ',
    custom_cfg:[
       ['/dev/methods','API Methods',[
          ['/dev/datatypes','Types'],
          ['/dev/api_requests','Requests'],
-         ['/page-1_35457043','Direct API auth']
+         ['/dev/auth_direct','Direct API auth']
       ]],
    ],
    custom_settings:function(){
-   
+      var cfg = vk_menu.custom_cfg; //JSON.parse(vkGetVal('menu_custom_links') || '[]');
+      var html='';
+      for (var i=0; i<cfg.length; i++){
+         var item=cfg[i];
+         html+='<a href="'+item[0]+'" target="_blank">'+item[1]+'</a><a href="#" class="vk_menu_remove_btn" onclick="return vk_menu.remove('+i+')">&times;</a><br>';
+         if (item[2]){
+            var sub=item[2];
+            for (var j=0; j<sub.length; j++){
+               html+='- <a href="'+sub[j][0]+'" target="_blank">'+sub[j][1]+'</a><a href="#" class="vk_menu_remove_btn" onclick="return vk_menu.remove('+i+','+j+')">&times;</a><br>'; 
+            }
+            html+='- <span id="vkm_add_frm'+i+'"><a href="#" class="vk_menu_add_btn" onclick="return vk_menu.add('+i+')">'+IDL('Add')+'</a></span><br>'; 
+         }
+      }
+      html+='<span id="vkm_add_frm"><a href="#" class="vk_menu_add_btn" onclick="return vk_menu.add()">'+IDL('Add')+'</a></span><br>'; 
+
       return '';
+   },
+   remove:function(idx,sub_idx){
+   
+   },
+   add:function(to_idx){
+      var p=ge('vkm_add_frm'+(to_idx!=null?to_idx:''));
+      p.innerHTML='<input type="text" id="vk_menu_add_link" onkeyup="vk_menu.add_checkkey(event,'+(to_idx || null)+')" value=""><input type="text" id="vk_menu_add_title" value="">'
+   },
+   add_checkkey:function(event,to_id){
+   
    }
 
 }
