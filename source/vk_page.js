@@ -2994,9 +2994,9 @@ function vk_tag_api(section,url,app_id){
          }\
          .post_dislike_icon{background:url('"+vk_dislike.icons[vk_dislike.icon_index]+"') 1px 0px no-repeat transparent;      height:10px;      margin:2px 2px 0px;      opacity:0.4;      padding-right:1px;      width:11px;   }\
          .post_dislike_count{color:#7295B2;      font-weight:700;    }\
-         .post_dislike{background:#FFFFFF;      border-radius:3px;      color:#2F5879;      cursor:pointer;      font-size:10px;      margin-top:-1px;      overflow:hidden;      padding:5px 6px;      right:0px;      white-space:nowrap;   }\
+         .post_dislike{background:rgba(255,255,255,0);      border-radius:3px;      color:#2F5879;      cursor:pointer;      font-size:10px;      margin-top:-1px;      overflow:hidden;      padding:5px 6px;      right:0px;      white-space:nowrap;   }\
          .post_dislike_link{color:#829BAF;   }\
-         .wall_module .post_dislike:hover{background:#E9EDF1;   }\
+         .wall_module .post_dislike:hover{background:rgba(158, 166, 173, 0.2);;   }\
          .wall_post_over .post_dislike_link,.wall_module .post:hover .post_dislike_link{color:#2F5879;   }\
          .post_full_like_wrap .post_dislike{position:static;   }\
          .post_dislike_link{display:none;   }\
@@ -3030,7 +3030,8 @@ function vk_tag_api(section,url,app_id){
          #pv_like_link{display:none;}\
          \
          #pv_wide .pv_comment .post_dislike{float:right; margin: 4px 1px 0px; padding: 0px 6px;}\
-         #pv_wide .pv_comment .post_dislike:hover{background:transparent;}\
+         #photos_container .pv_comment .post_dislike{margin: 0px 1px 0px !important; padding: 0px 6px; }\
+         #pv_wide .pv_comment .post_dislike:hover,.pv_comment .post_dislike:hover{background:transparent;}\
          .pv_comment .no_dislikes.post_dislike_icon{opacity:0;}\
          .pv_comment:hover .no_dislikes.post_dislike_icon{opacity:0.4;}\
          .pv_comment .like_link{display:none !important;}\
@@ -3041,6 +3042,9 @@ function vk_tag_api(section,url,app_id){
          .mv_comment .no_dislikes.post_dislike_icon{opacity:0;}\
          .mv_comment:hover .no_dislikes.post_dislike_icon{opacity:0.4;}\
          .mv_comment .like_link{display:none !important;}\
+         .review_comment .post_dislike{margin: 0px 1px 0px !important; padding: 0px 6px !important;}\
+         .review_comment .post_dislike:hover{background:transparent;}\
+         .review_comment .post_dislike:hover .post_dislike_icon{opacity:0.9;}\
          \
          #mv_wide .post_dislike_link {display:inline; font-size:11px; opacity:1; color: #2F5879; }\
          #mv_controls_line .post_dislike .post_dislike_icon, #mv_controls_line .post_dislike_link, #mv_controls_line .post_dislike_count  { opacity:0.4;}\

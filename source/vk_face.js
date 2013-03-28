@@ -559,6 +559,7 @@ function vkStyles(){
    main_css+=vk_photos.css;
    main_css+=vk_audio.css;
    main_css+=vk_feed.css;
+   main_css+=vk_skinman.css;
    main_css+=vk_videos.css();
    main_css+=vk_im.css();
 	main_css+=vk_plugins.css();
