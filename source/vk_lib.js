@@ -404,6 +404,35 @@ var vkMozExtension = {
 		}
 		return res;
 	}
+   
+   function vk_string_escape(str){
+      function encodeCharx(original){
+        var thecharchar=original.charAt(0);
+         switch(thecharchar){
+               case '\n': return "\\n"; break; //newline
+               case '\r': return "\\r"; break; //Carriage return
+               case '\'': return "\\'"; break;
+               case '"': return "\\\""; break;
+               //case '\&': return "\\&"; break;
+               case '\\': return "\\\\"; break;
+               case '\t': return "\\t"; break;
+               //case '\b': return "\\b"; break;
+               //case '\f': return "\\f"; break;
+
+               default:
+                  return original;
+                  break;
+         }
+      }
+      var preescape="" + str;
+      var escaped="";
+      var i=0;
+      for(i=0;i<preescape.length;i++){
+         escaped=escaped+encodeCharx(preescape.charAt(i));
+      }
+      return escaped;         
+   }
+
    function vkCleanFileName(s){   return trim(s.replace(/[\\\/\:\*\?\"\<\>\|]/g,'_').replace(/\u2013/g,'-').substr(0,200));   }
    function vkEncodeFileName(s){
       // [^A-Za-zА-Яа-я]

@@ -919,6 +919,7 @@ vk_im={
    },
    
    reply_btns:function(node){
+      if (getSet(81)!='y') return;
       var nodes=geByClass('im_log_author_chat_name',node);
       for (var i=0; i<nodes.length; i++){
          if (nodes[i].innerHTML.indexOf('vk_im.reply')!=-1) continue;
@@ -1590,6 +1591,8 @@ function vkMakeMsgHistory(uid,show_format){
 	var mid=remixmid();
 	var msg_pattern=vkGetVal('VK_SAVE_MSG_HISTORY_PATTERN') || SAVE_MSG_HISTORY_PATTERN;
 	var date_fmt=vkGetVal('VK_SAVE_MSG_HISTORY_DATE_FORMAT') || SAVE_MSG_HISTORY_DATE_FORMAT;
+   msg_pattern=msg_pattern.replace(/\r?\n/g,'\r\n');
+   date_fmt=date_fmt.replace(/\r?\n/g,'\r\n');
    var users={};
    var users_ids=[];
 	var collect=function(callback){
@@ -1705,6 +1708,8 @@ function vkMakeMsgHistory(uid,show_format){
 		aBox.addButton(IDL('OK'),function(){  
 			msg_pattern=ge('vk_msg_fmt').value;
 			date_fmt=ge('vk_msg_date_fmt').value;
+         msg_pattern=msg_pattern.replace(/\r?\n/g,'\r\n');
+         date_fmt=date_fmt.replace(/\r?\n/g,'\r\n');
 			vkSetVal('VK_SAVE_MSG_HISTORY_PATTERN',msg_pattern);
 			vkSetVal('VK_SAVE_MSG_HISTORY_DATE_FORMAT',date_fmt);
 			aBox.hide(); 
