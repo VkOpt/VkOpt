@@ -70,6 +70,7 @@ function vkProcessNode(node){
       vk_im.process_node(node);
       vk_board.get_user_posts_btn(node);
       vk_feed.process_node(node);
+      vk_photos.process_node(node);
 		vk_plugins.processnode(node);
 	// }  catch (e) { topMsg('vkProcessNode error',2)}
 	}
@@ -90,6 +91,7 @@ function vkProcessNodeLite(node){
    vk_board.get_user_posts_btn(node);
    vk_im.process_node(node);
    vk_feed.process_node(node);
+   vk_photos.process_node(node);
 	vk_plugins.processnode(node,true);
    if (getSet(63)=='y') vkSmiles(node);
   }  catch (e) {
