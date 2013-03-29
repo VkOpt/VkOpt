@@ -955,11 +955,11 @@ function vkSaveSettingsOnServer(check){
    var cfg={
       'remixbits':sett,
       'vklang':vkgetCookie('vklang'),
-      'menu_custom_links':vkGetVal('menu_custom_links'),
+      'menu_custom_links':vk_string_escape(vkGetVal('menu_custom_links')),
       //'FavList':vkGetVal('FavList'),
       'VK_CURRENT_CSS_URL':vkGetVal("VK_CURRENT_CSS_URL") || "",
       'VK_CURRENT_CSSJS_URL':vkGetVal('VK_CURRENT_CSSJS_URL') || "",
-      'VK_CURRENT_CSS_CODE':csscode,
+      'VK_CURRENT_CSS_CODE':csscode
    };
    var FavList=vkGetVal('FavList');
    if(FavList && FavList!='') cfg['FavList']=FavList;
