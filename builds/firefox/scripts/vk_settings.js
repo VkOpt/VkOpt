@@ -12,6 +12,11 @@
 //
 
 function InstallRelease(){
+  if (window.vkopt_plugins && vkopt_plugins['vkdislikes']){
+      alert('Please uninstall old vkopt dislike plugin');
+      return;
+  }
+  
   if (!window.vk || !vk.id) return;
   if (isNewLib() && !window.lastWindowWidth){
       setTimeout(InstallRelease,50);
@@ -176,14 +181,19 @@ function vkGetVkoptFullConfig(){
       remixumbit:vkgetCookie('remixumbit'),
       //AdmGr:vkgetCookie('AdmGr'),
       FavList:vkGetVal('FavList'),
-      //VK_CURRENT_CSS_URL:vkGetVal('VK_CURRENT_CSS_URL'),
+      menu_custom_links:vkGetVal('menu_custom_links'),
+      VK_CURRENT_CSS_URL:vkGetVal('VK_CURRENT_CSS_URL'),
+      VK_CURRENT_CSSJS_URL:vkGetVal('VK_CURRENT_CSSJS_URL'),
+      VK_CURRENT_CSS_CODE:vkGetVal('VK_CURRENT_CSS_CODE'),
       WallsID:vkGetVal('WallsID'),
       vklang:vkgetCookie('vklang')
    }
-  
+  /*
   var temp=[];
   for (var key in sets) if (sets[key]) temp.push(key+':'+'"'+sets[key]+'"');
   var config='{\r\n'+temp.join(',\r\n')+'\r\n}';
+  */
+  var config=JSON.stringify(sets);
   vkSaveText(config,'vksetts_id'+remixmid()+'.json');
   //alert(config);
 }
@@ -625,11 +635,12 @@ function vkInitSettings(){
      {id:55, text:IDL("seIMFullTime")},
      {id:56, text:IDL("seIMAlwaysShowTime")},
      {id:62, text:IDL("seWriteBoxWithoutFastChat")},
-     {id:68, text:IDL("seTypingNotify")}
+     {id:68, text:IDL("seTypingNotify")},
+     {id:81, text:IDL("seDialogsReplyBtn")}
     ],
     vkInterface:[
       {id:21, text:IDL("seADRem")+vkCheckboxSetting(44,IDL("seAdNotHideSugFr"),true)},
-      {id:12, text:IDL("seMenu")},
+      {id:12, text:IDL("seMenu")+'<br><a href="#" onclick="toggle(\'vkMenuCFG\'); return false;">[<b> '+IDL("Settings")+' </b>]</a><span id="vkMenuCFG" style="display:none">'+vkCheckboxSetting(80,IDL("seMenuToRight"),true)+'<div id="vkMenuCustom">'+vk_menu.custom_settings()+'</div></span>'},//
       {id:20, text:IDL("seAutoUpdMenu"),info:'infoUseNetTrafic'},
       {id:14, text:IDL("seLoadFrCats")},  
       {id:15, header:IDL("seLMenuH") , text:IDL("seLMenuO"),ops:[0,1,2]},
@@ -666,7 +677,7 @@ function vkInitSettings(){
    Help:[
      {id:69, text:IDL("HelpAds")}
    ],
-    Others:[
+   Others:[
 		{id:9,  header:IDL("seTestFr"), text:IDL("seRefList"), sub:{id:1, text:'<br>'+IDL("now")+': <b>%cur</b> '+IDL("day")+'<br>'+IDL("set")+': %sets'+
             '<br><a onClick="javascript:vkFriendsCheck();" style="cursor: hand;">'+IDL('seCreList')+'</a>',
             ops:[1,2,3,4,5,6,7]}},
@@ -674,9 +685,17 @@ function vkInitSettings(){
 		{id:34, text:IDL("seSwichTextChr")},
       {id:77, text:IDL("seBatchCleaners")},
       {id:78, text:IDL("seCutBracket")}	
-    ]
-  };	  
-	//LAST 78
+   ],
+   Hidden:[
+      {id:79, text:IDL("seDislikes")}
+   ]
+  };	
+   if (vk_dislike.is_enabled(true)){
+      vkoptSets['vkInterface'].push(vkoptSets['Hidden'][0]);
+      vkoptSets['Hidden']=[];
+   }
+  
+	//LAST 81
 	/*
       vkoptSets['advanced']=[
          'vk_upd_menu_timeout','vkMenuHideTimeout','CHECK_FAV_ONLINE_DELAY',
@@ -816,9 +835,14 @@ function vkMakeSettings(el){
  
   var html="";
   var tabs=[];
+  var excluded={
+   'Sounds':1,
+   'Help':1,
+   'Hidden':1
+  };
   for (var cat in vkoptSets){
     //alert(vkGetSettings(vkoptSets[cat],allsett));
-	if (cat!='Sounds' && cat!='Help') tabs.push({name:IDL(cat),content:'<div class="sett_cat_header">'+IDL(cat)+'</div>'+vkGetSettings(vkoptSets[cat],allsett)});
+	if (!excluded[cat]) tabs.push({name:IDL(cat),content:'<div class="sett_cat_header">'+IDL(cat)+'</div>'+vkGetSettings(vkoptSets[cat],allsett)});
     //html+='<div class="sett_container"><div class="sett_header" onclick="toggle(this.nextSibling);">'+IDL(cat)+'</div><div id="sett'+cat+'">'+vkGetSettings(vkoptSets[cat],allsett)+'</div></div>';
   }
   //*
@@ -931,10 +955,11 @@ function vkSaveSettingsOnServer(check){
    var cfg={
       'remixbits':sett,
       'vklang':vkgetCookie('vklang'),
+      'menu_custom_links':vkGetVal('menu_custom_links'),
       //'FavList':vkGetVal('FavList'),
       'VK_CURRENT_CSS_URL':vkGetVal("VK_CURRENT_CSS_URL") || "",
       'VK_CURRENT_CSSJS_URL':vkGetVal('VK_CURRENT_CSSJS_URL') || "",
-      'VK_CURRENT_CSS_CODE':csscode
+      'VK_CURRENT_CSS_CODE':csscode,
    };
    var FavList=vkGetVal('FavList');
    if(FavList && FavList!='') cfg['FavList']=FavList;
@@ -959,7 +984,7 @@ function vkSaveSettingsOnServer(check){
    */
 }
 function vkLoadSettingsFromServer(check,callback){
-	var params={keys:'remixbits,vklang,FavList,VK_CURRENT_CSS_URL,VK_CURRENT_CSSJS_URL,VK_CURRENT_CSS_CODE'};
+	var params={keys:'remixbits,vklang,FavList,menu_custom_links,VK_CURRENT_CSS_URL,VK_CURRENT_CSSJS_URL,VK_CURRENT_CSS_CODE'};
    if (check) params={key:'remixbits'};
 
    dApi.call('storage.get',params,function(r){
@@ -998,11 +1023,12 @@ function vkLoadSettingsFromServer(check,callback){
                if(!FavList || FavList=='') vkSetVal('FavList',val);
                else if(confirm(IDL('FavListRelace'))) vkSetVal('FavList',val);
             }   
-            
+            if (scfg['menu_custom_links']) vkSetVal('menu_custom_links',scfg['menu_custom_links']);
             // SkinManager settings
             if (scfg['VK_CURRENT_CSS_URL']) vkSetVal('VK_CURRENT_CSS_URL',scfg['VK_CURRENT_CSS_URL']);
             if (scfg['VK_CURRENT_CSSJS_URL']) vkSetVal('VK_CURRENT_CSSJS_URL',scfg['VK_CURRENT_CSSJS_URL']);
-            if (scfg['VK_CURRENT_CSS_CODE']) vk_LSSetVal('VK_CURRENT_CSS_CODE',decodeURIComponent(scfg['VK_CURRENT_CSS_CODE']));          
+            if (scfg['VK_CURRENT_CSS_CODE']) vk_LSSetVal('VK_CURRENT_CSS_CODE',decodeURIComponent(scfg['VK_CURRENT_CSS_CODE']));      
+            
    
 				ge('cfg_on_serv_info').innerHTML='<div class="vk_cfg_info">'+IDL('seCfgRestored')+'</div>';
 			} else {

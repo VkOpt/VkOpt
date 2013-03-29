@@ -409,8 +409,12 @@ function vkShowSkinMan(filter,page){
   '<div id="searchResults" class="searchResults clearFix"><div class="skin_table">';
   var COL_COUNT=3;
   var from=VK_THEMES_ON_PAGE*page;
-  var to=Math.min(VK_THEMES_ON_PAGE*(page+1),vkMyStyles.length);  
+  var to=Math.min(VK_THEMES_ON_PAGE*(page+1),vkMyStyles.length); 
+  var pids=[];
   for (var i=from; i<to;i++){
+     if (vkMyStyles[i].pid)
+         vkMyStyles[i].pid=vkMyStyles[i].pid.match(/-?\d+_\d+/)[0];
+     if (vkMyStyles[i].pid) pids.push(vkMyStyles[i].pid);
      var Thumb=(vkMyStyles[i].thumb)?vkMyStyles[i].thumb:"http://vkontakte.ru/images/question_a.gif";
      var Screen=(vkMyStyles[i].screen)?vkMyStyles[i].screen:null;
      var Name=(vkMyStyles[i].name)?vkMyStyles[i].name:IDL("Noname");
@@ -419,10 +423,12 @@ function vkShowSkinMan(filter,page){
      var CssJsUrl=(vkMyStyles[i].script_url)?vkMyStyles[i].script_url:"";
      var CssDesc=(vkMyStyles[i].description)?vkMyStyles[i].description:"";
      
+     var like_wrap=vkMyStyles[i].pid?vk_skinman.get_like_html(vkMyStyles[i].pid):'';
+
      var mouseover = ' onmouseover="vkSkinManInfo(this,\''+(CssDesc!=""?CssDesc:IDL('WarnCSSJSTheme'))+'\');" ';
      html +=""+
           '<div class="'+(vkGetVal("VK_CURRENT_CSS_URL")==CssUrl?'current_skin':'noselected_skin')+'">'+
-            '<div><h4 onclick="return vkSwichStyle(\''+CssUrl+'\',this,\''+CssJsUrl+'\');" style="cursor:hand;">'+Name+(CssJsUrl!=""?'<span class="vk_cssjs_ico" '+mouseover+'></span>':"")+'</h4></div>'+
+            '<div>'+like_wrap+'<h4 onclick="return vkSwichStyle(\''+CssUrl+'\',this,\''+CssJsUrl+'\');" style="cursor:hand;">'+Name+(CssJsUrl!=""?'<span class="vk_cssjs_ico" '+mouseover+'></span>':"")+'</h4></div>'+
             
             '<div align=center class="thumbimg">'+
               '<a href="#" onclick="return vkSwichStyle(\''+CssUrl+'\',this,\''+CssJsUrl+'\');"><img width="160px" alt="'+Name+'" src="' + Thumb + '"/></a>'+
@@ -437,7 +443,102 @@ function vkShowSkinMan(filter,page){
   ge("content").innerHTML=html;
   ge("toppages").innerHTML=vkMakePageListS(page,Math.ceil(vkMyStyles.length/VK_THEMES_ON_PAGE)-1,"javascript:vkShowSkinMan("+(filter?filter:false)+",%%);","vkShowSkinMan("+(filter?filter:false)+",%%); return false;");
   ge("header").innerHTML='<h1>'+IDL("SkinMan")+'</h1>';
+  vk_skinman.likes_load(pids);
   return false;
+}
+
+vk_skinman={
+   css:'\
+      .skin_like{\
+         border-radius: 3px;\
+         cursor: pointer;\
+         font-size: 10px;\
+         margin-top: -1px;\
+         overflow: hidden;\
+         /*padding: 5px 6px;*/\
+         right: 0px;\
+         white-space: nowrap;\
+      }\
+      .sm_like_icon{\
+         background: url(/images/icons/like_2x.png) 1px 0px no-repeat transparent;\
+         background-size: 10px 32px;\
+         height: 10px;\
+         margin: 2px 2px 0px;\
+         opacity: 0.4;\
+         padding-right: 1px;\
+         width: 11px;\
+      }\
+      .sm_like_count {\
+         color: #7295B2;\
+         font-weight: 700;\
+      }\
+      .skin_like:hover .sm_like_icon{  opacity: 0.8; }\
+      .skin_like .my_like.sm_like_icon {  opacity: 1;  }\
+   ',
+   get_like_html:function(pid,count){
+      var like_wrap=
+'<div class="skin_like fl_l" onmouseover="vk_skinman.like_over(\''+pid+'\',this)" onmouseout="vk_skinman.like_out(\''+pid+'\')" onclick="vk_skinman.like(\''+pid+'\'); event.cancelBubble = true;">\
+<i class="sm_like_icon fl_l" id="s_like_icon'+pid+'"></i>\
+<span class="sm_like_count fl_l" id="s_like_count'+pid+'">'+(count||'')+'</span>\
+</div>'; 
+      return like_wrap;
+   },
+   likes_load:function(pids){
+      dApi.call('photos.getById',{photos:pids.join(','),extended:1},function(r){
+         var data=r.response;
+         for (var i=0; i<data.length; i++){
+            var p=data[i];
+            var cnt=data[i].likes.count;
+            var my_like=data[i].likes.user_likes;
+            var pid=data[i].owner_id+'_'+data[i].pid;
+            
+            var icon=ge('s_like_icon'+pid),
+                count=ge('s_like_count'+pid);
+            if (count) count.innerHTML=cnt>0?cnt:'';
+            if (icon && my_like) addClass(icon,'my_like');
+         }
+      })
+   },
+   like:function(pid){
+      var id=pid.match(/(-?\d+)_(\d+)/);
+      var oid=id[1];
+      var item_id=id[2];
+      
+      var icon=ge('s_like_icon'+pid),
+          count=ge('s_like_count'+pid);
+      var act=hasClass(icon,'my_like');
+      (act?removeClass:addClass)(icon,'my_like');
+      dApi.call(act?'likes.delete':'likes.add',{type:'photo', owner_id:oid,item_id:item_id},function(r){
+         count.innerHTML=r.response.likes;
+         if (icon.parentNode.tt) icon.parentNode.tt.destroy();
+         //icon.parentNode.tt=null;
+         //vk_skinman.like_over(pid);
+      })
+   },   
+   like_over:function(pid,el){
+      var icon=ge('s_like_icon'+pid),
+          count=ge('s_like_count'+pid);
+      showTooltip(icon.parentNode, {
+         url: 'like.php',
+         params: {
+            act: 'a_get_stats',
+            object: 'photo' + pid,
+         },
+         slide: 15,
+         shift: [55, 0, 15],
+         ajaxdt: 100,
+         showdt: 400,
+         hidedt: 200,
+         className: 'rich like_tt',
+         init: function(tt) {
+            if (!tt.container)
+               return;
+         }
+      });
+   },
+   like_out:function(pid){
+      
+   },   
 }
 
 function vkSkinManInfo(el,text,hasover){

@@ -67,6 +67,7 @@ function vkProcessNode(node){
 		vkAudioNode(node);
       vkVidAddGetLink(node);
       vkPollResultsBtn(node);
+      vk_im.process_node(node);
       vk_board.get_user_posts_btn(node);
       vk_feed.process_node(node);
 		vk_plugins.processnode(node);
@@ -87,6 +88,7 @@ function vkProcessNodeLite(node){
    vkPollResultsBtn(node);
 	//vkPrepareTxtPanels(node);
    vk_board.get_user_posts_btn(node);
+   vk_im.process_node(node);
    vk_feed.process_node(node);
 	vk_plugins.processnode(node,true);
    if (getSet(63)=='y') vkSmiles(node);
@@ -238,7 +240,8 @@ function VkOptMainInit(){
   vkClock();
   vkVidAddGetLink();
   vkPollResultsBtn();
-  vk_board.get_user_posts_btn();   
+  vk_board.get_user_posts_btn();  
+  vk_im.process_node();  
   vk_plugins.processnode();
   if (getSet(34)=='y' && !window.setkev){ InpTexSetEvents(); setkev=true;}
   if (getSet(27)=='y') vkGetCalendar();
@@ -526,6 +529,12 @@ function vkAjaxNavDisabler(strLoc){
 function vkAllowPost(url, q, options){
    if (SUPPORT_STEALTH_MOD && q && q.audio_html && q.audio_orig){
       q.audio_html=q.audio_orig;
+   }
+   
+   if (false){ // attach docs to board as on wall, but can't attach docs from group to topic
+      if (url=='docs.php' && q.act=='a_choose_doc_box' && ((q.to_id || "")+"").indexOf('board')!=-1){
+         q.to_id=(q.to_id+"").replace('board','-');
+      }
    }
    if (MAIL_BLOCK_UNREAD_REQ){
       if (url=='al_mail.php' && q.act=='show') return false;
@@ -828,8 +837,49 @@ function vkImAddPreventHideCB(){
    });
 }
 
-
 vk_im={
+   css:function(){
+      return '\
+      .vk_im_reply{opacity:0;}\
+      .im_in:hover .vk_im_reply{opacity:1;}\
+      ';
+   },
+   process_node:function(node){
+      vk_im.reply_btns(node);
+   },
+   attach:function(type,media,data){
+      if (!isArray(cur.imPeerMedias[cur.peer])) {
+         cur.imPeerMedias[cur.peer] = [];
+         cur.imSortedMedias[cur.peer] = [];
+      }
+      var preview = type+media,
+         postview = '',
+         attrs = '',
+         conts = [
+            ge('im_docs_preview'),
+            ge('im_media_preview'),
+            ge('im_media_dpreview'),
+            ge('im_media_mpreview'),
+            ge('im_sdocs_preview')
+         ], tgl = {}, len = 0, i,
+        progressNode = ge('im_progress_preview'),
+        curPeerMedia = cur.imPeerMedias[cur.peer];
+
+      var contIndex = 0, cont, cls;
+      var ind = curPeerMedia.length,
+          mediaHtml = '<div class="im_preview_' + type + '_wrap im_preview_ind%ind% ' + cls + '"' + attrs + '>' + preview + '<div nosorthandle="1" class="im_media_x inl_bl" '+ (browser.msie ? 'title' : 'tooltip') + '="' + getLang('dont_attach') + '" onmouseover="if (browser.msie) return; showTooltip(this, {text: this.getAttribute(\'tooltip\'), shift: [14, 3, 3], black: 1})" onclick="cur.addMedia[%lnkId%].unchooseMedia(%ind%); return cancelEvent(event);"><div class="im_x" nosorthandle="1"></div></div>' + postview + '</div>',
+          mediaEl = se(rs(mediaHtml, {lnkId: cur.imMedia.lnkId, ind: ind}));
+      if (data.upload_ind !== undefined) re('upload' + data.upload_ind + '_progress_wrap');
+      (cont = conts[contIndex]).appendChild(mediaEl);
+      curPeerMedia.push([type, media, contIndex, mediaHtml]);
+      if (!cur.fileApiUploadStarted || data.upload_ind === undefined) {
+        boxQueue.hideLast();
+      }
+      if (data.upload_ind !== undefined) {
+        delete data.upload_ind;
+      }
+      show(cont);
+   },
    attach_wall:function(){
          var add=null;
          var aBox = new MessageBox({title: IDL('EnterLinkToWallPost')});
@@ -855,15 +905,100 @@ vk_im={
          }
          
          add=function(){
-            var val=(inp.value || '').match(/wall(-?\d+_\d+)/);
+            var val=(inp.value || '').match(/(wall)(-?\d+_\d+)/);// ^\[([^\|\[\]]+)\|([^\|\[\]]+)\]$
+            if (!val) (inp.value || '').match(/^\[([^\|\[\]]+)\|([^\|\[\]]+)\]$/); // format [type|madia_id]
             if (val){
-               cur.chooseMedia('wall',val[1],{});
+               vk_im.attach(val[1],val[2],{});
+               //cur.chooseMedia('wall',val[1],{});
                aBox.hide();
             } else {
                alert(IDL('IncorrectWallPostLink'))
             }
          }         
       return false;
+   },
+   
+   reply_btns:function(node){
+      if (getSet(81)!='y') return;
+      var nodes=geByClass('im_log_author_chat_name',node);
+      for (var i=0; i<nodes.length; i++){
+         if (nodes[i].innerHTML.indexOf('vk_im.reply')!=-1) continue;
+         var r=se('<a class="fl_r vk_im_reply opacity_anim" onclick="return vk_im.reply(this,event)">'+IDL('Reply')+'</a>');
+         nodes[i].appendChild(r);
+      }
+   },
+   reply:function(el,ev){
+      ev = ev || window.event; 
+      var ctrl=false;
+      if (ev.ctrlKey) ctrl=true;
+      var a=geByTag('a',el.parentNode)[0];
+      var id=ExtractUserID(a.getAttribute('href'));
+      var name=a.innerHTML;
+      if (ctrl){
+         getGidUid(id,function(uid,gid){// getUserID 
+           if (uid){
+               vk_im.paste_code('[id'+uid+'|'+name+'], ');
+           }
+           if (gid){// Ну а вдруг однажды можно будет от имени группы переписываться? 
+               vk_im.paste_code('[club'+gid+'|'+name+'], ');
+           }
+         });
+      } else {
+         vk_im.paste_code(name+', ');
+      }
+   },
+   paste_code:function(code) {
+       cur.emojiFocused = false;
+       if (cur.editable) {
+         var editable = IM.getTxt(cur.peer);
+         var sel = window.getSelection ? window.getSelection() : false;
+         if (sel && sel.rangeCount) {
+           r = sel.getRangeAt(0);
+           if (r.commonAncestorContainer) {
+             var rCont = r.commonAncestorContainer;
+           } else {
+             var rCont = r.parentElement ? r.parentElement() : r.item(0);
+           }
+         } else {
+           var rCont = false;
+         }
+         el = rCont;
+         while(el && el != editable) {
+           el = el.parentNode;
+         }
+         var edLast = (editable.lastChild || {});
+         if (browser.mozilla && edLast.tagName == 'BR' && !edLast.previousSibling) {
+           re(editable.lastChild);
+         }
+         if (!el) {
+           IM.editableFocus(editable, false, true);
+         }
+         if (browser.msie) {
+           var r = document.selection.createRange();
+           if (r.pasteHTML) {
+             r.pasteHTML(code);
+           }
+         } else {
+           document.execCommand('insertHTML', false, code);
+         }
+         if (editable.check) editable.check();
+       } else {
+         var textArea = IM.getTxt();
+         var val = textArea.value;
+
+         var text = code
+         var endIndex, range;
+         if (textArea.selectionStart != undefined && textArea.selectionEnd != undefined) {
+           endIndex = textArea.selectionEnd;
+           textArea.value = val.slice(0, textArea.selectionStart) + text + val.slice(endIndex);
+           textArea.selectionStart = textArea.selectionEnd = endIndex + text.length;
+         } else if (typeof document.selection != 'undefined' && typeof document.selection.createRange != 'undefined') {
+           textArea.focus();
+           range = document.selection.createRange();
+           range.text = text;
+           range.select();
+         }
+       }
    }
 }
 
@@ -1456,6 +1591,8 @@ function vkMakeMsgHistory(uid,show_format){
 	var mid=remixmid();
 	var msg_pattern=vkGetVal('VK_SAVE_MSG_HISTORY_PATTERN') || SAVE_MSG_HISTORY_PATTERN;
 	var date_fmt=vkGetVal('VK_SAVE_MSG_HISTORY_DATE_FORMAT') || SAVE_MSG_HISTORY_DATE_FORMAT;
+   msg_pattern=msg_pattern.replace(/\r?\n/g,'\r\n');
+   date_fmt=date_fmt.replace(/\r?\n/g,'\r\n');
    var users={};
    var users_ids=[];
 	var collect=function(callback){
@@ -1571,6 +1708,8 @@ function vkMakeMsgHistory(uid,show_format){
 		aBox.addButton(IDL('OK'),function(){  
 			msg_pattern=ge('vk_msg_fmt').value;
 			date_fmt=ge('vk_msg_date_fmt').value;
+         msg_pattern=msg_pattern.replace(/\r?\n/g,'\r\n');
+         date_fmt=date_fmt.replace(/\r?\n/g,'\r\n');
 			vkSetVal('VK_SAVE_MSG_HISTORY_PATTERN',msg_pattern);
 			vkSetVal('VK_SAVE_MSG_HISTORY_DATE_FORMAT',date_fmt);
 			aBox.hide(); 

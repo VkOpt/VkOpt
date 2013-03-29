@@ -346,8 +346,10 @@ var vkMozExtension = {
 
        this.resume();
    }
+   function isArray(obj) { return Object.prototype.toString.call(obj) === '[object Array]'; }
 	function vkCutBracket(s,bracket){
-		if (CUT_VKOPT_BRACKET || bracket==2) s=(s.substr(0,1)=='[')?s.substr(1,s.length-2):s;
+      if (isArray(s)) return s;
+      if (CUT_VKOPT_BRACKET || bracket==2) s=(s.substr(0,1)=='[')?s.substr(1,s.length-2):s;
       else if (bracket &&  bracket!=2) s='[ '+s+' ]';
 		return s;
 	}
@@ -916,6 +918,27 @@ var vkMozExtension = {
 			request.setRequestHeader("X-Requested-With", "XMLHttpRequest");//*/
 		request.send(urlEncData(data));
 		return true;
+	}
+   
+   function AjCrossAttachJS(url) {
+      var request = PrepReq();
+      if(!request) return false;
+      request.onerror=function(){
+         alert('to <head>');
+         var element = document.createElement('script');
+         element.type = 'text/javascript';
+         element.src = url;
+         document.getElementsByTagName('head')[0].appendChild(element);
+      }
+      request.onreadystatechange = function() {
+         if(request.readyState == 4 && request.responseText!=''){
+            alert('JS loaded');
+            eval(request.responseText);
+         }
+      };
+      request.open('GET', url, true);
+      request.send(null);
+      return true;
 	}
 //////////////
 // Ajax end //

@@ -346,16 +346,24 @@ var vkMozExtension = {
 
        this.resume();
    }
+   function isArray(obj) { return Object.prototype.toString.call(obj) === '[object Array]'; }
 	function vkCutBracket(s,bracket){
-		if (CUT_VKOPT_BRACKET || bracket==2) s=(s.substr(0,1)=='[')?s.substr(1,s.length-2):s;
+      if (isArray(s)) return s;
+      if (CUT_VKOPT_BRACKET || bracket==2) s=(s.substr(0,1)=='[')?s.substr(1,s.length-2):s;
       else if (bracket &&  bracket!=2) s='[ '+s+' ]';
 		return s;
 	}
 	function IDL(i,bracket) {
 	  vkLangGet();
-	  if (vk_lang[i]) return vkCutBracket(decodeURI(vk_lang[i]),bracket);
-	  if (vk_lang_ru[i]) return vkCutBracket(decodeURI(vk_lang_ru[i]),bracket);
-	  if (window.vk_lang_add && vk_lang_add[i]) return vkCutBracket(decodeURI(vk_lang_add[i]),bracket);
+     var dec=function(val){
+       try {
+         return decodeURI(val);
+       } catch(e) { }
+       return val;
+     }
+	  if (vk_lang[i]) return vkCutBracket(dec(vk_lang[i]),bracket);
+	  if (vk_lang_ru[i]) return vkCutBracket(dec(vk_lang_ru[i]),bracket);
+	  if (window.vk_lang_add && vk_lang_add[i]) return vkCutBracket(dec(vk_lang_add[i]),bracket);
 	  else return vkCutBracket(i,bracket);
 	}
 
@@ -398,6 +406,35 @@ var vkMozExtension = {
 		}
 		return res;
 	}
+   
+   function vk_string_escape(str){
+      function encodeCharx(original){
+        var thecharchar=original.charAt(0);
+         switch(thecharchar){
+               case '\n': return "\\n"; break; //newline
+               case '\r': return "\\r"; break; //Carriage return
+               case '\'': return "\\'"; break;
+               case '"': return "\\\""; break;
+               //case '\&': return "\\&"; break;
+               case '\\': return "\\\\"; break;
+               case '\t': return "\\t"; break;
+               //case '\b': return "\\b"; break;
+               //case '\f': return "\\f"; break;
+
+               default:
+                  return original;
+                  break;
+         }
+      }
+      var preescape="" + str;
+      var escaped="";
+      var i=0;
+      for(i=0;i<preescape.length;i++){
+         escaped=escaped+encodeCharx(preescape.charAt(i));
+      }
+      return escaped;         
+   }
+
    function vkCleanFileName(s){   return trim(s.replace(/[\\\/\:\*\?\"\<\>\|]/g,'_').replace(/\u2013/g,'-').substr(0,200));   }
    function vkEncodeFileName(s){
       // [^A-Za-zА-Яа-я]
@@ -881,6 +918,27 @@ var vkMozExtension = {
 			request.setRequestHeader("X-Requested-With", "XMLHttpRequest");//*/
 		request.send(urlEncData(data));
 		return true;
+	}
+   
+   function AjCrossAttachJS(url) {
+      var request = PrepReq();
+      if(!request) return false;
+      request.onerror=function(){
+         alert('to <head>');
+         var element = document.createElement('script');
+         element.type = 'text/javascript';
+         element.src = url;
+         document.getElementsByTagName('head')[0].appendChild(element);
+      }
+      request.onreadystatechange = function() {
+         if(request.readyState == 4 && request.responseText!=''){
+            alert('JS loaded');
+            eval(request.responseText);
+         }
+      };
+      request.open('GET', url, true);
+      request.send(null);
+      return true;
 	}
 //////////////
 // Ajax end //
@@ -2572,7 +2630,7 @@ vk_plugins={
 		var css='';
 		for (var key in vkopt_plugins){
 			var p=vkopt_plugins[key];
-			if (p.css) css+=p.css;	
+			if (p.css) css+=(Object.prototype.toString.call(p.css) === '[object Function]')?p.css():p.css;	
 		}
 		return css;
 	},

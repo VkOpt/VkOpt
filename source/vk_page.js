@@ -2302,11 +2302,17 @@ function vk_tag_api(section,url,app_id){
          
       },
       parse_id:function(obj_id){
+         //console.log('>>>',obj_id);
          var like_obj=obj_id;
-         var m = obj_id.match(/(-?\d+)(_?)(photo|video|note|topic|wall_reply|note_reply|photo_comment|video_comment|topic_post|)(\d+)/);
+         if (obj_id.match(/^([a-z_]+)(-?\d+)_(\d+)/)){
+            //console.log('<<<',like_obj);
+            return like_obj;
+         }
+         var m = obj_id.match(/(-?\d+)(_?)(photo|video|note|topic|wall_reply|note_reply|photo_comment|video_comment|topic_comment|)(\d+)/);
          if (m){
             like_obj = (m[3] || 'wall') + m[1] + '_' + m[4];
          }
+         //console.log('<<<',like_obj);
          return like_obj;
       },
       mark:function(obj_id,callback){
