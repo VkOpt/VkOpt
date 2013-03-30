@@ -260,8 +260,13 @@ var vk_photos = {
    },
    process_node:function(node){
       //vk_photos.toggle_thumb_size();
-      var p=geByClass('pvsa_summary_author',node)[0];
-      if (p) p.innerHTML+='<a href="#" class="fl_r" onclick="return vk_photos.toggle_thumb_size();">'+IDL('FullThumb')+'</a>'
+      var p=geByClass('pvsa_summary_author',node)[0] 
+      if (!p){
+         p=geByClass('photos_summary',node)[0] || geByClass('pva_summary',node)[0];
+         if (p) p=geByClass('summary',p)[0];
+      }
+      
+      if (p && p.innerHTML.indexOf('toggle_thumb_size')==-1) p.innerHTML+='<a href="#" class="fl_r" onclick="return vk_photos.toggle_thumb_size();">'+IDL('FullThumb')+'</a>';
    }
 }
 

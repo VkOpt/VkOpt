@@ -70,6 +70,7 @@ function vkProcessNode(node){
       vk_im.process_node(node);
       vk_board.get_user_posts_btn(node);
       vk_feed.process_node(node);
+      vk_photos.process_node(node);
 		vk_plugins.processnode(node);
 	// }  catch (e) { topMsg('vkProcessNode error',2)}
 	}
@@ -90,6 +91,7 @@ function vkProcessNodeLite(node){
    vk_board.get_user_posts_btn(node);
    vk_im.process_node(node);
    vk_feed.process_node(node);
+   vk_photos.process_node(node);
 	vk_plugins.processnode(node,true);
    if (getSet(63)=='y') vkSmiles(node);
   }  catch (e) {
@@ -242,6 +244,7 @@ function VkOptMainInit(){
   vkPollResultsBtn();
   vk_board.get_user_posts_btn();  
   vk_im.process_node();  
+  vk_photos.process_node();
   vk_plugins.processnode();
   if (getSet(34)=='y' && !window.setkev){ InpTexSetEvents(); setkev=true;}
   if (getSet(27)=='y') vkGetCalendar();

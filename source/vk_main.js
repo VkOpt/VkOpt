@@ -244,6 +244,7 @@ function VkOptMainInit(){
   vkPollResultsBtn();
   vk_board.get_user_posts_btn();  
   vk_im.process_node();  
+  vk_photos.process_node();
   vk_plugins.processnode();
   if (getSet(34)=='y' && !window.setkev){ InpTexSetEvents(); setkev=true;}
   if (getSet(27)=='y') vkGetCalendar();

@@ -727,7 +727,11 @@ vk_menu={
       ]],
    ],
    get_custom_links:function(){
-      return (JSON.parse(vkGetVal('menu_custom_links') || '[]') || []);
+      try {
+         return (JSON.parse(vkGetVal('menu_custom_links') || '[]') || []);
+      } catch(e) { 
+         return [];
+      }
    },
    custom_settings:function(){
       var cfg = vk_menu.get_custom_links();

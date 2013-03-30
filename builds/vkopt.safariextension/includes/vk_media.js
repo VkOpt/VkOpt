@@ -71,6 +71,10 @@ var vk_photos = {
       .photos_choose_row.c_album{position:relative; cursor:pointer; height: 100px; width: 178px;}\
       .c_album .photo_row_img{ max-width: 178px;}\
       .c_title{background:rgba(0,0,0,0.5); position:absolute; bottom:0px; left:0px; right:0px; color:#FFF; text-align: left; padding:2px 0px 2px 6px;}\
+      .vk_full_thumbs_photos #photos_container .photo_row a,\
+      .vk_full_thumbs_photos #photos_container .photo_row,\
+      .vk_full_thumbs_photos .pva_photo_link,\
+      .vk_full_thumbs_photos .pva_photo {height: auto !important;}\
    ',
    choose_album:function(oid){
       stManager.add('photoview.css');
@@ -249,6 +253,20 @@ var vk_photos = {
 
          parseForm.submit();
       })
+   },
+   toggle_thumb_size:function(){
+      toggleClass(geByTag('body')[0],'vk_full_thumbs_photos');
+      return false;
+   },
+   process_node:function(node){
+      //vk_photos.toggle_thumb_size();
+      var p=geByClass('pvsa_summary_author',node)[0] 
+      if (!p){
+         p=geByClass('photos_summary',node)[0] || geByClass('pva_summary',node)[0];
+         if (p) p=geByClass('summary',p)[0];
+      }
+      
+      if (p && p.innerHTML.indexOf('toggle_thumb_size')==-1) p.innerHTML+='<a href="#" class="fl_r" onclick="return vk_photos.toggle_thumb_size();">'+IDL('FullThumb')+'</a>';
    }
 }
 
@@ -569,6 +587,16 @@ function vkPhotosPage(){
                p_options.push({l:IDL('Add'), h:'/album'+oid+'_'+aid+'?act=add' /*onClick:function(item) { vkGetLinksToPhotos(oid,aid);}*/
                });
 				
+            p_options.push({
+               l:IDL('FullThumb'),
+               onClick:function(item) { 
+                  vk_photos.toggle_thumb_size();
+               } 
+            });
+               
+               
+               
+               
 				p_options=p_options.concat(vk_plugins.album_actions(oid,aid));
 				stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
 					cur.vkAlbumMenu = new DropdownMenu(p_options, {//
