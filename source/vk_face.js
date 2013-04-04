@@ -1060,6 +1060,12 @@ function vkMenu(){//vkExLeftMenu
   
   var custom_cfg = vk_menu.get_custom_links();
   for (var i=0; i<custom_cfg.length /*&& exm*/; i++){
+      if (i==0){   
+         var div=document.createElement('div');
+         div.className='moreDiv more_div';
+         nav.appendChild(div);
+      }
+      
       var m_item=custom_cfg[i];
       var attr=m_item[0].match(/^https?:\/\//)?'':' onclick="return nav.go(this, event);" ';
       var li=vkCe('li',{},'<a class="left_row vk_custom_link" href="'+m_item[0]+'" '+attr+'><span class="left_label inl_bl">'+m_item[1]+'</span><span></span></a>');
