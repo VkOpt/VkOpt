@@ -483,8 +483,24 @@ function vkAddToBL(uid){
 	});
 }
 
+/*
+/al_groups.php
 
-function vkBanUser(user_link,gid) {
+act	bl_edit
+al	1
+gid	11785177
+name	id1
+
+*/
+function vkBanUser(user_link,gid){
+   if (gid || cur.gid || cur.oid<0){
+      if (!gid) gid=cur.oid?Math.abs(cur.oid):cur.gid;
+      var name = trim(user_link)
+      showBox('al_groups.php', {act: 'bl_edit', name: name, gid: gid}, {stat: ['page.css', 'ui_controls.js', 'ui_controls.css'], dark: 1});
+   }
+}
+  
+function vkBanUser_(user_link,gid) {// old
 	if (gid || cur.gid || cur.oid<0){
 		if (!gid) gid=cur.oid?Math.abs(cur.oid):cur.gid;
 		var ban=function(){
