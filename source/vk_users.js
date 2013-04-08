@@ -1684,15 +1684,21 @@ function vkFaveOnlineChecker(on_storage){
 //*///
 ////
 
-function vkFrGenNotInListsCat(){
-   if (!cur.friendsList || !cur.friendsList['all']) return;
-   var data=cur.friendsList['all'];
-   var list=[];
-   for (var i=0; i<data.length;i++)
-      if (data[i][6]=='1') 
-         list.push(data[i]);
-   cur.friendsList['not_in_list']=list;
+function vkFrGenNotInListsCat() {
+    if (!cur.friendsList || !cur.friendsList['all']) return;
+    var data = cur.friendsList['all'];
+    var list = [];
+    for (var i = 0; i < data.length; i++) {
+        var cats = parseInt(data[i][6]);
+        var b = false;
+        for (var l in cur.userLists) {
+            if (cats & (1 << parseInt(l))) b = true;
+        }
+        if (!b) list.push(data[i]);
+    }
+    cur.friendsList['not_in_list'] = list;
 }
+
 function vkFrShowNotInList(){
    vkFrGenNotInListsCat();
    Friends.showSection('not_in_list');
