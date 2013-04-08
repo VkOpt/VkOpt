@@ -1,10 +1,55 @@
-function VkOpt_Loader(){
-      window.messageManager.loadFrameScript("chrome://VkOptExtension/content/content.js", true);
+var vkopt_scripts=[
+    "vklang.js",
+	"vk_lib.js", 
+	"vk_settings.js",
+   "vk_media.js",
+	"vk_users.js",
+	"vk_face.js",
+	"vk_page.js",
+	"vk_skinman.js",
+	"vk_txtedit.js",
+	"vk_main.js",
+	"vk_resources.js",	
+    "vkopt.js"
+];
+function isVKDomain(domain){
+   return ((domain || "").match(/vk\.com|vkontakte\.ru|userapi\.com|vk\.me|youtube\.com|vimeo\.com/));
 }
-window.addEventListener('load',VkOpt_Loader, false);
-
-
-
+(function(){
+var loader={
+   init:function(){
+      loader.moz_ldr(function(doc,win){
+        win.console.log('vkopt loader...');
+        if (!doc || !isVKDomain(doc.location.href)) return;
+        win.console.log('vkopt loader start');
+        for (var i=0;i<vkopt_scripts.length;i++){  
+          var js = doc.createElement('script');
+          js.type = 'text/javascript';
+          js.src =  'resource://vkopt/'+vkopt_scripts[i];
+          doc.getElementsByTagName('head')[0].appendChild(js);
+        }
+      });
+   },
+   moz_ldr:function(callback){
+      var srv={
+         observe:function(aSubject, aTopic, aData) {
+           switch (aTopic) {
+             case 'document-element-inserted':
+               var doc = aSubject;
+               if (null === doc.location) break;
+               var win = doc.defaultView;
+               callback(doc,win);
+               break;
+           }
+         }
+      };
+      var observerService = Components.classes['@mozilla.org/observer-service;1']
+        .getService(Components.interfaces.nsIObserverService);
+      observerService.addObserver(srv, 'document-element-inserted', false);
+   }
+}
+loader.init();
+})();
 
 var vkMozExtension = {  
   listen_request: function(callback) { // analogue of chrome.extension.onRequest.addListener  

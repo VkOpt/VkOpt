@@ -254,8 +254,14 @@ var vk_photos = {
          parseForm.submit();
       })
    },
-   toggle_thumb_size:function(){
-      toggleClass(geByTag('body')[0],'vk_full_thumbs_photos');
+   toggle_thumb_size:function(apply){
+      var p=geByTag('body')[0];
+      if (apply){
+         if (getSet(82)=='y') addClass(p,'vk_full_thumbs_photos');
+         return;
+      }
+      setCfg(82,hasClass(p,'vk_full_thumbs_photos')?'n':'y');
+      toggleClass(p,'vk_full_thumbs_photos');
       return false;
    },
    process_node:function(node){
@@ -546,7 +552,8 @@ function vkPVShowTagsInfo(){
 }
  
 function vkPhotosPage(){
-	if (nav.objLoc[0].indexOf('albums')!=-1){
+	vk_photos.toggle_thumb_size(true);
+   if (nav.objLoc[0].indexOf('albums')!=-1){
       vkAddAlbumCommentsLinks();
       if (cur.oid<0) vkPhotosWallAlbum();
    } else if (nav.objLoc[0].indexOf('album')!=-1 || nav.objLoc[0].indexOf('tag')!=-1 || nav.objLoc[0].indexOf('photos')!=-1){

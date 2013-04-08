@@ -668,7 +668,8 @@ function vkInitSettings(){
       {id:67, text:IDL("seHideLeftFrendsBlock")},
       {id:70, text:IDL("seHideBigLike")},
       {id:71, text:IDL("seWallReplyMod")},
-      {id:74, text:IDL("seLeaveGroupLinks")}
+      {id:74, text:IDL("seLeaveGroupLinks")},
+      {id:79, text:vk_settings.dislikes_icons()+IDL("seDislikes")}
       //{id:64, text:IDL("seToTopOld")}
     ],
 	Sounds:[
@@ -687,15 +688,12 @@ function vkInitSettings(){
       {id:78, text:IDL("seCutBracket")}	
    ],
    Hidden:[
-      {id:79, text:IDL("seDislikes")}
+      {id:82, text:IDL("FullThumb")},
+      {id:83, text:IDL("seDislikesIcon"), ops:[0,1,2,3]}
    ]
-  };	
-   if (vk_dislike.is_enabled(true)){
-      vkoptSets['vkInterface'].push(vkoptSets['Hidden'][0]);
-      vkoptSets['Hidden']=[];
-   }
-  
-	//LAST 81
+  };
+
+	//LAST 83
 	/*
       vkoptSets['advanced']=[
          'vk_upd_menu_timeout','vkMenuHideTimeout','CHECK_FAV_ONLINE_DELAY',
@@ -716,6 +714,33 @@ function vkInitSettings(){
   vksettobj();
 }
 
+vk_settings = {
+   dislikes_icons:function(){
+      html='\
+      <div class="dislikes_icons fl_r dislike_icon_%cur">\
+         <a class="post_dislike_icon dislike_icon_striked" onclick="return vk_settings.dislikes_icons_set(0,this);"></a>\
+         <a class="post_dislike_icon dislike_icon_broken"  onclick="return vk_settings.dislikes_icons_set(1,this);"></a>\
+         <a class="post_dislike_icon dislike_icon_crossed" onclick="return vk_settings.dislikes_icons_set(2,this);"></a>\
+         <a class="post_dislike_icon dislike_icon_skull"   onclick="return vk_settings.dislikes_icons_set(3,this);"></a>\
+      </div>';
+      var icon_index = parseInt(getSet(83));
+      if (!icon_index && icon_index!=0) 
+            icon_index=3;
+      html = html.replace(/%cur/g,icon_index);
+      return html;
+   },
+   dislikes_icons_set:function(idx,el){
+      setCfg(83,idx);
+      if (el){ 
+        removeClass(el.parentNode,'dislike_icon_0');
+        removeClass(el.parentNode,'dislike_icon_1');
+        removeClass(el.parentNode,'dislike_icon_2');
+        removeClass(el.parentNode,'dislike_icon_3');
+        addClass(el.parentNode,'dislike_icon_'+idx);
+      }
+      return false;
+   }
+}
 function vksettobj(s){
   vkoptSetsObj={};
   var x=0;

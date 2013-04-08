@@ -1131,7 +1131,9 @@ function vkIMModActMenu(types,peer,user){
    if (!types || !peer || !user) return;
    if (/*peer > 0 && peer < 2e9 &&*/ user.msg_count){
       //console.log(user);      
-      types.push(['save_history', IDL('SaveHistory'), '3px -41px', vkIMSaveHistoryBox.pbind(peer)]);//  [id, name, bg-position, onclick, href, bg-url, customStyle]
+      var item=['save_history', IDL('SaveHistory'), '3px -41px', vkIMSaveHistoryBox.pbind(peer)];
+      //types.push(item);//  [id, name, bg-position, onclick, href, bg-url, customStyle]
+      types.splice(1,0,item);
    }
 }
 function vkIMSaveHistoryBox(peer){
@@ -1598,6 +1600,7 @@ function vkMakeMsgHistory(uid,show_format){
    date_fmt=date_fmt.replace(/\r?\n/g,'\r\n');
    var users={};
    var users_ids=[];
+   var history_uids={};
 	var collect=function(callback){
 		hide('save_btn_text');
 		show('saveldr');
@@ -1605,7 +1608,9 @@ function vkMakeMsgHistory(uid,show_format){
       var w=getSize(ge('saveldr'),true)[0];
 		if (offset==0) ge('saveldr').innerHTML=vkProgressBar(offset,10,w);		
 		dApi.call('messages.getHistory',{uid:uid,offset:offset,count:100},function(r){
-			ge('saveldr').innerHTML=vkProgressBar(offset,r.response[0],w);
+			//console.log(r);
+         //return;
+         ge('saveldr').innerHTML=vkProgressBar(offset,r.response[0],w);
 			var msgs=r.response;
 			var count=msgs.shift();
 			msgs.reverse();
@@ -1614,6 +1619,7 @@ function vkMakeMsgHistory(uid,show_format){
          var make_msg=function(msg,level){
             level=level || 0;
             var from_id= msg.from_id || msg.uid
+            if (msg.from_id) history_uids['%'+msg.from_id+'%']='1';
             if (!users['%'+from_id+'%']){
                users['%'+from_id+'%']='id'+from_id+' DELETED';
                users_ids.push(from_id);
@@ -1686,18 +1692,22 @@ function vkMakeMsgHistory(uid,show_format){
 	var run=function(){     
 			collect(function(t){
             dApi.call('getProfiles',{uids:users_ids.join(',')/*remixmid()+','+uid*/},function(r){
+               var file_name=[];
                for (var i=0;i<r.response.length;i++){
                   var u=r.response[i];
                   users['%'+u.uid+'%']=u.first_name+" "+u.last_name;
+                  
                }
                for (var key in users){
+                  var uid=parseInt((key || '0').replace(/%/g,''));
+                  if (history_uids[key] && !(window.vk && uid==vk.id)) file_name.push(users[key]+'('+uid+')');
                   t=t.split(key).join(users[key]);
                }
                
                show('save_btn_text');
                hide('saveldr');
                //alert(t);
-               vkSaveText(t,"messages_"+uid+".txt");
+               vkSaveText(t,"messages_"+vkCleanFileName(file_name.join(',')).substr(0,250)+".txt");
                
             });            
 			});

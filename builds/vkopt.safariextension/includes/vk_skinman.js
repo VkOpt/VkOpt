@@ -243,9 +243,21 @@ function vkMakeCatMenu(cats){
 	vkNavigationMenu=el;
     //el.setAttribute("id","snav");
     var html='<li><h4 style="cursor:hand;" onclick="show(vkNavigationMenu); hide(\'vk_cat_skins_menu\')">'+IDL('categories')+"</h4></li>"+
-             '<li><a href=# onclick="return vkShowSkinMan();">'+IDL('all')+'<span>'+cats.SkinsCount+'</span></a></li>';
-    for (var cat in cats)  if(cat!='SkinsCount') html+='<li><a href=# category="'+cat+'" onclick="return vkCatNavigate(this);">'+cat+'<span>'+cats[cat]+'</span></a></li>';
+             
+             '<li><a href="#"  onclick="return vkShowSkinMan();" class="left_row">'+
+               '<span class="left_count_wrap  fl_r"><span class="inl_bl left_count">'+cats.SkinsCount+'</span></span>'+
+               '<span class="left_label inl_bl">'+IDL('all')+'</span>'+
+             '</a></li>';
+
+    for (var cat in cats)  if(cat!='SkinsCount') 
+      html+='<li><a href="#"  category="'+cat+'" onclick="return vkCatNavigate(this);" class="left_row">\
+    <span class="left_count_wrap  fl_r"><span class="inl_bl left_count">'+cats[cat]+'</span></span>\
+    <span class="left_label inl_bl">'+cat+'</span>\
+</a></li>';
     html+='<div class="moreDiv"></div>';
+    
+
+
 	hide(vkNavigationMenu);
 	el.parentNode.insertBefore(vkCe('ol',{id:'vk_cat_skins_menu'},html),el);
   }
@@ -335,6 +347,8 @@ function vkMakePageListS(cur,end,href,onclick,step){
 }
 function vkShowSkinMan(filter,page){
   vkDisableAjax();
+  removeClass(geByTag1('body'),'audio_fixed_nav');
+  removeClass(geByTag1('body'),'im_fixed_nav');
   if (!window.VK_STYLE_LIST){
 	var html='<div class="bar clearFix summaryBar summary_wrap clear_fix">'+
              '<div id="toppages" class="fl_r pages_top"></div>'+
@@ -387,7 +401,7 @@ function vkShowSkinMan(filter,page){
           .smaximize {  border-bottom: 1px solid #DAE1E8;  height: 19px;  line-height: 19px;  background-color: transparent; display: block;  clear: both;  padding: 3px; padding-left:25px;  border-bottom: solid 1px #CCD3DA; } \
           .smaximize:hover {  background-color: #DAE1E8;} \
           .smaximizeoff {  opacity: 0.5; color: #2b587a; border-bottom: 1px solid #DAE1E8;  height: 19px;  line-height: 19px;  background-color: transparent; display: block;  clear: both;  padding: 3px; padding-left:25px; border-bottom: solid 1px #CCD3DA; } \
-          #vk_cat_skins_menu li a span, #vk_cat_skins_menu li a span{float:right;} \
+          /*#vk_cat_skins_menu li a span, #vk_cat_skins_menu li a span{float:right;}*/ \
           #sideBar ol#vk_cat_skins_menu {  list-style: none;  margin: 0px 0px 10px;  padding: 0px;}\
           #sideBar ol#vk_cat_skins_menu  li {  font-size: 1.0em;}\
           #sideBar ol#vk_cat_skins_menu  li a {  border: 0;  display: block;  padding: 4px 3px 4px 6px;}\

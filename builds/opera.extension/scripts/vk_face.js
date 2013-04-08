@@ -765,14 +765,14 @@ vk_menu={
    add:function(to_idx){
       var id=(to_idx!=null?to_idx:'');
       var p=ge('vkm_add_frm'+id);
-      p.innerHTML='<input type="text" placeholder="http://" id="vk_menu_add_link'+id+'" onkeyup="vk_menu.add_checkkey(event,'+to_idx+')" value=""><input type="text" placeholder="Title" id="vk_menu_add_title'+id+'"  onkeyup="vk_menu.add_checkkey(event,'+to_idx+')" value="">';
+      p.innerHTML='<div class="button_gray fl_r" onclick="vk_menu.add_checkkey(1,'+to_idx+')"><button>OK</button></div><input type="text" placeholder="http://" id="vk_menu_add_link'+id+'" onkeyup="vk_menu.add_checkkey(event,'+to_idx+')" value=""><input type="text" placeholder="Title" id="vk_menu_add_title'+id+'"  onkeyup="vk_menu.add_checkkey(event,'+to_idx+')" value="">';
       return false;
    },
    add_checkkey:function(ev,to_id){
       var id=(to_id!=null?to_id:'');
       
       ev = ev || window.event;
-      if (ev.keyCode == 10 || ev.keyCode == 13){
+      if (ev.keyCode == 10 || ev.keyCode == 13 || ev===1){
          var link=trim(ge('vk_menu_add_link'+id).value);
          var title=trim(ge('vk_menu_add_title'+id).value);
          if (link=='' || title=='') return;
@@ -1059,7 +1059,13 @@ function vkMenu(){//vkExLeftMenu
   }
   
   var custom_cfg = vk_menu.get_custom_links();
-  for (var i=0; i<custom_cfg.length && exm; i++){
+  for (var i=0; i<custom_cfg.length /*&& exm*/; i++){
+      if (i==0){   
+         var div=document.createElement('div');
+         div.className='moreDiv more_div';
+         nav.appendChild(div);
+      }
+      
       var m_item=custom_cfg[i];
       var attr=m_item[0].match(/^https?:\/\//)?'':' onclick="return nav.go(this, event);" ';
       var li=vkCe('li',{},'<a class="left_row vk_custom_link" href="'+m_item[0]+'" '+attr+'><span class="left_label inl_bl">'+m_item[1]+'</span><span></span></a>');
@@ -1076,7 +1082,7 @@ function vkMenu(){//vkExLeftMenu
       var submenu=m_item[2];
       if (submenu && submenu.length==0) submenu=null;
       if (!submenu && exm) item.setAttribute('onmousemove','vkMenuHide();');
-      if (submenu && exm){
+      if (submenu /*&& exm*/){
          var ul=document.createElement('ul');
          ul.id='vkm_'+page;
          setActions(item);

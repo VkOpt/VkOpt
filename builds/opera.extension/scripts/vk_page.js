@@ -2258,48 +2258,70 @@ function vk_tag_api(section,url,app_id){
             "text": "",
             "h": "22"
          }; 
-         AjPost(location.protocol+'//vk.com/widget_like.php',params,function(r,t){
-            var _pageQuery=(t.match(/_pageQuery\s*=\s*'([a-f0-9]+)'/) || [])[1];
-            var likeHash=(t.match(/likeHash\s*=\s*'([a-f0-9]+)'/) || [])[1];
-            if (!_pageQuery || !likeHash){
-               alert('Parse hash error');
-               return;
-            }
-            var like_params={
-               value:like?1:0,
-               hash:likeHash,
-               pageQuery:_pageQuery,
-               app:app
-            };
-            send(location.protocol+'//vk.com/widget_like.php?act=a_like',like_params,function(obj){
-               if (callback) callback(obj.num);
-               //alert(obj.num);
+         var ret=0;
+         var req=function(){
+            AjPost(location.protocol+'//vk.com/widget_like.php',params,function(r,t){
+               var _pageQuery=(t.match(/_pageQuery\s*=\s*'([a-f0-9]+)'/) || [])[1];
+               var likeHash=(t.match(/likeHash\s*=\s*'([a-f0-9]+)'/) || [])[1];
+               if (!_pageQuery || !likeHash){
+                  if (ret<5 && t.match('db_err')){
+                     ret++;
+                     console.log('widget_req error... retry '+ret+'... ');
+                     setTimeout(req,3000);
+                  } else 
+                     alert('Parse hash error');
+                  return;
+               }
+               var like_params={
+                  value:like?1:0,
+                  hash:likeHash,
+                  pageQuery:_pageQuery,
+                  app:app
+               };
+               send(location.protocol+'//vk.com/widget_like.php?act=a_like',like_params,function(obj){
+                  if (callback) callback(obj.num);
+                  //alert(obj.num);
+               });
+               
             });
-            
-         });
+         }
+         req();
       },
       send:function(url,params,callback){
          var send=t.send;
-         AjPost(url,params,function(r,t){
-            var obj=parseJSON(t);
-            if (obj.ok && obj.ok==-2){
-               var difficulty = '';
-               if (obj.difficult === undefined) obj.difficult = 0;
-               if (obj.difficult !== undefined) {
-                 difficulty = intval(r.difficult) ? '' : 's=1&';
+         var ret=0;
+         var req=function(){
+            AjPost(url,params,function(r,t){
+               try { 
+                  var obj=JSON.parse(t); 
+               } catch (e) {
+                  if (ret<5){
+                     ret++;
+                     console.log('send error... retry '+ret+'... ');
+                     setTimeout(req,3000);
+                  } else 
+                     console.log('send error ',params);
+                  return;
                }
-               var captcha_img = 'http://vk.com/captcha.php?'+difficulty+'sid='+obj.captcha_sid;
-               dApi.captcha(obj.captcha_sid, captcha_img, function(sid, key){
-                  params['captcha_sid']=sid;
-                  params['captcha_key']=key;
-                  if (vk_api_captchaBox) vk_api_captchaBox.hide();
-                  send(url,params,callback);
-               });
-            } else {
-               callback(obj);
-            }
-         });
-         
+               if (obj.ok && obj.ok==-2){
+                  var difficulty = '';
+                  if (obj.difficult === undefined) obj.difficult = 0;
+                  if (obj.difficult !== undefined) {
+                    difficulty = intval(r.difficult) ? '' : 's=1&';
+                  }
+                  var captcha_img = 'http://vk.com/captcha.php?'+difficulty+'sid='+obj.captcha_sid;
+                  dApi.captcha(obj.captcha_sid, captcha_img, function(sid, key){
+                     params['captcha_sid']=sid;
+                     params['captcha_key']=key;
+                     if (vk_api_captchaBox) vk_api_captchaBox.hide();
+                     send(url,params,callback);
+                  });
+               } else {
+                  callback(obj);
+               }
+            });
+         }
+         req();
       },
       parse_id:function(obj_id){
          //console.log('>>>',obj_id);
@@ -2357,9 +2379,25 @@ function vk_tag_api(section,url,app_id){
             tmp.push('"'+obj_ids[i]+'":{count:'+a1+',my:'+a2+'}');
          }
          var code='return {'+tmp.join(',')+'};';
-         dApi.call('execute',{code:code},function(r,t){
-            if (callback) callback(r.response);
-         });
+         var retry_count=0;
+         var get=function(){
+            dApi.call('execute',{code:code},{
+                  ok:function(r,t){
+                     if (callback) callback(r.response);
+                  },
+                  error:function(r,err){
+                     console.log('api marks error',obj_ids,err)
+                     retry_count++;
+                     if (retry_count<5){
+                        setTimeout(get,2000);
+                        console.log('api marks error.. wait 2sec and retry.. code:'+err.error_code);
+                     } else { 
+                        console.log('api marks error',obj_ids,err)
+                     }
+                  }
+            });
+         }
+         get();
       }
    }
    return t;
@@ -2373,7 +2411,7 @@ function vk_tag_api(section,url,app_id){
       app_id:3395854,
       server:'http://dislike.server/like.php',
       ls_val:'dislike_auth',
-      ids_per_req:10,//20,
+      ids_per_req:5,//10,//20,
       delay:1000,
       cache_time:3 * 60 * 1000,// 3 min
       is_enabled:function(set){
@@ -2986,7 +3024,26 @@ function vk_tag_api(section,url,app_id){
          load_info();         
          return false;
       },
-      css:function(){return !dk.is_enabled()?"":"\
+      css:function(){
+         vk_dislike.icon_index = parseInt(getSet(83));
+         if (!vk_dislike.icon_index && vk_dislike.icon_index!=0) 
+            vk_dislike.icon_index=3;
+         var code="\
+         dislikes_icons{padding:1px;}\
+         .dislikes_icons a{float:left;opacity:0.5;}\
+         .dislikes_icons a:hover{opacity:1;}\
+         .dislike_icon_0 .dislike_icon_striked,\
+         .dislike_icon_1 .dislike_icon_broken,\
+         .dislike_icon_2 .dislike_icon_crossed,\
+         .dislike_icon_3 .dislike_icon_skull{opacity:1;}\
+         .post_dislike_icon{background:url('"+vk_dislike.icons[vk_dislike.icon_index]+"') 1px 0px no-repeat transparent;      height:10px;      margin:2px 2px 0px;      opacity:0.4;      padding-right:1px;      width:11px;   }\
+         .post_dislike_icon.dislike_icon_striked{background-image:url('"+vk_dislike.icons[0]+"')}\
+         .post_dislike_icon.dislike_icon_broken{background-image:url('"+vk_dislike.icons[1]+"')}\
+         .post_dislike_icon.dislike_icon_crossed{background-image:url('"+vk_dislike.icons[2]+"')}\
+         .post_dislike_icon.dislike_icon_skull{background-image:url('"+vk_dislike.icons[3]+"')}\
+         ";
+
+         code += !dk.is_enabled()?"":"\
          .antilike,#al_adv_side{display:none !important}\
          .disliked_users_loading{background: url(http://vk.com/images/upload_inv_mono.gif) no-repeat 50% 50%;}\
          .disliked_users_big_loader{background-image: url(http://vk.com/images/progress7.gif); background-repeat:no-repeat; background-position:50% 50%;}\
@@ -2998,7 +3055,6 @@ function vk_tag_api(section,url,app_id){
            -o-transition: opacity 200ms linear;\
            transition: opacity 200ms linear;\
          }\
-         .post_dislike_icon{background:url('"+vk_dislike.icons[vk_dislike.icon_index]+"') 1px 0px no-repeat transparent;      height:10px;      margin:2px 2px 0px;      opacity:0.4;      padding-right:1px;      width:11px;   }\
          .post_dislike_count{color:#7295B2;      font-weight:700;    }\
          .post_dislike{background:rgba(255,255,255,0);      border-radius:3px;      color:#2F5879;      cursor:pointer;      font-size:10px;      margin-top:-1px;      overflow:hidden;      padding:5px 6px;      right:0px;      white-space:nowrap;   }\
          .post_dislike_link{color:#829BAF;   }\
@@ -3068,6 +3124,7 @@ function vk_tag_api(section,url,app_id){
          .bp_post .like_link{display:none !important;}\
          #bt_rows .post_dislike:hover .post_dislike_icon{ opacity:1;}\
          ";
+         return code;
       }
    };
    window.vk_dislike=dk;

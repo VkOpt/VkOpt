@@ -483,8 +483,24 @@ function vkAddToBL(uid){
 	});
 }
 
+/*
+/al_groups.php
 
-function vkBanUser(user_link,gid) {
+act	bl_edit
+al	1
+gid	11785177
+name	id1
+
+*/
+function vkBanUser(user_link,gid){
+   if (gid || cur.gid || cur.oid<0){
+      if (!gid) gid=cur.oid?Math.abs(cur.oid):cur.gid;
+      var name = trim(user_link)
+      showBox('al_groups.php', {act: 'bl_edit', name: name, gid: gid}, {stat: ['page.css', 'ui_controls.js', 'ui_controls.css'], dark: 1});
+   }
+}
+  
+function vkBanUser_(user_link,gid) {// old
 	if (gid || cur.gid || cur.oid<0){
 		if (!gid) gid=cur.oid?Math.abs(cur.oid):cur.gid;
 		var ban=function(){
@@ -1668,15 +1684,21 @@ function vkFaveOnlineChecker(on_storage){
 //*///
 ////
 
-function vkFrGenNotInListsCat(){
-   if (!cur.friendsList || !cur.friendsList['all']) return;
-   var data=cur.friendsList['all'];
-   var list=[];
-   for (var i=0; i<data.length;i++)
-      if (data[i][6]=='1') 
-         list.push(data[i]);
-   cur.friendsList['not_in_list']=list;
+function vkFrGenNotInListsCat() {
+    if (!cur.friendsList || !cur.friendsList['all']) return;
+    var data = cur.friendsList['all'];
+    var list = [];
+    for (var i = 0; i < data.length; i++) {
+        var cats = parseInt(data[i][6]);
+        var b = false;
+        for (var l in cur.userLists) {
+            if (cats & (1 << parseInt(l))) b = true;
+        }
+        if (!b) list.push(data[i]);
+    }
+    cur.friendsList['not_in_list'] = list;
 }
+
 function vkFrShowNotInList(){
    vkFrGenNotInListsCat();
    Friends.showSection('not_in_list');
