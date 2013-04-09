@@ -30,7 +30,7 @@
 		</dict>
 	</dict>
 	<key>Description</key>
-	<string>Расшиение функциональности сайта vkontakte.ru (vk.com)</string>
+	<string>Расширение функциональности сайта vkontakte.ru (vk.com)</string>
 	<key>ExtensionInfoDictionaryVersion</key>
 	<string>1.0</string>
 	<key>Permissions</key>
@@ -53,6 +53,8 @@
 				<string>vimeo.com</string>
 				<string>*.vimeo.com</string>
 			</array>
+         <key>Include Secure Pages</key>
+         <true/>
 			<key>Level</key>
 			<string>Some</string>
 		</dict>
