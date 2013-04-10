@@ -625,8 +625,14 @@ function vkPhotosPage(){
 function vkGetLinksToPhotos(oid,aid){  
 	var MakeLinksList=function(phot){
 		var parr=[]; 
-		for (var i=0;i<phot.length;i++)
-		  parr.push('<a href="'+phot[i].max_src+'">'+phot[i].max_src+'</a>');
+      var len=(phot.length+"").length;
+		for (var i=0;i<phot.length;i++){
+		  var src=phot[i].max_src;
+        var num=('_000000000000'+i).substr(-len);
+        var name='?&/'+num+'_'+src.split('/').pop();
+        src+=name;
+        parr.push('<a href="'+src+'">'+src+'</a>');
+      }
 		return parr;
 	}
 	if (!ge('vk_links_container')){

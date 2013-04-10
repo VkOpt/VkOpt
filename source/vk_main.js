@@ -332,7 +332,7 @@ function ProcessAwayLink(node){
 function vkFriendsPage(){
 	vkFriendsBySex(true);
 	vkCheckFrLink();
-   vkFrNotInListsLink();
+   vk_friends.cat_links();
 }
 /* PUBLICS */
 function vkPublicPage(){
