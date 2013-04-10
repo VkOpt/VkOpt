@@ -2458,7 +2458,7 @@ function vkAudioPlayer(){
       Inj.Replace('audioPlayer.setCurTime','dur.innerHTML = res','dur.innerHTML = vkAudioDurMod(res)');
       Inj.Replace('audioPlayer.setGraphics','dur.innerHTML = res','dur.innerHTML = vkAudioDurMod(res)');
    }*/
-   if (getSet(75)=='y') vk_audio_player.gpCtrlsInit();
+   vk_audio_player.inj();
 }
 
 vk_audio_player={
@@ -2475,6 +2475,14 @@ vk_audio_player={
    #gp.reverse .vka_ctrl.vol .vol_panel{margin-top: -54px;}\
    .gp_vka_ctrls{position:absolute; width:137px; margin-top:34px; margin-left: 5px; padding:3px; border-radius:0 0 4px 4px; background:rgba(218, 225, 232, 0.702); }\
    ',
+   scroll_to_track_enabled:true,
+   inj:function(){
+      if (getSet(75)=='y') vk_audio_player.gpCtrlsInit();
+      Inj.Start('audioPlayer.scrollToTrack','if (!vk_audio_player.scroll_to_track_enabled) return;');
+   },  
+   init:function(){
+      if (getSet(85)=='y') vk_audio_player.scroll_to_track_enabled=false;
+   },
    gpCtrlsInit:function(){
       Inj.End('audioPlayer.setGraphics','vk_audio_player.gpCtrls();');
    },

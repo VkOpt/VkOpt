@@ -2003,7 +2003,12 @@ vk_feed={
    ',
    inj:function(){
       Inj.Before('Feed.go','revertLastInlineVideo',"/*console.log('process go',rows);*/ rows=vkModAsNode(rows,vk_feed.process_node);")
-      Inj.Before('Feed.update','var feed_rows','/*console.log("process update",rows);*/ rows=vkModAsNode(rows,vk_feed.process_node);')   
+      Inj.Before('Feed.update','var feed_rows','/*console.log("process update",rows);*/ rows=vkModAsNode(rows,vk_feed.process_node);')  
+      
+      Inj.Before('Feed.pushEvent','others.insertBefore(first','vkProcessNode(first);'); 
+      Inj.Before('Feed.pushEvent','cont.insertBefore(frow','vkProcessNode(frow);');
+      Inj.Before('Feed.pushEvent','cont.insertBefore(newEl','vkProcessNode(newEl);');
+      //      
    },
    on_page:function(){
       //vkSortFeedPhotos();
@@ -2012,6 +2017,8 @@ vk_feed={
    process_node:function(node){
       if (!vk_feed.filter_enabled) return;
       var nodes=geByClass('feed_row',node);
+      if (node && hasClass(node,'feed_row')) nodes=[node];
+      
       var reprocess=[];
       var process=function(row){
          if (hasClass(row,'vk_feed_filter')) return;
@@ -2108,6 +2115,8 @@ vk_feed={
    },
    filter_enabled:false,
    filter_init:function(){
+      var bit=84;
+      var enabled=(getSet(bit)=='y');
       if (ge('vk_feed_filter'))
          ((cur.section=="articles")?hide:show)('vk_feed_filter');
       vk_feed.process_node();
@@ -2159,14 +2168,21 @@ vk_feed={
             removeClass(ge(fobj),prefix+items[i][1]);
       }
       
+      vk_feed.filter_enabled=enabled;
+      if (enabled){
+         show(panel);
+         vk_feed.process_node();
+         apply();
+      }
       stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
-         vk_feed.filter_enabled=false;
+         
          var cb = new Checkbox(ge("vkf_filter_chk"), {  
                      width: 100,  
-                     checked:false,  
+                     checked:enabled,  
                      label: IDL('Filter'),
                      onChange: function(state) { 
-                        var checked = (state == 1)?true:false;  
+                        var checked = (state == 1)?true:false;
+                        setCfg(bit,checked?'y':'n');
                         if (checked){
                            vk_feed.filter_enabled=true;
                            show(panel);

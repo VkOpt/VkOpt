@@ -252,6 +252,7 @@ function VkOptMainInit(){
   if (getSet(16) == 'y') UserOnlineStatus();
   vkFavOnlineChecker();
   vkFaveOnlineChecker();
+  vk_audio_player.init();
   vkMoneyBoxAddHide();
   vkCheckUpdates();
   setTimeout(vkFriendsCheckRun,2000);
