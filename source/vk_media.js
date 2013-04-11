@@ -4428,4 +4428,43 @@ function vkGetAlbumInfo(artist,track,callback){
       );
 }
 
+
+vk_apps = {
+   page:function(){
+      if (ge('app_edit_summary'))
+         ge('app_edit_summary').onclick=vk_apps.view_adm_apps;
+   },
+   view_adm_apps: function() {
+      var list = cur.appsList[cur.curList] || [];
+      var summaries = [ge('apps_summary'), ge('app_site_summary'), ge('app_desktop_summary'), ge('app_edit_summary')];
+      var contents = [ge('app_rows'), ge('app_site_list'), ge('app_desktop_list'), ge('app_edit_list')];
+      var more_buttons = [ge('more_link'), ge('site_more_link'), ge('desktop_more_link'), ge('edit_more_link')];
+      var results = [ge('app_rows'), ge('app_site_results'), ge('app_desktop_results'), ge('app_edit_results')];
+      var wraps = [null, ge('app_site_wrap'), ge('app_desktop_wrap'), ge('app_edit_wrap')];
+      var i = 3;
+      var apps = Apps.filterByAppAdmin(list);
+      cur.totalCounters[i] = apps.length;
+      cur.shownCounters[i] = apps.length;
+      show(wraps[i]);
+      show(results[i]);
+      
+      contents[i].innerHTML='';
+      hide(more_buttons[i]);
+      var html = [];
+      for (k in apps) {
+         var app = apps[k];
+         var edit = (i == 3);
+         html.push(Apps.drawApp(app, false, true));
+      }
+      var au = ce('div', {
+         innerHTML: html.join('')
+      });
+      while (au.firstChild) {
+         contents[i].appendChild(au.firstChild);
+      }
+   }
+}
+
+//vk_apps.view_adm_apps();
+
 if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;

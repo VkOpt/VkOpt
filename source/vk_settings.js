@@ -164,7 +164,7 @@ function vkSettingsPage(){
 function vkLoadVkoptConfigFromFile(){
   vkLoadTxt(function(txt){
 	try {
-	  var cfg=eval('('+txt+')');
+     var cfg=eval('('+txt+')');
 	  /*alert(print_r(cfg));*/
 	  for (var key in cfg) if (cfg[key]) 
 		vksetCookie(key,cfg[key]);

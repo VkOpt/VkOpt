@@ -2285,8 +2285,8 @@ function vkattachScript(id, c) {
 
 
 // DATA SAVER
-var VKFDS_SWF_LINK='http://cs4785.vkontakte.ru/u13391307/90ea533137b420.zip';
-var VKFDS_SWF_HTTPS_LINK='https://pp.userapi.com/c4785/u13391307/90ea533137b420.zip';
+var VKFDS_SWF_LINK='http://cs6147.vk.me/u13391307/c0b944fc2c34a1.zip';
+var VKFDS_SWF_HTTPS_LINK='https://pp.vk.me/c6147/u13391307/c0b944fc2c34a1.zip';
 
 var VKTextToSave="QweQwe Test File"; var VKFNameToSave="vkontakte.txt";
   
@@ -2321,15 +2321,16 @@ function vkSaveText(text,fname){
 //END DATA SAVER
 
 // DATA LOADER
-var VKFDL_SWF_LINK='http://cs4788.vkontakte.ru/u13391307/27aa308ec116fa.zip';
-var VKFDL_SWF_HTTPS_LINK='https://pp.userapi.com/c4788/u13391307/27aa308ec116fa.zip';
+var VKFDL_SWF_LINK='http://cs6147.vk.me/u13391307/8f4dac1239fc88.zip';
+var VKFDL_SWF_HTTPS_LINK='https://pp.vk.me/c6147/u13391307/8f4dac1239fc88.zip';
 
 function vkLoadTxt(callback,mask){
 	DataLoadBox = new MessageBox({title: IDL('LoadFromFile')});
 	var Box = DataLoadBox;
 
 	vkOnDataLoaded=function(text){
-		Box.hide();
+		//alert(text);
+      Box.hide();
 		setTimeout(function(){callback(text);},10);	
 	}
 	vkOnInitDataLoader=function(w,h){

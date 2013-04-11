@@ -162,6 +162,7 @@ function vkOnNewLocation(startup){
          case 'fave'    :vkFavePage(); break;
          case 'im'      :vkImPage(); break;
          case 'pages'   :vkWikiPages(); break;
+         case 'apps'    :vk_apps.page(); break;
          //case 'groups_list': vkGroupsListPage(); break;
 		}
 		if (startup && window.Fave) Fave.init();	
