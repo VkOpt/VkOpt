@@ -344,6 +344,7 @@ function vkPublicPage(){
    vkWikiPagesList(true);
    vkGroupStatsBtn();
    vkUpdWallBtn();
+   vk_groups.show_members_btn();
 }
 /* EVENTS */
 function vkEventPage(){
@@ -362,6 +363,7 @@ function vkGroupPage(){
    vkUpdWallBtn();
    vkWikiPagesList(true);
    vkGroupStatsBtn();
+   vk_groups.show_members_btn();
 }
 
 function vkGroupStatsBtn(){
@@ -570,7 +572,8 @@ function vkCommon(){
 	Inj.End('nav.setLoc','setTimeout("vkOnNewLocation();",2);');
 	
     if (getSet(10)=='y') Inj.After('TopSearch.row','name +','vkTsUserMenuLink(mid)+');
-
+   
+   vk_pages.inj_common();
    
    //if(window.TopSearch) Inj.End('TopSearch.prepareRows','vkProccessLinks(tsWrap);');
 	//if (window.setFavIcon) Inj.Try('setFavIcon');
