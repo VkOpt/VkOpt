@@ -227,6 +227,7 @@ var vk_photos = {
    },
    url:function(url){
       if (!url) url=prompt('Image URL');
+      url=encodeURI(url);
       AjGet('http://vk.com/wall'+vk.id+'?offset=100000000',function(r,t){
          var o=(t.match(/"share":(\{[^}]+\})/)||[])[1];
          if (!o) {alert('hash error'); return;}
@@ -246,7 +247,49 @@ var vk_photos = {
          });
          
          window.onUploadDone = function(data){
-            showPhoto(data[1],data[2].list,{});
+            if (data[0]=='photo')
+               showPhoto(data[1],data[2].list,{});
+            else 
+            if (data[0]=='doc'){
+               var opts=data[2];
+               var hash=opts.href.match(/hash=([a-f0-9]+)/);
+               hash = hash?hash[1]:null;
+               if (!hash){
+                  alert('Hash error\r\nResponse data:\r\n'+JSON.stringify(data));
+                  return;
+               }
+               var title=(opts.lang || {}).profile_choose_doc || 'Save uploaded document';
+               var html='<a href="'+opts.href+'" target="_blank">'+opts.href+'</a><br>'+opts.title+'<br>'+(opts.thumb?'<img src="'+opts.thumb+'">':'');
+               /*
+                  ["doc", "16000020_171916744",
+                  {
+                     "lang": {
+                        "profile_choose_doc": "Document"
+                     },
+                     "title": "<span class=\"fl_l\">file.gif</span>&nbsp;<span class=\"fl_r\">3Mb</span>",
+                     "ext": "gif",
+                     "size": "2954778",
+                     "href": "/doc16000020_171916744?hash=abd5ca1bb1092cfa50&dl=91ec5a87ebf7bc21ee",
+                     "thumb": "http://cs521201.vk.me/u16000020/-3/m_1205c06403.jpg",
+                     "thumb_s": "http://cs521201.vk.me/u16000020/-3/s_1205c06403.jpg"
+                  }]
+               */               
+               var aBox = new MessageBox({title: title});
+               aBox.removeButtons();
+               aBox.addButton(getLang('box_cancel'),aBox.hide,'no');
+               aBox.addButton(getLang('box_save'),function(){  
+                  aBox.hide();
+                  ajax.post('docs.php', {act: 'a_add', doc: data[1], hash: hash}, {
+                     onDone: function(text, tooltip) {
+                        showDoneBox(text);
+                     }
+                  });
+               }, 'yes');
+               aBox.content(html);
+               aBox.show();
+            } else {
+               alert(JSON.stringify(data));
+            }
             console.log(data);
          }
          window.onUploadFail = function(){alert('Upload Fail')}
@@ -1401,6 +1444,17 @@ vk_videos = {
       .video_raw_info_name, .video_row_info_line {height: auto !important; white-space: normal !important;}\
       .video_row_info_line{bottom:0px !important;}';
       return code;
+   },
+   inj_common:function(){
+      Inj.Before('showVideo','ajax.post','vk_videos.change_show_video_params(options);');
+   },
+   change_show_video_params:function(opts){
+      if (!opts || !opts.params) return;
+      var params=opts.params;
+      if (VIDEO_AUTOPLAY_DISABLE)
+         params['autoplay']=0;            
+      //params['force_hd']=3;
+      //console.log('showVideo:',opts);
    },
    update_vid_titles:function(){
       var els=geByClass('video_row_relative');

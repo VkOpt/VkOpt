@@ -574,6 +574,7 @@ function vkCommon(){
     if (getSet(10)=='y') Inj.After('TopSearch.row','name +','vkTsUserMenuLink(mid)+');
    
    vk_pages.inj_common();
+   vk_videos.inj_common();
    
    //if(window.TopSearch) Inj.End('TopSearch.prepareRows','vkProccessLinks(tsWrap);');
 	//if (window.setFavIcon) Inj.Try('setFavIcon');

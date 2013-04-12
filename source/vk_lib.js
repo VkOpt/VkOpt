@@ -1563,7 +1563,7 @@ DAPI_APP_ID=2168679;
 //javascript: dApi.call('notes.get',{},uApi.show)
 var dApi = {
 	API_ID: DAPI_APP_ID,
-	SETTINGS: 277758+131072,//15614, /* FULL: 15615 + 131072;   Don't use NOT_USED_SETTING */
+	SETTINGS: 277758+131072+1048576,//15614, /* FULL: 15615 + 131072;   Don't use NOT_USED_SETTING */
 	NOT_USED_SETTING: 99999999, //32768, /* need for get auth dialog when all settings allowed */
 	allow_call:true,
 	auth_frame:null,
