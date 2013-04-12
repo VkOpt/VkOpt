@@ -227,7 +227,14 @@ var vk_photos = {
    },
    url:function(url){
       if (!url) url=prompt('Image URL');
+      
+      if (url && url.match(/(vk\.com|vk\.me|userapi\.com)\//)){
+         vkPhotoUrlUpload(url);
+         return;
+      }
       url=encodeURI(url);
+      
+      
       AjGet('http://vk.com/wall'+vk.id+'?offset=100000000',function(r,t){
          var o=(t.match(/"share":(\{[^}]+\})/)||[])[1];
          if (!o) {alert('hash error'); return;}
