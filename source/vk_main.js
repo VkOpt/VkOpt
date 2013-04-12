@@ -335,6 +335,8 @@ function vkFriendsPage(){
 	vkFriendsBySex(true);
 	vkCheckFrLink();
    vk_friends.cat_links();
+   
+   if (ge('main_class')) removeClass('main_class','wide');
 }
 /* PUBLICS */
 function vkPublicPage(){

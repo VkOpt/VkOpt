@@ -2865,6 +2865,7 @@ function vk_tag_api(section,url,app_id){
                  var ids=['post_dislike','dislike_link','dislike_icon','dislike_count'];
                  for (var i=0;i<ids.length; i++){
                      var _el=ge(ids[i]+insert_type);
+                     if (!_el) continue;
                      if (ids[i]=='post_dislike') _el.setAttribute('dislike_id',dislike_id);
                      if (_el) _el.id=ids[i]+dislike_id;
                  }
