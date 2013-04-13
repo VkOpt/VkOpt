@@ -1,0 +1,35 @@
+﻿[{
+   "type": "extension",
+   "frameworkVersion": "1.0.6",
+   "version": "2.0.0",
+   "guid": "{458D9EF6-7F82-4E4A-9D1C-DCCD956E5583}",
+   "name": "VkOpt",
+   "title": {
+      "ru-ru": "VkOpt",
+      "en": "VkOpt",
+   },
+   'description' : {
+      'en' : 'Extend functional of vk.com',
+      'ru-ru' : 'Расширение функционала социальной сети Вконтакте (vk.com)'
+   },
+
+   'author': {
+      'name': 'KiberInfinity'
+   },
+   'permissions': {
+      'httpRequest': ['*.vkopt.net', 'vkopt.net', '*.googlecode.com'],
+      'notifications': true
+   },
+   'service': {
+      'main': 'service.htm',
+      'debug': false
+   },
+
+   "actions": [{
+      "type": "script",
+      "entryPoints": ["doc_start"],
+      "include": ["*"],
+      "js": ["content_script.js"],
+      "includeFrames": true
+   }]
+}]

@@ -1,0 +1,27 @@
+[{
+   "type": "extension",
+   "frameworkVersion": "1.0.6",
+   "version": "1.0.0",
+   "guid": "{07DC914B-A987-4410-8E7D-DAFD8AFC34A6}",
+   "name": "VkOpt SVN",
+   "title": {
+      "ru-ru": "VkOpt SVN",
+      "en": "VkOpt SVN",
+   },
+   'permissions': {
+      'httpRequest': ['*.vkopt.net', 'vkopt.net', '*.googlecode.com'],
+      'notifications': true
+   },
+   'service': {
+      'main': 'service.htm',
+      'debug': false
+   },
+
+   "actions": [{
+      "type": "script",
+      "entryPoints": ["doc_start"],
+      "include": ["*"],
+      "js": ["content_script.js"],
+      "includeFrames": true
+   }]
+}]
