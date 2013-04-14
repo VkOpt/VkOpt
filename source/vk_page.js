@@ -1484,7 +1484,8 @@ vk_pages={
           edit=args[1], 
           ev = args[2], 
           opts=args[3];
-      console.log(ev);
+      //console.log(ev);
+      if (!ev) return true;
       var el= ev.target || ev.srcElement || {};
       if (box_disable && page && page.w && (page.w+"").match(/wall-?\d+_\d+/) && (el.tagName=='SPAN' || el.tagName=='A')){
          return true;

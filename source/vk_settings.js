@@ -472,7 +472,7 @@ function init_colorpicker(target, onselect, inhcolor){
         }
     }
     function valkeyup(e){
-        if(!/^#[\da-f]{6}$/.test(e.target.value)){ return; }
+        if(!/^#[\da-f]{6}$/i.test(e.target.value)){ return; }
         hcolor = e.target.value;
         col.style.backgroundColor = hcolor;
     }
