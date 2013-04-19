@@ -68,8 +68,9 @@ var vk_photos = {
    css:'\
       #vk_ph_save_move{width:160px}\
       #vkmakecover{margin-top:6px; width:164px;}\
-      .photos_choose_row.c_album{position:relative; cursor:pointer; height: 100px; width: 178px;}\
-      .c_album .photo_row_img{ max-width: 178px;}\
+      .photos_choose_header a, .photos_choose_header span{color:#FFF;}\
+      .photos_choose_row.c_album{position:relative; cursor:pointer; height: 100px; width: 175px;}\
+      .c_album .photo_row_img{ max-width: 175px;}\
       .c_title{background:rgba(0,0,0,0.5); position:absolute; bottom:0px; left:0px; right:0px; color:#FFF; text-align: left; padding:2px 0px 2px 6px;}\
       .vk_full_thumbs_photos #photos_container .photo_row a,\
       .vk_full_thumbs_photos #photos_container .photo_row,\
@@ -82,7 +83,8 @@ var vk_photos = {
       if (oid){
          params[oid<0?'gid':'uid']=Math.abs(oid);
       }
-      
+      hide('photos_choose_album_rows');
+      hide('photos_choose_more_albums');
       
       var on_done=function(r){
          var albums=(r.error && r.error.error_code==15)?[]:r.response;

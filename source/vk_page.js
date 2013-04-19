@@ -556,6 +556,7 @@ function vkProcessBirthday(day,month,year){
    return info;
 }
 
+//javascript: vk_users.find_age(cur.oid,function(age){alert(age?langNumeric(age, vk_lang["vk_year"]):'N/A')});
 function vkBDYear(uid,el){
    var _el=ge(el);
    var a=geByTag('a',_el)[0];
@@ -1485,9 +1486,9 @@ vk_pages={
           ev = args[2], 
           opts=args[3];
       //console.log(ev);
-      if (!ev) return true;
+      if (!ev) return false;
       var el= ev.target || ev.srcElement || {};
-      if (box_disable && page && page.w && (page.w+"").match(/wall-?\d+_\d+/) && (el.tagName=='SPAN' || el.tagName=='A')){
+      if (box_disable && page && page.w && (page.w+"").match(/^wall-?\d+_\d+$/) && (el.tagName=='SPAN' || el.tagName=='A')){
          return true;
       }
       return false;
