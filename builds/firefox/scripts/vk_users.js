@@ -11,7 +11,7 @@
 var vkUsersDomain={}; 
 var isUserRegEx=[
 /(^|\/)(reg|regstep|club|event|photo|photos|album|albums|video|videos|note|notes|app|page|board|topic|write|public|publics|groups|wall|graffiti|tag\d|doc|gifts)-?\d+/i,
-/(^|\/)(events|changemail|mail|im([^a-z0-9]|$)|audio|apps|editapp|feed|friends|friendsphotos|search|invite|settings|edit|fave|stats|video|groups|notes|docs|gifts|support|bugs|dev)\??.*#?/i,
+/(^|\/)(events|changemail|mail|im([^a-z0-9]|$)|audio|apps|editapp|feed|friends|friendsphotos|search|invite|settings|edit|fave|stats|video|groups|notes|docs|gifts|support|bugs|dev)(\?.*#?|#|$)/i,
 /javascript|#|\.mp3|\.flv|\.mov|\.jpg|\.gif|\.png|http...www|\/ru\//i,
 /\.php($|\?)/i,
 /\/$/i,
@@ -1065,15 +1065,6 @@ function vkCheckFrLink(){
 	}
 }
 
-function vkFrNotInListsLink(){
-	if (!ge('section_frnolist')){
-		var ref=ge("section_suggestions");
-      if (!ref) return;
-		var sec=vkCe('a',{href:'#', onclick:"vkFrShowNotInList(); Friends.selectSection('frnolist');return false;",id:'section_frnolist',"class":"side_filter"},IDL("FrNotInLists"));
-		ref.parentNode.insertBefore(sec, ref.nextSibling);//
-		return;
-	}
-}
 
 function vkFriendsCheckRun(cl){
 		if ((getSet(9) == 'y') && (!vkgetCookie('IDFriendsUpd') || cl)) {
@@ -1684,24 +1675,64 @@ function vkFaveOnlineChecker(on_storage){
 //*///
 ////
 
-function vkFrGenNotInListsCat() {
-    if (!cur.friendsList || !cur.friendsList['all']) return;
-    var data = cur.friendsList['all'];
-    var list = [];
-    for (var i = 0; i < data.length; i++) {
-        var cats = parseInt(data[i][6]);
-        var b = false;
-        for (var l in cur.userLists) {
+vk_friends={
+   cat_links:function(){
+      vk_friends.not_in_list_link();
+      vk_friends.deleted_link();
+   },
+   not_in_list_link:function(){
+      if (!ge('section_frnolist')){
+         var ref=ge("section_suggestions");
+         if (!ref) return;
+         var sec=vkCe('a',{href:'#', onclick:"vk_friends.not_in_list_show(); Friends.selectSection('frnolist');return false;",id:'section_frnolist',"class":"side_filter"},IDL("FrNotInLists"));
+         ref.parentNode.insertBefore(sec, ref.nextSibling);//
+         return;
+      }
+   },
+   not_in_list_show:function(){
+      vk_friends.not_in_list_get_cat();
+      Friends.showSection('not_in_list');   
+   },
+   not_in_list_get_cat:function(){
+      if (!cur.friendsList || !cur.friendsList['all']) return;
+      var data = cur.friendsList['all'];
+      var list = [];
+      for (var i = 0; i < data.length; i++) {
+         var cats = parseInt(data[i][6]);
+         var b = false;
+         for (var l in cur.userLists) {
             if (cats & (1 << parseInt(l))) b = true;
-        }
-        if (!b) list.push(data[i]);
-    }
-    cur.friendsList['not_in_list'] = list;
-}
-
-function vkFrShowNotInList(){
-   vkFrGenNotInListsCat();
-   Friends.showSection('not_in_list');
+         }
+         if (!b) list.push(data[i]);
+      }
+      cur.friendsList['not_in_list'] = list;   
+   },
+   deleted_link:function(){
+      var id='frdeleted';
+      if (!ge('section_'+id)){
+         var ref=ge("section_suggestions");
+         if (!ref) return;
+         var sec=vkCe('a',{href:'#', onclick:"vk_friends.deleted_show(); Friends.selectSection('"+id+"');return false;",id:'section_'+id,"class":"side_filter"},IDL("FrDeleted"));
+         ref.parentNode.insertBefore(sec, ref.nextSibling);//
+         return;
+      }
+   },
+   deleted_show:function(){
+      vk_friends.deleted_get_cat();
+      Friends.showSection('deleted');   
+   },
+   deleted_get_cat:function(){
+      if (!cur.friendsList || !cur.friendsList['all']) return;
+      var data = cur.friendsList['all'];
+      var list = [];
+      for (var i = 0; i < data.length; i++) {
+         var ava=data[i][1];
+         var name=data[i][5];
+         if (ava.match(/deactivated/) || name=="DELETED" )
+            list.push(data[i]);
+      }
+      cur.friendsList['deleted'] = list;   
+   }
 }
 
 if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;

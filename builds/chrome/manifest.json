@@ -30,7 +30,7 @@
       "includes/vkopt.js"
    ],
   "name": "VkOpt",
-  "version": "2.1.8.1",
+  "version": "2.1.9.0",
   "description": "Добавление множества функций, упрощающих жизнь ВКонтакте (vk.com). Official site and support: http://vkopt.net/",
   "icons": { "32":"img/bk_n_32.png",
              "48": "img/bk_n_48.png",

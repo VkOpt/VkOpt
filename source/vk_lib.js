@@ -262,27 +262,52 @@ if (!window.Audio){
   }
 }
 
-var vkMozExtension = {  
-  send_request: function(data, callback) { // analogue of chrome.extension.sendRequest  
-    var request = document.createTextNode("");  
-    request.setUserData("data", data, null);  
-    if (callback) {
-      request.setUserData("callback", callback, null);  
-      document.addEventListener("mozext-response", function(event) {  
-        var node = event.target, callback = node.getUserData("callback"), response = node.getUserData("response");  
-        document.documentElement.removeChild(node);  
-        document.removeEventListener("mozext-response", arguments.callee, false);  
-        return callback(response);  
-      }, false);  
-    }  
-    document.documentElement.appendChild(request);  
-    var sender = document.createEvent("HTMLEvents");  
-    sender.initEvent("mozext-query", true, false);  
-    return request.dispatchEvent(sender);  
-  },  
-
-  callback: function(response) {    return alert("response: " + (response && response.toSource ? response.toSource() : response)); }  
-} 
+var vkMozExtension = {
+   callbacks: [],
+   send_request: function (data, callback) { // analogue of chrome.extension.sendRequest  
+      var set_data = function (el, field, data) {
+         if(el.setUserData) {
+            el.setUserData(field, data, null);
+         } else {
+            el.dataset[field] = JSON.stringify(data);
+         }
+      }
+      var get_data = function (el, field) {
+         if(el.getUserData) {
+            return el.getUserData(field);
+         } else {
+            return JSON.parse(el.dataset[field]);
+         }
+      }
+      var request = null;
+      request = document.createElement("div");
+      set_data(request, "data", data);
+      if(callback) {
+         var callback_idx = vkMozExtension.callbacks.length;
+         vkMozExtension.callbacks.push(function (response) {
+            vkMozExtension.callbacks[callback_idx] = null;
+            //alert('Before callback');
+            return callback(response);
+         });
+         set_data(request, "callback", callback_idx);
+         document.addEventListener("mozext-response", function (event) {
+            var node = event.target,
+               callback = vkMozExtension.callbacks[get_data(node, "callback")],
+               response = get_data(node, "response");
+            document.documentElement.removeChild(node);
+            document.removeEventListener("mozext-response", arguments.callee, false);
+            return callback(response);
+         }, false);
+      }
+      document.documentElement.appendChild(request);
+      var sender = document.createEvent("HTMLEvents");
+      sender.initEvent("mozext-query", true, false);
+      return request.dispatchEvent(sender);
+   },
+   callback: function (response) {
+      return alert("response: " + (response && response.toSource ? response.toSource() : response));
+   }
+}
 /* FUNCTIONS. LEVEL 1 */
 	//LANG   
    function print_r( array, return_val ) {

@@ -560,6 +560,7 @@ function vkStyles(){
    main_css+=vk_audio.css;
    main_css+=vk_feed.css;
    main_css+=vk_skinman.css;
+   main_css+=vk_groups.css;
    main_css+=vk_videos.css();
    main_css+=vk_im.css();
 	main_css+=vk_plugins.css();
@@ -982,6 +983,7 @@ function vkMenu(){//vkExLeftMenu
         ['settings?act=notify',IDL("mSeN")],
         ['settings?act=blacklist',IDL("mSeB")],
         ['settings?act=mobile',IDL("mSeMobile")],
+        ['settings?act=balance',IDL("mSeBalance")],
         [['settings?act=vkopt',"vkShowSettings(false); return false;"],"VKOpt"], //['settings?act=vkopt" onClick="vkShowSettings(false); return false;',"VKOpt"],   
         [['settings?skinman','vkShowSkinMan(); return false;'],IDL("SkinMan")/*,false,vkbrowser.mozilla*/],
         [['#','hz_chooselang(); return false;'],IDL("ChangeVkOptLang")] 

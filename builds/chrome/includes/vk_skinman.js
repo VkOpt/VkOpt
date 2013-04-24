@@ -221,7 +221,7 @@ function vkPrepareCats(skins){ // it's PIZDEC! Don't translate to Russian
   var Cats={};
   for (var i = 0; i<skins.length; i++)
     if (skins[i].cat && skins[i].cat!='*'){
-      var cat=skins[i].cat.split(",");
+      var cat=skins[i].cat.split(/\s*,\s*/);
       for (var k = 0; k<cat.length; k++)  {
         if (!Cats[cat[k]]) Cats[cat[k]]=0;
         Cats[cat[k]]++;

@@ -3166,6 +3166,7 @@ function vk_tag_api(section,url,app_id){
                          .replace(/%TITLE%/g,langNumeric(info.count,IDL('users_dislike')))
                          .replace(/%USERS%/g,html);
             ge('dislike_list'+post).innerHTML=html;
+            vkProcessNode(ge('dislike_list'+post));
          }
          load_info();         
          return false;

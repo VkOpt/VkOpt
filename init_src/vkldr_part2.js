@@ -39,36 +39,49 @@ var loader={
 loader.init();
 })();
 
-var vkMozExtension = {  
-  listen_request: function(callback) { // analogue of chrome.extension.onRequest.addListener  
-    return document.addEventListener("mozext-query", function(event) {  
-      var node = event.target, doc = node.ownerDocument;  
-  
-      return callback(node.getUserData("data"), doc, function(data) {  
-        if (!node.getUserData("callback")) {  
-          return doc.documentElement.removeChild(node);  
-        }  
-  
-        node.setUserData("response", data, null);  
-  
-        var listener = doc.createEvent("HTMLEvents");  
-        listener.initEvent("mozext-response", true, false);  
-        return node.dispatchEvent(listener);  
-      });  
-    }, false, true);  
-  },  
-  
-  callback: function(request, sender, callback) {  
-    if (request.download) {  
-      vkDownloadFile(sender.defaultView,request.url,request.name);
-      return setTimeout(function() {  
-         callback({ok: 1});  
-      }, 1000);  
-    }
-    return callback(null);  
-    }  
-}  
-vkMozExtension.listen_request(vkMozExtension.callback); 
+var vkMozExtension = {
+   listen_request: function (callback) { // analogue of chrome.extension.onRequest.addListener  
+      var set_data = function (el, field, data) {
+         if(el.setUserData) {
+            el.setUserData(field, data, null);
+         } else {
+            el.dataset[field] = JSON.stringify(data);
+         }
+      }
+      var get_data = function (el, field) {
+         if(el.getUserData) {
+            return el.getUserData(field);
+         } else {
+            return JSON.parse(el.dataset[field]);
+         }
+      }
+      return document.addEventListener("mozext-query", function (event) {
+         var node = event.target,
+            doc = node.ownerDocument;
+         return callback(get_data(node, "data"), doc, function (data) {
+            if(!get_data(node, "callback")) {
+               return doc.documentElement.removeChild(node);
+            }
+            set_data(node, "response", data)
+            var listener = doc.createEvent("HTMLEvents");
+            listener.initEvent("mozext-response", true, false);
+            return node.dispatchEvent(listener);
+         });
+      }, false, true);
+   },
+   callback: function (request, sender, callback) {
+      if(request.download) {
+         vkDownloadFile(sender.defaultView, request.url, request.name);
+         return setTimeout(function () {
+            callback({
+               ok: 1
+            });
+         }, 1000);
+      }
+      return callback(null);
+   }
+}
+vkMozExtension.listen_request(vkMozExtension.callback);
 
 
 try {// Firefox 18+

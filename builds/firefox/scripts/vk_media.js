@@ -68,8 +68,9 @@ var vk_photos = {
    css:'\
       #vk_ph_save_move{width:160px}\
       #vkmakecover{margin-top:6px; width:164px;}\
-      .photos_choose_row.c_album{position:relative; cursor:pointer; height: 100px; width: 178px;}\
-      .c_album .photo_row_img{ max-width: 178px;}\
+      .photos_choose_header a, .photos_choose_header span{color:#FFF;}\
+      .photos_choose_row.c_album{position:relative; cursor:pointer; height: 100px; width: 175px;}\
+      .c_album .photo_row_img{ max-width: 175px;}\
       .c_title{background:rgba(0,0,0,0.5); position:absolute; bottom:0px; left:0px; right:0px; color:#FFF; text-align: left; padding:2px 0px 2px 6px;}\
       .vk_full_thumbs_photos #photos_container .photo_row a,\
       .vk_full_thumbs_photos #photos_container .photo_row,\
@@ -82,7 +83,8 @@ var vk_photos = {
       if (oid){
          params[oid<0?'gid':'uid']=Math.abs(oid);
       }
-      
+      hide('photos_choose_album_rows');
+      hide('photos_choose_more_albums');
       
       var on_done=function(r){
          var albums=(r.error && r.error.error_code==15)?[]:r.response;
@@ -227,6 +229,14 @@ var vk_photos = {
    },
    url:function(url){
       if (!url) url=prompt('Image URL');
+      
+      if (url && url.match(/(vk\.com|vk\.me|userapi\.com)\//)){
+         vkPhotoUrlUpload(url);
+         return;
+      }
+      url=encodeURI(url);
+      
+      
       AjGet('http://vk.com/wall'+vk.id+'?offset=100000000',function(r,t){
          var o=(t.match(/"share":(\{[^}]+\})/)||[])[1];
          if (!o) {alert('hash error'); return;}
@@ -246,7 +256,49 @@ var vk_photos = {
          });
          
          window.onUploadDone = function(data){
-            showPhoto(data[1],data[2].list,{});
+            if (data[0]=='photo')
+               showPhoto(data[1],data[2].list,{});
+            else 
+            if (data[0]=='doc'){
+               var opts=data[2];
+               var hash=opts.href.match(/hash=([a-f0-9]+)/);
+               hash = hash?hash[1]:null;
+               if (!hash){
+                  alert('Hash error\r\nResponse data:\r\n'+JSON.stringify(data));
+                  return;
+               }
+               var title=(opts.lang || {}).profile_choose_doc || 'Save uploaded document';
+               var html='<a href="'+opts.href+'" target="_blank">'+opts.href+'</a><br>'+opts.title+'<br>'+(opts.thumb?'<img src="'+opts.thumb+'">':'');
+               /*
+                  ["doc", "16000020_171916744",
+                  {
+                     "lang": {
+                        "profile_choose_doc": "Document"
+                     },
+                     "title": "<span class=\"fl_l\">file.gif</span>&nbsp;<span class=\"fl_r\">3Mb</span>",
+                     "ext": "gif",
+                     "size": "2954778",
+                     "href": "/doc16000020_171916744?hash=abd5ca1bb1092cfa50&dl=91ec5a87ebf7bc21ee",
+                     "thumb": "http://cs521201.vk.me/u16000020/-3/m_1205c06403.jpg",
+                     "thumb_s": "http://cs521201.vk.me/u16000020/-3/s_1205c06403.jpg"
+                  }]
+               */               
+               var aBox = new MessageBox({title: title});
+               aBox.removeButtons();
+               aBox.addButton(getLang('box_cancel'),aBox.hide,'no');
+               aBox.addButton(getLang('box_save'),function(){  
+                  aBox.hide();
+                  ajax.post('docs.php', {act: 'a_add', doc: data[1], hash: hash}, {
+                     onDone: function(text, tooltip) {
+                        showDoneBox(text);
+                     }
+                  });
+               }, 'yes');
+               aBox.content(html);
+               aBox.show();
+            } else {
+               alert(JSON.stringify(data));
+            }
             console.log(data);
          }
          window.onUploadFail = function(){alert('Upload Fail')}
@@ -625,8 +677,14 @@ function vkPhotosPage(){
 function vkGetLinksToPhotos(oid,aid){  
 	var MakeLinksList=function(phot){
 		var parr=[]; 
-		for (var i=0;i<phot.length;i++)
-		  parr.push('<a href="'+phot[i].max_src+'">'+phot[i].max_src+'</a>');
+      var len=(phot.length+"").length;
+		for (var i=0;i<phot.length;i++){
+		  var src=phot[i].max_src;
+        var num=('_000000000000'+i).substr(-len);
+        var name='?&/'+num+'_'+src.split('/').pop();
+        src+=name;
+        parr.push('<a href="'+src+'">'+src+'</a>');
+      }
 		return parr;
 	}
 	if (!ge('vk_links_container')){
@@ -755,7 +813,7 @@ function vkPhotosWallAlbum(){
 }
 function vkWallAlbumLink(){
    if (ge('vk_wall_album_link')) return;
-   if (isVisible('page_wall_switch'))  ge('page_wall_header').appendChild(vkCe('span',{"class":'fl_r right_link divide'},'|'))
+   if (isVisible('page_wall_switch') || isVisible('page_wall_suggest'))  ge('page_wall_header').appendChild(vkCe('span',{"class":'fl_r right_link divide'},'|'))
    var href=ge('page_wall_header').getAttribute('href');
    ge('page_wall_header').appendChild(vkCe('a',{
                "class":'fl_r right_link', 
@@ -1395,6 +1453,17 @@ vk_videos = {
       .video_raw_info_name, .video_row_info_line {height: auto !important; white-space: normal !important;}\
       .video_row_info_line{bottom:0px !important;}';
       return code;
+   },
+   inj_common:function(){
+      Inj.Before('showVideo','ajax.post','vk_videos.change_show_video_params(options);');
+   },
+   change_show_video_params:function(opts){
+      if (!opts || !opts.params) return;
+      var params=opts.params;
+      if (VIDEO_AUTOPLAY_DISABLE)
+         params['autoplay']=0;            
+      //params['force_hd']=3;
+      //console.log('showVideo:',opts);
    },
    update_vid_titles:function(){
       var els=geByClass('video_row_relative');
@@ -2452,7 +2521,7 @@ function vkAudioPlayer(){
       Inj.Replace('audioPlayer.setCurTime','dur.innerHTML = res','dur.innerHTML = vkAudioDurMod(res)');
       Inj.Replace('audioPlayer.setGraphics','dur.innerHTML = res','dur.innerHTML = vkAudioDurMod(res)');
    }*/
-   if (getSet(75)=='y') vk_audio_player.gpCtrlsInit();
+   vk_audio_player.inj();
 }
 
 vk_audio_player={
@@ -2469,6 +2538,14 @@ vk_audio_player={
    #gp.reverse .vka_ctrl.vol .vol_panel{margin-top: -54px;}\
    .gp_vka_ctrls{position:absolute; width:137px; margin-top:34px; margin-left: 5px; padding:3px; border-radius:0 0 4px 4px; background:rgba(218, 225, 232, 0.702); }\
    ',
+   scroll_to_track_enabled:true,
+   inj:function(){
+      if (getSet(75)=='y') vk_audio_player.gpCtrlsInit();
+      Inj.Start('audioPlayer.scrollToTrack','if (!vk_audio_player.scroll_to_track_enabled) return;');
+   },  
+   init:function(){
+      if (getSet(85)=='y') vk_audio_player.scroll_to_track_enabled=false;
+   },
    gpCtrlsInit:function(){
       Inj.End('audioPlayer.setGraphics','vk_audio_player.gpCtrls();');
    },
@@ -2563,6 +2640,20 @@ vk_audio={
       #vk_links_to_audio_on_page{padding: 10px; text-align:center; display:block;}\
    ',
    album_cache:{},
+   inj_common:function(){
+      Inj.Start('playAudioNew','if (vk_audio.prevent_play_check()) return;');
+   },
+   play_blocked:false,
+   prevent_play_check:function(){
+      if (vk_audio.play_blocked){
+         vk_audio.play_blocked=false;
+         return true;
+      }
+      return false;
+   },
+   prevent_play:function(){
+      vk_audio.play_blocked=true; 
+   },
    in_box_move:function(full_aid){
       //return;
       var x=full_aid.split('_');
@@ -2993,7 +3084,7 @@ function vkAudioNode(node){
     td.appendChild(el); 
     td=document.createElement('td');
     td.setAttribute('style',"vertical-align: top;");
-    td.innerHTML='<a href="'+url+'"  download="'+name+'" title="'+name+'" onclick="return vkDownloadFile(this);" onmouseover="vkDragOutFile(this);"><div onmouseover="vkGetAudioSize(\''+id+'\',this)" class="play_new down_btn" id="down'+id+'"></div></a>';//<img src="'+icon_src+'">
+    td.innerHTML='<a href="'+url+'"  download="'+name+'" title="'+name+'" onmousedown="vk_audio.prevent_play();" onclick="vk_audio.prevent_play(); return vkDownloadFile(this);" onmouseover="vkDragOutFile(this);"><div onmouseover="vkGetAudioSize(\''+id+'\',this)" class="play_new down_btn" id="down'+id+'"></div></a>';//<img src="'+icon_src+'">
     tr.appendChild(td);  
     el.setAttribute('vk_ok','1');  
     //vk$(this).dragout();
@@ -4413,5 +4504,44 @@ function vkGetAlbumInfo(artist,track,callback){
          }
       );
 }
+
+
+vk_apps = {
+   page:function(){
+      if (ge('app_edit_summary'))
+         ge('app_edit_summary').onclick=vk_apps.view_adm_apps;
+   },
+   view_adm_apps: function() {
+      var list = cur.appsList[cur.curList] || [];
+      var summaries = [ge('apps_summary'), ge('app_site_summary'), ge('app_desktop_summary'), ge('app_edit_summary')];
+      var contents = [ge('app_rows'), ge('app_site_list'), ge('app_desktop_list'), ge('app_edit_list')];
+      var more_buttons = [ge('more_link'), ge('site_more_link'), ge('desktop_more_link'), ge('edit_more_link')];
+      var results = [ge('app_rows'), ge('app_site_results'), ge('app_desktop_results'), ge('app_edit_results')];
+      var wraps = [null, ge('app_site_wrap'), ge('app_desktop_wrap'), ge('app_edit_wrap')];
+      var i = 3;
+      var apps = Apps.filterByAppAdmin(list);
+      cur.totalCounters[i] = apps.length;
+      cur.shownCounters[i] = apps.length;
+      show(wraps[i]);
+      show(results[i]);
+      
+      contents[i].innerHTML='';
+      hide(more_buttons[i]);
+      var html = [];
+      for (k in apps) {
+         var app = apps[k];
+         var edit = (i == 3);
+         html.push(Apps.drawApp(app, false, true));
+      }
+      var au = ce('div', {
+         innerHTML: html.join('')
+      });
+      while (au.firstChild) {
+         contents[i].appendChild(au.firstChild);
+      }
+   }
+}
+
+//vk_apps.view_adm_apps();
 
 if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;

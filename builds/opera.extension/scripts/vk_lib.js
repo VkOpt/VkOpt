@@ -262,27 +262,52 @@ if (!window.Audio){
   }
 }
 
-var vkMozExtension = {  
-  send_request: function(data, callback) { // analogue of chrome.extension.sendRequest  
-    var request = document.createTextNode("");  
-    request.setUserData("data", data, null);  
-    if (callback) {
-      request.setUserData("callback", callback, null);  
-      document.addEventListener("mozext-response", function(event) {  
-        var node = event.target, callback = node.getUserData("callback"), response = node.getUserData("response");  
-        document.documentElement.removeChild(node);  
-        document.removeEventListener("mozext-response", arguments.callee, false);  
-        return callback(response);  
-      }, false);  
-    }  
-    document.documentElement.appendChild(request);  
-    var sender = document.createEvent("HTMLEvents");  
-    sender.initEvent("mozext-query", true, false);  
-    return request.dispatchEvent(sender);  
-  },  
-
-  callback: function(response) {    return alert("response: " + (response && response.toSource ? response.toSource() : response)); }  
-} 
+var vkMozExtension = {
+   callbacks: [],
+   send_request: function (data, callback) { // analogue of chrome.extension.sendRequest  
+      var set_data = function (el, field, data) {
+         if(el.setUserData) {
+            el.setUserData(field, data, null);
+         } else {
+            el.dataset[field] = JSON.stringify(data);
+         }
+      }
+      var get_data = function (el, field) {
+         if(el.getUserData) {
+            return el.getUserData(field);
+         } else {
+            return JSON.parse(el.dataset[field]);
+         }
+      }
+      var request = null;
+      request = document.createElement("div");
+      set_data(request, "data", data);
+      if(callback) {
+         var callback_idx = vkMozExtension.callbacks.length;
+         vkMozExtension.callbacks.push(function (response) {
+            vkMozExtension.callbacks[callback_idx] = null;
+            //alert('Before callback');
+            return callback(response);
+         });
+         set_data(request, "callback", callback_idx);
+         document.addEventListener("mozext-response", function (event) {
+            var node = event.target,
+               callback = vkMozExtension.callbacks[get_data(node, "callback")],
+               response = get_data(node, "response");
+            document.documentElement.removeChild(node);
+            document.removeEventListener("mozext-response", arguments.callee, false);
+            return callback(response);
+         }, false);
+      }
+      document.documentElement.appendChild(request);
+      var sender = document.createEvent("HTMLEvents");
+      sender.initEvent("mozext-query", true, false);
+      return request.dispatchEvent(sender);
+   },
+   callback: function (response) {
+      return alert("response: " + (response && response.toSource ? response.toSource() : response));
+   }
+}
 /* FUNCTIONS. LEVEL 1 */
 	//LANG   
    function print_r( array, return_val ) {
@@ -1563,7 +1588,7 @@ DAPI_APP_ID=2168679;
 //javascript: dApi.call('notes.get',{},uApi.show)
 var dApi = {
 	API_ID: DAPI_APP_ID,
-	SETTINGS: 277758+131072,//15614, /* FULL: 15615 + 131072;   Don't use NOT_USED_SETTING */
+	SETTINGS: 277758+131072+1048576,//15614, /* FULL: 15615 + 131072;   Don't use NOT_USED_SETTING */
 	NOT_USED_SETTING: 99999999, //32768, /* need for get auth dialog when all settings allowed */
 	allow_call:true,
 	auth_frame:null,
@@ -2285,8 +2310,8 @@ function vkattachScript(id, c) {
 
 
 // DATA SAVER
-var VKFDS_SWF_LINK='http://cs4785.vkontakte.ru/u13391307/90ea533137b420.zip';
-var VKFDS_SWF_HTTPS_LINK='https://pp.userapi.com/c4785/u13391307/90ea533137b420.zip';
+var VKFDS_SWF_LINK='http://cs6147.vk.me/u13391307/c0b944fc2c34a1.zip';
+var VKFDS_SWF_HTTPS_LINK='https://pp.vk.me/c6147/u13391307/c0b944fc2c34a1.zip';
 
 var VKTextToSave="QweQwe Test File"; var VKFNameToSave="vkontakte.txt";
   
@@ -2321,15 +2346,16 @@ function vkSaveText(text,fname){
 //END DATA SAVER
 
 // DATA LOADER
-var VKFDL_SWF_LINK='http://cs4788.vkontakte.ru/u13391307/27aa308ec116fa.zip';
-var VKFDL_SWF_HTTPS_LINK='https://pp.userapi.com/c4788/u13391307/27aa308ec116fa.zip';
+var VKFDL_SWF_LINK='http://cs6147.vk.me/u13391307/8f4dac1239fc88.zip';
+var VKFDL_SWF_HTTPS_LINK='https://pp.vk.me/c6147/u13391307/8f4dac1239fc88.zip';
 
 function vkLoadTxt(callback,mask){
 	DataLoadBox = new MessageBox({title: IDL('LoadFromFile')});
 	var Box = DataLoadBox;
 
 	vkOnDataLoaded=function(text){
-		Box.hide();
+		//alert(text);
+      Box.hide();
 		setTimeout(function(){callback(text);},10);	
 	}
 	vkOnInitDataLoader=function(w,h){

@@ -813,7 +813,7 @@ function vkPhotosWallAlbum(){
 }
 function vkWallAlbumLink(){
    if (ge('vk_wall_album_link')) return;
-   if (isVisible('page_wall_switch'))  ge('page_wall_header').appendChild(vkCe('span',{"class":'fl_r right_link divide'},'|'))
+   if (isVisible('page_wall_switch') || isVisible('page_wall_suggest'))  ge('page_wall_header').appendChild(vkCe('span',{"class":'fl_r right_link divide'},'|'))
    var href=ge('page_wall_header').getAttribute('href');
    ge('page_wall_header').appendChild(vkCe('a',{
                "class":'fl_r right_link', 
@@ -2640,6 +2640,20 @@ vk_audio={
       #vk_links_to_audio_on_page{padding: 10px; text-align:center; display:block;}\
    ',
    album_cache:{},
+   inj_common:function(){
+      Inj.Start('playAudioNew','if (vk_audio.prevent_play_check()) return;');
+   },
+   play_blocked:false,
+   prevent_play_check:function(){
+      if (vk_audio.play_blocked){
+         vk_audio.play_blocked=false;
+         return true;
+      }
+      return false;
+   },
+   prevent_play:function(){
+      vk_audio.play_blocked=true; 
+   },
    in_box_move:function(full_aid){
       //return;
       var x=full_aid.split('_');
@@ -3070,7 +3084,7 @@ function vkAudioNode(node){
     td.appendChild(el); 
     td=document.createElement('td');
     td.setAttribute('style',"vertical-align: top;");
-    td.innerHTML='<a href="'+url+'"  download="'+name+'" title="'+name+'" onclick="return vkDownloadFile(this);" onmouseover="vkDragOutFile(this);"><div onmouseover="vkGetAudioSize(\''+id+'\',this)" class="play_new down_btn" id="down'+id+'"></div></a>';//<img src="'+icon_src+'">
+    td.innerHTML='<a href="'+url+'"  download="'+name+'" title="'+name+'" onmousedown="vk_audio.prevent_play();" onclick="vk_audio.prevent_play(); return vkDownloadFile(this);" onmouseover="vkDragOutFile(this);"><div onmouseover="vkGetAudioSize(\''+id+'\',this)" class="play_new down_btn" id="down'+id+'"></div></a>';//<img src="'+icon_src+'">
     tr.appendChild(td);  
     el.setAttribute('vk_ok','1');  
     //vk$(this).dragout();

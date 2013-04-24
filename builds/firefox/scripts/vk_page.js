@@ -556,6 +556,7 @@ function vkProcessBirthday(day,month,year){
    return info;
 }
 
+//javascript: vk_users.find_age(cur.oid,function(age){alert(age?langNumeric(age, vk_lang["vk_year"]):'N/A')});
 function vkBDYear(uid,el){
    var _el=ge(el);
    var a=geByTag('a',_el)[0];
@@ -1474,6 +1475,27 @@ function vkWikiNew(){
       nav.go("pages?act=edit&oid="+cur.oid+"&p="+encodeURIComponent(title));
 }
 
+vk_pages={
+   inj_common:function(){
+      Inj.Start('showWiki','if (vk_pages.is_wiki_box_disabled(arguments)) return;');
+   },
+   is_wiki_box_disabled:function(args){
+      var box_disable=(getSet(86)=='y');
+      var page=args[0], 
+          edit=args[1], 
+          ev = args[2], 
+          opts=args[3];
+      //console.log(ev);
+      if (!ev) return false;
+      var el= ev.target || ev.srcElement || {};
+      if (box_disable && page && page.w && (page.w+"").match(/^wall-?\d+_\d+$/) && (el.tagName=='SPAN' || el.tagName=='A')){
+         return true;
+      }
+      return false;
+   }
+   
+
+}
 
 function vkGroupsList(){
    Inj.Before('GroupsList.showMore','var name','if (vkGroupsListCheckRow(row)) continue;');
@@ -1491,6 +1513,109 @@ function vkGroupsListPage(){
 
 
 vk_groups = {
+   css:'\
+   #vk_gr_filter{margin-top: -3px;}\
+   #vk_show_members_link{text-align:center; margin-bottom:-8px; margin-top: -5px; opacity:0;}\
+   #group_followers:hover #vk_show_members_link, #public_followers:hover #vk_show_members_link{opacity:1;}\
+   ',
+   show_members_btn:function(){
+      var p=ge('group_followers') || ge('public_followers');
+      if (!p) return;
+      p=geByClass('module_body',p)[0];
+      if (p && !ge('vk_show_members_link')){
+         var el=se('<div id="vk_show_members_link" class="opacity_anim"><a href="#" onclick="return vk_groups.show_members()">'+IDL('ShowGroupMembers')+'</a></div>');
+         p.appendChild(el);
+      }
+   },
+   show_members:function(gid){
+         if (!gid) gid=Math.abs(cur.gid || cur.oid);
+         var box=showFastBox({title:IDL('GroupMembers'),width:'478px',progress:'progress'+gid},'<div id="vk_member_list'+gid+'" class="dislike_list"></div>'); 
+         box.setOptions({bodyStyle: 'padding: 0px; height: 310px;', width: 478});
+         addClass(ge('vk_member_list'+gid),'disliked_users_big_loader');
+         stManager.add('boxes.css');
+         vk_groups.show_members_page(gid,0);
+         return false;
+   },
+   show_members_page:function(gid,offset){
+      if (!gid) gid=Math.abs(cur.gid || cur.oid);
+      offset = offset || 0;
+      var PER_PAGE=24;
+      var IN_ROW=8;
+      
+      var sort="time_asc";//"time_desc";
+      var code='\
+      var members=API.groups.getMembers({gid:'+gid+', count:'+PER_PAGE+', offset:'+offset+', sort:"'+sort+'"});\
+      var users=API.users.get({uids:members.users,fields:"photo_rec"});\
+      return {count:members.count,users:users};\
+      ';
+
+      var item_tpl='\
+         <td><div class="liked_box_row">\
+            <div class="liked_box_thumb"><a href="/id%UID%" onclick="return nav.go(this, event)"><img width="50" height="50" src="%AVA%"></a></div>\
+            <div><a href="/id%UID%" onclick="return nav.go(this, event)">%NAME%</a></div>\
+         </div></td>\
+      ';
+      
+      var cont_tpl='\
+         <div style="padding: 7px 5px 5px;">\
+           <div class="fl_r" style="padding:0 5px;width:200px;">%PAGE_LIST%</div>\
+           <h4 style="border-bottom: 1px solid #DAE1E8;margin:0 5px 10px;padding:5px 0 2px;">%TITLE%</h4>\
+           <table cellpadding="0" cellspacing="0">\
+             <tbody>%USERS%</tbody>\
+           </table>\
+         </div>\
+      ';
+      
+      var page_list=function(cur,end,href,onclick,step,without_ul){
+         var after=2;
+         var before=2;
+         if (!step) step=1;
+         var html=(!without_ul)?'<ul class="page_list fl_r">':'';
+         if (cur>before) html+='<li><a href="'+href.replace(/%%/g,0)+'" onclick="'+onclick.replace(/%%/g,0)+'">&laquo;</a></li>';
+         var from=Math.max(0,cur-before);
+         var to=Math.min(end,cur+after);
+         for (var i=from;i<=to;i++){
+           html+=(i==cur)?'<li class="current">'+(i+1)+'</li>':'<li><a href="'+href.replace(/%%/g,(i*step))+'" onclick="'+onclick.replace(/%%/g,(i*step))+'">'+(i+1)+'</a></li>';
+         }    
+         if (end-cur>after) html+='<li><a href="'+href.replace(/%%/g,end*step)+'" onclick="'+onclick.replace(/%%/g,end*step)+'">&raquo;</a></li>';
+         html+=(!without_ul)?'</ul>':'';
+         return html; 
+      }
+      
+      var data=null;
+      var load_info = function(){ // Get Who Liked
+         show('progress'+gid);
+         dApi.call('execute',{code:code},function(r){
+            view_info(r.response);
+         });
+      }
+      var view_info=function(info){
+         removeClass(ge('vk_member_list'+gid),'disliked_users_big_loader');
+         hide('progress'+gid);
+         var html='';
+         var users=info.users;
+         for (var i=0; i<users.length;i++){
+            html+=item_tpl.replace(/%NAME%/g,users[i].first_name)
+                          .replace(/%UID%/g,users[i].uid)
+                          .replace(/%AVA%/g,users[i].photo_rec);
+            html+=((i+1)%IN_ROW==0)?'</tr><tr>':'';
+         }
+         html='<tr>'+html+'</tr>';
+         
+         var pg='';
+         if (info.count>PER_PAGE){
+            pg=page_list(Math.ceil(offset/PER_PAGE),Math.ceil(info.count/PER_PAGE)-1,'#',"return vk_groups.show_members_page('"+gid+"',%%)",PER_PAGE);
+         }
+         
+         html=cont_tpl.replace(/%PAGE_LIST%/g,pg)
+                      .replace(/%TITLE%/g,info.count)
+                      .replace(/%USERS%/g,html);
+         ge('vk_member_list'+gid).innerHTML=html;
+         vkProcessNode(ge('vk_member_list'+gid));
+      }
+      load_info();         
+      return false;
+   },
    leave_all_btn:function(){
       if (getSet(77)!='y') return;
       if (nav.objLoc['id'] && nav.objLoc['id']!=vk.id) return;
@@ -1622,13 +1747,17 @@ function vkGroupsListCheckRow(row){
 }
 
 function vkGrLstFilter(){
-   var p=ge('groups_list_tabs'); 
+   var p=(ge('groups_list_summary') || {}).parentNode;//ge('groups_list_tabs'); 
+   if (!p) return;
    if (ge('vk_gr_filter')){
       (nav.objLoc['tab']=='admin'?hide:show)('vk_gr_filter');
    }
    if ((ge('vk_gr_filter') && cur.vkGrLstMenu) || !p) return;
    
-   if (!ge('vk_gr_filter')) p.appendChild(vkCe('li',{id:'vk_gr_filter'},'<input type="hidden" id="vk_grlst_filter">'));
+   //var el=vkCe('li',{id:'vk_gr_filter'},'<input type="hidden" id="vk_grlst_filter">');
+   var el=se('<div class="fl_r"><div id="vk_gr_filter"><input type="hidden" id="vk_grlst_filter"></div></div>');
+   
+   if (!ge('vk_gr_filter')) p.insertBefore(el,p.firstChild);//p.appendChild(el);
    //*   
    stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
       vkaddcss('ul.t0 .result_list ul li{float:none}');
@@ -2003,7 +2132,12 @@ vk_feed={
    ',
    inj:function(){
       Inj.Before('Feed.go','revertLastInlineVideo',"/*console.log('process go',rows);*/ rows=vkModAsNode(rows,vk_feed.process_node);")
-      Inj.Before('Feed.update','var feed_rows','/*console.log("process update",rows);*/ rows=vkModAsNode(rows,vk_feed.process_node);')   
+      Inj.Before('Feed.update','var feed_rows','/*console.log("process update",rows);*/ rows=vkModAsNode(rows,vk_feed.process_node);')  
+      
+      Inj.Before('Feed.pushEvent','others.insertBefore(first','vkProcessNode(first);'); 
+      Inj.Before('Feed.pushEvent','cont.insertBefore(frow','vkProcessNode(frow);');
+      Inj.Before('Feed.pushEvent','cont.insertBefore(newEl','vkProcessNode(newEl);');
+      //      
    },
    on_page:function(){
       //vkSortFeedPhotos();
@@ -2012,6 +2146,8 @@ vk_feed={
    process_node:function(node){
       if (!vk_feed.filter_enabled) return;
       var nodes=geByClass('feed_row',node);
+      if (node && hasClass(node,'feed_row')) nodes=[node];
+      
       var reprocess=[];
       var process=function(row){
          if (hasClass(row,'vk_feed_filter')) return;
@@ -2108,6 +2244,8 @@ vk_feed={
    },
    filter_enabled:false,
    filter_init:function(){
+      var bit=84;
+      var enabled=(getSet(bit)=='y');
       if (ge('vk_feed_filter'))
          ((cur.section=="articles")?hide:show)('vk_feed_filter');
       vk_feed.process_node();
@@ -2159,14 +2297,21 @@ vk_feed={
             removeClass(ge(fobj),prefix+items[i][1]);
       }
       
+      vk_feed.filter_enabled=enabled;
+      if (enabled){
+         show(panel);
+         vk_feed.process_node();
+         apply();
+      }
       stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
-         vk_feed.filter_enabled=false;
+         
          var cb = new Checkbox(ge("vkf_filter_chk"), {  
                      width: 100,  
-                     checked:false,  
+                     checked:enabled,  
                      label: IDL('Filter'),
                      onChange: function(state) { 
-                        var checked = (state == 1)?true:false;  
+                        var checked = (state == 1)?true:false;
+                        setCfg(bit,checked?'y':'n');
                         if (checked){
                            vk_feed.filter_enabled=true;
                            show(panel);
@@ -2722,6 +2867,7 @@ function vk_tag_api(section,url,app_id){
                  var ids=['post_dislike','dislike_link','dislike_icon','dislike_count'];
                  for (var i=0;i<ids.length; i++){
                      var _el=ge(ids[i]+insert_type);
+                     if (!_el) continue;
                      if (ids[i]=='post_dislike') _el.setAttribute('dislike_id',dislike_id);
                      if (_el) _el.id=ids[i]+dislike_id;
                  }
@@ -3020,6 +3166,7 @@ function vk_tag_api(section,url,app_id){
                          .replace(/%TITLE%/g,langNumeric(info.count,IDL('users_dislike')))
                          .replace(/%USERS%/g,html);
             ge('dislike_list'+post).innerHTML=html;
+            vkProcessNode(ge('dislike_list'+post));
          }
          load_info();         
          return false;

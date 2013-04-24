@@ -162,6 +162,7 @@ function vkOnNewLocation(startup){
          case 'fave'    :vkFavePage(); break;
          case 'im'      :vkImPage(); break;
          case 'pages'   :vkWikiPages(); break;
+         case 'apps'    :vk_apps.page(); break;
          //case 'groups_list': vkGroupsListPage(); break;
 		}
 		if (startup && window.Fave) Fave.init();	
@@ -252,6 +253,7 @@ function VkOptMainInit(){
   if (getSet(16) == 'y') UserOnlineStatus();
   vkFavOnlineChecker();
   vkFaveOnlineChecker();
+  vk_audio_player.init();
   vkMoneyBoxAddHide();
   vkCheckUpdates();
   setTimeout(vkFriendsCheckRun,2000);
@@ -332,7 +334,9 @@ function ProcessAwayLink(node){
 function vkFriendsPage(){
 	vkFriendsBySex(true);
 	vkCheckFrLink();
-   vkFrNotInListsLink();
+   vk_friends.cat_links();
+   
+   if (ge('main_class')) removeClass('main_class','wide');
 }
 /* PUBLICS */
 function vkPublicPage(){
@@ -342,6 +346,7 @@ function vkPublicPage(){
    vkWikiPagesList(true);
    vkGroupStatsBtn();
    vkUpdWallBtn();
+   vk_groups.show_members_btn();
 }
 /* EVENTS */
 function vkEventPage(){
@@ -360,6 +365,7 @@ function vkGroupPage(){
    vkUpdWallBtn();
    vkWikiPagesList(true);
    vkGroupStatsBtn();
+   vk_groups.show_members_btn();
 }
 
 function vkGroupStatsBtn(){
@@ -568,7 +574,10 @@ function vkCommon(){
 	Inj.End('nav.setLoc','setTimeout("vkOnNewLocation();",2);');
 	
     if (getSet(10)=='y') Inj.After('TopSearch.row','name +','vkTsUserMenuLink(mid)+');
-
+   
+   vk_pages.inj_common();
+   vk_audio.inj_common();
+   vk_videos.inj_common();
    
    //if(window.TopSearch) Inj.End('TopSearch.prepareRows','vkProccessLinks(tsWrap);');
 	//if (window.setFavIcon) Inj.Try('setFavIcon');
@@ -687,14 +696,17 @@ function vkPhChooseProcess(answer,url,q){
   if (answer[1] && answer[1].indexOf && answer[1].indexOf('vk_link_to_photo')==-1){
      var div=vkCe('div',{},answer[1]);
      var ref=q.act=="a_choose_photo_box"?geByClass('summary',div)[0]:geByClass('photos_choose_rows',div)[0];
+     //*
      var p=geByClass('photos_choose_header',div)[0];
      if (p && !p.innerHTML.match('choose_album')){
-      p.appendChild(vkCe('a',{"class":'fl_r',href:'#',onclick:'return vk_photos.choose_album();'},IDL('mPhM',1)))
+      p.innerHTML='';
+      p.appendChild(vkCe('a',{"class":'fl_l_',href:'#',onclick:'return vk_photos.choose_album();'},IDL('mPhM',1)))
       console.log(q);
       if (q.to_id && q.to_id<0){
-         p.appendChild(vkCe('a',{"class":'fl_r',href:'#',onclick:'return vk_photos.choose_album('+q.to_id+');'},IDL('GroupAlbums',1)))
+         p.appendChild(vkCe('span',{"class":'fl_l_ divider'},'|'));
+         p.appendChild(vkCe('a',{"class":'fl_l_',href:'#',onclick:'return vk_photos.choose_album('+q.to_id+');'},IDL('GroupAlbums',1)))
       }
-     }
+     }//*/
      if (ref){
        var node=vkCe('div',{"class":'ta_r vk_opa2','style':"height: 25px; padding-left:10px; padding-top:4px;"},'\
        <div class="fl_l">\
@@ -771,6 +783,7 @@ function vkAudioChooseProcess(answer,url,q){
   if (answer[1].indexOf('vk_link_to_audio')==-1){
   var div=vkCe('div',{},answer[1]);
   var ref=geByClass('summary',div)[0] || geByClass('search_bar',div)[0];
+   
    var p=geByClass('choose_close',div)[0];
    if (p && !p.innerHTML.match('choose_album')){
          p.insertBefore(vkCe('span',{"class":'divide'},'|'),p.firstChild)

@@ -164,7 +164,7 @@ function vkSettingsPage(){
 function vkLoadVkoptConfigFromFile(){
   vkLoadTxt(function(txt){
 	try {
-	  var cfg=eval('('+txt+')');
+     var cfg=eval('('+txt+')');
 	  /*alert(print_r(cfg));*/
 	  for (var key in cfg) if (cfg[key]) 
 		vksetCookie(key,cfg[key]);
@@ -472,7 +472,7 @@ function init_colorpicker(target, onselect, inhcolor){
         }
     }
     function valkeyup(e){
-        if(!/^#[\da-f]{6}$/.test(e.target.value)){ return; }
+        if(!/^#[\da-f]{6}$/i.test(e.target.value)){ return; }
         hcolor = e.target.value;
         col.style.backgroundColor = hcolor;
     }
@@ -589,18 +589,16 @@ function vkInitSettings(){
     Media:[
       {id:0,  text:IDL("seLinkAu")},
       {id:1,  text:IDL("seAudioDownloadName")},
-      
       {id:2,  text:IDL("seLinkVi")},
       {id:66, text:IDL("seVidDownloadLinks")},
       {id:76, text:IDL("seVideoFullTitles")},
       {id:3, text:IDL("seCompactAudio")},
       {id:73, text:IDL("seLoadAudioAlbumInfo")},
       {id:75, text:IDL("seAPlayerCtrls")},
+      {id:85,  text:IDL("seAutoScrollToTrack")},
       {id:43, text:IDL("seAudioSize")},      
       {id:4, text:IDL("seMoreDarkViewer")},      
       {id:7,  text:IDL("seScroolPhoto")}
-
-      
     ],
     Users:[
       {id:10, text:IDL("seExUserMenu")+'<br><a href="#" onclick="toggle(\'vkExUMenuCFG\'); return false;">[<b> '+IDL("Settings")+' </b>]</a><span id="vkExUMenuCFG" style="display:none">'+GetUserMenuSett()+'</span>'},
@@ -669,7 +667,8 @@ function vkInitSettings(){
       {id:70, text:IDL("seHideBigLike")},
       {id:71, text:IDL("seWallReplyMod")},
       {id:74, text:IDL("seLeaveGroupLinks")},
-      {id:79, text:vk_settings.dislikes_icons()+IDL("seDislikes")}
+      {id:79, text:vk_settings.dislikes_icons()+IDL("seDislikes")},
+      {id:86, text:IDL("seDisableWallWikiBox")}
       //{id:64, text:IDL("seToTopOld")}
     ],
 	Sounds:[
@@ -689,11 +688,12 @@ function vkInitSettings(){
    ],
    Hidden:[
       {id:82, text:IDL("FullThumb")},
-      {id:83, text:IDL("seDislikesIcon"), ops:[0,1,2,3]}
+      {id:83, text:IDL("seDislikesIcon"), ops:[0,1,2,3]},
+      {id:84, text:IDL("seFeedFilter")}
    ]
   };
 
-	//LAST 83
+	//LAST 86
 	/*
       vkoptSets['advanced']=[
          'vk_upd_menu_timeout','vkMenuHideTimeout','CHECK_FAV_ONLINE_DELAY',
