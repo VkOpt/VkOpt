@@ -609,7 +609,8 @@ function vkProcessResponse(answer,url,q){
   if (url=='/photos.php' && q.act=="a_choose_photo_box") vkPhChooseProcess(answer,url,q);
   if (url=='/al_photos.php' && q.act=="choose_photo") vkPhChooseProcess(answer,url,q);
   if (url=='/video.php' && q.act=="a_choose_video_box") vkVidChooseProcess(answer,url,q);
-  if ((url=='/audio' || url=='/audio.php') && q.act=="a_choose_audio_box") vkAudioChooseProcess(answer,url,q);
+  if (url=='/al_video.php' && q.act=="a_choose_video_box") vkVidChooseProcess(answer,url,q);
+  if ((url=='/audio' || url=='/audio.php' || url=='/al_audio.php') && q.act=="a_choose_audio_box") vkAudioChooseProcess(answer,url,q);
   if (url=='/al_friends.php' && q.act=='add_box') answer[1]=answer[1].replace('"friends_add_block" style="display: none;"','"friends_add_block"');
   if(url=='/al_groups.php' && q.act=='people_silent') {
       if(answer[0].members)  answer[0].members = vkModAsNode(answer[0].members,vkProcessNodeLite,url,q);
@@ -664,6 +665,20 @@ vk_ch_media={
             "sizes": sizes
          }
       });
+   },
+   video:function(vid){
+      cur.chooseMedia('video', vid, {
+         "thumb": "http://vk.com/images/video_s.png",
+         "editable": {
+            "sizes": {
+               "s": ["http://vk.com/images/video_s.png", 130, 98],
+               "m": ["http://vk.com/images/video_s.png", 160, 120],
+               "l": ["http://vk.com/images/video_s.png", 240]
+            },
+            "duration": 0
+         }
+      });
+   
    }
 }
 function vkPhChooseProcess(answer,url,q){
@@ -731,7 +746,8 @@ function vkVidChooseProcess(answer,url,q){
     var val=ge('vk_link_to_video').value.match(/video(-?\d+)_(\d+)/);
     lockButton(btn);
     if (val){
-      cur.chooseMedia('video', val[1]+'_'+val[2], 'http://vk.com/images/video_s.png');
+      //cur.chooseMedia('video', val[1]+'_'+val[2], 'http://vk.com/images/video_s.png');
+      vk_ch_media.video(val[1]+'_'+val[2]);
     } else {
       alert(IDL('IncorrectVideoLink'))
     }
@@ -739,7 +755,8 @@ function vkVidChooseProcess(answer,url,q){
   };
   if (answer[1].indexOf('vk_link_to_video')==-1){
   var div=vkCe('div',{},answer[1]);
-  var ref=geByClass('summary',div)[0] || geByClass('search_bar',div)[0];
+  console.log(answer);
+  var ref=geByClass('summary',div)[0] || geByClass('search_bar',div)[0] || geByClass('choose_search_cont',div)[0];
    
    var p=geByClass('choose_close',div)[0];
    if (p && !p.innerHTML.match('choose_album')){

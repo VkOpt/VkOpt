@@ -1542,7 +1542,7 @@ vk_groups = {
       var PER_PAGE=24;
       var IN_ROW=8;
       
-      var sort="time_asc";//"time_desc";
+      var sort="time_desc";//"time_asc";//
       var code='\
       var members=API.groups.getMembers({gid:'+gid+', count:'+PER_PAGE+', offset:'+offset+', sort:"'+sort+'"});\
       var users=API.users.get({uids:members.users,fields:"photo_rec"});\
