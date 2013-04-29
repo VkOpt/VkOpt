@@ -1295,6 +1295,15 @@ function vkSearchPage(){
 function vkFavePage(){
    vkFavUsersList(true);
    vkFavPhotosMenu();
+   if (getSet(17)=='y' && nav.objLoc['section']=='users'){
+      setTimeout(function(){
+         var el=ge('users_content');
+         if (el.qsorter){ 
+            el.qsorter.destroy();
+            qsorter.init('users_content', {onReorder: Fave.reorderFave, xsize: 9, width: 67, height: 110});
+         }
+      },10);
+   }
 }
 
 

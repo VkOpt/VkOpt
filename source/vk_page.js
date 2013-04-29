@@ -556,7 +556,7 @@ function vkProcessBirthday(day,month,year){
    return info;
 }
 
-//javascript: vk_users.find_age(cur.oid,function(age){alert(age?langNumeric(age, vk_lang["vk_year"]):'N/A')});
+//javascript: vk_users.find_age(cur.oid,function(age){alert(age?langNumeric(age, vk_lang['vk_year']):'N/A')});
 function vkBDYear(uid,el){
    var _el=ge(el);
    var a=geByTag('a',_el)[0];
