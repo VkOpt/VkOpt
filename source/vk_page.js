@@ -685,10 +685,10 @@ function vkUpdWallBtn(){
 function vkAddCleanWallLink(){
 	 if (getSet(77)!='y') return;
     var rx=nav.objLoc[0].match(/notes(\d+)/);
-    
+    var rw=nav.objLoc[0].match(/wall-?\d+_\d+/);
     //notes
    var allow_clean=(cur.oid==remixmid() || isGroupAdmin(cur.oid));
-	if (allow_clean && !ge('vk_clean_wall') && ge('full_wall_filters')){
+	if (allow_clean && !rw && !ge('vk_clean_wall') && ge('full_wall_filters')){
 		
       var link='<a href="#" onclick="vkCleanWall('+cur.oid+'); return false;">'+IDL("wallClear")+'</a><span class="divide">|</span>';
       if (rx && rx[1]==remixmid())

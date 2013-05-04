@@ -214,7 +214,7 @@ function VkOptMainInit(){
   vkExtendLang({
 
   });//*/
-  vkStyles();
+  vkStyles();  
   if (!ge('content')) return;
   if (getSet(69)=='n') vkopt_disabled_ad=true;
   if (getSet(31)=='y' || getSet(35)=='y') vkMakeRightBar();
@@ -223,6 +223,9 @@ function VkOptMainInit(){
   if (getSet(78)=='n') CUT_VKOPT_BRACKET=true;
   vkBroadcast.Init(vkOnStorage);
   window.vkopt_ready=true;
+  
+  vkFixSmileMap();
+ 
   vk_plugins.init();
   addEvent(document, 'mouseup', vkOnDocumentClick);
   if (location.href.match('act=vkopt'))	vkShowSettings();

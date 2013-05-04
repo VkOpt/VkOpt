@@ -314,6 +314,7 @@ function vkStyles(){
       .choose_audio_row .audio_title_wrap { width: 350px !important; }\
 		.post_media .audio_title_wrap { width: 250px !important;}\
       \
+      #audio.new .wall_module .audio .title_wrap { width: 288px !important; }\
       #audio.new .audio .info { width: 370px !important;}\
       #pad_playlist .audio .info {width: 435px !important;}\
       #pad_playlist .audio .title_wrap {width: auto !important; }\
@@ -346,7 +347,7 @@ function vkStyles(){
    ";
 	  //extend switch color in viewer
 	if (MoreDarkPV=='y') main_css+="\
-		.pv_dark .pv_cont #pv_box,.pv_dark .info, .pv_dark .pv_comment,.pv_dark #pv_actions .left, .pv_dark #pv_actions .right{background:#000 !important; color: #FFF !important;} \
+		.pv_dark .pv_cont #pv_box,.pv_dark .info, .pv_dark .pv_comment,.pv_dark #pv_actions .left, .pv_dark #pv_actions .right{background-color:#000 !important; color: #FFF !important;} \
 		.pv_dark .pv_cont #pv_box DIV{border-color:#444 !important;}\
 		.pv_dark .pv_cont SPAN{color:#DDD !important;}\
 		.pv_dark .pv_cont A{color:#888 !important;}\
@@ -1794,6 +1795,18 @@ setInterval(clock,1000);
 
 
 /* SMILES */
+function vkFixSmileMap(){
+   for (key in SmilesMap){
+       var re=(SmilesMap[key][0])?SmilesMap[key][0]:SmilesMap[key];
+       re= new RegExp("(\\s|^)("+re.source+")([\\s\\.,]|$)", (re.ignoreCase?'i':''));
+       if (SmilesMap[key][0])
+         SmilesMap[key][0]=re;
+       else
+         SmilesMap[key]=re;
+   }
+   //
+}
+
 function vkSmiles(element){ 
 	if (getSet(33)!='y' || ge("vkopt_sett_table")) return;
 	var tstart=unixtime();
@@ -1817,15 +1830,29 @@ function SmileNode(mainNode,childItem,searchWord){
     node = mainNode.childNodes[childItem];
     for (key in SmilesMap){ 
       var regex=(SmilesMap[key][0])?SmilesMap[key][0]:SmilesMap[key];
-      var searchWord = node.nodeValue.match(regex);
-      searchWord=(searchWord)?searchWord[0]:false;
-      if (searchWord){   
-      var startIndex = node.nodeValue.indexOf(searchWord);
-      var endIndex = searchWord.length;
+      //new_regex= new RegExp("(\\s|^)("+regex.source+")([\\s\\.,]|$)", (regex.ignoreCase?'i':''));
       
-       if(startIndex!=-1){
-          var secondNode = node.splitText(startIndex);
-          var thirdNode = secondNode.splitText(endIndex);
+      var searchWord = node.nodeValue.match(regex);
+      if (searchWord)
+         console.log(searchWord);
+      var f='';
+      var l='';
+      var val=''
+      
+      if (searchWord){
+         f=searchWord[1]?searchWord[1]:'';
+         val=searchWord[2]?searchWord[2]:'';
+         l=searchWord[3]?searchWord[3]:'';
+         
+         searchWord=(searchWord)?searchWord[0]:false;
+      } else 
+         searchWord=false;
+      if (searchWord){   
+         var startIndex = node.nodeValue.indexOf(searchWord)+f.length;
+         var endIndex = searchWord.length-f.length-l.length;
+         if(startIndex!=-1){
+            var secondNode = node.splitText(startIndex);
+            var thirdNode = secondNode.splitText(endIndex);
           
           
          // var smilepath=(SmilesMap[key][0])?SmilesMap[key][1]:'icq';
@@ -1835,12 +1862,12 @@ function SmileNode(mainNode,childItem,searchWord){
           //smile.src='http://kolobok.us/smiles/'+smilepath+'/'+key+'.gif';
           smile.src=vkSmilesLinks[key];//'http://vkoptcss.narod.ru/smiles/'+key+'.gif';
           smile.setAttribute("onclick","RemoveSmile(this);");
-		  smile.alt=searchWord;
-          smile.title=searchWord;
+          smile.alt=val;
+          smile.title=val;
  
           mainNode.replaceChild(smile,mainNode.childNodes[childItem+1]);
           //childItem = childItem*1+2;
-          if(mainNode.childNodes[childItem] && mainNode.childNodes[childItem].nodeValue.match(SmilesMap[key])!=-1){
+          if(mainNode.childNodes[childItem] && mainNode.childNodes[childItem].nodeValue.match(regex)!=-1){
               childItem = SmileNode(mainNode,childItem,searchWord);
           }
       }

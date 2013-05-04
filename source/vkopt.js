@@ -221,7 +221,7 @@ var TextPasteSmiles={
 'scratch_one-s_head':[':-I','big_standart'],
 'fool': [':-|','big_standart'],
 'bomb': '@=',
-'new_russian':['\\\m\/','big_standart'],
+'new_russian':['\\\\m\/','big_standart'],
 'scare3':[':-@','big_standart'],
 'acute':[';D','big_standart'],
 'heart':['<3','light_skin'],
