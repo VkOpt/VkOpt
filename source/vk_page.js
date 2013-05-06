@@ -262,20 +262,6 @@ function vkWallReply(post,toMsgId, toId, event, rf,v,replyName){
       }
 }
 
-/* PAGES.JS */
-function vkPage(){
-	/*if (!window.wall) return;
-	Inj.Before('wall.receive','var current','vkProcessNode(n);');
-	Inj.End('wall._repliesLoaded','vkProcessNode(r);');*/
-   
-   if (getSet(71)=='y') 
-      Inj.Before('wall.replyTo','if (!v','vkWallReply(post,toMsgId, toId, event, rf,v,replyName); if(false) ');
-   
-   Inj.Before('Wall.replyTo','toggleClass','vk_wall.cancel_reply_btn(post);');
-}
-
-
-
 
 function vkPollResults(post_id,pid){
    var tpl='\
@@ -1475,7 +1461,13 @@ function vkWikiNew(){
       nav.go("pages?act=edit&oid="+cur.oid+"&p="+encodeURIComponent(title));
 }
 
+/* PAGES.JS */
 vk_pages={
+   inj:function(){
+      if (getSet(71)=='y') 
+         Inj.Before('wall.replyTo','if (!v','vkWallReply(post,toMsgId, toId, event, rf,v,replyName); if(false) ');
+      Inj.Before('Wall.replyTo','toggleClass','vk_wall.cancel_reply_btn(post);');
+   },
    inj_common:function(){
       Inj.Start('showWiki','if (vk_pages.is_wiki_box_disabled(arguments)) return;');
    },

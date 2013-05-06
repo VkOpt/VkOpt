@@ -2206,7 +2206,7 @@ function vkVidLoadLinks(oid,vid,el,yid,type){
          el.innerHTML='<small class="divide" >'+IDL('NO_ACCESS')+'</small>';
       } else {
          var obj=JSON.parse(t);
-         if (obj.extra=="21"){
+         if (obj.extra=="21"){// 21 - YouTube; 22 - Vimeo; 23 - Rutube; 24 - Russia.ru
             getyt(obj.extra_data);            
          } else if (obj.extra=="22"){
             getvimeo(obj.extra_data);

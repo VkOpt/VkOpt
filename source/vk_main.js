@@ -39,7 +39,7 @@ function vkInj(file){
 	case 'search.js':		   vkSearch();		break;
 	case 'profile.js':		vkProfile();	break;
 	case 'wall.js':			vkWall();		break;		
-	case 'page.js':			vkPage();		break;
+	case 'page.js':			vk_pages.inj();		break;
 	case 'friends.js':		vkFriends();	break;
 	case 'notifier.js': 	   vkNotifier(); 	break;
 	case 'common.js': 		vkCommon(); 	break;
@@ -675,8 +675,8 @@ vk_ch_media={
          "editable": {
             "sizes": {
                "s": ["http://vk.com/images/video_s.png", 130, 98],
-               "m": ["http://vk.com/images/video_s.png", 160, 120],
-               "l": ["http://vk.com/images/video_s.png", 240]
+               "m": ["http://vk.com/images/video_m.png", 160, 120],
+               "l": ["http://vk.com/images/video_l.png", 240]
             },
             "duration": 0
          }

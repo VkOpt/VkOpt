@@ -521,6 +521,6 @@ var dloc=document.location.href;
 var vk_domain=document.location.host;
 if (vk_domain.match('vk\\.com') || vk_domain.match('vkontakte\\.ru')){
    if (!dloc.match(/\/m\.vk\.com|login\.vk\.com|oauth\.vk\.com|al_index\.php|frame\.php|widget_.+php|notifier\.php|audio\?act=done_add/i)){
-       vkonDOMReady(VkOptInit);  
+       vkonDOMReady(VkOptInit); 
    }
 }
