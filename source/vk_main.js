@@ -1201,7 +1201,9 @@ function vkNotifier(){
 		});
       vkNotifyCustomSInit();
 	}
-   if (getSet(51)=='y') Inj.Replace('FastChat.clistRender','html.push(','vkFavChekUserAndToArray(mid,html,');
+   if (getSet(51)=='y'){ 
+      vk_fav.inj_notifier();
+   }
    
    
    //Inj.Before('FastChat.clistRender','if (lastMid','html.sort(vkFastChatSortUsers);');

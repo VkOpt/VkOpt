@@ -1427,6 +1427,7 @@ function vkFavAddDel(uid,is_del){
    if (ge('vk_fav_users_cont')) vkFavUsersList();
 }
 
+
 function vkFavChekUserAndToArray(mid,array,item){
    /*var umenu='<a id="pup'+mid+'_0" class="vk_usermenu_btn" onclick="pupShow(event,\''+mid+'_0\',\''+mid+'\',this); return false;" onmousedown="event.cancelBubble = true;">'+USERMENU_SYMBOL+'</a>';
    
@@ -1437,10 +1438,43 @@ function vkFavChekUserAndToArray(mid,array,item){
    if (getSet(8)=='y') item=item.replace('<img','<img onmouseover="vkPopupAvatar(\''+mid+'\',this);" onmouseout="vkHidePhoto();"');
    if (vkIsFavUser(mid)){ 
       item=item.replace('class="fc_contact','class="fc_contact vk_faved_user')
-      array.splice(0,0,item);
+      //array.splice(0,0,item);
    }
-   else array.push(item);
+   //else  array.push(item);
+   
+   array.push(item);
 }
+
+vk_fav={
+   inj_notifier:function(){
+      Inj.Start('FastChat.clistRender','vk_fav.sort_users();');
+      Inj.Replace('FastChat.clistRender','html.push(','vkFavChekUserAndToArray(mid,html,');
+   },
+   sort_users:function(){
+      var list={};
+      var faved={};
+      var new_list={};
+      if (!window.curFastChat || !curFastChat.friends) return;
+      each(curFastChat.friends, function (k) {
+         var mid = intval(k);
+         if (vkIsFavUser(mid)) 
+            faved[k]=curFastChat.friends[k];
+         else 
+            list[k]=curFastChat.friends[k];
+      });
+      
+      each(faved, function (k) {
+         new_list[k]=faved[k];
+      });
+      each(list, function (k) {
+         new_list[k]=list[k];
+      });
+      
+      curFastChat.friends=new_list;
+      
+   }
+}
+
 
 function vkFastChatSortUsers(a,b){
    var x=0;
