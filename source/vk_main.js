@@ -111,16 +111,35 @@ function vkOnStorage(id,cmd){
 	}
 }
 function vkOnNewLocation(startup){
-	if (!(window.nav && nav.objLoc)) return;
+	//console.log('hav hook', window.nav);
+   if (!(window.nav && nav.objLoc)) return;
    if (!cur.module){
       if (cur.gid && nav.objLoc['act']=='blacklist' && (cur.moreParams || {}).act=="blacklist"){
          cur.module='groups_edit';
-      }else if (nav.objLoc[0]=='settings'){
+      }else if (nav.objLoc[0].match(/page-?\d+_\d+/)){
+         var obj=nav.objLoc[0].match(/page(-?\d+)_(\d+)/)
+         cur.module='pages';
+         if (!cur.gid) cur.gid=Math.abs(obj[1]);
+         if (!cur.oid) cur.oid=obj[1];
+         if (!cur.pid) cur.pid=obj[2];
+         
+      } else {
+         switch(nav.objLoc[0]){
+            case 'settings':  cur.module='settings';          break;
+            case 'pages':      cur.module='pages';         break;
+            default:          setTimeout(vkOnNewLocation,10); return;               
+         }
+      }
+
+      /*
+      if (nav.objLoc[0]=='settings'){
          cur.module='settings';
+      } else if (nav.objLoc[0]=='page'){
+         cur.module='wiki_page';
       } else {
          setTimeout(vkOnNewLocation,10);
          return;
-      }
+      }*/
    }
 	vklog('Navigate:'+print_r(nav.objLoc).replace(/\n/g,','));
 	var tstart=unixtime();
@@ -430,7 +449,13 @@ function vkGetWikiCode(pid,gid){
 	//var dloc=document.location.href;
 	//var gid=dloc.match(/o=-(\d+)/);
 	//gid=gid?gid[1]:null;
-	dApi.call('pages.get',{pid:pid,gid:gid},function(r){
+   var params={gid:gid}
+   if ((pid+"").match(/^\d+$/)){
+      params['pid']=pid;
+   } else {
+      params['title']=pid;
+   }
+	dApi.call('pages.get',params,function(r){
       var data=r.response;
       if (!data.source) {
          alert('Nothing...');
@@ -439,9 +464,7 @@ function vkGetWikiCode(pid,gid){
       var code=(data.source || "").replace(/<br>/gi,'\r\n');
       var box=vkAlertBox('Wiki-code','<h2>'+data.title+'</h2><textarea id="vk_wikicode_area" style="width:460px; height:300px;">'+code+'</textarea>');
       box.setOptions({width:'500px'});
-      //ge('vk_wikicode_area').value=data.source;
    });
-   
    return false;
 }
 

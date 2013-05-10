@@ -1444,16 +1444,62 @@ function vkAudioBlock(load_audios,oid){
 
 
 function vkWikiPages(){
-   if (ge('pages_right_link') && !ge('vk_add_wiki_page')){
-      ge('pages_right_link').parentNode.appendChild(
-         vkCe('a',{
-            "class":"fl_r pages_right_link",
-            "id":"vk_add_wiki_page",
-            "href":"#",
-            "onclick":"vkWikiNew(); return false;"
-         },IDL('Add')+'<span class="divide">|</span>')
-      );
+   var p=(ge('pages_right_link') || {}).parentNode
+   var class_name='fl_r pages_right_link';
+   var gid=Math.abs(cur.gid || cur.oid || nav.objLoc['oid'] || nav.objLoc['gid']);
+   var pid=cur.pid || nav.objLoc['p'];
+   if (p){
+      if (p && !ge('vk_add_wiki_page')){
+         p.appendChild(
+            vkCe('a',{
+               "class":class_name,
+               "id":"vk_add_wiki_page",
+               "href":"#",
+               "onclick":"vkWikiNew(); return false;"
+            },IDL('Add')+'<span class="divide">|</span>')
+         );
+         p.appendChild(
+            vkCe('a',{
+               "class":class_name,
+               "id":"vk_add_wiki_page",
+               "href":"#",
+               "onclick":"vkGetWikiCode('"+pid+"','"+gid+"'); return false;"
+            },IDL('Code')+'<span class="divide">|</span>')
+         );
+      }   
+   } else {
+      var end=true;
+      if (geByClass('pages_header')[0] && !geByClass('pages_actions')[0]){
+         geByClass('pages_header')[0].appendChild(se('<span class="pages_actions fl_r"> </span>'));
+         end=false;
+      }
+      
+      p=geByClass('pages_actions')[0];
+      class_name='';
+      
+      if (p && !ge('vk_add_wiki_page')){
+         p.insertBefore(
+            vkCe('a',{
+               "class":class_name,
+               "id":"vk_add_wiki_page",
+               "href":"#",
+               "onclick":"vkWikiNew(); return false;"
+            },IDL('Add')+(end?'<span class="divide">|</span>':'')),
+            p.firstChild
+         );
+         p.insertBefore(
+            vkCe('a',{
+               "class":class_name,
+               "id":"vk_add_wiki_page",
+               "href":"#",
+               "onclick":"vkGetWikiCode('"+pid+"','"+gid+"'); return false;"
+            },IDL('Code')+'<span class="divide">|</span>'),
+            p.firstChild
+         );
+      }   
+
    }
+
 }
 function vkWikiNew(){
    var title=prompt(IDL("Title"));
