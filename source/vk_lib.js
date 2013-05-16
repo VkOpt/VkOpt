@@ -630,7 +630,7 @@ var vkMozExtension = {
 	
 
 	function vksetCookie(cookieName,cookieValue,nDays,domain){
-		if (vkLocalStoreReady() && SetsOnLocalStore[cookieName]){
+		if (vkLocalStoreReady() && (SetsOnLocalStore[cookieName] || /api\d+_[a-z]+/.test(cookieName))){
 		vkSetVal(cookieName,cookieValue);
 	  } else {
 		var today = new Date();
@@ -648,7 +648,7 @@ var vkMozExtension = {
 	function vkgetCookie(name,temp){
 	  if (name=='remixbit' && SettBit && !temp) return SettBit;
 	  if (name=='remixmid') { if (temp) return false; else { tmp=remixmid(); return tmp; } }
-	  if (vkLocalStoreReady() && SetsOnLocalStore[name]){
+	  if (vkLocalStoreReady() && (SetsOnLocalStore[name] || /api\d+_[a-z]+/.test(name))){
 		var val=vkGetVal(name);
 		if (val) return val;
 	  }
@@ -1819,6 +1819,7 @@ var dApi = {
 		key.focus();
 	}
 };
+
 
 function vkApiCall(method,params,callback){
    params = params || {};

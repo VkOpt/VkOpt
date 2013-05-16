@@ -663,7 +663,7 @@ function vkUpdWallBtn(){
 	var el=ge('page_wall_posts_count');
 	if (!el || ge('wall_upd_btn')) return;
 	var span=document.createElement('span');
-	span.innerHTML='<a href="#" id="wall_upd_btn" onclick="cancelEvent(event); wall.showMore(0); return false;">&#8635;</a>';/*&uarr;&darr;*/
+	span.innerHTML='<a href="#" id="wall_upd_btn" onclick="cancelEvent(event); wall.showMore(0); return false;"> &#8635;</a>';/*&uarr;&darr;*/
 	insertAfter(span,el);
 }
 
@@ -2547,6 +2547,7 @@ function vk_tag_api(section,url,app_id){
          var users=API.users.get({uids:like.users,fields:"photo_rec"});\
          return {count:like.count,users:users,uids:like.users};\
          ';
+         //api_for_dislikes
          dApi.call('execute',{code:code},function(r,t){
             if (callback) callback(r.response);
          });
@@ -2564,6 +2565,7 @@ function vk_tag_api(section,url,app_id){
          var code='return {'+tmp.join(',')+'};';
          var retry_count=0;
          var get=function(){
+            //api_for_dislikes
             dApi.call('execute',{code:code},{
                   ok:function(r,t){
                      if (callback) callback(r.response);

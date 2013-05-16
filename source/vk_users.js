@@ -926,6 +926,9 @@ function vkGetProfile(uid,callback,no_switch_button){
 			[profile.faculty_name,IDL('Faculty')],
 			[profile.graduation,IDL('Graduation')]
 		];
+      if (profile.deactivated){
+         info_labels.push([(profile.deactivated || '').toUpperCase(),'&times;']);
+      }
       if (vk_DEBUG) info_labels.push([is_vkopt_user==1?"<b>YES!!!</b>":"NO =(", "Use VkOpt?"]);
       
 		var info_html='';

@@ -879,10 +879,10 @@ function vkMenu(){//vkExLeftMenu
  var ExMenu={ 
     //*
     'profile':[
-      ['gifts'+vkmid,IDL('clGi')],
-      [['fans.php?act=fans&mid='+vkmid,"return !showTabbedBox('al_fans.php', {act: 'show_fans_box', oid: "+vkmid+"}, {cache: 1}, event);"],IDL('clFans')],
-      [['fans.php?act=idols',"return !showTabbedBox('al_fans.php', {act: 'show_publics_box', oid: "+vkmid+"}, {cache: 1}, event);"],IDL('clSubscriptions')],
-      [['stats?mid='+vkmid,'return;'],IDL('Stats')]
+      ['/gifts'+vkmid,IDL('clGi')],
+      [['/fans.php?act=fans&mid='+vkmid,"return !showTabbedBox('al_fans.php', {act: 'show_fans_box', oid: "+vkmid+"}, {cache: 1}, event);"],IDL('clFans')],
+      [['/fans.php?act=idols',"return !showTabbedBox('al_fans.php', {act: 'show_publics_box', oid: "+vkmid+"}, {cache: 1}, event);"],IDL('clSubscriptions')],
+      [['/stats?mid='+vkmid,'return;'],IDL('Stats')]
     ],//*/
     /*
     'edit':[
@@ -890,66 +890,66 @@ function vkMenu(){//vkExLeftMenu
       ['?','qazqaz']
     ],//*/
     'friends':[
-      ['friends?section=all',IDL("mFrA")],
-      ['friends?section=online',IDL("mFrO")],
-      ['friends?section=recent',IDL("mFrNew")],
-      ['friends?section=suggestions',IDL("mFrSug")],
-      ['friends?section=requests',IDL("mFrR"),true],
-      ['friends?section=all_requests',IDL("mFrAllReq")],
-      ['friends?section=out_requests',IDL("mFrOutReq")],
+      ['/friends?section=all',IDL("mFrA")],
+      ['/friends?section=online',IDL("mFrO")],
+      ['/friends?section=recent',IDL("mFrNew")],
+      ['/friends?section=suggestions',IDL("mFrSug")],
+      ['/friends?section=requests',IDL("mFrR"),true],
+      ['/friends?section=all_requests',IDL("mFrAllReq")],
+      ['/friends?section=out_requests',IDL("mFrOutReq")],
       [['/friends?w=calendar','return nav.change({w: \'calendar\'})'],IDL("Birthdays")] 
     ],
     'albums':[
-        ['albums'+vkmid,IDL("mPhM")],
-        ['friendsphotos',IDL("mPhFrP")],
-        ['tag'+vkmid,IDL("mPhW")],
+        ['/albums'+vkmid,IDL("mPhM")],
+        ['/friendsphotos',IDL("mPhFrP")],
+        ['/tag'+vkmid,IDL("mPhW")],
         [["#","showBox('al_photos.php', {act: 'new_album_box'},{stat: ['photos.css']}); return false;"],IDL("mPhN")],
-        ['photos'+vkmid+'?act=comments',IDL("mPhC")],
-        ['photos'+vkmid,IDL("mPhA")],
-        ['albums'+vkmid+'?act=added',vk_lang["mTags"],true]
+        ['/photos'+vkmid+'?act=comments',IDL("mPhC")],
+        ['/photos'+vkmid,IDL("mPhA")],
+        ['/albums'+vkmid+'?act=added',vk_lang["mTags"],true]
     ], 
     'video':[
-        ['video',IDL("mViM")],
-        ['video?section=tagged',IDL("mViW")],
-        ['video?section=comments',IDL("mPhC")],
+        ['/video',IDL("mViM")],
+        ['/video?section=tagged',IDL("mViW")],
+        ['/video?section=comments',IDL("mPhC")],
         [['#',"stManager.add('video.js',function(){Video.uploadVideoBox();}); return false;"], IDL("mViN")], //'video.php?act=new' //"showTabbedBox('al_video.php', {act: 'upload_box', oid: cur.oid}, {stat: ['video_edit.css', 'privacy.css', 'privacy.js', 'uploader.js']}); return false;"
-        ['video?section=tagged',vk_lang["mTags"],true]
+        ['/video?section=tagged',vk_lang["mTags"],true]
     ],
     'audio':[
-        ['audio',IDL("mAuM")],
-        ['audio?act=edit',IDL("mAuE")],
+        ['/audio',IDL("mAuM")],
+        ['/audio?act=edit',IDL("mAuE")],
         [['#',"showBox('/audio', extend({}, {act: 'new_audio'}), {   params: {width: '430px'}, stat: ['audio.css','audio.js'] }); return false;"],IDL("mAuN")] 
     ],
     'mail':[
-        ['mail',IDL("mMaI")],
-        ['mail?section=outbox',IDL("mMaO")],
-        ['mail?section=spam',IDL("Spam")],
-        ['im',IDL('mDialogsMessages')]
+        ['/mail',IDL("mMaI")],
+        ['/mail?section=outbox',IDL("mMaO")],
+        ['/mail?section=spam',IDL("Spam")],
+        ['/im',IDL('mDialogsMessages')]
 		//,[['im.php?act=a_box&popup=1',''],IDL('mQuickMessages')]
     ],
     'notes':[   
-        ['notes',IDL("mNoM")],
-        ['notes?act=new',IDL("mNoN")],
-        ['notes?act=comments',IDL("mNoC")],
-        ['notes?section=friends',IDL("mNoF")],
-        ['notes?section=fave',IDL("mNoI")]
+        ['/notes',IDL("mNoM")],
+        ['/notes?act=new',IDL("mNoN")],
+        ['/notes?act=comments',IDL("mNoC")],
+        ['/notes?section=friends',IDL("mNoF")],
+        ['/notes?section=fave',IDL("mNoI")]
     ],
     'groups':[
-        ['groups',IDL("mGrM")],
-        ['groups?tab=inv',IDL("mGrInv")],
-        ['search?c[section]=groups',IDL("mGrS")],
-        ['groups?tab=admin',IDL("mGrAdmin")]
+        ['/groups',IDL("mGrM")],
+        ['/groups?tab=inv',IDL("mGrInv")],
+        ['/search?c[section]=groups',IDL("mGrS")],
+        ['/groups?tab=admin',IDL("mGrAdmin")]
     ],
     'events':[
-        ['events?tab=future',IDL("mEvF")],
-        ['events?tab=past',IDL("mEvL")],
-        ['events?tab=calendar',IDL("mEvC")],
-        ['search?c[section]=events',IDL("mEvS")]
+        ['/events?tab=future',IDL("mEvF")],
+        ['/events?tab=past',IDL("mEvL")],
+        ['/events?tab=calendar',IDL("mEvC")],
+        ['/search?c[section]=events',IDL("mEvS")]
     ],
    'gifts':[
-        ['gifts.php?act=wishlist',IDL("mWishMy")],
-        ['gifts.php?act=wishlist&done=1',IDL("mWishDone")],
-        ['gifts.php?act=wishlist&mid=-1',IDL("mWishFr")]
+        ['/gifts.php?act=wishlist',IDL("mWishMy")],
+        ['/gifts.php?act=wishlist&done=1',IDL("mWishDone")],
+        ['/gifts.php?act=wishlist&mid=-1',IDL("mWishFr")]
     ],
    /*'gifts':[
         ['gifts#act=wishlist',IDL("mWishMy")],
@@ -1036,6 +1036,7 @@ function vkMenu(){//vkExLeftMenu
       ExMenu['vkopt'].push([["#","if (window.vk_updmenu_timeout) clearTimeout(vk_updmenu_timeout); return false;"],'<b>Stop Upd Menu</b>']);
       ExMenu['vkopt'].push([["#","vkPhotoUrlUpload(prompt('Image URL:')); return false;"],'UploadImg']);
       ExMenu['vkopt'].push([["#","vk_photos.url(prompt('Image URL:')); return false;"],'UploadImg v2']);
+      ExMenu['vkopt'].push([["#","(function(){var keys=[]; for(var key in localStorage) if(/im_draft/.test(key)){console.log(key); keys.push(key)}; for (var i=0; i<keys.length; i++) localStorage.removeItem(keys[i]);})(); return false;"],'Del LS Trash']);
   }
   /* 
   ExMenu['vkopt']=[];
@@ -1652,8 +1653,8 @@ function vkClock() {
 			sidebar.appendChild(div);
 		}
       if (ge('vkCl')){
-         if (getSet(30) ==1) setInterval(function(){ge('vkCl').innerHTML=new Date().toLocaleString().match(/\d+:\d+:\d+/i);},1000);
-         if (getSet(30) ==2) setInterval(function(){ge('vkCl').innerHTML=wr_date();},1000);
+         if (getSet(30) ==1) setInterval(function(){var c=ge('vkCl'); if (c) c.innerHTML=new Date().toLocaleString().match(/\d+:\d+:\d+/i);},1000);
+         if (getSet(30) ==2) setInterval(function(){var c=ge('vkCl'); if (c) c.innerHTML=wr_date();},1000);
       }
 		if (getSet(30) ==3) makeClock();
 	}
@@ -1833,8 +1834,7 @@ function SmileNode(mainNode,childItem,searchWord){
       //new_regex= new RegExp("(\\s|^)("+regex.source+")([\\s\\.,]|$)", (regex.ignoreCase?'i':''));
       
       var searchWord = node.nodeValue.match(regex);
-      if (searchWord)
-         console.log(searchWord);
+      //if (searchWord) console.log(searchWord);
       var f='';
       var l='';
       var val=''
