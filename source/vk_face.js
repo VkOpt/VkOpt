@@ -929,7 +929,7 @@ function vkMenu(){//vkExLeftMenu
     ],
     'notes':[   
         ['/notes',IDL("mNoM")],
-        ['/notes?act=new',IDL("mNoN")],
+        //['/notes?act=new',IDL("mNoN")],
         ['/notes?act=comments',IDL("mNoC")],
         ['/notes?section=friends',IDL("mNoF")],
         ['/notes?section=fave',IDL("mNoI")]
@@ -1023,7 +1023,7 @@ function vkMenu(){//vkExLeftMenu
 		['wall'+remixmid(),IDL('mWAllPosts')],
 		['wall'+remixmid()+'?own=1',IDL('mWMyPosts')],
       ['notes',IDL("mNoM")],
-      ['notes?act=new',IDL("mNoN")],
+      //['notes?act=new',IDL("mNoN")],
       ['notes?act=comments',IDL("mNoC")]
 	],	
     'vkopt':[

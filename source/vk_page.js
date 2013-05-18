@@ -226,7 +226,6 @@ function vkWall(){
 	Inj.End('FullWall.init','setTimeout("vkOnNewLocation();",2);');
    if (getSet(71)=='y') 
       Inj.Before('FullWall.replyTo','if (!v','vkWallReply(post,toMsgId, toId, event, rf,v,replyName); if(false) ');
-   
    //Inj.Before('Wall.replyTo','toggleClass','vk_wall.cancel_reply_btn(post);');  
 }
 

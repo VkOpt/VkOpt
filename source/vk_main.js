@@ -1963,24 +1963,32 @@ function vkBoardPage(){
 function vkProcessTopicLink(link){
    var href=link.getAttribute('href');
    if (!href) return;
+   var ment=link.getAttribute('mention') || "";
+   if (ment && ment!=''){
+      link.setAttribute('onmouseover', "vkTopicTooltip(this);");
+      return;
+   }
    var id=href.match(/topic(-?\d+)_(\d+)/);
    var post=href.match(/post=(\d+)/);
    if (!id) return;
-   if(!link.hasAttribute('onmouseover') && !hasClass(link,'bp_date') && !hasClass(link.parentNode,'bottom')) link.setAttribute('onmouseover', "vkTopicTooltip(this, "+id[1]+","+id[2]+","+(post?post[1]:null)+");");
+   if(!link.hasAttribute('onmouseover') && !hasClass(link,'bp_date') && !hasClass(link.parentNode,'bottom')){
+      link.setAttribute('onmouseover', "vkTopicTooltip(this, "+id[1]+","+id[2]+","+(post?post[1]:null)+");");
+   }
 }
 function vkTopicTooltip(el,gid,topic,post){
+    var bp_post = ((el.getAttribute('mention') || '').match(/^bp(-?\d+_\d+)$/) || {})[1];
     var post_id=post?(gid+'_'+post):(gid+'_topic'+topic);
-    var url = post?'al_board.php':'al_wall.php';
+    var url = (post || bp_post)?'al_board.php':'al_wall.php';
     stManager.add(post?'board.css':'wall.css', function() {
        showTooltip(el, {
          url: url,
-         params: extend({act: 'post_tt', post: post_id}, {}),
+         params: extend({act: 'post_tt', post: bp_post?bp_post:post_id}, {}),
          slide: 15,
          shift: [30, -3, 0],//78
          ajaxdt: 100,
          showdt: 400,
          hidedt: 200,
-         className: 'rich wall_tt'
+         className: 'rich '+(bp_post?'board_tt':'wall_tt')
        });    
     });
 }

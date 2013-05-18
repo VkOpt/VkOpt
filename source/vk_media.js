@@ -26,8 +26,10 @@ function vkPhotoViewer(){
   
   Inj.End('photoview.afterShow','vkPVAfterShow();');
   Inj.Start('photoview.canFullscreen','return true;');
+  if (getSet(71)=='y') 
+   Inj.Before('Photoview.commentTo','if (!v', 'vk_phviewer.reply_to(comm, toId, event, rf,v,replyName); if(false)' );
   
-  
+
   //*
   if (nav.strLoc.match(/photo-?\d+_\d+/))  { 
     setTimeout(function(){
@@ -44,6 +46,18 @@ vk_phviewer={
          cur.pvCommsLikes[ph.id][0]=vkModAsNode(cur.pvCommsLikes[ph.id][0],vkProcessNode);
       if(ph.tagshtml) 
          ph.tagshtml=vkModAsNode(ph.tagshtml,vkProcessNode);
+   },
+   reply_to:function(post, toId, event, rf,v,replyName){
+         console.log(post);
+         var name=(replyName[1] || '').split(',')[0];
+         if ((v||'').indexOf('id'+toId)==-1 && !checkEvent(event)){
+            var new_val=(v?v+'\r\n':'');
+            new_val+='['+(parseInt(toId)<0?'club':'id')+Math.abs(toId)+'|'+name+'], ';
+               
+            val(rf, new_val);
+            if (rf.autosize) 
+               rf.autosize.update();
+         }
    }
 }
 function vkPVAfterShow(){
@@ -1854,7 +1868,10 @@ function vkVideoViewer(){
 	vkVidVarsGet();
    Inj.End('videoview.showVideo','vkProcessNode(mvcur.mvWide);');
 	if (getSet(2)=='y') Inj.End('videoview.showVideo','setTimeout(vkVidLinks,0);');//Inj.After('videoview.showVideo','innerHTML = info;','setTimeout(vkVidLinks,0);');
-	videoview.enabledResize=function(){return true;}
+	if (getSet(71)=='y') 
+      Inj.Before('Videoview.commentTo','if (!v', 'vk_phviewer.reply_to(comm, toId, event, rf,v,replyName); if(false)' );
+    
+   videoview.enabledResize=function(){return true;}
 }
 
 function vkVideShowAdder(){
