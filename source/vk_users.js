@@ -1643,7 +1643,7 @@ function vkFavUsersList(add_button){
             if (u.online==1) onlines.push(u);
             html+=tpl.replace(/%uid/g,u.uid)
                      .replace(/%username/g,u.first_name+' '+u.last_name)
-                     .replace(/%online/g,u.online?'Online':'')
+                     .replace(/%online/g,u.online?vkOnlineInfo(u):'')
                      .replace(/%ava/g,u.photo_medium_rec)
          }
       } else {
