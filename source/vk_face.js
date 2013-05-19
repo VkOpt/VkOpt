@@ -717,8 +717,8 @@ function vkFixedMenu(){
 vk_menu={
    css:'\
       #vkMenuCFG{display:block;padding-left:20px;}\
-      .vk_menu_remove_btn{margin-left:10px; padding:0px 4px; border-radius:2px;}\
-      .vk_menu_remove_btn:hover{background:#DDD; text-decoration:none;}\
+      .vk_menu_remove_btn, .vk_ms_item a, .vk_m_item a{margin-left:10px; padding:0px 4px; border-radius:2px;}\
+      .vk_menu_remove_btn:hover, .vk_ms_item a:hover, .vk_m_item a:hover{background:#E9EDF1; text-decoration:none;}\
       .vk_m_item{padding-left:5px;}\
       .vk_ms_item{padding-left:15px;}\
    ',
@@ -741,11 +741,11 @@ vk_menu={
       var html='<h4>'+IDL('MenuCustomLinks')+'</h4>';
       for (var i=0; i<cfg.length; i++){
          var item=cfg[i];
-         html+='<span class="vk_m_item"><a href="'+item[0]+'" target="_blank">'+item[1]+'</a><a href="#" class="vk_menu_remove_btn" onclick="return vk_menu.remove('+i+')">&times;</a></span><br>';
+         html+='<div class="vk_m_item" id="vk_m_item'+i+'"><a href="'+item[0]+'" title="'+IDL('mAuE')+'" target="_blank" onclick="return vk_menu.edit('+i+');">'+item[1]+'</a><a href="#" class="vk_menu_remove_btn" onclick="return vk_menu.remove('+i+')">&times;</a></div>';
          if (item[2]){
             var sub=item[2];
             for (var j=0; j<sub.length; j++){
-               html+='<span class="vk_ms_item">- <a href="'+sub[j][0]+'" target="_blank">'+sub[j][1]+'</a><a href="#" class="vk_menu_remove_btn" onclick="return vk_menu.remove('+i+','+j+')">&times;</a></span><br>'; 
+               html+='<div class="vk_ms_item" id="vk_m_item'+i+'_'+j+'">- <a href="'+sub[j][0]+'" title="'+IDL('mAuE')+'"  target="_blank" onclick="return vk_menu.edit('+i+','+j+');">'+sub[j][1]+'</a><a href="#" class="vk_menu_remove_btn" title="'+IDL('delete')+'"  onclick="return vk_menu.remove('+i+','+j+')">&times;</a></div>'; 
             }
          }
          html+='<div id="vkm_add_frm'+i+'" class="vk_ms_item">- <span id="vkm_add_frm'+i+'"><a href="#" class="vk_menu_add_btn" onclick="return vk_menu.add('+i+')">'+IDL('Add')+'</a></div><br>'; 
@@ -763,6 +763,36 @@ vk_menu={
       }
       vkSetVal('menu_custom_links',JSON.stringify(cfg));
       vk_menu.update_cfg();
+      return false;
+   },
+   save:function(ev,idx,sub_idx){
+      ev = ev || window.event;
+      if (ev.keyCode == 10 || ev.keyCode == 13 || ev===1){
+         var cfg = vk_menu.get_custom_links();
+         var id=idx+(sub_idx!=null?'_'+sub_idx:'');
+         var link=trim(ge('vk_menu_edt_link'+id).value);
+         var title=trim(ge('vk_menu_edt_title'+id).value);
+         //alert(link+'\n'+title);
+         if (link=='' || title=='') return;
+         var edt=cfg[idx];
+         if (sub_idx!=null) edt=edt[2][sub_idx];
+         
+         edt[0]=link;
+         edt[1]=title;
+         vkSetVal('menu_custom_links',JSON.stringify(cfg));
+         vk_menu.update_cfg();
+      }
+   },
+   edit:function(idx,sub_idx){
+      var params=idx+','+(sub_idx!=null?sub_idx:'null');
+      var cfg = vk_menu.get_custom_links();
+      var id=idx+(sub_idx!=null?'_'+sub_idx:'');
+      var edt=cfg[idx];
+      if (sub_idx!=null) edt=edt[2][sub_idx];
+      var p=ge('vk_m_item'+id);
+      p.innerHTML='<div class="button_gray fl_r" onclick="vk_menu.save(1,'+params+')"><button>OK</button></div>\
+      <input type="text" placeholder="http://" id="vk_menu_edt_link'+id+'" onkeyup="vk_menu.save(event,'+params+')" value="'+edt[0]+'">\
+      <input type="text" placeholder="Title" id="vk_menu_edt_title'+id+'"  onkeyup="vk_menu.save(event,'+params+')" value="'+edt[1]+'">';
       return false;
    },
    add:function(to_idx){
