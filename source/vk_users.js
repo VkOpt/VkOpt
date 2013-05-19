@@ -890,7 +890,11 @@ function vkGetProfile(uid,callback,no_switch_button){
       var relation=profile.relation;
       var sex=profile.sex;
       var rel=IDL((sex==1?'profile_relation_f_':'profile_relation_m_')+relation);
-      rel=relation?rel:'';
+      rel=relation>0?rel:'';
+      if (profile.relation_partner){
+         var rp=profile.relation_partner;
+         rel+=' (<a href="/id'+rp.id+'">'+rp.first_name+' '+rp.last_name+'</a>)';
+      }
 
 
       
@@ -929,7 +933,10 @@ function vkGetProfile(uid,callback,no_switch_button){
       if (profile.deactivated){
          info_labels.push([(profile.deactivated || '').toUpperCase(),'&times;']);
       }
-      if (vk_DEBUG) info_labels.push([is_vkopt_user==1?"<b>YES!!!</b>":"NO =(", "Use VkOpt?"]);
+      if (vk_DEBUG){ 
+         info_labels.push([is_vkopt_user==1?"<b>YES!!!</b>":"NO =(", "Use VkOpt?"]);
+         info_labels.push([profile.has_mobile==1?"Yes":"<b>No</b>", "Has mobile"]);
+      }
       
 		var info_html='';
 		for (var i=0; i<info_labels.length;i++)
@@ -958,7 +965,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 	  else {
 		  var code = '';
         //code  += 'var activity=API.status.get({uid:"'+uid+'"});';
-		  code += 'var profile=API.getProfiles({uids:"'+uid+'",fields:"relation,sex,nickname,activity,photo_big,online,last_seen,rate,bdate,city,country,contacts,connections,education,can_post,can_write_private_message,lists"})[0];';
+		  code += 'var profile=API.getProfiles({uids:"'+uid+'",fields:"relation,sex,nickname,activity,photo_big,online,last_seen,rate,bdate,city,country,contacts,connections,education,can_post,can_write_private_message,lists,has_mobile"})[0];';
 		  code += 'var commonfr=API.friends.getMutual({target_uid:"'+uid+'"});';
 		  code += 'var commons=API.getProfiles({uids:commonfr,fields:"online"});';
         code += 'var msg_count=API.messages.getHistory({count:1,uid:'+uid+'})[0];';

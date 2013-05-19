@@ -36,7 +36,7 @@ function vkInj(file){
 	case 'audio.js':		   vkAudios();		   break;
    case 'audioplayer.js':	vkAudioPlayer();		break;
 	case 'feed.js':			vk_feed.inj(); break;
-	case 'search.js':		   vkSearch();		break;
+	case 'search.js':		   vk_search.inj();		break;
 	case 'profile.js':		vkProfile();	break;
 	case 'wall.js':			vkWall();		break;		
 	case 'page.js':			vk_pages.inj();		break;
@@ -71,6 +71,7 @@ function vkProcessNode(node){
       vk_board.get_user_posts_btn(node);
       vk_feed.process_node(node);
       vk_photos.process_node(node);
+      vk_search.process_node(node);
 		vk_plugins.processnode(node);
 	// }  catch (e) { topMsg('vkProcessNode error',2)}
 	}
@@ -92,6 +93,7 @@ function vkProcessNodeLite(node){
    vk_im.process_node(node);
    vk_feed.process_node(node);
    vk_photos.process_node(node);
+   vk_search.process_node(node);
 	vk_plugins.processnode(node,true);
    if (getSet(63)=='y') vkSmiles(node);
   }  catch (e) {
@@ -177,7 +179,7 @@ function vkOnNewLocation(startup){
          case 'video_edit' :vkVideoEditPage(); break;
 			case 'notes'   :vkNotesPage(); break;
 			case 'board'   :vkBoardPage(); break;
-			case 'search'  :vkSearchPage(); break;
+			case 'search'  :vk_search.page(); break;
          case 'fave'    :vkFavePage(); break;
          case 'im'      :vkImPage(); break;
          case 'pages'   :vkWikiPages(); break;
@@ -1309,16 +1311,6 @@ function vkModAsNode(text,func,url,q){ //url,q - for processing response
 	return txt;
 }
 
-/* SEARCH */
-function vkSearch(){
-	//Inj.Before('searcher.showMore',"ge('results')","rows=vkModAsNode(rows,vkProcessNodeLite);");
-	//Inj.Before('searcher.sendSearchReq',"ge('results')","rows=vkModAsNode(rows,vkProcessNodeLite);");
-}
-
-/* SEARCH */
-function vkSearchPage(){
-	vkAudioDelDup(true);
-}
 /* FAVE */
 function vkFavePage(){
    vkFavUsersList(true);

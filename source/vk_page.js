@@ -9,7 +9,112 @@
 	profiles, walls, graffity from file and  etc.
 */
 
+/* SEARCH */
+vk_search={
+   css:'\
+      #search_content .vk_ex_info .miniblock{ width: 310px;}\
+      #search_content .vk_ex_info .miniblock .labeled{position: static; width: 185px; }\
+      #search_content .vk_ex_info .miniblock .label{ position: static; width: 120px;}\
+   ',
+   page:function(){
+      vkAudioDelDup(true);
+      vk_search.process_node();
+   },
+   inj:function(){
+      //Inj.Before('searcher.showMore',"ge('results')","rows=vkModAsNode(rows,vkProcessNodeLite);");
+      //Inj.Before('searcher.sendSearchReq',"ge('results')","rows=vkModAsNode(rows,vkProcessNodeLite);");
+   },
+   process_node:function(node){
+      if (!window.cur || cur.module!='search' || getSet(87)!='y') return;
+      var nodes=geByClass('people_row',node);
+      var uids=[];
+      for (var i=0; i<nodes.length; i++){
+         var el=nodes[i];
+         var uid=(el.innerHTML.match(/Searcher.bigphOver\([^,\)]+\s*,\s*(\d+)\)/) || [])[1];
+         if (!uid) continue;
+         var info=geByClass('info',el)[0];
+         var ex=geByClass('vk_ex_info',el)[0];
+         if (!info || ex) continue;
+         info.appendChild(se('<div class="vk_ex_info" id="vk_exinfo_'+uid+'"><div class="labeled ">'+vkLdrMiniImg+'</div></div>'));
+         uids.push(uid);
+      }
+      vk_search.load_ex_info(uids);
+   },
+   ex_info_cfg:function(){
+      var p=ge('search_filters');
+      if (!p || ge('ex_info_cfg')) return;
+      
 
+   },
+   load_ex_info:function(uids,cnt){
+      if (!uids || uids.length==0) return;
+      if (!ge('vk_exinfo_'+uids[0])){
+         if (cnt && cnt>30) return;
+         setTimeout(function(){vk_search.load_ex_info(uids,(cnt||0)+1)},100);
+         return;
+      }
+      var u={};
+      for (var i=0; i<uids.length; i++)
+         u[''+uids[i]]=1;
+      
+      dApi.call('users.get',{uids:uids.join(','),fields:'screen_name,sex,bdate,contacts,connections,relation'},{
+         ok:function(r){
+            var data=r.response;
+            for (var i=0; i<data.length;i++){
+               var p=data[i];
+               var el=ge('vk_exinfo_'+p.uid) || ge('vk_exinfo_'+p.screen_name);
+               if (!el) continue;
+               u[''+p.uid]=0;
+               u[''+p.screen_name]=0;
+               el.innerHTML=vk_search.parse_info(p);//JSON.stringify(p);
+               vkProccessLinks(el);
+            }
+            for (var key in u)
+               if (u[key] && ge('vk_exinfo_'+key)) 
+                  ge('vk_exinfo_'+key).innerHTML='';
+            
+         },
+         error:function(){}
+      });
+      //ge('vk_exinfo_'+uid)
+   },
+   parse_info:function(profile){
+      var sex=profile.sex;
+      var relation=profile.relation;
+      var rel=IDL((sex==1?'profile_relation_f_':'profile_relation_m_')+relation);
+      rel=relation>0?rel:'';
+      if (profile.relation_partner){
+         var rp=profile.relation_partner;
+         rel+=' (<a href="/id'+rp.id+'">'+rp.first_name+' '+rp.last_name+'</a>)';
+      }
+      
+      var bdate=(profile.bdate || '').split('.');
+      var bday_info='';
+      if(bdate.length>1)
+            bday_info = vkProcessBirthday(bdate[0],bdate[1],bdate[2]).join(', ');
+      if (profile.bdate)
+         bday_info = profile.bdate + " (" + bday_info + ")";
+      else 
+         bday_info = null;
+         
+      var info_labels=[
+			[bday_info, IDL('Bithday')],
+         //[(sex==1?Sex_fm:Sex_m), IDL('Sex')],
+         [rel,IDL('Relation')],
+			[profile.mobile_phone, IDL('Mob_tel')],
+			[profile.home_phone, IDL('Home_tel')],
+         [profile.skype, IDL('Skype')],
+		];
+      var info_html='';
+		for (var i=0; i<info_labels.length;i++)
+			if (info_labels[i][0] && info_labels[i][0]!='0')
+			info_html+='<div class="clear_fix miniblock">\n\
+					  <div class="label fl_l">'+info_labels[i][1]+'</div>\n\
+					  <div class="labeled fl_l">'+info_labels[i][0]+'</div>\n\
+					</div>';
+      return info_html;
+   }
+}
 
 /* PROFILE */
 function vkProfilePage(){
