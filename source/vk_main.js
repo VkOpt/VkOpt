@@ -1373,7 +1373,7 @@ function vkMsgStats(){
 }
 
 function vkAddDeleteLink(){
-	if (!ge('vk_clean_msg') && ge('mail_tabs')){
+	if (!ge('vk_clean_msg') && ge('mail_tabs') && cur.section!="spam"){
 		//if (!(cur.section=="inbox" || cur.section=="outbox")) return;
 		var is_inbox=(cur.section=="inbox");
 		var caption=is_inbox?IDL('msgdelinbox'):IDL('msgdeloutbox');

@@ -2652,10 +2652,10 @@ function vk_tag_api(section,url,app_id){
          return {count:like.count,users:users,uids:like.users};\
          ';
          //api_for_dislikes
-         dApi.call('execute',{code:code},function(r,t){
+         api4dislike.call('execute',{code:code},function(r,t){
             if (callback) callback(r.response);
          });
-         //dApi.call('likes.getList',{type:'sitepage', page_url:url,owner_id:t.app},console.log)
+         //api4dislike.call('likes.getList',{type:'sitepage', page_url:url,owner_id:t.app},console.log)
       },
       get_tags:function(obj_ids,callback){
          var tmp=[];
@@ -2670,7 +2670,7 @@ function vk_tag_api(section,url,app_id){
          var retry_count=0;
          var get=function(){
             //api_for_dislikes
-            dApi.call('execute',{code:code},{
+            api4dislike.call('execute',{code:code},{
                   ok:function(r,t){
                      if (callback) callback(r.response);
                   },

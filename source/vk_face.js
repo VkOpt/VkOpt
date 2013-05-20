@@ -770,7 +770,7 @@ vk_menu={
       if (ev.keyCode == 10 || ev.keyCode == 13 || ev===1){
          var cfg = vk_menu.get_custom_links();
          var id=idx+(sub_idx!=null?'_'+sub_idx:'');
-         var link=trim(ge('vk_menu_edt_link'+id).value);
+         var link=vk_menu.check_link(ge('vk_menu_edt_link'+id).value);
          var title=trim(ge('vk_menu_edt_title'+id).value);
          //alert(link+'\n'+title);
          if (link=='' || title=='') return;
@@ -801,14 +801,20 @@ vk_menu={
       p.innerHTML='<div class="button_gray fl_r" onclick="vk_menu.add_checkkey(1,'+to_idx+')"><button>OK</button></div><input type="text" placeholder="http://" id="vk_menu_add_link'+id+'" onkeyup="vk_menu.add_checkkey(event,'+to_idx+')" value=""><input type="text" placeholder="Title" id="vk_menu_add_title'+id+'"  onkeyup="vk_menu.add_checkkey(event,'+to_idx+')" value="">';
       return false;
    },
+   check_link:function(link){
+      link=trim(link);
+      if (link=='') return;
+      if (link.match(/^[a-z0-9_-]+\.[a-z]{2,7}(\/|$)/)) link='http://'+link;
+      return  link;
+   },
    add_checkkey:function(ev,to_id){
       var id=(to_id!=null?to_id:'');
       
       ev = ev || window.event;
       if (ev.keyCode == 10 || ev.keyCode == 13 || ev===1){
-         var link=trim(ge('vk_menu_add_link'+id).value);
+         var link=vk_menu.check_link(ge('vk_menu_add_link'+id).value);//trim(ge('vk_menu_add_link'+id).value);
          var title=trim(ge('vk_menu_add_title'+id).value);
-         if (link=='' || title=='') return;
+         if (link=='' || title=='' || link===false) return;
          var p=ge('vkm_add_frm'+id);
          p.innerHTML='';
          var cfg = vk_menu.get_custom_links();
