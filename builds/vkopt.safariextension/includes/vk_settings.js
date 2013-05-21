@@ -620,7 +620,8 @@ function vkInitSettings(){
       {id:50, text:IDL("seFavOnline")+'<span style="padding-left:10px;">'+vkCheckboxSetting(57,IDL("seOnRightPart"))+'</span>',info:'infoUseNetTrafic'},
       {id:51, text:IDL("seFavToTopIm")},
       {id:52, text:IDL("seFaveOnline"),info:'infoUseNetTrafic'},
-      {id:72, text:IDL("seFriendCatsOnProfile")}
+      {id:72, text:IDL("seFriendCatsOnProfile")},
+      {id:87, text:IDL("seSearchExInfo"),info:'infoUseNetTrafic'}
       //{id:65, text:IDL("seShowLastActivity"),info:'infoUseNetTrafic'}
     ],
 
@@ -667,7 +668,7 @@ function vkInitSettings(){
       {id:70, text:IDL("seHideBigLike")},
       {id:71, text:IDL("seWallReplyMod")},
       {id:74, text:IDL("seLeaveGroupLinks")},
-      {id:79, text:vk_settings.dislikes_icons()+IDL("seDislikes")},
+      {id:79, text:vk_settings.dislikes_icons()+IDL("seDislikes"),info:'infoUseNetTrafic'},
       {id:86, text:IDL("seDisableWallWikiBox")}
       //{id:64, text:IDL("seToTopOld")}
     ],
@@ -693,7 +694,7 @@ function vkInitSettings(){
    ]
   };
 
-	//LAST 86
+	//LAST 87
 	/*
       vkoptSets['advanced']=[
          'vk_upd_menu_timeout','vkMenuHideTimeout','CHECK_FAV_ONLINE_DELAY',

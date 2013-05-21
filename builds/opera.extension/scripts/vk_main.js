@@ -36,10 +36,10 @@ function vkInj(file){
 	case 'audio.js':		   vkAudios();		   break;
    case 'audioplayer.js':	vkAudioPlayer();		break;
 	case 'feed.js':			vk_feed.inj(); break;
-	case 'search.js':		   vkSearch();		break;
+	case 'search.js':		   vk_search.inj();		break;
 	case 'profile.js':		vkProfile();	break;
 	case 'wall.js':			vkWall();		break;		
-	case 'page.js':			vkPage();		break;
+	case 'page.js':			vk_pages.inj();		break;
 	case 'friends.js':		vkFriends();	break;
 	case 'notifier.js': 	   vkNotifier(); 	break;
 	case 'common.js': 		vkCommon(); 	break;
@@ -71,6 +71,7 @@ function vkProcessNode(node){
       vk_board.get_user_posts_btn(node);
       vk_feed.process_node(node);
       vk_photos.process_node(node);
+      vk_search.process_node(node);
 		vk_plugins.processnode(node);
 	// }  catch (e) { topMsg('vkProcessNode error',2)}
 	}
@@ -92,6 +93,7 @@ function vkProcessNodeLite(node){
    vk_im.process_node(node);
    vk_feed.process_node(node);
    vk_photos.process_node(node);
+   vk_search.process_node(node);
 	vk_plugins.processnode(node,true);
    if (getSet(63)=='y') vkSmiles(node);
   }  catch (e) {
@@ -111,16 +113,35 @@ function vkOnStorage(id,cmd){
 	}
 }
 function vkOnNewLocation(startup){
-	if (!(window.nav && nav.objLoc)) return;
+	//console.log('hav hook', window.nav);
+   if (!(window.nav && nav.objLoc)) return;
    if (!cur.module){
       if (cur.gid && nav.objLoc['act']=='blacklist' && (cur.moreParams || {}).act=="blacklist"){
          cur.module='groups_edit';
-      }else if (nav.objLoc[0]=='settings'){
+      }else if (nav.objLoc[0].match(/page-?\d+_\d+/)){
+         var obj=nav.objLoc[0].match(/page(-?\d+)_(\d+)/)
+         cur.module='pages';
+         if (!cur.gid) cur.gid=Math.abs(obj[1]);
+         if (!cur.oid) cur.oid=obj[1];
+         if (!cur.pid) cur.pid=obj[2];
+         
+      } else {
+         switch(nav.objLoc[0]){
+            case 'settings':  cur.module='settings';          break;
+            case 'pages':      cur.module='pages';         break;
+            default:          setTimeout(vkOnNewLocation,10); return;               
+         }
+      }
+
+      /*
+      if (nav.objLoc[0]=='settings'){
          cur.module='settings';
+      } else if (nav.objLoc[0]=='page'){
+         cur.module='wiki_page';
       } else {
          setTimeout(vkOnNewLocation,10);
          return;
-      }
+      }*/
    }
 	vklog('Navigate:'+print_r(nav.objLoc).replace(/\n/g,','));
 	var tstart=unixtime();
@@ -158,7 +179,7 @@ function vkOnNewLocation(startup){
          case 'video_edit' :vkVideoEditPage(); break;
 			case 'notes'   :vkNotesPage(); break;
 			case 'board'   :vkBoardPage(); break;
-			case 'search'  :vkSearchPage(); break;
+			case 'search'  :vk_search.page(); break;
          case 'fave'    :vkFavePage(); break;
          case 'im'      :vkImPage(); break;
          case 'pages'   :vkWikiPages(); break;
@@ -214,7 +235,7 @@ function VkOptMainInit(){
   vkExtendLang({
 
   });//*/
-  vkStyles();
+  vkStyles();  
   if (!ge('content')) return;
   if (getSet(69)=='n') vkopt_disabled_ad=true;
   if (getSet(31)=='y' || getSet(35)=='y') vkMakeRightBar();
@@ -223,6 +244,9 @@ function VkOptMainInit(){
   if (getSet(78)=='n') CUT_VKOPT_BRACKET=true;
   vkBroadcast.Init(vkOnStorage);
   window.vkopt_ready=true;
+  
+  vkFixSmileMap();
+ 
   vk_plugins.init();
   addEvent(document, 'mouseup', vkOnDocumentClick);
   if (location.href.match('act=vkopt'))	vkShowSettings();
@@ -234,7 +258,7 @@ function VkOptMainInit(){
   vkProccessLinks();
   if (ge('left_blocks')) vkProccessLinks(ge('left_blocks'));
   vk_user_init();
-  vkFixedMenu();
+  setTimeout(vkFixedMenu,200);
   vkMenu();
   vkOnNewLocation(true);//Inj.Wait('window.nav', vkOnNewLocation,50);  
   vkSmiles();
@@ -427,7 +451,13 @@ function vkGetWikiCode(pid,gid){
 	//var dloc=document.location.href;
 	//var gid=dloc.match(/o=-(\d+)/);
 	//gid=gid?gid[1]:null;
-	dApi.call('pages.get',{pid:pid,gid:gid},function(r){
+   var params={gid:gid}
+   if ((pid+"").match(/^\d+$/)){
+      params['pid']=pid;
+   } else {
+      params['title']=pid;
+   }
+	dApi.call('pages.get',params,function(r){
       var data=r.response;
       if (!data.source) {
          alert('Nothing...');
@@ -436,9 +466,7 @@ function vkGetWikiCode(pid,gid){
       var code=(data.source || "").replace(/<br>/gi,'\r\n');
       var box=vkAlertBox('Wiki-code','<h2>'+data.title+'</h2><textarea id="vk_wikicode_area" style="width:460px; height:300px;">'+code+'</textarea>');
       box.setOptions({width:'500px'});
-      //ge('vk_wikicode_area').value=data.source;
    });
-   
    return false;
 }
 
@@ -609,7 +637,8 @@ function vkProcessResponse(answer,url,q){
   if (url=='/photos.php' && q.act=="a_choose_photo_box") vkPhChooseProcess(answer,url,q);
   if (url=='/al_photos.php' && q.act=="choose_photo") vkPhChooseProcess(answer,url,q);
   if (url=='/video.php' && q.act=="a_choose_video_box") vkVidChooseProcess(answer,url,q);
-  if ((url=='/audio' || url=='/audio.php') && q.act=="a_choose_audio_box") vkAudioChooseProcess(answer,url,q);
+  if (url=='/al_video.php' && q.act=="a_choose_video_box") vkVidChooseProcess(answer,url,q);
+  if ((url=='/audio' || url=='/audio.php' || url=='/al_audio.php') && q.act=="a_choose_audio_box") vkAudioChooseProcess(answer,url,q);
   if (url=='/al_friends.php' && q.act=='add_box') answer[1]=answer[1].replace('"friends_add_block" style="display: none;"','"friends_add_block"');
   if(url=='/al_groups.php' && q.act=='people_silent') {
       if(answer[0].members)  answer[0].members = vkModAsNode(answer[0].members,vkProcessNodeLite,url,q);
@@ -664,6 +693,20 @@ vk_ch_media={
             "sizes": sizes
          }
       });
+   },
+   video:function(vid){
+      cur.chooseMedia('video', vid, {
+         "thumb": "http://vk.com/images/video_s.png",
+         "editable": {
+            "sizes": {
+               "s": ["http://vk.com/images/video_s.png", 130, 98],
+               "m": ["http://vk.com/images/video_m.png", 160, 120],
+               "l": ["http://vk.com/images/video_l.png", 240]
+            },
+            "duration": 0
+         }
+      });
+   
    }
 }
 function vkPhChooseProcess(answer,url,q){
@@ -731,7 +774,8 @@ function vkVidChooseProcess(answer,url,q){
     var val=ge('vk_link_to_video').value.match(/video(-?\d+)_(\d+)/);
     lockButton(btn);
     if (val){
-      cur.chooseMedia('video', val[1]+'_'+val[2], 'http://vk.com/images/video_s.png');
+      //cur.chooseMedia('video', val[1]+'_'+val[2], 'http://vk.com/images/video_s.png');
+      vk_ch_media.video(val[1]+'_'+val[2]);
     } else {
       alert(IDL('IncorrectVideoLink'))
     }
@@ -739,7 +783,8 @@ function vkVidChooseProcess(answer,url,q){
   };
   if (answer[1].indexOf('vk_link_to_video')==-1){
   var div=vkCe('div',{},answer[1]);
-  var ref=geByClass('summary',div)[0] || geByClass('search_bar',div)[0];
+  console.log(answer);
+  var ref=geByClass('summary',div)[0] || geByClass('search_bar',div)[0] || geByClass('choose_search_cont',div)[0];
    
    var p=geByClass('choose_close',div)[0];
    if (p && !p.innerHTML.match('choose_album')){
@@ -1181,7 +1226,9 @@ function vkNotifier(){
 		});
       vkNotifyCustomSInit();
 	}
-   if (getSet(51)=='y') Inj.Replace('FastChat.clistRender','html.push(','vkFavChekUserAndToArray(mid,html,');
+   if (getSet(51)=='y'){ 
+      vk_fav.inj_notifier();
+   }
    
    
    //Inj.Before('FastChat.clistRender','if (lastMid','html.sort(vkFastChatSortUsers);');
@@ -1264,20 +1311,19 @@ function vkModAsNode(text,func,url,q){ //url,q - for processing response
 	return txt;
 }
 
-/* SEARCH */
-function vkSearch(){
-	//Inj.Before('searcher.showMore',"ge('results')","rows=vkModAsNode(rows,vkProcessNodeLite);");
-	//Inj.Before('searcher.sendSearchReq',"ge('results')","rows=vkModAsNode(rows,vkProcessNodeLite);");
-}
-
-/* SEARCH */
-function vkSearchPage(){
-	vkAudioDelDup(true);
-}
 /* FAVE */
 function vkFavePage(){
    vkFavUsersList(true);
    vkFavPhotosMenu();
+   if (getSet(17)=='y' && nav.objLoc['section']=='users'){
+      setTimeout(function(){
+         var el=ge('users_content');
+         if (el.qsorter){ 
+            el.qsorter.destroy();
+            qsorter.init('users_content', {onReorder: Fave.reorderFave, xsize: 9, width: 67, height: 110});
+         }
+      },10);
+   }
 }
 
 
@@ -1327,7 +1373,7 @@ function vkMsgStats(){
 }
 
 function vkAddDeleteLink(){
-	if (!ge('vk_clean_msg') && ge('mail_tabs')){
+	if (!ge('vk_clean_msg') && ge('mail_tabs') && cur.section!="spam"){
 		//if (!(cur.section=="inbox" || cur.section=="outbox")) return;
 		var is_inbox=(cur.section=="inbox");
 		var caption=is_inbox?IDL('msgdelinbox'):IDL('msgdeloutbox');
@@ -1909,24 +1955,32 @@ function vkBoardPage(){
 function vkProcessTopicLink(link){
    var href=link.getAttribute('href');
    if (!href) return;
+   var ment=link.getAttribute('mention') || "";
+   if (ment && ment!=''){
+      link.setAttribute('onmouseover', "vkTopicTooltip(this);");
+      return;
+   }
    var id=href.match(/topic(-?\d+)_(\d+)/);
    var post=href.match(/post=(\d+)/);
    if (!id) return;
-   if(!link.hasAttribute('onmouseover') && !hasClass(link,'bp_date') && !hasClass(link.parentNode,'bottom')) link.setAttribute('onmouseover', "vkTopicTooltip(this, "+id[1]+","+id[2]+","+(post?post[1]:null)+");");
+   if(!link.hasAttribute('onmouseover') && !hasClass(link,'bp_date') && !hasClass(link.parentNode,'bottom')){
+      link.setAttribute('onmouseover', "vkTopicTooltip(this, "+id[1]+","+id[2]+","+(post?post[1]:null)+");");
+   }
 }
 function vkTopicTooltip(el,gid,topic,post){
+    var bp_post = ((el.getAttribute('mention') || '').match(/^bp(-?\d+_\d+)$/) || {})[1];
     var post_id=post?(gid+'_'+post):(gid+'_topic'+topic);
-    var url = post?'al_board.php':'al_wall.php';
+    var url = (post || bp_post)?'al_board.php':'al_wall.php';
     stManager.add(post?'board.css':'wall.css', function() {
        showTooltip(el, {
          url: url,
-         params: extend({act: 'post_tt', post: post_id}, {}),
+         params: extend({act: 'post_tt', post: bp_post?bp_post:post_id}, {}),
          slide: 15,
          shift: [30, -3, 0],//78
          ajaxdt: 100,
          showdt: 400,
          hidedt: 200,
-         className: 'rich wall_tt'
+         className: 'rich '+(bp_post?'board_tt':'wall_tt')
        });    
     });
 }

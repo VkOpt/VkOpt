@@ -385,7 +385,7 @@ function ExGroupItems(gid,el){
 	uitems+=mkExItem(i++,'<a href="/video?gid=%GID">'+IDL('clVi')+'</a>');
    uitems+=mkExItem(i++,'<a href="/audio?gid=%GID">'+IDL('clAu')+'</a>');
 	uitems+=mkExItem(i++,'<a href="/photos-%GID">'+IDL('clPhBrowse')+'</a>');
-	uitems+=mkExItem(i++,'<a href="/apps?gid=%GID">'+IDL('clAp')+'</a>');
+	uitems+=mkExItem(i++,'<a href="/apps?act=apps&gid=%GID">'+IDL('clAp')+'</a>');
 	uitems+=mkExItem(i++,'<a href="/search?c[section]=people&c[group]=%GID">'+IDL('clGu')+'</a>');
    uitems+=mkExItem(i++,'<a href="/club%GID?act=edit">'+IDL('mGrAdmin')+'</a>');
 	return uitems;
@@ -890,7 +890,11 @@ function vkGetProfile(uid,callback,no_switch_button){
       var relation=profile.relation;
       var sex=profile.sex;
       var rel=IDL((sex==1?'profile_relation_f_':'profile_relation_m_')+relation);
-      rel=relation?rel:'';
+      rel=relation>0?rel:'';
+      if (profile.relation_partner){
+         var rp=profile.relation_partner;
+         rel+=' (<a href="/id'+rp.id+'">'+rp.first_name+' '+rp.last_name+'</a>)';
+      }
 
 
       
@@ -926,7 +930,13 @@ function vkGetProfile(uid,callback,no_switch_button){
 			[profile.faculty_name,IDL('Faculty')],
 			[profile.graduation,IDL('Graduation')]
 		];
-      if (vk_DEBUG) info_labels.push([is_vkopt_user==1?"<b>YES!!!</b>":"NO =(", "Use VkOpt?"]);
+      if (profile.deactivated){
+         info_labels.push([(profile.deactivated || '').toUpperCase(),'&times;']);
+      }
+      if (vk_DEBUG){ 
+         info_labels.push([is_vkopt_user==1?"<b>YES!!!</b>":"NO =(", "Use VkOpt?"]);
+         info_labels.push([profile.has_mobile==1?"Yes":"<b>No</b>", "Has mobile"]);
+      }
       
 		var info_html='';
 		for (var i=0; i<info_labels.length;i++)
@@ -955,7 +965,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 	  else {
 		  var code = '';
         //code  += 'var activity=API.status.get({uid:"'+uid+'"});';
-		  code += 'var profile=API.getProfiles({uids:"'+uid+'",fields:"relation,sex,nickname,activity,photo_big,online,last_seen,rate,bdate,city,country,contacts,connections,education,can_post,can_write_private_message,lists"})[0];';
+		  code += 'var profile=API.getProfiles({uids:"'+uid+'",fields:"relation,sex,nickname,activity,photo_big,online,last_seen,rate,bdate,city,country,contacts,connections,education,can_post,can_write_private_message,lists,has_mobile"})[0];';
 		  code += 'var commonfr=API.friends.getMutual({target_uid:"'+uid+'"});';
 		  code += 'var commons=API.getProfiles({uids:commonfr,fields:"online"});';
         code += 'var msg_count=API.messages.getHistory({count:1,uid:'+uid+'})[0];';
@@ -1427,6 +1437,7 @@ function vkFavAddDel(uid,is_del){
    if (ge('vk_fav_users_cont')) vkFavUsersList();
 }
 
+
 function vkFavChekUserAndToArray(mid,array,item){
    /*var umenu='<a id="pup'+mid+'_0" class="vk_usermenu_btn" onclick="pupShow(event,\''+mid+'_0\',\''+mid+'\',this); return false;" onmousedown="event.cancelBubble = true;">'+USERMENU_SYMBOL+'</a>';
    
@@ -1437,10 +1448,43 @@ function vkFavChekUserAndToArray(mid,array,item){
    if (getSet(8)=='y') item=item.replace('<img','<img onmouseover="vkPopupAvatar(\''+mid+'\',this);" onmouseout="vkHidePhoto();"');
    if (vkIsFavUser(mid)){ 
       item=item.replace('class="fc_contact','class="fc_contact vk_faved_user')
-      array.splice(0,0,item);
+      //array.splice(0,0,item);
    }
-   else array.push(item);
+   //else  array.push(item);
+   
+   array.push(item);
 }
+
+vk_fav={
+   inj_notifier:function(){
+      Inj.Start('FastChat.clistRender','vk_fav.sort_users();');
+      Inj.Replace('FastChat.clistRender','html.push(','vkFavChekUserAndToArray(mid,html,');
+   },
+   sort_users:function(){
+      var list={};
+      var faved={};
+      var new_list={};
+      if (!window.curFastChat || !curFastChat.friends) return;
+      each(curFastChat.friends, function (k) {
+         var mid = intval(k);
+         if (vkIsFavUser(mid)) 
+            faved[k]=curFastChat.friends[k];
+         else 
+            list[k]=curFastChat.friends[k];
+      });
+      
+      each(faved, function (k) {
+         new_list[k]=faved[k];
+      });
+      each(list, function (k) {
+         new_list[k]=list[k];
+      });
+      
+      curFastChat.friends=new_list;
+      
+   }
+}
+
 
 function vkFastChatSortUsers(a,b){
    var x=0;
@@ -1599,7 +1643,7 @@ function vkFavUsersList(add_button){
             if (u.online==1) onlines.push(u);
             html+=tpl.replace(/%uid/g,u.uid)
                      .replace(/%username/g,u.first_name+' '+u.last_name)
-                     .replace(/%online/g,u.online?'Online':'')
+                     .replace(/%online/g,u.online?vkOnlineInfo(u):'')
                      .replace(/%ava/g,u.photo_medium_rec)
          }
       } else {

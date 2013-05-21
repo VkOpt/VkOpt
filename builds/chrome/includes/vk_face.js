@@ -314,6 +314,7 @@ function vkStyles(){
       .choose_audio_row .audio_title_wrap { width: 350px !important; }\
 		.post_media .audio_title_wrap { width: 250px !important;}\
       \
+      #audio.new .wall_module .audio .title_wrap { width: 288px !important; }\
       #audio.new .audio .info { width: 370px !important;}\
       #pad_playlist .audio .info {width: 435px !important;}\
       #pad_playlist .audio .title_wrap {width: auto !important; }\
@@ -346,7 +347,7 @@ function vkStyles(){
    ";
 	  //extend switch color in viewer
 	if (MoreDarkPV=='y') main_css+="\
-		.pv_dark .pv_cont #pv_box,.pv_dark .info, .pv_dark .pv_comment,.pv_dark #pv_actions .left, .pv_dark #pv_actions .right{background:#000 !important; color: #FFF !important;} \
+		.pv_dark .pv_cont #pv_box,.pv_dark .info, .pv_dark .pv_comment,.pv_dark #pv_actions .left, .pv_dark #pv_actions .right{background-color:#000 !important; color: #FFF !important;} \
 		.pv_dark .pv_cont #pv_box DIV{border-color:#444 !important;}\
 		.pv_dark .pv_cont SPAN{color:#DDD !important;}\
 		.pv_dark .pv_cont A{color:#888 !important;}\
@@ -561,6 +562,7 @@ function vkStyles(){
    main_css+=vk_feed.css;
    main_css+=vk_skinman.css;
    main_css+=vk_groups.css;
+   main_css+=vk_search.css;
    main_css+=vk_videos.css();
    main_css+=vk_im.css();
 	main_css+=vk_plugins.css();
@@ -606,7 +608,7 @@ function vkMakeRightBar(){
 	var page_layout=ge('page_layout');
 	if (!page_layout) return;
    var el=ge('pageHeader') || ge('pageHeader1') || ge('page_header');
-	var h=getSize(el,true)[1]+getXY(el)[1];
+	var h=getSize(el,true)[1]+getXY(el,true)[1];
    
 	vkaddcss('\
       #side_bar {width:130px !important;} \
@@ -687,7 +689,7 @@ function vkFixedMenu(){
 	var el=ge('pageHeader') || ge('pageHeader1') || ge('page_header');
 	var side_bar=(ge('sideBar') || ge('side_bar'));
 	var right_bar=ge('right_bar');
-	var h=getSize(el,true)[1]+getXY(el)[1];
+	var h=getSize(el,true)[1]+getXY(el,true)[1];
 	vkaddcss("#sideBar,#side_bar"+(cfg_r=='y'?", #right_bar":'')+"{ position: fixed;z-index: 101; top: "+h+"px }\
          .audio_fixed_nav #side_bar, .im_fixed_nav #side_bar"
          +(cfg_r=='y'?", .audio_fixed_nav #right_bar, .im_fixed_nav #right_bar":'')+"{top: "+h+"px !important; }\
@@ -715,8 +717,8 @@ function vkFixedMenu(){
 vk_menu={
    css:'\
       #vkMenuCFG{display:block;padding-left:20px;}\
-      .vk_menu_remove_btn{margin-left:10px; padding:0px 4px; border-radius:2px;}\
-      .vk_menu_remove_btn:hover{background:#DDD; text-decoration:none;}\
+      .vk_menu_remove_btn, .vk_ms_item a, .vk_m_item a{margin-left:10px; padding:0px 4px; border-radius:2px;}\
+      .vk_menu_remove_btn:hover, .vk_ms_item a:hover, .vk_m_item a:hover{background:#E9EDF1; text-decoration:none;}\
       .vk_m_item{padding-left:5px;}\
       .vk_ms_item{padding-left:15px;}\
    ',
@@ -739,11 +741,11 @@ vk_menu={
       var html='<h4>'+IDL('MenuCustomLinks')+'</h4>';
       for (var i=0; i<cfg.length; i++){
          var item=cfg[i];
-         html+='<span class="vk_m_item"><a href="'+item[0]+'" target="_blank">'+item[1]+'</a><a href="#" class="vk_menu_remove_btn" onclick="return vk_menu.remove('+i+')">&times;</a></span><br>';
+         html+='<div class="vk_m_item" id="vk_m_item'+i+'"><a href="'+item[0]+'" title="'+IDL('mAuE')+'" target="_blank" onclick="return vk_menu.edit('+i+');">'+item[1]+'</a><a href="#" class="vk_menu_remove_btn" onclick="return vk_menu.remove('+i+')">&times;</a></div>';
          if (item[2]){
             var sub=item[2];
             for (var j=0; j<sub.length; j++){
-               html+='<span class="vk_ms_item">- <a href="'+sub[j][0]+'" target="_blank">'+sub[j][1]+'</a><a href="#" class="vk_menu_remove_btn" onclick="return vk_menu.remove('+i+','+j+')">&times;</a></span><br>'; 
+               html+='<div class="vk_ms_item" id="vk_m_item'+i+'_'+j+'">- <a href="'+sub[j][0]+'" title="'+IDL('mAuE')+'"  target="_blank" onclick="return vk_menu.edit('+i+','+j+');">'+sub[j][1]+'</a><a href="#" class="vk_menu_remove_btn" title="'+IDL('delete')+'"  onclick="return vk_menu.remove('+i+','+j+')">&times;</a></div>'; 
             }
          }
          html+='<div id="vkm_add_frm'+i+'" class="vk_ms_item">- <span id="vkm_add_frm'+i+'"><a href="#" class="vk_menu_add_btn" onclick="return vk_menu.add('+i+')">'+IDL('Add')+'</a></div><br>'; 
@@ -763,20 +765,56 @@ vk_menu={
       vk_menu.update_cfg();
       return false;
    },
+   save:function(ev,idx,sub_idx){
+      ev = ev || window.event;
+      if (ev.keyCode == 10 || ev.keyCode == 13 || ev===1){
+         var cfg = vk_menu.get_custom_links();
+         var id=idx+(sub_idx!=null?'_'+sub_idx:'');
+         var link=vk_menu.check_link(ge('vk_menu_edt_link'+id).value);
+         var title=trim(ge('vk_menu_edt_title'+id).value);
+         //alert(link+'\n'+title);
+         if (link=='' || title=='') return;
+         var edt=cfg[idx];
+         if (sub_idx!=null) edt=edt[2][sub_idx];
+         
+         edt[0]=link;
+         edt[1]=title;
+         vkSetVal('menu_custom_links',JSON.stringify(cfg));
+         vk_menu.update_cfg();
+      }
+   },
+   edit:function(idx,sub_idx){
+      var params=idx+','+(sub_idx!=null?sub_idx:'null');
+      var cfg = vk_menu.get_custom_links();
+      var id=idx+(sub_idx!=null?'_'+sub_idx:'');
+      var edt=cfg[idx];
+      if (sub_idx!=null) edt=edt[2][sub_idx];
+      var p=ge('vk_m_item'+id);
+      p.innerHTML='<div class="button_gray fl_r" onclick="vk_menu.save(1,'+params+')"><button>OK</button></div>\
+      <input type="text" placeholder="http://" id="vk_menu_edt_link'+id+'" onkeyup="vk_menu.save(event,'+params+')" value="'+edt[0]+'">\
+      <input type="text" placeholder="Title" id="vk_menu_edt_title'+id+'"  onkeyup="vk_menu.save(event,'+params+')" value="'+edt[1]+'">';
+      return false;
+   },
    add:function(to_idx){
       var id=(to_idx!=null?to_idx:'');
       var p=ge('vkm_add_frm'+id);
       p.innerHTML='<div class="button_gray fl_r" onclick="vk_menu.add_checkkey(1,'+to_idx+')"><button>OK</button></div><input type="text" placeholder="http://" id="vk_menu_add_link'+id+'" onkeyup="vk_menu.add_checkkey(event,'+to_idx+')" value=""><input type="text" placeholder="Title" id="vk_menu_add_title'+id+'"  onkeyup="vk_menu.add_checkkey(event,'+to_idx+')" value="">';
       return false;
    },
+   check_link:function(link){
+      link=trim(link);
+      if (link=='') return;
+      if (link.match(/^[a-z0-9_-]+\.[a-z]{2,7}(\/|$)/)) link='http://'+link;
+      return  link;
+   },
    add_checkkey:function(ev,to_id){
       var id=(to_id!=null?to_id:'');
       
       ev = ev || window.event;
       if (ev.keyCode == 10 || ev.keyCode == 13 || ev===1){
-         var link=trim(ge('vk_menu_add_link'+id).value);
+         var link=vk_menu.check_link(ge('vk_menu_add_link'+id).value);//trim(ge('vk_menu_add_link'+id).value);
          var title=trim(ge('vk_menu_add_title'+id).value);
-         if (link=='' || title=='') return;
+         if (link=='' || title=='' || link===false) return;
          var p=ge('vkm_add_frm'+id);
          p.innerHTML='';
          var cfg = vk_menu.get_custom_links();
@@ -878,10 +916,10 @@ function vkMenu(){//vkExLeftMenu
  var ExMenu={ 
     //*
     'profile':[
-      ['gifts'+vkmid,IDL('clGi')],
-      [['fans.php?act=fans&mid='+vkmid,"return !showTabbedBox('al_fans.php', {act: 'show_fans_box', oid: "+vkmid+"}, {cache: 1}, event);"],IDL('clFans')],
-      [['fans.php?act=idols',"return !showTabbedBox('al_fans.php', {act: 'show_publics_box', oid: "+vkmid+"}, {cache: 1}, event);"],IDL('clSubscriptions')],
-      [['stats?mid='+vkmid,'return;'],IDL('Stats')]
+      ['/gifts'+vkmid,IDL('clGi')],
+      [['/fans.php?act=fans&mid='+vkmid,"return !showTabbedBox('al_fans.php', {act: 'show_fans_box', oid: "+vkmid+"}, {cache: 1}, event);"],IDL('clFans')],
+      [['/fans.php?act=idols',"return !showTabbedBox('al_fans.php', {act: 'show_publics_box', oid: "+vkmid+"}, {cache: 1}, event);"],IDL('clSubscriptions')],
+      [['/stats?mid='+vkmid,'return;'],IDL('Stats')]
     ],//*/
     /*
     'edit':[
@@ -889,66 +927,66 @@ function vkMenu(){//vkExLeftMenu
       ['?','qazqaz']
     ],//*/
     'friends':[
-      ['friends?section=all',IDL("mFrA")],
-      ['friends?section=online',IDL("mFrO")],
-      ['friends?section=recent',IDL("mFrNew")],
-      ['friends?section=suggestions',IDL("mFrSug")],
-      ['friends?section=requests',IDL("mFrR"),true],
-      ['friends?section=all_requests',IDL("mFrAllReq")],
-      ['friends?section=out_requests',IDL("mFrOutReq")],
+      ['/friends?section=all',IDL("mFrA")],
+      ['/friends?section=online',IDL("mFrO")],
+      ['/friends?section=recent',IDL("mFrNew")],
+      ['/friends?section=suggestions',IDL("mFrSug")],
+      ['/friends?section=requests',IDL("mFrR"),true],
+      ['/friends?section=all_requests',IDL("mFrAllReq")],
+      ['/friends?section=out_requests',IDL("mFrOutReq")],
       [['/friends?w=calendar','return nav.change({w: \'calendar\'})'],IDL("Birthdays")] 
     ],
     'albums':[
-        ['albums'+vkmid,IDL("mPhM")],
-        ['friendsphotos',IDL("mPhFrP")],
-        ['tag'+vkmid,IDL("mPhW")],
+        ['/albums'+vkmid,IDL("mPhM")],
+        ['/friendsphotos',IDL("mPhFrP")],
+        ['/tag'+vkmid,IDL("mPhW")],
         [["#","showBox('al_photos.php', {act: 'new_album_box'},{stat: ['photos.css']}); return false;"],IDL("mPhN")],
-        ['photos'+vkmid+'?act=comments',IDL("mPhC")],
-        ['photos'+vkmid,IDL("mPhA")],
-        ['albums'+vkmid+'?act=added',vk_lang["mTags"],true]
+        ['/photos'+vkmid+'?act=comments',IDL("mPhC")],
+        ['/photos'+vkmid,IDL("mPhA")],
+        ['/albums'+vkmid+'?act=added',vk_lang["mTags"],true]
     ], 
     'video':[
-        ['video',IDL("mViM")],
-        ['video?section=tagged',IDL("mViW")],
-        ['video?section=comments',IDL("mPhC")],
+        ['/video',IDL("mViM")],
+        ['/video?section=tagged',IDL("mViW")],
+        ['/video?section=comments',IDL("mPhC")],
         [['#',"stManager.add('video.js',function(){Video.uploadVideoBox();}); return false;"], IDL("mViN")], //'video.php?act=new' //"showTabbedBox('al_video.php', {act: 'upload_box', oid: cur.oid}, {stat: ['video_edit.css', 'privacy.css', 'privacy.js', 'uploader.js']}); return false;"
-        ['video?section=tagged',vk_lang["mTags"],true]
+        ['/video?section=tagged',vk_lang["mTags"],true]
     ],
     'audio':[
-        ['audio',IDL("mAuM")],
-        ['audio?act=edit',IDL("mAuE")],
+        ['/audio',IDL("mAuM")],
+        ['/audio?act=edit',IDL("mAuE")],
         [['#',"showBox('/audio', extend({}, {act: 'new_audio'}), {   params: {width: '430px'}, stat: ['audio.css','audio.js'] }); return false;"],IDL("mAuN")] 
     ],
     'mail':[
-        ['mail',IDL("mMaI")],
-        ['mail?section=outbox',IDL("mMaO")],
-        ['mail?section=spam',IDL("Spam")],
-        ['im',IDL('mDialogsMessages')]
+        ['/mail',IDL("mMaI")],
+        ['/mail?section=outbox',IDL("mMaO")],
+        ['/mail?section=spam',IDL("Spam")],
+        ['/im',IDL('mDialogsMessages')]
 		//,[['im.php?act=a_box&popup=1',''],IDL('mQuickMessages')]
     ],
     'notes':[   
-        ['notes',IDL("mNoM")],
-        ['notes?act=new',IDL("mNoN")],
-        ['notes?act=comments',IDL("mNoC")],
-        ['notes?section=friends',IDL("mNoF")],
-        ['notes?section=fave',IDL("mNoI")]
+        ['/notes',IDL("mNoM")],
+        //['/notes?act=new',IDL("mNoN")],
+        ['/notes?act=comments',IDL("mNoC")],
+        ['/notes?section=friends',IDL("mNoF")],
+        ['/notes?section=fave',IDL("mNoI")]
     ],
     'groups':[
-        ['groups',IDL("mGrM")],
-        ['groups?tab=inv',IDL("mGrInv")],
-        ['search?c[section]=groups',IDL("mGrS")],
-        ['groups?tab=admin',IDL("mGrAdmin")]
+        ['/groups',IDL("mGrM")],
+        ['/groups?tab=inv',IDL("mGrInv")],
+        ['/search?c[section]=groups',IDL("mGrS")],
+        ['/groups?tab=admin',IDL("mGrAdmin")]
     ],
     'events':[
-        ['events?tab=future',IDL("mEvF")],
-        ['events?tab=past',IDL("mEvL")],
-        ['events?tab=calendar',IDL("mEvC")],
-        ['search?c[section]=events',IDL("mEvS")]
+        ['/events?tab=future',IDL("mEvF")],
+        ['/events?tab=past',IDL("mEvL")],
+        ['/events?tab=calendar',IDL("mEvC")],
+        ['/search?c[section]=events',IDL("mEvS")]
     ],
    'gifts':[
-        ['gifts.php?act=wishlist',IDL("mWishMy")],
-        ['gifts.php?act=wishlist&done=1',IDL("mWishDone")],
-        ['gifts.php?act=wishlist&mid=-1',IDL("mWishFr")]
+        ['/gifts.php?act=wishlist',IDL("mWishMy")],
+        ['/gifts.php?act=wishlist&done=1',IDL("mWishDone")],
+        ['/gifts.php?act=wishlist&mid=-1',IDL("mWishFr")]
     ],
    /*'gifts':[
         ['gifts#act=wishlist',IDL("mWishMy")],
@@ -1022,7 +1060,7 @@ function vkMenu(){//vkExLeftMenu
 		['wall'+remixmid(),IDL('mWAllPosts')],
 		['wall'+remixmid()+'?own=1',IDL('mWMyPosts')],
       ['notes',IDL("mNoM")],
-      ['notes?act=new',IDL("mNoN")],
+      //['notes?act=new',IDL("mNoN")],
       ['notes?act=comments',IDL("mNoC")]
 	],	
     'vkopt':[
@@ -1035,6 +1073,7 @@ function vkMenu(){//vkExLeftMenu
       ExMenu['vkopt'].push([["#","if (window.vk_updmenu_timeout) clearTimeout(vk_updmenu_timeout); return false;"],'<b>Stop Upd Menu</b>']);
       ExMenu['vkopt'].push([["#","vkPhotoUrlUpload(prompt('Image URL:')); return false;"],'UploadImg']);
       ExMenu['vkopt'].push([["#","vk_photos.url(prompt('Image URL:')); return false;"],'UploadImg v2']);
+      ExMenu['vkopt'].push([["#","(function(){var keys=[]; for(var key in localStorage) if(/im_draft/.test(key)){console.log(key); keys.push(key)}; for (var i=0; i<keys.length; i++) localStorage.removeItem(keys[i]);})(); return false;"],'Del LS Trash']);
   }
   /* 
   ExMenu['vkopt']=[];
@@ -1651,8 +1690,8 @@ function vkClock() {
 			sidebar.appendChild(div);
 		}
       if (ge('vkCl')){
-         if (getSet(30) ==1) setInterval(function(){ge('vkCl').innerHTML=new Date().toLocaleString().match(/\d+:\d+:\d+/i);},1000);
-         if (getSet(30) ==2) setInterval(function(){ge('vkCl').innerHTML=wr_date();},1000);
+         if (getSet(30) ==1) setInterval(function(){var c=ge('vkCl'); if (c) c.innerHTML=new Date().toLocaleString().match(/\d+:\d+:\d+/i);},1000);
+         if (getSet(30) ==2) setInterval(function(){var c=ge('vkCl'); if (c) c.innerHTML=wr_date();},1000);
       }
 		if (getSet(30) ==3) makeClock();
 	}
@@ -1794,6 +1833,18 @@ setInterval(clock,1000);
 
 
 /* SMILES */
+function vkFixSmileMap(){
+   for (key in SmilesMap){
+       var re=(SmilesMap[key][0])?SmilesMap[key][0]:SmilesMap[key];
+       re= new RegExp("(\\s|^)("+re.source+")([\\s\\.,]|$)", (re.ignoreCase?'i':''));
+       if (SmilesMap[key][0])
+         SmilesMap[key][0]=re;
+       else
+         SmilesMap[key]=re;
+   }
+   //
+}
+
 function vkSmiles(element){ 
 	if (getSet(33)!='y' || ge("vkopt_sett_table")) return;
 	var tstart=unixtime();
@@ -1817,15 +1868,28 @@ function SmileNode(mainNode,childItem,searchWord){
     node = mainNode.childNodes[childItem];
     for (key in SmilesMap){ 
       var regex=(SmilesMap[key][0])?SmilesMap[key][0]:SmilesMap[key];
-      var searchWord = node.nodeValue.match(regex);
-      searchWord=(searchWord)?searchWord[0]:false;
-      if (searchWord){   
-      var startIndex = node.nodeValue.indexOf(searchWord);
-      var endIndex = searchWord.length;
+      //new_regex= new RegExp("(\\s|^)("+regex.source+")([\\s\\.,]|$)", (regex.ignoreCase?'i':''));
       
-       if(startIndex!=-1){
-          var secondNode = node.splitText(startIndex);
-          var thirdNode = secondNode.splitText(endIndex);
+      var searchWord = node.nodeValue.match(regex);
+      //if (searchWord) console.log(searchWord);
+      var f='';
+      var l='';
+      var val=''
+      
+      if (searchWord){
+         f=searchWord[1]?searchWord[1]:'';
+         val=searchWord[2]?searchWord[2]:'';
+         l=searchWord[3]?searchWord[3]:'';
+         
+         searchWord=(searchWord)?searchWord[0]:false;
+      } else 
+         searchWord=false;
+      if (searchWord){   
+         var startIndex = node.nodeValue.indexOf(searchWord)+f.length;
+         var endIndex = searchWord.length-f.length-l.length;
+         if(startIndex!=-1){
+            var secondNode = node.splitText(startIndex);
+            var thirdNode = secondNode.splitText(endIndex);
           
           
          // var smilepath=(SmilesMap[key][0])?SmilesMap[key][1]:'icq';
@@ -1835,12 +1899,12 @@ function SmileNode(mainNode,childItem,searchWord){
           //smile.src='http://kolobok.us/smiles/'+smilepath+'/'+key+'.gif';
           smile.src=vkSmilesLinks[key];//'http://vkoptcss.narod.ru/smiles/'+key+'.gif';
           smile.setAttribute("onclick","RemoveSmile(this);");
-		  smile.alt=searchWord;
-          smile.title=searchWord;
+          smile.alt=val;
+          smile.title=val;
  
           mainNode.replaceChild(smile,mainNode.childNodes[childItem+1]);
           //childItem = childItem*1+2;
-          if(mainNode.childNodes[childItem] && mainNode.childNodes[childItem].nodeValue.match(SmilesMap[key])!=-1){
+          if(mainNode.childNodes[childItem] && mainNode.childNodes[childItem].nodeValue.match(regex)!=-1){
               childItem = SmileNode(mainNode,childItem,searchWord);
           }
       }

@@ -266,17 +266,17 @@ var vkMozExtension = {
    callbacks: [],
    send_request: function (data, callback) { // analogue of chrome.extension.sendRequest  
       var set_data = function (el, field, data) {
-         if(el.setUserData) {
-            el.setUserData(field, data, null);
-         } else {
+         if(el.dataset) {
             el.dataset[field] = JSON.stringify(data);
+         } else {
+            el.setUserData(field, data, null);
          }
       }
       var get_data = function (el, field) {
-         if(el.getUserData) {
-            return el.getUserData(field);
-         } else {
+         if(el.dataset) {
             return JSON.parse(el.dataset[field]);
+         } else {
+            return el.getUserData(field);
          }
       }
       var request = null;

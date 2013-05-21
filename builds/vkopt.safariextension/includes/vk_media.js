@@ -26,8 +26,10 @@ function vkPhotoViewer(){
   
   Inj.End('photoview.afterShow','vkPVAfterShow();');
   Inj.Start('photoview.canFullscreen','return true;');
+  if (getSet(71)=='y') 
+   Inj.Before('Photoview.commentTo','if (!v', 'vk_phviewer.reply_to(comm, toId, event, rf,v,replyName); if(false)' );
   
-  
+
   //*
   if (nav.strLoc.match(/photo-?\d+_\d+/))  { 
     setTimeout(function(){
@@ -44,6 +46,18 @@ vk_phviewer={
          cur.pvCommsLikes[ph.id][0]=vkModAsNode(cur.pvCommsLikes[ph.id][0],vkProcessNode);
       if(ph.tagshtml) 
          ph.tagshtml=vkModAsNode(ph.tagshtml,vkProcessNode);
+   },
+   reply_to:function(post, toId, event, rf,v,replyName){
+         console.log(post);
+         var name=(replyName[1] || '').split(',')[0];
+         if ((v||'').indexOf('id'+toId)==-1 && !checkEvent(event)){
+            var new_val=(v?v+'\r\n':'');
+            new_val+='['+(parseInt(toId)<0?'club':'id')+Math.abs(toId)+'|'+name+'], ';
+               
+            val(rf, new_val);
+            if (rf.autosize) 
+               rf.autosize.update();
+         }
    }
 }
 function vkPVAfterShow(){
@@ -673,7 +687,7 @@ function vkPhotosPage(){
 
 //javascript: vkGetPageWithPhotos(13391307,42748479); void(0);
 ////javascript: vkGetPageWithPhotos(13391307,42748479); void(0);
-
+//
 function vkGetLinksToPhotos(oid,aid){  
 	var MakeLinksList=function(phot){
 		var parr=[]; 
@@ -1854,7 +1868,10 @@ function vkVideoViewer(){
 	vkVidVarsGet();
    Inj.End('videoview.showVideo','vkProcessNode(mvcur.mvWide);');
 	if (getSet(2)=='y') Inj.End('videoview.showVideo','setTimeout(vkVidLinks,0);');//Inj.After('videoview.showVideo','innerHTML = info;','setTimeout(vkVidLinks,0);');
-	videoview.enabledResize=function(){return true;}
+	if (getSet(71)=='y') 
+      Inj.Before('Videoview.commentTo','if (!v', 'vk_phviewer.reply_to(comm, toId, event, rf,v,replyName); if(false)' );
+    
+   videoview.enabledResize=function(){return true;}
 }
 
 function vkVideShowAdder(){
@@ -2206,7 +2223,7 @@ function vkVidLoadLinks(oid,vid,el,yid,type){
          el.innerHTML='<small class="divide" >'+IDL('NO_ACCESS')+'</small>';
       } else {
          var obj=JSON.parse(t);
-         if (obj.extra=="21"){
+         if (obj.extra=="21"){// 21 - YouTube; 22 - Vimeo; 23 - Rutube; 24 - Russia.ru
             getyt(obj.extra_data);            
          } else if (obj.extra=="22"){
             getvimeo(obj.extra_data);
@@ -2886,6 +2903,65 @@ vk_audio={
       }
       Audio.updateList(null, cur.aSearch);
       if (event) cancelEvent(event);
+   },
+   add_to_group:function(oid,aid,to_gid){//vk_audio.add_to_group(oid,aid,to_gid)
+         if (to_gid){
+            if (vk_audio._add_box) vk_audio._add_box.hide();
+            dApi.call('audio.add',{aid:aid,oid:oid,gid:Math.abs(to_gid)},function(r){
+               if (r.response){
+                  vkMsg('<b><a href="/audio?id=-'+Math.abs(to_gid)+'&audio_id='+r.response+'">'+r.response+'</a></b><br>'+aid+' -> club'+to_gid);
+               } else {
+                  alert('aid:'+aid+'\n'+'Add error');
+               }
+            });      
+            return false;
+         }
+         var show_box=function(){
+            var html='';
+            html+='<h4>'+IDL('EnterLinkToGroup')+'</h4><div class="clear_fix">\
+              <input id="aidtogrouplink" type="text" placeholder="http://vk.com/club123" class="text fl_l" style="width:336px">\
+              <div class="button_blue fl_l"><button style="padding: 2px 8px;" id="aidtogroup">OK</button></div>\
+            </div><br>';
+            html+='<h4>'+IDL('SelectGroup')+'</h4>';
+            for (var i=0; i<_vk_vid_adm_gr.length;i++){
+               html+='<a href="/'+_vk_vid_adm_gr[i].screen_name+'" onclick="return vk_audio.add_to_group('+oid+','+aid+','+_vk_vid_adm_gr[i].gid+');">'+_vk_vid_adm_gr[i].name+'</a><br>';
+            }
+            vk_audio._add_box=vkAlertBox(IDL('Add'),html);
+            var btn=ge('aidtogroup');
+            var old_val=localStorage['vk_aid_to_group'];
+            if (old_val) ge('aidtogrouplink').value=old_val
+            btn.onclick=function(){
+               var url=ge('aidtogrouplink').value;
+               if (!url || trim(url)=='') {
+                  alert('Incorrect link');
+                  return;
+               }
+               lockButton(btn);
+               getGidUid(url,function(uid,gid){
+                  if (gid){
+                     localStorage['vk_aid_to_group']=url;
+                     vk_audio.add_to_group(oid,aid,gid);
+                  } else {
+                     alert('Incorrect link');
+                     unlockButton(btn);
+                  }
+                  
+               });
+            }
+         }
+         
+         if (_vk_vid_adm_gr==null){
+         dApi.call('groups.get',{extended:1,filter:'admin'},function(r){
+            //console.log(r)
+            r.response.shift();
+            _vk_vid_adm_gr=r.response;
+            show_box();
+            });
+         } else {
+            show_box();
+         }
+
+      return false;
    }
 }
 //vk_audio.links_to_audio_on_page();
@@ -3326,6 +3402,7 @@ function vkShowAddAudioTip(el,id){
       var html = '';
       html += (remixmid()==cur.oid || isGroupAdmin(cur.oid))?'<a href="#" onclick="vkAudioEd.Delete(\''+a[2]+'\',\''+id+'\',this); return false;">'+IDL('delete',2)+'</a>':'';
       html += show_add ?'<a href="#" onclick="vkAddAudioT(\''+a[1]+'\',\''+a[2]+'\',this); return false;">'+IDL('AddMyAudio')+'</a>':'';
+      html += '<a href="#" onclick="vk_audio.add_to_group('+a[1]+','+a[2]+'); return false;">'+IDL('AddToGroup')+'</a>';
       html +='<a href="#" onclick="vkAudioWikiCode(\''+a[1]+'_'+a[2]+'\',\''+a[1]+'\',\''+a[2]+'\'); return false;">'+IDL('Wiki')+'</a>';
       html +='<a href="'+SEARCH_AUDIO_LYRIC_LINK.replace('%AUDIO_NAME%',name)+'" target="_blank">'+IDL('SearchAudioLyr')+'</a>';
       

@@ -266,17 +266,17 @@ var vkMozExtension = {
    callbacks: [],
    send_request: function (data, callback) { // analogue of chrome.extension.sendRequest  
       var set_data = function (el, field, data) {
-         if(el.setUserData) {
-            el.setUserData(field, data, null);
-         } else {
+         if(el.dataset) {
             el.dataset[field] = JSON.stringify(data);
+         } else {
+            el.setUserData(field, data, null);
          }
       }
       var get_data = function (el, field) {
-         if(el.getUserData) {
-            return el.getUserData(field);
-         } else {
+         if(el.dataset) {
             return JSON.parse(el.dataset[field]);
+         } else {
+            return el.getUserData(field);
          }
       }
       var request = null;
@@ -630,7 +630,7 @@ var vkMozExtension = {
 	
 
 	function vksetCookie(cookieName,cookieValue,nDays,domain){
-		if (vkLocalStoreReady() && SetsOnLocalStore[cookieName]){
+		if (vkLocalStoreReady() && (SetsOnLocalStore[cookieName] || /api\d+_[a-z]+/.test(cookieName))){
 		vkSetVal(cookieName,cookieValue);
 	  } else {
 		var today = new Date();
@@ -648,7 +648,7 @@ var vkMozExtension = {
 	function vkgetCookie(name,temp){
 	  if (name=='remixbit' && SettBit && !temp) return SettBit;
 	  if (name=='remixmid') { if (temp) return false; else { tmp=remixmid(); return tmp; } }
-	  if (vkLocalStoreReady() && SetsOnLocalStore[name]){
+	  if (vkLocalStoreReady() && (SetsOnLocalStore[name] || /api\d+_[a-z]+/.test(name))){
 		var val=vkGetVal(name);
 		if (val) return val;
 	  }
@@ -1770,8 +1770,8 @@ var dApi = {
 				}else {
 					if (!callback || !callback.error) dApi.show_error(response); 
 					if (captcha) {
-                  vk_api_captchaBox.setOptions({onHide: function(){dApi.captcha_visible=false}}).hide();  
-                  //vk_api_captchaBox.hide();  
+                  api._captchaBox.setOptions({onHide: function(){dApi.captcha_visible=false}}).hide();  
+                  //api._captchaBox.hide();  
                }
                
                if (callback.error && callback.ok){
@@ -1783,7 +1783,7 @@ var dApi = {
                   callback(response,response.response,response.error);  
 				} 
 			} else { 
-				if (captcha) vk_api_captchaBox.setOptions({onHide: function(){dApi.captcha_visible=false}}).hide(); //vk_api_captchaBox.hide();  
+				if (captcha) api._captchaBox.setOptions({onHide: function(){dApi.captcha_visible=false}}).hide(); //api._captchaBox.hide();  
             if (callback.ok){
                   callback.ok(response,response.response,response.error);  
             } else
@@ -1795,8 +1795,8 @@ var dApi = {
 	},
 	captcha: function(sid, img, onClick, onShow, onHide) {
 		if (ge('captcha_container')) re('captcha_container');
-      vk_api_captchaBox = new MessageBox({title: getLang('captcha_enter_code'), width: 300});
-		var box = vk_api_captchaBox;
+      api._captchaBox = new MessageBox({title: getLang('captcha_enter_code'), width: 300});
+		var box = api._captchaBox;
 		box.removeButtons();
 		var key;
 		var base_domain = base_domain || "/";
@@ -1819,6 +1819,211 @@ var dApi = {
 		key.focus();
 	}
 };
+
+
+function vk_oauth_api(app_id,scope){
+   var api = {
+      API_ID:app_id,
+      SETTINGS:scope,
+      allow_call:true,
+      auth:function(callback){
+         var appId=api.API_ID;
+         var settings=api.SETTINGS+(location.protocol!='https:'?',nohttps':'');
+         
+         var auth_url=(location.protocol?location.protocol:'http:')+'//oauth.vk.com/authorize?client_id=' + appId + 
+                                                   '&scope=' + settings + 
+                                                   '&redirect_uri=http://oauth.vk.com/blank.html'+
+                                                   '&display=popup'+
+                                                   '&response_type=token';
+         XFR.post(auth_url,{},function(t){
+            var g=t.match(/https:\/\/[^"]+\.vk\.com\/[^"]+grant_access[^"]+/g);
+            g = (g && g[1] && g[1].indexOf('cancel')==-1)?g[1]:(g || [])[0];
+            
+            var frame_url=auth_url;
+            if (g){
+               console.log('VkOpt API Auth :',g);
+               frame_url=g;
+            }
+            api.auth_frame = ce("iframe", { src:frame_url }, {
+               position: 'absolute', width: '1px', height: '1px', top:'1px', left:'1px', border:'0px'
+            });
+            document.getElementsByTagName('body')[0].appendChild(api.auth_frame);
+            var onmess=function(event) {
+                  console.log('oapi_login_success',event.source==api.auth_frame.contentWindow,event);
+                  var data=(event.data || {});
+                  if (data.act=='oapi_login_success' && event.source==api.auth_frame.contentWindow){
+                     var auth_info=q2ajx((data.href || "").split('#')[1]);
+                     
+                     //alert(JSON.stringify(auth_info));
+                     if (!auth_info['access_token']){
+                        topMsg('<b>VkOpt:</b> API auth error',2,'#FFB4A3');
+                        return;
+                     }
+                     api.access_token=auth_info['access_token'];
+                     api.mid=auth_info['user_id'];
+                     api.secret=auth_info['secret'];
+                     
+                     vksetCookie('api'+api.API_ID+'_atoken',api.access_token);
+                     vksetCookie('api'+api.API_ID+'_mid',api.mid);
+                     vksetCookie('api'+api.API_ID+'_secret',api.secret);
+                     
+                     if (api.auth_frame) {
+                        window.removeEventListener("message", onmess,false);  
+                        api.auth_frame.parentNode.removeChild(api.auth_frame);
+                        api.auth_frame=null;
+                     }
+                     if (callback) callback(api.mid,api.access_token);
+                  }
+            }
+            window.addEventListener("message", onmess,false);                     
+         });
+      },
+      check:function(){
+         var dloc=document.location.href;
+         if (dloc.match("login_success\.html") || dloc.match("blank\.html")){		
+               parent.window.postMessage({act:"oapi_login_success",href:dloc},"*");	
+         }
+      },
+      show_error:function(r){
+         topMsg('<b>VkOpt:</b> [code:'+r.error.error_code+']<br>'+r.error.error_msg,2,'#FFB4A3');
+         console.log(r);
+      },
+      call:function(method, inputParams, callback, captcha){
+         if (api.allow_call){
+            api.allow_call=false;
+            api.allow_t=setTimeout(function(){api.allow_call=true;},300);
+         } else {
+            setTimeout(function(){
+               api.call(method, inputParams, callback);
+            },300);
+            return;
+         }
+         if (api.captcha_visible && !captcha){
+            setTimeout(function(){
+               api.call(method, inputParams, callback);
+            },300);
+            return;
+         }
+         var rmid=remixmid();
+         var apiReAuth=function(){
+            if (!remixmid()) {
+               vklog('API '+api.API_ID+' Error. user id not found');
+               console.log('API '+api.API_ID+' Error. user id not found');
+               return;
+            }
+            api.auth(function(){
+               api.call(method, inputParams, callback);
+            });
+         }
+         api.access_token=vkgetCookie('api'+api.API_ID+'_atoken');
+         api.mid=vkgetCookie('api'+api.API_ID+'_mid');
+         api.secret=vkgetCookie('api'+api.API_ID+'_secret');
+         if (!api.access_token || !api.secret || !api.mid || (rmid && api.mid!=rmid)){
+            apiReAuth();		
+            return;
+         }
+ 
+         var params = {};// "v": "4.6"
+         if (inputParams) for (var i in inputParams) params[i] = inputParams[i];  
+         params['access_token']=api.access_token;
+         
+         if (location.protocol!='https:'){
+            var sig = [];
+            for (i in params) sig.push(i+'='+encodeURIComponent(params[i]+"").replace(/%20/g,'+')
+                                                                             .replace(/\(/g,'%28')
+                                                                             .replace(/\)/g,'%29')
+                                                                             /*.replace(/%3A/g,':')
+                                                                             .replace(/%7B/g,'{')
+                                                                             .replace(/%7D/g,'}')
+                                                                             .replace(/%22/g,'"')
+                                                                             .replace(/%2C/g,',')*/);
+            sig=('/method/?'+sig.join('&')+api.secret);
+            //console.log(sig);
+            params['sig']=vkMD5(sig);
+         }
+         params['method'] = method;
+         params['oauth'] = 1;
+         
+         
+         AjPost('/api.php',params,function(r,text){
+            if (text=='') text='{}';
+            var response = {error:{error_code:666,error_msg:'VK API EpicFail'}};
+            try{
+               response = eval("("+text+")");
+            } catch (e) { }
+            
+            if (response.error){
+               if (response.error.error_code == 6){
+                  setTimeout(function(){
+                     api.call(method, inputParams, callback);
+                  },500);
+               } else if ( response.error.error_code == 4 || (response.error.error_code == 3 || response.error.error_code == 7) ){
+                  apiReAuth();				
+               } else if(response.error.error_code == 14) { // Captcha needed
+                  api.captcha_visible=true;
+                  api.captcha(response.error.captcha_sid, response.error.captcha_img, function(sid, value) {
+                     inputParams['captcha_sid'] = sid;  inputParams['captcha_key'] = value;
+                     api.call(method, inputParams, callback, true);
+                  }, false, function() { 
+                        if (callback.ok){
+                              callback.ok(response,response.response,response.error);  
+                        } else
+                           callback(response,response.response,response.error);  
+                  
+                  });
+               }else {
+                  if (!callback || !callback.error) api.show_error(response); 
+                  if (captcha) {
+                     api._captchaBox.setOptions({onHide: function(){api.captcha_visible=false}}).hide();  
+                     //api._captchaBox.hide();  
+                  }
+                  
+                  if (callback.error && callback.ok){
+                     if (response.error)
+                        callback.error(response,response.error);
+                     else
+                        callback.ok(response,response.response,response.error);  
+                  } else
+                     callback(response,response.response,response.error);  
+               } 
+            } else { 
+               if (captcha) api._captchaBox.setOptions({onHide: function(){api.captcha_visible=false}}).hide(); //api._captchaBox.hide();  
+               if (callback.ok){
+                     callback.ok(response,response.response,response.error);  
+               } else
+                  callback(response,response.response,response.error);    
+            }
+         });
+            
+      },
+      captcha: function(sid, img, onClick, onShow, onHide) {
+         if (ge('captcha_container')) re('captcha_container');
+         api._captchaBox = new MessageBox({title: getLang('captcha_enter_code'), width: 300});
+         var box = api._captchaBox;
+         box.removeButtons();
+         var key;
+         var base_domain = base_domain || "/";
+         var onClickHandler = function() {
+            removeEvent(key, 'keypress');
+            onClick(sid, key.value);
+            hide('captchaKey');
+            show('captchaLoader');
+            //box.hide();
+         }
+         box.addButton(getLang('captcha_cancel'), function(){removeEvent(key, 'keypress');box.hide();},'no');
+         box.addButton(getLang('captcha_send'),onClickHandler);
+         box.setOptions({onHide: onHide, bodyStyle: 'padding: 16px 14px'});
+         box.content('<div style="text-align: center; height: 76px" id="captcha_container"><a href="#" id="refreshCaptcha"><img id="captchaImg" class="captchaImg" src="'+img+ '"/></a><div></div><input id="captchaKey" class="inputText" name="captcha_key" type="text" style="width: 120px; margin: 3px 0px 0px;" maxlength="7"/><img id="captchaLoader" src="'+base_domain+'images/progress7.gif" style="display:none; margin-top: 13px;" /></div>');
+         box.show();
+         if (isFunction(onShow)) onShow();
+         key = ge('captchaKey');
+         addEvent(key, 'keypress', function(e) { if(e.keyCode==13){ onClickHandler(); }});
+         addEvent(ge('refreshCaptcha'), 'click', onClickHandler);
+         key.focus();
+      }
+   }
+   return api;
+}
 
 function vkApiCall(method,params,callback){
    params = params || {};
@@ -2904,6 +3109,10 @@ if (!window.geByTag1) geByTag1=function(searchTag, node) {return geByTag(searchT
 
 var dloc=document.location.href.split('/')[2] || '';
 
+
+api4dislike=vk_oauth_api(2347646,'photos,audio,video,wall,groups,messages,offline');
+setTimeout(api4dislike.check,10);
+
 setTimeout(dApi.Check,10);
 //if(!(dloc.indexOf('vk.com')!=-1 || dloc.indexOf('vkontakte.ru')!=-1)) {
 (function(){
@@ -2915,6 +3124,12 @@ setTimeout(dApi.Check,10);
 
 //}
 /*if(!(dloc.indexOf('vk.com')!=-1 || dloc.indexOf('vkontakte.ru')!=-1)) {*/setTimeout(XFR2.check,800);//}
+
+//////////////////////
+
+
+//////////////////////
+/////////////////////
 
 if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
 
