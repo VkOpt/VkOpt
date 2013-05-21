@@ -10,10 +10,13 @@ var loader={
         win.console.log('vkopt loader...');
         if (!doc || !isVKDomain(doc.location.href)) return;
         win.console.log('vkopt loader start');
-        for (var i=0;i<vkopt_scripts.length;i++){  
+        if (doc.getElementById('vkopt_inited')) return;
+        for (var i=0;i<vkopt_scripts.length;i++){
           var js = doc.createElement('script');
           js.type = 'text/javascript';
           js.src =  'resource://vkopt/'+vkopt_scripts[i];
+          if (i==(vkopt_scripts.length-1))
+            js.id='vkopt_inited';
           doc.getElementsByTagName('head')[0].appendChild(js);
         }
       });

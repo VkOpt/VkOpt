@@ -608,7 +608,7 @@ function vkMakeRightBar(){
 	var page_layout=ge('page_layout');
 	if (!page_layout) return;
    var el=ge('pageHeader') || ge('pageHeader1') || ge('page_header');
-	var h=getSize(el,true)[1]+getXY(el)[1];
+	var h=getSize(el,true)[1]+getXY(el,true)[1];
    
 	vkaddcss('\
       #side_bar {width:130px !important;} \
@@ -689,7 +689,7 @@ function vkFixedMenu(){
 	var el=ge('pageHeader') || ge('pageHeader1') || ge('page_header');
 	var side_bar=(ge('sideBar') || ge('side_bar'));
 	var right_bar=ge('right_bar');
-	var h=getSize(el,true)[1]+getXY(el)[1];
+	var h=getSize(el,true)[1]+getXY(el,true)[1];
 	vkaddcss("#sideBar,#side_bar"+(cfg_r=='y'?", #right_bar":'')+"{ position: fixed;z-index: 101; top: "+h+"px }\
          .audio_fixed_nav #side_bar, .im_fixed_nav #side_bar"
          +(cfg_r=='y'?", .audio_fixed_nav #right_bar, .im_fixed_nav #right_bar":'')+"{top: "+h+"px !important; }\

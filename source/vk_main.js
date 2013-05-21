@@ -258,7 +258,7 @@ function VkOptMainInit(){
   vkProccessLinks();
   if (ge('left_blocks')) vkProccessLinks(ge('left_blocks'));
   vk_user_init();
-  vkFixedMenu();
+  setTimeout(vkFixedMenu,200);
   vkMenu();
   vkOnNewLocation(true);//Inj.Wait('window.nav', vkOnNewLocation,50);  
   vkSmiles();
