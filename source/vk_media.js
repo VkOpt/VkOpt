@@ -3376,6 +3376,60 @@ function vkAudioNode(node){
   }
 }
 //*/
+vk_pads={
+   pl_remove:function(aid){ //aid=-1321_1414_141
+      //var aid = audio.id.substr(5);
+      var padPlist = padAudioPlaylist();
+      
+      if (aid && padPlist && !padPlist[aid]) {
+         aid = aid.replace('_pad', '');
+      }
+      if (aid && padPlist && padPlist[aid]) {
+         var next_id = padPlist[aid]._next;
+         var prev_id = padPlist[aid]._prev;
+         
+         if (padPlist[next_id] && padPlist[next_id]._prev) padPlist[next_id]._prev=prev_id;
+         if (padPlist[prev_id] && padPlist[prev_id]._next) padPlist[prev_id]._next=next_id;
+         delete padPlist[aid];
+         
+         Pads.updateAudioPlaylist();
+         
+         if (window.audioPlaylist && audioPlaylist[aid]) {
+            window.audioPlaylist = padPlist;
+         }
+         ls.set('pad_playlist', padPlist);
+         ls.set('pad_pltime', vkNow());
+      }
+   },
+   pl_add:function(aid,to){
+      to = to || 0;
+      var padPlist = padAudioPlaylist();
+      var info={}
+      switch (to){
+         case 0:
+            var cur_id = currentAudioId();
+            info=audioPlayer.getSongInfoFromDOM(aid);
+            var cur_info=padPlist[cur_id];
+            info._next= cur_info._next;
+            info._prev= cur_info.full_id;
+            info.full_id=aid;
+            cur_info._next=aid;
+            padPlist[aid]=info;
+            break;
+      }
+      if (aid && padPlist && padPlist[aid]) {         
+         if (window.audioPlaylist && audioPlaylist[aid]) {
+            window.audioPlaylist = padPlist;
+         }
+         ls.set('pad_playlist', padPlist);
+         ls.set('pad_pltime', vkNow());
+         if (window.Pads && Pads.updateAudioPlaylist)
+            Pads.updateAudioPlaylist();
+         vkMsg('<b>'+info[5]+' - '+info[6]+'</b><br>'+IDL('AddedToPls'),1000);
+      }
+   }
+}
+
 function vkAddAudio(aid,oid,callback){
 	dApi.call('audio.add',{aid:aid,oid:oid},function(r){
 		if (callback) callback(r.response);
@@ -3397,19 +3451,29 @@ function vkShowAddAudioTip(el,id){
    var show_add=(!ge('audio_add'+id)) && (a[1]!=remixmid());
    //alert(ge('audio_add'+id)+'\n'+(a[1]!=remixmid())+'\n'+show_add);
 	if (a){
-		var name=vkParseAudioInfo(id);
+		var pls=padAudioPlaylist();
+      var name=vkParseAudioInfo(id);
+      
       name=(name[5]+' '+name[6]).replace(/[\?\&\s]/g,'+');
       var html = '';
       html += (remixmid()==cur.oid || isGroupAdmin(cur.oid))?'<a href="#" onclick="vkAudioEd.Delete(\''+a[2]+'\',\''+id+'\',this); return false;">'+IDL('delete',2)+'</a>':'';
       html += show_add ?'<a href="#" onclick="vkAddAudioT(\''+a[1]+'\',\''+a[2]+'\',this); return false;">'+IDL('AddMyAudio')+'</a>':'';
       html += '<a href="#" onclick="vk_audio.add_to_group('+a[1]+','+a[2]+'); return false;">'+IDL('AddToGroup')+'</a>';
+      
+      if (pls && !pls[id] && currentAudioId())
+         html +='<a href="#" onclick="vk_pads.pl_add(\''+id+'\'); return false;">'+IDL('AddToPls')+'</a>';
+
       html +='<a href="#" onclick="vkAudioWikiCode(\''+a[1]+'_'+a[2]+'\',\''+a[1]+'\',\''+a[2]+'\'); return false;">'+IDL('Wiki')+'</a>';
       html +='<a href="'+SEARCH_AUDIO_LYRIC_LINK.replace('%AUDIO_NAME%',name)+'" target="_blank">'+IDL('SearchAudioLyr')+'</a>';
       
-		html = '<div class="vk_tt_links_list">'+html+'</div>';
+		var links = '<div class="vk_tt_links_list">'+html+'</div>';
+      
+      if (el.tt && el.tt.container){
+         geByClass('vk_tt_links_list',el.tt.container)[0].innerHTML=html;
+      }
       showTooltip(el, {
 		  hasover:true,
-		  text:html,
+		  text:links,
 		  slide: 15,
 		  shift: [-15, -3, 0],
 		  showdt: 400,
