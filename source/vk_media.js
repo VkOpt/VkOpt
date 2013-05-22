@@ -3411,10 +3411,15 @@ vk_pads={
             info=audioPlayer.getSongInfoFromDOM(aid);
             var cur_info=padPlist[cur_id];
             info._next= cur_info._next;
-            info._prev= cur_info.full_id;
+            info._prev= cur_info.full_id || cur_info.aid ;
             info.full_id=aid;
+            info.aid=aid;
+            
+            if (padPlist[cur_info._next])
+               padPlist[cur_info._next]._prev=aid;
             cur_info._next=aid;
             padPlist[aid]=info;
+            console.log(padPlist[cur_id],padPlist[aid],padPlist[cur_info._next]);
             break;
       }
       if (aid && padPlist && padPlist[aid]) {         
