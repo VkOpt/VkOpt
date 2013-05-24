@@ -462,8 +462,10 @@ var vkMozExtension = {
 
    function vkCleanFileName(s){   return trim(s.replace(/[\\\/\:\*\?\"\<\>\|]/g,'_').replace(/\u2013/g,'-').substr(0,200));   }
    function vkEncodeFileName(s){
-      // [^A-Za-zА-Яа-я]
-      return s.replace(/([^A-Za-z\u0410-\u042f\u0430-\u044f])/g,function (str, p1, offset, s) {return encodeURIComponent(p1) });
+      if (FULL_ENCODE_FILENAME)
+         return encodeURIComponent(s);
+      else
+         return s.replace(/([^A-Za-z\u0410-\u042f\u0430-\u044f])/g,function (str, p1, offset, s) {return encodeURIComponent(p1) });
    }
    
    function num_to_text(s){
@@ -2138,8 +2140,8 @@ vkApis={
                            var vidname=vkCleanFileName(decodeURIComponent(obj.title || obj.md_title)).replace(/\+/g,' ');
                            var vname=vidname;
 
-                           vidname='?'+vkDownloadPostfix()+'&/'+vidname;
-                           var vidurl=v+(smartlink?vidname+' ['+fmt[i]+']'+vidext:'');
+                           vidname='?'+vkDownloadPostfix()+'&/'+vkEncodeFileName(vidname+' ['+fmt[i]+']');
+                           var vidurl=v+(smartlink?vidname+vidext:'');
                            videos.push(vidurl);
                            
                            //html+='<a class="vk_down_icon" href="'+vidurl+'" download="'+vname+vidext+'"  title="'+vname+vidext+'" onclick="return vkDownloadFile(this);" onmouseover="vkGetVideoSize(this); vkDragOutFile(this);">'+fmt[i]+'<small class="divide" url="'+vidurl+'"></small></a>'; 
