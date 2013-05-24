@@ -2231,8 +2231,8 @@ function vkVidLoadLinks(oid,vid,el,yid,type){
             var html='';
             var arr=vkVidDownloadLinksArray(obj);
             for (var i=0; i<arr.length; i++){
-               var vidext=arr[i].substr(arr[i].lastIndexOf('.'));   
-               var vidname=vkCleanFileName(decodeURI(obj.title || obj.md_title)).replace(/\+/g,' ');
+               var vidext=arr[i].substr(arr[i].lastIndexOf('.'));  
+               var vidname=vkCleanFileName(decodeURIComponent(obj.title || obj.md_title)).replace(/\+/g,' ');
                var vname=vidname;
 
                vidname='?'+vkDownloadPostfix()+'&/'+vidname;
