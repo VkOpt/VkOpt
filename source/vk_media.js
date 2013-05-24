@@ -2039,7 +2039,7 @@ function vkVidDownloadLinks(vars){
 			var res = "360";
 			switch(i){case 2:{res = "480"; break;}  case 3:{  res = "720"; break;}}
 			vidHDurl=pathToHD(res);
-			s += (vidHDurl)?'<a href="'+vidHDurl+(smartlink?vidname+'.mp4':'')+'" download="'+vname+' ['+res+'p].mp4"  title="'+vname+' ['+res+'p].mp4" onclick="return vkDownloadFile(this);" onmouseover="vkGetVideoSize(this); vkDragOutFile(this);">'+IDL("downloadHD")+' '+res+'p<small class="fl_r divide" url="'+vidHDurl+'"></small></a>':"";   
+			s += (vidHDurl)?'<a href="'+vidHDurl+(smartlink?vidname+vkEncodeFileName(' ['+res+'p]')+'.mp4':'')+'" download="'+vname+' ['+res+'p].mp4"  title="'+vname+' ['+res+'p].mp4" onclick="return vkDownloadFile(this);" onmouseover="vkGetVideoSize(this); vkDragOutFile(this);">'+IDL("downloadHD")+' '+res+'p<small class="fl_r divide" url="'+vidHDurl+'"></small></a>':"";   
 		  }
 		  return s;
 	}
@@ -2235,9 +2235,9 @@ function vkVidLoadLinks(oid,vid,el,yid,type){
                var vidname=vkCleanFileName(winToUtf(decodeURIComponent(obj.title || obj.md_title))).replace(/\+/g,' ');
                var vname=vidname;
 
-               vidname='?'+vkDownloadPostfix()+'&/'+vidname;
+               vidname='?'+vkDownloadPostfix()+'&/'+vkEncodeFileName(vidname+' ['+fmt[i]+']');
                var vidurl=arr[i]+(smartlink?vidname+vidext:'')
-               html+='<a class="vk_down_icon" href="'+vidurl+'" download="'+vname+' ['+fmt[i]+']'+vidext+'"  title="'+vname+' ['+fmt[i]+']'+vidext+'" onclick="return vkDownloadFile(this);" onmouseover="vkGetVideoSize(this); vkDragOutFile(this);">'+fmt[i]+'<small class="divide" url="'+vidurl+'"></small></a>'; 
+               html+='<a class="vk_down_icon" href="'+vidurl+'" download="'+vname+vidext+'"  title="'+vname+' ['+fmt[i]+']'+vidext+'" onclick="return vkDownloadFile(this);" onmouseover="vkGetVideoSize(this); vkDragOutFile(this);">'+fmt[i]+'<small class="divide" url="'+vidurl+'"></small></a>'; 
             }
             el.innerHTML=html;
          } else {
