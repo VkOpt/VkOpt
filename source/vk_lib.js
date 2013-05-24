@@ -460,7 +460,7 @@ var vkMozExtension = {
       return escaped;         
    }
 
-   function vkCleanFileName(s){   return trim(s.replace(/[\\\/\:\*\?\"\<\>\|]/g,'_').replace(/\u2013/g,'-').substr(0,200));   }
+   function vkCleanFileName(s){   return trim(s.replace(/[\\\/\:\*\?\"\<\>\|]/g,'_').replace(/\u2013/g,'-').replace(/&#\d+;/g,'_').substr(0,200));   }
    function vkEncodeFileName(s){
       if (FULL_ENCODE_FILENAME)
          return encodeURIComponent(s);
@@ -2136,8 +2136,10 @@ vkApis={
                         var i=arr[quality]?quality:arr.length-1;
                         //for (var i=0; i<arr.length; i++){
                            var v=arr[i];
-                           var vidext=v.substr(v.lastIndexOf('.'));   
-                           var vidname=vkCleanFileName(decodeURIComponent(obj.title || obj.md_title)).replace(/\+/g,' ');
+                           var vidext=v.substr(v.lastIndexOf('.'));  
+                           
+                           var vidname=vkCleanFileName(winToUtf(decodeURIComponent(obj.title || obj.md_title))).replace(/\+/g,' ');
+                           alert(vidname);
                            var vname=vidname;
 
                            vidname='?'+vkDownloadPostfix()+'&/'+vkEncodeFileName(vidname+' ['+fmt[i]+']');
