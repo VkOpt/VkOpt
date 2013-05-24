@@ -2135,7 +2135,7 @@ vkApis={
                         //for (var i=0; i<arr.length; i++){
                            var v=arr[i];
                            var vidext=v.substr(v.lastIndexOf('.'));   
-                           var vidname=vkCleanFileName(decodeURI(obj.title || obj.md_title)).replace(/\+/g,' ');
+                           var vidname=vkCleanFileName(decodeURIComponent(obj.title || obj.md_title)).replace(/\+/g,' ');
                            var vname=vidname;
 
                            vidname='?'+vkDownloadPostfix()+'&/'+vidname;
