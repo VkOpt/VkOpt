@@ -2139,7 +2139,6 @@ vkApis={
                            var vidext=v.substr(v.lastIndexOf('.'));  
                            
                            var vidname=vkCleanFileName(winToUtf(decodeURIComponent(obj.title || obj.md_title))).replace(/\+/g,' ');
-                           alert(vidname);
                            var vname=vidname;
 
                            vidname='?'+vkDownloadPostfix()+'&/'+vkEncodeFileName(vidname+' ['+fmt[i]+']');
