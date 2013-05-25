@@ -364,7 +364,7 @@ function vkFriendsPage(){
 }
 /* PUBLICS */
 function vkPublicPage(){
-	addFakeGraffItem();
+	vk_graff.upload_graff_item();
    vkWallAlbumLink();
    vkSwitchPublicToGroup();
    vkWikiPagesList(true);
@@ -374,14 +374,14 @@ function vkPublicPage(){
 }
 /* EVENTS */
 function vkEventPage(){
-	addFakeGraffItem();
+	vk_graff.upload_graff_item();
    vkWallAlbumLink();
    vkUpdWallBtn();
    //vkWikiPagesList(true);
 }
 /* GROUPS */
 function vkGroupPage(){
-	addFakeGraffItem();
+	vk_graff.upload_graff_item();
 	vkCheckGroupsAdmin();
    vkModGroupBlocks();
    //vkAudioBlock();

@@ -125,7 +125,7 @@ function vkProfilePage(){
 	if (getSet(25) == 'y') status_icq(ge('profile_full_info'));
 	if (getSet(26) == 'y') vkProcessProfileBday(); //VkCalcAge();
 	vkPrepareProfileInfo();
-	addFakeGraffItem();
+	vk_graff.upload_graff_item();
    //vkWallAddPreventHideCB();
 	vkUpdWallBtn(); //Update wall button
    vkWallNotesLink();
@@ -308,7 +308,7 @@ function vkProfileEditMidName(){
 
 /*WALL*/
 function vkWallPage(){
-	addFakeGraffItem();
+	vk_graff.upload_graff_item();
    //vkWallAddPreventHideCB();
 	vkAddCleanWallLink();
 	vkAddDelWallCommentsLink();
@@ -1318,104 +1318,64 @@ if (!masks[id]) return;
 /* END OF SHUT */
 
 /////////// GRAFFITY /////////////
-function vkOnGetGraffitiSig(imgsig){ge('GrafSig').value=imgsig;}
-function vkInitFakeGraffiti(){
-  var upUrl=ge('content').innerHTML.match(/'postTo','(.+)'/i); 
-  upUrl=unescape(upUrl[1]);
-  /*alert(vkGetFakeGraffitiForm(upUrl));*/
-  var bef=ge('content').firstChild;
-  var div=document.createElement('div');
-  div.innerHTML=vkGetFakeGraffitiForm(upUrl);
-  ge('content').insertBefore(div,bef);
-  //ge('content').innerHTML=vkGetFakeGraffitiForm(upUrl)+ge('content').innerHTML;
-  
-  
-  vkMakeGrafSidGen();
-}
-var VKGSC_SWF_LINK='http://cs4287.vkontakte.ru/u13391307/4804adefa66494.zip';
-var VKGSC_SWF_HTTPS_LINK='https://pp.userapi.com/c4287/u13391307/4804adefa66494.zip';
 
-function vkMakeGrafSidGen(){
-  var swf=location.protocol=='https:'?VKGSC_SWF_HTTPS_LINK:VKGSC_SWF_LINK;
-  var so = new SWFObject(swf,'player',"84","24",'10');
-  so.addParam("allowscriptaccess", "always");
-  so.addParam("preventhide", "1");
-  so.addVariable('idl_browse', IDL('GrafSidCalc'));
-  so.write('SigCalc');
-}
+vk_graff={
+   upload_box:function(mid){
+      mid = mid || cur.oid;
+      AjPost('/al_wall.php',{act:'canvas_draw_box',al:1,flash:11,to_id:mid},function(r,t){
+         var url=t.match(/action="([^"]+)"/);
+         if (!url){
+            alert('Parse upload url error');
+            return;
+         }
+         url=url[1];
+         var html='<iframe src="about:blank" name="graff_upload_frame" width=0 height=0 style="display:none;"></iframe>\
+               <form id="fakeupload" name="upload" action="'+url+'" method="POST" enctype="multipart/form-data" target="graff_upload_frame"><center>\
+               <span class="label">'+IDL('GraffitiFile')+'</span><br>\
+               <input type="file" style="width:280px;" size="22" id="file2" name="photo">\
+               </center></form>';
+         var Box = new MessageBox({title: IDL('LoadFakeGraffiti')});
+         Box.removeButtons();
+         Box.addButton(getLang('box_cancel'), function(){Box.hide(200);Box.content("");},'no');
+         Box.addButton(getLang('box_send'), vk_graff.start_upload,'yes');         
+         Box.content(html).show(); 
+      
+      });
+   },
+   start_upload:function(){
+      cur.graffitiSaved = function(photoRaw, mediaData) {
+         cur.chooseMedia('photo', photoRaw, mediaData, false, false, true);
+         //cur.chooseMedia('graffiti', media, thumb);
+      }
+      document.getElementById('fakeupload').submit();
+   },
+   upload_graff_item:function(){
+      var AddGraffItem=function(bef){
+         var mid=ge('mid')?ge('mid').value:(window.cur && cur.oid?cur.oid:0);
+         if (bef && mid){
+            bef=bef.getElementsByTagName('a')[0];
+            var a=document.createElement('a');
+            a.setAttribute("onfocus","this.blur()");
+            a.setAttribute("class"," add_media_item");
+            a.setAttribute("id","vk_wall_post_type0");
+            a.setAttribute("style","background-image: url(/images/icons/attach_icons.gif); background-position: 3px -151px");
+            a.setAttribute("href","#");
+            a.setAttribute("onclick","vk_graff.upload_box("+mid+");return false;");
+            a.innerHTML=IDL('LoadGraffiti');
+            bef.parentNode.insertBefore(a,bef.nextSibling);
+         }
+      }
 
-function vkGraffUpForm(upUrl){
-return '<iframe src="about:blank" name="graff_upload_frame" width=0 height=0 style="display:none;" onload="'+"if (window.vk_allowPostGrafffiti) ajax.post('al_wall.php', {act: 'last_graffiti'}, {onDone: function(media, thumb) {vk_allowPostGrafffiti=false;   cur.chooseMedia('graffiti', media, thumb);    }});"+'"></iframe>\
-		<form id="fakeupload" name="upload" action="'+
-  upUrl+'" method="POST" enctype="multipart/form-data" target="graff_upload_frame"><center>'+
-  '<table class="formTable" border="0" cellspacing="0"><tbody><tr class="tallRow"><td class="label" style="text-align:right; vertical-align: top;">'+
-  IDL('UpGraffiti')+'</td><td>'+
-              '<span class="label">'+IDL('GraffitiFile')+'</span><br>'+
-              '<input type="file" style="width:280px;" size="22" id="file2" name="Filedata">'+
-              '<br><span class="label">'+IDL('GraffitiSignature')+'</span><br>'+
-              '<div style="display:inline;"><INPUT type="text" size="32" name="Signature" id="GrafSig"></div><div id="SigCalc"  style="width:84px; display:inline; position:relative;top:7px;" ></div> <BR>'+
-              
-  '</td></tr><tr><td></td><td><div style="height:30px; margin-top:10px;"><center>'+
-  vkRoundButton([IDL('UploadFraffiti'),"javascript:this.disabled=true; vk_allowPostGrafffiti=true; document.getElementById('fakeupload').submit();"])+
-  '</center></div></td></tr></tbody></table></center></form>'+
-  '<div style="margin_: 10px 20px; border:1px solid #b1bdd6; padding:5px; line-height: 15px; background-color:#f7f7f;"><small>'+
-   IDL('GraffHelp')+ 
-  '</small></div>';
-}
-
-function vkGetFakeGraffitiForm(upUrl){
-return  '<div id="fgraff"><ol id="nav"><li><center><a href="#" onclick="hide(\'fgraff\'); show(\'fake_graffiti\'); hide(\'flash_player_container\'); return false;">'+IDL('LoadFakeGraffiti')+'</a></center></li></ol></div>'+
-  '<div id="fake_graffiti" style="display:none"><div style="width:450px; text-align:center; margin:0px auto; padding:20px;">'+vkGraffUpForm(upUrl)+'</div></div>';
-
-}
-
-function vkShowFakeGraffLoader(mid){
-  var Box = new MessageBox({title: IDL('LoadFakeGraffiti')});
-  Box.removeButtons();
-  /*Box.addButton({
-    onClick: function(){ msgret=Box.hide(200);Box.content(""); },
-    style:'button_no',label:IDL('Cancel')});
-  */
-  Box.addButton(!isNewLib()?{
-    onClick:  function(){ msgret=Box.hide(200);Box.content(""); },
-    style:'button_no',label:IDL('Cancel')}:IDL('Cancel'), function(){ msgret=Box.hide(200);Box.content(""); },'no');
-    
-  Box.content(vkGraffUpForm('/graffiti.php?'+((location.href.match(/club\d+/))?"group_id=":"to_id=")+mid)).show(); 
-  vkMakeGrafSidGen();
+      if (ge('vk_wall_post_type0')) return;
+      var vk__addMediaIndex=0;
+      if (window.__addMediaIndex) vk__addMediaIndex=__addMediaIndex;
+      var lnkId = ++vk__addMediaIndex;
+      if (ge('page_add_media')){
+         Inj.Wait("geByClass('add_media_rows')[0]",AddGraffItem,300,10);
+      }   
+   }
 }
 
-function addFakeGraffItem() {
-  var AddGraffItem=function(bef){
-    var mid=ge('mid')?ge('mid').value:(window.cur && cur.oid?cur.oid:0);
-    if (bef && mid){
-    bef=bef.getElementsByTagName('a')[0];
-	vkAddScript('/js/lib/swfobject.js');
-    var a=document.createElement('a');
-    a.setAttribute("onfocus","this.blur()");
-    a.setAttribute("class"," add_media_item");
-    a.setAttribute("id","vk_wall_post_type0");
-    a.setAttribute("style","background-image: url(/images/icons/attach_icons.gif); background-position: 3px -151px");
-    a.setAttribute("href","/graffiti.php?act=draw&"+((location.href.match(/club\d+/))?"group_id=":"to_id=")+mid);
-    a.setAttribute("onclick","vkShowFakeGraffLoader("+mid+");return false;");
-    a.innerHTML=IDL('LoadGraffiti');
-    bef.parentNode.insertBefore(a,bef.nextSibling);
-    }   
-  }
-  
-  if (ge('vk_wall_post_type0')) return;
-  var vk__addMediaIndex=0;
-  if (window.__addMediaIndex) vk__addMediaIndex=__addMediaIndex;
-  var lnkId = ++vk__addMediaIndex;
-  if (ge('page_add_media')){
-    Inj.Wait("geByClass('add_media_rows')[0]",AddGraffItem,300,10);
-	
-	/*
-	Inj.Wait("ge('add_media_type_"+(lnkId-1)+"_0')",AddGraffItem,300,10);
-	Inj.Wait("ge('add_media_type_"+lnkId+"_0')",AddGraffItem,300,10);
-	*/
-  } 
- 
-}
 
 function vkWallAddPreventHideCB(){
    Inj.Wait('cur.wallAddMedia',function(){
