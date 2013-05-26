@@ -2054,22 +2054,39 @@ vkApis={
 		var temp={};
 		var get=function(){
 			if (progress) progress(cur,count);
-			ajax.post('al_photos.php', {act: 'show', list: listId, offset: cur}, {onDone: function(listId, ph_count, offset, data, opts) {
-				if (!count) count=ph_count;
-				for(var i=0; i<data.length;i++){
-					if (temp[data[i].id]) continue;
-					temp[data[i].id]=true;	
-					var p=data[i];
-					p.max_src= p.w_src || p.z_src || p.y_src || p.x_src
-					photos.push(p);
-				}
-				if (cur<count){
-					cur+=PER_REQ;
-					setTimeout(get,50);
-				} else callback(photos);
-			}});
+			vk_ph_xhr=ajax.post('al_photos.php', {act: 'show', list: listId, offset: cur}, {
+            onDone: function(listId, ph_count, offset, data, opts) {
+               if (!count) count=ph_count;
+               for(var i=0; i<data.length;i++){
+                  if (temp[data[i].id]) continue;
+                  temp[data[i].id]=true;	
+                  var p=data[i];
+                  var max_src= p.w_src || p.z_src || p.y_src || p.x_src;
+                  //p.max_src=max_src;
+                  photos.push(max_src);//p
+                  data[i]=null;
+                  p=null;
+               }
+               if (cur<count){
+                  cur+=PER_REQ;
+                  setTimeout(nxt,50); // активируем костыль
+                  //setTimeout(get,50);
+               } else callback(photos);
+            },
+            onFail: function(){
+               //alert('Request failed..\n'+arguments);
+               console.log(arguments);
+               setTimeout(function(){next=true;},5000); // активируем костыль
+            }
+         });
 		}
-		get();
+      var next=true;
+      var nxt=function(){next=true;};
+      var ti=setInterval(function(){ // знаю... этот ужасный костыль для избежания наращивания стека вызовов... 
+         if (!next) return;
+         next=false;
+         get();
+      },100);
 	},
    videos: function(oid,aid,quality,callback,progress){// quality: 0 - 240p; 1 - 360p;  2 - 480p;  3 - 720p;
       aid = parseInt(aid) || 0;

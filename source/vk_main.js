@@ -1952,29 +1952,47 @@ function vkBoardPage(){
  //vkTopicsTip();
 }
 
-function vkProcessTopicLink(link){
-   var href=link.getAttribute('href');
+function vkProcessTopicLink(link){ // Wall and Topics links
+   var href=link.getAttribute('href') || "";
+   var onclick=link.getAttribute('onclick') || "";
    if (!href) return;
    var ment=link.getAttribute('mention') || "";
    if (ment && ment!=''){
       link.setAttribute('onmouseover', "vkTopicTooltip(this);");
       return;
    }
+   //*
+   var rp=onclick.match(/wall.showReply\('(-?\d+)_(\d+)'\s*,\s*'-?\d+_(\d+)'\)/);
+   if (!rp) rp=href.match(/\/wall(-?\d+)_(\d+)\?reply=(\d+)/) || href.match(/\/wall(-?\d+)_(\d+)$/);
+   if (rp && !link.hasAttribute('onmouseover') && !hasClass(link,'wd_lnk') && link.innerHTML.indexOf("rel_date")==-1){
+      link.setAttribute('onmouseover', "vkTopicTooltip(this, '"+rp[1]+"', null, '"+(rp[3] || rp[2])+"','wall');");
+      return;
+   } 
+   //*/
    var id=href.match(/topic(-?\d+)_(\d+)/);
    var post=href.match(/post=(\d+)/);
+
    if (!id) return;
-   if(!link.hasAttribute('onmouseover') && !hasClass(link,'bp_date') && !hasClass(link.parentNode,'bottom')){
+   if(!link.hasAttribute('onmouseover') && !hasClass(link,'bp_date') && !hasClass(link,'wd_lnk') && !hasClass(link.parentNode,'bottom')){
       link.setAttribute('onmouseover', "vkTopicTooltip(this, "+id[1]+","+id[2]+","+(post?post[1]:null)+");");
    }
 }
-function vkTopicTooltip(el,gid,topic,post){
+
+function vkTopicTooltip(el,gid,topic,post,type){
+    type = type || 'board';
     var bp_post = ((el.getAttribute('mention') || '').match(/^bp(-?\d+_\d+)$/) || {})[1];
     var post_id=post?(gid+'_'+post):(gid+'_topic'+topic);
-    var url = (post || bp_post)?'al_board.php':'al_wall.php';
+    var url = (post || bp_post) && type=='board'?'al_board.php':'al_wall.php';
+    var params={};
+    if (post && type=='wall'){ 
+      params['from']='feedback';
+      params['self']=1;
+      //from=feedback&post=-16925304_3197&self=1
+    }
     stManager.add(post?'board.css':'wall.css', function() {
        showTooltip(el, {
          url: url,
-         params: extend({act: 'post_tt', post: bp_post?bp_post:post_id}, {}),
+         params: extend({act: 'post_tt', post: bp_post?bp_post:post_id}, params),
          slide: 15,
          shift: [30, -3, 0],//78
          ajaxdt: 100,

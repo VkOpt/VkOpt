@@ -693,7 +693,7 @@ function vkGetLinksToPhotos(oid,aid){
 		var parr=[]; 
       var len=(phot.length+"").length;
 		for (var i=0;i<phot.length;i++){
-		  var src=phot[i].max_src;
+		  var src=phot[i];
         var num=('_000000000000'+i).substr(-len);
         var name='?&/'+num+'_'+src.split('/').pop();
         src+=name;
@@ -732,7 +732,7 @@ function vkGetPageWithPhotos(oid,aid){
   var MakeImgsList=function(phot){
     var parr=[]; 
     for (var i=0;i<phot.length;i++)
-      parr.push('<img src="'+phot[i].max_src+'">');
+      parr.push('<img src="'+phot[i]+'">');
     return parr;
   }
 	var box=new MessageBox({title: IDL('SavingImages'),width:"350px"});
