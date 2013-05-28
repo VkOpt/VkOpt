@@ -2050,8 +2050,19 @@ vkApis={
 		var PER_REQ=10;
 		var cur=0;
 		var count=0;
+      var from=0;
+      var to=0;
 		var photos=[];
 		var temp={};
+      if (!isFunction(callback)){
+         var params=callback;
+         callback=params.callback;
+         progress=params.progress;
+         from=params.from;
+         to=params.to;
+         if (from) cur=from;
+      }
+      
 		var get=function(){
 			if (progress) progress(cur,count);
 			vk_ph_xhr=ajax.post('al_photos.php', {act: 'show', list: listId, offset: cur}, {
@@ -2067,7 +2078,8 @@ vkApis={
                   data[i]=null;
                   p=null;
                }
-               if (cur<count){
+               if (!to) to=count;
+               if (cur<Math.min(to,count)){
                   cur+=PER_REQ;
                   setTimeout(nxt,50); // активируем костыль
                   //setTimeout(get,50);

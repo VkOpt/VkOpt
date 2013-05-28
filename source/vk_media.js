@@ -691,6 +691,7 @@ function vkPhotosPage(){
 function vkGetLinksToPhotos(oid,aid){  
 	var MakeLinksList=function(phot){
 		var parr=[]; 
+      var txt='';
       var len=(phot.length+"").length;
 		for (var i=0;i<phot.length;i++){
 		  var src=phot[i];
@@ -698,8 +699,9 @@ function vkGetLinksToPhotos(oid,aid){
         var name='?&/'+num+'_'+src.split('/').pop();
         src+=name;
         parr.push('<a href="'+src+'">'+src+'</a>');
+        txt+=src+'\r\n';
       }
-		return parr;
+		return [parr,txt];
 	}
 	if (!ge('vk_links_container')){
 		var div=vkCe('div',{id:"vk_links_container","class":"clear_fix",style:"padding:10px;"},'<center>'+vkBigLdrImg+'</center>');
@@ -716,11 +718,14 @@ function vkGetLinksToPhotos(oid,aid){
       div=ge('vk_links_container');
    }
 	vkApis.photos_hd(oid,aid,function(r){
-		var html=MakeLinksList(r).join('<br>');
+		var arr=MakeLinksList(r);
+      
+      var html=arr[0].join('<br>');
       div.innerHTML=html+(box?'':
 				'<div class="vk_hide_links" style="text-align:center; padding:20px;">\
 					<a href="#" onclick="re(\'vk_links_container\'); return false;">'+IDL('Hide')+'</a>\
 				</div>');
+      vkSaveText(arr[1],"photos_"+vkCleanFileName((oid||'')+'_'+(aid||'')).substr(0,250)+".txt");
 	},function(c,f){
 		if (!f) f=1;
 		ge('vk_links_container').innerHTML=vkProgressBar(c,f,600);
@@ -1672,6 +1677,81 @@ vk_videos = {
    }
 }
 
+vk_vid_down={
+   get_ivi_links:function(vid,callback){
+      // 'http://www.ivi.ru/watch/'+vid
+      /*
+      XFR2.send({
+         url:'http: //api.digitalaccess.ru/api/json/',
+         method: 'POST',
+         data:'{"method":"da.content.get","params":[98391,{"utmfullinfo":"","_url":null,"watchid":"98391_820943761555.3776_1369750436537","site":"s132","_domain":null,"uid":"820943761555.3776","referrer":null,"contentid":98391,"campaignid":"","sourceid":""}]}'
+      },function(r){
+         alert(r.text);
+      });
+      */
+      var rnd=Math.random()*1000000000000;
+      var data={
+         "method":"da.content.get",
+         "params":[
+            vid,
+            {
+               "utmfullinfo":"",
+               "_url":null,
+               "watchid":[vid,rnd,unixtime()].join('_'),
+               "site":"s132",
+               "_domain":null,
+               "uid":rnd,
+               "referrer":null,
+               "contentid":vid,
+               "campaignid":"",
+               "sourceid":""
+            }
+         ]
+      };
+      
+      var ondone=function(r) {
+         var vars=JSON.parse(r);
+         var links=vars.result.files;
+         if (!links){ 
+            callback([]);
+            return;
+         }
+         var res=[];
+         for (var i=0; i<links.length; i++){
+            if (links[i].content_format!='Flash-Access')
+               res.push([
+                  links[i].url,
+                  links[i].content_format
+               ]);
+         };
+         callback(res);
+         //console.log(r);
+      }
+      
+      xhr = new XMLHttpRequest();
+      xhr.open('POST', 'http://api.digitalaccess.ru/api/json/', true);
+      xhr.onreadystatechange = function(){         
+         if (xhr.readyState == 4) {
+            ondone(xhr.responseText);
+         }
+      };
+      xhr.send(JSON.stringify(data));
+   },
+   ivi_links:function(ivi_id){
+      ivi_id=ivi_id+"";
+      if (!ivi_id.match(/^\d+$/)){
+         ivi_id=(ivi_id.match(/videoId=(\d+)/)||[])[1];// + may be need parse siteId=s132 ...
+      }
+      vk_vid_down.get_ivi_links(ivi_id,function(r){
+         if (!r) return;
+         var html='';//'<a href="http://www.ivi.ru/watch/'+ivi_id+'">ivi.ru</a>'; 
+         //alert(html);
+         for (var i=0;i<r.length;i++)
+            html+='<a href="'+r[i][0]+'" title="'+r[i][1]+'"  class="clear_fix">'+IDL("download")+' ['+r[i][1]+']</a>';
+         ge('vkyoutubelinks').innerHTML='<a id="vkyoutubelinks_show" href="javascript: toggle(\'vkyoutubelinks_list\');">'+IDL('download')+'</a><span id="vkyoutubelinks_list" style="display:none;">'+html+'</span>';    });
+      return '<span id="vkyoutubelinks"></span>';
+   }
+}
 function vkVideoNullAlbum(){
    /*
    var p=ge('video_albums_list');
@@ -2205,6 +2285,7 @@ function vkVidLoadLinks(oid,vid,el,yid,type){
                el.innerHTML=html;      
             });
       }
+      
       var getvimeo=function(vimeoid){
          vkGetVimeoLinks(vimeoid,function(r){
             if (!r) return;
@@ -2215,6 +2296,21 @@ function vkVidLoadLinks(oid,vid,el,yid,type){
             el.innerHTML=html;
          });  
       }
+      var get_ivi=function(ivi_id){
+         ivi_id=ivi_id+"";
+         if (!ivi_id.match(/^\d+$/)){
+            ivi_id=(ivi_id.match(/videoId=(\d+)/)||[])[1];// + may be need parse siteId=s132 ...
+         }
+         vk_vid_down.get_ivi_links(ivi_id,function(r){
+            if (!r) return;
+            var html='<a href="http://www.ivi.ru/watch/'+ivi_id+'">ivi.ru</a>'; 
+            //alert(html);
+            for (var i=0;i<r.length;i++)
+               html+='<a href="'+r[i][0]+'" title="'+r[i][1]+'"  class="vk_down_icon">'+r[i][1].replace(/-/g,'.')+' </a>';
+            el.innerHTML=html;
+         });  
+      }      
+      
       if (yid && (!type || type=='youtube')){
          getyt(yid);
       } else if (yid && type=='vimeo'){ 
@@ -2227,6 +2323,8 @@ function vkVidLoadLinks(oid,vid,el,yid,type){
             getyt(obj.extra_data);            
          } else if (obj.extra=="22"){
             getvimeo(obj.extra_data);
+         } else if (obj.extra=="50"){
+            get_ivi(obj.extra_data);
          } else if (!obj.extra){
             var html='';
             var arr=vkVidDownloadLinksArray(obj);
@@ -2465,9 +2563,15 @@ function vkVimeoVideoLinks(link){
 
 function vkVidLinks(data){	
 	if (ge('mv_actions')){
-      if (ge('video_player') && ge('video_player').tagName.toUpperCase()=='IFRAME'){
-         var vlink=ge('video_player').getAttribute('src');
-         if (vlink && vlink.indexOf('youtube')!=-1){
+      var vlink=null;
+      if (ge('video_player') && ge('video_player').tagName.toUpperCase()=='IFRAME')
+         vlink=ge('video_player').getAttribute('src');
+      else if (ge('mv_content') && ge('mv_content').innerHTML.indexOf('ivi.ru')>-1){
+         vlink=ge('mv_content').innerHTML.match(/ivi\.ru[^"]+videoId=\d+/);
+         vlink = vlink?vlink[0]:null;
+      }
+      if (vlink){
+         if (vlink.indexOf('youtube')!=-1){
             if (ge('vk_youtube_video_link')) return;
             var link=vlink.split('?')[0].replace('embed/','watch?v=');
             ge('mv_actions').innerHTML+='<a href="'+link+'" id="vk_youtube_video_link">'+IDL('YouTube',1)+'</a>';/*savefrom_link_tpl.replace('%URL%',link).replace('%CLASS%','fl_l')+*/ 
@@ -2478,7 +2582,7 @@ function vkVidLinks(data){
             */
             
          }
-         if (vlink && vlink.indexOf('vimeo')!=-1){
+         if (vlink.indexOf('vimeo')!=-1){
             if (ge('vk_youtube_video_link')) return;
             //var link=vlink.split('?')[0].replace('embed/','watch?v=');
             var link='http://vimeo.com/'+String(vlink).split('?')[0].split('/').pop();
@@ -2488,7 +2592,13 @@ function vkVidLinks(data){
                http://www.youtube.com/embed/jfKVHD3hCS0?autoplay=0
                http://www.youtube.com/watch?v=jfKVHD3hCS0
             */
+         }
+         //alert(vlink+'\n'+(vlink.indexOf('ivi.ru')));
+         if (vlink.indexOf('ivi.ru')!=-1){
             
+            var link='http://www.ivi.ru/watch/'+(vlink.match(/ivi\.ru[^"]+videoId=(\d+)/)||[])[1];
+            ge('mv_actions').innerHTML+='<a href="'+link+'" id="vk_youtube_video_link">'+IDL('ivi.ru',1)+'</a>';/*savefrom_link_tpl.replace('%URL%',link).replace('%CLASS%','fl_l')+*/ 
+            ge('mv_actions').innerHTML+=vk_vid_down.ivi_links(vlink);
          }
          ge('mv_actions').innerHTML+=vk_plugins.video_links(ge('video_player').src);
       } else if (vkVidVars){  

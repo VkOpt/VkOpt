@@ -1298,7 +1298,7 @@ function vkFrReqDoneAddUserLists(text,mid){
 
 function vkModAsNode(text,func,url,q){ //url,q - for processing response 
 	if (!text || text.tagName){
-      console.log('ModAsNode fail',text,url,q);
+      //console.log('ModAsNode fail',text,url,q);
       return;
    }
    var is_table=text.substr(0,3)=='<tr';
