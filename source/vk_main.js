@@ -32,6 +32,7 @@ function vkInj(file){
  switch (file){
    case 'photoview.js':    vkPhotoViewer();	break;
 	case 'videoview.js':	   vkVideoViewer();	break;
+   case 'html5video.js':	vk_videos.inj_html5();	break;
    case 'video.js':	      vkVideo();	      break;
 	case 'audio.js':		   vkAudios();		   break;
    case 'audioplayer.js':	vkAudioPlayer();		break;

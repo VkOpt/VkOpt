@@ -1476,6 +1476,9 @@ vk_videos = {
    inj_common:function(){
       Inj.Before('showVideo','ajax.post','vk_videos.change_show_video_params(options);');
    },
+   inj_html5:function(){
+      Inj.End('html5video.initHTML5Video','vkOnRenderFlashVars(vars);');
+   },
    change_show_video_params:function(opts){
       if (!opts || !opts.params) return;
       var params=opts.params;
@@ -1680,15 +1683,6 @@ vk_videos = {
 vk_vid_down={
    get_ivi_links:function(vid,callback){
       // 'http://www.ivi.ru/watch/'+vid
-      /*
-      XFR2.send({
-         url:'http: //api.digitalaccess.ru/api/json/',
-         method: 'POST',
-         data:'{"method":"da.content.get","params":[98391,{"utmfullinfo":"","_url":null,"watchid":"98391_820943761555.3776_1369750436537","site":"s132","_domain":null,"uid":"820943761555.3776","referrer":null,"contentid":98391,"campaignid":"","sourceid":""}]}'
-      },function(r){
-         alert(r.text);
-      });
-      */
       var rnd=Math.random()*1000000000000;
       var data={
          "method":"da.content.get",
@@ -1728,6 +1722,9 @@ vk_vid_down={
          //console.log(r);
       }
       
+     
+      // XFR2.send({ url:'http: //api.digitalaccess.ru/api/json/', method: 'POST', data:JSON.stringify(data)},function(r){ alert(r.text);  });
+
       xhr = new XMLHttpRequest();
       xhr.open('POST', 'http://api.digitalaccess.ru/api/json/', true);
       xhr.onreadystatechange = function(){         
