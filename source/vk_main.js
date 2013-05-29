@@ -652,6 +652,35 @@ function vkProcessResponse(answer,url,q){
   if (getSet(39) == 'y' && url=='/al_profile.php' && q.act=='groups'){
       answer[1]=vkModAsNode(answer[1],vkHighlightProfileGroups,url,q);
   }
+  
+  if (url=='/al_wall.php' && q.act=='poll_export_box'){
+      answer[1]=vkModAsNode(answer[1],vk_features.poll_preview_btn,url,q);
+  }
+}
+
+vk_features={
+   poll_preview_btn:function(node){
+      if (!node) return;
+      var t=geByTag('textarea',node)[0];
+      if (!t) return;
+      t.setAttribute('id','vk_poll_code');
+      var el=se('<div><a href="#" onclick="return vk_features.poll_preview();">'+IDL('Preview',1)+'</a><div id="vk_poll_preview"></div></div>');
+      node.appendChild(el);
+   },
+   poll_preview:function(){
+      stManager.add('api/openapi.js',function(){
+         ge('vk_poll_preview').innerHTML='';
+         ge('vk_poll_preview').innerHTML=ge('vk_poll_code').value.replace(/<script[^>]+>[^<]*<\/script>/g,'');
+         eval(ge('vk_poll_code').value.match(/VK\.Widgets[^\)]+\)/)[0]);
+      });
+
+      /*
+      fr=se('<iframe frameborder="0"  style="width: 100%; height: 200px;"></iframe>'); 
+      ge('vk_poll_preview').appendChild(fr);
+      fr.contentDocument.write(ge('vk_poll_code').value);
+      */
+      return false;
+   }
 }
 
 vk_ch_media={
@@ -1300,7 +1329,7 @@ function vkFrReqDoneAddUserLists(text,mid){
 function vkModAsNode(text,func,url,q){ //url,q - for processing response 
 	if (!text || text.tagName){
       //console.log('ModAsNode fail',text,url,q);
-      return;
+      return text;
    }
    var is_table=text.substr(0,3)=='<tr';
 	var div=vkCe(is_table?'table':'div');

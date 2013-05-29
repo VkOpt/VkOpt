@@ -460,7 +460,7 @@ var vkMozExtension = {
       return escaped;         
    }
 
-   function vkCleanFileName(s){   return trim(s.replace(/[\\\/\:\*\?\"\<\>\|]/g,'_').replace(/\u2013/g,'-').replace(/&#\d+;/g,'_').substr(0,200));   }
+   function vkCleanFileName(s){   return trim(s.replace(/[\\\/\:\*\?\"\<\>\|]/g,'_').replace(/\u2013/g,'-').replace(/&#\d+;/g,'_').replace(/\s\s/g,'').substr(0,200));   }
    function vkEncodeFileName(s){
       if (FULL_ENCODE_FILENAME)
          return encodeURIComponent(s);
