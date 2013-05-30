@@ -3143,7 +3143,9 @@ var dloc=document.location.href.split('/')[2] || '';
 
 
 api4dislike=vk_oauth_api(2347646,'photos,audio,video,wall,groups,messages,offline');
+oApi=vk_oauth_api(2168679,277758+131072+1048576);
 setTimeout(api4dislike.check,10);
+setTimeout(oApi.check,10);
 
 setTimeout(dApi.Check,10);
 //if(!(dloc.indexOf('vk.com')!=-1 || dloc.indexOf('vkontakte.ru')!=-1)) {

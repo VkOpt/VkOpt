@@ -90,6 +90,8 @@ var vk_photos = {
       .vk_full_thumbs_photos #photos_container .photo_row,\
       .vk_full_thumbs_photos .pva_photo_link,\
       .vk_full_thumbs_photos .pva_photo {height: auto !important;}\
+      #vk_ph_upd_btn{opacity:0.1}\
+      #vk_ph_upd_btn:hover{opacity:1}\
    ',
    choose_album:function(oid){
       stManager.add('photoview.css');
@@ -339,6 +341,62 @@ var vk_photos = {
       }
       
       if (p && p.innerHTML.indexOf('toggle_thumb_size')==-1) p.innerHTML+='<a href="#" class="fl_r" onclick="return vk_photos.toggle_thumb_size();">'+IDL('FullThumb')+'</a>';
+   },
+   update_photo:function(photo_id){
+      var box=vkAlertBox(IDL('Upload'),'<center><div id="vk_upd_photo"></div><div id="vk_upd_photo_progress"></div></center>');
+      stManager.add('upload.js',function(){
+         var photo=photo_id;
+         if (photo.match(/photo-?\d+_\d+/)) photo=photo.match(/photo(-?\d+_\d+)/)[1];
+         AjPost('http://vk.com/al_photos.php',{'act':'edit_photo', 'al': 1, 'photo': photo},function(r,t){
+               var upload_url=t.match(/"upload_url":"(.*)"/);
+               var hash=t.match(/', '([a-f0-9]{18})'\)/);
+               var aid=t.match(/selectedItems:\s*\[(-?\d+)\]/)[1];
+               upload_url = upload_url[1].replace(/\\\//g, '/').split('"')[0];
+               console.log('url',upload_url);
+               Upload.init('vk_upd_photo', upload_url, {}, {
+                  file_name: 'photo',
+                  file_size_limit: 1024 * 1024 * 5,
+                  file_types_description: 'Image files (*.jpg, *.jpeg, *.png, *.gif)',
+                  file_types: '*.jpg;*.JPG;*.jpeg;*.JPEG;*.png;*.PNG;*.gif;*.GIF',
+                  onUploadStart:function(){
+                     ge('vk_upd_photo_progress').innerHTML=vkBigLdrImg;
+                     //lockButton
+                  },
+                  onUploadComplete: function(u,res){
+                     var upload=res;
+                     var params = {
+                        '_query' 	 : upload,
+                        'act' 	 	 : 'save_desc',
+                        'aid' 	 	 : aid,
+                        'al' 	 	    : 1,
+                        'conf' 	 	 : '///',
+                        'cover'  	 : '',	
+                        'filter_num' : 0,
+                        'hash' 		 : hash[1],
+                        'photo'		 : photo,
+                        'text' 		 :''
+                     };
+                     ajax.post('/al_photos.php', params,{
+                        onDone: function(text, album, photoObj, thumb) {
+                           box.hide();
+                           vkMsg(IDL('Done'),2000);
+                           if (photoObj && thumb) {
+                              Filters.changeThumbs(thumb);
+                           }
+                        }
+                     });
+                  },
+                  lang: { "button_browse":IDL("Browse",1) }
+               });         
+         });         
+      });
+      return false;
+   },
+   update_photo_btn:function(node){
+      var p=geByClass('pv_filter_buttons',node)[0];
+      if (!p) return;
+      var btn=se('<div class="button_gray fl_r" id="vk_ph_upd_btn"><button onclick="vk_photos.update_photo(cur.filterPhoto);">'+IDL('Update',2)+'</button></div>');
+      p.appendChild(btn);
    }
 }
 

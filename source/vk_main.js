@@ -656,6 +656,11 @@ function vkProcessResponse(answer,url,q){
   if (url=='/al_wall.php' && q.act=='poll_export_box'){
       answer[1]=vkModAsNode(answer[1],vk_features.poll_preview_btn,url,q);
   }
+  
+  if (url=='/al_photos.php' && q.act=='edit_photo'){
+      answer[1]=vkModAsNode(answer[1],vk_photos.update_photo_btn,url,q);
+  }  
+  
 }
 
 vk_features={
