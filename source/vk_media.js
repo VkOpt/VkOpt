@@ -4175,6 +4175,7 @@ vkLastFM={
             className: 'gp_tip',
             black: 1,
             shift: [4 + intval(dx), 13 + intval(dy1), 16 + intval(dy2)],
+            showdt:300,
             onHide:opts.onHide,
             onShowStart:opts.onShowStart
          });     

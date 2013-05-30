@@ -889,6 +889,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 		var rate=make_rate(profile.rate);
       var relation=profile.relation;
       var sex=profile.sex;
+      var verified=profile.verified;
       var rel=IDL((sex==1?'profile_relation_f_':'profile_relation_m_')+relation);
       rel=relation>0?rel:'';
       if (profile.relation_partner){
@@ -947,7 +948,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 					</div>';
 		var html=VK_PROFILE_TPL.replace("%AVA_SRC%",ava_url)
 							   .replace(/%UID%/g,uid)
-							   .replace(/%USERNAME%/g,username)
+							   .replace(/%USERNAME%/g,(verified==1?'<span class="vk_profile_verified"></span>':'')+username)
 							   .replace("%ACTIVITY%",profile.activity)
 							   .replace("%RATE%",rate)
 							   .replace("%ONLINE%",online)
@@ -965,7 +966,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 	  else {
 		  var code = '';
         //code  += 'var activity=API.status.get({uid:"'+uid+'"});';
-		  code += 'var profile=API.getProfiles({uids:"'+uid+'",fields:"relation,sex,nickname,activity,photo_big,online,last_seen,rate,bdate,city,country,contacts,connections,education,can_post,can_write_private_message,lists,has_mobile"})[0];';
+		  code += 'var profile=API.getProfiles({uids:"'+uid+'",fields:"relation,sex,nickname,activity,photo_big,online,last_seen,rate,bdate,city,country,contacts,connections,education,can_post,can_write_private_message,lists,has_mobile,verified"})[0];';
 		  code += 'var commonfr=API.friends.getMutual({target_uid:"'+uid+'"});';
 		  code += 'var commons=API.getProfiles({uids:commonfr,fields:"online"});';
         code += 'var msg_count=API.messages.getHistory({count:1,uid:'+uid+'})[0];';

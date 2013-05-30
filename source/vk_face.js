@@ -104,7 +104,8 @@ function vkStyles(){
 		  .vk_rate_lvl_5 .vk_rate_left{ border-top: 1px solid #B29F4E; background: #CBB464;}\n\
 		  .vk_rate_lvl_5 .vk_rate_right{ border-top: 1px solid #C5B565; background: #E1CC7E;}\n\
 		/*.vk_profile_info{width:450px;}*/\
-		#vk_profile_toogle{position:relative;display:block; text-align:center; 	background:rgba(0,0,0,0.5); color:#FFF; font-weight:bold; 	font-size:20px; margin-top:-25px; line-height:22px;}\
+		.vk_profile_verified { background: url("/images/profile_icons.gif?7") 0px -73px no-repeat transparent;display: inline-block;height: 11px;margin: 0px 3px 0px 6px;width: 13px;}\
+      #vk_profile_toogle{position:relative;display:block; text-align:center; 	background:rgba(0,0,0,0.5); color:#FFF; font-weight:bold; 	font-size:20px; margin-top:-25px; line-height:22px;}\
 		#vk_profile_toogle:hover{text-decoration:none;}\
 		.vk_profile_info .label { width: 100px;color: #777777; }\
 		.vk_profile_info .labeled { width: 140px;overflow-x: hidden;overflow-y: hidden; }\
