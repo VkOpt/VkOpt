@@ -43,10 +43,10 @@ function getGidUid(url,callback){ //callback(uid,gid)
 	url=String(url);
 	if (url.match(/^\d+$/)){callback(url);  return;}
 	if (url.match(/^u\d+$/)){callback(url.match(/^u(\d+)$/)[1],null);  return;}
-	if (url.match(/id\d+$/)){callback(url.match(/id(\d+)$/)[1],null);  return;}
+	if (url.match(/(^|\/)id\d+$/)){callback(url.match(/(^|\/)id(\d+)$/)[2],null);  return;}
 	
 	if (url.match(/^g\d+$/)){callback(null,url.match(/^g(\d+)$/)[1]);  return;}
-	if (url.match(/club\d+$/)){callback(null,url.match(/club(\d+)$/)[1]);  return;}
+	if (url.match(/(^|\/)club\d+$/)){callback(null,url.match(/(^|\/)club(\d+)$/)[2]);  return;}
 	
 	if (vkUsersGroupsDomain[url]){callback(vkUsersGroupsDomain[url][0],vkUsersGroupsDomain[url][1]);  return; }
    
