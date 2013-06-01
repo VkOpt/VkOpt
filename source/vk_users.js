@@ -881,7 +881,7 @@ function vkGetProfile(uid,callback,no_switch_button){
          return {uid:uid,in_lists:user_in_lists,lists:lists}
       */   
 		var common='';
-		console.log(profile);
+		//console.log(profile);
 		var username='<a href="/id'+uid+'" onclick="return nav.go(this, event);">'+profile.first_name+' '+profile.nickname+' '+profile.last_name+'</a>';
 		var ava_url=profile.photo_big;
       var last_seen=(profile.last_seen || {}).time;

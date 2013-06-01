@@ -126,6 +126,8 @@ function vkOnNewLocation(startup){
          if (!cur.oid) cur.oid=obj[1];
          if (!cur.pid) cur.pid=obj[2];
          
+      } else if (nav.objLoc['act']=='users' && (cur.tab || "").match(/^(members|invites|admins)$/) && cur.oid<0){
+         cur.module='groups_edit';
       } else {
          switch(nav.objLoc[0]){
             case 'settings':  cur.module='settings';          break;
@@ -143,6 +145,7 @@ function vkOnNewLocation(startup){
          setTimeout(vkOnNewLocation,10);
          return;
       }*/
+
    }
 	vklog('Navigate:'+print_r(nav.objLoc).replace(/\n/g,','));
 	var tstart=unixtime();
@@ -155,12 +158,8 @@ function vkOnNewLocation(startup){
       default:
          if (nav.objLoc[0].match(/write\d+/)) vkMailPage();
 	}
-   /*
-   if (!cur.module){
-      if(nav.objLoc[0].match(/wall-?\d+/)) 
-         cur.module='wall';
-   }
-   */
+
+
 
 	if (cur.module){	
 		vklog(cur.module+'|'+print_r(nav.objLoc).replace(/\n/g,','));
@@ -168,7 +167,7 @@ function vkOnNewLocation(startup){
 			case 'profile':vkProfilePage(); break;
          case 'profileEdit':vkProfileEditPage(); break;
 			case 'groups' :vkGroupPage(); break;
-         case 'groups_edit':vkGroupEditPage(); break;
+         case 'groups_edit':vk_groups.group_edit_page(); break;
 			case 'event'  :vkEventPage(); break;
 			case 'public' :vkPublicPage(); break;
 			case 'wall'   :vkWallPage(); break;
