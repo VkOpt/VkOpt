@@ -727,7 +727,15 @@ function vkPhotosPage(){
                   vk_photos.toggle_thumb_size();
                } 
             });
-               
+            
+            if (aid=='photos')
+               p_options.push({
+                  l:IDL('mPhC'),
+                  onClick:function(item) { 
+                     cur.oid=oid;
+                     vk_ph_comms.init();
+                  } 
+               });               
                
                
                
@@ -761,7 +769,7 @@ vk_ph_comms = {
       cur.module = 'photos_comments';
       cur.oid=oid;
       cur.offset = 0;
-      ge('photos_albums').innerHTML='<div id="photos_container" class="clear_fix"></div>\
+      (ge('photos_albums') || geByClass('photos_albums_page')[0]).innerHTML='<div id="photos_container" class="clear_fix"></div>\
          <a id="photos_load_more" onclick="vk_ph_comms.load()" style="">\
            <span style="display: inline;">'+IDL('ShowMore')+'</span>\
            <div id="photos_more_progress" class="progress" style="display: none;"></div>\
