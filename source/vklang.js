@@ -1620,7 +1620,8 @@ vk_lang_en={//by Hzy
    'Code':'[ Code ]',
    'seSearchExInfo':'Additional information about user in search results',
    'AddedToPls':'Added to playlist',
-   'AddToPls':'Add to playlist'
+   'AddToPls':'Add to playlist',
+   'ShowMore':'Show more'
 };
  
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)

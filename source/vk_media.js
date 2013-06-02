@@ -814,9 +814,15 @@ vk_ph_comms = {
          show(more.firstChild);
          hide(progress);
          cur.loading = done?1:0;
-         var comms=se(html);
-         vkProcessNode(comms);
-         vk_ph_comms.cont.appendChild(comms);
+         if (done){
+            hide(more);
+            hide(progress);
+         }
+         if (html!=''){
+            var comms=se(html);
+            vkProcessNode(comms);
+            vk_ph_comms.cont.appendChild(comms);
+         }
       });
    },
    get_data:function(offset,callback){
@@ -899,7 +905,7 @@ vk_ph_comms = {
             }
             dApi.call('users.get',{uids:uids.join(','),fields:'photo_50'},function(ur){
                var users=ur.response;
-               console.log('users:',ur);
+               //console.log('users:',ur);
                for (var i=0; i<users.length; i++)
                   vk_ph_comms.users[users[i].uid+'']=[users[i].first_name+' '+users[i].last_name,users[i].photo_50];
                photos_load();
