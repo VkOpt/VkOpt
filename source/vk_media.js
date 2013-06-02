@@ -679,7 +679,10 @@ function vkPhotosPage(){
 	vk_photos.toggle_thumb_size(true);
    if (nav.objLoc[0].indexOf('albums')!=-1){
       vkAddAlbumCommentsLinks();
-      if (cur.oid<0) vkPhotosWallAlbum();
+      if (cur.oid<0){
+         vkPhotosWallAlbum();
+         vk_ph_comms.browse_comments_btn();
+      }
    } else if (nav.objLoc[0].indexOf('album')!=-1 || nav.objLoc[0].indexOf('tag')!=-1 || nav.objLoc[0].indexOf('photos')!=-1){
 		
       var m=nav.objLoc[0].match(/album(-?\d+)_(\d+)/);
@@ -743,6 +746,172 @@ function vkPhotosPage(){
 	}
 }
 
+vk_ph_comms = {
+   users:{},
+   photos:{},
+   browse_comments_btn:function(){
+      if (cur.oid>0 || ge('vk_php_comm')) return;
+      var p=geByClass('summary',ge('photos_albums'))[0];
+      if (!p) return;
+      p.appendChild(se('<span class="fl_r" id="vk_php_comm"><a href="#" onclick="return vk_ph_comms.init();">'+IDL('mPhC',1)+'</a><span class="divider">|</span></span>'))
+   },
+   init:function(){
+      var oid=cur.oid;
+      processDestroy(cur);
+      cur.module = 'photos_comments';
+      cur.oid=oid;
+      cur.offset = 0;
+      ge('photos_albums').innerHTML='<div id="photos_container" class="clear_fix"></div>\
+         <a id="photos_load_more" onclick="vk_ph_comms.load()" style="">\
+           <span style="display: inline;">'+IDL('ShowMore')+'</span>\
+           <div id="photos_more_progress" class="progress" style="display: none;"></div>\
+         </a>';
+      vk_ph_comms.moreLink=ge('photos_load_more');
+      vk_ph_comms.progress=ge('photos_more_progress');
+      vk_ph_comms.cont=ge('photos_container');
+      stManager.add('photoview.css');
+      vk_ph_comms.initScroll();
+      vk_ph_comms.load();
+      return false;
+   },
+   initScroll: function() {
+      vk_ph_comms.scrollnode = browser.msie6 ? pageNode : window;
+
+      addEvent(vk_ph_comms.scrollnode, 'scroll', vk_ph_comms.scrollResize);
+      addEvent(window, 'resize', vk_ph_comms.scrollResize);
+      removeEvent(window, 'load', vk_ph_comms.initScroll);
+      cur.destroy.push(function() {
+         removeEvent(vk_ph_comms.scrollnode, 'scroll', vk_ph_comms.scrollResize);
+         removeEvent(window, 'resize', vk_ph_comms.scrollResize);
+         vk_ph_comms.users={};
+         vk_ph_comms.photos={};
+      });
+   },   
+   scrollResize: function() {
+      if (browser.mobile || cur.pvShown) return;
+
+      var docEl = document.documentElement;
+      var ch = window.innerHeight || docEl.clientHeight || bodyNode.clientHeight;
+      var st = scrollGetY();
+      var lnk = vk_ph_comms.moreLink;
+
+      if (isVisible(lnk) && st + ch > lnk.offsetTop) {
+         vk_ph_comms.load();
+      }
+   },
+   load:function(){
+      var more=vk_ph_comms.moreLink;
+      var progress=vk_ph_comms.progress;
+      if (!isVisible(more) || isVisible(progress)) return;
+      if (cur.loading) {
+         cur.loading = 2;
+         return;
+      }
+      cur.loading = 1;
+      show(progress);
+      hide(more.firstChild);
+      vk_ph_comms.get_data(cur.offset,function(html,done){
+         show(more.firstChild);
+         hide(progress);
+         cur.loading = done?1:0;
+         var comms=se(html);
+         vkProcessNode(comms);
+         vk_ph_comms.cont.appendChild(comms);
+      });
+   },
+   get_data:function(offset,callback){
+      var PER_REQ=20;//max 100
+      dApi.call('photos.getAllComments', {
+         oid: cur.oid,
+         offset:cur.offset,
+         need_likes:1,
+         allow_group_comments:1,
+         count:PER_REQ
+      }, function(r){
+         cur.offset+=PER_REQ;
+         var data=r.response;
+         if (data.length==0){ 
+            callback('',true)
+            return;
+         }
+
+         var tpl='<div class="clear_fix pv_comment pv_first_comment" id="pv_comment%id">\
+              <div class="reply_table">\
+                <div class="fl_l pv_thumb"><a href="/id%uid" onclick="return nav.go(this, event)"><img src="%ava" class="vk_userava%uid"></a></div>\
+                <div class="fl_l pv_comm">\
+                  <a href="/id%uid" onclick="return nav.go(this, event)" class="author">%name</a>\
+                  <div><div class="pv_commtext">%comment</div></div>\
+                  <div class="pv_commdata"><span class="fl_l pv_commdate">%date</span></div>\
+                </div>\
+                <a class="pv_photo_thumb fl_r vk_ph_preview" href="/photo%pid?all=1" onclick="return showPhoto(\'%pid\', \'photos%oid\', {temp:{}}, event)">\
+                  <img src="%src" id="vk_photo_prw%id">\
+                </a>\
+              </div>\
+            </div>'
+         var html='';
+         var pids=[];//.vk_ph_preview{background:url(); width:; height:;}//vk_photo_prw%id
+         var uids=[];//.vk_userava%uid .src=
+         for (var i=0; i<data.length; i++){
+            var com=data[i];
+            var uid=com.from_id+"";
+            var pid=com.pid+"";
+            if (!vk_ph_comms.users[uid])
+               uids.push(uid);
+            if (!vk_ph_comms.photos[pid])   
+               pids.push(cur.oid+'_'+pid);
+         }
+         
+         var make_comments=function(){
+            var users=vk_ph_comms.users;
+            var photos=vk_ph_comms.photos;
+            for (var i=0; i<data.length; i++){
+               var com=data[i];
+               //*
+               html+=tpl.replace(/%id/g,cur.oid+'_'+com.cid+'review')
+                        .replace(/%ava/g,users[com.from_id][1])
+                        .replace(/%uid/g,com.from_id)
+                        .replace(/%name/g,users[com.from_id][0])
+                        .replace(/%comment/g,com.message.replace(/\[(id\d+)\|([^\]]+)\]/,'<a href="/$1">$2</a>'))
+                        .replace(/%date/g, (new Date(com.date*1000)).format('dd.mm.yyyy HH:MM'))
+                        .replace(/%pid/g,cur.oid+'_'+com.pid) //'-1_2'
+                        .replace(/%oid/g,cur.oid)
+                        .replace(/%src/g,photos[com.pid+'']||"http://vk.com/images/no_photo.png");
+               //*/         
+            }
+            callback('<div>'+html+'</div>');
+         }
+         var photos_load=function(){
+            if (pids.length==0){ 
+               make_comments();
+               return;
+            }
+            dApi.call('photos.getById',{photos:pids.join(',')},function(pr){
+               var photos=pr.response;
+               for (var i=0; i<photos.length; i++)
+                  vk_ph_comms.photos[photos[i].pid+'']=photos[i].src;
+               make_comments();
+            })         
+         }        
+         var users_load=function(){
+            if (uids.length==0){ 
+               photos_load();
+               return;
+            }
+            dApi.call('users.get',{uids:uids.join(','),fields:'photo_50'},function(ur){
+               var users=ur.response;
+               console.log('users:',ur);
+               for (var i=0; i<users.length; i++)
+                  vk_ph_comms.users[users[i].uid+'']=[users[i].first_name+' '+users[i].last_name,users[i].photo_50];
+               photos_load();
+            });         
+         }
+
+         users_load();
+         
+
+      })
+   }
+}
 //javascript: vkGetPageWithPhotos(13391307,42748479); void(0);
 ////javascript: vkGetPageWithPhotos(13391307,42748479); void(0);
 //

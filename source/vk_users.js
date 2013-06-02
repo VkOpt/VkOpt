@@ -117,6 +117,7 @@ function ExtractUserID(link){
     if (!link) return null;
 	var tmp2=link.match(/\/id(\d+)$/);
     if (!tmp2 && isUserLink(link)) {  
+            link=link.replace(/http:\/\/[^\/]+/,'');
             tmp2=link.split('/'); 
             var n=tmp2.pop();
             var d=tmp2.pop();
