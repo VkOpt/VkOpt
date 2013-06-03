@@ -397,6 +397,53 @@ var vk_photos = {
       if (!p) return;
       var btn=se('<div class="button_gray fl_r" id="vk_ph_upd_btn"><button onclick="vk_photos.update_photo(cur.filterPhoto);">'+IDL('Update',2)+'</button></div>');
       p.appendChild(btn);
+   },
+   scan_wall:function(oid,only_owner){
+      var PER_REQ=100;
+      var offset=0;
+      var links=[];
+      var oid=cur.oid;
+      var filter=!only_owner?'all':'owner';
+      var abort=false;
+      function scan(){
+         if (abort) return;
+         dApi.call('wall.get',{owner_id:oid,count:PER_REQ,offset:offset,filter:filter,extended:1},function(r){
+            if (abort) return;
+            var data=r.response;
+            var posts=data.wall;
+            var count=posts.shift();
+            var len=posts.length;
+            ge('vk_links_container_progr').innerHTML=vkProgressBar(offset,count,600);
+            for (var j=0; j<len; j++){
+               var att=posts[j].attachments;
+               if (!att) continue;
+               for (var i=0; i<att.length; i++){
+                  if (!att[i].photo) continue;
+                  var p=att[i].photo;
+                  links.push(p.src_xxxbig || p.src_xxbig || p.src_xbig || p.src_big || p.src_big);
+                  p=null;
+               }
+               att=null;
+            }
+            data=null;
+            posts=null;
+            if (len>0){
+               offset+=PER_REQ;
+               setTimeout(scan, 350);
+            } else {
+               var to_file=isChecked('links_to_file');
+               ge('vk_links_container').innerHTML='<h2>count: '+links.length+'</h2><textarea style="width:560px; height:300px;">'+links.join('\n')+'</textarea>';
+               if (to_file)
+                  vkSaveText(links.join('\n'),("wall_photos_"+oid).substr(0,250)+".txt");
+            }
+         })
+      }
+      
+      var html='<div id="vk_links_container"><div id="vk_links_container_progr"></div>'+
+               '<br><div class="checkbox fl_l" id="links_to_file" onclick="checkbox(this);"><div></div>Save links list to file after scan</div></div>';
+      var box=vkAlertBox(IDL('Links'),html,function(){abort=true;});
+      box.setOptions({width:"640px"});
+      scan();
    }
 }
 

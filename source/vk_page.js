@@ -776,19 +776,46 @@ function vkAddCleanWallLink(){
 	 if (getSet(77)!='y') return;
     var rx=nav.objLoc[0].match(/notes(\d+)/);
     var rw=nav.objLoc[0].match(/wall-?\d+_\d+/);
+    var p_options = [];
+
+    if (!rx){
+      p_options.push({
+         l:IDL('PhotoLinks'),
+         onClick:function(item) { 
+            vk_photos.scan_wall(cur.oid,(cur.wallType=="full_own"?true:false));
+         } 
+      });
+    }
     //notes
    var allow_clean=(cur.oid==remixmid() || isGroupAdmin(cur.oid));
 	if (allow_clean && !rw && !ge('vk_clean_wall') && ge('full_wall_filters')){
 		
-      var link='<a href="#" onclick="vkCleanWall('+cur.oid+'); return false;">'+IDL("wallClear")+'</a><span class="divide">|</span>';
-      if (rx && rx[1]==remixmid())
-         link='<a href="#" onclick="vkCleanNotes(); return false;">'+IDL('DelAllNotes')+'</a>';
+      var link='';
+      if (rx && rx[1]==remixmid()){
+         //link='<a href="#" onclick="vkCleanNotes(); return false;">'+IDL('DelAllNotes')+'</a>';
+         p_options.push({
+            l:IDL('DelAllNotes'),
+            onClick:function(item) { 
+               vkCleanNotes();
+            } 
+         });
+      } else {
+         //link='<a href="#" onclick="vkCleanWall('+cur.oid+'); return false;">'+IDL("wallClear")+'</a><span class="divide">|</span>';
+         p_options.push({
+            l:IDL('wallClear'),
+            onClick:function(item) { 
+               vkCleanWall(cur.oid);
+            } 
+         });         
+      }
+      /*
       var li=vkCe('li',{"class":'t_r', id:'vk_clean_wall'},'\
 			'+link+'\
 		');
-		ge('full_wall_filters').appendChild(li);
+		ge('full_wall_filters').appendChild(li);*/
 	}
-	
+   
+   
 	if(allow_clean && cur.wallType=="one" && !ge('vk_clean_post_comments_wall')){
 		var p=geByClass('reply_link_wrap')[0];
 		var el=vkCe('small',{id:'vk_clean_post_comments_wall'},'\
@@ -796,6 +823,26 @@ function vkAddCleanWallLink(){
 		');
 		p.appendChild(el);
 	}
+   
+   //p_options=p_options.concat(vk_plugins.wall_actions(cur.oid,cur.wallType));
+   
+   if (ge('full_wall_filters')){
+      if (!ge('vk_wall_act_cont')){
+         ge('full_wall_filters').appendChild(vkCe('li',{"class":'t_r', id:'vk_wall_act_cont'},'<a href="#" id="vk_wall_act_menu">'+IDL('Actions')+'</a><span class="divide"> </span>'));
+         stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
+            cur.vkFullWallMenu = new DropdownMenu(p_options, {//
+              target: ge('vk_wall_act_menu'),
+              containerClass: 'dd_menu_posts',
+              updateHeader:false,
+              offsetLeft:-15,
+              showHover:false
+            });
+         });
+      } else {
+         if (cur.vkFullWallMenu)
+            cur.vkFullWallMenu.setData(p_options);
+      }
+   }
 }
 
 function vkAddDelWallCommentsLink(node){
