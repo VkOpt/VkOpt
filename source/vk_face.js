@@ -1075,6 +1075,7 @@ function vkMenu(){//vkExLeftMenu
       ExMenu['vkopt'].push([["#","if (window.vk_updmenu_timeout) clearTimeout(vk_updmenu_timeout); return false;"],'<b>Stop Upd Menu</b>']);
       ExMenu['vkopt'].push([["#","vkPhotoUrlUpload(prompt('Image URL:')); return false;"],'UploadImg']);
       ExMenu['vkopt'].push([["#","vk_photos.url(prompt('Image URL:')); return false;"],'UploadImg v2']);
+      ExMenu['vkopt'].push([["#","vk_photos.scan_walls_list_box(); return false;"],'Grab walls (photo)']);
       ExMenu['vkopt'].push([["#","(function(){var keys=[]; for(var key in localStorage) if(/im_draft/.test(key)){console.log(key); keys.push(key)}; for (var i=0; i<keys.length; i++) localStorage.removeItem(keys[i]);})(); return false;"],'Del LS Trash']);
   }
   /* 

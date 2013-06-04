@@ -432,6 +432,7 @@ var vk_photos = {
                setTimeout(scan, 350);
             } else {
                var to_file=isChecked('links_to_file');
+               vkSetVal('vk_collect_links_to_file',to_file?'1':'0');
                ge('vk_links_container').innerHTML='<h2>count: '+links.length+'</h2><textarea style="width:560px; height:300px;">'+links.join('\n')+'</textarea>';
                if (to_file)
                   vkSaveText(links.join('\n'),("wall_photos_"+oid).substr(0,250)+".txt");
@@ -440,10 +441,122 @@ var vk_photos = {
       }
       
       var html='<div id="vk_links_container"><div id="vk_links_container_progr"></div>'+
-               '<br><div class="checkbox fl_l" id="links_to_file" onclick="checkbox(this);"><div></div>Save links list to file after scan</div></div>';
+               '<br><div class="checkbox'+(vkGetVal('vk_collect_links_to_file')=='1'?' on':'')+' fl_l" id="links_to_file" onclick="checkbox(this);"><div></div>Save links list to file after scan</div></div>';
       var box=vkAlertBox(IDL('Links'),html,function(){abort=true;});
       box.setOptions({width:"640px"});
       scan();
+   },
+   scan_walls_list:function(list){
+      var PER_REQ=100;
+      var offset=0;
+      var links=[];
+      var oid=cur.oid;
+      var type='owner_id';
+      var lid=0;
+      var abort=false;
+      if (oid) list.push(oid);
+      function next(){
+         offset=0;
+         if (lid>=list.length) {
+            var to_file=isChecked('links_to_file');
+            vkSetVal('vk_collect_links_to_file',to_file?'1':'0');
+            ge('vk_links_container').innerHTML='<h2>count: '+links.length+'</h2><textarea style="width:590px; height:300px;">'+links.join('\n')+'</textarea>';
+            if (to_file)
+               vkSaveText(links.join('\n'),("wall_photos_"+oid).substr(0,250)+".txt");
+            return;
+         }
+         oid=list[lid]+'';
+         if (oid.match(/^-?\d+$/)){
+            type='owner_id';
+         } else {
+            var m=oid.match(/(^|\/)(club|public|event|id)(\d+)/);
+            if (m){
+               oid=(m[2]=='id'?'':'-')+m[3];
+               type='owner_id';
+            } else {
+               oid=oid.split(/\?|#/)[0].split('/').pop().replace(/[^a-zA-Z0-9_]+/g,'');
+               type='domain';
+            }
+         }
+         if (!oid || oid==''){
+            lid++;
+            next();
+         } else {
+            scan();
+            lid++;
+         }
+      }
+      
+      function scan(filter){
+         if (abort) return;
+         filter = filter || 'all';
+         var params={count:PER_REQ,offset:offset,filter:filter,extended:1};
+         params[type]=oid;
+         dApi.call('wall.get',params,function(r){
+            if (abort) return;
+            var data=r.response;
+            if (r.error){
+               if (r.error.error_code==15 && filter!='owner'){ 
+                  filter='owner';
+                  scan(filter);
+                  return;
+               } else {
+                  ge('vk_scan_log').innerHTML+='Scan error. <b>'+oid+'</b> ('+r.error.error_msg+'). Skip...<br>';
+                  next();
+                  return;
+               }
+            }
+            var posts=data.wall;
+            var count=posts.shift();
+            var len=posts.length;
+            ge('vk_links_container_progr').innerHTML=vkProgressBar(offset,count,600)+(list.length>1?vkProgressBar(lid,list.length,600):'');
+            for (var j=0; j<len; j++){
+               var att=posts[j].attachments;
+               if (!att) continue;
+               for (var i=0; i<att.length; i++){
+                  if (!att[i].photo) continue;
+                  var p=att[i].photo;
+                  links.push(p.src_xxxbig || p.src_xxbig || p.src_xbig || p.src_big || p.src_big);
+                  p=null;
+               }
+               att=null;
+            }
+            data=null;
+            posts=null;
+            if (len>0){
+               offset+=PER_REQ;
+               setTimeout(function(){scan(filter)}, 350);
+            } else {
+               next();
+            }
+         })
+      }
+      
+         var html='<div id="vk_links_container"><div id="vk_links_container_progr"></div>'+
+                  '<br><div class="checkbox'+(vkGetVal('vk_collect_links_to_file')=='1'?' on':'')+' fl_l" id="links_to_file" onclick="checkbox(this);"><div></div>Save links list to file after scan</div><br><div id="vk_scan_log"></div></div>';
+      var box=vkAlertBox(IDL('Links'),html,function(){abort=true;});
+      box.setOptions({width:"640px"});
+      next();
+   },
+   scan_walls_list_box:function(){
+      var html='<textarea id="vk_links_list" style="width:560px; height:300px;"></textarea>';
+      
+      var aBox = new MessageBox({title: IDL('Enter_links')});
+      aBox.removeButtons();
+      aBox.addButton(getLang('box_cancel'),aBox.hide, 'no')
+      aBox.addButton('OK',function(){  
+         var links=ge('vk_links_list').value;
+         links=trim(links).split(/\s*[\r\n,]+\s*/);
+         aBox.hide();
+         if (links.length==0){
+            alert('List is empty...');
+         } else {
+            vk_photos.scan_walls_list(links);
+         }
+      },'yes');
+      aBox.content(html);
+      aBox.setOptions({width:"600px", onHide:function(){aBox.content('');}});
+      aBox.show();
    }
 }
 
