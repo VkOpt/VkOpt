@@ -1101,14 +1101,20 @@ function vkMenu(){//vkExLeftMenu
         elem.setAttribute('onmouseout','vkMenuItemOut(event,this)');  
       } else return ' onmousemove="vkMenuItemHover(event,this)" onmouseout="vkMenuItemOut(event,this)" ';
   }
+  var more_div=(ge('l_ap')||{}).previousSibling;
+  var need_delimiter=true;
+  if (more_div &&  more_div.className=='more_div' && !isVisible(more_div)){
+   need_delimiter=false;
+  }
   
   var custom_cfg = vk_menu.get_custom_links();
   for (var i=0; i<custom_cfg.length /*&& exm*/; i++){
-      if (i==0){   
+      if (i==0 && need_delimiter){   
          var div=document.createElement('div');
          div.className='moreDiv more_div';
          nav.appendChild(div);
       }
+      if (!need_delimiter) need_delimiter=true;
       
       var m_item=custom_cfg[i];
       var attr=m_item[0].match(/^https?:\/\//)?'':' onclick="return nav.go(this, event);" ';
@@ -1155,18 +1161,20 @@ function vkMenu(){//vkExLeftMenu
   
   
   if (WALL_LINK){
-	var li=vkCe('li',{},'<a class="left_row" href="/wall'+remixmid()+'" onclick="return nav.go(this, event);"><span class="left_label inl_bl">'+IDL('wall')+'</span><span></span></a>');
-	var md=geByClass('more_div',nav)[0];
-	if (md) insertAfter(li,md) 
-	else nav.appendChild(li);
+      var li=vkCe('li',{},'<a class="left_row" href="/wall'+remixmid()+'" onclick="return nav.go(this, event);"><span class="left_label inl_bl">'+IDL('wall')+'</span><span></span></a>');
+      var md=geByClass('more_div',nav)[0];
+      if (md) insertAfter(li,md) 
+      else nav.appendChild(li);
   }
   
 
   
   //*
-  var div=document.createElement('div');
-  div.className='moreDiv more_div';
-  nav.appendChild(div);
+  if (need_delimiter){
+     var div=document.createElement('div');
+     div.className='moreDiv more_div';
+     nav.appendChild(div);
+  }
   var li=vkCe('li',{id:"frOpt"},'<a class="left_row" href="settings?act=vkopt" onclick="vkShowSettings(true); return false;"><span class="left_label inl_bl">'+IDL('VKopt',1)+'</span><span></span></a>');
   nav.appendChild(li);
   //*/
