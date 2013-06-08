@@ -92,6 +92,7 @@ var vk_photos = {
       .vk_full_thumbs_photos .pva_photo {height: auto !important;}\
       #vk_ph_upd_btn{opacity:0.1}\
       #vk_ph_upd_btn:hover{opacity:1}\
+      .vk_albums_list a{display:block; padding-left:10px; padding-bottom:3px; border-bottom:1px solid rgba(100,100,100,0.1)}\
    ',
    choose_album:function(oid){
       stManager.add('photoview.css');
@@ -557,6 +558,24 @@ var vk_photos = {
       aBox.content(html);
       aBox.setOptions({width:"600px", onHide:function(){aBox.content('');}});
       aBox.show();
+   },
+   profile_albums_list:function(oid){
+      var album=ge('profile_albums');
+      if (!album) return;
+      oid=oid || cur.oid;
+      var p=geByClass('module_body',album)[0];
+      p.innerHTML=vkBigLdrImg;
+      var html='';
+      dApi.call('photos.getAlbums',{oid:oid,need_covers:1},function(r){
+         var data=r.response;
+         if (!data){
+            p.innerHTML=IDL('Error');
+            return;
+         }
+         for (var i=0; i<data.length; i++)
+            html+='<a href="/album'+oid+'_'+data[i].aid+'" onclick="return nav.change({z: \'album'+oid+'_'+data[i].aid+'\'}, event)">'+data[i].title+'</a>';
+         p.innerHTML='<div class="vk_albums_list">'+html+'</div>';  
+      });
    }
 }
 

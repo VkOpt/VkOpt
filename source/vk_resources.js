@@ -148,7 +148,7 @@ var vkSmilesLinks={
 "dash1":"http://img-fotki.yandex.ru/get/5405/kiberinfinity.0/0_4b4cd_4b8735bb_XS",
 "diablo":"http://img-fotki.yandex.ru/get/5106/kiberinfinity.0/0_4b4ce_5472ae0c_XS",
 "drinks":"http://img-fotki.yandex.ru/get/5301/kiberinfinity.0/0_4b4cf_1a6f6049_XS",
-"facepalm":"http://img-fotki.yandex.ru/get/5802/kiberinfinity.0/0_4b4d0_5abf5d2d_XS",
+"facepalm":"http://img-fotki.yandex.ru/get/9259/50997776.1/0_97a71_69a43d56_XS",
 "flood":"http://img-fotki.yandex.ru/get/4806/kiberinfinity.0/0_4b4d1_d08593ae_XS",
 "fool":"http://img-fotki.yandex.ru/get/4603/kiberinfinity.0/0_4b4d2_d384cdd9_XS",
 "girl_angel":"http://img-fotki.yandex.ru/get/5901/kiberinfinity.0/0_4b4d3_b221dac_XS",

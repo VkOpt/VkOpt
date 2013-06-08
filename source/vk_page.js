@@ -1148,7 +1148,7 @@ function vkFrProfile(){
 	var rlink=geByClass('right_link',el)[0];
 	if (rlink) rlink.setAttribute('onclick',"return nav.go(this.parentNode.parentNode, event)");
     var all=hdr.getElementsByTagName('span')[0];
-    hdr.innerHTML='<a href="javascript:vkFriends_get(\''+postfix+'\')" id="Fr'+postfix+'Lnk">[ '+hdr.innerHTML+' ]</a>';
+    hdr.innerHTML='<a href="javascript:vkFriends_get(\''+postfix+'\')" id="Fr'+postfix+'Lnk">'+vkopt_brackets(hdr.innerHTML)+'</a>';
     if (all) {
        all.innerHTML='<a href="'+el.href+'" onclick="'+el.getAttribute('onclick')+'">'+all.innerHTML+'</a>';//return nav.go(this, event)
        var div=document.createElement('div');
@@ -1160,6 +1160,8 @@ function vkFrProfile(){
     div.appendChild(hdr);
     insertAfter(div,el);
   };
+  
+  
   var mod_lite=function(el,postfix){
     var hdr=geByClass('p_header_bottom',el)[0];
     if (!hdr) return;
@@ -1184,8 +1186,11 @@ function vkFrProfile(){
   };
   var mod_el={
     'profile_albums':function(el){
-        var el=geByClass('module_body',el)[0];
-        el.innerHTML='<div align="center"><a href="/photos'+cur.oid+'" onclick="return nav.go(this, event);">[ '+IDL("obzor")+' ]</a> <a href="/photos'+cur.oid+'?act=comments"  onclick="return nav.go(this, event);">[ '+IDL("komm")+' ]</a></div>'+el.innerHTML;
+        var _el=geByClass('module_body',el)[0];
+        _el.innerHTML='<div align="center"><a href="/photos'+cur.oid+'" onclick="return nav.go(this, event);">'+vkopt_brackets(IDL("obzor"))+'</a> <a href="/photos'+cur.oid+'?act=comments"  onclick="return nav.go(this, event);">'+vkopt_brackets(IDL("komm"))+'</a></div>'+_el.innerHTML;
+        var hdr=geByClass('p_header_bottom',el)[0];
+        if (!hdr) return;
+        hdr.innerHTML='<a href="javascript:vk_photos.profile_albums_list()">'+vkopt_brackets(hdr.innerHTML)+'</a>';
       }
   };
   for (var i=0; i<els.length;i++)
@@ -3514,6 +3519,22 @@ if (!window.vkopt_plugins) vkopt_plugins={};
 })();
 
 
+/*
+// GIFTS. ANONIM SEND
+if (!window.vkopt_plugins) vkopt_plugins={};
+(function(){ 
+   vkopt_plugins['vk_anonim_gift']={
+      Name:'vk_anonim_gift',
+      css:'',
+      onLibFiles:function(js){
+         if (js!='gifts.js') return;
+         Inj.Before("Gifts.sendGift","isChecked('gift_receiver_only')",'arguments[Gifts.sendGift.length]==2?2:');
+         Inj.Before("Gifts.selectGift","box.setControlsText","box.addButton('Anonim send', function(){Gifts.sendGift(2)}, 'no');");
+      }   
+   };
+   if (window.vkopt_ready) vkopt_plugin_run('vk_anonim_gift');
+})();
+*/
 
 
 if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;

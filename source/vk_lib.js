@@ -391,6 +391,12 @@ var vkMozExtension = {
 	  if (window.vk_lang_add && vk_lang_add[i]) return vkCutBracket(dec(vk_lang_add[i]),bracket);
 	  else return vkCutBracket(i,bracket);
 	}
+   
+   function vkopt_brackets(s){
+      var s=vkCutBracket(s,2);
+      if (!CUT_VKOPT_BRACKET) s='[ '+s+' ]';
+      return s;
+   }
 
 	function vkExtendLang(obj) {
 	  if (!window.vk_lang_add) vk_lang_add={};
@@ -1772,7 +1778,7 @@ var dApi = {
 				}else {
 					if (!callback || !callback.error) dApi.show_error(response); 
 					if (captcha) {
-                  api._captchaBox.setOptions({onHide: function(){dApi.captcha_visible=false}}).hide();  
+                  dApi._captchaBox.setOptions({onHide: function(){dApi.captcha_visible=false}}).hide();  
                   //api._captchaBox.hide();  
                }
                
@@ -1785,7 +1791,7 @@ var dApi = {
                   callback(response,response.response,response.error);  
 				} 
 			} else { 
-				if (captcha) api._captchaBox.setOptions({onHide: function(){dApi.captcha_visible=false}}).hide(); //api._captchaBox.hide();  
+				if (captcha) dApi._captchaBox.setOptions({onHide: function(){dApi.captcha_visible=false}}).hide(); //api._captchaBox.hide();  
             if (callback.ok){
                   callback.ok(response,response.response,response.error);  
             } else
@@ -1797,8 +1803,8 @@ var dApi = {
 	},
 	captcha: function(sid, img, onClick, onShow, onHide) {
 		if (ge('captcha_container')) re('captcha_container');
-      api._captchaBox = new MessageBox({title: getLang('captcha_enter_code'), width: 300});
-		var box = api._captchaBox;
+      dApi._captchaBox = new MessageBox({title: getLang('captcha_enter_code'), width: 300});
+		var box = dApi._captchaBox;
 		box.removeButtons();
 		var key;
 		var base_domain = base_domain || "/";
