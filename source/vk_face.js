@@ -1118,7 +1118,7 @@ function vkMenu(){//vkExLeftMenu
       
       var m_item=custom_cfg[i];
       var attr=m_item[0].match(/^https?:\/\//)?'':' onclick="return nav.go(this, event);" ';
-      var li=vkCe('li',{},'<a class="left_row vk_custom_link" href="'+m_item[0]+'" '+attr+'><span class="left_label inl_bl">'+m_item[1]+'</span><span></span></a>');
+      var li=vkCe('li',{"class":'vk_custom_item'},'<a class="left_row vk_custom_link" href="'+m_item[0]+'" '+attr+'><span class="left_label inl_bl">'+m_item[1]+'</span><span></span></a>');
       var item=geByTag('a',li)[0];
       /*
       var md=geByClass('more_div',nav)[0];
