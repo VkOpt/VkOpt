@@ -1888,7 +1888,7 @@ vk_videos = {
       .vk_full_vid_info .vk_clr{clear:both;}\
       ';
       if (full_titles)  code+='\
-      .video_album_text { height: auto !important; }\
+      .video_album_text { height: auto !important; white-space: normal !important;}\
       .video_raw_info_name, .video_row_info_line {height: auto !important; white-space: normal !important;}\
       .video_row_info_line{bottom:0px !important;}';
       return code;
