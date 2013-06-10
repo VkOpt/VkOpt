@@ -349,6 +349,63 @@ vk_wall = {
    }
 }
 
+vk_notes={
+   add_new:function(){
+      
+      stManager.add(['ui_controls.js', 'ui_controls.css','wkview.css'],function(){
+         
+         var box = new MessageBox({title: IDL('NoteNew'),width:'654px', progress:'vk_box_progr',bodyStyle:'padding:0px;'},true);
+         box.removeButtons();
+
+         //box.addButton(getLang('box_cancel'),box.hide, 'gray')
+         var save_btn=box.addButton(getLang('box_save'),function(){  
+            lockButton(save_btn);
+            console.log(save_btn);
+            dApi.call('notes.add',{title:ge('wk_page_title').value,text:ge('wke_textarea').value,privacy:ge('vk_note_privacy_val').value},function(r){ //privacy: 0 — all, 1 — only friends , 2 — friends and friends , 3 — only owner
+               unlockButton(save_btn);
+               var nid=(r.response || {}).nid;
+               if (nid){
+                  var note='note'+vk.id+'_'+nid;
+                  vkMsg('<a href="/'+note+'">'+note+'</a>')
+               }
+               box.hide(); 
+               if (nav.objLoc[0].match(/notes\d+/)){
+                  nav.reload();
+               }
+            })
+
+
+         },'yes',true);
+         save_btn=geByTag1('button',save_btn);
+         
+         html='<div class="wk_page_title_cont"><input id="wk_page_title" class="text" value="" placeholder="Title"><br><br></div>';
+         html+='<div id="editor_cont">\
+         <textarea id="wke_textarea" class="wk_wiki_text wke_textarea" style="width: 630px; overflow-x: hidden; overflow-y: hidden; resize: none; height: 300px; display: block;"></textarea>\
+         </div>';
+
+         box.content(html);
+         box.show();
+         var p=ge('vk_box_progr');
+         p.parentNode.insertBefore(se('<div id="vk_note_privacy"><input type="hidden" id="vk_note_privacy_val"></div>'),p);
+         cur.vkNotePrivacy = new Dropdown(ge('vk_note_privacy_val'),[
+               [0,getLang("privacy_options_all_users")],
+               [1,getLang("privacy_options_friends_only")],
+               [2,getLang("privacy_options_friends_and_friends")],
+               [3,getLang("privacy_options_only_me")]
+         ], {
+           target: ge('vk_note_privacy'),
+           resultField:'vk_note_privacy_val',
+           customArrowWidth:25,
+           width:260,
+           onChange: function(val){    }
+         });
+      });	
+      
+      return false;
+   }
+}
+
+
 function vkWallReply(post,toMsgId, toId, event, rf,v,replyName){
       console.log(post, toMsgId);
       var name=(replyName[1] || '').split(',')[0];
@@ -799,6 +856,14 @@ function vkAddCleanWallLink(){
                vkCleanNotes();
             } 
          });
+         p_options.push({
+            l:IDL('NoteNew'),
+            onClick:function(item) { 
+               vk_notes.add_new();
+            } 
+         });
+         
+         
       } else {
          //link='<a href="#" onclick="vkCleanWall('+cur.oid+'); return false;">'+IDL("wallClear")+'</a><span class="divide">|</span>';
          p_options.push({
