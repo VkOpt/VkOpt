@@ -669,7 +669,8 @@ function vkInitSettings(){
       {id:71, text:IDL("seWallReplyMod")},
       {id:74, text:IDL("seLeaveGroupLinks")},
       {id:79, text:vk_settings.dislikes_icons()+IDL("seDislikes"),info:'infoUseNetTrafic'},
-      {id:86, text:IDL("seDisableWallWikiBox")}
+      {id:86, text:IDL("seDisableWallWikiBox")},
+      {id:88, text:IDL("seGroupRequestsBlock"),info:'infoUseNetTrafic'}
       //{id:64, text:IDL("seToTopOld")}
     ],
 	Sounds:[
@@ -694,7 +695,7 @@ function vkInitSettings(){
    ]
   };
 
-	//LAST 87
+	//LAST 88
 	/*
       vkoptSets['advanced']=[
          'vk_upd_menu_timeout','vkMenuHideTimeout','CHECK_FAV_ONLINE_DELAY',

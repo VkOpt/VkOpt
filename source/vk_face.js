@@ -206,6 +206,18 @@ function vkStyles(){
    .vk_x_btn{background: url(http://vk.com/images/hide_to.gif) no-repeat 50% 50%; display: inline-block; vertical-align: middle; width: 10px; height: 10px; }\
    .vk_x_btn{opacity:0.5; cursor:pointer;}\
    .vk_x_btn:hover{opacity:1;}\
+   .vk_cancel_ico{\
+      background: url(http://vk.com/images/tasks_icons.gif) no-repeat 0px -69px;\
+      display: inline-block;\
+      width: 13px; height: 11px;\
+      margin-bottom:-2px;\
+   }\
+   .vk_ok_ico{\
+      background: url(http://vk.com/images/tasks_icons.gif) no-repeat 0px -43px;\
+      display: inline-block;\
+      width: 13px; height: 11px;\
+      margin-bottom:-2px;\
+   }\
    .vk_profile_links a{padding:3px;}\
    .vk_profile_links a:hover{background-color:#E1E7ED; text-decoration:none;}\
    .vk_profile_links{line-height:20px;}\

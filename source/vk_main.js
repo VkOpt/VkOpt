@@ -390,6 +390,7 @@ function vkGroupPage(){
    vkWikiPagesList(true);
    vkGroupStatsBtn();
    vk_groups.show_members_btn();
+   vk_groups.requests_block();
 }
 
 function vkGroupStatsBtn(){

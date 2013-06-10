@@ -349,9 +349,8 @@ vk_wall = {
    }
 }
 
-vk_notes={
+vk_notes={  // <a onclick="showBox('wkview.php', {act: 'notes_old_privacy', nid: 11661199});">Privacy settings</a>
    add_new:function(){
-      
       stManager.add(['ui_controls.js', 'ui_controls.css','wkview.css'],function(){
          
          var box = new MessageBox({title: IDL('NoteNew'),width:'654px', progress:'vk_box_progr',bodyStyle:'padding:0px;'},true);
@@ -1081,7 +1080,7 @@ function vkFaveProfileBlock(is_list){
         <a href="/fave" onclick="return nav.go(this, event)" class="module_header"><div class="header_top clear_fix">'+IDL('FaveOnline')+'</div></a>\
         <div class="module_header">\
           <div class="p_header_bottom">\
-            <a href="javascript:vkFaveProfileBlock(true)" id="vk_fave_all_link">[ '+ IDL('FaveOnline') +' ( -- ) ]</a>\
+            <a href="javascript:vkFaveProfileBlock(true)" id="vk_fave_all_link">'+ vkopt_brackets(IDL('FaveOnline') +' ( -- )')+'</a>\
             <span class="fl_r"><a href="/fave" onclick="return nav.go(this, event)">'+IDL('all')+'</a></span>\
           </div>\
         </div>\
@@ -1132,7 +1131,7 @@ function vkFaveProfileBlock(is_list){
             }
          }
          if (ge('vk_fave_users_content')){
-            ge("vk_fave_all_link").innerHTML='[ '+ IDL('FaveOnline') +' ('+onlines.length+') ]';
+            ge("vk_fave_all_link").innerHTML=vkopt_brackets(IDL('FaveOnline') +' ('+onlines.length+')');
             ge('vk_fave_users_content').innerHTML=users;
             vkProcessNodeLite(ge('vk_fave_users_content'));
          }
@@ -1836,6 +1835,132 @@ vk_groups = {
       load_info();         
       return false;
    },
+   requests_block:function(is_list){
+      if (getSet(88)!='y') return;
+      var oid=cur.oid;
+      var gid=Math.abs(oid);
+      if (!ge('vk_group_requests')){//
+         var html='\
+           <a href="/club'+gid+'?act=users&tab=requests" onclick="return nav.go(this, event)" class="module_header"><div class="header_top clear_fix">'+IDL('GroupRequests')+'</div></a>\
+           <div class="module_header">\
+             <div class="p_header_bottom">\
+               <a href="javascript:vk_groups.requests_block(true)" id="vk_gr_req_all_link">'+ vkopt_brackets(getLang('global_X_people',0)) +'</a>\
+               <span class="fl_r"><a href="/club'+gid+'?act=users&tab=requests" onclick="return nav.go(this, event)">'+IDL('all')+'</a></span>\
+             </div>\
+           </div>\
+           <div class="module_body clear_fix" id="vk_gr_req_users_content"></div>\
+         ';
+         //html=html.replace('%USERS%',users);
+         var div=vkCe('div',{"class":"module clear people_module",id:"vk_group_requests"});
+         div.innerHTML=html;
+         var p=ge('group_followers');
+         if (!p) return;
+         p.parentNode.insertBefore(div,p);
+         hide('vk_group_requests');
+      }
+      ge('vk_gr_req_users_content').innerHTML=vkBigLdrImg;
+      if (is_list){
+         ge("vk_gr_req_all_link").href="javascript:vk_groups.requests_block()";
+         addClass('vk_gr_req_all_link','as_list')
+      } else {
+         ge("vk_gr_req_all_link").href="javascript:vk_groups.requests_block(true)";
+         removeClass('vk_gr_req_all_link','as_list')
+      }
+      ajax.post('groupsedit.php', {act: 'get_list', id: Math.abs(cur.oid), tab: 'requests'}, {onDone: function(cnt, res) {
+         //console.log('gr_requests',cnt, res);
+         if (cnt<=0) {
+            hide('vk_group_requests');
+            return;
+         }
+         show('vk_group_requests');
+         var udata=res;
+         var to=3;
+         var count=is_list?udata.length:Math.min(udata.length,FAVE_ONLINE_BLOCK_SHOW_COUNT);
+         var users='';
+         for (var i = 0; i < count; i++) {
+            if (!is_list){
+            //udata[i][7]  - HASH
+            var n1=udata[i][2].split(' ')[0] || '';
+            var n2=udata[i][2].split(' ')[1] || '';
+            users += ((i == 0 || i % to == 0) ? '<div class="people_row">' : '') + 
+                     '<div class="fl_l people_cell" id="vk_gru'+udata[i][0]+'">\
+                       <a href="/id'+udata[i][0]+'" onclick="return nav.go(this, event)">\
+                         <img width="50" height="50" src="'+udata[i][3]+'">\
+                       </a>\
+                       <div class="name_field">\
+                         <a href="/id'+udata[i][0]+'" onclick="return nav.go(this, event)">\
+                           '+n1+'<!--<br><small>'+n2+'</small>-->\
+                         </a>\
+                         <span id="vk_gru_act'+udata[i][0]+'"><br>\
+                           <a href="#" class="vk_cancel_ico" onclick="vk_groups.request_cancel('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
+                           <span class="divide">|</span>\
+                           <a href="#" class="vk_ok_ico" onclick="vk_groups.request_accept('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
+                         </span>\
+                       </div>\
+                     </div>'+
+                  ((i > 0 && (i + 1) % to == 0) ? '</div>' : '');
+            } else {
+               //GroupsEdit.uAction(this, 14565307, 'bc08c2c7b1baf9f81a', 1)// agree
+               //GroupsEdit.uAction(this, 14565307, 'bc08c2c7b1baf9f81a', -1) // cancel
+               
+               users +='<div align="left" style="width:195px;">\
+                  <span class="fl_r" id="vk_gru_act'+udata[i][0]+'">\
+                     <a href="#" class="vk_cancel_ico" onclick="vk_groups.request_cancel('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
+                     <span class="divide">|</span>\
+                     <a href="#" class="vk_ok_ico" onclick="vk_groups.request_accept('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
+                  </span>\
+                  <a href="id'+udata[i][0]+'" '+(vkIsFavUser(udata[i][0])?'class="vk_faved_user"':'')+'>'+udata[i][2]+'</a>\
+                  </div>';
+            }
+         }
+         if (ge('vk_gr_req_users_content')){
+            ge("vk_gr_req_all_link").innerHTML=vkopt_brackets(getLang('global_X_people',cnt));
+            ge('vk_gr_req_users_content').innerHTML=users;
+            vkProcessNodeLite(ge('vk_gr_req_users_content'));
+         }   
+      
+      }});
+   },
+   request_accept:function(gid,mid,hash){
+      var el=ge('vk_gru_act'+mid);
+      if (el)
+         el.innerHTML=vkLdrMiniImg;
+      ajax.post('groupsedit.php', {act: 'user_action', id: gid, addr: mid, hash: hash, action: 1}, {
+         onDone: function(row) {
+            //alert(row);
+            if (el){ 
+               el.innerHTML='OK';
+               fadeOut(el, 200);
+               //hide(el);
+               setTimeout(function(){
+                  if (ge('vk_gr_req_users_content') && geByClass('vk_ok_ico',ge('vk_gr_req_users_content')).length==0)
+                     vk_groups.requests_block(hasClass('vk_gr_req_users_content','as_list'))               
+               },300)
+
+               
+            }
+         }
+      });
+   },
+   request_cancel:function(gid,mid,hash){
+      var el=ge('vk_gru_act'+mid);
+      if (el)
+         el.innerHTML=vkLdrMiniImg;
+      ajax.post('groupsedit.php', {act: 'user_action', id: gid, addr: mid, hash: hash, action: -1}, {
+         onDone: function(row) {
+            //alert(row);
+            if (el){ 
+               el.innerHTML='OK';
+               fadeOut(el, 200);
+               //hide(el);
+               setTimeout(function(){
+                  if (ge('vk_gr_req_users_content') && geByClass('vk_ok_ico',ge('vk_gr_req_users_content')).length==0)
+                     vk_groups.requests_block(hasClass('vk_gr_req_users_content','as_list'))               
+               },300)
+            }
+         }
+      });
+   },   
    // GROUP EDIT
    group_edit_page:function(){
       //var tab=(nav.objLoc['tab'] || cur.tab);
