@@ -2105,6 +2105,7 @@ vk_videos = {
              <input type="text" class="text" id="vk_filter_regex">\
              <div class="vk_cfg_info" style="margin-top:3px;">'+IDL('VideoFilterRegexHelp')+'</div>\
              <br><div id="vk_vid_filter_all" class="checkbox" onclick="checkbox(this)"><div></div>'+IDL('VideosOnlyWithoutAlbum')+'</div>\
+             <br><div id="vk_vid_need_reload" class="checkbox on" onclick="checkbox(this)"><div></div>'+IDL('ReloadPegeAfterMove')+'</div>\
              <div id="vk_move_ctrls" style="display:none;">\
                <div class="video_add_label">'+IDL('MoveTo')+'</div>\
                <div class="button_blue fl_r" id="vk_run_move_btn"><button>'+IDL('Move')+'</button></div>\
@@ -2172,6 +2173,7 @@ vk_videos = {
             dApi.call('video.moveToAlbum',{vids:filtred_vids.splice(0,30).join(','),gid:Math.abs(cur.oid),album_id:to_album},function(r){
                console.log(r);
                move(callback);
+               if (isChecked('vk_vid_need_reload')) nav.reload();
             });
          } else {
             console.log('done move to :'+to_album);
