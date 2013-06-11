@@ -139,8 +139,8 @@ function vkProfilePage(){
 	if (getSet(47) == 'n') vkFriends_get('common');
    if (getSet(72) == 'y') vkFrCatsOnProfile();
    vkAddCheckBox_OnlyForFriends();
-	vkHighlightGroups();
-   vkHighlightProfileGroups();
+	vk_highlinghts.groups_block();
+   vk_highlinghts.profile_groups();
 }
 
 function vkFrCatsOnProfile(){
@@ -219,74 +219,105 @@ function vkShowLastActivity(){
    });
 }
 
-
-function vkHighlightProfileGroups(node){
-   var common=(getSet(39) == 'y');
-   if (!common) return;
-   var p=node || ge('profile_full_info') ;
-   if (!p) return;
-   var nodes=p.getElementsByTagName('a');
-   
-   var hl=function(){
-      var groups=','+vkGetVal('vk_my_groups')+',';
-      for (var i=0;i<nodes.length;i++){
-         var href=nodes[i].getAttribute('href');
-         if (!href) continue;
-         var gid=href.split('/');
-         gid=gid[gid.length-1];
-         if (cur.oid!=remixmid() && groups.indexOf(','+gid+',')!=-1)	addClass(nodes[i],'vk_common_group');
-         if (isGroupAdmin(gid))	addClass(nodes[i],'vk_adm_group');
-      }	      
-   }
-   var gl=vkGetVal('vk_my_groups');
-   if (!gl || gl==''){
-      dApi.call('groups.get',{extended:1},function(r){
-         var data=r.response;
-         count=data.shift();
-         var mygr=[];
-         for (var i=0;i<data.length;i++){
-            mygr.push(data[i].screen_name);
+vk_highlinghts={
+   process_node:function(node){
+      var common=(getSet(39) == 'y');
+      if (!common || !window.cur || cur.module!='profile') return;
+      var els=geByClass('fans_idol_row',node);
+      if (node && els.length>0){
+         for (var i=0; i<els.length; i++){
+            var nodes=els[i].getElementsByTagName('a');
+            var hl=function(){
+               var groups=','+vkGetVal('vk_my_groups')+',';
+               for (var i=0;i<nodes.length;i++){
+                  var href=nodes[i].getAttribute('href');
+                  if (!href) continue;
+                  var gid=href.split('/');
+                  gid=gid[gid.length-1];
+                  if (hasClass(nodes[i],'fans_idol_ph')) continue;
+                  if (cur.oid!=remixmid() && groups.indexOf(','+gid+',')!=-1)	addClass(nodes[i],'vk_common_group');
+                  if (isGroupAdmin(gid))	addClass(nodes[i],'vk_adm_group');
+               }	      
+            }
+            hl();
          }
-         var groups=mygr.join(',');
-         vkSetVal('vk_my_groups',groups);
+      }
+   },
+   profile_groups:function(node){
+      var common=(getSet(39) == 'y');
+      if (!common) return;
+      var p=node || ge('profile_full_info') ;
+      if (!p || !p.getElementsByTagName) return;
+      var nodes=p.getElementsByTagName('a');
+      
+      var hl=function(){
+         var groups=','+vkGetVal('vk_my_groups')+',';
+         for (var i=0;i<nodes.length;i++){
+            var href=nodes[i].getAttribute('href');
+            if (!href) continue;
+            var gid=href.split('/');
+            gid=gid[gid.length-1];
+            if (cur.oid!=remixmid() && groups.indexOf(','+gid+',')!=-1)	addClass(nodes[i],'vk_common_group');
+            if (isGroupAdmin(gid))	addClass(nodes[i],'vk_adm_group');
+         }	      
+      }
+      var gl=vkGetVal('vk_my_groups');
+      if (!gl || gl==''){
+         dApi.call('groups.get',{extended:1},function(r){
+            var data=r.response;
+            count=data.shift();
+            var mygr=[];
+            for (var i=0;i<data.length;i++){
+               mygr.push(data[i].screen_name);
+            }
+            var groups=mygr.join(',');
+            vkSetVal('vk_my_groups',groups);
+            hl();
+         });
+      } else {
          hl();
-      });
-   } else {
-      hl();
+      } 
+   },
+   groups_block:function(){
+      var common=(getSet(39) == 'y');
+      
+      function process_node(nodes){
+         if (cur.oid==remixmid()){
+            var mygr=[];
+            for (var i=0;i<nodes.length;i++){
+               var href=nodes[i].getAttribute('href');
+               if (!href) continue;
+               var id=href.split('/');	
+               id=id[id.length-1];
+               if (id!=''){
+                  mygr.push(id);
+               }
+               if (isGroupAdmin(id))	addClass(nodes[i],'vk_adm_group');
+            }
+            var groups=mygr.join(',');
+            vkSetVal('vk_my_groups',groups);
+         } else if(common){
+            var groups=','+vkGetVal('vk_my_groups')+',';
+            for (var i=0;i<nodes.length;i++){
+               var href=nodes[i].getAttribute('href');
+               if (!href) continue;
+               var gid=href.split('/');
+               gid=gid[gid.length-1];
+               if (groups.indexOf(','+gid+',')!=-1)	addClass(nodes[i],'vk_common_group');
+               if (isGroupAdmin(gid))	addClass(nodes[i],'vk_adm_group');
+            }		
+         }
+      }
+      if (ge('profile_groups') && geByClass('module_body',ge('profile_groups'))[0]){
+         var nodes=geByClass('module_body',ge('profile_groups'))[0].getElementsByTagName('a');
+         process_node(nodes);
+      }
+      if (ge('page_list_module') && geByClass('module_body',ge('page_list_module'))[0]){
+         var nodes=geByClass('module_body',ge('page_list_module'))[0].getElementsByTagName('a');
+         process_node(nodes);
+      }     
    }
-   
-}
 
-function vkHighlightGroups(){
-	var common=(getSet(39) == 'y');
-	if (ge('profile_groups') && geByClass('module_body',ge('profile_groups'))[0]){
-		var nodes=geByClass('module_body',ge('profile_groups'))[0].getElementsByTagName('a');
-		if (cur.oid==remixmid()){
-			var mygr=[];
-			for (var i=0;i<nodes.length;i++){
-				var href=nodes[i].getAttribute('href');
-				if (!href) continue;
-				var id=href.split('/');	
-				id=id[id.length-1];
-				if (id!=''){
-					mygr.push(id);
-				}
-				if (isGroupAdmin(id))	addClass(nodes[i],'vk_adm_group');
-			}
-			var groups=mygr.join(',');
-			vkSetVal('vk_my_groups',groups);
-		} else if(common){
-			var groups=','+vkGetVal('vk_my_groups')+',';
-			for (var i=0;i<nodes.length;i++){
-				var href=nodes[i].getAttribute('href');
-				if (!href) continue;
-				var gid=href.split('/');
-				gid=gid[gid.length-1];
-				if (groups.indexOf(','+gid+',')!=-1)	addClass(nodes[i],'vk_common_group');
-				if (isGroupAdmin(gid))	addClass(nodes[i],'vk_adm_group');
-			}		
-		}
-	}
 }
 
 
@@ -1185,7 +1216,7 @@ function vkProfileGroupBlock(){
          if (data[i][0]) html+='<a onclick="return nav.go(this, event)" href="'+data[i][3]+'">'+data[i][0]+' </a>';
       
       ge('vk_group_block_content').innerHTML=html;
-      vkHighlightGroups();
+      vk_highlinghts.groups_block();
       vkProcessNode(ge('vk_group_block_content'));     
    });
 }//*/

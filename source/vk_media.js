@@ -589,14 +589,6 @@ function vkPVPhotoMover(show_selector){
       return;
    }
    if (!show_selector) return;
-   /*
-   var albums = [
-      [138034142,"=)"],[92465922,"Mope 2009 №1"],[110245703,"O_o"],[115650991,"[test]"],
-      [159007167,"rc"],[117386025,"Белые и пушистые ^_^"],[92305257,"Картинки всякие"],
-      [134753574,"Кролик суицидник"],[42748479,"Моё заphotoshopленное"],[137964159,"Обои"],
-      [119635156,"Песец"],[136689491,"Тортик от Vkopt Team на.."],[71357281,"Фотки"],
-      [114052940,"Фото для &quot;Трясучки&quot;"],[98569862,"без названия"],[163724290,"всякость"]
-   ];*/
    var a=(cur.pvCurPhoto.album || "").match(/album(-?\d+)_(\d+)/);
    if (!a){
       alert('album detect error');
@@ -2097,6 +2089,144 @@ vk_videos = {
          cont.appendChild(vkCe('div',{'class':'vk_clr'}));
          // c.insertBefore(div,c.firstChild);
       })
+   },
+   mass_move_box:function(){
+      var box = new MessageBox({title: IDL('VideoMove'), bodyStyle:'padding:0;', width:'550px'});
+      box.removeButtons();
+      
+      box.addButton(getLang('box_cancel'), function() {
+         box.hide();
+         
+      }, 'no');
+      var html='<div id="video_upload_tab" class="video_upload_tab">\
+           <div id="video_upload_info">\
+             <div class="video_add_label">'+IDL('VideoFilterRegex')+'</div>\
+             <div class="button_blue fl_r" id="vk_apply_filter_btn"><button>OK</button></div>\
+             <input type="text" class="text" id="vk_filter_regex">\
+             <div class="vk_cfg_info" style="margin-top:3px;">'+IDL('VideoFilterRegexHelp')+'</div>\
+             <br><div id="vk_vid_filter_all" class="checkbox" onclick="checkbox(this)"><div></div>'+IDL('VideosOnlyWithoutAlbum')+'</div>\
+             <div id="vk_move_ctrls" style="display:none;">\
+               <div class="video_add_label">'+IDL('MoveTo')+'</div>\
+               <div class="button_blue fl_r" id="vk_run_move_btn"><button>'+IDL('Move')+'</button></div>\
+               <div id="vk_vid_album_selector"></div> \
+             </div>\
+             <div id="vid_move_progress"></div>\
+             <div id="vid_filt_list"></div>\
+           </div>\
+         </div>';
+      box.content(html);
+      box.show();
+      
+      var filtred_vids=null;
+      var filtred_vids_count=0;
+      var first_video=[0,0];
+      var to_album=0;
+      
+      function collect_albums(callback,offset,data){
+         data = data || [];
+         dApi.call('video.getAlbums',{oid:cur.oid,count:100,offset:(offset||0),extended:1},function(r){
+            var count=r.response.shift();
+            //alert(count);
+            data = data.concat(r.response);
+            if ((offset>=count) || (data.length==count)){
+               callback(data);
+            } else {
+               setTimeout(function(){
+                  collect_albums(callback,offset+100,data);
+               },350)
+            }
+         
+         })
+      }
+      stManager.add(['video_edit.css','ui_controls.js', 'ui_controls.css','wkview.css'],function(){
+         ge('vk_vid_album_selector').innerHTML=vkLdrImg;
+         collect_albums(function(list){
+               //alert(list);
+               var items=[];
+               items.push(['0',IDL('NotInAlbums')]);
+               for (var i=0; i<list.length;i++){
+                  items.push([list[i].album_id,list[i].title,list[i].count+""]);
+               }
+               cur.vk_vidMoveToAlbum = new Dropdown(ge('vk_vid_album_selector'), items, {
+                    width: 350,
+                    selectedItems: [0],
+                    autocomplete: (items.length > 7),
+                    onChange: function(val) {
+                      if (!intval(val)) {
+                        cur.vk_vidMoveToAlbum.val(0);
+                      }
+                      to_album=cur.vk_vidMoveToAlbum.val();
+                    }
+               });//end of selector
+               
+               
+         })
+      });
+      
+     
+      
+      function move(callback){
+         if (filtred_vids.length>0){
+            console.log(filtred_vids.length);
+            ge('vid_move_progress').innerHTML=vkProgressBar(filtred_vids_count-filtred_vids.length,filtred_vids_count,310,(filtred_vids_count-filtred_vids.length)+'/'+filtred_vids_count);
+            dApi.call('video.moveToAlbum',{vids:filtred_vids.splice(0,30).join(','),gid:Math.abs(cur.oid),album_id:to_album},function(r){
+               console.log(r);
+               move(callback);
+            });
+         } else {
+            console.log('done move to :'+to_album);
+            callback();
+         }
+      }
+      
+      ge('vk_apply_filter_btn').onclick=function(){
+         var rx=ge('vk_filter_regex').value;
+         
+         var x=rx.match(/^\/(.+)\/([a-z]*)$/);  // parse regex  "|^http://ya\\.ru|i"
+         if (x){
+            rx=new RegExp(x[1],x[2]);
+         }
+         arr=cur.videoList['all'];
+         function filter_arr(regex,all){
+            arr=arr.filter(function(video){
+               var title=winToUtf(video[3]);
+               var decr=video[4];
+               var album=video[6];
+               var dur=video[3];
+               if (regex.indexOf){
+                  regex=regex.toLowerCase();
+                  title=title.toLowerCase();
+               }
+               if ((album==0 || all===true) && ((regex.indexOf?title.indexOf(regex)!=-1:title.match(regex)) || regex==null))
+                  return true;
+               else 
+                  return false;
+            });
+         }
+         filter_arr(rx,(isChecked('vk_vid_filter_all')==1?false:true));
+         filtred_vids=arr;
+         filtred_vids_count=filtred_vids.length;
+         (filtred_vids.length>0?show:hide)('vk_move_ctrls');
+         
+         console.log(filtred_vids);
+         var lst='<h4>'+IDL('Found')+': '+filtred_vids.length+'</h4>';
+         for (var i=0; i<filtred_vids.length; i++){
+            lst+='<a href="/video'+filtred_vids[i][0]+'_'+filtred_vids[i][1]+'">'+filtred_vids[i][3]+'</a><br>';//title
+         }
+         if (filtred_vids[0])
+            first_video=[filtred_vids[0][0],filtred_vids[0][1]];
+         ge('vid_filt_list').innerHTML=lst;
+         
+         ge('vk_run_move_btn').onclick=function(){
+            move(function(){
+               ge('vid_filt_list').innerHTML='';
+               hide('vk_move_ctrls');
+               ge('vid_move_progress').innerHTML='';
+               dApi.call('video.restore',{oid:first_video[0],vid:first_video[1]},function(){});
+               vkMsg('Done');
+            });
+         }
+      }
    }
 }
 
@@ -2472,6 +2602,8 @@ function vkVideoAddOpsBtn(){
       }
       if (getSet(77)=='y')
          p_options.push({l:IDL('DelAll'), onClick:vk_videos.clean}); 
+      if (cur.canEditAlbums) 
+         p_options.push({l:IDL('VideoMove'), onClick:vk_videos.mass_move_box}); 
       
       /*
       p_options.push({l:IDL('Links'), onClick:function(item) {

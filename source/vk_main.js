@@ -73,6 +73,7 @@ function vkProcessNode(node){
       vk_feed.process_node(node);
       vk_photos.process_node(node);
       vk_search.process_node(node);
+      vk_highlinghts.process_node(node);
 		vk_plugins.processnode(node);
 	// }  catch (e) { topMsg('vkProcessNode error',2)}
 	}
@@ -95,6 +96,7 @@ function vkProcessNodeLite(node){
    vk_feed.process_node(node);
    vk_photos.process_node(node);
    vk_search.process_node(node);
+   vk_highlinghts.process_node(node);
 	vk_plugins.processnode(node,true);
    if (getSet(63)=='y') vkSmiles(node);
   }  catch (e) {
@@ -650,7 +652,7 @@ function vkProcessResponse(answer,url,q){
   if (q.act=='edit_audio_box' && answer[2]) answer[2]=answer[2]+'vk_audio.in_box_move("'+q.aid+'");'
   // 39 - highlight common groups
   if (getSet(39) == 'y' && url=='/al_profile.php' && q.act=='groups'){
-      answer[1]=vkModAsNode(answer[1],vkHighlightProfileGroups,url,q);
+      answer[1]=vkModAsNode(answer[1],vk_highlinghts.profile_groups,url,q);
   }
   
   if (url=='/al_wall.php' && q.act=='poll_export_box'){
