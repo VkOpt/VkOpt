@@ -218,6 +218,8 @@ function vkStyles(){
       width: 13px; height: 11px;\
       margin-bottom:-2px;\
    }\
+   .vk_ok_ico{background: url(http://vk.com/images/icons/check_balanced.gif) no-repeat 0px -2px;}\
+   .vk_cancel_ico{background: url(http://vk.com/images/hide_to.gif) no-repeat 0px -2px;}\
    .vk_profile_links a{padding:3px;}\
    .vk_profile_links a:hover{background-color:#E1E7ED; text-decoration:none;}\
    .vk_profile_links{line-height:20px;}\

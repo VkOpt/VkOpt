@@ -1932,7 +1932,7 @@ vk_groups = {
                setTimeout(function(){
                   if (ge('vk_gr_req_users_content') && geByClass('vk_ok_ico',ge('vk_gr_req_users_content')).length==0)
                      vk_groups.requests_block(hasClass('vk_gr_req_users_content','as_list'))               
-               },300)
+               },600)
 
                
             }
@@ -1953,7 +1953,7 @@ vk_groups = {
                setTimeout(function(){
                   if (ge('vk_gr_req_users_content') && geByClass('vk_ok_ico',ge('vk_gr_req_users_content')).length==0)
                      vk_groups.requests_block(hasClass('vk_gr_req_users_content','as_list'))               
-               },300)
+               },600)
             }
          }
       });
