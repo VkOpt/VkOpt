@@ -1910,7 +1910,7 @@ vk_groups = {
                users +='<div align="left" class="vk_gru_row">\
                   <span class="fl_r vk_gru_actions opacity_anim" id="vk_gru_act'+udata[i][0]+'">\
                      <a href="#" class="vk_ok_ico vk_act_btn" onclick="vk_groups.request_accept('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
-                     <span class="divide">|</span>\
+                     <span class="divide"></span>\
                      <a href="#" class="vk_cancel_ico vk_act_btn" onclick="vk_groups.request_cancel('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
                   </span>\
                   <a href="id'+udata[i][0]+'" '+(vkIsFavUser(udata[i][0])?'class="vk_faved_user"':'')+'>'+udata[i][2]+'</a>\
