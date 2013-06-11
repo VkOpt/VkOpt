@@ -1892,22 +1892,19 @@ vk_groups = {
                            '+n1+'<!--<br><small>'+n2+'</small>-->\
                          </a>\
                          <span id="vk_gru_act'+udata[i][0]+'"><br>\
-                           <a href="#" class="vk_cancel_ico" onclick="vk_groups.request_cancel('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
-                           <span class="divide">|</span>\
                            <a href="#" class="vk_ok_ico" onclick="vk_groups.request_accept('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
+                           <span class="divide">|</span>\
+                           <a href="#" class="vk_cancel_ico" onclick="vk_groups.request_cancel('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
                          </span>\
                        </div>\
                      </div>'+
                   ((i > 0 && (i + 1) % to == 0) ? '</div>' : '');
             } else {
-               //GroupsEdit.uAction(this, 14565307, 'bc08c2c7b1baf9f81a', 1)// agree
-               //GroupsEdit.uAction(this, 14565307, 'bc08c2c7b1baf9f81a', -1) // cancel
-               
                users +='<div align="left" style="width:195px;">\
                   <span class="fl_r" id="vk_gru_act'+udata[i][0]+'">\
-                     <a href="#" class="vk_cancel_ico" onclick="vk_groups.request_cancel('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
-                     <span class="divide">|</span>\
                      <a href="#" class="vk_ok_ico" onclick="vk_groups.request_accept('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
+                     <span class="divide">|</span>\
+                     <a href="#" class="vk_cancel_ico" onclick="vk_groups.request_cancel('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
                   </span>\
                   <a href="id'+udata[i][0]+'" '+(vkIsFavUser(udata[i][0])?'class="vk_faved_user"':'')+'>'+udata[i][2]+'</a>\
                   </div>';

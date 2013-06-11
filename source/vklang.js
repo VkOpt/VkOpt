@@ -1627,7 +1627,9 @@ vk_lang_en={//by Hzy
    'AddToPls':'Add to playlist',
    'ShowMore':'Show more',
    'Share':'Share',
-   'NoteNew':'New note'
+   'NoteNew':'New note',
+   'GroupRequests':'Group requests',
+   'seGroupRequestsBlock':'Show block with requests in groups'
 };
  
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
