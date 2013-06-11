@@ -1735,10 +1735,13 @@ vk_groups = {
    #vk_gr_filter{margin-top: -3px;}\
    #vk_show_members_link{text-align:center; margin-bottom:-8px; margin-top: -5px; opacity:0;}\
    #group_followers:hover #vk_show_members_link, #public_followers:hover #vk_show_members_link{opacity:1;}\
-   .people_cell .vk_gru_actions.opacity_anim{opacity:0.5}\
-   .people_cell:hover .vk_gru_actions.opacity_anim{opacity:1}\
+   .people_cell .vk_gru_actions.opacity_anim, .vk_gru_row .vk_gru_actions.opacity_anim{opacity:0.5;}\
+   .people_cell:hover .vk_gru_actions.opacity_anim, .vk_gru_row:hover .vk_gru_actions.opacity_anim{opacity:1;}\
+   .vk_gru_row{}\
+   .vk_gru_row:hover{background-color:rgba(163, 180, 194, 0.2);}\
    .vk_act_btn{opacity:0.6}\
    .vk_act_btn:hover{opacity:1} \
+   .vk_gru_row{width:195px; padding-left:3px;}\
    ',
    // GROUP PAGE
    show_members_btn:function(){
@@ -1904,11 +1907,11 @@ vk_groups = {
                      </div>'+
                   ((i > 0 && (i + 1) % to == 0) ? '</div>' : '');
             } else {
-               users +='<div align="left" style="width:195px;">\
-                  <span class="fl_r" id="vk_gru_act'+udata[i][0]+'">\
-                     <a href="#" class="vk_ok_ico" onclick="vk_groups.request_accept('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
+               users +='<div align="left" class="vk_gru_row">\
+                  <span class="fl_r vk_gru_actions opacity_anim" id="vk_gru_act'+udata[i][0]+'">\
+                     <a href="#" class="vk_ok_ico vk_act_btn" onclick="vk_groups.request_accept('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
                      <span class="divide">|</span>\
-                     <a href="#" class="vk_cancel_ico" onclick="vk_groups.request_cancel('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
+                     <a href="#" class="vk_cancel_ico vk_act_btn" onclick="vk_groups.request_cancel('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
                   </span>\
                   <a href="id'+udata[i][0]+'" '+(vkIsFavUser(udata[i][0])?'class="vk_faved_user"':'')+'>'+udata[i][2]+'</a>\
                   </div>';
