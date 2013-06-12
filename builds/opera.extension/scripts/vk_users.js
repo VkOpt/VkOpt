@@ -43,10 +43,10 @@ function getGidUid(url,callback){ //callback(uid,gid)
 	url=String(url);
 	if (url.match(/^\d+$/)){callback(url);  return;}
 	if (url.match(/^u\d+$/)){callback(url.match(/^u(\d+)$/)[1],null);  return;}
-	if (url.match(/id\d+$/)){callback(url.match(/id(\d+)$/)[1],null);  return;}
+	if (url.match(/(^|\/)id\d+$/)){callback(url.match(/(^|\/)id(\d+)$/)[2],null);  return;}
 	
 	if (url.match(/^g\d+$/)){callback(null,url.match(/^g(\d+)$/)[1]);  return;}
-	if (url.match(/club\d+$/)){callback(null,url.match(/club(\d+)$/)[1]);  return;}
+	if (url.match(/(^|\/)club\d+$/)){callback(null,url.match(/(^|\/)club(\d+)$/)[2]);  return;}
 	
 	if (vkUsersGroupsDomain[url]){callback(vkUsersGroupsDomain[url][0],vkUsersGroupsDomain[url][1]);  return; }
    
@@ -117,6 +117,7 @@ function ExtractUserID(link){
     if (!link) return null;
 	var tmp2=link.match(/\/id(\d+)$/);
     if (!tmp2 && isUserLink(link)) {  
+            link=link.replace(/http:\/\/[^\/]+/,'');
             tmp2=link.split('/'); 
             var n=tmp2.pop();
             var d=tmp2.pop();
@@ -881,7 +882,7 @@ function vkGetProfile(uid,callback,no_switch_button){
          return {uid:uid,in_lists:user_in_lists,lists:lists}
       */   
 		var common='';
-		console.log(profile);
+		//console.log(profile);
 		var username='<a href="/id'+uid+'" onclick="return nav.go(this, event);">'+profile.first_name+' '+profile.nickname+' '+profile.last_name+'</a>';
 		var ava_url=profile.photo_big;
       var last_seen=(profile.last_seen || {}).time;
@@ -889,6 +890,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 		var rate=make_rate(profile.rate);
       var relation=profile.relation;
       var sex=profile.sex;
+      var verified=profile.verified;
       var rel=IDL((sex==1?'profile_relation_f_':'profile_relation_m_')+relation);
       rel=relation>0?rel:'';
       if (profile.relation_partner){
@@ -947,7 +949,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 					</div>';
 		var html=VK_PROFILE_TPL.replace("%AVA_SRC%",ava_url)
 							   .replace(/%UID%/g,uid)
-							   .replace(/%USERNAME%/g,username)
+							   .replace(/%USERNAME%/g,(verified==1?'<span class="vk_profile_verified"></span>':'')+username)
 							   .replace("%ACTIVITY%",profile.activity)
 							   .replace("%RATE%",rate)
 							   .replace("%ONLINE%",online)
@@ -965,7 +967,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 	  else {
 		  var code = '';
         //code  += 'var activity=API.status.get({uid:"'+uid+'"});';
-		  code += 'var profile=API.getProfiles({uids:"'+uid+'",fields:"relation,sex,nickname,activity,photo_big,online,last_seen,rate,bdate,city,country,contacts,connections,education,can_post,can_write_private_message,lists,has_mobile"})[0];';
+		  code += 'var profile=API.getProfiles({uids:"'+uid+'",fields:"relation,sex,nickname,activity,photo_big,online,last_seen,rate,bdate,city,country,contacts,connections,education,can_post,can_write_private_message,lists,has_mobile,verified"})[0];';
 		  code += 'var commonfr=API.friends.getMutual({target_uid:"'+uid+'"});';
 		  code += 'var commons=API.getProfiles({uids:commonfr,fields:"online"});';
         code += 'var msg_count=API.messages.getHistory({count:1,uid:'+uid+'})[0];';

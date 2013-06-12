@@ -104,7 +104,8 @@ function vkStyles(){
 		  .vk_rate_lvl_5 .vk_rate_left{ border-top: 1px solid #B29F4E; background: #CBB464;}\n\
 		  .vk_rate_lvl_5 .vk_rate_right{ border-top: 1px solid #C5B565; background: #E1CC7E;}\n\
 		/*.vk_profile_info{width:450px;}*/\
-		#vk_profile_toogle{position:relative;display:block; text-align:center; 	background:rgba(0,0,0,0.5); color:#FFF; font-weight:bold; 	font-size:20px; margin-top:-25px; line-height:22px;}\
+		.vk_profile_verified { background: url("/images/profile_icons.gif?7") 0px -73px no-repeat transparent;display: inline-block;height: 11px;margin: 0px 3px 0px 6px;width: 13px;}\
+      #vk_profile_toogle{position:relative;display:block; text-align:center; 	background:rgba(0,0,0,0.5); color:#FFF; font-weight:bold; 	font-size:20px; margin-top:-25px; line-height:22px;}\
 		#vk_profile_toogle:hover{text-decoration:none;}\
 		.vk_profile_info .label { width: 100px;color: #777777; }\
 		.vk_profile_info .labeled { width: 140px;overflow-x: hidden;overflow-y: hidden; }\
@@ -150,13 +151,13 @@ function vkStyles(){
         }\
 		';
 	var calendar='#vk_calendar.calendar {	width: 120px; margin:0px; padding:0px;margin-left:-1px;}\
-		#vk_calendar .day_table {  width: 120px; table-layout: fixed;}\
+		#vk_calendar .day_table {  width: 120px; table-layout: fixed; background: rgba(255, 255, 255, 0.9)}\
 		#vk_calendar .day_cell.day2, #vk_calendar  .day_cell.day4, #vk_calendar .day_cell.day6, #vk_calendar .day_head.day2, #vk_calendar .day_head.day4, #vk_calendar .day_head.day6{}\
 		#vk_calendar .day_head{overflow:hidden; width: 16px; }\
-		#vk_calendar .day_cell {width: 16px; height: 16px;}\
-		#vk_calendar .day_cell.holiday{background-color: #fff2ab}\
+		#vk_calendar .day_cell {width: 16px; height: 16px; background:transparent}\
+		#vk_calendar .day_cell.holiday{background-color: rgba(255, 215, 0, 0.329)}\
 		#vk_calendar .day_cell.event{font-weight:bold;}\
-		#vk_calendar .day_cell.today,#vk_calendar .day_cell.holiday.today {background-color: #bbffaf;}\
+		#vk_calendar .day_cell.today,#vk_calendar .day_cell.holiday.today {background-color: rgba(38, 255, 0, 0.313);}\
 		#vk_calendar .day_cell.today .day_num {display: block;}\
 		#vk_calendar .day_cell .day_button {cursor:pointer;}\
 		#vk_calendar .day_row {height: 16px; }\
@@ -205,6 +206,20 @@ function vkStyles(){
    .vk_x_btn{background: url(http://vk.com/images/hide_to.gif) no-repeat 50% 50%; display: inline-block; vertical-align: middle; width: 10px; height: 10px; }\
    .vk_x_btn{opacity:0.5; cursor:pointer;}\
    .vk_x_btn:hover{opacity:1;}\
+   .vk_cancel_ico{\
+      background: url(http://vk.com/images/tasks_icons.gif) no-repeat 0px -69px;\
+      display: inline-block;\
+      width: 13px; height: 11px;\
+      margin-bottom:-2px;\
+   }\
+   .vk_ok_ico{\
+      background: url(http://vk.com/images/tasks_icons.gif) no-repeat 0px -43px;\
+      display: inline-block;\
+      width: 13px; height: 11px;\
+      margin-bottom:-2px;\
+   }\
+   .vk_ok_ico{background: url(http://vk.com/images/icons/check_balanced.gif) no-repeat 0px -2px;}\
+   .vk_cancel_ico{background: url(http://vk.com/images/hide_to.gif) no-repeat 0px -2px;}\
    .vk_profile_links a{padding:3px;}\
    .vk_profile_links a:hover{background-color:#E1E7ED; text-decoration:none;}\
    .vk_profile_links{line-height:20px;}\
@@ -214,9 +229,9 @@ function vkStyles(){
     .lsrow:hover{border:1px solid #AAA; background-color:#EEE; }\
     .lsrow_sel{border:1px solid #AAA; background-color:#E0E0E0;}\
     .lstable{border:1px solid #DDD; max-height:200px; overflow:auto}\
-	.vk_cfg_warn{padding:8px; border:1px solid #DD0; background:#FFE}\
-	.vk_cfg_error{padding:8px; border:1px solid #D00; background:#FEE}\
-	.vk_cfg_info{padding:8px; border:1px solid #36638e; background:#EEF}\
+	.vk_cfg_warn{padding:8px; border:1px solid #DD0; background:rgba(255, 255, 0, 0.066)}\
+	.vk_cfg_error{padding:8px; border:1px solid #D00; background:rgba(255, 0, 0, 0.066)}\
+	.vk_cfg_info{padding:8px; border:1px solid #36638e; background:rgba(0, 0, 255, 0.066)}\
 	#vk_online_status .vkUOnline,#vk_online_status .vkUOffline,#vk_online_status .vkUUndef{padding:4px; border:1px solid; opacity: 0.5;}\
 	#vk_online_status .vkUOnline{background:#CCFF99; color:#009900; border-color:#009900;}\
 	#vk_online_status .vkUOffline{background:#FFDCAD; color:#C00000; border-color:#C00000;}\
@@ -387,12 +402,12 @@ function vkStyles(){
 		.btns A[on]:hover,.btns A[off]:hover{text-decoration:none;}\
 		.btns A[on],.btns A[off]{font-weight:normal; border:1px solid; }\
 		.btns A[on] {color: #959595; border-bottom:0px; -moz-border-radius:5px 5px 0 0; border-radius:5px 5px 0 0;margin:3px 7px 0 7px;}\
-		.btns A[on]:hover{color:#080; border-color:#080; background-color: #baf1ba;}\
+		.btns A[on]:hover{color:#080; border-color:#080; background-color: rgba(0, 203, 0, 0.27);}\
 		.btns A[off]{color: #959595; border-top: 0px; -moz-border-radius:0 0 5px 5px; border-radius:0 0 5px 5px; margin:0 7px 3px 7px;}\
-		.btns A[off]:hover{color: #800; border-color:#880000; background-color: #ffbebe;}\
-		.btns A[set_on]{color:#080; background-color: #baf1ba; border:1px solid; -moz-border-radius:5px; border-radius:5px; margin: 2px 2px 0px 2px;}\
-		.btns A[on][set_on]{border:1px solid; color:#080; background-color: #baf1ba;-moz-border-radius:5px; border-radius:5px; margin: 2px 2px 0px 2px;}\
-		.btns A[off][set_on]{border:1px solid; color:#800; background-color: #ffbebe;-moz-border-radius:5px; border-radius:5px; margin: 0px 2px 2px 2px;}\
+		.btns A[off]:hover{color: #800; border-color:#880000; background-color: rgba(255, 0, 0, 0.254);}\
+		.btns A[set_on]{color:#080; background-color: rgba(0, 203, 0, 0.27); border:1px solid; -moz-border-radius:5px; border-radius:5px; margin: 2px 2px 0px 2px;}\
+		.btns A[on][set_on]{border:1px solid; color:#080; background-color: rgba(0, 203, 0, 0.27);-moz-border-radius:5px; border-radius:5px; margin: 2px 2px 0px 2px;}\
+		.btns A[off][set_on]{border:1px solid; color:#800; background-color: rgba(255, 0, 0, 0.254);-moz-border-radius:5px; border-radius:5px; margin: 0px 2px 2px 2px;}\
 		.sett_block .scaption{padding-left:70px;}\
 		.sett_block .stext{border:0px solid; float:right; width:230px;}\
 		.sett_header{text-align: center; font-weight:bold; border: 1px solid #B1BDD6; border-bottom: 1px solid #B1BDD6; color: #255B8E; background: #DAE2E8; height: 25px;}\
@@ -400,7 +415,7 @@ function vkStyles(){
 		.sett_new{/*background-color:#FFC;*/}\
 		.sett_new_:after{content:'*'; color:#F00; position:absolute; margin-top:-3px;}\
 		.sett_new:before{content:'new'; color:#F00; position:absolute; margin-left:-3px; margin-top:-3px; font-size:7pt; text-shadow:white 1px 1px 2px; background:rgba(255,255,255,0.6); -moz-border-radius:2px; border-radius:2px; transform:rotate(-20deg); -webkit-transform:rotate(-20deg);  -moz-transform:rotate(-20deg);  -o-transform:rotate(-20deg);}\
-		.sett_cat_header{display: inline-block; width:100%; text-align: center; font-weight:bold; border: 1px solid #B1BDD6; color: #255B8E; background: #DAE2E8; line-height: 25px;}\
+		.sett_cat_header{display: inline-block; width:100%; text-align: center; font-weight:bold; border: 1px solid #B1BDD6; color: #255B8E; background: rgba(0, 55, 96, 0.145); line-height: 25px;}\
 		.vk_sounds_settrings .sett_block{border-bottom:0px; width: 300px;}\
 		#vkTestSounds a{  margin: 0px;  padding: 3px; padding-left:25px; line-height:20px; display: inline-block; width:225px;  \
 						  background: url(http:\/\/vk.com\/images\/play.gif) 4px 5px no-repeat;\
@@ -487,7 +502,7 @@ function vkStyles(){
 			  -webkit-border-radius: 4px 4px 0px 0px;\
 			  -o-border-radius: 4px 4px 0px 0px;\
 			}\
-			.vk_tab_nav li a:hover{ background: #DAE1E8; color: #2B587A;  text-decoration: none;}\
+			.vk_tab_nav li a:hover{ background: rgba(0, 48, 96, 0.145); color: #2B587A;  text-decoration: none;}\
 			.vk_tab_nav li.activeLink a,.vk_tab_nav li.activeLink a:hover{background-color: #36638e;color:#FFF;}\
 			a.vk_button{\
 			  background-color: #36638e;color:#FFF; text-decoration:none; padding:5px; margin: 0 5px;\
@@ -642,6 +657,7 @@ function vkMakeRightBar(){
 		if (b) bar.appendChild(b);
 	}
    updSideTopLink(true);
+   setTimeout("updSideTopLink(true);",500);
 }
 //if (getSet(44)=='y') vkMoveSuggFrBox();
 function vkMoveSuggFrBox(){
@@ -1073,6 +1089,7 @@ function vkMenu(){//vkExLeftMenu
       ExMenu['vkopt'].push([["#","if (window.vk_updmenu_timeout) clearTimeout(vk_updmenu_timeout); return false;"],'<b>Stop Upd Menu</b>']);
       ExMenu['vkopt'].push([["#","vkPhotoUrlUpload(prompt('Image URL:')); return false;"],'UploadImg']);
       ExMenu['vkopt'].push([["#","vk_photos.url(prompt('Image URL:')); return false;"],'UploadImg v2']);
+      ExMenu['vkopt'].push([["#","vk_photos.scan_walls_list_box(); return false;"],'Grab walls (photo)']);
       ExMenu['vkopt'].push([["#","(function(){var keys=[]; for(var key in localStorage) if(/im_draft/.test(key)){console.log(key); keys.push(key)}; for (var i=0; i<keys.length; i++) localStorage.removeItem(keys[i]);})(); return false;"],'Del LS Trash']);
   }
   /* 
@@ -1098,18 +1115,24 @@ function vkMenu(){//vkExLeftMenu
         elem.setAttribute('onmouseout','vkMenuItemOut(event,this)');  
       } else return ' onmousemove="vkMenuItemHover(event,this)" onmouseout="vkMenuItemOut(event,this)" ';
   }
+  var more_div=(ge('l_ap')||{}).previousSibling;
+  var need_delimiter=true;
+  if (more_div &&  more_div.className=='more_div' && !isVisible(more_div)){
+   need_delimiter=false;
+  }
   
   var custom_cfg = vk_menu.get_custom_links();
   for (var i=0; i<custom_cfg.length /*&& exm*/; i++){
-      if (i==0){   
+      if (i==0 && need_delimiter){   
          var div=document.createElement('div');
          div.className='moreDiv more_div';
          nav.appendChild(div);
       }
+      if (!need_delimiter) need_delimiter=true;
       
       var m_item=custom_cfg[i];
       var attr=m_item[0].match(/^https?:\/\//)?'':' onclick="return nav.go(this, event);" ';
-      var li=vkCe('li',{},'<a class="left_row vk_custom_link" href="'+m_item[0]+'" '+attr+'><span class="left_label inl_bl">'+m_item[1]+'</span><span></span></a>');
+      var li=vkCe('li',{"class":'vk_custom_item'},'<a class="left_row vk_custom_link" href="'+m_item[0]+'" '+attr+'><span class="left_label inl_bl">'+m_item[1]+'</span><span></span></a>');
       var item=geByTag('a',li)[0];
       /*
       var md=geByClass('more_div',nav)[0];
@@ -1152,18 +1175,20 @@ function vkMenu(){//vkExLeftMenu
   
   
   if (WALL_LINK){
-	var li=vkCe('li',{},'<a class="left_row" href="/wall'+remixmid()+'" onclick="return nav.go(this, event);"><span class="left_label inl_bl">'+IDL('wall')+'</span><span></span></a>');
-	var md=geByClass('more_div',nav)[0];
-	if (md) insertAfter(li,md) 
-	else nav.appendChild(li);
+      var li=vkCe('li',{},'<a class="left_row" href="/wall'+remixmid()+'" onclick="return nav.go(this, event);"><span class="left_label inl_bl">'+IDL('wall')+'</span><span></span></a>');
+      var md=geByClass('more_div',nav)[0];
+      if (md) insertAfter(li,md) 
+      else nav.appendChild(li);
   }
   
 
   
   //*
-  var div=document.createElement('div');
-  div.className='moreDiv more_div';
-  nav.appendChild(div);
+  if (need_delimiter){
+     var div=document.createElement('div');
+     div.className='moreDiv more_div';
+     nav.appendChild(div);
+  }
   var li=vkCe('li',{id:"frOpt"},'<a class="left_row" href="settings?act=vkopt" onclick="vkShowSettings(true); return false;"><span class="left_label inl_bl">'+IDL('VKopt',1)+'</span><span></span></a>');
   nav.appendChild(li);
   //*/

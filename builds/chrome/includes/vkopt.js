@@ -10,14 +10,14 @@
 // (c) All Rights Reserved. VkOpt.
 //
 /* VERSION INFO */
-var vVersion	= 219;
-var vBuild = 130425;
+var vVersion	= 220;
+var vBuild = 130612;
 var vPostfix = ' ';
 if (!window.vk_DEBUG) var vk_DEBUG=0;
 /* EXT CONFIG */
 if (!window.DefSetBits)
 
-var DefSetBits='ynyynnyyynyyy0n0yy0nnnynyyynyy0nynynnnnyy0yyy1yynnnnny0nynynynnnnyynnynnnynyyyynnyn3nnnn-3-0-#c5d9e7-#34a235-1';
+var DefSetBits='ynyynnyyynyyy0n0yy0nnnynyyynyy0nynynnnnyy0yyy1yynnnnny0nynynynnnnyynnynnnynyyyynnyn3nnnny-3-0-#c5d9e7-#34a235-1';
 
 var DefExUserMenuCfg='11111110111111111111'; // default user-menu items config
 var vk_upd_menu_timeout=20000;      //(ms) Update left menu timeout
@@ -50,6 +50,7 @@ var MAIL_BLOCK_UNREAD_REQ=false; // true - отключает отсылку о�
 var MAIL_SHOWMSG_FIX=true;
 var SUPPORT_STEALTH_MOD=true;    // прикидываемся перед ТП, что у нас не стоит расширение для скачивания.
 var VIDEO_AUTOPLAY_DISABLE=false;
+var FULL_ENCODE_FILENAME=false;
 var vkNewSettings=[82,83,84,85,86,87]; //"new" label on settings item
 var SetsOnLocalStore={
   'vkOVer':'c',
@@ -412,13 +413,13 @@ function vkOpt_toogle(){
     #vk_onoff{ color: #2B587A; position:absolute; z-index:1000; background:#FFF; margin-left:5px; border:1px solid #DDD;display:none}\
     #vk_onoff .vk_off,#vk_onoff .vk_on{cursor:hand; float:right; border-radius:4px; width:35px; height:8px; padding:1px;}\
     #vk_onoff .btn{width:15px; height:6px;  border-radius:4px;}\
-    .vk_off{background:#FDD; border:1px solid #800; }\
+    .vk_off{background:rgba(255, 0, 0, 0.133); border:1px solid #800; }\
     .vk_off .btn{border:1px solid #A00; background:#DDD; margin-left:15px;}\
-    .vk_on{background:#DFD; border:1px solid #080;}\
+    .vk_on{background:rgba(0, 255, 0, 0.133); border:1px solid #080;}\
     .vk_on .btn{border:1px solid #0A0; background:#DDD; margin-left:2px;}\
     .vkSettList   { margin: 0px;  padding: 0px 0px; font-weight:normal;  background: transparent; width:105px;}\
     .vkSettList a { color: #2B587A;  margin: 0px;  padding: 3px;  display: inline-block; width:100px;  background: transparent;  border-bottom: solid 1px #CCD3DA; }\
-    .vkSettList a:hover {  text-decoration: none;  background-color: #DAE1E8; }\
+    .vkSettList a:hover {  text-decoration: none;  background-color: rgba(0, 48, 96, 0.145); }\
   ");
   
   var div=document.createElement('div');

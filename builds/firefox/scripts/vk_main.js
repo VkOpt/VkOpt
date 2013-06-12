@@ -32,6 +32,7 @@ function vkInj(file){
  switch (file){
    case 'photoview.js':    vkPhotoViewer();	break;
 	case 'videoview.js':	   vkVideoViewer();	break;
+   case 'html5video.js':	vk_videos.inj_html5();	break;
    case 'video.js':	      vkVideo();	      break;
 	case 'audio.js':		   vkAudios();		   break;
    case 'audioplayer.js':	vkAudioPlayer();		break;
@@ -72,6 +73,7 @@ function vkProcessNode(node){
       vk_feed.process_node(node);
       vk_photos.process_node(node);
       vk_search.process_node(node);
+      vk_highlinghts.process_node(node);
 		vk_plugins.processnode(node);
 	// }  catch (e) { topMsg('vkProcessNode error',2)}
 	}
@@ -94,6 +96,7 @@ function vkProcessNodeLite(node){
    vk_feed.process_node(node);
    vk_photos.process_node(node);
    vk_search.process_node(node);
+   vk_highlinghts.process_node(node);
 	vk_plugins.processnode(node,true);
    if (getSet(63)=='y') vkSmiles(node);
   }  catch (e) {
@@ -125,6 +128,8 @@ function vkOnNewLocation(startup){
          if (!cur.oid) cur.oid=obj[1];
          if (!cur.pid) cur.pid=obj[2];
          
+      } else if (nav.objLoc['act']=='users' && (cur.tab || "").match(/^(members|invites|admins)$/) && cur.oid<0){
+         cur.module='groups_edit';
       } else {
          switch(nav.objLoc[0]){
             case 'settings':  cur.module='settings';          break;
@@ -142,6 +147,7 @@ function vkOnNewLocation(startup){
          setTimeout(vkOnNewLocation,10);
          return;
       }*/
+
    }
 	vklog('Navigate:'+print_r(nav.objLoc).replace(/\n/g,','));
 	var tstart=unixtime();
@@ -154,12 +160,8 @@ function vkOnNewLocation(startup){
       default:
          if (nav.objLoc[0].match(/write\d+/)) vkMailPage();
 	}
-   /*
-   if (!cur.module){
-      if(nav.objLoc[0].match(/wall-?\d+/)) 
-         cur.module='wall';
-   }
-   */
+
+
 
 	if (cur.module){	
 		vklog(cur.module+'|'+print_r(nav.objLoc).replace(/\n/g,','));
@@ -167,7 +169,7 @@ function vkOnNewLocation(startup){
 			case 'profile':vkProfilePage(); break;
          case 'profileEdit':vkProfileEditPage(); break;
 			case 'groups' :vkGroupPage(); break;
-         case 'groups_edit':vkGroupEditPage(); break;
+         case 'groups_edit':vk_groups.group_edit_page(); break;
 			case 'event'  :vkEventPage(); break;
 			case 'public' :vkPublicPage(); break;
 			case 'wall'   :vkWallPage(); break;
@@ -364,7 +366,7 @@ function vkFriendsPage(){
 }
 /* PUBLICS */
 function vkPublicPage(){
-	addFakeGraffItem();
+	vk_graff.upload_graff_item();
    vkWallAlbumLink();
    vkSwitchPublicToGroup();
    vkWikiPagesList(true);
@@ -374,14 +376,14 @@ function vkPublicPage(){
 }
 /* EVENTS */
 function vkEventPage(){
-	addFakeGraffItem();
+	vk_graff.upload_graff_item();
    vkWallAlbumLink();
    vkUpdWallBtn();
    //vkWikiPagesList(true);
 }
 /* GROUPS */
 function vkGroupPage(){
-	addFakeGraffItem();
+	vk_graff.upload_graff_item();
 	vkCheckGroupsAdmin();
    vkModGroupBlocks();
    //vkAudioBlock();
@@ -390,6 +392,7 @@ function vkGroupPage(){
    vkWikiPagesList(true);
    vkGroupStatsBtn();
    vk_groups.show_members_btn();
+   vk_groups.requests_block();
 }
 
 function vkGroupStatsBtn(){
@@ -649,8 +652,42 @@ function vkProcessResponse(answer,url,q){
   if (q.act=='edit_audio_box' && answer[2]) answer[2]=answer[2]+'vk_audio.in_box_move("'+q.aid+'");'
   // 39 - highlight common groups
   if (getSet(39) == 'y' && url=='/al_profile.php' && q.act=='groups'){
-      answer[1]=vkModAsNode(answer[1],vkHighlightProfileGroups,url,q);
+      answer[1]=vkModAsNode(answer[1],vk_highlinghts.profile_groups,url,q);
   }
+  
+  if (url=='/al_wall.php' && q.act=='poll_export_box'){
+      answer[1]=vkModAsNode(answer[1],vk_features.poll_preview_btn,url,q);
+  }
+  
+  if (url=='/al_photos.php' && q.act=='edit_photo'){
+      answer[1]=vkModAsNode(answer[1],vk_photos.update_photo_btn,url,q);
+  }  
+  
+}
+
+vk_features={
+   poll_preview_btn:function(node){
+      if (!node) return;
+      var t=geByTag('textarea',node)[0];
+      if (!t) return;
+      t.setAttribute('id','vk_poll_code');
+      var el=se('<div><a href="#" onclick="return vk_features.poll_preview();">'+IDL('Preview',1)+'</a><div id="vk_poll_preview"></div></div>');
+      node.appendChild(el);
+   },
+   poll_preview:function(){
+      stManager.add('api/openapi.js',function(){
+         ge('vk_poll_preview').innerHTML='';
+         ge('vk_poll_preview').innerHTML=ge('vk_poll_code').value.replace(/<script[^>]+>[^<]*<\/script>/g,'');
+         eval(ge('vk_poll_code').value.match(/VK\.Widgets[^\)]+\)/)[0]);
+      });
+
+      /*
+      fr=se('<iframe frameborder="0"  style="width: 100%; height: 200px;"></iframe>'); 
+      ge('vk_poll_preview').appendChild(fr);
+      fr.contentDocument.write(ge('vk_poll_code').value);
+      */
+      return false;
+   }
 }
 
 vk_ch_media={
@@ -1298,8 +1335,8 @@ function vkFrReqDoneAddUserLists(text,mid){
 
 function vkModAsNode(text,func,url,q){ //url,q - for processing response 
 	if (!text || text.tagName){
-      console.log('ModAsNode fail',text,url,q);
-      return;
+      //console.log('ModAsNode fail',text,url,q);
+      return text;
    }
    var is_table=text.substr(0,3)=='<tr';
 	var div=vkCe(is_table?'table':'div');
@@ -1952,29 +1989,47 @@ function vkBoardPage(){
  //vkTopicsTip();
 }
 
-function vkProcessTopicLink(link){
-   var href=link.getAttribute('href');
+function vkProcessTopicLink(link){ // Wall and Topics links
+   var href=link.getAttribute('href') || "";
+   var onclick=link.getAttribute('onclick') || "";
    if (!href) return;
    var ment=link.getAttribute('mention') || "";
    if (ment && ment!=''){
       link.setAttribute('onmouseover', "vkTopicTooltip(this);");
       return;
    }
+   //*
+   var rp=onclick.match(/wall.showReply\('(-?\d+)_(\d+)'\s*,\s*'-?\d+_(\d+)'\)/);
+   if (!rp) rp=href.match(/\/wall(-?\d+)_(\d+)\?reply=(\d+)/) || href.match(/\/wall(-?\d+)_(\d+)$/);
+   if (rp && !link.hasAttribute('onmouseover') && !hasClass(link,'wd_lnk') && link.innerHTML.indexOf("rel_date")==-1){
+      link.setAttribute('onmouseover', "vkTopicTooltip(this, '"+rp[1]+"', null, '"+(rp[3] || rp[2])+"','wall');");
+      return;
+   } 
+   //*/
    var id=href.match(/topic(-?\d+)_(\d+)/);
    var post=href.match(/post=(\d+)/);
+
    if (!id) return;
-   if(!link.hasAttribute('onmouseover') && !hasClass(link,'bp_date') && !hasClass(link.parentNode,'bottom')){
+   if(!link.hasAttribute('onmouseover') && !hasClass(link,'bp_date') && !hasClass(link,'wd_lnk') && !hasClass(link.parentNode,'bottom')){
       link.setAttribute('onmouseover', "vkTopicTooltip(this, "+id[1]+","+id[2]+","+(post?post[1]:null)+");");
    }
 }
-function vkTopicTooltip(el,gid,topic,post){
+
+function vkTopicTooltip(el,gid,topic,post,type){
+    type = type || 'board';
     var bp_post = ((el.getAttribute('mention') || '').match(/^bp(-?\d+_\d+)$/) || {})[1];
     var post_id=post?(gid+'_'+post):(gid+'_topic'+topic);
-    var url = (post || bp_post)?'al_board.php':'al_wall.php';
+    var url = (post || bp_post) && type=='board'?'al_board.php':'al_wall.php';
+    var params={};
+    if (post && type=='wall'){ 
+      params['from']='feedback';
+      params['self']=1;
+      //from=feedback&post=-16925304_3197&self=1
+    }
     stManager.add(post?'board.css':'wall.css', function() {
        showTooltip(el, {
          url: url,
-         params: extend({act: 'post_tt', post: bp_post?bp_post:post_id}, {}),
+         params: extend({act: 'post_tt', post: bp_post?bp_post:post_id}, params),
          slide: 15,
          shift: [30, -3, 0],//78
          ajaxdt: 100,

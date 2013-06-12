@@ -391,6 +391,12 @@ var vkMozExtension = {
 	  if (window.vk_lang_add && vk_lang_add[i]) return vkCutBracket(dec(vk_lang_add[i]),bracket);
 	  else return vkCutBracket(i,bracket);
 	}
+   
+   function vkopt_brackets(s){
+      var s=vkCutBracket(s,2);
+      if (!CUT_VKOPT_BRACKET) s='[ '+s+' ]';
+      return s;
+   }
 
 	function vkExtendLang(obj) {
 	  if (!window.vk_lang_add) vk_lang_add={};
@@ -460,10 +466,12 @@ var vkMozExtension = {
       return escaped;         
    }
 
-   function vkCleanFileName(s){   return trim(s.replace(/[\\\/\:\*\?\"\<\>\|]/g,'_').replace(/\u2013/g,'-').substr(0,200));   }
+   function vkCleanFileName(s){   return trim(s.replace(/[\\\/\:\*\?\"\<\>\|]/g,'_').replace(/\u2013/g,'-').replace(/&#\d+;/g,'_').replace(/\s\s/g,'').substr(0,200));   }
    function vkEncodeFileName(s){
-      // [^A-Za-zА-Яа-я]
-      return s.replace(/([^A-Za-z\u0410-\u042f\u0430-\u044f])/g,function (str, p1, offset, s) {return encodeURIComponent(p1) });
+      if (FULL_ENCODE_FILENAME)
+         return encodeURIComponent(s);
+      else
+         return s.replace(/([^A-Za-z\u0410-\u042f\u0430-\u044f])/g,function (str, p1, offset, s) {return encodeURIComponent(p1) });
    }
    
    function num_to_text(s){
@@ -983,8 +991,26 @@ String.prototype.leftPad = function (l, c) {
 		//example hexcolor='#34A235' or hexcolor='34A235'
 		var hex = hexcolor;
 		if(hex.substr(0, 1) == "#"){ hex = hex.substr(1); }
+      if (hex.length==3) hex=hex.replace(/([A-Z0-9])([A-Z0-9])([A-Z0-9])/i,'$1$1$2$2$3$3');
 		return [parseInt(hex.substr(0, 2), 16), parseInt(hex.substr(2, 2), 16), parseInt(hex.substr(4, 2), 16)];
 	}
+   function hex2rgba(hexcolor,ret_struct){
+      var rgb=hex2rgb(hexcolor);
+      var r=rgb[0];
+      var g=rgb[1];
+      var b=rgb[2];
+      var min, a = ( 255 - (min = Math.min(r, g, b)) ) / 255;
+
+      var color={
+           r    : r = 0|( r - min ) / a,
+           g    : g = 0|( g - min ) / a,
+           b    : b = 0|( b - min ) / a,
+           a    : a = (0|1000*a)/1000,
+           rgba : 'rgba(' + r + ', ' + g + ', ' + b + ', ' + a + ')'
+       };
+       return ret_struct?color:color.rgba;
+   }
+
 /// end of color functions
 
 /* FUNCTIONS. LEVEL 2*/
@@ -1770,7 +1796,7 @@ var dApi = {
 				}else {
 					if (!callback || !callback.error) dApi.show_error(response); 
 					if (captcha) {
-                  api._captchaBox.setOptions({onHide: function(){dApi.captcha_visible=false}}).hide();  
+                  dApi._captchaBox.setOptions({onHide: function(){dApi.captcha_visible=false}}).hide();  
                   //api._captchaBox.hide();  
                }
                
@@ -1783,7 +1809,7 @@ var dApi = {
                   callback(response,response.response,response.error);  
 				} 
 			} else { 
-				if (captcha) api._captchaBox.setOptions({onHide: function(){dApi.captcha_visible=false}}).hide(); //api._captchaBox.hide();  
+				if (captcha) dApi._captchaBox.setOptions({onHide: function(){dApi.captcha_visible=false}}).hide(); //api._captchaBox.hide();  
             if (callback.ok){
                   callback.ok(response,response.response,response.error);  
             } else
@@ -1795,8 +1821,8 @@ var dApi = {
 	},
 	captcha: function(sid, img, onClick, onShow, onHide) {
 		if (ge('captcha_container')) re('captcha_container');
-      api._captchaBox = new MessageBox({title: getLang('captcha_enter_code'), width: 300});
-		var box = api._captchaBox;
+      dApi._captchaBox = new MessageBox({title: getLang('captcha_enter_code'), width: 300});
+		var box = dApi._captchaBox;
 		box.removeButtons();
 		var key;
 		var base_domain = base_domain || "/";
@@ -2048,26 +2074,55 @@ vkApis={
 		var PER_REQ=10;
 		var cur=0;
 		var count=0;
+      var from=0;
+      var to=0;
 		var photos=[];
 		var temp={};
+      if (!isFunction(callback)){
+         var params=callback;
+         callback=params.callback;
+         progress=params.progress;
+         from=params.from;
+         to=params.to;
+         if (from) cur=from;
+      }
+      
 		var get=function(){
 			if (progress) progress(cur,count);
-			ajax.post('al_photos.php', {act: 'show', list: listId, offset: cur}, {onDone: function(listId, ph_count, offset, data, opts) {
-				if (!count) count=ph_count;
-				for(var i=0; i<data.length;i++){
-					if (temp[data[i].id]) continue;
-					temp[data[i].id]=true;	
-					var p=data[i];
-					p.max_src= p.w_src || p.z_src || p.y_src || p.x_src
-					photos.push(p);
-				}
-				if (cur<count){
-					cur+=PER_REQ;
-					setTimeout(get,50);
-				} else callback(photos);
-			}});
+			vk_ph_xhr=ajax.post('al_photos.php', {act: 'show', list: listId, offset: cur}, {
+            onDone: function(listId, ph_count, offset, data, opts) {
+               if (!count) count=ph_count;
+               for(var i=0; i<data.length;i++){
+                  if (temp[data[i].id]) continue;
+                  temp[data[i].id]=true;	
+                  var p=data[i];
+                  var max_src= p.w_src || p.z_src || p.y_src || p.x_src;
+                  //p.max_src=max_src;
+                  photos.push(max_src);//p
+                  data[i]=null;
+                  p=null;
+               }
+               if (!to) to=count;
+               if (cur<Math.min(to,count)){
+                  cur+=PER_REQ;
+                  setTimeout(nxt,50); // активируем костыль
+                  //setTimeout(get,50);
+               } else callback(photos);
+            },
+            onFail: function(){
+               //alert('Request failed..\n'+arguments);
+               console.log(arguments);
+               setTimeout(function(){next=true;},5000); // активируем костыль
+            }
+         });
 		}
-		get();
+      var next=true;
+      var nxt=function(){next=true;};
+      var ti=setInterval(function(){ // знаю... этот ужасный костыль для избежания наращивания стека вызовов... 
+         if (!next) return;
+         next=false;
+         get();
+      },100);
 	},
    videos: function(oid,aid,quality,callback,progress){// quality: 0 - 240p; 1 - 360p;  2 - 480p;  3 - 720p;
       aid = parseInt(aid) || 0;
@@ -2134,12 +2189,13 @@ vkApis={
                         var i=arr[quality]?quality:arr.length-1;
                         //for (var i=0; i<arr.length; i++){
                            var v=arr[i];
-                           var vidext=v.substr(v.lastIndexOf('.'));   
-                           var vidname=vkCleanFileName(decodeURI(obj.title || obj.md_title)).replace(/\+/g,' ');
+                           var vidext=v.substr(v.lastIndexOf('.'));  
+                           
+                           var vidname=vkCleanFileName(winToUtf(decodeURIComponent(obj.title || obj.md_title))).replace(/\+/g,' ');
                            var vname=vidname;
 
-                           vidname='?'+vkDownloadPostfix()+'&/'+vidname;
-                           var vidurl=v+(smartlink?vidname+' ['+fmt[i]+']'+vidext:'');
+                           vidname='?'+vkDownloadPostfix()+'&/'+vkEncodeFileName(vidname+' ['+fmt[i]+']');
+                           var vidurl=v+(smartlink?vidname+vidext:'');
                            videos.push(vidurl);
                            
                            //html+='<a class="vk_down_icon" href="'+vidurl+'" download="'+vname+vidext+'"  title="'+vname+vidext+'" onclick="return vkDownloadFile(this);" onmouseover="vkGetVideoSize(this); vkDragOutFile(this);">'+fmt[i]+'<small class="divide" url="'+vidurl+'"></small></a>'; 
@@ -3111,7 +3167,9 @@ var dloc=document.location.href.split('/')[2] || '';
 
 
 api4dislike=vk_oauth_api(2347646,'photos,audio,video,wall,groups,messages,offline');
+oApi=vk_oauth_api(2168679,277758+131072+1048576);
 setTimeout(api4dislike.check,10);
+setTimeout(oApi.check,10);
 
 setTimeout(dApi.Check,10);
 //if(!(dloc.indexOf('vk.com')!=-1 || dloc.indexOf('vkontakte.ru')!=-1)) {
