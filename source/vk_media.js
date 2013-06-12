@@ -2215,7 +2215,6 @@ vk_videos = {
                   }//*/
                }
                move(callback);
-               if (isChecked('vk_vid_need_reload')) nav.reload();
             });
          } else {
             console.log('done move to :'+to_album);
@@ -2268,6 +2267,8 @@ vk_videos = {
                ge('vid_move_progress').innerHTML='';
                dApi.call('video.restore',{oid:first_video[0],vid:first_video[1]},function(){});
                vkMsg('Done');
+               
+               if (isChecked('vk_vid_need_reload')) setTimeout(nav.reload,1200);
             });
          }
       }
