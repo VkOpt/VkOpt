@@ -413,13 +413,13 @@ function vkOpt_toogle(){
     #vk_onoff{ color: #2B587A; position:absolute; z-index:1000; background:#FFF; margin-left:5px; border:1px solid #DDD;display:none}\
     #vk_onoff .vk_off,#vk_onoff .vk_on{cursor:hand; float:right; border-radius:4px; width:35px; height:8px; padding:1px;}\
     #vk_onoff .btn{width:15px; height:6px;  border-radius:4px;}\
-    .vk_off{background:#FDD; border:1px solid #800; }\
+    .vk_off{background:rgba(255, 0, 0, 0.133); border:1px solid #800; }\
     .vk_off .btn{border:1px solid #A00; background:#DDD; margin-left:15px;}\
-    .vk_on{background:#DFD; border:1px solid #080;}\
+    .vk_on{background:rgba(0, 255, 0, 0.133); border:1px solid #080;}\
     .vk_on .btn{border:1px solid #0A0; background:#DDD; margin-left:2px;}\
     .vkSettList   { margin: 0px;  padding: 0px 0px; font-weight:normal;  background: transparent; width:105px;}\
     .vkSettList a { color: #2B587A;  margin: 0px;  padding: 3px;  display: inline-block; width:100px;  background: transparent;  border-bottom: solid 1px #CCD3DA; }\
-    .vkSettList a:hover {  text-decoration: none;  background-color: #DAE1E8; }\
+    .vkSettList a:hover {  text-decoration: none;  background-color: rgba(0, 48, 96, 0.145); }\
   ");
   
   var div=document.createElement('div');

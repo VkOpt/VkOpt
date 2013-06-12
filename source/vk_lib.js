@@ -991,8 +991,26 @@ String.prototype.leftPad = function (l, c) {
 		//example hexcolor='#34A235' or hexcolor='34A235'
 		var hex = hexcolor;
 		if(hex.substr(0, 1) == "#"){ hex = hex.substr(1); }
+      if (hex.length==3) hex=hex.replace(/([A-Z0-9])([A-Z0-9])([A-Z0-9])/i,'$1$1$2$2$3$3');
 		return [parseInt(hex.substr(0, 2), 16), parseInt(hex.substr(2, 2), 16), parseInt(hex.substr(4, 2), 16)];
 	}
+   function hex2rgba(hexcolor,ret_struct){
+      var rgb=hex2rgb(hexcolor);
+      var r=rgb[0];
+      var g=rgb[1];
+      var b=rgb[2];
+      var min, a = ( 255 - (min = Math.min(r, g, b)) ) / 255;
+
+      var color={
+           r    : r = 0|( r - min ) / a,
+           g    : g = 0|( g - min ) / a,
+           b    : b = 0|( b - min ) / a,
+           a    : a = (0|1000*a)/1000,
+           rgba : 'rgba(' + r + ', ' + g + ', ' + b + ', ' + a + ')'
+       };
+       return ret_struct?color:color.rgba;
+   }
+
 /// end of color functions
 
 /* FUNCTIONS. LEVEL 2*/

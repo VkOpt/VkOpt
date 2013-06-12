@@ -1875,6 +1875,7 @@ vk_groups = {
    },
    requests_block:function(is_list){
       if (getSet(88)!='y') return;
+      if (!ge('page_actions') || ge('page_actions').innerHTML.indexOf('?act=edit')==-1) return;
       var oid=cur.oid;
       var gid=Math.abs(oid);
       if (!ge('vk_group_requests')){//

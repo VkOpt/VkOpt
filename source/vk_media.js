@@ -1883,6 +1883,10 @@ vk_videos = {
       .video_album_text { height: auto !important; white-space: normal !important;}\
       .video_raw_info_name, .video_row_info_line {height: auto !important; white-space: normal !important;}\
       .video_row_info_line{bottom:0px !important;}';
+      
+      code+='\
+         .vid_filt_link{display:inline-block; min-width:350px;}\
+         .vid_filt_row:hover{background:rgba(163, 180, 194, 0.2);}';
       return code;
    },
    inj_common:function(){
@@ -2098,6 +2102,10 @@ vk_videos = {
          box.hide();
          
       }, 'no');
+      
+      
+
+      
       var html='<div id="video_upload_tab" class="video_upload_tab">\
            <div id="video_upload_info">\
              <div class="video_add_label">'+IDL('VideoFilterRegex')+'</div>\
@@ -2129,7 +2137,7 @@ vk_videos = {
             var count=r.response.shift();
             //alert(count);
             data = data.concat(r.response);
-            if ((offset>=count) || (data.length==count)){
+            if ((offset>=count) || (data.length==count) || r.response.length==0){
                callback(data);
             } else {
                setTimeout(function(){
@@ -2141,8 +2149,8 @@ vk_videos = {
       }
       stManager.add(['video_edit.css','ui_controls.js', 'ui_controls.css','wkview.css'],function(){
          ge('vk_vid_album_selector').innerHTML=vkLdrImg;
+         /*
          collect_albums(function(list){
-               //alert(list);
                var items=[];
                items.push(['0',IDL('NotInAlbums')]);
                for (var i=0; i<list.length;i++){
@@ -2161,7 +2169,27 @@ vk_videos = {
                });//end of selector
                
                
-         })
+         })*/
+         
+         
+         var items=[];
+         items.push(['0',IDL('NotInAlbums')]);
+         for (var i=0; i<cur.sections.length;i++){
+            items.push([cur.sections[i][0],cur.sections[i][1],cur.sections[i][3]+""]);
+         }
+         cur.vk_vidMoveToAlbum = new Dropdown(ge('vk_vid_album_selector'), items, {
+              width: 350,
+              selectedItems: [0],
+              autocomplete: (items.length > 7),
+              onChange: function(val) {
+                if (!intval(val)) {
+                  cur.vk_vidMoveToAlbum.val(0);
+                }
+                to_album=cur.vk_vidMoveToAlbum.val();
+              }
+         });
+
+         
       });
       
      
@@ -2169,9 +2197,23 @@ vk_videos = {
       function move(callback){
          if (filtred_vids.length>0){
             console.log(filtred_vids.length);
+            //
             ge('vid_move_progress').innerHTML=vkProgressBar(filtred_vids_count-filtred_vids.length,filtred_vids_count,310,(filtred_vids_count-filtred_vids.length)+'/'+filtred_vids_count);
-            dApi.call('video.moveToAlbum',{vids:filtred_vids.splice(0,30).join(','),gid:Math.abs(cur.oid),album_id:to_album},function(r){
+            var part=filtred_vids.splice(0,30);
+            
+            var vids=[];
+            for (var i=0; i<part.length; i++) vids.push(part[i][1]);
+            
+            dApi.call('video.moveToAlbum',{vids:vids.join(','),gid:Math.abs(cur.oid),album_id:to_album},function(r){
                console.log(r);
+               //*
+               //filtred_vids[i][6]
+               var arr=cur.videoList['all'];
+               for (var j=0;j<arr.length; j++){
+                  for (var i=0;i<vids.length; i++){
+                     if (arr[j] && arr[j][1]==vids[i]) arr[j][6]=to_album;
+                  }//*/
+               }
                move(callback);
                if (isChecked('vk_vid_need_reload')) nav.reload();
             });
@@ -2213,7 +2255,7 @@ vk_videos = {
          console.log(filtred_vids);
          var lst='<h4>'+IDL('Found')+': '+filtred_vids.length+'</h4>';
          for (var i=0; i<filtred_vids.length; i++){
-            lst+='<a href="/video'+filtred_vids[i][0]+'_'+filtred_vids[i][1]+'">'+filtred_vids[i][3]+'</a><br>';//title
+            lst+='<div class="vid_filt_row"><a class="vid_filt_link" href="/video'+filtred_vids[i][0]+'_'+filtred_vids[i][1]+'">'+filtred_vids[i][3]+'</a>'+(filtred_vids[i][6]>0?'<span class="vid_alb_info">[album<b>'+filtred_vids[i][6]+'</b>]</span>':'')+'</div>';//title
          }
          if (filtred_vids[0])
             first_video=[filtred_vids[0][0],filtred_vids[0][1]];
@@ -2228,6 +2270,19 @@ vk_videos = {
                vkMsg('Done');
             });
          }
+      }
+      
+      var apply_btn=geByTag1('button',ge('vk_apply_filter_btn'));
+      if (cur.silent){
+         lockButton(apply_btn);
+         var app_chk_int=setInterval(function(){
+            if (!ge('vk_apply_filter_btn'))
+               clearInterval(app_chk_int);
+            if (!cur.silent){
+               unlockButton(apply_btn);
+               clearInterval(app_chk_int);
+            }
+         });
       }
    }
 }
