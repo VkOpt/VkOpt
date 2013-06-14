@@ -814,6 +814,7 @@ function vkOnlineInfo(p){
                title='iPad';
                break;  
             case '2424737':
+            case '3502561':
                title='Windows Phone';
                break; 
             case '3136627':
