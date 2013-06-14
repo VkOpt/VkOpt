@@ -3372,6 +3372,7 @@ vk_audio={
    css:'\
       .album_choose{display: block;float: left; padding: 6px 10px; min-width: 175px;}\
       #vk_links_to_audio_on_page{padding: 10px; text-align:center; display:block;}\
+     #albumBanned .post_dislike_icon{opacity: 1;}\
    ',
    album_cache:{},
    inj_common:function(){
