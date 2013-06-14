@@ -4289,7 +4289,8 @@ function vkAudioBtns(){
                onmouseover:"if (Audio.listOver) Audio.listOver(this)",
                onmouseout:"if (Audio.listOut) Audio.listOut(this)",
                onclick:"vkAudioLoadAlbum('NoSort')"
-            },'<div class="label">'+IDL('NotInAlbums')+'</div>');
+            },'<div class="label">'+IDL('NotInAlbums')+'</div>\
+               <div class="icon_wrap" id="albumBanned" onclick="vkAudioLoadAlbum(\'Banned\'); return cancelEvent(event)" onmouseover="addClass(this,\'over\'); showTooltip(this, {text: \''+IDL('Banned')+'\', black: 1, shift: [7, 2, 0]})" onmouseout="removeClass(this, \'over\')"><div class="post_dislike_icon dislike_icon_skull" style="margin:8px 6px "></div></div>');
          p.insertBefore(btn,p.firstChild);
       }
 }
@@ -4303,8 +4304,18 @@ function vkAudioLoadAlbum(albumid){
             cur.audiosList['albumNoSort'].push(audios[i]);
       }
    }
+   if (albumid=='Banned'){
+      var audios=cur.audiosList['all'];
+      cur.audiosList['albumBanned']=[];
+      for (var i=0; i<audios.length; i++){
+         if (!audios[i][2] || audios[i][2]=="")
+            cur.audiosList['albumBanned'].push(audios[i]);
+      }   
+   }
+   
    Audio.loadAlbum(albumid);
 }
+
 
 function vkAudioPlayList(add_button){
 	if(add_button){
