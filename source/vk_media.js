@@ -5068,6 +5068,8 @@ var preview_album_info_tpl='<div class="audio_filter_sep"></div>\
 
 var vk_alb_last_track='';
 var vk_current_album_info=null;
+var vk_current_album_full_thumb=false;
+
 
 function vkViewAlbumFix(e,over){
    if (over){
@@ -5080,6 +5082,8 @@ function vkViewAlbumFix(e,over){
 function vkViewAlbumThumb(ev){
    cancelEvent(ev);
    toggleClass('vk_album_info','view_big');
+   vk_current_album_full_thumb=hasClass('vk_album_info','view_big');
+   vkSetVal('vk_album_info_thumb',vk_current_album_full_thumb?1:0);
 }
 function vkViewAlbumInfo(artist,track){
    if (getSet(73)!='y') return;
@@ -5088,6 +5092,7 @@ function vkViewAlbumInfo(artist,track){
    if (!ge('vk_album_info')){
       var div=vkCe('div',{id:'vk_album_info'},'<div class="audio_filter_sep"></div>'); 
       insertAfter(div,ge('album_filters'));
+      vk_current_album_full_thumb=parseInt(vkGetVal('vk_album_info_thumb') || '0') || false;
    } else if (vk_alb_last_track==artist+'-'+track && ge('vk_album_info').innerHTML!=''){
       return;
    }
@@ -5097,6 +5102,8 @@ function vkViewAlbumInfo(artist,track){
    vk_current_album_info=null;
    vkGetAlbumInfo(artist,track,function(data,tracks){
       if (!ge('vk_album_info')) return;
+      if (vk_current_album_full_thumb) 
+         addClass('vk_album_info','view_big');
       console.log(data);
       var html='';
       /*
@@ -5135,6 +5142,7 @@ function vkViewAlbumInfo(artist,track){
                                     .replace(/%TRACKS%/g,html?html:(data.bio.summary?'<div class="bio">'+data.bio.summary+'</div>':''));      
       }
       ge('vk_album_info').innerHTML=html;
+      
    });
 }
 
