@@ -1317,6 +1317,42 @@ function vkPhotoUrlUpload(url){
 //vkPhotoUrlUpload('http://cs9543.vk.com/u3457516/124935920/w_5603bf45.jpg')
 
 // ADMIN MODULE
+vk_photoadm={
+   css:'.photo_row .checkbox{position:absolute;margin-top: -5px; margin-left: -5px;}',
+   mover:function(){// TO DO
+         if (ge('photos_container').qsorter){
+            ge('photos_container').qsorter.destroy();
+         }
+         var nodes=geByClass('photo_row');
+         for (var i=0; i<nodes.length; i++){
+            if (hasClass(nodes[i],'vk_chk')) continue;
+            var pid=((nodes[i].id || '').match(/-?\d+_\d+/) || [])[0];
+            if (!pid) continue;
+            addClass(nodes[i],'vk_chk');
+            nodes[i].insertBefore(se('<div class="checkbox" id="ph_chk'+pid+'" pid="'+pid+'" onclick="checkbox(this); (isChecked(this)?addClass:removeClass)(this,\'vk_checked_ph\'); cancelEvent(event)"><div></div></div>'),nodes[i].firstChild)
+         }
+         
+         
+   },
+   move_run:function(){
+      var photos=geByClass('vk_checked_ph');
+     
+      //var ph=photos[i].getAttribute('pid').split('_');// [0] - oid   [1] - pid
+      
+      //vk_photoadm.move_photos(oid,target_aid,pids)
+   },
+   move_photos:function(oid,target_aid,pids){
+      //dApi.call('photos.move',{pid:pids[idx],:target_aid,oid:oid},function(r){  });
+   },
+   check_all:function(uncheck){
+      
+   }
+}
+/*
+vkaddcss(vk_photoadm.css);
+vk_photoadm.mover();
+//*/
+
 function vkAlbumAdminItems(){
    var a=[];
    var p=geByClass('photos_tabs')[0];
