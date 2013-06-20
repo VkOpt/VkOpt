@@ -49,6 +49,10 @@ vk_phviewer={
    },
    reply_to:function(post, toId, event, rf,v,replyName){
          console.log(post);
+         if (!toId){
+            console.log(post, 'VkOpt: Reply canceled. toId=null!');
+            return;
+         }
          var name=(replyName[1] || '').split(',')[0];
          if ((v||'').indexOf('id'+toId)==-1 && !checkEvent(event)){
             var new_val=(v?v+'\r\n':'');
