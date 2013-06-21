@@ -2966,11 +2966,11 @@ function vkVidLoadLinks(oid,vid,el,yid,type){
          el.innerHTML='<small class="divide" >'+IDL('NO_ACCESS')+'</small>';
       } else {
          var obj=JSON.parse(t);
-         if (obj.extra=="21"){// 21 - YouTube; 22 - Vimeo; 23 - Rutube; 24 - Russia.ru
+         if (obj.extra=="21"){// 21 - YouTube; 22 - Vimeo; 50 - ivi.ru; 23 - Rutube; 24 - Russia.ru
             getyt(obj.extra_data);            
          } else if (obj.extra=="22"){
             getvimeo(obj.extra_data);
-         } else if (obj.extra=="50"){
+         } else if (obj.extra=="50"){// AND ALSO extra=50 - carambatv.ru??? О_о WTF?
             get_ivi(obj.extra_data);
          } else if (!obj.extra){
             var html='';
@@ -3120,23 +3120,126 @@ function vkGetYoutubeLinks(vid, callback) {
   var url = location.protocol+'//www.youtube.com/get_video_info?video_id=' + vid +
             '&asv=3&eurl=' + 
             encodeURIComponent(location.href) + '&el=embedded';
+   /*// Hashes calc from youtube html5 player lib 
+   var x = Date.now ||
+   function() {
+      return +new Date
+   };
+   function Qi(a) {
+      a = a.split("");
+      a = Ri(a, 52);
+      a = a.reverse();
+      a = a.slice(3);
+      a = Ri(a, 21);
+      a = a.reverse();
+      a = a.slice(3);
+      a = a.reverse();
+      return a.join("")
+   }
+   function Ri(a, b) {
+      var c = a[0];
+      a[0] = a[b % a.length];
+      a[b] = c;
+      return a
+   };
    
+   var Ek = void 0;
+   function Fk() {
+      var a;
+      if (void 0 == Ek && (Ek = !1, window.crypto && window.crypto.Nx)) try {
+         a = new Uint8Array(1), window.crypto.Nx(a), Ek = !0
+      } catch (b) {}
+      if (Ek) {
+         a = Array(16);
+         var c = new Uint8Array(16);
+         window.crypto.getRandomValues(c);
+         for (var d = 0; d < a.length; d++) a[d] = c[d]
+      } else for (a = Array(16), c = 0; 16 > c; c++) {
+         for (var d = x(), e = 0; e < d % 23; e++) a[c] = Math.random();
+         a[c] = Math.floor(256 * Math.random())
+      }
+      return a
+   }
+
+   function Gk() {
+      for (var a = Fk(), b = [], c = 0; c < a.length; c++) b.push("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_" [a[c] & 63]);
+      return b.join("")
+   }
+   */
+   /*
+   function decode_sig(s){// code from http://userscripts.org/scripts/review/25105
+      var sig=s;      
+      function swap(a,b){var c=a[0];a[0]=a[b%a.length];a[b]=c;return a};
+      if (sig.length==88) {      
+        var sigA=sig.split("");
+        sigA=sigA.slice(2);sigA=swap(sigA,1);sigA=swap(sigA,10);
+        sigA=sigA.reverse();sigA=sigA.slice(2);sigA=swap(sigA,23);
+        sigA=sigA.slice(3);sigA=swap(sigA,15);sigA=swap(sigA,34);
+        sig=sigA.join("");
+      } else if (sig.length==87) {
+        var sigA=sig.substr(44,40).split('').reverse().join('');
+        var sigB=sig.substr(3,40).split('').reverse().join('');
+        sig=sigA.substr(21,1)+sigA.substr(1,20)+sigA.substr(0,1)+sigA.substr(22,9)+
+        sig.substr(0,1)+sigA.substr(32,8)+sig.substr(43,1)+sigB;
+      } else if (sig.length==86) {
+        sig=sig.substr(2,15)+sig.substr(0,1)+sig.substr(18,23)+sig.substr(79,1)+
+        sig.substr(42,1)+sig.substr(43,36)+sig.substr(82,1)+sig.substr(80,2)+sig.substr(41,1);
+      } else if (sig.length==85) {
+        var sigA=sig.substr(44,40).split('').reverse().join('');
+        var sigB=sig.substr(3,40).split('').reverse().join('');
+        sig=sigA.substr(7,1)+sigA.substr(1,6)+sigA.substr(0,1)+sigA.substr(8,15)+sig.substr(0,1)+
+        sigA.substr(24,9)+sig.substr(1,1)+sigA.substr(34,6)+sig.substr(43,1)+sigB;
+      } else if (sig.length==84) {
+        var sigA=sig.substr(44,40).split('').reverse().join('');
+        var sigB=sig.substr(3,40).split('').reverse().join('');
+        sig=sigA+sig.substr(43,1)+sigB.substr(0,6)+sig.substr(2,1)+sigB.substr(7,9)+
+        sigB.substr(39,1)+sigB.substr(17,22)+sigB.substr(16,1);
+      } else if (sig.length==83) {
+        var sigA=sig.substr(43,40).split('').reverse().join('');
+        var sigB=sig.substr(2,40).split('').reverse().join('');
+        sig=sigA.substr(30,1)+sigA.substr(1,26)+sigB.substr(39,1)+
+        sigA.substr(28,2)+sigA.substr(0,1)+sigA.substr(31,9)+sig.substr(42,1)+
+        sigB.substr(0,5)+sigA.substr(27,1)+sigB.substr(6,33)+sigB.substr(5,1);
+      } else if (sig.length==82) {
+        var sigA=sig.substr(34,48).split('').reverse().join('');
+        var sigB=sig.substr(0,33).split('').reverse().join('');
+        sig=sigA.substr(45,1)+sigA.substr(2,12)+sigA.substr(0,1)+sigA.substr(15,26)+
+        sig.substr(33,1)+sigA.substr(42,1)+sigA.substr(43,1)+sigA.substr(44,1)+
+        sigA.substr(41,1)+sigA.substr(46,1)+sigB.substr(32,1)+sigA.substr(14,1)+
+        sigB.substr(0,32)+sigA.substr(47,1);
+      }
+      return sig;
+   }
+   */
    XFR.post(url,{},function(t){   
       var obj=YTDataDecode(t);
       //alert(JSON.Str(obj));
-      var map=(obj.fmt_url_map || obj.url_encoded_fmt_stream_map);
+      var map=(/*obj.adaptive_fmts ||*/ obj.fmt_url_map || obj.url_encoded_fmt_stream_map);
       if (!map) {
          callback([]);
          return [];
       }
+      /*
+      var params={
+         oid:obj.oid,
+         ptk:obj.ptk,
+         ptchn:obj.ptchn,
+         pltype:obj.pltype,
+         cpn:Gk()
+      }
+      */
       var links=[];
       for (var i=0;i<map.length;i++){
+         var sig=map[i].sig ;// || (decode_sig(map[i].s)); // || Qi(map[i].s);
+         if (!map[i].sig) continue;
+
          var format=YT_video_itag_formats[map[i].itag];
-         
          var info=(map[i].type+'').split(';')[0]+' '+(obj.fmt_list[i]+'').split('/')[1];
          if (!format) vklog('<b>YT '+map[i].itag+'</b>: \n'+(map[i].stereo3d?'3D/':'')+info,1);
          format=(map[i].stereo3d?'3D/':'')+(format?format:info);
-         links.push([map[i].url+'&signature='+map[i].sig+'&quality='+map[i].quality+(obj.title?'&title='+encodeURIComponent(obj.title):''), format,info]);
+         
+         //links.push([map[i].url+'&signature='+sig+'&'+ajx2q(params), format,info]); // sig=Qi(map[i].s)
+         links.push([map[i].url+'&signature='+sig+'&quality='+map[i].quality+(obj.title?'&title='+encodeURIComponent(obj.title):''), format,info]);
       }
       callback(links);
    });
