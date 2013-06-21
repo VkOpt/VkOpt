@@ -1918,6 +1918,7 @@ vk_videos = {
       .vk_full_vid_info .video_row_inner_cont{float:left}\
       .vk_full_vid_info .vid_descr{width: 298px;}\
       .vk_full_vid_info .vk_clr{clear:both;}\
+      .vk_vide_wide_lnks{width:230px; display:block;}\
       ';
       if (full_titles)  code+='\
       .video_album_text { height: auto !important; white-space: normal !important;}\
@@ -2929,7 +2930,9 @@ function vkVidLoadLinks(oid,vid,el,yid,type){
                if (!r) return;
                for (var i=0;i<r.length;i++)
                   html+='<a class="vk_down_icon" href="'+r[i][0]+'" title="'+r[i][2]+'" onmouseover="vkGetVideoSize(this);">'+r[i][1]+'<small class="divide" url="'+r[i][0]+'"></small></a>';
-               el.innerHTML=html;      
+               el.innerHTML=html; 
+               addClass(el,'vk_vide_wide_lnks');
+               
             });
       }
       
