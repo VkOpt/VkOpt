@@ -4468,7 +4468,7 @@ function vkAudioLoadAlbum(albumid){
             s_list.push([audios[i][5],audios[i][6]]);
          }
       }  
-      if (s_list.length>0 && cur.oid==vk.id){
+      if (s_list.length>0 && cur.curList=='albumBanned'){
          vkAlertBox(getLang('audio_N_recs',s_list.length),IDL('SearchBanned'),function(){
          vk_aalbum.search_tracks(s_list);
          },function(){
