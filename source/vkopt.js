@@ -51,7 +51,7 @@ var MAIL_SHOWMSG_FIX=true;
 var SUPPORT_STEALTH_MOD=true;    // прикидываемся перед ТП, что у нас не стоит расширение для скачивания.
 var VIDEO_AUTOPLAY_DISABLE=false;
 var FULL_ENCODE_FILENAME=false;
-var vkNewSettings=[82,83,84,85,86,87]; //"new" label on settings item
+var vkNewSettings=[85,86,87,88,89]; //"new" label on settings item
 var SetsOnLocalStore={
   'vkOVer':'c',
   'remixbit':'c',
