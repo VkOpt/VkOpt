@@ -635,7 +635,8 @@ function vkInitSettings(){
      {id:56, text:IDL("seIMAlwaysShowTime")},
      {id:62, text:IDL("seWriteBoxWithoutFastChat")},
      {id:68, text:IDL("seTypingNotify")},
-     {id:81, text:IDL("seDialogsReplyBtn")}
+     {id:81, text:IDL("seDialogsReplyBtn")},
+     {id:89, text:IDL("seDisableIMFavicon")}
     ],
     vkInterface:[
       {id:21, text:IDL("seADRem")+vkCheckboxSetting(44,IDL("seAdNotHideSugFr"),true)},
@@ -695,7 +696,7 @@ function vkInitSettings(){
    ]
   };
 
-	//LAST 88
+	//LAST 89
 	/*
       vkoptSets['advanced']=[
          'vk_upd_menu_timeout','vkMenuHideTimeout','CHECK_FAV_ONLINE_DELAY',
