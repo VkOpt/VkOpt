@@ -2929,7 +2929,7 @@ function vkVidLoadLinks(oid,vid,el,yid,type){
             vkGetYoutubeLinks(youid,function(r){
                if (!r) return;
                for (var i=0;i<r.length;i++)
-                  html+='<a class="vk_down_icon" href="'+r[i][0]+'" title="'+r[i][2]+'" onmouseover="vkGetVideoSize(this);">'+r[i][1]+'<small class="divide" url="'+r[i][0]+'"></small></a>';
+                  html+='<a class="vk_down_icon" href="'+r[i][0]+'" title="'+r[i][2]+'" onmouse_over="vkGetVideoSize(this);">'+r[i][1]+'<small class="divide" url="'+r[i][0]+'"></small></a>';
                el.innerHTML=html; 
                addClass(el,'vk_vide_wide_lnks');
                
@@ -3120,9 +3120,6 @@ function YTDataDecode(qa) {
 }  
 
 function vkGetYoutubeLinks(vid, callback) {
-  var url = location.protocol+'//www.youtube.com/get_video_info?video_id=' + vid +
-            '&asv=3&eurl=' + 
-            encodeURIComponent(location.href) + '&el=embedded';
    /*// Hashes calc from youtube html5 player lib 
    var x = Date.now ||
    function() {
@@ -3146,6 +3143,9 @@ function vkGetYoutubeLinks(vid, callback) {
       return a
    };
    
+   //alert(Qi('7F57F587C6E44AB8DFCAC50556FA669876D918A33F2.AAA00E3B7056C121228F5B949CDBCDEF5357ABD1BD1')=='8DBA7535FEDCBDC949B5F122121C6507B3E00AAA.2F33A819D678966AF65505CACFD8BA44E6C785F7');
+   
+   
    var Ek = void 0;
    function Fk() {
       var a;
@@ -3168,7 +3168,7 @@ function vkGetYoutubeLinks(vid, callback) {
       for (var a = Fk(), b = [], c = 0; c < a.length; c++) b.push("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_" [a[c] & 63]);
       return b.join("")
    }
-   */
+   //*/
    /*
    function decode_sig(s){// code from http://userscripts.org/scripts/review/25105
       var sig=s;      
@@ -3214,9 +3214,16 @@ function vkGetYoutubeLinks(vid, callback) {
       return sig;
    }
    */
+   
+   //var cpn=Gk();
+   
+   var url = location.protocol+'//www.youtube.com/get_video_info?video_id=' + vid +
+            '&asv=3&eurl=' + 
+            encodeURIComponent(location.href) + '&el=embedded';
+            /*'html5=1&video_id=' + vid +'&cpn='+cpn+'&eurl=' + 
+            encodeURIComponent(location.href) + '&el=embedded&c=web'*/
    XFR.post(url,{},function(t){   
       var obj=YTDataDecode(t);
-      //alert(JSON.Str(obj));
       var map=(/*obj.adaptive_fmts ||*/ obj.fmt_url_map || obj.url_encoded_fmt_stream_map);
       if (!map) {
          callback([]);
@@ -3228,13 +3235,13 @@ function vkGetYoutubeLinks(vid, callback) {
          ptk:obj.ptk,
          ptchn:obj.ptchn,
          pltype:obj.pltype,
-         cpn:Gk()
+         cpn:cpn//Gk()
       }
-      */
+      //*/
       var links=[];
       for (var i=0;i<map.length;i++){
-         var sig=map[i].sig ;// || (decode_sig(map[i].s)); // || Qi(map[i].s);
-         if (!map[i].sig) continue;
+         var sig=map[i].sig //|| Qi(map[i].s);// || (decode_sig(map[i].s));
+         if (!map[i].sig) continue;// "Qi(map[i].s)" calc sig normaly, but links not valid
 
          var format=YT_video_itag_formats[map[i].itag];
          var info=(map[i].type+'').split(';')[0]+' '+(obj.fmt_list[i]+'').split('/')[1];
@@ -4453,11 +4460,22 @@ function vkAudioLoadAlbum(albumid){
    }
    if (albumid=='Banned'){
       var audios=cur.audiosList['all'];
+      var s_list=[];
       cur.audiosList['albumBanned']=[];
       for (var i=0; i<audios.length; i++){
-         if (!audios[i][2] || audios[i][2]=="")
+         if (!audios[i][2] || audios[i][2]==""){
             cur.audiosList['albumBanned'].push(audios[i]);
-      }   
+            s_list.push([audios[i][5],audios[i][6]]);
+         }
+      }  
+      if (s_list.length>0 && cur.oid==vk.id){
+         vkAlertBox(getLang('audio_N_recs',s_list.length),IDL('SearchBanned'),function(){
+         vk_aalbum.search_tracks(s_list);
+         },function(){
+            s_list=null;
+         })
+         
+      }
    }
    
    Audio.loadAlbum(albumid);
@@ -5325,6 +5343,106 @@ function vkGetSongInfoFromNode(node) {
     };
     res.full_id = full_id;
     return res;
+}
+
+vk_aalbum={
+   s_cache:{},
+   s_toggle:function(idx){
+      ge('vk_audios_search'+idx).innerHTML=trim(ge('vk_audios_search'+idx).innerHTML)!=''?'':vk_aalbum.s_cache['au'+idx];
+   },
+   search_tracks:function(list){
+      if (!list || !list.length) return;
+      var result=vkCe('div',{});
+      var box=null;
+      // <div class="button_gray button_wide"><button onclick="vk_audio.links_to_audio_on_page();return false;">'+IDL('Links')+'</button></div>
+      vk_aalbum.s_cache={};
+      var abort=false;
+      var idx=0;
+      var get_track=function(){
+         if (abort){
+            removeClass(cur.searchCont, 'loading');
+            return;
+         }
+         if (idx>=list.length){
+            box.hide();
+            
+            //var res = cur.audiosIndex.search(htmlencode(str));
+            var str='vkalbum';
+            var newList = cur.curSection;
+            newList += '_search_'+str;
+            cur.curList = newList;
+            cur.audiosList[cur.curList] = [];
+            
+            removeClass(cur.searchCont, 'loading');
+            cur.aContent.innerHTML = '';
+            cur.sContent.innerHTML = '<a href="#" id="vk_links_to_audio_on_page" onclick="return vk_audio.links_to_audio_on_page();">'+IDL('Links')+'</a>'+result.innerHTML;
+            show(cur.sContent);
+            hide(cur.sShowMore);
+            removeClass('audios_list', 'light');
+            Audio.showRows();
+            return;
+         }
+            
+         ge('vk_scan_msg').innerHTML=vkProgressBar(idx,list.length,310, '['+idx+'/'+list.length+'] %');  
+
+         //progressbar
+         
+         var name=list[idx][0]+'-'+list[idx][1];
+         var query={
+                  act: "search", offset: 0, sort: 0, performer: 0,
+                  id     : cur.id, 
+                  gid    : cur.gid,
+                  q      : winToUtf(name)
+               };
+         ajax.post(Audio.address, query, {
+            onDone: function(res, preload, options) {
+               var div=vkCe('div',{},res);
+               var els=geByClass('audio',div);
+               var au=els[0];
+               for (var i=0; i<els.length; i++){
+                  //au=els[i];
+                  var info=vkGetSongInfoFromNode(els[i]);
+                  if (info[5]==list[idx][0] && info[6]==list[idx][1]){
+                     au=els[i];
+                  }
+                  //console.log(info[5],info[6]);
+               }
+               if (au){
+                  ge('vk_scan_info').innerHTML+=name+'<br>';
+                  result.appendChild(au);
+                  if (els.length>1){
+                     result.appendChild(se('<div class="vk_au_search_block_btn fl_r"><small><a href="#" onclick="vk_aalbum.s_toggle('+idx+'); return false;">'+IDL('ShowMore')+' +'+(els.length-1)+'</a></small></div>'));
+                     result.appendChild(se('<div class="vk_au_search_block" id="vk_audios_search'+idx+'"></div>'));
+                     
+                     var c=se('<div></div>');
+                     for (var i=0; i<els.length; i++){
+                        if (els[i]!=au)
+                           c.appendChild(els[i]);
+                     }
+                     vk_aalbum.s_cache['au'+idx]=c.innerHTML;
+                     c=null;
+                  }
+               }
+               else
+                  ge('vk_scan_info').innerHTML+='<b>Search failed:</b> '+name+'<br>'; 
+               idx++;
+               setTimeout(get_track,(idx%10==0 || !au)?2000:100);
+               //get_track();
+            }
+         });
+      }
+      addClass(cur.searchCont, 'loading');
+      //cur.aContent.innerHTML = '';
+      
+      box=new MessageBox({title: IDL('Searching...'),closeButton:true,width:"350px"});
+      box.removeButtons();
+      box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no');
+      var html='</br><div id="vk_scan_msg"></div><div id="vk_scan_info" style="padding-bottom:10px;"></div>';
+      box.content(html).show();
+
+      get_track();
+      
+   }
 }
 function vkAlbumCollectPlaylist(){
    if (!vk_current_album_info) return;
