@@ -939,7 +939,7 @@ function vkImAddPreventHideCB(){
 vk_im={
    css:function(){
       return '\
-      .vk_im_reply{opacity:0; margin-right:10px; margin-top:-1px;}\
+      .vk_im_reply{opacity:0; margin-top:1px; margin-left: -34px; position:absolute; }\
       .im_in:hover .vk_im_reply{opacity:1;}\
       .im_out .vk_im_reply{display:none;}\
       ';
@@ -1020,15 +1020,44 @@ vk_im={
    
    reply_btns:function(node){
       if (getSet(81)!='y') return;
-      var nodes=geByClass('im_log_author_chat_name',node);
+      var nodes=geByClass('im_date_link',node);//geByClass('im_log_author_chat_name',node);
       for (var i=0; i<nodes.length; i++){
-         if (nodes[i].innerHTML.indexOf('vk_im.reply')!=-1) continue;
-         var r=se('<a class="fl_r vk_im_reply opacity_anim" onmouseover="showTooltip(this, {text: \''+IDL('Reply')+'\', showdt: 0, black: 1, shift: [10, -2, 0], className: \'im_important_tt\'});" onclick="return vk_im.reply(this,event)"><span class="vk_repost_icon"></span></a>');
-         nodes[i].appendChild(r);
+         var mid=(nodes[i].href || '').match(/mail.+id=(\d+)/);
+         if (!mid) continue;
+         mid = mid[1];
+         var p=nodes[i].parentNode;
+         if (p.innerHTML.indexOf('vk_im.reply')!=-1) continue;
+         var r=se('<a class="fl_r_ vk_im_reply opacity_anim" onmouseover="showTooltip(this, {text: \''+IDL('Reply')+'\', showdt: 0, black: 1, shift: [15, -2, 0], className: \'im_important_tt\'});" onclick="return vk_im.reply(this,event,'+mid+')"><div class="vk_repost_icon"></div></a>');
+         p.insertBefore(r,p.firstChild); //appendChild(r);
       }
    },
-   reply:function(el,ev){
-      ev = ev || window.event; 
+   reply:function(el,ev,msg_id){
+      ev = ev || window.event;
+      var selMsgs=[];
+      
+      // Add to attached mails
+      curPeerMedia = cur.imPeerMedias[cur.peer];
+      for (i in curPeerMedia) {
+        if (curPeerMedia[i][0] == 'mail') {
+          selMsgs=(curPeerMedia[i][1]+"").split(';');
+          cur.imMedia.unchooseMedia(i);
+          //curPeerMedia.splice(i, 1);
+          break;
+        }
+      }
+
+      
+      selMsgs.push(msg_id);
+      cur.fwdFromPeer = cur.peer;
+      IM.onMediaChange('mail', selMsgs.join(';'), [selMsgs.length]);
+      var txt = IM.getTxt(cur.peer);
+      if (cur.editable) {
+        IM.editableFocus(txt, false, true);
+      } else {
+        elfocus(txt);
+      }
+      
+      /*
       var ctrl=false;
       if (ev.ctrlKey) ctrl=true;
       var a=geByTag('a',el.parentNode)[0];
@@ -1045,7 +1074,7 @@ vk_im={
          });
       } else {
          vk_im.paste_code(name+', ');
-      }
+      }*/
    },
    paste_code:function(code) {
        cur.emojiFocused = false;
