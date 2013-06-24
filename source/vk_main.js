@@ -939,8 +939,9 @@ function vkImAddPreventHideCB(){
 vk_im={
    css:function(){
       return '\
-      .vk_im_reply{opacity:0;}\
+      .vk_im_reply{opacity:0; margin-right:10px; margin-top:-1px;}\
       .im_in:hover .vk_im_reply{opacity:1;}\
+      .im_out .vk_im_reply{display:none;}\
       ';
    },
    process_node:function(node){
@@ -1022,7 +1023,7 @@ vk_im={
       var nodes=geByClass('im_log_author_chat_name',node);
       for (var i=0; i<nodes.length; i++){
          if (nodes[i].innerHTML.indexOf('vk_im.reply')!=-1) continue;
-         var r=se('<a class="fl_r vk_im_reply opacity_anim" onclick="return vk_im.reply(this,event)">'+IDL('Reply')+'</a>');
+         var r=se('<a class="fl_r vk_im_reply opacity_anim" onmouseover="showTooltip(this, {text: \''+IDL('Reply')+'\', showdt: 0, black: 1, shift: [10, -2, 0], className: \'im_important_tt\'});" onclick="return vk_im.reply(this,event)"><span class="vk_repost_icon"></span></a>');
          nodes[i].appendChild(r);
       }
    },

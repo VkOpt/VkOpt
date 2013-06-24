@@ -2969,12 +2969,14 @@ function vkVidLoadLinks(oid,vid,el,yid,type){
          el.innerHTML='<small class="divide" >'+IDL('NO_ACCESS')+'</small>';
       } else {
          var obj=JSON.parse(t);
-         if (obj.extra=="21"){// 21 - YouTube; 22 - Vimeo; 50 - ivi.ru; 23 - Rutube; 24 - Russia.ru
+         if (obj.extra=="21"){// 21 - YouTube; 22 - Vimeo; 50 - ivi.ru; 23 - Rutube; 24 - Russia.ru 
             getyt(obj.extra_data);            
          } else if (obj.extra=="22"){
             getvimeo(obj.extra_data);
-         } else if (obj.extra=="50"){// AND ALSO extra=50 - carambatv.ru??? О_о WTF?
-            get_ivi(obj.extra_data);
+         } else if (obj.extra=="50"){// AND ALSO extra=50 - carambatv.ru??? О_о WTF?  //О_о coub.сom  links - http://coub.com/coubs/{coubID}.json
+            if ((obj.extra_data||'').indexOf('ivi.ru')!=-1)
+               get_ivi(obj.extra_data);
+            else el.innerHTML='<small class="divide" >'+IDL('NA')+'('+obj.extra+')</small>';
          } else if (!obj.extra){
             var html='';
             var arr=vkVidDownloadLinksArray(obj);
@@ -2989,7 +2991,7 @@ function vkVidLoadLinks(oid,vid,el,yid,type){
             }
             el.innerHTML=html;
          } else {
-            el.innerHTML='<small class="divide" >'+IDL('NA')+'</small>';
+            el.innerHTML='<small class="divide" >'+IDL('NA')+'('+obj.extra+')</small>';
          }
       }
     });
