@@ -3471,6 +3471,7 @@ function vk_tag_api(section,url,app_id){
             html='<tr>'+html+'</tr>';
             ge('dislike_table_'+post).innerHTML=html;
             ge('dislike_title_'+post).innerHTML=langNumeric(info.count,IDL('users_dislike'));
+            vkProcessNode(ge('dislike_table_'+post));
          }
          if (cnt>0 || act){
             if (!tip_ready || act) load_info();
@@ -3538,6 +3539,7 @@ function vk_tag_api(section,url,app_id){
                setStyle(tp, {
                   marginLeft: pointerShift
                });
+               //vkProcessNode(tt.container);
             }
          });
       },

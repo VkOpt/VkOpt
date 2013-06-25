@@ -77,6 +77,7 @@ function vkStyles(){
 	main_css+='\
 		.vk_common_group{background-color:#ffc1c1; background-color: rgba(89, 125, 163, 0.23);}\
 		.vk_adm_group{font-weight:bold; padding:6px 0 !important; background-color: rgba(255, 255, 0, 0.4);}\
+      .group_name .vk_adm_group{padding:0 !important;}\
       .vk_faved_user{font-weight:bold;} .vk_faved_user nobr{text-decoration:underline;}\
 		';
    //main_css+='.friends_add_block[style]{display:block !important;};';
@@ -203,6 +204,7 @@ function vkStyles(){
    .vk_audio_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -221px; line-height: 11px; }\
    .vk_video_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -75px; line-height: 11px; }\
    .vk_txt_icon{ display: inline-block;height: 12px; padding-left:12px; line-height: 12px; background: url(/images/icons/photo_icons.png) 0px -23px no-repeat transparent;}\
+   .vk_repost_icon{display: inline-block;height: 9px; padding-left:12px; line-height: 9px; background: url(/images/icons/mono_iconset.gif) 0px -251px no-repeat transparent;}\
    .vk_x_btn{background: url(http://vk.com/images/hide_to.gif) no-repeat 50% 50%; display: inline-block; vertical-align: middle; width: 10px; height: 10px; }\
    .vk_x_btn{opacity:0.5; cursor:pointer;}\
    .vk_x_btn:hover{opacity:1;}\
@@ -872,12 +874,12 @@ function vkMenu(){//vkExLeftMenu
          .vkico_wall,.vkico_gifts,.vkico_vkplug,.vkico_vkopt,.vkico_app,.vkico_ads,.vkico_pages{background:url("http://vk.com/images/icons/mono_iconset.gif") no-repeat;}\
          .left_row  .vkicon{margin: 4px 3px -4px 0px;}\
          \
-         .vkico_profile{background-position:0 0px;}\
+         .vkico_profile{background-position:0 2px;}\
          .vkico_albums{background-position:0 -29px;}\
-         .vkico_friends{background-position:0 -88px;}\
+         .vkico_friends{background-position:0 -87px;}\
          .vkico_video{background-position:0 -74px;}\
          .vkico_audio{background-position:0 -221px;}\
-         .vkico_mail,.vkico_im{background-position:0 -193px;}\
+         .vkico_mail,.vkico_im{background-position:0 -192px;}\
          .vkico_notes{background-position:0 -133px;}\
          .vkico_groups{background-position:0 -177px;}\
          .vkico_feed, .vkico_newsfeed{background-position:0 -163px;}\
@@ -1091,6 +1093,7 @@ function vkMenu(){//vkExLeftMenu
       ExMenu['vkopt'].push([["#","vk_photos.url(prompt('Image URL:')); return false;"],'UploadImg v2']);
       ExMenu['vkopt'].push([["#","vk_photos.scan_walls_list_box(); return false;"],'Grab walls (photo)']);
       ExMenu['vkopt'].push([["#","(function(){var keys=[]; for(var key in localStorage) if(/im_draft/.test(key)){console.log(key); keys.push(key)}; for (var i=0; i<keys.length; i++) localStorage.removeItem(keys[i]);})(); return false;"],'Del LS Trash']);
+      ExMenu['vkopt'].push([["#","showBox('/al_apps.php', {act: 'show_app_friends_box', aid: 2168679}, {cache: 1, params:{width: '400px', bodyStyle: 'padding: 0px'}, stat: ['boxes.css','apps.css'], dark: 1}); return false;"],'Friends+Vkopt']);
   }
   /* 
   ExMenu['vkopt']=[];

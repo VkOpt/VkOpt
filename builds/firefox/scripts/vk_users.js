@@ -266,7 +266,7 @@ vkumlnks=0;
 function vkProcessUserLink(link){
 	if (link.hasAttribute('exuser')) return;
    var cn=link.className || '';
-   if (cn.match(/audio_friend_status/)) return;
+   if (cn.match(/audio_friend_status|audio_popular_owner/)) return;
    var cl_name=(link.className.indexOf('fl_r')!=-1?' fl_r':'');
    if (cn.indexOf('audio_friend_name_now')!=-1) cl_name+=' fl_r';
    
@@ -810,9 +810,11 @@ function vkOnlineInfo(p){
                title='iPhone';         //vk.com/app2753935  iPhone || FAKE?
                break; 
             case '3145329':
+            case '3682744':
                title='iPad';
                break;  
             case '2424737':
+            case '3502561':
                title='Windows Phone';
                break; 
             case '3136627':
