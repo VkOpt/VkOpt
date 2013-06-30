@@ -15,6 +15,7 @@ vk_search={
       #search_content .vk_ex_info .miniblock{ width: 310px;}\
       #search_content .vk_ex_info .miniblock .labeled{position: static; width: 185px; }\
       #search_content .vk_ex_info .miniblock .label{ position: static; width: 120px;}\
+      #search_content .people_row.short .info .vk_ex_info{display:none;}\
    ',
    page:function(){
       vkAudioDelDup(true);
