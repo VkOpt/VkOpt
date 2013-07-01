@@ -1428,7 +1428,7 @@ function vkMsgStatsBtn(){
       ge('mail_bar_search').insertBefore(vkCe('div',{id:'vk_stats_btn','class':'fl_l'},'<div class="button_blue"><button onclick="vkMsgStats();">'+IDL('Stats')+'</button></div>'),ge('mail_bar_search').firstChild);
    }
    if (ge('im_filter_out') && !ge('vk_stats_im_btn')){
-      ge('im_filter_out').appendChild(vkCe('div',{id:'vk_stats_im_btn','class':'fl_r'},'<div class="button_blue"><button onclick="vkMsgStats();">'+IDL('Stats')+'</button></div>'));
+      ge('im_filter_out').appendChild(vkCe('div',{id:'vk_stats_im_btn','class':'fl_r'},'<div class="button_gray"><button onclick="vkMsgStats();" onmouseover="showTooltip(this, {text: \''+IDL('Stats')+'\', black: 1, shift: [0, 2, 0]});"><span class="vk_stats_icon"></span></button></div>'));
    }
 }
 function vkMsgStats(){

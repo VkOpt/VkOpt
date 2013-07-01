@@ -1983,7 +1983,7 @@ function vk_oauth_api(app_id,scope){
                   setTimeout(function(){
                      api.call(method, inputParams, callback);
                   },500);
-               } else if ( response.error.error_code == 4 || (response.error.error_code == 3 || response.error.error_code == 7) ){
+               } else if ( response.error.error_code == 4 || (response.error.error_code == 3 || response.error.error_code == 7 || response.error.error_code == 5) ){
                   apiReAuth();				
                } else if(response.error.error_code == 14) { // Captcha needed
                   api.captcha_visible=true;

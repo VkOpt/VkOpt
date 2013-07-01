@@ -2245,7 +2245,11 @@ vk_videos = {
             var vids=[];
             for (var i=0; i<part.length; i++) vids.push(part[i][1]);
             
-            dApi.call('video.moveToAlbum',{vids:vids.join(','),gid:Math.abs(cur.oid),album_id:to_album},function(r){
+            var params={vids:vids.join(','),album_id:to_album};
+            if (cur.oid<0){
+               params['gid']=Math.abs(cur.oid);
+            }
+            dApi.call('video.moveToAlbum',params,function(r){
                console.log(r);
                //*
                //filtred_vids[i][6]

@@ -93,31 +93,42 @@ try {// Firefox 18+
   // old Firefox versions (e.g. 3.6) didn't have PrivateBrowsingUtils.
 }
 
-function vkDownloadFile(win,aURL, aDefaultFileName, aContentType, aShouldBypassCache, aFilePickerTitleKey, aSkipPrompt) {
-  if (aSkipPrompt == undefined) aSkipPrompt = false;
-   var file, fileURL;
-   var fileInfo = new FileInfo(aDefaultFileName);
-   initFileInfo(fileInfo, aURL, null, null, aContentType, null);
-   fileInfo.fileName = aDefaultFileName;
-   fileInfo.fileBaseName = aDefaultFileName.substr(0, aDefaultFileName.lastIndexOf(".") - 1);
-   fileInfo.fileExt = aDefaultFileName.substr(aDefaultFileName.lastIndexOf(".") + 1);
-   var fpParams = {
-      fpTitleKey: aFilePickerTitleKey,
-      isDocument: false,
-      fileInfo: fileInfo,
-      contentType: aContentType,
-      saveMode: 0x00,
-      saveAsType : 0,
-      file: file,
-      fileURL: fileURL
-   };
-   if (!getTargetFile(fpParams, aSkipPrompt)) return;
-   saveAsType = fpParams.saveAsType;
-   saveMode = fpParams.saveMode;
-   file = fpParams.file;
-   fileURL = fpParams.fileURL;
-   if (!fileURL) fileURL = makeFileURI(file);
-   var source = fileInfo.uri;
+function vkDownloadFile(win, url, title, fileType, aShouldBypassCache) 
+{
+      function getDownloadFile(defaultString, fileType) 
+      {
+          var nsIFilePicker = Components.interfaces.nsIFilePicker;
+
+          var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+          fp.init(window, "Save As", nsIFilePicker.modeSave);
+          try {
+              var urlExt = defaultString.substr(defaultString.lastIndexOf(".")+1, 3);
+              if (urlExt!=fileType) defaultString += "." + fileType
+          }catch(ex){}
+
+          fp.defaultString = defaultString;
+
+          fp.appendFilter(fileType, "*." + fileType);
+          var rv = fp.show();
+          if (rv == nsIFilePicker.returnOK || rv == nsIFilePicker.returnReplace) {
+            var file = fp.file;
+            var path = fp.file.path;
+            return file;
+          }
+          return null;
+      }
+    
+    
+    if (!fileType)
+      fileType=url.substr(url.lastIndexOf(".")+1, 3);
+    
+    var file = getDownloadFile(title, fileType);
+    var persist = Components.classes['@mozilla.org/embedding/browser/nsWebBrowserPersist;1'].createInstance(Components.interfaces.nsIWebBrowserPersist);  
+    var ios = Components.classes['@mozilla.org/network/io-service;1'].getService(Components.interfaces.nsIIOService);  
+    var uri = ios.newURI(url, null, null); 
+
+    var fileURL = ios.newFileURI(file);
+    
    var persist = makeWebBrowserPersist();
    const nsIWBP = Components.interfaces.nsIWebBrowserPersist;
    const flags = nsIWBP.PERSIST_FLAGS_REPLACE_EXISTING_FILES;
@@ -139,7 +150,8 @@ function vkDownloadFile(win,aURL, aDefaultFileName, aContentType, aShouldBypassC
    persist.persistFlags |= nsIWBP.PERSIST_FLAGS_AUTODETECT_APPLY_CONVERSION;
    persist.persistFlags |= nsIWBP.PERSIST_FLAGS_DONT_CHANGE_FILENAMES
    var tr = Components.classes["@mozilla.org/transfer;1"].createInstance(Components.interfaces.nsITransfer);
-   tr.init(source, fileURL, "", null, null, null, persist, isPrivate);
+   tr.init(uri, fileURL, "", null, null, null, persist, isPrivate);
    persist.progressListener = tr;
-   persist.saveURI(source, null, null, null, null, fileURL, privacyContext);
+   persist.saveURI(uri, null, null, null, null, fileURL, privacyContext);
+
 }
