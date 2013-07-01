@@ -198,12 +198,13 @@ function vkStyles(){
 	.vk_mail_save_history_block .cfg, .save_msgs_link .cfg, .vk_cfg_icon{height: 11px; width: 15px; margin-top:2px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -60px;}\
    #vk_stats_btn{position: absolute; float:left}\
    #vk_stats_btn .button_blue{position: absolute; right: 0px;}\
-   #vk_stats_im_btn{margin-right:3px;}\
+   #vk_stats_im_btn{margin-right:10px;}\
    .vk_photo_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -29px; line-height: 11px; }\
    .vk_msg_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -193px; line-height: 11px; }\
    .vk_audio_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -221px; line-height: 11px; }\
    .vk_video_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -75px; line-height: 11px; }\
    .vk_txt_icon{ display: inline-block;height: 12px; padding-left:12px; line-height: 12px; background: url(/images/icons/photo_icons.png) 0px -23px no-repeat transparent;}\
+   .vk_stats_icon{background:url(http://vk.com/images/icons/mono_iconset.gif) 0px -207px no-repeat; display:inline-block; width:12px; height:11px;}\
    .vk_repost_icon{display: inline-block;height: 9px; padding-left:12px; line-height: 9px; background: url(/images/icons/mono_iconset.gif) 0px -251px no-repeat transparent;}\
    .vk_x_btn{background: url(http://vk.com/images/hide_to.gif) no-repeat 50% 50%; display: inline-block; vertical-align: middle; width: 10px; height: 10px; }\
    .vk_x_btn{opacity:0.5; cursor:pointer;}\
