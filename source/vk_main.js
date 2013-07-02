@@ -1033,8 +1033,11 @@ vk_im={
    },
    reply:function(el,ev,msg_id){
       ev = ev || window.event;
-      var selMsgs=[];
       
+      var scrll=IM.scrollOn;
+      IM.scrollOn=function(){};
+      
+      var selMsgs=[];
       // Add to attached mails
       curPeerMedia = cur.imPeerMedias[cur.peer];
       for (i in curPeerMedia) {
@@ -1044,12 +1047,13 @@ vk_im={
           //curPeerMedia.splice(i, 1);
           break;
         }
-      }
-
-      
+      }      
       selMsgs.push(msg_id);
       cur.fwdFromPeer = cur.peer;
       IM.onMediaChange('mail', selMsgs.join(';'), [selMsgs.length]);
+      
+      IM.scrollOn=scrll;
+      
       var txt = IM.getTxt(cur.peer);
       if (cur.editable) {
         IM.editableFocus(txt, false, true);
