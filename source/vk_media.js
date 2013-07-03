@@ -1056,6 +1056,12 @@ vk_ph_comms = {
             for (var i=0; i<data.length; i++){
                var com=data[i];
                //*
+               if (!users[com.from_id]){ 
+                  if (com.from_id<0)
+                     users[com.from_id]=['Admin','http://vk.com/images/camera_c.gif'];
+                  else
+                     users[com.from_id]=['[id'+com.from_id+']','http://vk.com/images/camera_c.gif'];
+               }
                html+=tpl.replace(/%id/g,cur.oid+'_'+com.cid+'review')
                         .replace(/%ava/g,users[com.from_id][1])
                         .replace(/%uid/g,com.from_id)
@@ -1086,12 +1092,17 @@ vk_ph_comms = {
                photos_load();
                return;
             }
-            dApi.call('users.get',{uids:uids.join(','),fields:'photo_50'},function(ur){
-               var users=ur.response;
-               //console.log('users:',ur);
-               for (var i=0; i<users.length; i++)
-                  vk_ph_comms.users[users[i].uid+'']=[users[i].first_name+' '+users[i].last_name,users[i].photo_50];
-               photos_load();
+            dApi.call('users.get',{uids:uids.join(','),fields:'photo_50'},{ok:function(ur){
+                  var users=ur.response;
+                  //console.log('users:',ur);
+                  for (var i=0; i<users.length; i++)
+                     vk_ph_comms.users[users[i].uid+'']=[users[i].first_name+' '+users[i].last_name,users[i].photo_50];
+                  photos_load();
+               },
+               error:function(r){
+                  photos_load();
+                  dApi.show_error(r);
+               }
             });         
          }
 
