@@ -77,7 +77,7 @@ function vkStyles(){
 	main_css+='\
 		.vk_common_group{background-color:#ffc1c1; background-color: rgba(89, 125, 163, 0.23);}\
 		.vk_adm_group{font-weight:bold; padding:6px 0 !important; background-color: rgba(255, 255, 0, 0.4);}\
-      .group_name .vk_adm_group{padding:0 !important;}\
+      .group_name .vk_adm_group, .profile_info .vk_adm_group{padding:0 !important;}\
       .vk_faved_user{font-weight:bold;} .vk_faved_user nobr{text-decoration:underline;}\
 		';
    //main_css+='.friends_add_block[style]{display:block !important;};';
@@ -872,7 +872,7 @@ function vkMenu(){//vkExLeftMenu
          .vkico_notes,.vkico_groups,.vkico_events,\
          .vkico_feed, .vkico_newsfeed,.vkico_fave,.vkico_custom_link,\
          .vkico_settings,.vkico_apps,.vkico_docs,\
-         .vkico_wall,.vkico_gifts,.vkico_vkplug,.vkico_vkopt,.vkico_app,.vkico_ads,.vkico_pages{background:url("http://vk.com/images/icons/mono_iconset.gif") no-repeat;}\
+         .vkico_wall,.vkico_gifts,.vkico_vkplug,.vkico_vkopt,.vkico_app,.vkico_ads,.vkico_pages,.vkico_support{background:url("http://vk.com/images/icons/mono_iconset.gif") no-repeat;}\
          .left_row  .vkicon{margin: 4px 3px -4px 0px;}\
          \
          .vkico_profile{background-position:0 2px;}\
@@ -892,6 +892,7 @@ function vkMenu(){//vkExLeftMenu
          \
          .vkico_ads{background-position:0 -235px;}\
          .vkico_pages{background-position:0 -133px;}\
+         .vkico_support{background-position: 0px -320px}\
          \
          /*.vkico_events{background-position:0 -168px;}*/\
          /*.vkico_gifts{background-position:0 -104px;}*/\
@@ -980,7 +981,8 @@ function vkMenu(){//vkExLeftMenu
         ['/mail',IDL("mMaI")],
         ['/mail?section=outbox',IDL("mMaO")],
         ['/mail?section=spam',IDL("Spam")],
-        ['/im',IDL('mDialogsMessages')]
+        ['/im',IDL('mDialogsMessages')],
+        ['/im?sel=-5',IDL('mImportant')]
 		//,[['im.php?act=a_box&popup=1',''],IDL('mQuickMessages')]
     ],
     'notes':[   
