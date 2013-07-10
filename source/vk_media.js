@@ -80,8 +80,19 @@ cur.chooseMedia=function(type, media, data, url, noboxhide){
    return orig_cur_chooseMedia(type, media, data, url, true);
 }
 */
-var _vk_albums_list_cache={};
 
+
+/* ALBUMS IDS
+-5 app
+-6 avas
+-7 user wall
+-8 from share on wall
+-12 board
+-14 wall
+-24 graff
+-15 saved
+*/
+var _vk_albums_list_cache={};
 var vk_photos = {
    css:'\
       #vk_ph_save_move{width:160px}\

@@ -68,6 +68,7 @@ function vkStyles(){
          margin-bottom: -5px;\
          margin-top: -2px;*/\
       }\
+      #im_rows .im_add_row .im_important_toggler{ margin-left: -22px; }\
       ';
    }
    if (ShowGroupNews=='y') main_css+='#group .wide_column .group_wiki_wrap .wk_text{display:block}';
