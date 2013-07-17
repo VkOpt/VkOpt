@@ -1652,7 +1652,8 @@ vk_lang_en={//by Hzy
    'ReloadPegeAfterMove':'Reload the page after moving',
    'AudioBanned':'Blocked audio',
    'SearchBanned':'Try to search blocked audio?',
-   'seDisableIMFavicon':'Disable favicon and title animation in conversation tab when new message recieved'
+   'seDisableIMFavicon':'Disable favicon and title animation in conversation tab when new message recieved',
+   'mImportant':'Important'
 };
  
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)

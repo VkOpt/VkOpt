@@ -108,6 +108,7 @@ var vk_photos = {
       #vk_ph_upd_btn{opacity:0.1}\
       #vk_ph_upd_btn:hover{opacity:1}\
       .vk_albums_list a{display:block; padding-left:10px; padding-bottom:3px; border-bottom:1px solid rgba(100,100,100,0.1)}\
+      .photos_tabs ul.t0 #photo_add_tab .tab_word {max-width: 39px;}\
    ',
    choose_album:function(oid){
       stManager.add('photoview.css');
