@@ -2353,6 +2353,29 @@ vk_videos = {
             }
          });
       }
+   },
+   get_album:function(){
+      var list = [];
+      var video= mvcur.mvData.videoRaw;
+      var album_id=null;
+      var album_link=null;
+      var vid_data=null;
+      if (cur.vSection == 'search' && cur.vStr) {
+         var hd = cur.vHD ? cur.vHD : 0;
+         var searchData = cur.searchData[cur.vStr + hd.toString() + cur.vOrder.toString()];
+         list=searchData.list;
+      } else {
+         list = cur.videoList[cur.vSection];
+      }
+      for (var i = 0, len = list.length; i < len; i++) {
+         if (list[i][0] + '_' + list[i][1] == video) {
+            album_id=list[i][6];
+            vid_data=list[i];
+            album_link='/videos'+list[i][0]+'?section=album_'+album_id;
+            break;
+         }
+      }
+      return [album_id,album_link,vid_data];
    }
 }
 
@@ -3393,6 +3416,12 @@ function vkVidLinks(data){
       } else if (vkVidVars){  
          var h=ge('mv_actions').innerHTML;
          if (h.indexOf('vkGetVideoSize')!=-1) return;
+         var inf=vk_videos.get_album();
+         var v_el=el=geByClass('mv_num_views',ge('mv_comments_data'))[0];
+         if (inf[0] && v_el){
+            v_el.innerHTML='<a href="'+inf[1]+'">'+v_el.innerHTML+'</a>';
+            
+         }
          ge('mv_actions').innerHTML+=vkVidDownloadLinks(vkVidVars); 
          ge('mv_actions').innerHTML+=vk_plugins.video_links(vkVidVars,vkVidDownloadLinksArray(vkVidVars));
          //if (h.indexOf('showTagSelector')!=-1){	ge('mv_actions').innerHTML+='<a href="#" onclick="vkTagAllFriends(); return false;">'+IDL("selall")+'</a>';	}
