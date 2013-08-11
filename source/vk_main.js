@@ -778,7 +778,7 @@ function vkPhChooseProcess(answer,url,q){
      var div=vkCe('div',{},answer[1]);
      var ref=q.act=="a_choose_photo_box"?geByClass('summary',div)[0]:geByClass('photos_choose_rows',div)[0];
      //*
-     var p=geByClass('photos_choose_header',div)[0];
+     var p=geByClass('photos_choose_header_title',div)[0];
      if (p && !p.innerHTML.match('choose_album')){
       p.innerHTML='';
       p.appendChild(vkCe('a',{"class":'fl_l_',href:'#',onclick:'return vk_photos.choose_album();'},IDL('mPhM',1)))
