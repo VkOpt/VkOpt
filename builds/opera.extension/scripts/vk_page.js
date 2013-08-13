@@ -244,6 +244,20 @@ vk_highlinghts={
          }
       }
    },
+   update_my_gr_list:function(callback){
+      dApi.call('groups.get',{extended:1},function(r){
+         
+         var data=r.response;
+         count=data.shift();
+         var mygr=[];
+         for (var i=0;i<data.length;i++){
+            mygr.push(data[i].screen_name);
+         }
+         var groups=mygr.join(',');
+         vkSetVal('vk_my_groups',groups);
+         if (callback) callback();
+      }); 
+   },
    profile_groups:function(node){
       var common=(getSet(39) == 'y');
       if (!common) return;
@@ -252,27 +266,24 @@ vk_highlinghts={
       var nodes=p.getElementsByTagName('a');
       
       var hl=function(){
-         var groups=','+vkGetVal('vk_my_groups')+',';
+         var groups=vkGetVal('vk_my_groups').split(',');
          for (var i=0;i<nodes.length;i++){
             var href=nodes[i].getAttribute('href');
             if (!href) continue;
             var gid=href.split('/');
             gid=gid[gid.length-1];
-            if (cur.oid!=remixmid() && groups.indexOf(','+gid+',')!=-1)	addClass(nodes[i],'vk_common_group');
+            if (cur.oid!=remixmid() && groups.indexOf(gid)!=-1)	addClass(nodes[i],'vk_common_group');
+            /*
+            if (cur.oid==remixmid() && groups.indexOf(gid)==-1){
+               groups.push(gid);
+               vkSetVal('vk_my_groups',groups.join(','));
+            }*/
             if (isGroupAdmin(gid))	addClass(nodes[i],'vk_adm_group');
          }	      
       }
       var gl=vkGetVal('vk_my_groups');
-      if (!gl || gl==''){
-         dApi.call('groups.get',{extended:1},function(r){
-            var data=r.response;
-            count=data.shift();
-            var mygr=[];
-            for (var i=0;i<data.length;i++){
-               mygr.push(data[i].screen_name);
-            }
-            var groups=mygr.join(',');
-            vkSetVal('vk_my_groups',groups);
+      if (!gl || gl=='' || (common && cur.oid==remixmid())){ 
+         vk_highlinghts.update_my_gr_list(function(r){
             hl();
          });
       } else {
@@ -284,7 +295,7 @@ vk_highlinghts={
       
       function process_node(nodes){
          if (cur.oid==remixmid()){
-            var mygr=[];
+            var mygr=vkGetVal('vk_my_groups').split(',');//[];
             for (var i=0;i<nodes.length;i++){
                var href=nodes[i].getAttribute('href');
                if (!href) continue;
@@ -295,8 +306,8 @@ vk_highlinghts={
                }
                if (isGroupAdmin(id))	addClass(nodes[i],'vk_adm_group');
             }
-            var groups=mygr.join(',');
-            vkSetVal('vk_my_groups',groups);
+            //var groups=mygr.join(',');
+            //vkSetVal('vk_my_groups',groups);
          } else if(common){
             var groups=','+vkGetVal('vk_my_groups')+',';
             for (var i=0;i<nodes.length;i++){

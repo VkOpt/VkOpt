@@ -778,7 +778,7 @@ function vkPhChooseProcess(answer,url,q){
      var div=vkCe('div',{},answer[1]);
      var ref=q.act=="a_choose_photo_box"?geByClass('summary',div)[0]:geByClass('photos_choose_rows',div)[0];
      //*
-     var p=geByClass('photos_choose_header',div)[0];
+     var p=geByClass('photos_choose_header_title',div)[0];
      if (p && !p.innerHTML.match('choose_album')){
       p.innerHTML='';
       p.appendChild(vkCe('a',{"class":'fl_l_',href:'#',onclick:'return vk_photos.choose_album();'},IDL('mPhM',1)))
@@ -1033,8 +1033,11 @@ vk_im={
    },
    reply:function(el,ev,msg_id){
       ev = ev || window.event;
-      var selMsgs=[];
       
+      var scrll=IM.scrollOn;
+      IM.scrollOn=function(){};
+      
+      var selMsgs=[];
       // Add to attached mails
       curPeerMedia = cur.imPeerMedias[cur.peer];
       for (i in curPeerMedia) {
@@ -1044,12 +1047,13 @@ vk_im={
           //curPeerMedia.splice(i, 1);
           break;
         }
-      }
-
-      
+      }      
       selMsgs.push(msg_id);
       cur.fwdFromPeer = cur.peer;
       IM.onMediaChange('mail', selMsgs.join(';'), [selMsgs.length]);
+      
+      IM.scrollOn=scrll;
+      
       var txt = IM.getTxt(cur.peer);
       if (cur.editable) {
         IM.editableFocus(txt, false, true);

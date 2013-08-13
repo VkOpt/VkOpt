@@ -182,6 +182,7 @@ function vkGetVkoptFullConfig(){
       //AdmGr:vkgetCookie('AdmGr'),
       FavList:vkGetVal('FavList'),
       menu_custom_links:vkGetVal('menu_custom_links'),
+      vk_sounds_vol:vkGetVal("vk_sounds_vol") || "",
       VK_CURRENT_CSS_URL:vkGetVal('VK_CURRENT_CSS_URL'),
       VK_CURRENT_CSSJS_URL:vkGetVal('VK_CURRENT_CSSJS_URL'),
       VK_CURRENT_CSS_CODE:vkGetVal('VK_CURRENT_CSS_CODE'),
@@ -984,6 +985,7 @@ function vkSaveSettingsOnServer(check){
       'remixbits':sett,
       'vklang':vkgetCookie('vklang'),
       'menu_custom_links':vk_string_escape(vkGetVal('menu_custom_links') || ""),
+      'vk_sounds_vol':vkGetVal("vk_sounds_vol") || "",
       //'FavList':vkGetVal('FavList'),
       'VK_CURRENT_CSS_URL':vkGetVal("VK_CURRENT_CSS_URL") || "",
       'VK_CURRENT_CSSJS_URL':vkGetVal('VK_CURRENT_CSSJS_URL') || "",
@@ -1012,9 +1014,8 @@ function vkSaveSettingsOnServer(check){
    */
 }
 function vkLoadSettingsFromServer(check,callback){
-	var params={keys:'remixbits,vklang,FavList,menu_custom_links,VK_CURRENT_CSS_URL,VK_CURRENT_CSSJS_URL,VK_CURRENT_CSS_CODE'};
+	var params={keys:'remixbits,vklang,FavList,menu_custom_links,vk_sounds_vol,VK_CURRENT_CSS_URL,VK_CURRENT_CSSJS_URL,VK_CURRENT_CSS_CODE'};
    if (check) params={key:'remixbits'};
-
    dApi.call('storage.get',params,function(r){
 		if (check){
 			if (r.response && r.response!=''){
@@ -1056,7 +1057,7 @@ function vkLoadSettingsFromServer(check,callback){
             if (scfg['VK_CURRENT_CSS_URL']) vkSetVal('VK_CURRENT_CSS_URL',scfg['VK_CURRENT_CSS_URL']);
             if (scfg['VK_CURRENT_CSSJS_URL']) vkSetVal('VK_CURRENT_CSSJS_URL',scfg['VK_CURRENT_CSSJS_URL']);
             if (scfg['VK_CURRENT_CSS_CODE']) vk_LSSetVal('VK_CURRENT_CSS_CODE',decodeURIComponent(scfg['VK_CURRENT_CSS_CODE']));      
-            
+            if (scfg['vk_sounds_vol']) vkSetVal("vk_sounds_vol",scfg['vk_sounds_vol']);
    
 				ge('cfg_on_serv_info').innerHTML='<div class="vk_cfg_info">'+IDL('seCfgRestored')+'</div>';
 			} else {

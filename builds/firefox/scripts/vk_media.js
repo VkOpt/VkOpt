@@ -80,8 +80,19 @@ cur.chooseMedia=function(type, media, data, url, noboxhide){
    return orig_cur_chooseMedia(type, media, data, url, true);
 }
 */
-var _vk_albums_list_cache={};
 
+
+/* ALBUMS IDS
+-5 app
+-6 avas
+-7 user wall
+-8 from share on wall
+-12 board
+-14 wall
+-24 graff
+-15 saved
+*/
+var _vk_albums_list_cache={};
 var vk_photos = {
    css:'\
       #vk_ph_save_move{width:160px}\
@@ -97,6 +108,7 @@ var vk_photos = {
       #vk_ph_upd_btn{opacity:0.1}\
       #vk_ph_upd_btn:hover{opacity:1}\
       .vk_albums_list a{display:block; padding-left:10px; padding-bottom:3px; border-bottom:1px solid rgba(100,100,100,0.1)}\
+      .photos_tabs ul.t0 #photo_add_tab .tab_word {max-width: 39px;}\
    ',
    choose_album:function(oid){
       stManager.add('photoview.css');
@@ -1056,6 +1068,12 @@ vk_ph_comms = {
             for (var i=0; i<data.length; i++){
                var com=data[i];
                //*
+               if (!users[com.from_id]){ 
+                  if (com.from_id<0)
+                     users[com.from_id]=['Admin','http://vk.com/images/camera_c.gif'];
+                  else
+                     users[com.from_id]=['[id'+com.from_id+']','http://vk.com/images/camera_c.gif'];
+               }
                html+=tpl.replace(/%id/g,cur.oid+'_'+com.cid+'review')
                         .replace(/%ava/g,users[com.from_id][1])
                         .replace(/%uid/g,com.from_id)
@@ -1086,12 +1104,17 @@ vk_ph_comms = {
                photos_load();
                return;
             }
-            dApi.call('users.get',{uids:uids.join(','),fields:'photo_50'},function(ur){
-               var users=ur.response;
-               //console.log('users:',ur);
-               for (var i=0; i<users.length; i++)
-                  vk_ph_comms.users[users[i].uid+'']=[users[i].first_name+' '+users[i].last_name,users[i].photo_50];
-               photos_load();
+            dApi.call('users.get',{uids:uids.join(','),fields:'photo_50'},{ok:function(ur){
+                  var users=ur.response;
+                  //console.log('users:',ur);
+                  for (var i=0; i<users.length; i++)
+                     vk_ph_comms.users[users[i].uid+'']=[users[i].first_name+' '+users[i].last_name,users[i].photo_50];
+                  photos_load();
+               },
+               error:function(r){
+                  photos_load();
+                  dApi.show_error(r);
+               }
             });         
          }
 
@@ -2330,6 +2353,29 @@ vk_videos = {
             }
          });
       }
+   },
+   get_album:function(){
+      var list = [];
+      var video= mvcur.mvData.videoRaw;
+      var album_id=null;
+      var album_link=null;
+      var vid_data=null;
+      if (cur.vSection == 'search' && cur.vStr) {
+         var hd = cur.vHD ? cur.vHD : 0;
+         var searchData = cur.searchData[cur.vStr + hd.toString() + cur.vOrder.toString()];
+         list=searchData.list;
+      } else {
+         list = cur.videoList[cur.vSection];
+      }
+      for (var i = 0, len = list.length; i < len; i++) {
+         if (list[i][0] + '_' + list[i][1] == video) {
+            album_id=list[i][6];
+            vid_data=list[i];
+            album_link='/videos'+list[i][0]+'?section=album_'+album_id;
+            break;
+         }
+      }
+      return [album_id,album_link,vid_data];
    }
 }
 
@@ -3370,6 +3416,12 @@ function vkVidLinks(data){
       } else if (vkVidVars){  
          var h=ge('mv_actions').innerHTML;
          if (h.indexOf('vkGetVideoSize')!=-1) return;
+         var inf=vk_videos.get_album();
+         var v_el=el=geByClass('mv_num_views',ge('mv_comments_data'))[0];
+         if (inf[0] && v_el){
+            v_el.innerHTML='<a href="'+inf[1]+'">'+v_el.innerHTML+'</a>';
+            
+         }
          ge('mv_actions').innerHTML+=vkVidDownloadLinks(vkVidVars); 
          ge('mv_actions').innerHTML+=vk_plugins.video_links(vkVidVars,vkVidDownloadLinksArray(vkVidVars));
          //if (h.indexOf('showTagSelector')!=-1){	ge('mv_actions').innerHTML+='<a href="#" onclick="vkTagAllFriends(); return false;">'+IDL("selall")+'</a>';	}
