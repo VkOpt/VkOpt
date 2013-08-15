@@ -752,7 +752,8 @@ function vkPVSaveAndMover(){
          var albums = [];
          var albums_full=[];
          for (var i=0; i<data.length;i++)
-            if (data[i].size<501)
+            //if (data[i].size<501)
+            if (data[i].size<10001)
                albums.push([data[i].aid,data[i].title,data[i].size+""]);
             /*else
                albums_full.push([data[i].aid,data[i].title,data[i].size+""]);*/
