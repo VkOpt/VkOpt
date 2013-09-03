@@ -2321,6 +2321,21 @@ vk_groups = {
       };
 
       vkAlertBox(IDL('LeaveGroups'),IDL('LeaveAllGroupsConfirm'),run,true);
+   },
+   // UTILS
+   leave:function(gid){
+      vkAlertBox('', IDL('LeaveGroup'),function(){
+         dApi.call('groups.leave',{gid:Math.abs(gid)},function(r){
+            vkMsg(r.response?IDL('GroupLeft'):IDL('Fail'),700)
+         });
+      }, true)
+      return false;
+   },
+   enter:function(gid){
+      dApi.call('groups.join',{gid:Math.abs(gid)},function(r){
+         vkMsg(r.response?IDL('Done'):IDL('Fail'),700)
+      });
+      return false;
    }
 }
 
