@@ -468,10 +468,14 @@ var vkMozExtension = {
 
    function vkCleanFileName(s){   return trim(s.replace(/[\\\/\:\*\?\"\<\>\|]/g,'_').replace(/\u2013/g,'-').replace(/&#\d+;/g,'_').replace(/\s\s/g,'').substr(0,200));   }
    function vkEncodeFileName(s){
-      if (FULL_ENCODE_FILENAME)
-         return encodeURIComponent(s);
-      else
-         return s.replace(/([^A-Za-z\u0410-\u042f\u0430-\u044f])/g,function (str, p1, offset, s) {return encodeURIComponent(p1) });
+      try {
+         if (FULL_ENCODE_FILENAME)
+            return encodeURIComponent(s);
+         else
+            return s.replace(/([^A-Za-z\u0410-\u042f\u0430-\u044f])/g,function (str, p1, offset, s) {return encodeURIComponent(p1)});
+      }catch(e){ 
+         return s;
+      }
    }
    
    function num_to_text(s){
@@ -850,7 +854,7 @@ var vkMozExtension = {
 		guid:parseInt(Math.random()*10000),
 		cmd_item:'vkopt_command',
 		last_cmd:'',
-		handler:function(id,cmd){alert(id+'\n\n'+JSON.stringify(cmd));},
+		handler:function(id,cmd){topMsg('<b>Maybe conflict detected</b><br>VkOpt may work not correctly<br>'+JSON.stringify(cmd),4);},
 		Init:function(handler){
 			if (!window.localStorage && window.topMsg){
 				topMsg('<b>You use old browser.</b><br>VkOpt can work not correctly',4);

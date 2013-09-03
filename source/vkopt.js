@@ -249,7 +249,9 @@ var TextPasteSmiles={
 	  LAST_LOG_MSG='';
 	  LAST_EQ_LOG_MSG_COUNT=0;
 	  vkaddcss('\
-			#vkDebug{ border: 1px solid #AAA; border-radius:5px; background:#FFF; color: #555;\
+			#vkDebug{opacity:0}\
+         #vkDebug:hover{opacity:1}\
+         #vkDebug{ border: 1px solid #AAA; border-radius:5px; background:#FFF; color: #555;\
 					  padding:1px;\
 					  width:'+sWIDTH+'px; height:'+sHEIGHT+'px; overflow:hidden;\
 					  position:fixed; z-index:1000; right:0px; top:0px;}\

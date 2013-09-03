@@ -266,7 +266,7 @@ vk_highlinghts={
       var nodes=p.getElementsByTagName('a');
       
       var hl=function(){
-         var groups=vkGetVal('vk_my_groups').split(',');
+         var groups=(vkGetVal('vk_my_groups')||'').split(',');
          for (var i=0;i<nodes.length;i++){
             var href=nodes[i].getAttribute('href');
             if (!href) continue;
@@ -295,7 +295,7 @@ vk_highlinghts={
       
       function process_node(nodes){
          if (cur.oid==remixmid()){
-            var mygr=vkGetVal('vk_my_groups').split(',');//[];
+            var mygr=(vkGetVal('vk_my_groups')||'').split(',');//[];
             for (var i=0;i<nodes.length;i++){
                var href=nodes[i].getAttribute('href');
                if (!href) continue;
@@ -1918,56 +1918,58 @@ vk_groups = {
          removeClass('vk_gr_req_all_link','as_list')
       }
       ajax.post('groupsedit.php', {act: 'get_list', id: Math.abs(cur.oid), tab: 'requests'}, {onDone: function(cnt, res) {
-         //console.log('gr_requests',cnt, res);
-         if (cnt<=0) {
-            hide('vk_group_requests');
-            return;
-         }
-         show('vk_group_requests');
-         var udata=res;
-         var to=3;
-         var count=is_list?udata.length:Math.min(udata.length,FAVE_ONLINE_BLOCK_SHOW_COUNT);
-         var users='';
-         for (var i = 0; i < count; i++) {
-            if (!is_list){
-            //udata[i][7]  - HASH
-            var n1=udata[i][2].split(' ')[0] || '';
-            var n2=udata[i][2].split(' ')[1] || '';
-            users += ((i == 0 || i % to == 0) ? '<div class="people_row">' : '') + 
-                     '<div class="fl_l people_cell" id="vk_gru'+udata[i][0]+'">\
-                       <a href="/id'+udata[i][0]+'" onclick="return nav.go(this, event)">\
-                         <img width="50" height="50" src="'+udata[i][3]+'">\
-                       </a>\
-                       <div class="name_field">\
-                         <a href="/id'+udata[i][0]+'" onclick="return nav.go(this, event)">\
-                           '+n1+'<!--<br><small>'+n2+'</small>-->\
-                         </a>\
-                         <span id="vk_gru_act'+udata[i][0]+'" class="vk_gru_actions opacity_anim"><br>\
-                           <a href="#" class="vk_ok_ico vk_act_btn" onclick="vk_groups.request_accept('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
-                           <span class="divide"></span>\
-                           <a href="#" class="vk_cancel_ico vk_act_btn" onclick="vk_groups.request_cancel('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
-                         </span>\
-                       </div>\
-                     </div>'+
-                  ((i > 0 && (i + 1) % to == 0) ? '</div>' : '');
-            } else {
-               users +='<div align="left" class="vk_gru_row">\
-                  <span class="fl_r vk_gru_actions opacity_anim" id="vk_gru_act'+udata[i][0]+'">\
-                     <a href="#" class="vk_ok_ico vk_act_btn" onclick="vk_groups.request_accept('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
-                     <span class="divide"></span>\
-                     <a href="#" class="vk_cancel_ico vk_act_btn" onclick="vk_groups.request_cancel('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
-                  </span>\
-                  <a href="id'+udata[i][0]+'" '+(vkIsFavUser(udata[i][0])?'class="vk_faved_user"':'')+'>'+udata[i][2]+'</a>\
-                  </div>';
+            //console.log('gr_requests',cnt, res);
+            if (cnt<=0) {
+               hide('vk_group_requests');
+               return;
             }
-         }
-         if (ge('vk_gr_req_users_content')){
-            ge("vk_gr_req_all_link").innerHTML=vkopt_brackets(getLang('global_X_people',cnt));
-            ge('vk_gr_req_users_content').innerHTML=users;
-            vkProcessNodeLite(ge('vk_gr_req_users_content'));
-         }   
-      
-      }});
+            show('vk_group_requests');
+            var udata=res;
+            var to=3;
+            var count=is_list?udata.length:Math.min(udata.length,FAVE_ONLINE_BLOCK_SHOW_COUNT);
+            var users='';
+            for (var i = 0; i < count; i++) {
+               if (!is_list){
+               //udata[i][7]  - HASH
+               var n1=udata[i][2].split(' ')[0] || '';
+               var n2=udata[i][2].split(' ')[1] || '';
+               users += ((i == 0 || i % to == 0) ? '<div class="people_row">' : '') + 
+                        '<div class="fl_l people_cell" id="vk_gru'+udata[i][0]+'">\
+                          <a href="/id'+udata[i][0]+'" onclick="return nav.go(this, event)">\
+                            <img width="50" height="50" src="'+udata[i][3]+'">\
+                          </a>\
+                          <div class="name_field">\
+                            <a href="/id'+udata[i][0]+'" onclick="return nav.go(this, event)">\
+                              '+n1+'<!--<br><small>'+n2+'</small>-->\
+                            </a>\
+                            <span id="vk_gru_act'+udata[i][0]+'" class="vk_gru_actions opacity_anim"><br>\
+                              <a href="#" class="vk_ok_ico vk_act_btn" onclick="vk_groups.request_accept('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
+                              <span class="divide"></span>\
+                              <a href="#" class="vk_cancel_ico vk_act_btn" onclick="vk_groups.request_cancel('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
+                            </span>\
+                          </div>\
+                        </div>'+
+                     ((i > 0 && (i + 1) % to == 0) ? '</div>' : '');
+               } else {
+                  users +='<div align="left" class="vk_gru_row">\
+                     <span class="fl_r vk_gru_actions opacity_anim" id="vk_gru_act'+udata[i][0]+'">\
+                        <a href="#" class="vk_ok_ico vk_act_btn" onclick="vk_groups.request_accept('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
+                        <span class="divide"></span>\
+                        <a href="#" class="vk_cancel_ico vk_act_btn" onclick="vk_groups.request_cancel('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
+                     </span>\
+                     <a href="id'+udata[i][0]+'" '+(vkIsFavUser(udata[i][0])?'class="vk_faved_user"':'')+'>'+udata[i][2]+'</a>\
+                     </div>';
+               }
+            }
+            if (ge('vk_gr_req_users_content')){
+               ge("vk_gr_req_all_link").innerHTML=vkopt_brackets(getLang('global_X_people',cnt));
+               ge('vk_gr_req_users_content').innerHTML=users;
+               vkProcessNodeLite(ge('vk_gr_req_users_content'));
+            }   
+         
+         },
+         onFail:function(text){console.log('VkOpt: get "requests" list fail! ['+text+']');return true;}
+      });
    },
    request_accept:function(gid,mid,hash){
       var el=ge('vk_gru_act'+mid);

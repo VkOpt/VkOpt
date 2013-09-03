@@ -815,6 +815,7 @@ function vkOnlineInfo(p){
                break;  
             case '2424737':
             case '3502561':
+            case '3502557'://3.x
                title='Windows Phone';
                break; 
             case '3136627':
