@@ -593,12 +593,13 @@ function vkInitSettings(){
       {id:2,  text:IDL("seLinkVi")},
       {id:66, text:IDL("seVidDownloadLinks")},
       {id:76, text:IDL("seVideoFullTitles")},
-      {id:3, text:IDL("seCompactAudio")},
+      {id:3,  text:IDL("seCompactAudio")},
+      {id:90, text:IDL("seAudioFullTitles")},
       {id:73, text:IDL("seLoadAudioAlbumInfo")},
       {id:75, text:IDL("seAPlayerCtrls")},
-      {id:85,  text:IDL("seAutoScrollToTrack")},
+      {id:85, text:IDL("seAutoScrollToTrack")},
       {id:43, text:IDL("seAudioSize")},      
-      {id:4, text:IDL("seMoreDarkViewer")},      
+      {id:4,  text:IDL("seMoreDarkViewer")},      
       {id:7,  text:IDL("seScroolPhoto")}
     ],
     Users:[
@@ -697,7 +698,7 @@ function vkInitSettings(){
    ]
   };
 
-	//LAST 89
+	//LAST 90
 	/*
       vkoptSets['advanced']=[
          'vk_upd_menu_timeout','vkMenuHideTimeout','CHECK_FAV_ONLINE_DELAY',

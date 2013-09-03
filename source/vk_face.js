@@ -38,7 +38,7 @@ function vkStyles(){
    var ShowGroupNews=getSet(59);
    var hideBigLike = getSet(70)=='y';
    var SubMenuToRight = getSet(80)=='y';
-  
+   var AuFullTitles = getSet(90)=='y';
 	var main_css='';
 	if (getSet(28)=='y') main_css+=GetUnReadColorCss();
    main_css+=vkNotifierWrapMove();
@@ -319,10 +319,14 @@ function vkStyles(){
       .vk_album_thumb{padding:3px;}\
       .vk_album_tracks ul{list-style-type: disc; margin:0px; padding:0px; padding-left:4px; margin-left: 17px; color:#AAA;}\
       .vk_album_tracks .vk_tracks_search_btn{padding:3px 10px;}\
-      \
-      /* Display full audio names*/\
+      '+
+      (AuFullTitles?'/* Display full audio names*/\
       .audio .title_wrap{white-space: normal !important; width: 245px; !important; }\
-      .audio .title_wrap b{white-space: normal !important; display: inline !important;}\
+      .audio .title_wrap b{white-space: normal !important; display: inline !important;}':'')
+      +
+      '\
+      .afull_title .audio .title_wrap{white-space: normal !important; width: 245px; !important; }\
+      .afull_title .audio .title_wrap b{white-space: normal !important; display: inline !important;}\
       \
 		.audio_table .audio td.info { width: 340px !important;}\
 		.audio_table .audio td { padding-left: 0px; }\
