@@ -623,7 +623,7 @@ function vkInitSettings(){
       {id:51, text:IDL("seFavToTopIm")},
       {id:52, text:IDL("seFaveOnline"),info:'infoUseNetTrafic'},
       {id:72, text:IDL("seFriendCatsOnProfile")},
-      {id:87, text:IDL("seSearchExInfo"),info:'infoUseNetTrafic'}
+      {id:87, text:IDL("seSearchExInfo"),info:'infoUseNetTrafic'},
       {id:91, text:IDL("seFaveFr"),info:'infoUseNetTrafic'}
       
       //{id:65, text:IDL("seShowLastActivity"),info:'infoUseNetTrafic'}
