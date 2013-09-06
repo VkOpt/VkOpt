@@ -131,7 +131,8 @@ function vkProfilePage(){
 	vkUpdWallBtn(); //Update wall button
    vkWallNotesLink();
    if (cur.oid!=vk.id) vkWallTatLink();
-   if (remixmid()==cur.oid && getSet(50)=='y' && !ge('profile_fave')) vkFaveProfileBlock(); 
+   if (getSet(91)=='y' && cur.oid!=vk.id) vk_profile.fav_fr_block(); 
+   if (getSet(50)=='y' && remixmid()==cur.oid && !ge('profile_fave')) vkFaveProfileBlock(); 
    if (getSet(60) == 'y') vkProfileMoveAudioBlock(); 
    if (getSet(61) == 'y') vkProfileGroupBlock();   
 	if (MOD_PROFILE_BLOCKS) vkFrProfile();
@@ -142,6 +143,88 @@ function vkProfilePage(){
    vkAddCheckBox_OnlyForFriends();
 	vk_highlinghts.groups_block();
    vk_highlinghts.profile_groups();
+}
+
+vk_profile={  
+   fav_fr_block:function(is_list){
+      var is_right_block = false;//(getSet(XX)=='y');
+      if (!ge('profile_favefr')){
+         var html='\
+           <a href="/fave" onclick="return nav.go(this, event)" class="module_header"><div class="header_top clear_fix">'+IDL('FaveFr')+'</div></a>\
+           <div class="module_header">\
+             <div class="p_header_bottom">\
+               <a href="javascript:vk_profile.fav_fr_block(true)" id="vk_favefr_all_link">'+ vkopt_brackets(IDL('FaveFr') +' ( -- )')+'</a>\
+             </div>\
+           </div>\
+           <div class="module_body clear_fix" id="vk_favefr_users_content"></div>\
+         ';
+         var div=vkCe('div',{"class":"module clear people_module",id:"profile_favefr"});
+         div.innerHTML=html;
+         var p=ge(is_right_block?'profile_wall':'profile_friends');
+         p.parentNode.insertBefore(div,p);  
+      }
+      ge('vk_favefr_users_content').innerHTML=vkBigLdrImg;
+      if (is_list){
+         ge("vk_favefr_all_link").href="javascript:vk_profile.fav_fr_block()";
+      } else {
+         ge("vk_favefr_all_link").href="javascript:vk_profile.fav_fr_block(true)";
+      }
+      
+      var uid=cur.oid;
+      function get_users(callback){
+         dApi.call('execute',{code:'var a=API.fave.getUsers({count:1000}); return {faves:a@.uid,friends:API.friends.get({uid:'+uid+'})};'},function(r){
+            var data=r.response;
+            var fav=data.faves;
+            var fr=data.friends;
+            var favfr=[];
+            for (var i=0; i<fav.length; i++){
+               if (fr.indexOf(fav[i])!=-1) favfr.push(fav[i]);
+            }
+            if (favfr.length){
+               dApi.call('users.get',{uids:favfr.join(','),fields:'photo'},function(r){
+                  callback(r.response || []);
+               })
+            } else {
+               callback([]);
+            }
+         });
+      };
+      
+      get_users(function(list){
+         var to=3;
+         var count=is_list?list.length:Math.min(list.length,FAVE_ONLINE_BLOCK_SHOW_COUNT);
+         var users='';
+         for (var i = 0; i < count; i++) {
+            if (!is_list){
+            var n1=list[i].first_name || '';
+            var n2=list[i].last_name || '';
+            users += ((i == 0 || i % to == 0) ? '<div class="people_row">' : '') + 
+                     '<div class="fl_l people_cell">\
+                       <a href="/id'+list[i].uid+'" onclick="return nav.go(this, event)">\
+                         <img width="50" height="50" src="'+list[i].photo+'">\
+                       </a>\
+                       <div class="name_field">\
+                         <a href="/id'+list[i].uid+'" onclick="return nav.go(this, event)">\
+                           '+n1+'<br><small>'+n2+'</small>\
+                         </a>\
+                       </div>\
+                     </div>'+
+                  ((i > 0 && (i + 1) % to == 0) ? '</div>' : '');
+            } else {
+               users +='<div align="left" style="margin-left: 10px; width:180px;">&#x25AA;&nbsp;\
+                  <a href="write'+list[i].uid+'" onclick="return showWriteMessageBox(event, '+list[i].uid+')" target="_blank">@</a>&nbsp;\
+                  <a href="id'+list[i].uid+'" '+(vkIsFavUser(list[i].uid)?'class="vk_faved_user"':'')+'>'+list[i].first_name+' '+list[i].last_name+'</a>\
+                  </div>';
+            }
+         }
+         if (ge('vk_favefr_users_content')){
+            ge("vk_favefr_all_link").innerHTML=vkopt_brackets(IDL('FaveFr') +' ('+list.length+')');
+            ge('vk_favefr_users_content').innerHTML=users;
+            vkProcessNodeLite(ge('vk_favefr_users_content'));
+         }
+         
+      });
+   }
 }
 
 function vkFrCatsOnProfile(){

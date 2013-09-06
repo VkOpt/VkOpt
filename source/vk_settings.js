@@ -624,6 +624,8 @@ function vkInitSettings(){
       {id:52, text:IDL("seFaveOnline"),info:'infoUseNetTrafic'},
       {id:72, text:IDL("seFriendCatsOnProfile")},
       {id:87, text:IDL("seSearchExInfo"),info:'infoUseNetTrafic'}
+      {id:91, text:IDL("seFaveFr"),info:'infoUseNetTrafic'}
+      
       //{id:65, text:IDL("seShowLastActivity"),info:'infoUseNetTrafic'}
     ],
 
@@ -698,7 +700,7 @@ function vkInitSettings(){
    ]
   };
 
-	//LAST 90
+	//LAST 91
 	/*
       vkoptSets['advanced']=[
          'vk_upd_menu_timeout','vkMenuHideTimeout','CHECK_FAV_ONLINE_DELAY',

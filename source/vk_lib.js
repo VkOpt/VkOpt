@@ -1831,13 +1831,14 @@ var dApi = {
 		var key;
 		var base_domain = base_domain || "/";
 		var onClickHandler = function() {
-			removeEvent(key, 'keypress');
+			key = ge('captchaKey');
+         removeEvent(key, 'keypress');
 			onClick(sid, key.value);
 			hide('captchaKey');
 			show('captchaLoader');
          //box.hide();
 		}
-		box.addButton(getLang('captcha_cancel'), function(){removeEvent(key, 'keypress');box.hide();},'no');
+		box.addButton(getLang('captcha_cancel'), function(){key = ge('captchaKey'); removeEvent(key, 'keypress');box.hide();},'no');
 		box.addButton(getLang('captcha_send'),onClickHandler);
 		box.setOptions({onHide: onHide, bodyStyle: 'padding: 16px 14px'});
 		box.content('<div style="text-align: center; height: 76px" id="captcha_container"><a href="#" id="refreshCaptcha"><img id="captchaImg" class="captchaImg" src="'+img+ '"/></a><div></div><input id="captchaKey" class="inputText" name="captcha_key" type="text" style="width: 120px; margin: 3px 0px 0px;" maxlength="7"/><img id="captchaLoader" src="'+base_domain+'images/progress7.gif" style="display:none; margin-top: 13px;" /></div>');
