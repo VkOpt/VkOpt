@@ -1225,6 +1225,10 @@ function vkFavPhotosMenu(){
                vkGetLinksToPhotos('liked'+vk.id,null);
          }});
          
+         p_options.push({l:IDL('DelLikes'), onClick:function(item) {
+               vk_fave.remove_likes_photo();
+         }});         
+         
          
          //p_options=p_options.concat(vk_plugins.album_actions(oid,aid));
          stManager.add(['ui_controls.js', 'ui_controls.css'],function(){

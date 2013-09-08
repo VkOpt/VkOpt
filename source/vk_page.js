@@ -2552,6 +2552,69 @@ vk_fave={
       if (link.match(/^https?:\/\/[^\/]+\//) && !link.match(/https?:\/\/(vk\.com|vkontakte\.ru)/)){
          ge('fave_new_link').value='vk.com/away.php?to='+link;
       }
+   },
+   remove_likes_photo:function(){
+      var REQ_CNT=2;//100;
+      var DEL_REQ_DELAY=400;
+      var box=null;
+      var ids=[];
+      var del_offset=0;
+      var cur_offset=0;
+      var abort=false;	
+      var deldone=function(){
+            box.hide();
+            vkMsg(IDL("ClearDone"),3000);	
+      };
+      var del=function(callback){	
+         if (abort) return;
+         var del_count=ids.length;
+         ge('vk_del_info').innerHTML=vkProgressBar(del_offset,del_count,310,IDL('deleting')+' %');
+         var obj=ids[del_offset];
+         if (!obj){
+            ge('vk_del_info').innerHTML=vkProgressBar(1,1,310,' ');
+            del_offset=0;
+            callback();
+         } else
+         dApi.call('likes.delete', {type:'photo', owner_id:obj[0], item_id:obj[1]},function(r,t){
+            del_offset++;
+            setTimeout(function(){del(callback);},DEL_REQ_DELAY);
+         });
+      };
+      var info_count=0;
+      var scan=function(){
+         ids=[];
+         if (cur_offset==0){
+            ge('vk_del_info').innerHTML=vkProgressBar(1,1,310,' ');
+            ge('vk_scan_info').innerHTML=vkProgressBar(cur_offset,2,310,IDL('listreq')+' %');
+         }
+         dApi.call('fave.getPhotos',{offset:0/*cur_offset*/,count:REQ_CNT},function(r){
+            //var data=r.response;
+            //var count=data.shift();
+            if (abort) return;
+            var data=r.response;
+            if (data==0 || !data[1]){
+               deldone();
+               return;
+            }
+            if (info_count==0) info_count=data.shift();
+            else data.shift();
+            ge('vk_scan_info').innerHTML=vkProgressBar(cur_offset+REQ_CNT,info_count,310,IDL('listreq')+' %');
+            for (var i=0;i<data.length;i++) ids.push([data[i].owner_id,data[i].pid]);
+            cur_offset+=REQ_CNT;
+            //vklog(ids);
+            del(scan);            
+            
+         });
+      };
+      var run=function(){
+         box=new MessageBox({title: IDL('DelPhotosLikes'),closeButton:true,width:"350px"});
+         box.removeButtons();
+         box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no');
+         var html='<div id="vk_del_info" style="padding-bottom:10px;"></div><div id="vk_scan_info"></div>';
+         box.content(html).show();	
+         scan();
+      };
+      vkAlertBox(IDL('DelPhotosLikes'),IDL('DelPhotosLikesConfirm'),run,true);
    }
 }
 
