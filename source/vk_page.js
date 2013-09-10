@@ -1192,7 +1192,8 @@ function vkCleanWall(oid){
 	*/
 	var html=IDL('ClearBegin')+'<br><b>\
 			<a href="#" onclick="vkRunCleanWall(0);  return false;">- '+IDL('FromFirstPage')+'</a><br>\
-			<a href="#" onclick="vkRunCleanWall(20); return false;">- '+IDL('FromSecondPage')+'</a>\
+			<a href="#" onclick="vkRunCleanWall(20); return false;">- '+IDL('FromSecondPage')+'</a><br>'+
+         (cur.pgPage?'<a href="#" onclick="vkRunCleanWall('+cur.pgPage*20+'); return false;">- '+IDL('FromPage')+' <b>'+(cur.pgPage+1) +'</b></a>':'')+'\
 		</b>\
 		';
 	var abox=vkAlertBox(IDL('ClearWall'),html);
@@ -2552,6 +2553,7 @@ vk_fave={
       vk_fave.photos_menu();
       vk_fave.videos_menu();
       vk_fave.posts_menu();
+      vk_fave.notes_menu();
       if (getSet(17)=='y' && nav.objLoc['section']=='users'){
          setTimeout(function(){
             var el=ge('users_content');
@@ -2875,7 +2877,7 @@ vk_fave={
          scan();
       };
       vkAlertBox(IDL('DelPostsLikes'),IDL('DelPostsLikesConfirm'),run,true);
-   }   
+   }
 }
 
 vk_board={
