@@ -2547,14 +2547,148 @@ vk_fave={
       if (FAVE_ALLOW_EXTERNAL_LINKS)
          Inj.Before('Fave.newLink','var link','vk_fave.new_link_fix();');   
    },
+   page:function(){
+      vkFavUsersList(true);
+      vk_fave.photos_menu();
+      vk_fave.videos_menu();
+      vk_fave.posts_menu();
+      if (getSet(17)=='y' && nav.objLoc['section']=='users'){
+         setTimeout(function(){
+            var el=ge('users_content');
+            if (el.qsorter){ 
+               el.qsorter.destroy();
+               qsorter.init('users_content', {onReorder: Fave.reorderFave, xsize: 9, width: 67, height: 110});
+            }
+         },10);
+      }   
+   },
    new_link_fix:function(){
       var link = ge('fave_new_link').value;
       if (link.match(/^https?:\/\/[^\/]+\//) && !link.match(/https?:\/\/(vk\.com|vkontakte\.ru)/)){
          ge('fave_new_link').value='vk.com/away.php?to='+link;
       }
    },
+   photos_menu:function(){
+      var e=ge('fave_likes_tabs');
+      var x=ge('vk_fav_phlinks_btn');
+      if (x) (nav.objLoc['section']=='likes_photo'?show:hide)(x);
+      if (!e || x) return;
+      var p=geByClass('summary_tab',e);
+      p=p[p.length-1];
+      if (!p || nav.objLoc['section']!='likes_photo') return;
+      
+      if (!ge('vk_fav_phlinks_btn')){			
+         var a=vkCe('div',{id:'vk_fav_phlinks_btn',"class":'summary_tab fl_r'},'\
+            <a href="#" onclick="return false;"  id="vk_favph_act_menu" class_="summary_tab2">'+IDL('Actions')+'</a>\
+         ');//<a href="#" onclick="return false;"  id="vk_favph_act_menu" class_="fl_r summary_right">'+IDL('Actions')+'</a>\
+         //geByClass('t0')[0].appendChild(a);
+         insertAfter(a,p)
+         
+         var p_options = [];
+         p_options.push({l:IDL('SaveAlbumAsHtml'), onClick:function(item) {
+            vkGetPageWithPhotos('liked'+vk.id,null);
+         }});
+         p_options.push({l:IDL('Links'), onClick:function(item) {
+               vkGetLinksToPhotos('liked'+vk.id,null);
+         }});
+         
+         p_options.push({l:IDL('DelLikes'), onClick:function(item) {
+               vk_fave.remove_likes_photo();
+         }});         
+         
+         
+         //p_options=p_options.concat(vk_plugins.album_actions(oid,aid));
+         stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
+            cur.vkAlbumMenu = new DropdownMenu(p_options, {//
+              target: ge('vk_favph_act_menu'),
+              containerClass: 'dd_menu_posts',
+              updateHeader:false,
+              offsetLeft:-15,
+              showHover:false
+            });
+         });			
+      }
+      
+      return;
+   },
+   videos_menu:function(){
+      var e=ge('fave_likes_tabs');
+      var x=ge('vk_fav_vidlinks_btn');
+      if (x) (nav.objLoc['section']=='likes_video'?show:hide)(x);
+      if (!e || x) return;
+      var p=geByClass('summary_tab',e);
+      p=p[p.length-1];
+      if (!p || nav.objLoc['section']!='likes_video') return;
+      
+      if (!ge('vk_fav_vidlinks_btn')){		
+         var a=vkCe('div',{id:'vk_fav_vidlinks_btn',"class":'summary_tab fl_r'},'\
+            <a href="#" onclick="return false;"  id="vk_favvid_act_menu" class_="summary_tab2">'+IDL('Actions')+'</a>\
+         ');//<a href="#" onclick="return false;"  id="vk_favvid_act_menu" class_="fl_r summary_right">'+IDL('Actions')+'</a>\
+         //geByClass('t0')[0].appendChild(a);
+         insertAfter(a,p)
+         
+         var p_options = [];
+         
+         p_options.push({l:IDL('DelLikes'), onClick:function(item) {
+               vk_fave.remove_likes_video();
+         }});         
+         
+         
+         //p_options=p_options.concat(vk_plugins.album_actions(oid,aid));
+         stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
+            cur.vkAlbumMenu = new DropdownMenu(p_options, {//
+              target: ge('vk_favvid_act_menu'),
+              containerClass: 'dd_menu_posts',
+              updateHeader:false,
+              offsetLeft:-15,
+              showHover:false
+            });
+         });			
+      }
+      
+      return;
+   },
+   posts_menu:function(){
+      var e=ge('fave_notes_tab_wrap');//fave_likes_tabs
+      var x=ge('vk_fav_postlinks_btn');
+      if (x) (nav.objLoc['section']=='likes_posts'?show:hide)(x);
+      if (!e || x) return;
+      //var p=geByClass('summary_tab',e);
+      //p=p[p.length-1];
+      if (/* !p ||*/ nav.objLoc['section']!='likes_posts') return;
+      
+      if (!ge('vk_fav_postlinks_btn')){		
+         var a=vkCe('div',{id:'vk_fav_postlinks_btn',"class":'summary_tab fl_r', "style":'padding: 11px 5px 4px;'},'\
+            <a href="#" onclick="return false;"  id="vk_favpost_act_menu" class_="summary_tab2">'+IDL('Actions')+'</a>\
+         ');//<a href="#" onclick="return false;"  id="vk_favpost_act_menu" class_="fl_r summary_right">'+IDL('Actions')+'</a>\
+         //geByClass('t0')[0].appendChild(a);
+         //e.parentNode.insertBefore(a,e);
+         insertAfter(a,e)
+         
+         
+         var p_options = [];
+         
+         p_options.push({l:IDL('DelLikes'), onClick:function(item) {
+               vk_fave.remove_likes_posts();
+         }});         
+         
+         
+         //p_options=p_options.concat(vk_plugins.album_actions(oid,aid));
+         stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
+            cur.vkAlbumMenu = new DropdownMenu(p_options, {//
+              target: ge('vk_favpost_act_menu'),
+              containerClass: 'dd_menu_posts',
+              updateHeader:false,
+              offsetLeft:-15,
+              showHover:false
+            });
+         });			
+      }
+      
+      return;
+   },
    remove_likes_photo:function(){
-      var REQ_CNT=2;//100;
+      var REQ_CNT=100;//100;
       var DEL_REQ_DELAY=400;
       var box=null;
       var ids=[];
@@ -2615,7 +2749,133 @@ vk_fave={
          scan();
       };
       vkAlertBox(IDL('DelPhotosLikes'),IDL('DelPhotosLikesConfirm'),run,true);
-   }
+   },
+   remove_likes_video:function(){
+      var REQ_CNT=100;//100;
+      var DEL_REQ_DELAY=400;
+      var box=null;
+      var ids=[];
+      var del_offset=0;
+      var cur_offset=0;
+      var abort=false;	
+      var deldone=function(){
+            box.hide();
+            vkMsg(IDL("ClearDone"),3000);	
+      };
+      var del=function(callback){	
+         if (abort) return;
+         var del_count=ids.length;
+         ge('vk_del_info').innerHTML=vkProgressBar(del_offset,del_count,310,IDL('deleting')+' %');
+         var obj=ids[del_offset];
+         if (!obj){
+            ge('vk_del_info').innerHTML=vkProgressBar(1,1,310,' ');
+            del_offset=0;
+            callback();
+         } else
+         dApi.call('likes.delete', {type:'video', owner_id:obj[0], item_id:obj[1]},function(r,t){
+            del_offset++;
+            setTimeout(function(){del(callback);},DEL_REQ_DELAY);
+         });
+      };
+      var info_count=0;
+      var scan=function(){
+         ids=[];
+         if (cur_offset==0){
+            ge('vk_del_info').innerHTML=vkProgressBar(1,1,310,' ');
+            ge('vk_scan_info').innerHTML=vkProgressBar(cur_offset,2,310,IDL('listreq')+' %');
+         }
+         dApi.call('fave.getVideos',{offset:0/*cur_offset*/,count:REQ_CNT},function(r){
+            //var data=r.response;
+            //var count=data.shift();
+            if (abort) return;
+            var data=r.response;
+            if (data==0 || !data[1]){
+               deldone();
+               return;
+            }
+            if (info_count==0) info_count=data.shift();
+            else data.shift();
+            ge('vk_scan_info').innerHTML=vkProgressBar(cur_offset+REQ_CNT,info_count,310,IDL('listreq')+' %');
+            for (var i=0;i<data.length;i++) ids.push([data[i].owner_id,data[i].vid]);
+            cur_offset+=REQ_CNT;
+            //vklog(ids);
+            del(scan);            
+            
+         });
+      };
+      var run=function(){
+         box=new MessageBox({title: IDL('DelVideosLikes'),closeButton:true,width:"350px"});
+         box.removeButtons();
+         box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no');
+         var html='<div id="vk_del_info" style="padding-bottom:10px;"></div><div id="vk_scan_info"></div>';
+         box.content(html).show();	
+         scan();
+      };
+      vkAlertBox(IDL('DelVideosLikes'),IDL('DelVideosLikesConfirm'),run,true);
+   },
+   remove_likes_posts:function(){
+      var REQ_CNT=100;//100;
+      var DEL_REQ_DELAY=400;
+      var box=null;
+      var ids=[];
+      var del_offset=0;
+      var cur_offset=0;
+      var abort=false;	
+      var deldone=function(){
+            box.hide();
+            vkMsg(IDL("ClearDone"),3000);	
+      };
+      var del=function(callback){	
+         if (abort) return;
+         var del_count=ids.length;
+         ge('vk_del_info').innerHTML=vkProgressBar(del_offset,del_count,310,IDL('deleting')+' %');
+         var obj=ids[del_offset];
+         if (!obj){
+            ge('vk_del_info').innerHTML=vkProgressBar(1,1,310,' ');
+            del_offset=0;
+            callback();
+         } else
+         dApi.call('likes.delete', {type:'post', owner_id:obj[0], item_id:obj[1]},function(r,t){
+            del_offset++;
+            setTimeout(function(){del(callback);},DEL_REQ_DELAY);
+         });
+      };
+      var info_count=0;
+      var scan=function(){
+         ids=[];
+         if (cur_offset==0){
+            ge('vk_del_info').innerHTML=vkProgressBar(1,1,310,' ');
+            ge('vk_scan_info').innerHTML=vkProgressBar(cur_offset,2,310,IDL('listreq')+' %');
+         }
+         dApi.call('fave.getPosts',{offset:0/*cur_offset*/,count:REQ_CNT},function(r){
+            //var data=r.response;
+            //var count=data.shift();
+            if (abort) return;
+            var data=r.response;
+            if (data==0 || !data[1]){
+               deldone();
+               return;
+            }
+            if (info_count==0) info_count=data.shift();
+            else data.shift();
+            ge('vk_scan_info').innerHTML=vkProgressBar(cur_offset+REQ_CNT,info_count,310,IDL('listreq')+' %');
+            for (var i=0;i<data.length;i++) ids.push([data[i].to_id,data[i].id]);
+            cur_offset+=REQ_CNT;
+            //vklog(ids);
+            del(scan);            
+            
+         });
+      };
+      var run=function(){
+         box=new MessageBox({title: IDL('DelPostsLikes'),closeButton:true,width:"350px"});
+         box.removeButtons();
+         box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no');
+         var html='<div id="vk_del_info" style="padding-bottom:10px;"></div><div id="vk_scan_info"></div>';
+         box.content(html).show();	
+         scan();
+      };
+      vkAlertBox(IDL('DelPostsLikes'),IDL('DelPostsLikesConfirm'),run,true);
+   }   
 }
 
 vk_board={

@@ -182,7 +182,7 @@ function vkOnNewLocation(startup){
 			case 'notes'   :vkNotesPage(); break;
 			case 'board'   :vkBoardPage(); break;
 			case 'search'  :vk_search.page(); break;
-         case 'fave'    :vkFavePage(); break;
+         case 'fave'    :vk_fave.page(); break;
          case 'im'      :vkImPage(); break;
          case 'pages'   :vkWikiPages(); break;
          case 'apps'    :vk_apps.page(); break;
@@ -1385,22 +1385,6 @@ function vkModAsNode(text,func,url,q){ //url,q - for processing response
 	if (is_table && txt.substr(0,7)=="<tbody>")	txt=txt.substr(7,txt.length-15);
 	return txt;
 }
-
-/* FAVE */
-function vkFavePage(){
-   vkFavUsersList(true);
-   vkFavPhotosMenu();
-   if (getSet(17)=='y' && nav.objLoc['section']=='users'){
-      setTimeout(function(){
-         var el=ge('users_content');
-         if (el.qsorter){ 
-            el.qsorter.destroy();
-            qsorter.init('users_content', {onReorder: Fave.reorderFave, xsize: 9, width: 67, height: 110});
-         }
-      },10);
-   }
-}
-
 
 
 /* MAIL */

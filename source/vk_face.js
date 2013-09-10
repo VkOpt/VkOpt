@@ -981,7 +981,7 @@ function vkMenu(){//vkExLeftMenu
     ],
     'audio':[
         ['/audio',IDL("mAuM")],
-        ['/audio?act=edit',IDL("mAuE")],
+        ['/audio?act=feed',IDL("mNeU")],
         [['#',"showBox('/audio', extend({}, {act: 'new_audio'}), {   params: {width: '430px'}, stat: ['audio.css','audio.js'] }); return false;"],IDL("mAuN")] 
     ],
     'mail':[
