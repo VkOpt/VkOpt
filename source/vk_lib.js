@@ -3158,6 +3158,7 @@ function WMPursesList(result_el){
 	return html;
 }
 if (!window.winToUtf) winToUtf=function(text) {
+  text=text.replace(/&#0+(\d+);/g,"&#$1;");
   var m, i, j, code;  m = text.match(/&#[0-9]{2}[0-9]*;/gi);
   for (j in m) {   var val = '' + m[j]; code = intval(val.substr(2, val.length - 3));
     if (code >= 32 && ('&#' + code + ';' == val)) text = text.replace(val, String.fromCharCode(code));

@@ -4644,6 +4644,7 @@ vkLastFM={
       return Math.round((new Date()).getTime()/1000)
    },
    clean:function(s){
+      s=s.replace(/&#0+(\d+);/g,"&#$1;");
       return winToUtf(s);//s.replace(/&quot;|&amp;|&lt;|&gt;|&rsquo;|&#[0-9]{2}[0-9]*;/gi, ' ');//   |<|>|"|'
    },
    init:function(){

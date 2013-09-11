@@ -585,6 +585,7 @@ function vkAllowPost(url, q, options){
 function vkCommon(){
     if (getSet(6)=='y'){
 		goAway=function(lnk,params){
+         lnk=lnk.replace(/&#0+(\d+);/g,"&#$1;");
          lnk=winToUtf(lnk);//.replace(/&amp;/,'&');
          window.open(lnk, '_blank');
          return false;
