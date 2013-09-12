@@ -208,6 +208,7 @@ function vkStyles(){
    .vk_txt_icon{ display: inline-block;height: 12px; padding-left:12px; line-height: 12px; background: url(/images/icons/photo_icons.png) 0px -23px no-repeat transparent;}\
    .vk_stats_icon{background:url(http://vk.com/images/icons/mono_iconset.gif) 0px -207px no-repeat; display:inline-block; width:12px; height:11px;}\
    .vk_repost_icon{display: inline-block;height: 9px; padding-left:12px; line-height: 9px; background: url(/images/icons/mono_iconset.gif) 0px -251px no-repeat transparent;}\
+   .vk_magglass_icon{background: url(http://vk.com/images/magglass_2x.png) no-repeat 50% 50%; background-size:11px 11px; margin-right: 4px; display: inline-block; vertical-align: middle; width: 11px; height: 11px; }\
    .vk_x_btn{background: url(http://vk.com/images/hide_to.gif) no-repeat 50% 50%; display: inline-block; vertical-align: middle; width: 10px; height: 10px; }\
    .vk_x_btn{opacity:0.5; cursor:pointer;}\
    .vk_x_btn:hover{opacity:1;}\

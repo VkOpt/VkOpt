@@ -825,8 +825,15 @@ function vkPVLinks(ph){
   
   if (ph.x_src){
       var src=(ph.w_src || ph.z_src || ph.y_src || ph.x_src);
+      /*
       html+='<a target="_blank" href="http://www.tineye.com/search?url='+src+'">'+IDL('TinEyeSearch')+'</a>';
       html+='<a target="_blank" href="https://www.google.ru/searchbyimage?image_url='+src+'">'+IDL('GoogleImgSearch')+'</a>';
+      html+='<a target="_blank" href="http://images.yandex.ru/yandsearch?rpt=imagecbir&img_url='+src+'">'+IDL('YandexImgSearch')+'</a>';*/
+      html+='<a target="_blank" class="fl_r" href="http://www.tineye.com/search?url='+src+'">TinEye</a>';
+      html+='<a target="_blank" class="fl_r" href="http://images.yandex.ru/yandsearch?rpt=imagecbir&img_url='+src+'">Yandex</a>';      
+      html+='<a target="_blank" href="https://www.google.ru/searchbyimage?image_url='+src+'"><span class="vk_magglass_icon"></span>Google</a>';
+
+      /* http://images.yandex.ru/favicon.ico */
   }
   
   return html;
