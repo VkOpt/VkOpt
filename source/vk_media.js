@@ -822,16 +822,18 @@ function vkPVLinks(ph){
   if ((ph.tags || [])[0]>0){
       html+='<a href="#" onclick="vkPVShowTagsInfo(); return false;">'+IDL('TagsInfo')+'</a>';
   }
-  
+  console.log('QWEQWE!!',ph);
   if (ph.x_src){
       var src=(ph.w_src || ph.z_src || ph.y_src || ph.x_src);
       /*
       html+='<a target="_blank" href="http://www.tineye.com/search?url='+src+'">'+IDL('TinEyeSearch')+'</a>';
       html+='<a target="_blank" href="https://www.google.ru/searchbyimage?image_url='+src+'">'+IDL('GoogleImgSearch')+'</a>';
       html+='<a target="_blank" href="http://images.yandex.ru/yandsearch?rpt=imagecbir&img_url='+src+'">'+IDL('YandexImgSearch')+'</a>';*/
+      html+='<div class="pv_info" style="padding-left:5px;">'+IDL('ImgCopySeacrh')+'</div>';
       html+='<a target="_blank" class="fl_r" href="http://www.tineye.com/search?url='+src+'">TinEye</a>';
-      html+='<a target="_blank" class="fl_r" href="http://images.yandex.ru/yandsearch?rpt=imagecbir&img_url='+src+'">Yandex</a>';      
-      html+='<a target="_blank" href="https://www.google.ru/searchbyimage?image_url='+src+'"><span class="vk_magglass_icon"></span>Google</a>';
+      html+='<a target="_blank" class="fl_r" href="http://images.yandex.ru/yandsearch?rpt=imagecbir&img_url='+src+'">Yandex</a>';  
+      html+='<a target="_blank" class="fl_r" href="https://vk.com/feed?section=photos_search&q=copy%3Aphoto'+ph.id+'">VK</a>';  
+      html+='<a target="_blank" href="https://www.google.ru/searchbyimage?image_url='+src+'"><!--<span class="vk_magglass_icon"></span>-->Google</a>';
 
       /* http://images.yandex.ru/favicon.ico */
   }
