@@ -367,6 +367,7 @@ function vkFriendsPage(){
 /* PUBLICS */
 function vkPublicPage(){
 	vk_graff.upload_graff_item();
+   vk_photos.pz_item();
    vkWallAlbumLink();
    vkSwitchPublicToGroup();
    vkWikiPagesList(true);
@@ -377,6 +378,7 @@ function vkPublicPage(){
 /* EVENTS */
 function vkEventPage(){
 	vk_graff.upload_graff_item();
+   vk_photos.pz_item();
    vkWallAlbumLink();
    vkUpdWallBtn();
    //vkWikiPagesList(true);
@@ -384,6 +386,7 @@ function vkEventPage(){
 /* GROUPS */
 function vkGroupPage(){
 	vk_graff.upload_graff_item();
+   vk_photos.pz_item();
 	vkCheckGroupsAdmin();
    vkModGroupBlocks();
    //vkAudioBlock();

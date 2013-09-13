@@ -127,6 +127,7 @@ function vkProfilePage(){
 	if (getSet(26) == 'y') vkProcessProfileBday(); //VkCalcAge();
 	vkPrepareProfileInfo();
 	vk_graff.upload_graff_item();
+   vk_photos.pz_item();
    //vkWallAddPreventHideCB();
 	vkUpdWallBtn(); //Update wall button
    vkWallNotesLink();
@@ -435,6 +436,7 @@ function vkProfileEditMidName(){
 /*WALL*/
 function vkWallPage(){
 	vk_graff.upload_graff_item();
+   vk_photos.pz_item();
    //vkWallAddPreventHideCB();
 	vkAddCleanWallLink();
 	vkAddDelWallCommentsLink();

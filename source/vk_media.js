@@ -593,45 +593,94 @@ var vk_photos = {
          p.innerHTML='<div class="vk_albums_list">'+html+'</div>';  
       });
    },
-   VKPZL_SWF_LINK:"http://app.vk.com/c6130/u13391307/b57dd33a04bf43.swf",
-   VKPZL_SWF_HTTPS_LINK:"https://app.vk.com/c6130/u13391307/b57dd33a04bf43.swf",
+   VKPZL_SWF_LINK:"http://app.vk.com/c6130/u13391307/121ade347eecd4.swf",
+   VKPZL_SWF_HTTPS_LINK:"https://app.vk.com/c6130/u13391307/121ade347eecd4.swf",
    pz_box:function(){
-/*
-  var html = '<div><span id="vkdsldr"><div class="box_loader"></div></span>'+
-             '<span id="vksavetext" style="display:none">'+IDL("ClickForSave")+'</span>'+
-             '<div id="dscontainer" style="display:inline-block;position:relative;top:8px;"></div>'+
-             '</div>';
-  DataSaveBox = new MessageBox({title: IDL('SaveToFile')});
-  var Box = DataSaveBox;
-  vkOnSavedFile=function(){Box.hide(200);};
-  Box.removeButtons();
-  Box.addButton(IDL('Cancel'),Box.hide,'no');
-  Box.content(html).show(); 
-*/
-   
-   
-      var swf=location.protocol=='https:'?vk_photos.VKPZL_SWF_HTTPS_LINK:vk_photos.VKPZL_SWF_LINK;
-      var params={width:100, height:29, allowscriptaccess: 'always',"wmode":"transparent","preventhide":"1","scale":"noScale"};
-      var vars={
-         'idl_browse': IDL('Browse'),
-         'idl_upload': IDL('Upload'),
-         'upload_url': upload_url,
-         'onResize'  :'vk_photos.pz_onresize',
-         'onDone'    :'vk_photos.pz_ondone'
-      };
-      renderFlash('pz_container',
-         {url:swf,id:"vkpzl_pl"},
-         params,vars
-      ); 
+      
+      var html = '<div><span id="vkpzldr"><div class="box_loader"></div></span>'+
+                '<div id="pz_container" style="display:inline-block;position:relative;top:8px;"></div>'+
+                '</div>';
+                
+      vk_photos.PZLBox = new MessageBox({title: IDL('PhotoShredder'), width:'650px'});
+      var Box = vk_photos.PZLBox;
+      vkOnSavedFile=function(){Box.hide(200);};
+      Box.removeButtons();
+      Box.addButton(IDL('Cancel'),Box.hide,'no');
+      Box.content(html).show(); 
+      
+      dApi.call('photos.getWallUploadServer',{},function(r){
+         var info=r.response;
+         //alert(info.upload_url);
+         //info.upload_url;
+         //info.aid;
+         //info.mid;
+         //
+         //
+         //
+         var swf=location.protocol=='https:'?vk_photos.VKPZL_SWF_HTTPS_LINK:vk_photos.VKPZL_SWF_LINK;
+         var params={width:627, height:100, allowscriptaccess: 'always',"wmode":"transparent","preventhide":"1","scale":"noScale"};
+         var vars={
+            'idl_browse': IDL('Browse'),
+            'idl_upload': IDL('Upload'),
+            'upload_url': info.upload_url,
+            'onResize'  :'vk_photos.pz_onresize',
+            'onDone'    :'vk_photos.pz_ondone'
+         };
+         renderFlash('pz_container',
+            {url:swf,id:"vkpzl_pl"},
+            params,vars
+         );          
+      })
+
    },
    pz_ondone:function(s){
-    alert(s);
+      var data=JSON.parse(s);
+      dApi.call('photos.saveWallPhoto',{photo:data.photo, server: data.server, hash:data.hash},function(r){
+         console.log('Save photo: ',r);
+         var photos=r.response;
+         for (var i=0; i<photos.length; i++){
+            vk_ch_media.photo(photos[i].owner_id+'_'+photos[i].pid,photos[i].src_big,photos[i].width,photos[i].height);
+            //cur.chooseMedia('photo', photoRaw, mediaData, false, false, true);
+         }
+         /*
+         id "photo13391307_311284003"
+         owner_id 13391307
+         pid 311284003*/
+      });
+      vk_photos.PZLBox.hide();
    },
    pz_onresize:function(new_height){
-      //alert('resize:'+h);
+      //console.log('PZL height: '+new_height);
+		hide("vkpzldr");
       var h=parseInt(new_height);
       if (h>0)  
       ge('vkpzl_pl').setAttribute("height",h+10);
+      
+   },
+   pz_item:function(){
+      var AddItem=function(bef){
+         var mid=ge('mid')?ge('mid').value:(window.cur && cur.oid?cur.oid:0);
+         if (bef && mid){
+            bef=bef.getElementsByTagName('a')[0];
+            var a=document.createElement('a');
+            a.setAttribute("onfocus","this.blur()");
+            a.setAttribute("class"," add_media_item");
+            a.setAttribute("id","vk_wall_post_type1");
+            a.setAttribute("style","background-image: url(/images/icons/attach_icons.gif); background-position: 3px 3px");
+            a.setAttribute("href","#");
+            a.setAttribute("onclick","vk_photos.pz_box("+mid+");return false;");
+            a.innerHTML=IDL('PhotoShredder');
+            bef.parentNode.insertBefore(a,bef.nextSibling);
+         }
+      }
+
+      if (ge('vk_wall_post_type1')) return;
+      var vk__addMediaIndex=0;
+      if (window.__addMediaIndex) vk__addMediaIndex=__addMediaIndex;
+      var lnkId = ++vk__addMediaIndex;
+      if (ge('page_add_media')){
+         Inj.Wait("geByClass('add_media_rows')[0]",AddItem,300,10);
+      }   
    }
 }
 
