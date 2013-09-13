@@ -593,8 +593,8 @@ var vk_photos = {
          p.innerHTML='<div class="vk_albums_list">'+html+'</div>';  
       });
    },
-   VKPZL_SWF_LINK:"http://app.vk.com/c6130/u13391307/121ade347eecd4.swf",
-   VKPZL_SWF_HTTPS_LINK:"https://app.vk.com/c6130/u13391307/121ade347eecd4.swf",
+   VKPZL_SWF_LINK:"http://app.vk.com/c6130/u13391307/8c0797eea18120.swf",
+   VKPZL_SWF_HTTPS_LINK:"https://app.vk.com/c6130/u13391307/8c0797eea18120.swf",
    pz_box:function(){
       
       var html = '<div><span id="vkpzldr"><div class="box_loader"></div></span>'+
