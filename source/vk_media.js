@@ -592,6 +592,46 @@ var vk_photos = {
             html+='<a href="/album'+oid+'_'+data[i].aid+'" onclick="return nav.change({z: \'album'+oid+'_'+data[i].aid+'\'}, event)">'+data[i].title+'</a>';
          p.innerHTML='<div class="vk_albums_list">'+html+'</div>';  
       });
+   },
+   VKPZL_SWF_LINK:"http://app.vk.com/c6130/u13391307/b57dd33a04bf43.swf",
+   VKPZL_SWF_HTTPS_LINK:"https://app.vk.com/c6130/u13391307/b57dd33a04bf43.swf",
+   pz_box:function(){
+/*
+  var html = '<div><span id="vkdsldr"><div class="box_loader"></div></span>'+
+             '<span id="vksavetext" style="display:none">'+IDL("ClickForSave")+'</span>'+
+             '<div id="dscontainer" style="display:inline-block;position:relative;top:8px;"></div>'+
+             '</div>';
+  DataSaveBox = new MessageBox({title: IDL('SaveToFile')});
+  var Box = DataSaveBox;
+  vkOnSavedFile=function(){Box.hide(200);};
+  Box.removeButtons();
+  Box.addButton(IDL('Cancel'),Box.hide,'no');
+  Box.content(html).show(); 
+*/
+   
+   
+      var swf=location.protocol=='https:'?vk_photos.VKPZL_SWF_HTTPS_LINK:vk_photos.VKPZL_SWF_LINK;
+      var params={width:100, height:29, allowscriptaccess: 'always',"wmode":"transparent","preventhide":"1","scale":"noScale"};
+      var vars={
+         'idl_browse': IDL('Browse'),
+         'idl_upload': IDL('Upload'),
+         'upload_url': upload_url,
+         'onResize'  :'vk_photos.pz_onresize',
+         'onDone'    :'vk_photos.pz_ondone'
+      };
+      renderFlash('pz_container',
+         {url:swf,id:"vkpzl_pl"},
+         params,vars
+      ); 
+   },
+   pz_ondone:function(s){
+    alert(s);
+   },
+   pz_onresize:function(new_height){
+      //alert('resize:'+h);
+      var h=parseInt(new_height);
+      if (h>0)  
+      ge('vkpzl_pl').setAttribute("height",h+10);
    }
 }
 
@@ -830,10 +870,12 @@ function vkPVLinks(ph){
       html+='<a target="_blank" href="https://www.google.ru/searchbyimage?image_url='+src+'">'+IDL('GoogleImgSearch')+'</a>';
       html+='<a target="_blank" href="http://images.yandex.ru/yandsearch?rpt=imagecbir&img_url='+src+'">'+IDL('YandexImgSearch')+'</a>';*/
       html+='<div class="pv_info" style="padding-left:5px;">'+IDL('ImgCopySeacrh')+'</div>';
-      html+='<a target="_blank" class="fl_r" href="https://vk.com/feed?section=photos_search&q=copy%3Aphoto'+ph.id+'">VK</a>';  
-      html+='<a target="_blank" class="fl_r" href="http://images.yandex.ru/yandsearch?rpt=imagecbir&img_url='+src+'">Yandex</a>';  
-      html+='<a target="_blank" class="fl_r" href="http://www.tineye.com/search?url='+src+'">TinEye</a>';
-      html+='<a target="_blank" href="https://www.google.ru/searchbyimage?image_url='+src+'">Google</a>';
+      html+='<a target="_blank" class="fl_l" href="https://www.google.ru/searchbyimage?image_url='+src+'">Google</a>';
+      html+='<a target="_blank" class="fl_l" href="http://www.tineye.com/search?url='+src+'">TinEye</a>';
+      html+='<a target="_blank" class="fl_l" href="http://images.yandex.ru/yandsearch?rpt=imagecbir&img_url='+src+'">Yandex</a>';  
+      html+='<a target="_blank" class="fl_l" href="/feed?section=photos_search&q=copy%3Aphoto'+ph.id+'">VK</a>';  
+      html+='<div class="clear"></div>';
+      
 
       /* http://images.yandex.ru/favicon.ico */
   }
