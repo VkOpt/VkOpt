@@ -812,6 +812,7 @@ function vkOnlineInfo(p){
                break; 
             case '3145329':
             case '3682744':
+            case '3133286':
                title='iPad';
                break;  
             case '2424737':

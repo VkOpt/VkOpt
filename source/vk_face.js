@@ -976,6 +976,7 @@ function vkMenu(){//vkExLeftMenu
     'video':[
         ['/video',IDL("mViM")],
         ['/video?section=tagged',IDL("mViW")],
+        ['/video?section=uploaded',IDL("mViUploaded")],
         ['/video?section=comments',IDL("mPhC")],
         [['#',"stManager.add('video.js',function(){Video.uploadVideoBox();}); return false;"], IDL("mViN")], //'video.php?act=new' //"showTabbedBox('al_video.php', {act: 'upload_box', oid: cur.oid}, {stat: ['video_edit.css', 'privacy.css', 'privacy.js', 'uploader.js']}); return false;"
         ['/video?section=tagged',vk_lang["mTags"],true]
@@ -1088,6 +1089,7 @@ function vkMenu(){//vkExLeftMenu
 	'wall':[
 		['wall'+remixmid(),IDL('mWAllPosts')],
 		['wall'+remixmid()+'?own=1',IDL('mWMyPosts')],
+      [['#',"showWiki({w: 'postbox'}, false, event, {queue: 1, stat: ['wkview.js' ,'wkview.css', 'postbox.js', 'postbox.css', 'wide_dd.js', 'wide_dd.css', 'page.js', 'page.css']}); return false;"],IDL('NewPost')],
       ['notes',IDL("mNoM")],
       //['notes?act=new',IDL("mNoN")],
       ['notes?act=comments',IDL("mNoC")]
