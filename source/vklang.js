@@ -1637,11 +1637,11 @@ vk_lang_en={//by Hzy
    'seDislikes':'Show "dislike" button',
    'CancelAnswer':'[ Revote ]',
    'CancelAnswerError':'Vote not found. Maybe you did not vote?',
-   'CancelAnswerSuccess':'Vote canceled. Reload this page',
+   'CancelAnswerSuccess':'Vote cancelled. Reload this page',
    'CancelAnswerFail':'Error while cancelling vote',
    'seMenuToRight':'menu to the left',
    'MenuCustomLinks':'User links in menu:',
-   'seDialogsReplyBtn':'Add to messanges "Reply" button',
+   'seDialogsReplyBtn':'Add "Reply" button to messages in conversation',
    'FullThumb':'[ Full thumbnails ]',
    'FrDeleted':'[ Blocked ]',
    'seAutoScrollToTrack':'Disable page autoscroll to current track\'s position after changing it',
@@ -1669,7 +1669,21 @@ vk_lang_en={//by Hzy
    'AudioBanned':'Blocked audio',
    'SearchBanned':'Try to search blocked audio?',
    'seDisableIMFavicon':'Disable favicon and title animation in conversation tab when new message recieved',
-   'mImportant':'Important'
+   'mImportant':'Important',
+   'seAudioFullTitles':'Show full audio titles',
+   'GroupJoin':'Join',
+   'FaveFr':'Bookmarks in friends',
+   'seFaveFr':'Show block "Bookmarks in friends" on profiles',
+   'DelLikes':'[ Delete Likes ]',
+   'DelPhotosLikes':'Delete likes on photos',
+   'DelPhotosLikesConfirm':'Are you sure, that you want to delete all likes on photos?',
+   'DelVideosLikes':'Delete likes on videos',
+   'DelVideosLikesConfirm':'Are you sure, that you want to delete all likes on videos?',
+   'DelPostsLikes':'Delete likes on posts',
+   'DelPostsLikesConfirm':'Are you sure, that you want to delete all likes on posts?',
+   'FromPage':'from page',
+   'ImgCopySeacrh':'Search copy:',
+   'PhotoShredder':'PhotoShredder'
 };
  
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
