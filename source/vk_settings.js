@@ -604,7 +604,8 @@ function vkInitSettings(){
       {id:43, text:IDL("seAudioSize")},    
       
       {id:4,  text:IDL("seMoreDarkViewer")},      
-      {id:7,  text:IDL("seScroolPhoto")}
+      {id:7,  text:IDL("seScroolPhoto")},
+      {id:93, text:IDL("seAlbumPhotosExInfo"),info:'infoUseNetTrafic'}
     ],
     Users:[
       {id:10, text:IDL("seExUserMenu")+'<br><a href="#" onclick="toggle(\'vkExUMenuCFG\'); return false;">[<b> '+IDL("Settings")+' </b>]</a><span id="vkExUMenuCFG" style="display:none">'+GetUserMenuSett()+'</span>'},
@@ -704,7 +705,7 @@ function vkInitSettings(){
    ]
   };
 
-	//LAST 92
+	//LAST 93
 	/*
       vkoptSets['advanced']=[
          'vk_upd_menu_timeout','vkMenuHideTimeout','CHECK_FAV_ONLINE_DELAY',

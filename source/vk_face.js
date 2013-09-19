@@ -206,9 +206,11 @@ function vkStyles(){
    .vk_audio_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -221px; line-height: 11px; }\
    .vk_video_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -75px; line-height: 11px; }\
    .vk_txt_icon{ display: inline-block;height: 12px; padding-left:12px; line-height: 12px; background: url(/images/icons/photo_icons.png) 0px -23px no-repeat transparent;}\
-   .vk_stats_icon{background:url(http://vk.com/images/icons/mono_iconset.gif) 0px -207px no-repeat; display:inline-block; width:12px; height:11px;}\
+   .vk_stats_icon{background:url('/images/icons/mono_iconset.gif') 0px -207px no-repeat; display:inline-block; width:12px; height:11px;}\
    .vk_repost_icon{display: inline-block;height: 9px; padding-left:12px; line-height: 9px; background: url(/images/icons/mono_iconset.gif) 0px -251px no-repeat transparent;}\
-   .vk_magglass_icon{background: url(http://vk.com/images/magglass_2x.png) no-repeat 50% 50%; background-size:11px 11px; margin-right: 4px; display: inline-block; vertical-align: middle; width: 11px; height: 11px; }\
+   .vk_magglass_icon{background: url('/images/magglass_2x.png') no-repeat 50% 50%; background-size:11px 11px; margin-right: 4px; display: inline-block; vertical-align: middle; width: 11px; height: 11px; }\
+   .vk_like_icon_white{background: url('/images/icons/like_2x.png') 1px -10px no-repeat transparent; background-size: 10px 32px; height: 10px; width: 11px; display: inline-block; vertical-align: middle;}\
+   .vk_comm_icon_white{background: url('/images/fixedmenu_2x.png') 100% -282px no-repeat transparent; background-size: 11px 322px; height: 11px; width: 11px; display: inline-block; vertical-align: middle;}\
    .vk_x_btn{background: url(http://vk.com/images/hide_to.gif) no-repeat 50% 50%; display: inline-block; vertical-align: middle; width: 10px; height: 10px; }\
    .vk_x_btn{opacity:0.5; cursor:pointer;}\
    .vk_x_btn:hover{opacity:1;}\

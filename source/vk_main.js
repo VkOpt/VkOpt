@@ -48,6 +48,7 @@ function vkInj(file){
    case 'mail.js': 			vkMail(); 	   break;
    case 'groups_list.js':  vkGroupsList(); break;
    case 'fave.js':         vk_fave.inj(); break;
+   case 'photos.js':       vk_photos.inj_photos(); break;
   }
   vk_plugins.onjs(file); 
 }
@@ -73,6 +74,7 @@ function vkProcessNode(node){
       vk_feed.process_node(node);
       vk_photos.process_node(node);
       vk_search.process_node(node);
+      //vk_photos.album_process_node(node);
       vk_highlinghts.process_node(node);
 		vk_plugins.processnode(node);
 	// }  catch (e) { topMsg('vkProcessNode error',2)}
@@ -174,7 +176,7 @@ function vkOnNewLocation(startup){
 			case 'public' :vkPublicPage(); break;
 			case 'wall'   :vkWallPage(); break;
 			case 'friends':vkFriendsPage(); break;
-			case 'photos' :vkPhotosPage(); break;
+			case 'photos' :vk_photos.page(); break;
 			case 'audio'  :vkAudioPage(); break;
 			case 'audio_edit' :vkAudioEditPage(); break;
          case 'video'      :vkVideoPage(); break;
