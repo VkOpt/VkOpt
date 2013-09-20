@@ -236,9 +236,9 @@ var vk_photos = {
                var pid=p.owner_id+'_'+p.pid;
                var el=ge('vk_exinfo_'+pid);
                if (!el) continue;
-               //  onmouseover="vk_skinman.like_over(\''+pid+'\',this)" onmouseout="vk_skinman.like_out(\''+pid+'\')" onclick="vk_skinman.like(\''+pid+'\'); event.cancelBubble = true;"
+               //   onclick="vk_skinman.like(\''+pid+'\'); event.cancelBubble = true;" onmouseout="vk_skinman.like_out(\''+pid+'\')"
                el.innerHTML='<span class="info_wrap">\
-                               <span>\
+                               <span onmouseover="vk_photos.like_over(\''+pid+'\',this)">\
                                  <i class="vk_like_icon_white'+(p.likes.user_likes?' my_like':'')+'" id="s_like_icon'+pid+'"></i>\
                                  <span id="s_like_count'+pid+'">'+p.likes.count+'</span>\
                                </span>'+
@@ -254,6 +254,27 @@ var vk_photos = {
          error:function(){}
       });
       //ge('vk_exinfo_'+uid)
+   },
+   like_over:function(pid,el){
+      var icon=ge('s_like_icon'+pid),
+          count=ge('s_like_count'+pid);
+      showTooltip(icon.parentNode, {
+         url: 'like.php',
+         params: {
+            act: 'a_get_stats',
+            object: 'photo' + pid,
+         },
+         slide: 15,
+         shift: [65, 10, 10],
+         ajaxdt: 100,
+         showdt: 400,
+         hidedt: 200,
+         className: 'rich like_tt',
+         init: function(tt) {
+            if (!tt.container)
+               return;
+         }
+      });
    },
    
    choose_album:function(oid){
