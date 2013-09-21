@@ -963,8 +963,7 @@ function vkGetProfile(uid,callback,no_switch_button){
                         .replace("%MSG_COUNT%",msg_count || '');
 		if (no_switch_button) html=html.replace(/%nb%/g,'_'); else html=html.replace(/%nb%/g,'');
 		html=vkModAsNode(html,vkAddUserMenu);
-		callback(html,uid);
-		//uApi.show(r);	
+		callback(html,uid);	
 	  };
 	  if (!window.VK_CURRENT_PROFILES_DATA) VK_CURRENT_PROFILES_DATA={};
 	  if (VK_CURRENT_PROFILES_DATA['uid'+uid]) 
@@ -1179,7 +1178,6 @@ function vkFriendsCheck(nid){
 		ge('vkfrupdck1').className='vkcheckbox_on';
 		frList(function(fids,PostData,cnt){
 			dApi.call('notes.getById',{nid:nid},function(r){
-				//uApi.show(r);
 				if (r.error && r.error.error_code==180){
 					searchNote();
 					return;

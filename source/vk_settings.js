@@ -985,7 +985,7 @@ function vkSaveSettingsOnServer(check){
     VK_CURRENT_CSSJS_URL=vkGetVal('VK_CURRENT_CSSJS_URL') || "";  
    */  
    
-   //dApi.call('execute',{code:'return [API.storage.get({key:"remixbits"}),API.storage.get({key:"Qwe"}),];'},uApi.show)
+   //dApi.call('execute',{code:'return [API.storage.get({key:"remixbits"}),API.storage.get({key:"Qwe"}),];'},console.log)
    var csscode=encodeURIComponent(vk_LSGetVal('VK_CURRENT_CSS_CODE') || "");
    csscode=csscode.length<4096?csscode:'';
    

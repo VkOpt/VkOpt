@@ -59,7 +59,6 @@ var SetsOnLocalStore={
   'IDNew':'c',
   'AdmGr':'c',//last of cookie
   'vkplayer':'c',
-  'uapi_sid':'c',
   'dapi_mid':'c',
   'dapi_sid':'c',
   'dapi_secret':'c',

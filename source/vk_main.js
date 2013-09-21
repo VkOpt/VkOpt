@@ -214,7 +214,6 @@ function vkProcessResponseNode(node,url,q){
 }
 
 function vkLocationCheck(){
-  if (uApi.onLogin()) return true;
   if (dApi.onLogin()) return true;
   if (vkCheckInstallCss()) return true;
   XFR.check();
