@@ -1525,6 +1525,7 @@ var vk_shuts_mask = {
   'profile_wall'          : 0x800000,
   'profile_photos_module' : 0x1000000,
   'profile_gifts'         : 0x2000000,
+  'profile_favefr'        : 0x4000000
 }
 var vk_shuts_prof=0x400000;
 
