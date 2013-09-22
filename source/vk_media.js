@@ -238,12 +238,12 @@ var vk_photos = {
                if (!el) continue;
                //   onclick="vk_skinman.like(\''+pid+'\'); event.cancelBubble = true;" onmouseout="vk_skinman.like_out(\''+pid+'\')"
                el.innerHTML='<span class="info_wrap">\
-                               <span onmouseover="vk_photos.like_over(\''+pid+'\',this)">\
+                               <span class="vk_ph_likes_count" onmouseover="vk_photos.like_over(\''+pid+'\',this)">\
                                  <i class="vk_like_icon_white'+(p.likes.user_likes?' my_like':'')+'" id="s_like_icon'+pid+'"></i>\
                                  <span id="s_like_count'+pid+'">'+p.likes.count+'</span>\
                                </span>'+
                                '<span class="divide"></span>'+
-                               '<div class="vk_comm_icon_white"></div> '+p.comments.count+
+                               '<span class="vk_ph_comm_count"><div class="vk_comm_icon_white"></div> '+p.comments.count+'</span>'+
                             '</span>';//vk_photos.parse_info(p);//JSON.stringify(p);
             }
             for (var key in p)
@@ -1065,9 +1065,9 @@ function vkPVLinks(ph){
   }
   if (ph.y_src || links.length>0){
     html+='<div id="pv_hd_links"><a href="#" onclick="toggle(\'vk_ph_links_list\'); return false;" class="fl_l">'+IDL('Links')+': </a>'+  
-        (ph.y_src?'<a href="'+ph.y_src+'" class="fl_r">HD1</a>':'')+
-        (ph.z_src?'<a href="'+ph.z_src+'" class="fl_r">HD2</a>':'')+
-        (ph.w_src?'<a href="'+ph.w_src+'" class="fl_r">HD3</a>':'')+
+        (ph.y_src?'<a href="'+ph.y_src+'" onclick="return vkDownloadFile(this);" download="photo'+ph.id+'y.jpg" class="fl_r">HD1</a>':'')+
+        (ph.z_src?'<a href="'+ph.z_src+'" onclick="return vkDownloadFile(this);" download="photo'+ph.id+'z.jpg" class="fl_r">HD2</a>':'')+
+        (ph.w_src?'<a href="'+ph.w_src+'" onclick="return vkDownloadFile(this);" download="photo'+ph.id+'w.jpg" class="fl_r">HD3</a>':'')+
         (links.length>0?'<div id="vk_ph_links_list" class="clear" style="display:none;">'+links.join('')+'</div>':'')+
     '</div><div class="clear"></div>';
   } 
