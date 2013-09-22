@@ -1059,12 +1059,13 @@ function vkPVLinks(ph){
       var sz=ph[sizes[i]];
       var src=ph[sizes[i]+'src'];
       if (sz && sz[1] && src){
-         links.push('<a href="'+src+'" class="fl_l">'+sizes[i]+'['+sz[1]+'x'+sz[2]+']</a>')
+         links.push('<a href="'+src+'" class="fl_l"  onclick="return vkDownloadFile(this);" download="photo'+ph.id+sizes[i].replace(/_/g,'')+'">'+sizes[i]+'['+sz[1]+'x'+sz[2]+']</a>')
       }
    }
   }
   if (ph.y_src || links.length>0){
     html+='<div id="pv_hd_links"><a href="#" onclick="toggle(\'vk_ph_links_list\'); return false;" class="fl_l">'+IDL('Links')+': </a>'+  
+        (!ph.y_src && links.length>0 ? links[0] :'')+
         (ph.y_src?'<a href="'+ph.y_src+'" onclick="return vkDownloadFile(this);" download="photo'+ph.id+'y.jpg" class="fl_r">HD1</a>':'')+
         (ph.z_src?'<a href="'+ph.z_src+'" onclick="return vkDownloadFile(this);" download="photo'+ph.id+'z.jpg" class="fl_r">HD2</a>':'')+
         (ph.w_src?'<a href="'+ph.w_src+'" onclick="return vkDownloadFile(this);" download="photo'+ph.id+'w.jpg" class="fl_r">HD3</a>':'')+
