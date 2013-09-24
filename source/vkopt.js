@@ -17,7 +17,7 @@ if (!window.vk_DEBUG) var vk_DEBUG=0;
 /* EXT CONFIG */
 if (!window.DefSetBits)
 
-var DefSetBits='ynyynnyyynyyy0n0yy0nnnynyyynyy0nynynnnnyy0yyy1yynnnnny0nynynynnnnyynnynnnynyyyynnyn3nnnnynynnn-3-0-#c5d9e7-#34a235-1';
+var DefSetBits='ynyynnyyynyyy0n0yy0nnnynyyynyy0nynynnnnyy0yyy1yynnnnny0nynynynnnnyynnynnnynyyyynnyn3nnnnynynnnn-3-0-#c5d9e7-#34a235-1';
 
 var DefExUserMenuCfg='11111110111111111111'; // default user-menu items config
 var vk_upd_menu_timeout=20000;      //(ms) Update left menu timeout
@@ -51,7 +51,7 @@ var MAIL_SHOWMSG_FIX=true;
 var SUPPORT_STEALTH_MOD=true;    // прикидываемся перед ТП, что у нас не стоит расширение для скачивания.
 var VIDEO_AUTOPLAY_DISABLE=false;
 var FULL_ENCODE_FILENAME=false;
-var vkNewSettings=[88,89,90,91,92]; //"new" label on settings item
+var vkNewSettings=[88,89,90,91,92,93,94]; //"new" label on settings item
 var SetsOnLocalStore={
   'vkOVer':'c',
   'remixbit':'c',

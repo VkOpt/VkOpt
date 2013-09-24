@@ -601,7 +601,8 @@ function vkInitSettings(){
       {id:73, text:IDL("seLoadAudioAlbumInfo")},
       {id:75, text:IDL("seAPlayerCtrls")},
       {id:85, text:IDL("seAutoScrollToTrack")},
-      {id:43, text:IDL("seAudioSize")},    
+      {id:43, text:IDL("seAudioSize")},
+      {id:94, text:IDL("seAudioUntrashTitle")},
       
       {id:4,  text:IDL("seMoreDarkViewer")},      
       {id:7,  text:IDL("seScroolPhoto")},
@@ -705,7 +706,7 @@ function vkInitSettings(){
    ]
   };
 
-	//LAST 93
+	//LAST 94
 	/*
       vkoptSets['advanced']=[
          'vk_upd_menu_timeout','vkMenuHideTimeout','CHECK_FAV_ONLINE_DELAY',

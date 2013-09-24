@@ -104,7 +104,7 @@ var vk_photos = {
       .vk_full_thumbs_photos #photos_container .photo_row a,\
       .vk_full_thumbs_photos #photos_container .photo_row,\
       .vk_full_thumbs_photos .pva_photo_link,\
-      .vk_full_thumbs_photos .pva_photo {height: auto !important;}\
+      .vk_full_thumbs_photos .pva_photo{height: auto !important;}\
       #vk_ph_upd_btn{opacity:0.1}\
       #vk_ph_upd_btn:hover{opacity:1}\
       .vk_albums_list a{display:block; padding-left:10px; padding-bottom:3px; border-bottom:1px solid rgba(100,100,100,0.1)}\
@@ -3740,8 +3740,24 @@ vk_audio={
    inj_common:function(){
       Inj.Start('playAudioNew','if (vk_audio.prevent_play_check()) return;');
    },
-   process_node:function(){
-      //vkRemoveTrash
+   remove_trash:function(s){
+      s=vkRemoveTrash(s);
+      s=s.replace(/\[\s*\]|\(\s*\)|\{\s*\}/g,'');
+      s=s.replace(/[\u1806\u2010\u2011\u2012\u2013\u2014\u2015\u2212\u2043\u02D7\u2796\-]+/g,'\u2013').replace(/\u2013\s*\u2013/g,'\u2013');
+      s=s.replace(/[\s\u1806\u2010\u2011\u2012\u2013\u2014\u2015\u2212\u2043\u02D7\u2796\-]+$/,'');// ^[\s\u1806\u2010\u2011\u2012\u2013\u2014\u2015\u2212\u2043\u02D7\u2796\-]+
+      return s;
+   },
+   process_node:function(node){
+      FindAndProcessTextNodes(node,function(mainNode,childItem){
+         var el = mainNode.childNodes[childItem];
+         if (el.nodeValue && !el.nodeValue.match(/^[\u2013\s]+$/)){
+            console.log('>>',el.nodeValue);
+            el.nodeValue=vk_audio.remove_trash(el.nodeValue);
+            console.log('<<',el.nodeValue);
+         }
+         return childItem;
+      });
+      
    },
    play_blocked:false,
    prevent_play_check:function(){
@@ -4216,8 +4232,8 @@ function vkAudioNode(node){
   
   if ((node || ge('content')).innerHTML.indexOf('play_new')==-1) return;
   var smartlink=(getSet(1) == 'y')?true:false;
-
   var download=(getSet(0) == 'y')?1:0;
+  var clean_trash=getSet(94) == 'y';
   if (!download) return;
   var SearchLink=true;
   var trim=function(text) { return (text || "").replace(/^\s+|\s+$/g, ""); }
@@ -4260,6 +4276,7 @@ function vkAudioNode(node){
          //if (url=='') continue;
          if (url.indexOf('/u00000/')!=-1) continue;
          var anode=(node?divs[i].parentNode.parentNode.parentNode:ge('audio'+id));
+         if (clean_trash) vk_audio.process_node(anode);
 			 var el=geByClass("duration",anode )[0];
 			 var spans=el.parentNode.getElementsByTagName('span');
 			 var span_title=null;
