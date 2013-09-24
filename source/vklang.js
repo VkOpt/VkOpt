@@ -1688,7 +1688,10 @@ vk_lang_en={//by Hzy
    'ImgCopySeacrh':'Search copy:',
    'PhotoShredder':'PhotoShredder',
    'mViUploaded':'Uploaded',
-   'NewPost':'New post'
+   'NewPost':'New post',
+   "seVideoHideConfirm": "Disable \"Are you sure you want to close this video?\" popup",
+   "seAlbumPhotosExInfo": "Load number of likes and comments in photo albums",
+   "seAudioUntrashTitle": "Clear audios title from unnecessary symbols"
 };
  
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
