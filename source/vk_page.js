@@ -2546,7 +2546,7 @@ function vkToTopBackLink(){
 }
 
 // FAVE
-vk_fave={
+vk_fave = {
    inj:function(){
       if (FAVE_ALLOW_EXTERNAL_LINKS)
          Inj.Before('Fave.newLink','var link','vk_fave.new_link_fix();');   

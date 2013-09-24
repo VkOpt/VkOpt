@@ -2117,7 +2117,7 @@ vk_videos = {
       if (getSet(2)=='y') Inj.End('videoview.showVideo','setTimeout(vkVidLinks,0);');//Inj.After('videoview.showVideo','innerHTML = info;','setTimeout(vkVidLinks,0);');
       if (getSet(71)=='y') 
          Inj.Before('Videoview.commentTo','if (!v', 'vk_phviewer.reply_to(comm, toId, event, rf,v,replyName); if(false)' );
-      if (getSet(92)=='y') Inj.Start('Videoview.hide','force=true;');
+      if (getSet(92)=='y') Inj.Start('Videoview.hide','if (!mvcur.minimized) force=true;');
       videoview.enabledResize=function(){return true;}
    },
    change_show_video_params:function(opts){
@@ -3739,6 +3739,9 @@ vk_audio={
    album_cache:{},
    inj_common:function(){
       Inj.Start('playAudioNew','if (vk_audio.prevent_play_check()) return;');
+   },
+   process_node:function(){
+      //vkRemoveTrash
    },
    play_blocked:false,
    prevent_play_check:function(){
