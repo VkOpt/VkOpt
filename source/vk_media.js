@@ -3744,16 +3744,16 @@ vk_audio={
       s=vkRemoveTrash(s);
       s=s.replace(/\[\s*\]|\(\s*\)|\{\s*\}/g,'');
       s=s.replace(/[\u1806\u2010\u2011\u2012\u2013\u2014\u2015\u2212\u2043\u02D7\u2796\-]+/g,'\u2013').replace(/\u2013\s*\u2013/g,'\u2013');
-      s=s.replace(/[\s\u1806\u2010\u2011\u2012\u2013\u2014\u2015\u2212\u2043\u02D7\u2796\-]+$/,'');// ^[\s\u1806\u2010\u2011\u2012\u2013\u2014\u2015\u2212\u2043\u02D7\u2796\-]+
+      s=s.replace(/[\u1806\u2010\u2011\u2012\u2013\u2014\u2015\u2212\u2043\u02D7\u2796\-]+$/,'');// ^[\s\u1806\u2010\u2011\u2012\u2013\u2014\u2015\u2212\u2043\u02D7\u2796\-]+
       return s;
    },
    process_node:function(node){
       FindAndProcessTextNodes(node,function(mainNode,childItem){
          var el = mainNode.childNodes[childItem];
          if (el.nodeValue && !el.nodeValue.match(/^[\u2013\s]+$/)){
-            console.log('>>',el.nodeValue);
+            //console.log('>>',el.nodeValue);
             el.nodeValue=vk_audio.remove_trash(el.nodeValue);
-            console.log('<<',el.nodeValue);
+            //console.log('<<',el.nodeValue);
          }
          return childItem;
       });
@@ -4236,7 +4236,7 @@ function vkAudioNode(node){
   var clean_trash=getSet(94) == 'y';
   if (!download) return;
   var SearchLink=true;
-  var trim=function(text) { return (text || "").replace(/^\s+|\s+$/g, ""); }
+  var trim=function(text) { return (text || "").replace(/^\s+|\s+$/g, " "); }
   //InitAudiosMenu();
   var icon_src='data:image/gif;base64,R0lGODdhEAARALMAAF99nf///+7u7pqxxv///8nW4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACwAAAAAEAARAAAEJpCUQaulRd5dJ/9gKI5hYJ7mh6LgGojsmJJ0PXq3JmaE4P9AICECADs=';
  
