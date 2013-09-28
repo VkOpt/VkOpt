@@ -1054,21 +1054,27 @@ function vkPVLinks(ph){
   
   var links=[];
   var sizes=["x_","y_","z_","w_","o_","p_","q_","r_","s_","m_"];
+  
+  var d_name=function(p,pfx){
+    if (!PHOTO_DOWNLOAD_NAMES) return '';
+    return ' onclick="return vkDownloadFile(this);" download="photo'+p.id+pfx+'.jpg" ';
+  };
+  
   if (ph['x_'] && ph['x_'][1]){
    for (var i=0; i<sizes.length; i++){
       var sz=ph[sizes[i]];
       var src=ph[sizes[i]+'src'];
       if (sz && sz[1] && src){
-         links.push('<a href="'+src+'" class="fl_l"  onclick="return vkDownloadFile(this);" download="photo'+ph.id+sizes[i].replace(/_/g,'')+'">'+sizes[i]+'['+sz[1]+'x'+sz[2]+']</a>')
+         links.push('<a href="'+src+'" class="fl_l" '+d_name(ph,sizes[i].replace(/_/g,''))+'>'+sizes[i]+'['+sz[1]+'x'+sz[2]+']</a>')
       }
    }
   }
   if (ph.y_src || links.length>0){
     html+='<div id="pv_hd_links"><a href="#" onclick="toggle(\'vk_ph_links_list\'); return false;" class="fl_l">'+IDL('Links')+': </a>'+  
         (!ph.y_src && links.length>0 ? links[0] :'')+
-        (ph.y_src?'<a href="'+ph.y_src+'" onclick="return vkDownloadFile(this);" download="photo'+ph.id+'y.jpg" class="fl_r">HD1</a>':'')+
-        (ph.z_src?'<a href="'+ph.z_src+'" onclick="return vkDownloadFile(this);" download="photo'+ph.id+'z.jpg" class="fl_r">HD2</a>':'')+
-        (ph.w_src?'<a href="'+ph.w_src+'" onclick="return vkDownloadFile(this);" download="photo'+ph.id+'w.jpg" class="fl_r">HD3</a>':'')+
+        (ph.y_src?'<a href="'+ph.y_src+'" '+d_name(ph,'y')+' class="fl_r">HD1</a>':'')+
+        (ph.z_src?'<a href="'+ph.z_src+'" '+d_name(ph,'z')+' class="fl_r">HD2</a>':'')+
+        (ph.w_src?'<a href="'+ph.w_src+'" '+d_name(ph,'w')+' class="fl_r">HD3</a>':'')+
         (links.length>0?'<div id="vk_ph_links_list" class="clear" style="display:none;">'+links.join('')+'</div>':'')+
     '</div><div class="clear"></div>';
   } 
@@ -1079,7 +1085,6 @@ function vkPVLinks(ph){
   if ((ph.tags || [])[0]>0){
       html+='<a href="#" onclick="vkPVShowTagsInfo(); return false;">'+IDL('TagsInfo')+'</a>';
   }
-  console.log('QWEQWE!!',ph);
   if (ph.x_src){
       var src=(ph.w_src || ph.z_src || ph.y_src || ph.x_src);
       /*
@@ -1325,9 +1330,11 @@ function vkGetLinksToPhotos(oid,aid){
       var len=(phot.length+"").length;
 		for (var i=0;i<phot.length;i++){
 		  var src=phot[i];
-        var num=('_000000000000'+i).substr(-len);
-        var name='?&/'+num+'_'+src.split('/').pop();
-        src+=name;
+        if (PHOTO_DOWNLOAD_NAMES){
+           var num=('_000000000000'+i).substr(-len);
+           var name='?&/'+num+'_'+src.split('/').pop();
+           src+=name;
+        }
         parr.push('<a href="'+src+'">'+src+'</a>');
         txt+=src+'\r\n';
       }

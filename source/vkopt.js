@@ -51,6 +51,8 @@ var MAIL_SHOWMSG_FIX=true;
 var SUPPORT_STEALTH_MOD=true;    // прикидываемся перед ТП, что у нас не стоит расширение для скачивания.
 var VIDEO_AUTOPLAY_DISABLE=false;
 var FULL_ENCODE_FILENAME=false;
+var PHOTO_DOWNLOAD_NAMES=false;
+
 var vkNewSettings=[88,89,90,91,92,93,94]; //"new" label on settings item
 var SetsOnLocalStore={
   'vkOVer':'c',
