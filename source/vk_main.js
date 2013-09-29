@@ -1173,11 +1173,15 @@ function vkImEvents(response){
         var update = response.updates[i],
             code = intval(update[0]),
             msg_id = intval(update[1]),// UID!!!!!! copypaste >_<
-            flags = intval(update[2]),
+            flags = intval(update[2]), // chat id
             peer = intval(update[3]);
-        // console.log(code,msg_id,peer,update);
+            // [62, 39226536, 15] - 62 chat
+        console.log('IM events', code,msg_id,peer,flags,update);
         if (code == 61 || code == 62) { // peer or chat peer is typing
-          vkImTypingEvent(msg_id);
+          if (code == 61)
+            vkImTypingEvent({uid:msg_id});
+          if (code == 62)
+            vkImTypingEvent({uid:msg_id,chat:flags});
           /*
           if (code == 62) { // 62 chat     cur.peer == 2e9 + flags
               IM.onTyping(2e9 + flags, msg_id); //cur.tabs[cur.peer].data.members[msg_id]);
@@ -1195,6 +1199,11 @@ function vkImEvents(response){
 
 _vk_im_typings={};
 function vkImTypingEvent(uid,need_close){
+   var chat=0;
+   if (uid.chat) 
+      chat=uid.chat
+   uid=uid.uid;
+   
    if (getSet(68)=='n') return;
    
    var NOTIFY_TIMEOUT= 15000; // 15sec
@@ -1222,18 +1231,33 @@ function vkImTypingEvent(uid,need_close){
    //if (cur.peer!=uid)
    setTimeout(function(){
       vkGetUserInfo(uid,function(info){
-         var tm=(new Date).format('isoTime');
-         var time='<div class="fl_r">'+tm+'</div>';
-         var text=IDL('Typing');
-         text+=
-         '<br><b>'+
-         '<a href="#" onclick="TopSearch.writeBox(%uid); return false;">'+IDL("Chat")+'</a><span class="divider">|</span>'+
-         '<a href="/im?sel=%uid" onclick="return nav.go(this, event);">'+IDL('Dialog')+'</a><span class="divider">|</span>'+
-         '<a href="/write%uid" onclick="return showWriteMessageBox(event, %uid);">'+IDL('txMessage')+'</a></b>';
-         text=text.replace(/%uid/g,uid);
-         text+=time;
-         //if (vk_DEBUG) text+='<br>'+document.title;
-         vkShowEvent({sound:'none', hide_in_current_tab:cur.peer==uid ,id:'vk_typing_'+uid,title:info.name, text:text,author_photo:info.photo_rec});
+         var show=function(chat_name){
+            var tm=(new Date).format('isoTime');
+            var time='<div class="fl_r">'+tm+'</div>';
+            var text=IDL('Typing')+(chat?' ('+IDL("Chat")+' «'+chat_name+'»)':'');
+            text+=
+            '<br><b>'+
+            (chat?
+            '<a href="#" onclick="TopSearch.writeBox('+(2e9+chat)+'); return false;">'+IDL("Chat")+'</a><span class="divider">|</span>'+
+            '<a href="/im?sel=c'+chat+'" onclick="return nav.go(this, event);">'+IDL('Dialog')+'</a>'       
+            :
+            '<a href="#" onclick="TopSearch.writeBox(%uid); return false;">'+IDL("Chat")+'</a><span class="divider">|</span>'+
+            '<a href="/im?sel=%uid" onclick="return nav.go(this, event);">'+IDL('Dialog')+'</a><span class="divider">|</span>'+
+            '<a href="/write%uid" onclick="return showWriteMessageBox(event, %uid);">'+IDL('txMessage')+'</a>')+
+            '</b>';
+            text=text.replace(/%uid/g,uid);
+            text+=time;
+            //if (vk_DEBUG) text+='<br>'+document.title;            
+            vkShowEvent({sound:'none', hide_in_current_tab:cur.peer==uid ,id:'vk_typing_'+uid,title:info.name, text:text,author_photo:info.photo_rec});
+         }
+         
+         if (!chat) {
+            show();
+         } else {
+            dApi.call('messages.getChat',{chat_id:chat},function(r){
+               show(r.response.title);
+            });
+         }
       });
    },1);
 }
@@ -1338,10 +1362,16 @@ function vkFcEvents(response){
          //console.log('fc:',evType,peer,ev);
       if (evType=='typing' && peer) {
          var uid = peer<2e9?peer:ev[3];
-         vkImTypingEvent(uid);
+         var chat = peer>2e9?peer-2e9:0;
+         if (chat)
+            vkImTypingEvent({uid:uid,chat:chat});
+         else 
+            vkImTypingEvent(uid);
+         console.log('fc events',ev);
          /* console.log(ev);
             Array ["23", "typing", "13391307", "1", "10116"] // dialog
             Array ["23", "typing", "2000000003", "13391307", "1", "10116"] // Chat!
+            
          */
       }
       if (evType=='new' && peer) {
