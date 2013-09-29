@@ -1234,7 +1234,7 @@ function vkImTypingEvent(uid,need_close){
          var show=function(chat_name){
             var tm=(new Date).format('isoTime');
             var time='<div class="fl_r">'+tm+'</div>';
-            var text=IDL('Typing')+(chat?' ('+IDL("Chat")+' «'+chat_name+'»)':'');
+            var text=IDL('Typing')+(chat?' ('+IDL("Chat")+' &laquo;'+chat_name+'&raquo;)':'');
             text+=
             '<br><b>'+
             (chat?
