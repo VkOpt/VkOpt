@@ -1200,9 +1200,11 @@ function vkImEvents(response){
 _vk_im_typings={};
 function vkImTypingEvent(uid,need_close){
    var chat=0;
-   if (uid.chat) 
-      chat=uid.chat
-   uid=uid.uid;
+   if (uid.chat)
+      chat=uid.chat;
+   if (uid.uid)
+      uid=uid.uid;
+   
    
    if (getSet(68)=='n') return;
    
@@ -1245,7 +1247,7 @@ function vkImTypingEvent(uid,need_close){
             '<a href="/im?sel=%uid" onclick="return nav.go(this, event);">'+IDL('Dialog')+'</a><span class="divider">|</span>'+
             '<a href="/write%uid" onclick="return showWriteMessageBox(event, %uid);">'+IDL('txMessage')+'</a>')+
             '</b>';
-            text=text.replace(/%uid/g,uid);
+            text=text.replace(/%uid/g,info.uid);
             text+=time;
             //if (vk_DEBUG) text+='<br>'+document.title;            
             vkShowEvent({sound:'none', hide_in_current_tab:cur.peer==uid ,id:'vk_typing_'+uid,title:info.name, text:text,author_photo:info.photo_rec});
