@@ -3534,9 +3534,9 @@ function vkVimeoVideoLinks(link){
 function vkVidLinks(data){	
 	if (ge('mv_actions')){
       var vid=((window.mvcur || {}).videoRaw || '').split('_');
-      if (vid[0])
+      if (vid[0] && ge('mv_actions').innerHTML.indexOf('vkVidAddToGroup')==-1)
          ge('mv_actions').innerHTML+='<a href="#" onclick="return vkVidAddToGroup('+vid[0]+','+vid[1]+');">'+IDL('AddToGroup',1)+'</a>';
-      console.log('Cur video',(window.mvcur || {}).videoRaw); 
+      //console.log('Cur video',(window.mvcur || {}).videoRaw); 
       var vlink=null;
       if (ge('video_player') && ge('video_player').tagName.toUpperCase()=='IFRAME')
          vlink=ge('video_player').getAttribute('src');
