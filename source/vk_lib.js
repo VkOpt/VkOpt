@@ -2031,7 +2031,7 @@ vkApis={
 	},
    videos: function(oid,aid,quality,callback,progress){// quality: 0 - 240p; 1 - 360p;  2 - 480p;  3 - 720p;
       aid = parseInt(aid) || 0;
-      quality = quality || 3;
+      quality = quality!=null ? quality : 3;
       var smartlink=true;
       //*
       var load=function(cback){
