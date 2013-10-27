@@ -3033,6 +3033,7 @@ vk_feed={
    on_page:function(){
       //vkSortFeedPhotos();
       vk_feed.filter_init();
+      vk_feed.new_list_btn();
    },
    process_node:function(node){
       if (!vk_feed.filter_enabled) return;
@@ -3237,6 +3238,105 @@ vk_feed={
                         
       });
 
+   }, 
+   new_list_btn:function(){
+      var r=ge('filter_t_newlist');
+      if (!r) return;
+      var el=se('<div class="feed_filter_tabs_row clear_fix feed_newlist_filter_row" id="filter_t_vknewlist" onmouseover="addClass(this, \'feed_filter_tabs_row_over\');" onmouseout="removeClass(this, \'feed_filter_tabs_row_over\');" onclick="vk_feed.new_list();">\
+        <div class="feed_filter_tabs_icon fl_l feed_icon_newlist"></div>\
+        <div class="feed_filter_tabs_title fl_l noselect" onselectstart="return false;">'+IDL('NewList',1)+'</div>\
+        <div class="feed_filter_tabs_check fl_l"></div>\
+      </div>');
+      r.parentNode.appendChild(el);
+      //vk_feed.new_list();
+   },
+   new_list:function(){
+      var box = new MessageBox({title: IDL('NewList')});
+      
+      var users_list=[];
+      
+      var save = function(white,title) {
+            var list_id = -1; // create new
+            ajax.post('al_feed.php', {
+               act: 'a_save_list',
+               hash: cur.tabs_hash,
+               White: white.join(','),
+               title: title,
+               list_id: list_id,
+               no_reposts: 1
+            }, {
+               onDone: function(new_list_id) {
+                  if (list_id > 0) {
+                     Feed.switchList(list_id);
+                  } else {
+                     nav.go({
+                        '0': 'feed',
+                        section: 'list',
+                        list: new_list_id
+                     }, null, {
+                        nocur: true
+                     });
+                  }
+                  box.hide();
+               },
+               showProgress: box.showProgress,
+               hiderogress: box.hideProgress
+            });
+
+      }
+      
+      var tpl='<a href="/id%UID" class="olist_item_wrap" id="olist_item_wrap%UID">\
+        <div class="olist_item clear_fix">\
+          <!--<span class="olist_checkbox fl_r"></span>-->\
+          <span class="olist_item_photo fl_l">\
+            <img class="olist_item_photo" src="%PHOTO" width="40" height="40">\
+          </span>\
+          <span class="olist_item_name fl_l">%NAME</span>\
+        </div>\
+      </a>';
+      
+      var search_user=function(){
+         var v=val('vk_feed_list_user');
+         var sn=v.split('#')[0].split('?')[0].split('/').pop();
+         if (!sn) return;
+         dApi.call('users.get',{user_ids:sn,fields:'photo_50'},function(r){
+            if (!r.response || !r.response[0]) return;
+            var u=r.response[0];
+            if (users_list.indexOf(u.uid)!=-1) return;
+            users_list.push(u.uid);
+            var el=se(tpl.replace(/%UID/g,u.uid)
+               .replace(/%PHOTO/g,u.photo_50)
+               .replace(/%NAME/g,u.first_name+' '+u.last_name));
+            val('vk_feed_list_user','');   
+            ge('vk_feed_users_list').appendChild(el);
+         })
+      }
+
+      box.removeButtons();   
+      box.addButton(getLang('box_no'),box.hide, 'no')
+      box.addButton(getLang('box_save'),function(){
+         save(users_list,val('vk_feed_list_title'));
+      },'yes');
+      box.content('<div>\
+      <h2>'+IDL('ListTitle')+'</h2>\
+      <input type="text" id="vk_feed_list_title" value="'+Math.round((new Date()).getTime()/1000).toString(36)+'" class="text" style="width:370px; margin-bottom:15px;">\
+      <h2>'+IDL('LinkToUser')+'</h2>\
+      <div class="fl_r"><div class="button_blue" id="vk_feed_search_btn"><button><span class="vk_magglass_icon"></span></button></div></div>\
+      <div><input type="text" id="vk_feed_list_user" class="text olist_filter" style="margin-top:2px; width: 305px;"></div>\
+      <div id="vk_feed_users_list"></div>\
+      </div>');
+      stManager.add(['privacy.css','ui_controls.css','boxes.css']);
+      box.show();
+      
+      var inp=ge('vk_feed_list_user');
+      inp.onkeydown=function(ev){
+        ev = ev || window.event;
+        if (ev.keyCode == 10 || ev.keyCode == 13) {
+          search_user();
+          cancelEvent(ev);
+        }
+      }
+      ge('vk_feed_search_btn').onclick=search_user;
    }
 }
 
