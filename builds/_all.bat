@@ -13,6 +13,8 @@ _zip_packer.py opera.extension vkopt_%answer%_opera.oex
 @del vkopt_%answer%_chrome.zip
 _zip_packer.py chrome vkopt_%answer%_chrome.zip
 
+del vkopt_%answer%_maxthon.mxaddon
+makpak.exe  .\maxthon\  vkopt_%answer%_maxthon.mxaddon
 
 @del vkopt_%answer%_opera.zip
 cd ..

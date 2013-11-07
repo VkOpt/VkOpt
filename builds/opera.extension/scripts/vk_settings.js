@@ -590,16 +590,23 @@ function vkInitSettings(){
     Media:[
       {id:0,  text:IDL("seLinkAu")},
       {id:1,  text:IDL("seAudioDownloadName")},
+      
       {id:2,  text:IDL("seLinkVi")},
       {id:66, text:IDL("seVidDownloadLinks")},
+      {id:92,  text:IDL("seVideoHideConfirm")},
       {id:76, text:IDL("seVideoFullTitles")},
-      {id:3, text:IDL("seCompactAudio")},
+      
+      {id:3,  text:IDL("seCompactAudio")},
+      {id:90, text:IDL("seAudioFullTitles")},
       {id:73, text:IDL("seLoadAudioAlbumInfo")},
       {id:75, text:IDL("seAPlayerCtrls")},
-      {id:85,  text:IDL("seAutoScrollToTrack")},
-      {id:43, text:IDL("seAudioSize")},      
-      {id:4, text:IDL("seMoreDarkViewer")},      
-      {id:7,  text:IDL("seScroolPhoto")}
+      {id:85, text:IDL("seAutoScrollToTrack")},
+      {id:43, text:IDL("seAudioSize")},
+      {id:94, text:IDL("seAudioUntrashTitle")},
+      
+      {id:4,  text:IDL("seMoreDarkViewer")},      
+      {id:7,  text:IDL("seScroolPhoto")},
+      {id:93, text:IDL("seAlbumPhotosExInfo"),info:'infoUseNetTrafic'}
     ],
     Users:[
       {id:10, text:IDL("seExUserMenu")+'<br><a href="#" onclick="toggle(\'vkExUMenuCFG\'); return false;">[<b> '+IDL("Settings")+' </b>]</a><span id="vkExUMenuCFG" style="display:none">'+GetUserMenuSett()+'</span>'},
@@ -622,7 +629,9 @@ function vkInitSettings(){
       {id:51, text:IDL("seFavToTopIm")},
       {id:52, text:IDL("seFaveOnline"),info:'infoUseNetTrafic'},
       {id:72, text:IDL("seFriendCatsOnProfile")},
-      {id:87, text:IDL("seSearchExInfo"),info:'infoUseNetTrafic'}
+      {id:87, text:IDL("seSearchExInfo"),info:'infoUseNetTrafic'},
+      {id:91, text:IDL("seFaveFr"),info:'infoUseNetTrafic'}
+      
       //{id:65, text:IDL("seShowLastActivity"),info:'infoUseNetTrafic'}
     ],
 
@@ -697,7 +706,7 @@ function vkInitSettings(){
    ]
   };
 
-	//LAST 89
+	//LAST 94
 	/*
       vkoptSets['advanced']=[
          'vk_upd_menu_timeout','vkMenuHideTimeout','CHECK_FAV_ONLINE_DELAY',
@@ -977,7 +986,7 @@ function vkSaveSettingsOnServer(check){
     VK_CURRENT_CSSJS_URL=vkGetVal('VK_CURRENT_CSSJS_URL') || "";  
    */  
    
-   //dApi.call('execute',{code:'return [API.storage.get({key:"remixbits"}),API.storage.get({key:"Qwe"}),];'},uApi.show)
+   //dApi.call('execute',{code:'return [API.storage.get({key:"remixbits"}),API.storage.get({key:"Qwe"}),];'},console.log)
    var csscode=encodeURIComponent(vk_LSGetVal('VK_CURRENT_CSS_CODE') || "");
    csscode=csscode.length<4096?csscode:'';
    

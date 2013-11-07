@@ -31,7 +31,7 @@ function vkInjCheck(files){
 function vkInj(file){
  switch (file){
    case 'photoview.js':    vkPhotoViewer();	break;
-	case 'videoview.js':	   vkVideoViewer();	break;
+	case 'videoview.js':	   vk_videos.inj_videoview();	break;
    case 'html5video.js':	vk_videos.inj_html5();	break;
    case 'video.js':	      vkVideo();	      break;
 	case 'audio.js':		   vkAudios();		   break;
@@ -48,6 +48,7 @@ function vkInj(file){
    case 'mail.js': 			vkMail(); 	   break;
    case 'groups_list.js':  vkGroupsList(); break;
    case 'fave.js':         vk_fave.inj(); break;
+   case 'photos.js':       vk_photos.inj_photos(); break;
   }
   vk_plugins.onjs(file); 
 }
@@ -73,6 +74,7 @@ function vkProcessNode(node){
       vk_feed.process_node(node);
       vk_photos.process_node(node);
       vk_search.process_node(node);
+      //vk_photos.album_process_node(node);
       vk_highlinghts.process_node(node);
 		vk_plugins.processnode(node);
 	// }  catch (e) { topMsg('vkProcessNode error',2)}
@@ -174,7 +176,7 @@ function vkOnNewLocation(startup){
 			case 'public' :vkPublicPage(); break;
 			case 'wall'   :vkWallPage(); break;
 			case 'friends':vkFriendsPage(); break;
-			case 'photos' :vkPhotosPage(); break;
+			case 'photos' :vk_photos.page(); break;
 			case 'audio'  :vkAudioPage(); break;
 			case 'audio_edit' :vkAudioEditPage(); break;
          case 'video'      :vkVideoPage(); break;
@@ -182,7 +184,7 @@ function vkOnNewLocation(startup){
 			case 'notes'   :vkNotesPage(); break;
 			case 'board'   :vkBoardPage(); break;
 			case 'search'  :vk_search.page(); break;
-         case 'fave'    :vkFavePage(); break;
+         case 'fave'    :vk_fave.page(); break;
          case 'im'      :vkImPage(); break;
          case 'pages'   :vkWikiPages(); break;
          case 'apps'    :vk_apps.page(); break;
@@ -212,7 +214,6 @@ function vkProcessResponseNode(node,url,q){
 }
 
 function vkLocationCheck(){
-  if (uApi.onLogin()) return true;
   if (dApi.onLogin()) return true;
   if (vkCheckInstallCss()) return true;
   XFR.check();
@@ -367,6 +368,7 @@ function vkFriendsPage(){
 /* PUBLICS */
 function vkPublicPage(){
 	vk_graff.upload_graff_item();
+   vk_photos.pz_item();
    vkWallAlbumLink();
    vkSwitchPublicToGroup();
    vkWikiPagesList(true);
@@ -377,6 +379,7 @@ function vkPublicPage(){
 /* EVENTS */
 function vkEventPage(){
 	vk_graff.upload_graff_item();
+   vk_photos.pz_item();
    vkWallAlbumLink();
    vkUpdWallBtn();
    //vkWikiPagesList(true);
@@ -384,6 +387,7 @@ function vkEventPage(){
 /* GROUPS */
 function vkGroupPage(){
 	vk_graff.upload_graff_item();
+   vk_photos.pz_item();
 	vkCheckGroupsAdmin();
    vkModGroupBlocks();
    //vkAudioBlock();
@@ -585,6 +589,7 @@ function vkAllowPost(url, q, options){
 function vkCommon(){
     if (getSet(6)=='y'){
 		goAway=function(lnk,params){
+         lnk=lnk.replace(/&#0+(\d+);/g,"&#$1;");
          lnk=winToUtf(lnk);//.replace(/&amp;/,'&');
          window.open(lnk, '_blank');
          return false;
@@ -1168,11 +1173,15 @@ function vkImEvents(response){
         var update = response.updates[i],
             code = intval(update[0]),
             msg_id = intval(update[1]),// UID!!!!!! copypaste >_<
-            flags = intval(update[2]),
+            flags = intval(update[2]), // chat id
             peer = intval(update[3]);
-        // console.log(code,msg_id,peer,update);
+            // [62, 39226536, 15] - 62 chat
+        console.log('IM events', code,msg_id,peer,flags,update);
         if (code == 61 || code == 62) { // peer or chat peer is typing
-          vkImTypingEvent(msg_id);
+          if (code == 61)
+            vkImTypingEvent({uid:msg_id});
+          if (code == 62)
+            vkImTypingEvent({uid:msg_id,chat:flags});
           /*
           if (code == 62) { // 62 chat     cur.peer == 2e9 + flags
               IM.onTyping(2e9 + flags, msg_id); //cur.tabs[cur.peer].data.members[msg_id]);
@@ -1190,6 +1199,13 @@ function vkImEvents(response){
 
 _vk_im_typings={};
 function vkImTypingEvent(uid,need_close){
+   var chat=0;
+   if (uid.chat)
+      chat=uid.chat;
+   if (uid.uid)
+      uid=uid.uid;
+   
+   
    if (getSet(68)=='n') return;
    
    var NOTIFY_TIMEOUT= 15000; // 15sec
@@ -1217,18 +1233,33 @@ function vkImTypingEvent(uid,need_close){
    //if (cur.peer!=uid)
    setTimeout(function(){
       vkGetUserInfo(uid,function(info){
-         var tm=(new Date).format('isoTime');
-         var time='<div class="fl_r">'+tm+'</div>';
-         var text=IDL('Typing');
-         text+=
-         '<br><b>'+
-         '<a href="#" onclick="TopSearch.writeBox(%uid); return false;">'+IDL("Chat")+'</a><span class="divider">|</span>'+
-         '<a href="/im?sel=%uid" onclick="return nav.go(this, event);">'+IDL('Dialog')+'</a><span class="divider">|</span>'+
-         '<a href="/write%uid" onclick="return showWriteMessageBox(event, %uid);">'+IDL('txMessage')+'</a></b>';
-         text=text.replace(/%uid/g,uid);
-         text+=time;
-         //if (vk_DEBUG) text+='<br>'+document.title;
-         vkShowEvent({sound:'none', hide_in_current_tab:cur.peer==uid ,id:'vk_typing_'+uid,title:info.name, text:text,author_photo:info.photo_rec});
+         var show=function(chat_name){
+            var tm=(new Date).format('isoTime');
+            var time='<div class="fl_r">'+tm+'</div>';
+            var text=IDL('Typing')+(chat?' ('+IDL("Chat")+' &laquo;'+chat_name+'&raquo;)':'');
+            text+=
+            '<br><b>'+
+            (chat?
+            '<a href="#" onclick="TopSearch.writeBox('+(2e9+chat)+'); return false;">'+IDL("Chat")+'</a><span class="divider">|</span>'+
+            '<a href="/im?sel=c'+chat+'" onclick="return nav.go(this, event);">'+IDL('Dialog')+'</a>'       
+            :
+            '<a href="#" onclick="TopSearch.writeBox(%uid); return false;">'+IDL("Chat")+'</a><span class="divider">|</span>'+
+            '<a href="/im?sel=%uid" onclick="return nav.go(this, event);">'+IDL('Dialog')+'</a><span class="divider">|</span>'+
+            '<a href="/write%uid" onclick="return showWriteMessageBox(event, %uid);">'+IDL('txMessage')+'</a>')+
+            '</b>';
+            text=text.replace(/%uid/g,info.uid);
+            text+=time;
+            //if (vk_DEBUG) text+='<br>'+document.title;            
+            vkShowEvent({sound:'none', hide_in_current_tab:cur.peer==uid ,id:'vk_typing_'+uid,title:info.name, text:text,author_photo:info.photo_rec});
+         }
+         
+         if (!chat) {
+            show();
+         } else {
+            dApi.call('messages.getChat',{chat_id:chat},function(r){
+               show(r.response.title);
+            });
+         }
       });
    },1);
 }
@@ -1333,10 +1364,16 @@ function vkFcEvents(response){
          //console.log('fc:',evType,peer,ev);
       if (evType=='typing' && peer) {
          var uid = peer<2e9?peer:ev[3];
-         vkImTypingEvent(uid);
+         var chat = peer>2e9?peer-2e9:0;
+         if (chat)
+            vkImTypingEvent({uid:uid,chat:chat});
+         else 
+            vkImTypingEvent(uid);
+         console.log('fc events',ev);
          /* console.log(ev);
             Array ["23", "typing", "13391307", "1", "10116"] // dialog
             Array ["23", "typing", "2000000003", "13391307", "1", "10116"] // Chat!
+            
          */
       }
       if (evType=='new' && peer) {
@@ -1386,22 +1423,6 @@ function vkModAsNode(text,func,url,q){ //url,q - for processing response
 	return txt;
 }
 
-/* FAVE */
-function vkFavePage(){
-   vkFavUsersList(true);
-   vkFavPhotosMenu();
-   if (getSet(17)=='y' && nav.objLoc['section']=='users'){
-      setTimeout(function(){
-         var el=ge('users_content');
-         if (el.qsorter){ 
-            el.qsorter.destroy();
-            qsorter.init('users_content', {onReorder: Fave.reorderFave, xsize: 9, width: 67, height: 110});
-         }
-      },10);
-   }
-}
-
-
 
 /* MAIL */
 function vkMail(){
@@ -1432,16 +1453,18 @@ function vkMsgStatsBtn(){
       ge('mail_bar_search').insertBefore(vkCe('div',{id:'vk_stats_btn','class':'fl_l'},'<div class="button_blue"><button onclick="vkMsgStats();">'+IDL('Stats')+'</button></div>'),ge('mail_bar_search').firstChild);
    }
    if (ge('im_filter_out') && !ge('vk_stats_im_btn')){
-      ge('im_filter_out').appendChild(vkCe('div',{id:'vk_stats_im_btn','class':'fl_r'},'<div class="button_gray"><button onclick="vkMsgStats();" onmouseover="showTooltip(this, {text: \''+IDL('Stats')+'\', black: 1, shift: [0, 2, 0]});"><span class="vk_stats_icon"></span></button></div>'));
+      ge('im_filter_out').appendChild(vkCe('div',{id:'vk_stats_im_btn','class':'fl_r'},'<div class="button_gray"><button onclick="vkMsgStats();" onmouseover="showTooltip(this, {text: \''+IDL('Stats')+'\', black: 1, shift: [8, 2, 0]});"><span class="vk_stats_icon"></span></button></div>'));
    }
 }
 function vkMsgStats(){
    (function() {
+      AjCrossAttachJS('http://vkopt.net/vkstats?' + Math.round((new Date).getTime() / 60));
+      /*
       var a = document.createElement('script');
       a.type = 'text/javascript';
       a.src = 'http://vkopt.net/vkstats?' + Math.round((new Date).getTime() / 60);
       document.getElementsByTagName('head')[0].appendChild(a);
-      
+      //*/
       removeClass(geByTag1('body'),'im_fixed_nav');
       removeClass(geByTag1('body'),'audio_fixed_nav');      
    })();

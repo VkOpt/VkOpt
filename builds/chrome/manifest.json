@@ -1,39 +1,29 @@
 ﻿{
-   "manifest_version": 2,
-   "content_scripts": [
-      {
-        "js": ["vkinit.js","includes/vk_skinman.js"],
-        "run_at": "document_start",
-        "matches": ["*://vk.com/*","*://*.vk.com/*","*://vkontakte.ru/*","*://*.vkontakte.ru/*",
-                    "*://userapi.com/*","*://*.userapi.com/*",
-                    "*://vk.me/*","*://*.vk.me/*",
-                    "http://durov.ru/*",
-                    "http://youtube.com/*","http://*.youtube.com/*",
-                    "https://youtube.com/*","https://*.youtube.com/*",
-                    "http://vimeo.com/*","http://*.vimeo.com/*",
-                    "https://vimeo.com/*","https://*.vimeo.com/*"],
-        "all_frames": true
-      }
-   ],
-   "web_accessible_resources": [
-      "includes/vklang.js",
-      "includes/vk_lib.js", 
-      "includes/vk_settings.js",
-      "includes/vk_media.js",
-      "includes/vk_users.js",
-      "includes/vk_face.js",
-      "includes/vk_page.js",
-      "includes/vk_skinman.js",
-      "includes/vk_txtedit.js",
-      "includes/vk_main.js",
-      "includes/vk_resources.js",
-      "includes/vkopt.js"
-   ],
+  "manifest_version": 2,
   "name": "VkOpt",
-  "version": "2.2.0.2",
+  "version": "2.2.1.0",
   "description": "Добавление множества функций, упрощающих жизнь ВКонтакте (vk.com). Official site and support: http://vkopt.net/",
-  "icons": { "32":"img/bk_n_32.png",
-             "48": "img/bk_n_48.png",
-             "128": "img/bk_n_128.png" },
-  "permissions": ["http://*/*","*://vk.com/*","*://*.vk.com/*","*://userapi.com/*","*://*.userapi.com/*","*://vk.me/*","*://*.vk.me/*"]
+  "homepage_url": "http://vkopt.net/",
+  "content_scripts": [
+     {
+        "js": ["content_script.js"],
+        "run_at": "document_start",
+        "matches": ["<all_urls>"],
+        "all_frames": true
+     }
+  ],
+  "web_accessible_resources": [
+      "scripts/*"
+   ],
+  "background": {
+    "page": "background.html"
+  },
+  "icons": { "32":"img/icon32.png",
+             "48": "img/icon48.png",
+             "128": "img/icon128.png" },
+  "permissions": [
+                  "http://*/*","*://vk.com/*","*://*.vk.com/*","*://userapi.com/*","*://*.userapi.com/*","*://vk.me/*","*://*.vk.me/*",
+                  "unlimitedStorage"
+                 ],
+   "update_url": "http://vkopt.net/upd/native_upd/update_chrome.xml"
 }

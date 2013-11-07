@@ -1,9 +1,9 @@
-content   VkOptExtension                 chrome/content/
-content   VkOptExtension                 chrome/content/ contentaccessible=yes
+content   vkopt                 chrome/content/
+content   vkopt                 chrome/content/ contentaccessible=yes
 resource  vkopt                          scripts/
-skin      VkOptExtension   classic/1.0   chrome/skin/
-locale    VkOptExtension   en-US         chrome/locale/en-US/
+skin      vkopt   classic/1.0   chrome/skin/
+locale    vkopt   en-US         chrome/locale/en-US/
 
 
-overlay   chrome://browser/content/browser.xul     chrome://VkOptExtension/content/ff-overlay.xul
-overlay   chrome://navigator/content/navigator.xul chrome://VkOptExtension/content/ff-overlay.xul
+overlay   chrome://browser/content/browser.xul     chrome://vkopt/content/ff-overlay.xul
+overlay   chrome://navigator/content/navigator.xul chrome://vkopt/content/ff-overlay.xul

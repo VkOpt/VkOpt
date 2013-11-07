@@ -127,11 +127,13 @@ function vkProfilePage(){
 	if (getSet(26) == 'y') vkProcessProfileBday(); //VkCalcAge();
 	vkPrepareProfileInfo();
 	vk_graff.upload_graff_item();
+   vk_photos.pz_item();
    //vkWallAddPreventHideCB();
 	vkUpdWallBtn(); //Update wall button
    vkWallNotesLink();
    if (cur.oid!=vk.id) vkWallTatLink();
-   if (remixmid()==cur.oid && getSet(50)=='y' && !ge('profile_fave')) vkFaveProfileBlock(); 
+   if (getSet(91)=='y' && cur.oid!=vk.id) vk_profile.fav_fr_block(); 
+   if (getSet(50)=='y' && remixmid()==cur.oid && !ge('profile_fave')) vkFaveProfileBlock(); 
    if (getSet(60) == 'y') vkProfileMoveAudioBlock(); 
    if (getSet(61) == 'y') vkProfileGroupBlock();   
 	if (MOD_PROFILE_BLOCKS) vkFrProfile();
@@ -142,6 +144,88 @@ function vkProfilePage(){
    vkAddCheckBox_OnlyForFriends();
 	vk_highlinghts.groups_block();
    vk_highlinghts.profile_groups();
+}
+
+vk_profile={  
+   fav_fr_block:function(is_list){
+      var is_right_block = false;//(getSet(XX)=='y');
+      if (!ge('profile_favefr')){
+         var html='\
+           <a href="/fave" onclick="return nav.go(this, event)" class="module_header"><div class="header_top clear_fix">'+IDL('FaveFr')+'</div></a>\
+           <div class="module_header">\
+             <div class="p_header_bottom">\
+               <a href="javascript:vk_profile.fav_fr_block(true)" id="vk_favefr_all_link">'+ vkopt_brackets(IDL('FaveFr') +' ( -- )')+'</a>\
+             </div>\
+           </div>\
+           <div class="module_body clear_fix" id="vk_favefr_users_content"></div>\
+         ';
+         var div=vkCe('div',{"class":"module clear people_module",id:"profile_favefr"});
+         div.innerHTML=html;
+         var p=ge(is_right_block?'profile_wall':'profile_friends');
+         p.parentNode.insertBefore(div,p);  
+      }
+      ge('vk_favefr_users_content').innerHTML=vkBigLdrImg;
+      if (is_list){
+         ge("vk_favefr_all_link").href="javascript:vk_profile.fav_fr_block()";
+      } else {
+         ge("vk_favefr_all_link").href="javascript:vk_profile.fav_fr_block(true)";
+      }
+      
+      var uid=cur.oid;
+      function get_users(callback){
+         dApi.call('execute',{code:'var a=API.fave.getUsers({count:1000}); return {faves:a@.uid,friends:API.friends.get({uid:'+uid+'})};'},function(r){
+            var data=r.response;
+            var fav=data.faves;
+            var fr=data.friends;
+            var favfr=[];
+            for (var i=0; i<fav.length; i++){
+               if (fr.indexOf(fav[i])!=-1) favfr.push(fav[i]);
+            }
+            if (favfr.length){
+               dApi.call('users.get',{uids:favfr.join(','),fields:'photo'},function(r){
+                  callback(r.response || []);
+               })
+            } else {
+               callback([]);
+            }
+         });
+      };
+      
+      get_users(function(list){
+         var to=3;
+         var count=is_list?list.length:Math.min(list.length,FAVE_ONLINE_BLOCK_SHOW_COUNT);
+         var users='';
+         for (var i = 0; i < count; i++) {
+            if (!is_list){
+            var n1=list[i].first_name || '';
+            var n2=list[i].last_name || '';
+            users += ((i == 0 || i % to == 0) ? '<div class="people_row">' : '') + 
+                     '<div class="fl_l people_cell">\
+                       <a href="/id'+list[i].uid+'" onclick="return nav.go(this, event)">\
+                         <img width="50" height="50" src="'+list[i].photo+'">\
+                       </a>\
+                       <div class="name_field">\
+                         <a href="/id'+list[i].uid+'" onclick="return nav.go(this, event)">\
+                           '+n1+'<br><small>'+n2+'</small>\
+                         </a>\
+                       </div>\
+                     </div>'+
+                  ((i > 0 && (i + 1) % to == 0) ? '</div>' : '');
+            } else {
+               users +='<div align="left" style="margin-left: 10px; width:180px;">&#x25AA;&nbsp;\
+                  <a href="write'+list[i].uid+'" onclick="return showWriteMessageBox(event, '+list[i].uid+')" target="_blank">@</a>&nbsp;\
+                  <a href="id'+list[i].uid+'" '+(vkIsFavUser(list[i].uid)?'class="vk_faved_user"':'')+'>'+list[i].first_name+' '+list[i].last_name+'</a>\
+                  </div>';
+            }
+         }
+         if (ge('vk_favefr_users_content')){
+            ge("vk_favefr_all_link").innerHTML=vkopt_brackets(IDL('FaveFr') +' ('+list.length+')');
+            ge('vk_favefr_users_content').innerHTML=users;
+            vkProcessNodeLite(ge('vk_favefr_users_content'));
+         }
+         
+      });
+   }
 }
 
 function vkFrCatsOnProfile(){
@@ -266,7 +350,7 @@ vk_highlinghts={
       var nodes=p.getElementsByTagName('a');
       
       var hl=function(){
-         var groups=vkGetVal('vk_my_groups').split(',');
+         var groups=(vkGetVal('vk_my_groups')||'').split(',');
          for (var i=0;i<nodes.length;i++){
             var href=nodes[i].getAttribute('href');
             if (!href) continue;
@@ -295,7 +379,7 @@ vk_highlinghts={
       
       function process_node(nodes){
          if (cur.oid==remixmid()){
-            var mygr=vkGetVal('vk_my_groups').split(',');//[];
+            var mygr=(vkGetVal('vk_my_groups')||'').split(',');//[];
             for (var i=0;i<nodes.length;i++){
                var href=nodes[i].getAttribute('href');
                if (!href) continue;
@@ -352,6 +436,7 @@ function vkProfileEditMidName(){
 /*WALL*/
 function vkWallPage(){
 	vk_graff.upload_graff_item();
+   vk_photos.pz_item();
    //vkWallAddPreventHideCB();
 	vkAddCleanWallLink();
 	vkAddDelWallCommentsLink();
@@ -1109,7 +1194,8 @@ function vkCleanWall(oid){
 	*/
 	var html=IDL('ClearBegin')+'<br><b>\
 			<a href="#" onclick="vkRunCleanWall(0);  return false;">- '+IDL('FromFirstPage')+'</a><br>\
-			<a href="#" onclick="vkRunCleanWall(20); return false;">- '+IDL('FromSecondPage')+'</a>\
+			<a href="#" onclick="vkRunCleanWall(20); return false;">- '+IDL('FromSecondPage')+'</a><br>'+
+         (cur.pgPage?'<a href="#" onclick="vkRunCleanWall('+cur.pgPage*20+'); return false;">- '+IDL('FromPage')+' <b>'+(cur.pgPage+1) +'</b></a>':'')+'\
 		</b>\
 		';
 	var abox=vkAlertBox(IDL('ClearWall'),html);
@@ -1439,6 +1525,7 @@ var vk_shuts_mask = {
   'profile_wall'          : 0x800000,
   'profile_photos_module' : 0x1000000,
   'profile_gifts'         : 0x2000000,
+  'profile_favefr'        : 0x4000000
 }
 var vk_shuts_prof=0x400000;
 
@@ -1918,56 +2005,58 @@ vk_groups = {
          removeClass('vk_gr_req_all_link','as_list')
       }
       ajax.post('groupsedit.php', {act: 'get_list', id: Math.abs(cur.oid), tab: 'requests'}, {onDone: function(cnt, res) {
-         //console.log('gr_requests',cnt, res);
-         if (cnt<=0) {
-            hide('vk_group_requests');
-            return;
-         }
-         show('vk_group_requests');
-         var udata=res;
-         var to=3;
-         var count=is_list?udata.length:Math.min(udata.length,FAVE_ONLINE_BLOCK_SHOW_COUNT);
-         var users='';
-         for (var i = 0; i < count; i++) {
-            if (!is_list){
-            //udata[i][7]  - HASH
-            var n1=udata[i][2].split(' ')[0] || '';
-            var n2=udata[i][2].split(' ')[1] || '';
-            users += ((i == 0 || i % to == 0) ? '<div class="people_row">' : '') + 
-                     '<div class="fl_l people_cell" id="vk_gru'+udata[i][0]+'">\
-                       <a href="/id'+udata[i][0]+'" onclick="return nav.go(this, event)">\
-                         <img width="50" height="50" src="'+udata[i][3]+'">\
-                       </a>\
-                       <div class="name_field">\
-                         <a href="/id'+udata[i][0]+'" onclick="return nav.go(this, event)">\
-                           '+n1+'<!--<br><small>'+n2+'</small>-->\
-                         </a>\
-                         <span id="vk_gru_act'+udata[i][0]+'" class="vk_gru_actions opacity_anim"><br>\
-                           <a href="#" class="vk_ok_ico vk_act_btn" onclick="vk_groups.request_accept('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
-                           <span class="divide"></span>\
-                           <a href="#" class="vk_cancel_ico vk_act_btn" onclick="vk_groups.request_cancel('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
-                         </span>\
-                       </div>\
-                     </div>'+
-                  ((i > 0 && (i + 1) % to == 0) ? '</div>' : '');
-            } else {
-               users +='<div align="left" class="vk_gru_row">\
-                  <span class="fl_r vk_gru_actions opacity_anim" id="vk_gru_act'+udata[i][0]+'">\
-                     <a href="#" class="vk_ok_ico vk_act_btn" onclick="vk_groups.request_accept('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
-                     <span class="divide"></span>\
-                     <a href="#" class="vk_cancel_ico vk_act_btn" onclick="vk_groups.request_cancel('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
-                  </span>\
-                  <a href="id'+udata[i][0]+'" '+(vkIsFavUser(udata[i][0])?'class="vk_faved_user"':'')+'>'+udata[i][2]+'</a>\
-                  </div>';
+            //console.log('gr_requests',cnt, res);
+            if (cnt<=0) {
+               hide('vk_group_requests');
+               return;
             }
-         }
-         if (ge('vk_gr_req_users_content')){
-            ge("vk_gr_req_all_link").innerHTML=vkopt_brackets(getLang('global_X_people',cnt));
-            ge('vk_gr_req_users_content').innerHTML=users;
-            vkProcessNodeLite(ge('vk_gr_req_users_content'));
-         }   
-      
-      }});
+            show('vk_group_requests');
+            var udata=res;
+            var to=3;
+            var count=is_list?udata.length:Math.min(udata.length,FAVE_ONLINE_BLOCK_SHOW_COUNT);
+            var users='';
+            for (var i = 0; i < count; i++) {
+               if (!is_list){
+               //udata[i][7]  - HASH
+               var n1=udata[i][2].split(' ')[0] || '';
+               var n2=udata[i][2].split(' ')[1] || '';
+               users += ((i == 0 || i % to == 0) ? '<div class="people_row">' : '') + 
+                        '<div class="fl_l people_cell" id="vk_gru'+udata[i][0]+'">\
+                          <a href="/id'+udata[i][0]+'" onclick="return nav.go(this, event)">\
+                            <img width="50" height="50" src="'+udata[i][3]+'">\
+                          </a>\
+                          <div class="name_field">\
+                            <a href="/id'+udata[i][0]+'" onclick="return nav.go(this, event)">\
+                              '+n1+'<!--<br><small>'+n2+'</small>-->\
+                            </a>\
+                            <span id="vk_gru_act'+udata[i][0]+'" class="vk_gru_actions opacity_anim"><br>\
+                              <a href="#" class="vk_ok_ico vk_act_btn" onclick="vk_groups.request_accept('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
+                              <span class="divide"></span>\
+                              <a href="#" class="vk_cancel_ico vk_act_btn" onclick="vk_groups.request_cancel('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
+                            </span>\
+                          </div>\
+                        </div>'+
+                     ((i > 0 && (i + 1) % to == 0) ? '</div>' : '');
+               } else {
+                  users +='<div align="left" class="vk_gru_row">\
+                     <span class="fl_r vk_gru_actions opacity_anim" id="vk_gru_act'+udata[i][0]+'">\
+                        <a href="#" class="vk_ok_ico vk_act_btn" onclick="vk_groups.request_accept('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
+                        <span class="divide"></span>\
+                        <a href="#" class="vk_cancel_ico vk_act_btn" onclick="vk_groups.request_cancel('+gid+','+udata[i][0]+',\''+udata[i][7]+'\'); return false;"></a>\
+                     </span>\
+                     <a href="id'+udata[i][0]+'" '+(vkIsFavUser(udata[i][0])?'class="vk_faved_user"':'')+'>'+udata[i][2]+'</a>\
+                     </div>';
+               }
+            }
+            if (ge('vk_gr_req_users_content')){
+               ge("vk_gr_req_all_link").innerHTML=vkopt_brackets(getLang('global_X_people',cnt));
+               ge('vk_gr_req_users_content').innerHTML=users;
+               vkProcessNodeLite(ge('vk_gr_req_users_content'));
+            }   
+         
+         },
+         onFail:function(text){console.log('VkOpt: get "requests" list fail! ['+text+']');return true;}
+      });
    },
    request_accept:function(gid,mid,hash){
       var el=ge('vk_gru_act'+mid);
@@ -2319,6 +2408,21 @@ vk_groups = {
       };
 
       vkAlertBox(IDL('LeaveGroups'),IDL('LeaveAllGroupsConfirm'),run,true);
+   },
+   // UTILS
+   leave:function(gid){
+      vkAlertBox('', IDL('LeaveGroup'),function(){
+         dApi.call('groups.leave',{gid:Math.abs(gid)},function(r){
+            vkMsg(r.response?IDL('GroupLeft'):IDL('Fail'),700)
+         });
+      }, true)
+      return false;
+   },
+   enter:function(gid){
+      dApi.call('groups.join',{gid:Math.abs(gid)},function(r){
+         vkMsg(r.response?IDL('Done'):IDL('Fail'),700)
+      });
+      return false;
    }
 }
 
@@ -2442,16 +2546,340 @@ function vkToTopBackLink(){
 }
 
 // FAVE
-vk_fave={
+vk_fave = {
    inj:function(){
       if (FAVE_ALLOW_EXTERNAL_LINKS)
          Inj.Before('Fave.newLink','var link','vk_fave.new_link_fix();');   
+   },
+   page:function(){
+      vkFavUsersList(true);
+      vk_fave.photos_menu();
+      vk_fave.videos_menu();
+      vk_fave.posts_menu();
+      vk_fave.notes_menu();
+      if (getSet(17)=='y' && nav.objLoc['section']=='users'){
+         setTimeout(function(){
+            var el=ge('users_content');
+            if (el.qsorter){ 
+               el.qsorter.destroy();
+               qsorter.init('users_content', {onReorder: Fave.reorderFave, xsize: 9, width: 67, height: 110});
+            }
+         },10);
+      }   
    },
    new_link_fix:function(){
       var link = ge('fave_new_link').value;
       if (link.match(/^https?:\/\/[^\/]+\//) && !link.match(/https?:\/\/(vk\.com|vkontakte\.ru)/)){
          ge('fave_new_link').value='vk.com/away.php?to='+link;
       }
+   },
+   photos_menu:function(){
+      var e=ge('fave_likes_tabs');
+      var x=ge('vk_fav_phlinks_btn');
+      if (x) (nav.objLoc['section']=='likes_photo'?show:hide)(x);
+      if (!e || x) return;
+      var p=geByClass('summary_tab',e);
+      p=p[p.length-1];
+      if (!p || nav.objLoc['section']!='likes_photo') return;
+      
+      if (!ge('vk_fav_phlinks_btn')){			
+         var a=vkCe('div',{id:'vk_fav_phlinks_btn',"class":'summary_tab fl_r'},'\
+            <a href="#" onclick="return false;"  id="vk_favph_act_menu" class_="summary_tab2">'+IDL('Actions')+'</a>\
+         ');//<a href="#" onclick="return false;"  id="vk_favph_act_menu" class_="fl_r summary_right">'+IDL('Actions')+'</a>\
+         //geByClass('t0')[0].appendChild(a);
+         insertAfter(a,p)
+         
+         var p_options = [];
+         p_options.push({l:IDL('SaveAlbumAsHtml'), onClick:function(item) {
+            vkGetPageWithPhotos('liked'+vk.id,null);
+         }});
+         p_options.push({l:IDL('Links'), onClick:function(item) {
+               vkGetLinksToPhotos('liked'+vk.id,null);
+         }});
+         
+         p_options.push({l:IDL('DelLikes'), onClick:function(item) {
+               vk_fave.remove_likes_photo();
+         }});         
+         
+         
+         //p_options=p_options.concat(vk_plugins.album_actions(oid,aid));
+         stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
+            cur.vkAlbumMenu = new DropdownMenu(p_options, {//
+              target: ge('vk_favph_act_menu'),
+              containerClass: 'dd_menu_posts',
+              updateHeader:false,
+              offsetLeft:-15,
+              showHover:false
+            });
+         });			
+      }
+      
+      return;
+   },
+   videos_menu:function(){
+      var e=ge('fave_likes_tabs');
+      var x=ge('vk_fav_vidlinks_btn');
+      if (x) (nav.objLoc['section']=='likes_video'?show:hide)(x);
+      if (!e || x) return;
+      var p=geByClass('summary_tab',e);
+      p=p[p.length-1];
+      if (!p || nav.objLoc['section']!='likes_video') return;
+      
+      if (!ge('vk_fav_vidlinks_btn')){		
+         var a=vkCe('div',{id:'vk_fav_vidlinks_btn',"class":'summary_tab fl_r'},'\
+            <a href="#" onclick="return false;"  id="vk_favvid_act_menu" class_="summary_tab2">'+IDL('Actions')+'</a>\
+         ');//<a href="#" onclick="return false;"  id="vk_favvid_act_menu" class_="fl_r summary_right">'+IDL('Actions')+'</a>\
+         //geByClass('t0')[0].appendChild(a);
+         insertAfter(a,p)
+         
+         var p_options = [];
+         
+         p_options.push({l:IDL('DelLikes'), onClick:function(item) {
+               vk_fave.remove_likes_video();
+         }});         
+         
+         
+         //p_options=p_options.concat(vk_plugins.album_actions(oid,aid));
+         stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
+            cur.vkAlbumMenu = new DropdownMenu(p_options, {//
+              target: ge('vk_favvid_act_menu'),
+              containerClass: 'dd_menu_posts',
+              updateHeader:false,
+              offsetLeft:-15,
+              showHover:false
+            });
+         });			
+      }
+      
+      return;
+   },
+   posts_menu:function(){
+      var e=ge('fave_notes_tab_wrap');//fave_likes_tabs
+      var x=ge('vk_fav_postlinks_btn');
+      if (x) (nav.objLoc['section']=='likes_posts'?show:hide)(x);
+      if (!e || x) return;
+      //var p=geByClass('summary_tab',e);
+      //p=p[p.length-1];
+      if (/* !p ||*/ nav.objLoc['section']!='likes_posts') return;
+      
+      if (!ge('vk_fav_postlinks_btn')){		
+         var a=vkCe('div',{id:'vk_fav_postlinks_btn',"class":'summary_tab fl_r', "style":'padding: 11px 5px 4px;'},'\
+            <a href="#" onclick="return false;"  id="vk_favpost_act_menu" class_="summary_tab2">'+IDL('Actions')+'</a>\
+         ');//<a href="#" onclick="return false;"  id="vk_favpost_act_menu" class_="fl_r summary_right">'+IDL('Actions')+'</a>\
+         //geByClass('t0')[0].appendChild(a);
+         //e.parentNode.insertBefore(a,e);
+         insertAfter(a,e)
+         
+         
+         var p_options = [];
+         
+         p_options.push({l:IDL('DelLikes'), onClick:function(item) {
+               vk_fave.remove_likes_posts();
+         }});         
+         
+         
+         //p_options=p_options.concat(vk_plugins.album_actions(oid,aid));
+         stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
+            cur.vkAlbumMenu = new DropdownMenu(p_options, {//
+              target: ge('vk_favpost_act_menu'),
+              containerClass: 'dd_menu_posts',
+              updateHeader:false,
+              offsetLeft:-15,
+              showHover:false
+            });
+         });			
+      }
+      
+      return;
+   },
+   remove_likes_photo:function(){
+      var REQ_CNT=100;//100;
+      var DEL_REQ_DELAY=400;
+      var box=null;
+      var ids=[];
+      var del_offset=0;
+      var cur_offset=0;
+      var abort=false;	
+      var deldone=function(){
+            box.hide();
+            vkMsg(IDL("ClearDone"),3000);	
+      };
+      var del=function(callback){	
+         if (abort) return;
+         var del_count=ids.length;
+         ge('vk_del_info').innerHTML=vkProgressBar(del_offset,del_count,310,IDL('deleting')+' %');
+         var obj=ids[del_offset];
+         if (!obj){
+            ge('vk_del_info').innerHTML=vkProgressBar(1,1,310,' ');
+            del_offset=0;
+            callback();
+         } else
+         dApi.call('likes.delete', {type:'photo', owner_id:obj[0], item_id:obj[1]},function(r,t){
+            del_offset++;
+            setTimeout(function(){del(callback);},DEL_REQ_DELAY);
+         });
+      };
+      var info_count=0;
+      var scan=function(){
+         ids=[];
+         if (cur_offset==0){
+            ge('vk_del_info').innerHTML=vkProgressBar(1,1,310,' ');
+            ge('vk_scan_info').innerHTML=vkProgressBar(cur_offset,2,310,IDL('listreq')+' %');
+         }
+         dApi.call('fave.getPhotos',{offset:0/*cur_offset*/,count:REQ_CNT},function(r){
+            //var data=r.response;
+            //var count=data.shift();
+            if (abort) return;
+            var data=r.response;
+            if (data==0 || !data[1]){
+               deldone();
+               return;
+            }
+            if (info_count==0) info_count=data.shift();
+            else data.shift();
+            ge('vk_scan_info').innerHTML=vkProgressBar(cur_offset+REQ_CNT,info_count,310,IDL('listreq')+' %');
+            for (var i=0;i<data.length;i++) ids.push([data[i].owner_id,data[i].pid]);
+            cur_offset+=REQ_CNT;
+            //vklog(ids);
+            del(scan);            
+            
+         });
+      };
+      var run=function(){
+         box=new MessageBox({title: IDL('DelPhotosLikes'),closeButton:true,width:"350px"});
+         box.removeButtons();
+         box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no');
+         var html='<div id="vk_del_info" style="padding-bottom:10px;"></div><div id="vk_scan_info"></div>';
+         box.content(html).show();	
+         scan();
+      };
+      vkAlertBox(IDL('DelPhotosLikes'),IDL('DelPhotosLikesConfirm'),run,true);
+   },
+   remove_likes_video:function(){
+      var REQ_CNT=100;//100;
+      var DEL_REQ_DELAY=400;
+      var box=null;
+      var ids=[];
+      var del_offset=0;
+      var cur_offset=0;
+      var abort=false;	
+      var deldone=function(){
+            box.hide();
+            vkMsg(IDL("ClearDone"),3000);	
+      };
+      var del=function(callback){	
+         if (abort) return;
+         var del_count=ids.length;
+         ge('vk_del_info').innerHTML=vkProgressBar(del_offset,del_count,310,IDL('deleting')+' %');
+         var obj=ids[del_offset];
+         if (!obj){
+            ge('vk_del_info').innerHTML=vkProgressBar(1,1,310,' ');
+            del_offset=0;
+            callback();
+         } else
+         dApi.call('likes.delete', {type:'video', owner_id:obj[0], item_id:obj[1]},function(r,t){
+            del_offset++;
+            setTimeout(function(){del(callback);},DEL_REQ_DELAY);
+         });
+      };
+      var info_count=0;
+      var scan=function(){
+         ids=[];
+         if (cur_offset==0){
+            ge('vk_del_info').innerHTML=vkProgressBar(1,1,310,' ');
+            ge('vk_scan_info').innerHTML=vkProgressBar(cur_offset,2,310,IDL('listreq')+' %');
+         }
+         dApi.call('fave.getVideos',{offset:0/*cur_offset*/,count:REQ_CNT},function(r){
+            //var data=r.response;
+            //var count=data.shift();
+            if (abort) return;
+            var data=r.response;
+            if (data==0 || !data[1]){
+               deldone();
+               return;
+            }
+            if (info_count==0) info_count=data.shift();
+            else data.shift();
+            ge('vk_scan_info').innerHTML=vkProgressBar(cur_offset+REQ_CNT,info_count,310,IDL('listreq')+' %');
+            for (var i=0;i<data.length;i++) ids.push([data[i].owner_id,data[i].vid]);
+            cur_offset+=REQ_CNT;
+            //vklog(ids);
+            del(scan);            
+            
+         });
+      };
+      var run=function(){
+         box=new MessageBox({title: IDL('DelVideosLikes'),closeButton:true,width:"350px"});
+         box.removeButtons();
+         box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no');
+         var html='<div id="vk_del_info" style="padding-bottom:10px;"></div><div id="vk_scan_info"></div>';
+         box.content(html).show();	
+         scan();
+      };
+      vkAlertBox(IDL('DelVideosLikes'),IDL('DelVideosLikesConfirm'),run,true);
+   },
+   remove_likes_posts:function(){
+      var REQ_CNT=100;//100;
+      var DEL_REQ_DELAY=400;
+      var box=null;
+      var ids=[];
+      var del_offset=0;
+      var cur_offset=0;
+      var abort=false;	
+      var deldone=function(){
+            box.hide();
+            vkMsg(IDL("ClearDone"),3000);	
+      };
+      var del=function(callback){	
+         if (abort) return;
+         var del_count=ids.length;
+         ge('vk_del_info').innerHTML=vkProgressBar(del_offset,del_count,310,IDL('deleting')+' %');
+         var obj=ids[del_offset];
+         if (!obj){
+            ge('vk_del_info').innerHTML=vkProgressBar(1,1,310,' ');
+            del_offset=0;
+            callback();
+         } else
+         dApi.call('likes.delete', {type:'post', owner_id:obj[0], item_id:obj[1]},function(r,t){
+            del_offset++;
+            setTimeout(function(){del(callback);},DEL_REQ_DELAY);
+         });
+      };
+      var info_count=0;
+      var scan=function(){
+         ids=[];
+         if (cur_offset==0){
+            ge('vk_del_info').innerHTML=vkProgressBar(1,1,310,' ');
+            ge('vk_scan_info').innerHTML=vkProgressBar(cur_offset,2,310,IDL('listreq')+' %');
+         }
+         dApi.call('fave.getPosts',{offset:0/*cur_offset*/,count:REQ_CNT},function(r){
+            //var data=r.response;
+            //var count=data.shift();
+            if (abort) return;
+            var data=r.response;
+            if (data==0 || !data[1]){
+               deldone();
+               return;
+            }
+            if (info_count==0) info_count=data.shift();
+            else data.shift();
+            ge('vk_scan_info').innerHTML=vkProgressBar(cur_offset+REQ_CNT,info_count,310,IDL('listreq')+' %');
+            for (var i=0;i<data.length;i++) ids.push([data[i].to_id,data[i].id]);
+            cur_offset+=REQ_CNT;
+            //vklog(ids);
+            del(scan);            
+            
+         });
+      };
+      var run=function(){
+         box=new MessageBox({title: IDL('DelPostsLikes'),closeButton:true,width:"350px"});
+         box.removeButtons();
+         box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no');
+         var html='<div id="vk_del_info" style="padding-bottom:10px;"></div><div id="vk_scan_info"></div>';
+         box.content(html).show();	
+         scan();
+      };
+      vkAlertBox(IDL('DelPostsLikes'),IDL('DelPostsLikesConfirm'),run,true);
    }
 }
 
@@ -2605,6 +3033,7 @@ vk_feed={
    on_page:function(){
       //vkSortFeedPhotos();
       vk_feed.filter_init();
+      vk_feed.new_list_btn();
    },
    process_node:function(node){
       if (!vk_feed.filter_enabled) return;
@@ -2809,6 +3238,105 @@ vk_feed={
                         
       });
 
+   }, 
+   new_list_btn:function(){
+      var r=ge('filter_t_newlist');
+      if (!r) return;
+      var el=se('<div class="feed_filter_tabs_row clear_fix feed_newlist_filter_row" id="filter_t_vknewlist" onmouseover="addClass(this, \'feed_filter_tabs_row_over\');" onmouseout="removeClass(this, \'feed_filter_tabs_row_over\');" onclick="vk_feed.new_list();">\
+        <div class="feed_filter_tabs_icon fl_l feed_icon_newlist"></div>\
+        <div class="feed_filter_tabs_title fl_l noselect" onselectstart="return false;">'+IDL('NewList',1)+'</div>\
+        <div class="feed_filter_tabs_check fl_l"></div>\
+      </div>');
+      r.parentNode.appendChild(el);
+      //vk_feed.new_list();
+   },
+   new_list:function(){
+      var box = new MessageBox({title: IDL('NewList')});
+      
+      var users_list=[];
+      
+      var save = function(white,title) {
+            var list_id = -1; // create new
+            ajax.post('al_feed.php', {
+               act: 'a_save_list',
+               hash: cur.tabs_hash,
+               White: white.join(','),
+               title: title,
+               list_id: list_id,
+               no_reposts: 1
+            }, {
+               onDone: function(new_list_id) {
+                  if (list_id > 0) {
+                     Feed.switchList(list_id);
+                  } else {
+                     nav.go({
+                        '0': 'feed',
+                        section: 'list',
+                        list: new_list_id
+                     }, null, {
+                        nocur: true
+                     });
+                  }
+                  box.hide();
+               },
+               showProgress: box.showProgress,
+               hiderogress: box.hideProgress
+            });
+
+      }
+      
+      var tpl='<a href="/id%UID" class="olist_item_wrap" id="olist_item_wrap%UID">\
+        <div class="olist_item clear_fix">\
+          <!--<span class="olist_checkbox fl_r"></span>-->\
+          <span class="olist_item_photo fl_l">\
+            <img class="olist_item_photo" src="%PHOTO" width="40" height="40">\
+          </span>\
+          <span class="olist_item_name fl_l">%NAME</span>\
+        </div>\
+      </a>';
+      
+      var search_user=function(){
+         var v=val('vk_feed_list_user');
+         var sn=v.split('#')[0].split('?')[0].split('/').pop();
+         if (!sn) return;
+         dApi.call('users.get',{user_ids:sn,fields:'photo_50'},function(r){
+            if (!r.response || !r.response[0]) return;
+            var u=r.response[0];
+            if (users_list.indexOf(u.uid)!=-1) return;
+            users_list.push(u.uid);
+            var el=se(tpl.replace(/%UID/g,u.uid)
+               .replace(/%PHOTO/g,u.photo_50)
+               .replace(/%NAME/g,u.first_name+' '+u.last_name));
+            val('vk_feed_list_user','');   
+            ge('vk_feed_users_list').appendChild(el);
+         })
+      }
+
+      box.removeButtons();   
+      box.addButton(getLang('box_no'),box.hide, 'no')
+      box.addButton(getLang('box_save'),function(){
+         save(users_list,val('vk_feed_list_title'));
+      },'yes');
+      box.content('<div>\
+      <h2>'+IDL('ListTitle')+'</h2>\
+      <input type="text" id="vk_feed_list_title" value="'+Math.round((new Date()).getTime()/1000).toString(36)+'" class="text" style="width:370px; margin-bottom:15px;">\
+      <h2>'+IDL('LinkToUser')+'</h2>\
+      <div class="fl_r"><div class="button_blue" id="vk_feed_search_btn"><button><span class="vk_magglass_icon"></span></button></div></div>\
+      <div><input type="text" id="vk_feed_list_user" class="text olist_filter" style="margin-top:2px; width: 305px;"></div>\
+      <div id="vk_feed_users_list"></div>\
+      </div>');
+      stManager.add(['privacy.css','ui_controls.css','boxes.css']);
+      box.show();
+      
+      var inp=ge('vk_feed_list_user');
+      inp.onkeydown=function(ev){
+        ev = ev || window.event;
+        if (ev.keyCode == 10 || ev.keyCode == 13) {
+          search_user();
+          cancelEvent(ev);
+        }
+      }
+      ge('vk_feed_search_btn').onclick=search_user;
    }
 }
 

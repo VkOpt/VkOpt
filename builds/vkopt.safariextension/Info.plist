@@ -9,23 +9,27 @@
 	<key>CFBundleDisplayName</key>
 	<string>VkOpt</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.kiberinfinity.vkopt</string>
+	<string>net.vkopt.extension</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.2.0.2</string>
+	<string>2.2.1.0</string>
 	<key>CFBundleVersion</key>
-	<string>2.2.0.2</string>
+	<string>2.2.1.0</string>
 	<key>Chrome</key>
-	<dict/>
+	<dict>
+		<key>Database Quota</key>
+		<real>5242880</real>
+		<key>Global Page</key>
+		<string>background.html</string>
+	</dict>
 	<key>Content</key>
 	<dict>
 		<key>Scripts</key>
 		<dict>
 			<key>Start</key>
 			<array>
-				<string>vkinit.js</string>
-				<string>includes/vk_skinman.js</string>
+				<string>content_script.js</string>
 			</array>
 		</dict>
 	</dict>
@@ -37,26 +41,10 @@
 	<dict>
 		<key>Website Access</key>
 		<dict>
-			<key>Allowed Domains</key>
-			<array>
-				<string>vkontakte.ru</string>
-				<string>*.vkontakte.ru</string>
-				<string>vk.com</string>
-				<string>*.vk.com</string>
-				<string>*.vkadre.ru</string>
-				<string>youtube.com</string>
-				<string>*.youtube.com</string>
-				<string>userapi.com</string>
-				<string>*.userapi.com</string>
-            <string>vk.me</string>
-				<string>*.vk.me</string>
-				<string>vimeo.com</string>
-				<string>*.vimeo.com</string>
-			</array>
-         <key>Include Secure Pages</key>
-         <true/>
+			<key>Include Secure Pages</key>
+			<true/>
 			<key>Level</key>
-			<string>Some</string>
+			<string>All</string>
 		</dict>
 	</dict>
 	<key>Update Manifest URL</key>

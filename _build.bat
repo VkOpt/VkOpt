@@ -1,0 +1,2 @@
+cd source
+build.bat

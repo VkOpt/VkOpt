@@ -104,12 +104,179 @@ var vk_photos = {
       .vk_full_thumbs_photos #photos_container .photo_row a,\
       .vk_full_thumbs_photos #photos_container .photo_row,\
       .vk_full_thumbs_photos .pva_photo_link,\
-      .vk_full_thumbs_photos .pva_photo {height: auto !important;}\
+      .vk_full_thumbs_photos .pva_photo{height: auto !important;}\
       #vk_ph_upd_btn{opacity:0.1}\
       #vk_ph_upd_btn:hover{opacity:1}\
       .vk_albums_list a{display:block; padding-left:10px; padding-bottom:3px; border-bottom:1px solid rgba(100,100,100,0.1)}\
       .photos_tabs ul.t0 #photo_add_tab .tab_word {max-width: 39px;}\
+      .vk_ph_info{position:absolute; min-height:13px; /*background:rgba(0,0,0,0.8);*/ width: inherit; text-align: center; padding: 3px 0 0 0; color:#FFF; border-radius: 0 0 3px 0;}\
+      .vk_ph_info .info_wrap{background: rgba(0, 0, 0, 0.8); border-radius: 0px 0px 3px 3px; box-shadow: 0px 0px 2px #FFFFFF; padding: 3px;}\
+      .vk_ph_info .vk_like_icon_white{opacity:0.5;}\
+      .vk_ph_info.my_like .vk_like_icon_white, .vk_ph_info .vk_like_icon_white.my_like{opacity:1;}\
+      .vk_ph_info .vk_comm_icon_white{opacity:0.5;}\
    ',
+   inj_photos:function(){
+      Inj.Before('photos.loaded','while','vk_photos.album_process_node(d);');
+   },
+   page:function(){
+      vk_photos.album_process_node();
+      vk_photos.toggle_thumb_size(true);
+      if (nav.objLoc[0].indexOf('albums')!=-1){
+         vkAddAlbumCommentsLinks();
+         if (cur.oid<0){
+            vkPhotosWallAlbum();
+            vk_ph_comms.browse_comments_btn();
+         }
+      } else if (nav.objLoc[0].indexOf('album')!=-1 || nav.objLoc[0].indexOf('tag')!=-1 || nav.objLoc[0].indexOf('photos')!=-1){
+         
+         var m=nav.objLoc[0].match(/album(-?\d+)_(\d+)/);
+         var oid=null;
+         var aid=null; 
+         if(m){	
+            oid=m[1];
+            aid=m[2];
+         } else {
+            m=nav.objLoc[0].match(/(tag|photos)(-?\d+)/);
+            if (m){
+              oid=m[2];
+              aid=m[1];
+            }      
+         }
+         if(m){	
+            /*oid=m[1];
+            aid=m[2];*/
+            if (!ge('vk_album_actions')){			
+               
+               var li=vkCe('li',{id:'vk_album_actions',"class":'t_r'},'\
+                  <a href="#" onclick="return false;"  id="vk_album_act_menu" class_="fl_r summary_right">'+IDL('Actions')+'</a>\
+                  '+(geByClass('summary_right')[0]?'<span class="divide">|</span>':'')+'\
+               ');
+               geByClass('t0')[0].appendChild(li);
+               
+               var p_options = [];
+               //if (!vkbrowser.chrome && !vkbrowser.safari)
+                  p_options.push({l:IDL('SaveAlbumAsHtml'), onClick:function(item) {
+                     vkGetPageWithPhotos(oid,aid);
+                  }});
+               p_options.push({l:IDL('Links'), onClick:function(item) {
+                     vkGetLinksToPhotos(oid,aid);
+               }});
+               if (cur.statsPhotoAddHash)
+                  p_options.push({l:IDL('Add'), h:'/album'+oid+'_'+aid+'?act=add' /*onClick:function(item) { vkGetLinksToPhotos(oid,aid);}*/
+                  });
+               
+               p_options.push({
+                  l:IDL('FullThumb'),
+                  onClick:function(item) { 
+                     vk_photos.toggle_thumb_size();
+                  } 
+               });
+               
+               if (aid=='photos')
+                  p_options.push({
+                     l:IDL('mPhC'),
+                     onClick:function(item) { 
+                        cur.oid=oid;
+                        vk_ph_comms.init();
+                     } 
+                  });               
+                  
+                  
+                  
+               p_options=p_options.concat(vk_plugins.album_actions(oid,aid));
+               stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
+                  cur.vkAlbumMenu = new DropdownMenu(p_options, {//
+                    target: ge('vk_album_act_menu'),
+                    containerClass: 'dd_menu_posts',
+                    updateHeader:false,
+                    offsetLeft:-15,
+                    showHover:false
+                  });
+               });			
+            }								
+         }
+      }
+   },
+   //vk_photos.inj_photos()
+   //vk_photos.page();
+   //vk_photos.album_process_node()
+   album_process_node:function(node){
+      // cur.module=='photos'
+      if (!window.cur || cur.module!='photos' || getSet(93)!='y') return;
+      var nodes=geByClass('photo_row',node);
+      var pids=[];
+      for (var i=0; i<nodes.length; i++){
+         var el=nodes[i];
+         var pid=((el.getAttribute('id') || '').match(/photo_row(-?\d+_\d+)/) || [])[1];
+         if (!pid) continue;
+         var info=geByTag1('a',el);
+         var ex=geByClass('vk_ph_info',el)[0];
+         if (!info || ex) continue;
+         info.insertBefore(se('<div class="vk_ph_info" id="vk_exinfo_'+pid+'"><div style="padding-top:3px"><!--'+vkLdrMiniImg+'--></div></div>'),info.firstChild);
+         pids.push(pid);
+      }
+      vk_photos.load_ph_info(pids);
+   },
+   load_ph_info:function(pids,cnt){
+      if (!pids || pids.length==0) return;
+      if (!ge('vk_exinfo_'+pids[0])){ // Костыль если на странице ещё не появились фотки
+         if (cnt && cnt>30) return;
+         setTimeout(function(){vk_photos.load_ph_info(pids,(cnt||0)+1)},100);
+         return;
+      }
+      var p={};
+      for (var i=0; i<pids.length; i++)
+         p[''+pids[i]]=1;
+      
+      dApi.call('photos.getById',{photos:pids.join(','),extended:1},{
+         ok:function(r){
+            var data=r.response;
+            for (var i=0; i<data.length;i++){
+               var p=data[i];
+               var pid=p.owner_id+'_'+p.pid;
+               var el=ge('vk_exinfo_'+pid);
+               if (!el) continue;
+               //   onclick="vk_skinman.like(\''+pid+'\'); event.cancelBubble = true;" onmouseout="vk_skinman.like_out(\''+pid+'\')"
+               el.innerHTML='<span class="info_wrap">\
+                               <span class="vk_ph_likes_count" onmouseover="vk_photos.like_over(\''+pid+'\',this)">\
+                                 <i class="vk_like_icon_white'+(p.likes.user_likes?' my_like':'')+'" id="s_like_icon'+pid+'"></i>\
+                                 <span id="s_like_count'+pid+'">'+p.likes.count+'</span>\
+                               </span>'+
+                               '<span class="divide"></span>'+
+                               '<span class="vk_ph_comm_count"><div class="vk_comm_icon_white"></div> '+p.comments.count+'</span>'+
+                            '</span>';//vk_photos.parse_info(p);//JSON.stringify(p);
+            }
+            for (var key in p)
+               if (p[key] && ge('vk_exinfo_'+key)) 
+                  ge('vk_exinfo_'+key).innerHTML='';
+            
+         },
+         error:function(){}
+      });
+      //ge('vk_exinfo_'+uid)
+   },
+   like_over:function(pid,el){
+      var icon=ge('s_like_icon'+pid),
+          count=ge('s_like_count'+pid);
+      showTooltip(icon.parentNode, {
+         url: 'like.php',
+         params: {
+            act: 'a_get_stats',
+            object: 'photo' + pid,
+         },
+         slide: 15,
+         shift: [65, 10, 10],
+         ajaxdt: 100,
+         showdt: 400,
+         hidedt: 200,
+         className: 'rich like_tt',
+         init: function(tt) {
+            if (!tt.container)
+               return;
+         }
+      });
+   },
+   
    choose_album:function(oid){
       stManager.add('photoview.css');
       var params={need_covers:1};
@@ -270,7 +437,7 @@ var vk_photos = {
       url=encodeURI(url);
       
       
-      AjGet('http://vk.com/wall'+vk.id+'?offset=100000000',function(r,t){
+      AjGet('/wall'+vk.id+'?offset=100000000',function(r,t){
          var o=(t.match(/"share":(\{[^}]+\})/)||[])[1];
          if (!o) {alert('hash error'); return;}
          o=eval('('+o+')');
@@ -364,7 +531,7 @@ var vk_photos = {
       stManager.add('upload.js',function(){
          var photo=photo_id;
          if (photo.match(/photo-?\d+_\d+/)) photo=photo.match(/photo(-?\d+_\d+)/)[1];
-         AjPost('http://vk.com/al_photos.php',{'act':'edit_photo', 'al': 1, 'photo': photo},function(r,t){
+         AjPost('/al_photos.php',{'act':'edit_photo', 'al': 1, 'photo': photo},function(r,t){
                var upload_url=t.match(/"upload_url":"(.*)"/);
                var hash=t.match(/', '([a-f0-9]{18})'\)/);
                var aid=t.match(/selectedItems:\s*\[(-?\d+)\]/)[1];
@@ -592,6 +759,95 @@ var vk_photos = {
             html+='<a href="/album'+oid+'_'+data[i].aid+'" onclick="return nav.change({z: \'album'+oid+'_'+data[i].aid+'\'}, event)">'+data[i].title+'</a>';
          p.innerHTML='<div class="vk_albums_list">'+html+'</div>';  
       });
+   },
+   VKPZL_SWF_LINK:"http://app.vk.com/c6130/u13391307/8c0797eea18120.swf",
+   VKPZL_SWF_HTTPS_LINK:"https://app.vk.com/c6130/u13391307/8c0797eea18120.swf",
+   pz_box:function(){
+      
+      var html = '<div><span id="vkpzldr"><div class="box_loader"></div></span>'+
+                '<div id="pz_container" style="display:inline-block;position:relative;top:8px;"></div>'+
+                '</div>';
+                
+      vk_photos.PZLBox = new MessageBox({title: IDL('PhotoShredder'), width:'650px'});
+      var Box = vk_photos.PZLBox;
+      vkOnSavedFile=function(){Box.hide(200);};
+      Box.removeButtons();
+      Box.addButton(IDL('Cancel'),Box.hide,'no');
+      Box.content(html).show(); 
+      
+      dApi.call('photos.getWallUploadServer',{},function(r){
+         var info=r.response;
+         //alert(info.upload_url);
+         //info.upload_url;
+         //info.aid;
+         //info.mid;
+         //
+         //
+         //
+         var swf=location.protocol=='https:'?vk_photos.VKPZL_SWF_HTTPS_LINK:vk_photos.VKPZL_SWF_LINK;
+         var params={width:627, height:100, allowscriptaccess: 'always',"wmode":"transparent","preventhide":"1","scale":"noScale"};
+         var vars={
+            'idl_browse': IDL('Browse'),
+            'idl_upload': IDL('Upload'),
+            'upload_url': info.upload_url,
+            'onResize'  :'vk_photos.pz_onresize',
+            'onDone'    :'vk_photos.pz_ondone'
+         };
+         renderFlash('pz_container',
+            {url:swf,id:"vkpzl_pl"},
+            params,vars
+         );          
+      })
+
+   },
+   pz_ondone:function(s){
+      var data=JSON.parse(s);
+      dApi.call('photos.saveWallPhoto',{photo:data.photo, server: data.server, hash:data.hash},function(r){
+         console.log('Save photo: ',r);
+         var photos=r.response;
+         for (var i=0; i<photos.length; i++){
+            vk_ch_media.photo(photos[i].owner_id+'_'+photos[i].pid,photos[i].src_big,photos[i].width,photos[i].height);
+            //cur.chooseMedia('photo', photoRaw, mediaData, false, false, true);
+         }
+         /*
+         id "photo13391307_311284003"
+         owner_id 13391307
+         pid 311284003*/
+      });
+      vk_photos.PZLBox.hide();
+   },
+   pz_onresize:function(new_height){
+      //console.log('PZL height: '+new_height);
+		hide("vkpzldr");
+      var h=parseInt(new_height);
+      if (h>0)  
+      ge('vkpzl_pl').setAttribute("height",h+10);
+      
+   },
+   pz_item:function(){
+      var AddItem=function(bef){
+         var mid=ge('mid')?ge('mid').value:(window.cur && cur.oid?cur.oid:0);
+         if (bef && mid){
+            bef=bef.getElementsByTagName('a')[0];
+            var a=document.createElement('a');
+            a.setAttribute("onfocus","this.blur()");
+            a.setAttribute("class"," add_media_item");
+            a.setAttribute("id","vk_wall_post_type1");
+            a.setAttribute("style","background-image: url(/images/icons/attach_icons.gif); background-position: 3px 3px");
+            a.setAttribute("href","#");
+            a.setAttribute("onclick","vk_photos.pz_box("+mid+");return false;");
+            a.innerHTML=IDL('PhotoShredder');
+            bef.parentNode.insertBefore(a,bef.nextSibling);
+         }
+      }
+
+      if (ge('vk_wall_post_type1')) return;
+      var vk__addMediaIndex=0;
+      if (window.__addMediaIndex) vk__addMediaIndex=__addMediaIndex;
+      var lnkId = ++vk__addMediaIndex;
+      if (ge('page_add_media')){
+         Inj.Wait("geByClass('add_media_rows')[0]",AddItem,300,10);
+      }   
    }
 }
 
@@ -752,7 +1008,8 @@ function vkPVSaveAndMover(){
          var albums = [];
          var albums_full=[];
          for (var i=0; i<data.length;i++)
-            if (data[i].size<501)
+            //if (data[i].size<501)
+            if (data[i].size<10001)
                albums.push([data[i].aid,data[i].title,data[i].size+""]);
             /*else
                albums_full.push([data[i].aid,data[i].title,data[i].size+""]);*/
@@ -797,20 +1054,27 @@ function vkPVLinks(ph){
   
   var links=[];
   var sizes=["x_","y_","z_","w_","o_","p_","q_","r_","s_","m_"];
+  
+  var d_name=function(p,pfx){
+    if (!PHOTO_DOWNLOAD_NAMES) return '';
+    return ' onclick="return vkDownloadFile(this);" download="photo'+p.id+pfx+'.jpg" ';
+  };
+  
   if (ph['x_'] && ph['x_'][1]){
    for (var i=0; i<sizes.length; i++){
       var sz=ph[sizes[i]];
       var src=ph[sizes[i]+'src'];
       if (sz && sz[1] && src){
-         links.push('<a href="'+src+'" class="fl_l">'+sizes[i]+'['+sz[1]+'x'+sz[2]+']</a>')
+         links.push('<a href="'+src+'" class="fl_l" '+d_name(ph,sizes[i].replace(/_/g,''))+'>'+sizes[i]+'['+sz[1]+'x'+sz[2]+']</a>')
       }
    }
   }
   if (ph.y_src || links.length>0){
     html+='<div id="pv_hd_links"><a href="#" onclick="toggle(\'vk_ph_links_list\'); return false;" class="fl_l">'+IDL('Links')+': </a>'+  
-        (ph.y_src?'<a href="'+ph.y_src+'" class="fl_r">HD1</a>':'')+
-        (ph.z_src?'<a href="'+ph.z_src+'" class="fl_r">HD2</a>':'')+
-        (ph.w_src?'<a href="'+ph.w_src+'" class="fl_r">HD3</a>':'')+
+        (!ph.y_src && links.length>0 ? links[0] :'')+
+        (ph.y_src?'<a href="'+ph.y_src+'" '+d_name(ph,'y')+' class="fl_r">HD1</a>':'')+
+        (ph.z_src?'<a href="'+ph.z_src+'" '+d_name(ph,'z')+' class="fl_r">HD2</a>':'')+
+        (ph.w_src?'<a href="'+ph.w_src+'" '+d_name(ph,'w')+' class="fl_r">HD3</a>':'')+
         (links.length>0?'<div id="vk_ph_links_list" class="clear" style="display:none;">'+links.join('')+'</div>':'')+
     '</div><div class="clear"></div>';
   } 
@@ -821,11 +1085,21 @@ function vkPVLinks(ph){
   if ((ph.tags || [])[0]>0){
       html+='<a href="#" onclick="vkPVShowTagsInfo(); return false;">'+IDL('TagsInfo')+'</a>';
   }
-  
   if (ph.x_src){
       var src=(ph.w_src || ph.z_src || ph.y_src || ph.x_src);
+      /*
       html+='<a target="_blank" href="http://www.tineye.com/search?url='+src+'">'+IDL('TinEyeSearch')+'</a>';
       html+='<a target="_blank" href="https://www.google.ru/searchbyimage?image_url='+src+'">'+IDL('GoogleImgSearch')+'</a>';
+      html+='<a target="_blank" href="http://images.yandex.ru/yandsearch?rpt=imagecbir&img_url='+src+'">'+IDL('YandexImgSearch')+'</a>';*/
+      html+='<div class="pv_info" style="padding-left:5px;">'+IDL('ImgCopySeacrh')+'</div>';
+      html+='<a target="_blank" class="fl_l" href="https://www.google.ru/searchbyimage?image_url='+src+'">Google</a>';
+      html+='<a target="_blank" class="fl_l" href="http://www.tineye.com/search?url='+src+'">TinEye</a>';
+      html+='<a target="_blank" class="fl_l" href="http://images.yandex.ru/yandsearch?rpt=imagecbir&img_url='+src+'">Yandex</a>';  
+      html+='<a target="_blank" class="fl_l" href="/feed?section=photos_search&q=copy%3Aphoto'+ph.id+'">VK</a>';  
+      html+='<div class="clear"></div>';
+      
+
+      /* http://images.yandex.ru/favicon.ico */
   }
   
   return html;
@@ -862,84 +1136,6 @@ function vkPVShowTagsInfo(){
     });
 }
  
-function vkPhotosPage(){
-	vk_photos.toggle_thumb_size(true);
-   if (nav.objLoc[0].indexOf('albums')!=-1){
-      vkAddAlbumCommentsLinks();
-      if (cur.oid<0){
-         vkPhotosWallAlbum();
-         vk_ph_comms.browse_comments_btn();
-      }
-   } else if (nav.objLoc[0].indexOf('album')!=-1 || nav.objLoc[0].indexOf('tag')!=-1 || nav.objLoc[0].indexOf('photos')!=-1){
-		
-      var m=nav.objLoc[0].match(/album(-?\d+)_(\d+)/);
-		var oid=null;
-      var aid=null; 
-		if(m){	
-			oid=m[1];
-			aid=m[2];
-      } else {
-         m=nav.objLoc[0].match(/(tag|photos)(-?\d+)/);
-         if (m){
-           oid=m[2];
-           aid=m[1];
-         }      
-      }
-		if(m){	
-			/*oid=m[1];
-			aid=m[2];*/
-			if (!ge('vk_album_actions')){			
-				
-				var li=vkCe('li',{id:'vk_album_actions',"class":'t_r'},'\
-					<a href="#" onclick="return false;"  id="vk_album_act_menu" class_="fl_r summary_right">'+IDL('Actions')+'</a>\
-					'+(geByClass('summary_right')[0]?'<span class="divide">|</span>':'')+'\
-				');
-				geByClass('t0')[0].appendChild(li);
-				
-				var p_options = [];
-				//if (!vkbrowser.chrome && !vkbrowser.safari)
-               p_options.push({l:IDL('SaveAlbumAsHtml'), onClick:function(item) {
-                  vkGetPageWithPhotos(oid,aid);
-               }});
-				p_options.push({l:IDL('Links'), onClick:function(item) {
-						vkGetLinksToPhotos(oid,aid);
-				}});
-            if (cur.statsPhotoAddHash)
-               p_options.push({l:IDL('Add'), h:'/album'+oid+'_'+aid+'?act=add' /*onClick:function(item) { vkGetLinksToPhotos(oid,aid);}*/
-               });
-				
-            p_options.push({
-               l:IDL('FullThumb'),
-               onClick:function(item) { 
-                  vk_photos.toggle_thumb_size();
-               } 
-            });
-            
-            if (aid=='photos')
-               p_options.push({
-                  l:IDL('mPhC'),
-                  onClick:function(item) { 
-                     cur.oid=oid;
-                     vk_ph_comms.init();
-                  } 
-               });               
-               
-               
-               
-				p_options=p_options.concat(vk_plugins.album_actions(oid,aid));
-				stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
-					cur.vkAlbumMenu = new DropdownMenu(p_options, {//
-					  target: ge('vk_album_act_menu'),
-					  containerClass: 'dd_menu_posts',
-					  updateHeader:false,
-					  offsetLeft:-15,
-					  showHover:false
-					});
-				});			
-			}								
-		}
-	}
-}
 
 vk_ph_comms = {
    users:{},
@@ -1134,9 +1330,11 @@ function vkGetLinksToPhotos(oid,aid){
       var len=(phot.length+"").length;
 		for (var i=0;i<phot.length;i++){
 		  var src=phot[i];
-        var num=('_000000000000'+i).substr(-len);
-        var name='?&/'+num+'_'+src.split('/').pop();
-        src+=name;
+        if (PHOTO_DOWNLOAD_NAMES){
+           var num=('_000000000000'+i).substr(-len);
+           var name=(src.indexOf('?')>0?'&/':'?&/')+num+'_'+src.split('/').pop();
+           src+=name;
+        }
         parr.push('<a href="'+src+'">'+src+'</a>');
         txt+=src+'\r\n';
       }
@@ -1200,45 +1398,6 @@ function vkGetPageWithPhotos(oid,aid){
 	});
 }
 
-function vkFavPhotosMenu(){
-      var e=ge('fave_likes_tabs');
-      var x=ge('vk_fav_phlinks_btn');
-      if (x) (nav.objLoc['section']=='likes_photo'?show:hide)(x);
-      if (!e || x) return;
-      var p=geByClass('summary_tab',e);
-      p=p[p.length-1];
-      if (!p || nav.objLoc['section']!='likes_photo') return;
-      
-      if (!ge('vk_fav_phlinks_btn')){			
-         var a=vkCe('div',{id:'vk_fav_phlinks_btn',"class":'summary_tab fl_r'},'\
-            <a href="#" onclick="return false;"  id="vk_favph_act_menu" class_="summary_tab2">'+IDL('Actions')+'</a>\
-         ');//<a href="#" onclick="return false;"  id="vk_favph_act_menu" class_="fl_r summary_right">'+IDL('Actions')+'</a>\
-         //geByClass('t0')[0].appendChild(a);
-         insertAfter(a,p)
-         
-         var p_options = [];
-         p_options.push({l:IDL('SaveAlbumAsHtml'), onClick:function(item) {
-            vkGetPageWithPhotos('liked'+vk.id,null);
-         }});
-         p_options.push({l:IDL('Links'), onClick:function(item) {
-               vkGetLinksToPhotos('liked'+vk.id,null);
-         }});
-         
-         
-         //p_options=p_options.concat(vk_plugins.album_actions(oid,aid));
-         stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
-            cur.vkAlbumMenu = new DropdownMenu(p_options, {//
-              target: ge('vk_favph_act_menu'),
-              containerClass: 'dd_menu_posts',
-              updateHeader:false,
-              offsetLeft:-15,
-              showHover:false
-            });
-         });			
-      }
-      
-      return;
-}
 function vkAddAlbumCommentsLinks(node){
    var els=geByClass('album',node);
    for (var i=0;i<els.length;i++){
@@ -1959,6 +2118,15 @@ vk_videos = {
    inj_html5:function(){
       Inj.End('html5video.initHTML5Video','vkOnRenderFlashVars(vars);');
    },
+   inj_videoview:function(){
+      vkVidVarsGet();
+      Inj.End('videoview.showVideo','vkProcessNode(mvcur.mvWide);');
+      if (getSet(2)=='y') Inj.End('videoview.showVideo','setTimeout(vkVidLinks,0);');//Inj.After('videoview.showVideo','innerHTML = info;','setTimeout(vkVidLinks,0);');
+      if (getSet(71)=='y') 
+         Inj.Before('Videoview.commentTo','if (!v', 'vk_phviewer.reply_to(comm, toId, event, rf,v,replyName); if(false)' );
+      if (getSet(92)=='y') Inj.Start('Videoview.hide','if (!mvcur.minimized) force=true;');
+      videoview.enabledResize=function(){return true;}
+   },
    change_show_video_params:function(opts){
       if (!opts || !opts.params) return;
       var params=opts.params;
@@ -2356,15 +2524,19 @@ vk_videos = {
    },
    get_album:function(){
       var list = [];
+      if (!window.mvcur || !window.mvcur.mvData) return '';
       var video= mvcur.mvData.videoRaw;
       var album_id=null;
       var album_link=null;
       var vid_data=null;
+      
       if (cur.vSection == 'search' && cur.vStr) {
+         if (!cur.searchData || !cur.vOrder) return '';
          var hd = cur.vHD ? cur.vHD : 0;
          var searchData = cur.searchData[cur.vStr + hd.toString() + cur.vOrder.toString()];
          list=searchData.list;
       } else {
+         if (!cur.videoList) return '';
          list = cur.videoList[cur.vSection];
       }
       for (var i = 0, len = list.length; i < len; i++) {
@@ -2639,16 +2811,6 @@ function vkVidEditAlbumTitle(album_id,add_buttons){
    } 
 }
 
-
-function vkVideoViewer(){
-	vkVidVarsGet();
-   Inj.End('videoview.showVideo','vkProcessNode(mvcur.mvWide);');
-	if (getSet(2)=='y') Inj.End('videoview.showVideo','setTimeout(vkVidLinks,0);');//Inj.After('videoview.showVideo','innerHTML = info;','setTimeout(vkVidLinks,0);');
-	if (getSet(71)=='y') 
-      Inj.Before('Videoview.commentTo','if (!v', 'vk_phviewer.reply_to(comm, toId, event, rf,v,replyName); if(false)' );
-    
-   videoview.enabledResize=function(){return true;}
-}
 
 function vkVideShowAdder(){
       var rclass='vk_vid_add_hidden', 
@@ -3375,6 +3537,10 @@ function vkVimeoVideoLinks(link){
 
 function vkVidLinks(data){	
 	if (ge('mv_actions')){
+      var vid=((window.mvcur || {}).videoRaw || '').split('_');
+      if (vid[0] && ge('mv_actions').innerHTML.indexOf('vkVidAddToGroup')==-1)
+         ge('mv_actions').innerHTML+='<a href="#" onclick="return vkVidAddToGroup('+vid[0]+','+vid[1]+');">'+IDL('AddToGroup',1)+'</a>';
+      //console.log('Cur video',(window.mvcur || {}).videoRaw); 
       var vlink=null;
       if (ge('video_player') && ge('video_player').tagName.toUpperCase()=='IFRAME')
          vlink=ge('video_player').getAttribute('src');
@@ -3418,7 +3584,7 @@ function vkVidLinks(data){
          if (h.indexOf('vkGetVideoSize')!=-1) return;
          var inf=vk_videos.get_album();
          var v_el=el=geByClass('mv_num_views',ge('mv_comments_data'))[0];
-         if (inf[0] && v_el){
+         if (inf && inf[0] && v_el){
             v_el.innerHTML='<a href="'+inf[1]+'">'+v_el.innerHTML+'</a>';
             
          }
@@ -3588,6 +3754,25 @@ vk_audio={
    album_cache:{},
    inj_common:function(){
       Inj.Start('playAudioNew','if (vk_audio.prevent_play_check()) return;');
+   },
+   remove_trash:function(s){
+      s=vkRemoveTrash(s);
+      s=s.replace(/\[\s*\]|\(\s*\)|\{\s*\}/g,'');
+      s=s.replace(/[\u1806\u2010\u2011\u2012\u2013\u2014\u2015\u2212\u2043\u02D7\u2796\-]+/g,'\u2013').replace(/\u2013\s*\u2013/g,'\u2013');
+      s=s.replace(/[\u1806\u2010\u2011\u2012\u2013\u2014\u2015\u2212\u2043\u02D7\u2796\-]+$/,'');// ^[\s\u1806\u2010\u2011\u2012\u2013\u2014\u2015\u2212\u2043\u02D7\u2796\-]+
+      return s;
+   },
+   process_node:function(node){
+      FindAndProcessTextNodes(node,function(mainNode,childItem){
+         var el = mainNode.childNodes[childItem];
+         if (el.nodeValue && !el.nodeValue.match(/^[\u2013\s]+$/)){
+            //console.log('>>',el.nodeValue);
+            el.nodeValue=vk_audio.remove_trash(el.nodeValue);
+            //console.log('<<',el.nodeValue);
+         }
+         return childItem;
+      });
+      
    },
    play_blocked:false,
    prevent_play_check:function(){
@@ -4062,11 +4247,11 @@ function vkAudioNode(node){
   
   if ((node || ge('content')).innerHTML.indexOf('play_new')==-1) return;
   var smartlink=(getSet(1) == 'y')?true:false;
-
   var download=(getSet(0) == 'y')?1:0;
+  var clean_trash=getSet(94) == 'y';
   if (!download) return;
   var SearchLink=true;
-  var trim=function(text) { return (text || "").replace(/^\s+|\s+$/g, ""); }
+  var trim=function(text) { return (text || "").replace(/^\s+|\s+$/g, " "); }
   //InitAudiosMenu();
   var icon_src='data:image/gif;base64,R0lGODdhEAARALMAAF99nf///+7u7pqxxv///8nW4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACwAAAAAEAARAAAEJpCUQaulRd5dJ/9gKI5hYJ7mh6LgGojsmJJ0PXq3JmaE4P9AICECADs=';
  
@@ -4106,6 +4291,7 @@ function vkAudioNode(node){
          //if (url=='') continue;
          if (url.indexOf('/u00000/')!=-1) continue;
          var anode=(node?divs[i].parentNode.parentNode.parentNode:ge('audio'+id));
+         if (clean_trash) vk_audio.process_node(anode);
 			 var el=geByClass("duration",anode )[0];
 			 var spans=el.parentNode.getElementsByTagName('span');
 			 var span_title=null;
@@ -4120,7 +4306,7 @@ function vkAudioNode(node){
 
 		     var name=el.parentNode.getElementsByTagName('b')[0].innerText+' - '+(span_title || ge('title'+id) || spans[1] || spans[0]).innerText;
            name=vkCleanFileName(name);
-		     if (smartlink) {url+='?'+vkDownloadPostfix()+'&/'+vkEncodeFileName(name)+'.mp3';};//normal name
+		     if (smartlink) {url+=(url.indexOf('?')>0?'':'?')+vkDownloadPostfix()+'&/'+vkEncodeFileName(name)+'.mp3';};//normal name
 		     //if (SearchLink && el){el.innerHTML=vkAudioDurSearchBtn(el.innerText,name,id);/* "<a href='/search?c[section]=audio&c[q]="+name+"'>"+el.innerText+"</a>";*/}
          if (download){ 
             divs[i].setAttribute('style','width:17px;'); 
@@ -4578,7 +4764,7 @@ function vkAudioPlayList(add_button){
 			
          wiki+='[[audio'+itm.owner_id+'_'+itm.aid+']]\r\n';
          
-			links.push(itm.url+"?/"+vkEncodeFileName(vkCleanFileName(itm.artist+" - "+itm.title))+".mp3");
+			links.push(itm.url+(itm.url.indexOf('?')>0?'&/':'?/')+vkEncodeFileName(vkCleanFileName(itm.artist+" - "+itm.title))+".mp3");
 		}
 		pls+='\nNumberOfEntries='+list.length+'\n\nVersion=2'
 
@@ -4682,6 +4868,7 @@ vkLastFM={
       return Math.round((new Date()).getTime()/1000)
    },
    clean:function(s){
+      s=s.replace(/&#0+(\d+);/g,"&#$1;");
       return winToUtf(s);//s.replace(/&quot;|&amp;|&lt;|&gt;|&rsquo;|&#[0-9]{2}[0-9]*;/gi, ' ');//   |<|>|"|'
    },
    init:function(){

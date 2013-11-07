@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet href="chrome://VkOptExtension/skin/overlay.css" type="text/css"?>
-<!DOCTYPE overlay SYSTEM "chrome://VkOptExtension/locale/overlay.dtd">
-<overlay id="VkOptExtension-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-  <script src="vkldr.js"/>
-  
+<?xml-stylesheet href="chrome://vkopt/skin/overlay.css" type="text/css"?>
+<!DOCTYPE overlay SYSTEM "chrome://vkopt/locale/overlay.dtd">
+<overlay id="vkopt-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <script src="background.js"/>
+  <script src="content_script.js"/>
   <stringbundleset id="stringbundleset">
-    <stringbundle id="VkOptExtension-strings" src="chrome://VkOptExtension/locale/overlay.properties"/>
+    <stringbundle id="vkopt-strngs" src="chrome://vkopt/locale/overlay.properties"/>
   </stringbundleset>
 
 

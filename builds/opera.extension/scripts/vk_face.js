@@ -38,7 +38,7 @@ function vkStyles(){
    var ShowGroupNews=getSet(59);
    var hideBigLike = getSet(70)=='y';
    var SubMenuToRight = getSet(80)=='y';
-  
+   var AuFullTitles = getSet(90)=='y';
 	var main_css='';
 	if (getSet(28)=='y') main_css+=GetUnReadColorCss();
    main_css+=vkNotifierWrapMove();
@@ -200,13 +200,17 @@ function vkStyles(){
    #vk_stats_btn{position: absolute; float:left}\
    #vk_stats_btn .button_blue{position: absolute; right: 0px;}\
    #vk_stats_im_btn{margin-right:10px;}\
+   #vk_stats_im_btn .button_gray button{padding: 4px 5px;}\
    .vk_photo_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -29px; line-height: 11px; }\
    .vk_msg_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -193px; line-height: 11px; }\
    .vk_audio_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -221px; line-height: 11px; }\
    .vk_video_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -75px; line-height: 11px; }\
    .vk_txt_icon{ display: inline-block;height: 12px; padding-left:12px; line-height: 12px; background: url(/images/icons/photo_icons.png) 0px -23px no-repeat transparent;}\
-   .vk_stats_icon{background:url(http://vk.com/images/icons/mono_iconset.gif) 0px -207px no-repeat; display:inline-block; width:12px; height:11px;}\
+   .vk_stats_icon{background:url('/images/icons/mono_iconset.gif') 0px -207px no-repeat; display:inline-block; width:12px; height:11px;}\
    .vk_repost_icon{display: inline-block;height: 9px; padding-left:12px; line-height: 9px; background: url(/images/icons/mono_iconset.gif) 0px -251px no-repeat transparent;}\
+   .vk_magglass_icon{background: url('/images/magglass_2x.png') no-repeat 50% 50%; background-size:11px 11px; margin-right: 4px; display: inline-block; vertical-align: middle; width: 11px; height: 11px; }\
+   .vk_like_icon_white{background: url('/images/icons/like_2x.png') 1px -10px no-repeat transparent; background-size: 10px 32px; height: 10px; width: 11px; display: inline-block; vertical-align: middle;}\
+   .vk_comm_icon_white{background: url('/images/fixedmenu_2x.png') 100% -282px no-repeat transparent; background-size: 11px 322px; height: 11px; width: 11px; display: inline-block; vertical-align: middle;}\
    .vk_x_btn{background: url(http://vk.com/images/hide_to.gif) no-repeat 50% 50%; display: inline-block; vertical-align: middle; width: 10px; height: 10px; }\
    .vk_x_btn{opacity:0.5; cursor:pointer;}\
    .vk_x_btn:hover{opacity:1;}\
@@ -318,10 +322,14 @@ function vkStyles(){
       .vk_album_thumb{padding:3px;}\
       .vk_album_tracks ul{list-style-type: disc; margin:0px; padding:0px; padding-left:4px; margin-left: 17px; color:#AAA;}\
       .vk_album_tracks .vk_tracks_search_btn{padding:3px 10px;}\
-      \
-      /* Display full audio names*/\
+      '+
+      (AuFullTitles?'/* Display full audio names*/\
       .audio .title_wrap{white-space: normal !important; width: 245px; !important; }\
-      .audio .title_wrap b{white-space: normal !important; display: inline !important;}\
+      .audio .title_wrap b{white-space: normal !important; display: inline !important;}':'')
+      +
+      '\
+      .afull_title .audio .title_wrap{white-space: normal !important; width: 245px; !important; }\
+      .afull_title .audio .title_wrap b{white-space: normal !important; display: inline !important;}\
       \
 		.audio_table .audio td.info { width: 340px !important;}\
 		.audio_table .audio td { padding-left: 0px; }\
@@ -970,13 +978,14 @@ function vkMenu(){//vkExLeftMenu
     'video':[
         ['/video',IDL("mViM")],
         ['/video?section=tagged',IDL("mViW")],
+        ['/video?section=uploaded',IDL("mViUploaded")],
         ['/video?section=comments',IDL("mPhC")],
         [['#',"stManager.add('video.js',function(){Video.uploadVideoBox();}); return false;"], IDL("mViN")], //'video.php?act=new' //"showTabbedBox('al_video.php', {act: 'upload_box', oid: cur.oid}, {stat: ['video_edit.css', 'privacy.css', 'privacy.js', 'uploader.js']}); return false;"
         ['/video?section=tagged',vk_lang["mTags"],true]
     ],
     'audio':[
         ['/audio',IDL("mAuM")],
-        ['/audio?act=edit',IDL("mAuE")],
+        ['/audio?act=feed',IDL("mNeU")],
         [['#',"showBox('/audio', extend({}, {act: 'new_audio'}), {   params: {width: '430px'}, stat: ['audio.css','audio.js'] }); return false;"],IDL("mAuN")] 
     ],
     'mail':[
@@ -1082,6 +1091,7 @@ function vkMenu(){//vkExLeftMenu
 	'wall':[
 		['wall'+remixmid(),IDL('mWAllPosts')],
 		['wall'+remixmid()+'?own=1',IDL('mWMyPosts')],
+      [['#',"showWiki({w: 'postbox'}, false, event, {queue: 1, stat: ['wkview.js' ,'wkview.css', 'postbox.js', 'postbox.css', 'wide_dd.js', 'wide_dd.css', 'page.js', 'page.css']}); return false;"],IDL('NewPost')],
       ['notes',IDL("mNoM")],
       //['notes?act=new',IDL("mNoN")],
       ['notes?act=comments',IDL("mNoC")]

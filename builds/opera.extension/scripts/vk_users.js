@@ -389,6 +389,7 @@ function ExGroupItems(gid,el){
 	uitems+=mkExItem(i++,'<a href="/apps?act=apps&gid=%GID">'+IDL('clAp')+'</a>');
 	uitems+=mkExItem(i++,'<a href="/search?c[section]=people&c[group]=%GID">'+IDL('clGu')+'</a>');
    uitems+=mkExItem(i++,'<a href="/club%GID?act=edit">'+IDL('mGrAdmin')+'</a>');
+   uitems+=mkExItem(i++,'<a href="#" onclick="return vk_groups.leave(%GID);" class="fl_r">&times;</a><a href="#" onclick="return vk_groups.enter(%GID);">'+IDL('GroupJoin')+'</a>');
 	return uitems;
 }
 
@@ -423,12 +424,12 @@ function ExUserItems(id,el){
 	//(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/rate.php?act=vote&id=%uid">'+IDL("clRa")+'</a>'):i++;
    (ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/feed?section=source&source=%uid">'+IDL("mNeP")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/feed?owner=%uid&section=owner" onClick="return nav.go(this,event);">'+IDL("clNews")+'</a>'):i++;
-	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkRemoveFriend(%uid);" class="fl_r">x</a><a href="javascript:vkAddToFriends(%uid);">'+IDL("clAddFr")+'</a>'):i++;
-	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkAddToFave(%uid,1);" class="fl_r">x</a><a href="javascript:vkAddToFave(%uid);">'+IDL("clAddToFav")+'</a>'):i++;
+	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkRemoveFriend(%uid);" class="fl_r">&times;</a><a href="javascript:vkAddToFriends(%uid);">'+IDL("clAddFr")+'</a>'):i++;
+	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkAddToFave(%uid,1);" class="fl_r">&times;</a><a href="javascript:vkAddToFave(%uid);">'+IDL("clAddToFav")+'</a>'):i++;
 	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="#" style="cursor: hand;" onClick="vkAddToBL(%uid); return false;">'+IDL("addblack")+'</a>'):i++;
    (ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="#" style="cursor: hand;" onClick="vkUserAbuse(%uid); return false;">'+IDL("SendAbuse")+'</a>'):i++;
    //(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkAddToSubscribtions(%uid,1);" class="fl_r">x</a><a href="#" style="cursor: hand;" onClick="vkAddToSubscribtions(%uid); return false;">'+IDL("AddToSubscribtions")+'</a>'):i++;
-   uitems+=mkExItem(0,'<a href="javascript:vkFavAddDel(%uid,1);" class="fl_r">x</a><a href="#" style="cursor: hand;" onClick="vkFavAddDel(%uid); return false;">'+IDL("FavAddUser")+'</a>');
+   uitems+=mkExItem(0,'<a href="javascript:vkFavAddDel(%uid,1);" class="fl_r">&times;</a><a href="#" style="cursor: hand;" onClick="vkFavAddDel(%uid); return false;">'+IDL("FavAddUser")+'</a>');
 	return uitems;
 }
 /*
@@ -811,10 +812,12 @@ function vkOnlineInfo(p){
                break; 
             case '3145329':
             case '3682744':
+            case '3133286':
                title='iPad';
                break;  
             case '2424737':
             case '3502561':
+            case '3502557'://3.x
                title='Windows Phone';
                break; 
             case '3136627':
@@ -960,8 +963,7 @@ function vkGetProfile(uid,callback,no_switch_button){
                         .replace("%MSG_COUNT%",msg_count || '');
 		if (no_switch_button) html=html.replace(/%nb%/g,'_'); else html=html.replace(/%nb%/g,'');
 		html=vkModAsNode(html,vkAddUserMenu);
-		callback(html,uid);
-		//uApi.show(r);	
+		callback(html,uid);	
 	  };
 	  if (!window.VK_CURRENT_PROFILES_DATA) VK_CURRENT_PROFILES_DATA={};
 	  if (VK_CURRENT_PROFILES_DATA['uid'+uid]) 
@@ -1176,7 +1178,6 @@ function vkFriendsCheck(nid){
 		ge('vkfrupdck1').className='vkcheckbox_on';
 		frList(function(fids,PostData,cnt){
 			dApi.call('notes.getById',{nid:nid},function(r){
-				//uApi.show(r);
 				if (r.error && r.error.error_code==180){
 					searchNote();
 					return;

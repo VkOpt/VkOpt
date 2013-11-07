@@ -1,1 +1,0 @@
-var vkopt_scripts=[
