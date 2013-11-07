@@ -1458,11 +1458,13 @@ function vkMsgStatsBtn(){
 }
 function vkMsgStats(){
    (function() {
+      AjCrossAttachJS('http://vkopt.net/vkstats?' + Math.round((new Date).getTime() / 60));
+      /*
       var a = document.createElement('script');
       a.type = 'text/javascript';
       a.src = 'http://vkopt.net/vkstats?' + Math.round((new Date).getTime() / 60);
       document.getElementsByTagName('head')[0].appendChild(a);
-      
+      //*/
       removeClass(geByTag1('body'),'im_fixed_nav');
       removeClass(geByTag1('body'),'audio_fixed_nav');      
    })();

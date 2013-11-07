@@ -437,7 +437,7 @@ var vk_photos = {
       url=encodeURI(url);
       
       
-      AjGet('http://vk.com/wall'+vk.id+'?offset=100000000',function(r,t){
+      AjGet('/wall'+vk.id+'?offset=100000000',function(r,t){
          var o=(t.match(/"share":(\{[^}]+\})/)||[])[1];
          if (!o) {alert('hash error'); return;}
          o=eval('('+o+')');
@@ -531,7 +531,7 @@ var vk_photos = {
       stManager.add('upload.js',function(){
          var photo=photo_id;
          if (photo.match(/photo-?\d+_\d+/)) photo=photo.match(/photo(-?\d+_\d+)/)[1];
-         AjPost('http://vk.com/al_photos.php',{'act':'edit_photo', 'al': 1, 'photo': photo},function(r,t){
+         AjPost('/al_photos.php',{'act':'edit_photo', 'al': 1, 'photo': photo},function(r,t){
                var upload_url=t.match(/"upload_url":"(.*)"/);
                var hash=t.match(/', '([a-f0-9]{18})'\)/);
                var aid=t.match(/selectedItems:\s*\[(-?\d+)\]/)[1];
@@ -1332,7 +1332,7 @@ function vkGetLinksToPhotos(oid,aid){
 		  var src=phot[i];
         if (PHOTO_DOWNLOAD_NAMES){
            var num=('_000000000000'+i).substr(-len);
-           var name='?&/'+num+'_'+src.split('/').pop();
+           var name=(src.indexOf('?')>0?'&/':'?&/')+num+'_'+src.split('/').pop();
            src+=name;
         }
         parr.push('<a href="'+src+'">'+src+'</a>');
@@ -2524,15 +2524,19 @@ vk_videos = {
    },
    get_album:function(){
       var list = [];
+      if (!window.mvcur || !window.mvcur.mvData) return '';
       var video= mvcur.mvData.videoRaw;
       var album_id=null;
       var album_link=null;
       var vid_data=null;
+      
       if (cur.vSection == 'search' && cur.vStr) {
+         if (!cur.searchData || !cur.vOrder) return '';
          var hd = cur.vHD ? cur.vHD : 0;
          var searchData = cur.searchData[cur.vStr + hd.toString() + cur.vOrder.toString()];
          list=searchData.list;
       } else {
+         if (!cur.videoList) return '';
          list = cur.videoList[cur.vSection];
       }
       for (var i = 0, len = list.length; i < len; i++) {
@@ -3580,7 +3584,7 @@ function vkVidLinks(data){
          if (h.indexOf('vkGetVideoSize')!=-1) return;
          var inf=vk_videos.get_album();
          var v_el=el=geByClass('mv_num_views',ge('mv_comments_data'))[0];
-         if (inf[0] && v_el){
+         if (inf && inf[0] && v_el){
             v_el.innerHTML='<a href="'+inf[1]+'">'+v_el.innerHTML+'</a>';
             
          }
@@ -4302,7 +4306,7 @@ function vkAudioNode(node){
 
 		     var name=el.parentNode.getElementsByTagName('b')[0].innerText+' - '+(span_title || ge('title'+id) || spans[1] || spans[0]).innerText;
            name=vkCleanFileName(name);
-		     if (smartlink) {url+='?'+vkDownloadPostfix()+'&/'+vkEncodeFileName(name)+'.mp3';};//normal name
+		     if (smartlink) {url+=(url.indexOf('?')>0?'':'?')+vkDownloadPostfix()+'&/'+vkEncodeFileName(name)+'.mp3';};//normal name
 		     //if (SearchLink && el){el.innerHTML=vkAudioDurSearchBtn(el.innerText,name,id);/* "<a href='/search?c[section]=audio&c[q]="+name+"'>"+el.innerText+"</a>";*/}
          if (download){ 
             divs[i].setAttribute('style','width:17px;'); 
@@ -4760,7 +4764,7 @@ function vkAudioPlayList(add_button){
 			
          wiki+='[[audio'+itm.owner_id+'_'+itm.aid+']]\r\n';
          
-			links.push(itm.url+"?/"+vkEncodeFileName(vkCleanFileName(itm.artist+" - "+itm.title))+".mp3");
+			links.push(itm.url+(itm.url.indexOf('?')>0?'&/':'?/')+vkEncodeFileName(vkCleanFileName(itm.artist+" - "+itm.title))+".mp3");
 		}
 		pls+='\nNumberOfEntries='+list.length+'\n\nVersion=2'
 

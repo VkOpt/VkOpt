@@ -775,10 +775,16 @@ var vkMozExtension = {
 		if (vkbrowser.safari) updatejs='upd_safari.js'; 
 		updatejs=updhost+updatejs;
 		if (heads.length > 0) {
-			var node = document.createElement("script");
-			node.type = "text/javascript";
-			node.src = updatejs+"?"+datsig;   //http://vkoptimizer.narod.ru/update.js
-			heads[0].appendChild(node);
+			AjCrossAttachJS(updatejs+"?"+datsig);
+         /*
+         if (vk_ext_api.ready){
+            vk_aj.get(updatejs+"?"+datsig,function(t){eval(t)});
+         } else {
+            var node = document.createElement("script");
+            node.type = "text/javascript";
+            node.src = updatejs+"?"+datsig;   //http://vkoptimizer.narod.ru/update.js
+            heads[0].appendChild(node);
+         }*/
 		}
 	}
 	/* Injection to JsFunctions Lib  */
@@ -978,25 +984,32 @@ var vkMozExtension = {
 		return true;
 	}
    
-   function AjCrossAttachJS(url) {
-      var request = PrepReq();
-      if(!request) return false;
-      request.onerror=function(){
-         alert('to <head>');
-         var element = document.createElement('script');
-         element.type = 'text/javascript';
-         element.src = url;
-         document.getElementsByTagName('head')[0].appendChild(element);
-      }
-      request.onreadystatechange = function() {
-         if(request.readyState == 4 && request.responseText!=''){
-            alert('JS loaded');
-            eval(request.responseText);
+   function AjCrossAttachJS(url,id) {
+      	if (vk_ext_api.ready && (url || '').replace(/^\s+|\s+$/g, '')){
+            vk_aj.get(url,function(t){eval(t)});
+            return true;
+         } else {
+            var request = PrepReq();
+            if(!request) return false;
+            request.onerror=function(){
+               //alert('to <head>');
+               var element = document.createElement('script');
+               element.type = 'text/javascript';
+               element.src = url;
+               if (id)
+                  element.id=id;
+               document.getElementsByTagName('head')[0].appendChild(element);
+            }
+            request.onreadystatechange = function() {
+               if(request.readyState == 4 && request.responseText!=''){
+                  //alert('JS loaded');
+                  eval(request.responseText);
+               }
+            };
+            request.open('GET', url, true);
+            request.send(null);
+            return false;
          }
-      };
-      request.open('GET', url, true);
-      request.send(null);
-      return true;
 	}
 //////////////
 // Ajax end //
@@ -2255,6 +2268,81 @@ function remixmid() {
   
   return tmp;
 }
+// 
+var vk_ext_api={
+   mark:'vkopt_loader',
+   callbacks:{},
+   cid:1,
+   ready: window._ext_ldr_vkopt_loader?true:false,
+   init:function(){
+      if (!vk_ext_api.inited){
+         window.addEventListener("message", vk_ext_api.on_message,false);
+         vk_ext_api.inited = true;
+      }
+      vk_ext_api.req()
+   },
+   on_message:function(e){
+		var res=e.data || {};
+      var data=res.response;
+      var sub=res.sub || {};
+      if (sub.cid && sub.mark==vk_ext_api.mark){
+         vk_ext_api.callbacks['cb_'+sub.cid](data);
+      }
+   },
+   req:function(data,callback){
+      /*
+      {
+         act: get post head ajax
+         mark: vk_ext_api.mark
+         url:
+         params:
+         options: only for ajax
+      }*/     
+      var cid=vk_ext_api.cid++;
+      data = data || {};
+      data.mark = vk_ext_api.mark;
+      data._sub = {cid:cid,mark:vk_ext_api.mark};
+      if (callback) 
+         vk_ext_api.callbacks['cb_'+cid]=function(response){
+            callback(response);
+            delete vk_ext_api.callbacks['cb_'+cid];            
+         }
+      window.postMessage(data,"*");
+   },
+   ajax:{
+      get:function(url,callback){
+         vk_ext_api.req({act:'get',url:url},function(r){
+            callback(r.response);
+         });      
+      },
+      post:function(url,params,callback){
+         vk_ext_api.req({act:'post',url:url,params:params},function(r){
+            callback(r.response);
+         });        
+      },      
+      head:function(url,callback){
+         vk_ext_api.req({act:'head',url:url},function(r){
+            var raw=(r.response || '').split(/\r?\n/);
+            var headers={};
+            for (var i=0; i<raw.length; i++){
+               var s=raw[i].split(':');
+               var n=s.shift().replace(/^\s+|\s+$/g, '');
+               var c=s.join(':').replace(/^\s+|\s+$/g, '');
+               if (n && c)
+                  headers[n]=c;
+            }
+            
+            callback(headers);
+         });        
+      },
+   }
+}
+vk_ext_api.init();
+vk_ext_api.req({act:'check_ext'},function(){vk_ext_api.ready=true;});
+vk_aj=vk_ext_api.ajax;
+/*
+
+*/
 
 var XFR={
 	reqs:0,
@@ -2263,6 +2351,20 @@ var XFR={
 		var domain=(location.protocol?location.protocol+'//':'http://')+url.split('/')[2];
       if (domain.indexOf('youtube.com')!=-1) domain+='/embed/';
       if (domain.indexOf('player.vimeo.com')!=-1) domain+='/video/';
+      
+      if (vk_ext_api.ready && url){
+         if (only_head){
+            vk_aj.head(url,function(h){
+               var l=parseInt(h['Content-Length']);
+               callback(h,l);
+            });
+         } else {
+            vk_aj.post(url,data,function(t){
+               callback(t);
+            });         
+         }
+         return;
+      }
 		data=data || {};
 		var req_id=this.reqs++;
 		var frame_url=domain+'?xfr_query='+escape(JSON.Str([url,data,req_id,only_head?1:0]));
@@ -2687,7 +2789,10 @@ function vkDownloadFile(el,ignore) {
       name=d || decodeURI(a[1]);
    }
    if (!name) return true;//name = url.split('/').pop();
-   vkMozExtension.send_request({download:1,url:url,name:name});
+   if (vk_ext_api.ready)
+      vk_ext_api.req({act:'download',url:url,name:name},function(r){});
+   else 
+      vkMozExtension.send_request({download:1,url:url,name:name});
    return false;
 }
 

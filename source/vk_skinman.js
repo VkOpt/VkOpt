@@ -108,65 +108,145 @@ function vkSetBodyScrResolution(){
       add_scr_info();
 }
 
-function vkStyle(url){ if (ge("vkStyleCSS")) ge("vkStyleCSS").href=url; }
+var vk_skinman_last_style_url='';
+function vkStyle(url){ 
+   vk_skinman_last_style_url=url;
+   var need_xhr=false;
+   if (url && document.location.protocol=='https:' && url.substr(0,6)!='https:') need_xhr=true;
+   var vkcssNode=ge("vkStyleCSS");
+   if (vkcssNode) vkcssNode.parentNode.removeChild(vkcssNode);
+
+   var vkcssNode = null;
+   var set = function(node){
+      var head = document.getElementsByTagName('head')[0];
+      if (!head){ 
+         setTimeout(function(){set(node)},2);
+         return;
+      }
+      head.appendChild(node);
+   
+   }  
+   
+   if (need_xhr && vk_ext_api.ready){
+      vk_aj.get(url,function(css){
+         if (vk_skinman_last_style_url!=url) return; // if new theme apply before loaded previous
+         
+         var t=url.split('/');
+         t.pop();
+         var base_url=t.join('/');
+         var base_domain=t[0]+'//'+t[2];
+         //*
+         var replaced=0;
+         css=css.replace(/(url\(['"]?)(.{6})/g,function(str,p1,p2,offset,s){
+            if (p2!='http:/' && p2!='https:'){
+               //console.log('"'+p2+'"', str);
+               replaced++;
+               return p1+(p2[0]=='/'?base_domain:base_url+'/')+p2;
+            } else {
+               return p1+''+p2;
+            }
+            //console.log(p1,p2);
+         });
+         if (replaced){
+            console.log('Process css: '+url+'\nbase_url: '+base_url+'\nbase_domain: '+base_domain+'\nreplaced: '+replaced);
+         }
+         //*/
+         
+         vkcssNode = document.createElement("style");
+         vkcssNode.type = "text/css";
+         vkcssNode.id="vkStyleCSS";
+         vkcssNode.appendChild(document.createTextNode(css));
+         set(vkcssNode);
+      });
+
+   } else {
+      vkcssNode = document.createElement('link');
+      vkcssNode.type = 'text/css';
+      vkcssNode.rel = 'stylesheet';
+      vkcssNode.id="vkStyleCSS";
+      if (url) vkcssNode.href = url;
+      set(vkcssNode);
+   }
+
+   /*
+   if (ge("vkStyleCSS"))
+      ge("vkStyleCSS").href=url; */
+}
+
 function vkStyleJS(url){ 
    if (window.vkThemeOnDisable) vkThemeOnDisable();
    
    var js=ge("vkStyleCSSJS");
    if (js)  js.parentNode.removeChild(js);
    
+   AjCrossAttachJS(url,"vkStyleCSSJS");
+   /*
    var  scriptElement = document.createElement("script");
    scriptElement.type = "text/javascript";
    scriptElement.id="vkStyleCSSJS";
    scriptElement.src=url;
    document.getElementsByTagName('head')[0].appendChild(scriptElement);
+   */
    
    //if (ge("vkStyleCSSJS")) ge("vkStyleCSSJS").src=url; 
 }
 
 function vkSkinnerInit(){
   //var lsready=vkLocalStoreReady();
+  if (!window.AjCrossAttachJS){
+      setTimeout(vkSkinnerInit,2);
+      return;
+  }
   if (EnableSetStyle && !ge('vkStyleCSS')) {                                                           
     VK_CURRENT_CSS_URL=vkGetVal("VK_CURRENT_CSS_URL") || "";//vk_LSGetVal - only localstore; vkGetVal- localstore && cookie 
     VK_CURRENT_CSS_CODE=vk_LSGetVal('VK_CURRENT_CSS_CODE') || "";
     VK_CURRENT_CSSJS_URL=vkGetVal('VK_CURRENT_CSSJS_URL') || "";
     
       vkSetBodyScrResolution();
+      
+      vkStyle(VK_CURRENT_CSS_URL);
+      /*
       var vkcssNode = document.createElement('link');
       vkcssNode.type = 'text/css';
       vkcssNode.rel = 'stylesheet';
       vkcssNode.id="vkStyleCSS";
       if (!VK_CURRENT_CSS_URL=="") vkcssNode.href = VK_CURRENT_CSS_URL;
-      
+      */
       
       var styleElement = document.createElement("style");
       styleElement.type = "text/css";
       styleElement.id="vkStyleNode";
       styleElement.appendChild(document.createTextNode(VK_CURRENT_CSS_CODE));
       
-
-      var  scriptElement = document.createElement("script");
-      scriptElement.type = "text/javascript";
-      scriptElement.id="vkStyleCSSJS";
-      if (!VK_CURRENT_CSSJS_URL=="") scriptElement.src=VK_CURRENT_CSSJS_URL;
+      var  scriptElement = null;
+      if (VK_CURRENT_CSSJS_URL!=""){
+         AjCrossAttachJS(VK_CURRENT_CSSJS_URL,"vkStyleCSSJS");
+      } else {
+         scriptElement = document.createElement("script");
+         scriptElement.type = "text/javascript";
+         scriptElement.id="vkStyleCSSJS";
+      }
+      //if (!VK_CURRENT_CSSJS_URL=="") scriptElement.src=VK_CURRENT_CSSJS_URL;
       
       var appendTo='head';//"body";
       var headID = document.getElementsByTagName(appendTo)[0];
 	  //var link = document.getElementsByTagName('link')[0];
       if (headID){
         headID.appendChild(document.createElement('link'));//fix
-        headID.appendChild(vkcssNode);
+        //headID.appendChild(vkcssNode);
         headID.appendChild(styleElement);
-        headID.appendChild(scriptElement);
+        if (scriptElement) 
+         headID.appendChild(scriptElement);
       } else {
         var vkcsload=setInterval(function(){                                            
           if (document.getElementsByTagName(appendTo)[0]){
             clearInterval(vkcsload);
             headID = document.getElementsByTagName(appendTo)[0];
             //headID.appendChild(document.createElement('link'));//fix
-            headID.appendChild(vkcssNode);
+            //headID.appendChild(vkcssNode);
             headID.appendChild(styleElement);
-            headID.appendChild(scriptElement);
+            if (scriptElement) 
+               headID.appendChild(scriptElement);
           }
         },2);
     }
@@ -369,10 +449,13 @@ function vkShowSkinMan(filter,page){
       var nows= new  Date(); 
       var datsig=nows.getYear()+"_"+nows.getMonth()+"_"+nows.getDate()+"_";
       datsig+=Math.floor(nows.getHours()/4); //raz v 4 chasa      
+      /*
       var element = document.createElement('script');
       element.type = 'text/javascript';
       element.src = VK_CSS_CATALOG_BASE_URL+"?"+datsig;
-      document.getElementsByTagName('head')[0].appendChild(element);
+      document.getElementsByTagName('head')[0].appendChild(element);*/
+      AjCrossAttachJS(VK_CSS_CATALOG_BASE_URL+"?"+datsig,"vkStyleCSSJS");
+      
       return false;
   }
   if (!page) page=0;
