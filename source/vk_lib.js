@@ -2347,12 +2347,13 @@ vk_aj=vk_ext_api.ajax;
 var XFR={
 	reqs:0,
 	callbacks:[],
+   vk_ext_api_exclude:/oauth\.vk\.com\/authorize/,
 	post:function(url,data,callback,only_head){
 		var domain=(location.protocol?location.protocol+'//':'http://')+url.split('/')[2];
       if (domain.indexOf('youtube.com')!=-1) domain+='/embed/';
       if (domain.indexOf('player.vimeo.com')!=-1) domain+='/video/';
       
-      if (vk_ext_api.ready && url){
+      if (vk_ext_api.ready && url && !XFR.vk_ext_api_exclude.test(url)){
          if (only_head){
             vk_aj.head(url,function(h){
                var l=parseInt(h['Content-Length']);

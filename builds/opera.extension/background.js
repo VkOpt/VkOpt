@@ -30,7 +30,7 @@ var ex_loader = {
       },
       {
          "files":["vk_lib.js"],
-         "domain":"vkontakte\\.ru|vk\\.com|youtube\\.com|vimeo\\.com|vk\\.me|userapi\\.com",
+         "domain":"vkontakte\\.ru|vk\\.com|vk\\.me|userapi\\.com",
          "exclude":"|notifier\\.php|im_frame\\.php|about:blank|i"
       }      
    ],
@@ -567,6 +567,10 @@ ext_api={
           }
           return pairs.join('&');
       };
+      var isEmptyObject = function (obj) {
+         for ( var key in obj ) return false;
+         return true;
+      };
       var xhr = new XMLHttpRequest(),
          //callback = callback || this.noop,
          method = options.method || 'GET',
@@ -575,6 +579,9 @@ ext_api={
          data = options.data || null,
          url = options.url || '',
          contentType = headers['Content-type'] || 'x-www-form-urlencoded';
+         
+         
+         if (data && (typeof data == 'object') && isEmptyObject(data)) data=null;
          
          if (~contentType.indexOf('multipart/form-data') && method == 'POST' && data && data.length) {
             var buffer = new Uint8Array(data.length);
