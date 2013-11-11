@@ -1694,7 +1694,10 @@ vk_lang_en={//by Hzy
    'NewPost':'New post',
    "seVideoHideConfirm": "Disable \"Are you sure you want to close this video?\" popup",
    "seAlbumPhotosExInfo": "Load number of likes and comments in photo albums",
-   "seAudioUntrashTitle": "Clear unnecessary symbols from audios title"
+   "seAudioUntrashTitle": "Clear unnecessary symbols from audios title",
+   "NewList": "New list",
+   "ListTitle": "Title of the list",
+   "LinkToUser": "Link to user"
 };
  
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
