@@ -501,6 +501,7 @@ ext_api={
       switch(data.act){
          case 'check_ext':
             send_response({act:'get_response'});
+            break;
          case 'get':
             ext_api.get(data.url,function(t,status){
                send_response({act:'GET_response', response:t});
@@ -582,6 +583,7 @@ ext_api={
          
          
          if (data && (typeof data == 'object') && isEmptyObject(data)) data=null;
+         if (data && (typeof data == 'object')) data=serialize(data);
          
          if (~contentType.indexOf('multipart/form-data') && method == 'POST' && data && data.length) {
             var buffer = new Uint8Array(data.length);

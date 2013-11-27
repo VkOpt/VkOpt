@@ -3241,7 +3241,7 @@ vk_feed={
    }, 
    new_list_btn:function(){
       var r=ge('filter_t_newlist');
-      if (!r) return;
+      if (!r || ge('filter_t_vknewlist')) return;
       var el=se('<div class="feed_filter_tabs_row clear_fix feed_newlist_filter_row" id="filter_t_vknewlist" onmouseover="addClass(this, \'feed_filter_tabs_row_over\');" onmouseout="removeClass(this, \'feed_filter_tabs_row_over\');" onclick="vk_feed.new_list();">\
         <div class="feed_filter_tabs_icon fl_l feed_icon_newlist"></div>\
         <div class="feed_filter_tabs_title fl_l noselect" onselectstart="return false;">'+IDL('NewList',1)+'</div>\

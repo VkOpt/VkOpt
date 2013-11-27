@@ -15,7 +15,8 @@ function vkPhotoViewer(){
   Inj.Before('photoview.doShow','cur.pvNarrow','vk_phviewer.proc1(ph);');
   Inj.Before('photoview.doShow','var likeop','vkProcessNode(cur.pvNarrow);');
   Inj.End('photoview.doShow','vkProcessNode(cur.pvWide);');
-  Inj.Before('photoview.doShow','+ (ph.actions.del','+ vkPVLinks(ph) + vk_plugins.photoview_actions(ph) ');
+  //Inj.Before('photoview.doShow','+ (ph.actions.del','+ vkPVLinks(ph) + vk_plugins.photoview_actions(ph) ');
+  Inj.Before('photoview.doShow','+ actsHtml',' + vkPVLinks(ph) + vk_plugins.photoview_actions(ph) ');
   if (getSet(7)=='y') Inj.Start('photoview.afterShow','vkPVMouseScroll();');
   
   vkPVNoCheckHeight=function(){return !window.PVShowFullHeight};
@@ -4721,8 +4722,8 @@ function vkAudioLoadAlbum(albumid){
          
       }
    }
-   
-   Audio.loadAlbum(albumid);
+  
+   Audio.loadAlbum({from_pad: '', album: albumid} );
 }
 
 

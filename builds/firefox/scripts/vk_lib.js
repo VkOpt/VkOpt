@@ -986,7 +986,7 @@ var vkMozExtension = {
    
    function AjCrossAttachJS(url,id) {
       	if (vk_ext_api.ready && (url || '').replace(/^\s+|\s+$/g, '')){
-            vk_aj.get(url,function(t){eval(t)});
+            vk_aj.get(url,function(t){window.eval(t)});
             return true;
          } else {
             var request = PrepReq();
@@ -1003,7 +1003,7 @@ var vkMozExtension = {
             request.onreadystatechange = function() {
                if(request.readyState == 4 && request.responseText!=''){
                   //alert('JS loaded');
-                  eval(request.responseText);
+                  window.eval(request.responseText);
                }
             };
             request.open('GET', url, true);
