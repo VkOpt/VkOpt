@@ -346,6 +346,7 @@ function vkStyles(){
       #pad_playlist .audio .info {width: 435px !important;}\
       #pad_playlist .audio .title_wrap {width: 328px !important; }\
       #pad_playlist_panel .audio .info {width: 370px !important;}\
+      #pad_playlist_panel .wall_module .audio .title_wrap { max-width:290px !important; width: auto !important;}\
       \
 		#mail_envelope .audio_title_wrap { width: 215px !important;}\
       .narrow_column .audio_title_wrap { width: 115px !important;}\
