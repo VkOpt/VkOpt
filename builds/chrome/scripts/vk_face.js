@@ -48,7 +48,7 @@ function vkStyles(){
 	//compact fave
 	if (CompactFave=='y'){//getSet(17)
 		main_css+='\
-		.fave_user_div{height: 110px !important; width: 67px !important;}\
+		.fave_user_div{height: 118px !important; width: 67px !important;}\
 		.fave_user_div *{width:67px !important;} .fave_user_div a img{width:50px !important;}\
       .fave_user_div .fave_u_bl_wrap{width: 7px !important;}\
       .fave_uph_wrap{height: 50px !important;}\
@@ -575,6 +575,7 @@ function vkStyles(){
          .cur_section .vk_edit_ico{       background-position: -151px -51px; }\
          \
          .vk_mob_ico {  background: url(/images/mobile_online.gif) no-repeat transparent; height: 12px;margin-left: 4px;padding-left: 10px;width: 0px;}\
+         .vk_mob_ico {  background: url(/images/mobile_online_2x.png) no-repeat transparent; background-size: 40px 13px;}\
          .vk_album_done_link  .vk_album_count{display:none;}\
          .vk_opa2{\
             opacity:0.2;\

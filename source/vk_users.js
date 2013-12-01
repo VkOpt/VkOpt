@@ -1685,6 +1685,36 @@ function vkFaveOnlineChecker(on_storage){
       }     
       var new_onl=[];
       vkCmd('fave_users_statuses','ok');
+      dApi.call('fave.getUsers',{offset:0, count:1000, fields:'online,photo_50'},function(r){
+         var users=r.response;
+         var count=users.shift();
+         //console.log(r)
+         for (var i=0; i<users.length;i++){
+            var u=users[i];
+            u.id=u.uid;
+            if (onlines[u.id]==0 && u.online) new_onl.push(u);
+            onlines[u.id]=u.online;
+         }  
+         var ostr=[];
+         for (var key in onlines) ostr.push(key+'_'+(onlines[key]?1:0));
+         vkSetVal('FaveList_Onlines',ostr.join('-'));
+         if (!ignore){  
+            for (var i=0;i<new_onl.length;i++){
+               if (getSet(49)=='y' && vkIsFavUser(new_onl[i].id)) continue;
+               var tm=(new Date).format('isoTime');
+               var time='<div class="fl_r">'+tm+'</div>';
+               new_onl[i].name = new_onl[i].first_name + ' ' + new_onl[i].last_name;
+               
+               var text='<b><a href="/id'+new_onl[i].id+'" onclick="nav.go(this);">'+new_onl[i].name+'</a></b>'+time;
+               text+='<br>'+vkOnlineInfo(new_onl[i]);
+               // vkNotifyUserCheckAndShow
+               vkShowNotify({sound:'On',title:IDL('FaveOnline'),text:text,_time:tm,author_photo:new_onl[i].photo_50,author_link:'id'+new_onl[i].id,link:'id'+new_onl[i].id,onclick:"nav.go('id"+new_onl[i].id+"')"});
+            }
+         }
+         vkCmd('fave_users_statuses','ok');
+      })
+      
+      /*
       vkApis.faves(function(r,onl){
          if (r){
             for (var i=0; i<r.length;i++){
@@ -1717,7 +1747,7 @@ function vkFaveOnlineChecker(on_storage){
             vklog('FaveOnline Api error')
          }
          timeout();
-      });
+      });*/
    }
    
 }

@@ -2556,7 +2556,6 @@ vk_fave = {
       vk_fave.photos_menu();
       vk_fave.videos_menu();
       vk_fave.posts_menu();
-      vk_fave.notes_menu();
       if (getSet(17)=='y' && nav.objLoc['section']=='users'){
          setTimeout(function(){
             var el=ge('users_content');
