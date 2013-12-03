@@ -1074,7 +1074,7 @@ function vkFriendUserInLists(uid,callback,only_cats){
 
 function vkCheckFrLink(){
 	if (getSet(9)=='y' && !ge('section_frcheck')){
-		var ref=ge("section_suggestions");
+		var ref=ge("section_all");//section_suggestions
 		var sec=vkCe('a',{href:'#', onclick:"vkFriendsCheckRun(true);return false;",id:'section_frcheck',"class":"side_filter"},IDL("refreshList"));
 		ref.parentNode.insertBefore(sec, ref.nextSibling);//
 		return;
@@ -1295,7 +1295,7 @@ function vkFriendsIdsGet(callback){
 
 function vkFriendsBySex(add_link){
 	if (add_link  && !ge('section_slists')){
-		var ref=ge("section_suggestions");
+		var ref=ge("section_all");//section_suggestions
       if (!ref) return;
 		var sec=vkCe('a',{href:'#', onclick:"vkFriendsBySex();return false;",id:'section_slists',"class":"side_filter"},IDL('FrSexToLists'));
 		ref.parentNode.insertBefore(sec, ref.nextSibling);//
@@ -1761,7 +1761,7 @@ vk_friends={
    },
    not_in_list_link:function(){
       if (!ge('section_frnolist')){
-         var ref=ge("section_suggestions");
+         var ref=ge("section_all");//section_suggestions
          if (!ref) return;
          var sec=vkCe('a',{href:'#', onclick:"vk_friends.not_in_list_show(); Friends.selectSection('frnolist');return false;",id:'section_frnolist',"class":"side_filter"},IDL("FrNotInLists"));
          ref.parentNode.insertBefore(sec, ref.nextSibling);//
@@ -1789,7 +1789,7 @@ vk_friends={
    deleted_link:function(){
       var id='frdeleted';
       if (!ge('section_'+id)){
-         var ref=ge("section_suggestions");
+         var ref=ge("section_all"); //section_suggestions
          if (!ref) return;
          var sec=vkCe('a',{href:'#', onclick:"vk_friends.deleted_show(); Friends.selectSection('"+id+"');return false;",id:'section_'+id,"class":"side_filter"},IDL("FrDeleted"));
          ref.parentNode.insertBefore(sec, ref.nextSibling);//
