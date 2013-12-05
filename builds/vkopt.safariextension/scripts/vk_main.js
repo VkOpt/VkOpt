@@ -67,7 +67,7 @@ function vkProcessNode(node){
 		vkSmiles(node);
 		//vkPrepareTxtPanels(node);
 		vkAudioNode(node);
-      vkVidAddGetLink(node);
+      vk_vid_down.vkVidAddGetLink(node);
       vkPollResultsBtn(node);
       vk_im.process_node(node);
       vk_board.get_user_posts_btn(node);
@@ -90,7 +90,7 @@ function vkProcessNodeLite(node){
   try{
 	vkProccessLinks(node);
 	vkAudioNode(node);
-   vkVidAddGetLink(node);
+   vk_vid_down.vkVidAddGetLink(node);
    vkPollResultsBtn(node);
 	//vkPrepareTxtPanels(node);
    vk_board.get_user_posts_btn(node);
@@ -268,7 +268,7 @@ function VkOptMainInit(){
   //vkPrepareTxtPanels();  
   vkSkinManInit();
   vkClock();
-  vkVidAddGetLink();
+  vk_vid_down.vkVidAddGetLink();
   vkPollResultsBtn();
   vk_board.get_user_posts_btn();  
   vk_im.process_node();  
@@ -284,7 +284,7 @@ function VkOptMainInit(){
   vkMoneyBoxAddHide();
   vkCheckUpdates();
   setTimeout(vkFriendsCheckRun,2000);
-  setTimeout(vkVidLinks,0);
+  setTimeout(vk_vid_down.vkVidLinks,0);
   if (vkgetCookie('IDFriendsUpd') && (vkgetCookie('IDFriendsUpd') != '_')) {	vkShowFriendsUpd();  }
   
 }

@@ -2102,7 +2102,7 @@ vkApis={
                   var obj=JSON.parse(t);
                   if (!obj.extra){
                         //var html='';
-                        var arr=vkVidDownloadLinksArray(obj);
+                        var arr=vk_vid_down.vkVidDownloadLinksArray(obj);
                         
                         var i=arr[quality]?quality:arr.length-1;
                         //for (var i=0; i<arr.length; i++){
@@ -2116,7 +2116,7 @@ vkApis={
                            var vidurl=v+(smartlink?vidname+vidext:'');
                            videos.push(vidurl);
                            
-                           //html+='<a class="vk_down_icon" href="'+vidurl+'" download="'+vname+vidext+'"  title="'+vname+vidext+'" onclick="return vkDownloadFile(this);" onmouseover="vkGetVideoSize(this); vkDragOutFile(this);">'+fmt[i]+'<small class="divide" url="'+vidurl+'"></small></a>'; 
+                           //html+='<a class="vk_down_icon" href="'+vidurl+'" download="'+vname+vidext+'"  title="'+vname+vidext+'" onclick="return vkDownloadFile(this);" onmouseover="vk_vid_down.vkGetVideoSize(this); vkDragOutFile(this);">'+fmt[i]+'<small class="divide" url="'+vidurl+'"></small></a>'; 
                         //}
                         //el.innerHTML=html;      
                   } else {

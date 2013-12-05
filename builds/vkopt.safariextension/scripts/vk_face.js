@@ -963,7 +963,6 @@ function vkMenu(){//vkExLeftMenu
       ['/friends?section=all',IDL("mFrA")],
       ['/friends?section=online',IDL("mFrO")],
       ['/friends?section=recent',IDL("mFrNew")],
-      ['/friends?section=suggestions',IDL("mFrSug")],
       ['/friends?section=requests',IDL("mFrR"),true],
       ['/friends?section=all_requests',IDL("mFrAllReq")],
       ['/friends?section=out_requests',IDL("mFrOutReq")],
