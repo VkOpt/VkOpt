@@ -3045,8 +3045,9 @@ vk_vid_down={
       generateHDLinks();
       return result;
    },
-   vkVidGetLinkBtn: function(vid,res){//for cur.videoTpl
+   vkVidGetLinkBtn: function(vid,res){//for cur.videoTpl  
       if (res){
+         if (getSet(2)!='y' ||  getSet(66)=='n') return res;
          res=res.replace(/%download%/,'<div class="vk_vid_acts_panel"><div class="download_cont">\
             <span><a href="#" onclick="vk_vid_down.vkVidLoadLinks('+vid[0]+','+vid[1]+',this.parentNode); return false;">'+IDL('download')+'</a></span>\
             <small class="fl_r '+(!window.vk_vid_list_adder?'vk_vid_add_hidden':'vk_vid_add_visible')+'"><a href="#" onclick="return vkVidAddToGroup('+vid[0]+','+vid[1]+');">'+IDL('AddToGroup')+'</a>'+(cur_oid!=oid?'<span class="divide">|</span>':'')+'</small>\
