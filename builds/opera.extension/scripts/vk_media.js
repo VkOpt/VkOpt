@@ -3424,7 +3424,7 @@ vk_vid_down={
       
       //var cpn=Gk();
       
-      var url = location.protocol+'//www.youtube.com/get_video_info?video_id=' + vid +
+      var url = (vk_ext_api.ready?'http:':location.protocol)+'//www.youtube.com/get_video_info?video_id=' + vid +
                '&asv=3&eurl=' + 
                encodeURIComponent(location.href) + '&el=embedded';
                /*'html5=1&video_id=' + vid +'&cpn='+cpn+'&eurl=' + 
