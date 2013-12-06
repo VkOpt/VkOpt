@@ -3511,7 +3511,7 @@ vk_vid_down={
          }
          callback(links);
       }); 
-   }
+   },
 
    vkVimeoVideoLinks: function(link){
       if (String(link).indexOf('vimeo.com')==-1) return;
