@@ -66,8 +66,8 @@ function vkProcessNode(node){
 		vkSortFeedPhotos(node);
 		vkSmiles(node);
 		//vkPrepareTxtPanels(node);
-		vkAudioNode(node);
-      vk_vid_down.vkVidAddGetLink(node);
+		vk_audio.process_node(node);
+      window.vk_vid_down && vk_vid_down.process_node(node);
       vkPollResultsBtn(node);
       vk_im.process_node(node);
       vk_board.get_user_posts_btn(node);
@@ -89,8 +89,8 @@ function vkProcessNodeLite(node){
   var tstart=unixtime();
   try{
 	vkProccessLinks(node);
-	vkAudioNode(node);
-   vk_vid_down.vkVidAddGetLink(node);
+	vk_audio.process_node(node);
+   window.vk_vid_down && vk_vid_down.process_node(node);
    vkPollResultsBtn(node);
 	//vkPrepareTxtPanels(node);
    vk_board.get_user_posts_btn(node);
@@ -256,7 +256,7 @@ function VkOptMainInit(){
   if (window.topMsg){
 	vkStManHook();
 	for (var key in StaticFiles)  if (key.indexOf('.js') != -1) vkInj(key); 
-	vkAudioNode();
+	vk_audio.process_node();
   } 
   vkProccessLinks();
   if (ge('left_blocks')) vkProccessLinks(ge('left_blocks'));
@@ -268,7 +268,7 @@ function VkOptMainInit(){
   //vkPrepareTxtPanels();  
   vkSkinManInit();
   vkClock();
-  vk_vid_down.vkVidAddGetLink();
+  window.vk_vid_down && vk_vid_down.process_node();
   vkPollResultsBtn();
   vk_board.get_user_posts_btn();  
   vk_im.process_node();  
@@ -284,7 +284,7 @@ function VkOptMainInit(){
   vkMoneyBoxAddHide();
   vkCheckUpdates();
   setTimeout(vkFriendsCheckRun,2000);
-  setTimeout(vk_vid_down.vkVidLinks,0);
+  window.vk_vid_down &&  setTimeout(vk_vid_down.vkVidLinks,0);
   if (vkgetCookie('IDFriendsUpd') && (vkgetCookie('IDFriendsUpd') != '_')) {	vkShowFriendsUpd();  }
   
 }

@@ -586,6 +586,13 @@ function WallManForm(){
 }
 //end wallmgr
 function vkInitSettings(){
+  vkoptHiddenSets=[]
+  if (!window.vk_vid_down){
+    vkoptHiddenSets.push(2,66)
+  }
+  if (!window.vk_au_down){
+    vkoptHiddenSets.push(0,1,43);
+  }
   vkoptSets={
     Media:[
       {id:0,  text:IDL("seLinkAu")},
@@ -811,6 +818,10 @@ function vkGetSettings(setts,allsett){
       var set=setts[k];
       if (set.hide) continue;
       var id=set.id;
+      
+      if (vkoptHiddenSets.indexOf(id)!=-1) continue;
+      
+      
       var ops=(set.ops)?set.ops:["on","off"];
       
       html+='<div id="settBlock'+id+'" class="sett_block'+(vkIsNewSett(id)?' sett_new':'')+'" '+(ops.length>2?'style="float:right; margin-right:4px;"':'')+'>'+(set.header?'<div class="scaption">'+set.header+'</div>':'')+'<div class="btns" id="sbtns'+id+'">';

@@ -1739,7 +1739,7 @@ function vkAudioBlock(load_audios,oid){
       removeClass(div,'empty');
       ge('vk_audio_count').innerHTML=list.length;
       ge('vk_audio_content').innerHTML=html;
-      vkAudioNode(div);
+      vk_audio.process_node(div);
 	});
    /*
    // AUDIO
