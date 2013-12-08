@@ -591,7 +591,9 @@ function vkInitSettings(){
     vkoptHiddenSets.push(2,66)
   }
   if (!window.vk_au_down){
-    vkoptHiddenSets.push(0,1,43);
+    vkoptHiddenSets.push(0,1);
+    vkLangGet();
+    vk_lang['seAudioSize']=vk_lang['seAudioSizeP'];
   }
   vkoptSets={
     Media:[
