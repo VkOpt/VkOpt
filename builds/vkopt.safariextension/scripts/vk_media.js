@@ -4985,7 +4985,7 @@ vk_apps = {
 ////////////////////
 // DOWNLOAD CODE //
 //////////////////
-vk_vid_down_={
+vk_vid_down={
    vid_page:function(){
       if (getSet(2)=='y'){
          if (cur.videoTpl){ 
@@ -5919,7 +5919,7 @@ vk_vid_down_={
    dummy:function(){}
 }
 
-vk_au_down_={
+vk_au_down={
    page:function(){
       vk_au_down.vkAudioPlayList(true);
    },
