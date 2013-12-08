@@ -2962,7 +2962,7 @@ vk_audio={
      var smartlink=(getSet(1) == 'y')?true:false;
      var download=(getSet(0) == 'y')?1:0;
      //var clean_trash=getSet(94) == 'y';
-     if (!download) return;
+     if (!download && getSet(43) != 'y') return;
      var SearchLink=true;
      var trim=function(text) { return (text || "").replace(/^\s+|\s+$/g, " "); }
      //InitAudiosMenu();
@@ -3000,11 +3000,10 @@ vk_audio={
                divs[i].setAttribute('style','width:17px;'); 
                divs[i].setAttribute('vk_ok','1');
                window.vk_au_down && vk_au_down.make_d_btn(url,divs[i],id,name+'.mp3');
-               
-               var btn=geByClass('down_btn',anode)[0] || geByClass('play_new',anode)[0];
-               if (!btn) continue;
-               btn.setAttribute('onmouseover',"vkGetAudioSize('"+id+"',this);")
-            }    
+            }
+            var btn=geByClass('down_btn',anode)[0] || geByClass('play_new',anode)[0];
+            if (!btn) continue;
+            btn.setAttribute('onmouseover',"vkGetAudioSize('"+id+"',this);");           
          }  
      }   
    },
@@ -5943,6 +5942,7 @@ vk_au_down={
    },
    vkAudioPlayList: function(add_button){
       if(add_button){
+         if (getSet(0) != 'y') return;
          if (ge('vkmp3links') || nav.objLoc['act']=='recommendations' || nav.objLoc['act']=='popular') return;
          var p=ge('album_filters');
          var btn=vkCe("div",{
