@@ -1027,7 +1027,7 @@ vk_im={
       if (getSet(81)!='y') return;
       var nodes=geByClass('im_date_link',node);//geByClass('im_log_author_chat_name',node);
       for (var i=0; i<nodes.length; i++){
-         var mid=(nodes[i].href || '').match(/mail.+id=(\d+)/);
+         var mid=(nodes[i].href || '').match(/mail.+id=(\d+)/) || (nodes[i].href || '').match(/im\?.*msgid=(\d+)/);
          if (!mid) continue;
          mid = mid[1];
          var p=nodes[i].parentNode;

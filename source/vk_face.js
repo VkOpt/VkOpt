@@ -892,7 +892,7 @@ function vkMenu(){//vkExLeftMenu
          .vkico_albums{background-position:0 -29px;}\
          .vkico_friends{background-position:0 -87px;}\
          .vkico_video{background-position:0 -74px;}\
-         .vkico_audio{background-position:0 -221px;}\
+         .vkico_audio, .vkico_audios{background-position:0 -221px;}\
          .vkico_mail,.vkico_im{background-position:0 -192px;}\
          .vkico_notes{background-position:0 -133px;}\
          .vkico_groups{background-position:0 -177px;}\
@@ -1105,6 +1105,7 @@ function vkMenu(){//vkExLeftMenu
     ]
   };
   ExMenu['im']=ExMenu['mail'];
+  ExMenu['audios']=ExMenu['audio'];
   if (vk_DEBUG){
       ExMenu['vkopt'].push([["#","if (window.vk_updmenu_timeout) clearTimeout(vk_updmenu_timeout); return false;"],'<b>Stop Upd Menu</b>']);
       ExMenu['vkopt'].push([["#","vkPhotoUrlUpload(prompt('Image URL:')); return false;"],'UploadImg']);

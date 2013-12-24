@@ -257,7 +257,7 @@ function vkStyles(){
    .vk_tt_links_list a{display:block; padding:2px 1px;}\
    .nobold{font-weight: normal;}\
    .vk_pr_tt{width:300px}\
-	"+(RemoveAd=='y'?".ad_box,.ad_help_link, .ad_help_link_new, .ad_box_new, #ad_help_link_new, #left_ads {display: none !important;}\
+	"+(RemoveAd=='y'?".ad_box,.ad_help_link, .ad_help_link_new, .ad_box_new, #ad_help_link_new, #left_ads, .ads_ads_news_wrap {display: none !important;}\
 			"+(NotHideSugFr?'.ad_box_friend{display: block !important;} .ad_box_friend + .ad_box_new{display:block !important;}':'')+"\
 			#groups .clearFix {display: block !important;} \
 			#sideBar a[href*=\"help.php\"] {display: none !important;} \
@@ -892,7 +892,7 @@ function vkMenu(){//vkExLeftMenu
          .vkico_albums{background-position:0 -29px;}\
          .vkico_friends{background-position:0 -87px;}\
          .vkico_video{background-position:0 -74px;}\
-         .vkico_audio{background-position:0 -221px;}\
+         .vkico_audio, .vkico_audios{background-position:0 -221px;}\
          .vkico_mail,.vkico_im{background-position:0 -192px;}\
          .vkico_notes{background-position:0 -133px;}\
          .vkico_groups{background-position:0 -177px;}\
@@ -963,6 +963,7 @@ function vkMenu(){//vkExLeftMenu
       ['/friends?section=all',IDL("mFrA")],
       ['/friends?section=online',IDL("mFrO")],
       ['/friends?section=recent',IDL("mFrNew")],
+	  ['/friends?act=find',IDL("mFrSug")],
       ['/friends?section=requests',IDL("mFrR"),true],
       ['/friends?section=all_requests',IDL("mFrAllReq")],
       ['/friends?section=out_requests',IDL("mFrOutReq")],
@@ -1104,6 +1105,7 @@ function vkMenu(){//vkExLeftMenu
     ]
   };
   ExMenu['im']=ExMenu['mail'];
+  ExMenu['audios']=ExMenu['audio'];
   if (vk_DEBUG){
       ExMenu['vkopt'].push([["#","if (window.vk_updmenu_timeout) clearTimeout(vk_updmenu_timeout); return false;"],'<b>Stop Upd Menu</b>']);
       ExMenu['vkopt'].push([["#","vkPhotoUrlUpload(prompt('Image URL:')); return false;"],'UploadImg']);

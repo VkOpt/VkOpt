@@ -1,7 +1,7 @@
 ﻿{
   "manifest_version": 2,
   "name": "VkOpt",
-  "version": "2.2.1.2",
+  "version": "2.2.1.3",
   "description": "Добавление множества функций, упрощающих жизнь ВКонтакте (vk.com). Official site and support: http://vkopt.net/",
   "homepage_url": "http://vkopt.net/",
   "content_scripts": [
@@ -13,7 +13,19 @@
      }
   ],
   "web_accessible_resources": [
-      "scripts/*"
+      "scripts/*",
+      "scripts/vkopt.js",
+      "scripts/vk_face.js",
+      "scripts/vk_lib.js",
+      "scripts/vk_main.js",
+      "scripts/vk_media.js",
+      "scripts/vk_page.js",
+      "scripts/vk_resources.js",
+      "scripts/vk_settings.js",
+      "scripts/vk_skinman.js",
+      "scripts/vk_txtedit.js",
+      "scripts/vk_users.js",
+      "scripts/vklang.js"
    ],
   "background": {
     "page": "background.html"

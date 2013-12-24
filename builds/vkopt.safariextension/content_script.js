@@ -72,14 +72,24 @@ var ex_ldr={
             }
          },false);
       } else if (ext_browser.chrome){                                              // CHROMIUM
-         chrome.extension.sendRequest({url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc),key:ex_ldr.key}, function(data) {
+         chrome.extension.sendRequest({act:'get_scripts', url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc),key:ex_ldr.key}, function(data) {
             if (data.key==ex_ldr.key && data.files && data.files.length>0){
                callback(data.files);
             }
          });
          //*
          ex_api.ready=true;
-         
+
+         ex_api.post_message=function(msg){
+            msg=ex_api.prepare_data(msg);
+            chrome.extension.sendRequest(msg, function(data) {
+               if (data.key==ex_ldr.key){
+                  ex_api.message_handler(data);
+               } 
+            });
+            return msg;
+         } 
+         /*                  
          var port = chrome.runtime.connect({name: "extension_api"});
          ex_api.post_message=function(msg){
             msg=ex_api.prepare_data(msg);
@@ -91,6 +101,9 @@ var ex_ldr={
                ex_api.message_handler(data);
             }               
          });
+         */
+         
+         
       } else if (ext_browser.safari){
          ex_api.ready=true;
          safari.self.addEventListener("message", function(e) {                                    // SAFARI

@@ -1712,6 +1712,7 @@ function vkFaveOnlineChecker(on_storage){
             }
          }
          vkCmd('fave_users_statuses','ok');
+         timeout();
       })
       
       /*

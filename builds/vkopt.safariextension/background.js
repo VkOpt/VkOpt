@@ -109,19 +109,38 @@ var ex_loader = {
          ext_api.ready=true;
          chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
             // request.url - contain url
-            if (request.url){
+            if (request.act=='get_scripts' && request.url){
                var obj={};
                ex_loader.get_scripts(request.url,function(files){
                   //console.log({url: request.url, inframe: request.in_frame, files:files});
                   sendResponse({files:files, key:request.key});
-               },request.in_frame);         
-               
+               },request.in_frame);           
+               return;
             }
+            // FOR API
+            var SendResp=function(data){
+               data.key = request.key;
+               data._req= request._req;
+               sendResponse(data);
+            }
+            ext_api.message_handler(request,SendResp);            
+            
          });
          
           
 
-         //* FOR API
+         // FOR API
+         /*
+         chrome.extension.onRequest.addListener(function(msg, sender, sendResponse){
+            var SendResp=function(data){
+               data.key = msg.key;
+               data._req= msg._req;
+               sendResponse(data);
+            }
+            ext_api.message_handler(msg,SendResp);
+         });
+         */
+         /*
          var ports=[]
          chrome.runtime.onConnect.addListener(function(port) {
            ports.push(port);
@@ -134,6 +153,8 @@ var ex_loader = {
              ext_api.message_handler(msg,SendResponse);
            });
          });
+         */
+         
       } else if(window.safari && safari.application){                         // SAFARI
          safari.application.addEventListener("message", function(e) {
             // e.message.url - contain url
