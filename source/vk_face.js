@@ -585,6 +585,8 @@ function vkStyles(){
             transition: opacity 100ms linear;\
          }\
          .vk_opa2:hover{opacity:1}\
+         .search_bar .vk_idattach{display:none;}\
+         .search_bar:hover .vk_idattach{display:block;}\
 	";
    main_css+=vk_menu.css;
    main_css+=vk_board.css;
@@ -881,7 +883,7 @@ function vkMenu(){//vkExLeftMenu
   var vkmenu_css1='\
          #nav a .vkicon, #side_bar ol a .vkicon{float:left; width:13px; height:13px; margin-right:1px; /*background:#DDD;*/}\
          .vkico_friends, .vkico_profile, .vkico_albums,\
-         .vkico_video,.vkico_audio,.vkico_mail,.vkico_im,\
+         .vkico_video,.vkico_audio, .vkico_audios, .vkico_mail,.vkico_im,\
          .vkico_notes,.vkico_groups,.vkico_events,\
          .vkico_feed, .vkico_newsfeed,.vkico_fave,.vkico_custom_link,\
          .vkico_settings,.vkico_apps,.vkico_docs,\
