@@ -3284,7 +3284,7 @@ vk_feed={
 
       }
       
-      var tpl='<a href="/id%UID" class="olist_item_wrap" id="olist_item_wrap%UID">\
+      var tpl='<a href="/%LINK" class="olist_item_wrap" id="olist_item_wrap%UID">\
         <div class="olist_item clear_fix">\
           <!--<span class="olist_checkbox fl_r"></span>-->\
           <span class="olist_item_photo fl_l">\
@@ -3293,21 +3293,43 @@ vk_feed={
           <span class="olist_item_name fl_l">%NAME</span>\
         </div>\
       </a>';
+      var search_group=function(gid){
+         dApi.call('groups.getById',{group_id:gid},function(r){
+            if (!r.response || !r.response[0]) return;
+            var u=r.response[0];
+            if (users_list.indexOf('-'+u.gid)!=-1) return;
+            users_list.push('-'+u.gid);
+            var el=se(tpl.replace(/%UID/g,u.gid)
+               .replace(/%LINK/g,u.screen_name)
+               .replace(/%PHOTO/g,u.photo)
+               .replace(/%NAME/g,u.name));
+            val('vk_feed_list_user','');   
+            ge('vk_feed_users_list').appendChild(el);
+         })
+         
+      }
       
       var search_user=function(){
          var v=val('vk_feed_list_user');
          var sn=v.split('#')[0].split('?')[0].split('/').pop();
          if (!sn) return;
-         dApi.call('users.get',{user_ids:sn,fields:'photo_50'},function(r){
-            if (!r.response || !r.response[0]) return;
-            var u=r.response[0];
-            if (users_list.indexOf(u.uid)!=-1) return;
-            users_list.push(u.uid);
-            var el=se(tpl.replace(/%UID/g,u.uid)
-               .replace(/%PHOTO/g,u.photo_50)
-               .replace(/%NAME/g,u.first_name+' '+u.last_name));
-            val('vk_feed_list_user','');   
-            ge('vk_feed_users_list').appendChild(el);
+         dApi.call('users.get',{user_ids:sn,fields:'photo_50,screen_name'},{
+            ok:function(r){
+               if (!r.response || !r.response[0]){ 
+                  search_group(sn);
+                  return;
+               }
+               var u=r.response[0];
+               if (users_list.indexOf(u.uid)!=-1) return;
+               users_list.push(u.uid);
+               var el=se(tpl.replace(/%UID/g,u.uid)
+                  .replace(/%LINK/g,u.screen_name)
+                  .replace(/%PHOTO/g,u.photo_50)
+                  .replace(/%NAME/g,u.first_name+' '+u.last_name));
+               val('vk_feed_list_user','');   
+               ge('vk_feed_users_list').appendChild(el);
+            },
+            error:function(r){ search_group(sn); }
          })
       }
 
@@ -3319,7 +3341,7 @@ vk_feed={
       box.content('<div>\
       <h2>'+IDL('ListTitle')+'</h2>\
       <input type="text" id="vk_feed_list_title" value="'+Math.round((new Date()).getTime()/1000).toString(36)+'" class="text" style="width:370px; margin-bottom:15px;">\
-      <h2>'+IDL('LinkToUser')+'</h2>\
+      <h2>'+IDL('LinkToUserOrGroup')+'</h2>\
       <div class="fl_r"><div class="button_blue" id="vk_feed_search_btn"><button><span class="vk_magglass_icon"></span></button></div></div>\
       <div><input type="text" id="vk_feed_list_user" class="text olist_filter" style="margin-top:2px; width: 305px;"></div>\
       <div id="vk_feed_users_list"></div>\

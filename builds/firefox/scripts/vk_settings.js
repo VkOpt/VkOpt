@@ -720,9 +720,17 @@ function vkInitSettings(){
 	//LAST 94
 	/*
       vkoptSets['advanced']=[
-         'vk_upd_menu_timeout','vkMenuHideTimeout','CHECK_FAV_ONLINE_DELAY',
-         'FAVE_ONLINE_BLOCK_SHOW_COUNT','SHOW_POPUP_PROFILE_DELAY','USERMENU_SYMBOL',
-         'MOD_PROFILE_BLOCKS','CUT_VKOPT_BRACKET','MAIL_BLOCK_UNREAD_REQ','SUPPORT_STEALTH_MOD','FULL_ENCODE_FILENAME'
+         'vk_upd_menu_timeout',
+         'vkMenuHideTimeout',
+         'CHECK_FAV_ONLINE_DELAY',
+         'FAVE_ONLINE_BLOCK_SHOW_COUNT',
+         'SHOW_POPUP_PROFILE_DELAY',
+         'USERMENU_SYMBOL',
+         'MOD_PROFILE_BLOCKS',
+         'CUT_VKOPT_BRACKET',
+         'MAIL_BLOCK_UNREAD_REQ',
+         'SUPPORT_STEALTH_MOD',
+         'FULL_ENCODE_FILENAME'
       ];
    */
 	vkSetsType={
@@ -763,6 +771,51 @@ vk_settings = {
         addClass(el.parentNode,'dislike_icon_'+idx);
       }
       return false;
+   },
+   filter:function(s){
+      if (!s || trim(s)==''){
+         ge('vksets_search_result').innerHTML='';
+         hide('vksets_clear_inp');
+         show('vksets_stoggle_btn');
+         vkMakeSettings('vksetts_tabs');
+         return;
+      }
+      hide('vksets_stoggle_btn');
+      show('vksets_clear_inp');
+      var cat=replaceEntities(s);
+      vkCheckSettLength();
+
+      var remixbit=vkgetCookie('remixbit');
+      allsett = remixbit.split('-');
+      sett = allsett[0].split('');
+
+      for (var j = 0; j <= VK_SETTS_COUNT; j++){
+         if (sett[j] == null) { if (!vkoptSetsObj[j] || !vkoptSetsObj[j][0]) sett[j] = 'n'; else sett[j] = '0'; }
+      }
+      allsett[0] = sett.join('');
+      vksetCookie('remixbit', allsett.join('-'));
+     
+      var sets=[];
+      var excluded={
+         //'Sounds':1,
+         'Help':1,
+         'Hidden':1
+      };
+      for (var key in vkoptSets){
+       var setts=vkoptSets[key];
+       if (excluded[key]) continue;
+       for (var i=0;i<setts.length;i++){
+         var txt=(setts[i].text|| '').toUpperCase()+' '+(setts[i].header|| '').toUpperCase();
+         s=s.toUpperCase();
+         if ( txt.indexOf(s)>-1 || txt.match(s) ){// TopSearch.parseLatKeys(s)
+            sets.push(setts[i]);
+         }
+       }   
+     }
+     //console.log(sets);
+     ge('vksetts_tabs').innerHTML='';
+     ge('vksets_search_result').innerHTML='<div class="sett_cat_header">'+cat+' ('+sets.length+')</div>'+vkGetSettings(sets,allsett)
+     //
    }
 }
 function vksettobj(s){
@@ -885,51 +938,7 @@ function vkInpChange(e,obj,callback){
       callback(trim(obj.value));
    },50);
 }
-function vkSettsFilter(s){
-   if (!s || trim(s)==''){
-      ge('vksets_search_result').innerHTML='';
-      hide('vksets_clear_inp');
-      show('vksets_stoggle_btn');
-      vkMakeSettings('vksetts_tabs');
-      return;
-   }
-   hide('vksets_stoggle_btn');
-   show('vksets_clear_inp');
-   var cat=replaceEntities(s);
-   vkCheckSettLength();
 
-   var remixbit=vkgetCookie('remixbit');
-   allsett = remixbit.split('-');
-   sett = allsett[0].split('');
-
-   for (var j = 0; j <= VK_SETTS_COUNT; j++){
-      if (sett[j] == null) { if (!vkoptSetsObj[j] || !vkoptSetsObj[j][0]) sett[j] = 'n'; else sett[j] = '0'; }
-   }
-   allsett[0] = sett.join('');
-   vksetCookie('remixbit', allsett.join('-'));
-  
-   var sets=[];
-   var excluded={
-      //'Sounds':1,
-      'Help':1,
-      'Hidden':1
-   };
-   for (var key in vkoptSets){
-    var setts=vkoptSets[key];
-    if (excluded[key]) continue;
-    for (var i=0;i<setts.length;i++){
-      var txt=(setts[i].text|| '').toUpperCase()+' '+(setts[i].header|| '').toUpperCase();
-      s=s.toUpperCase();
-      if ( txt.indexOf(s)>-1 || txt.match(s) ){// TopSearch.parseLatKeys(s)
-         sets.push(setts[i]);
-      }
-    }   
-  }
-  //console.log(sets);
-  ge('vksetts_tabs').innerHTML='';
-  ge('vksets_search_result').innerHTML='<div class="sett_cat_header">'+cat+' ('+sets.length+')</div>'+vkGetSettings(sets,allsett)
-  //
-}
 
 function vkMakeSettings(el){
   vklog('Last settings index: '+VK_SETTS_COUNT,2);
@@ -1026,8 +1035,8 @@ function vkMakeSettings(el){
 function vkShowSettings(box){
   var tpl='<div id="vksetts_search">\
      <div id="vksetts_sbox" style="display:none;">\
-        <div class="vk_clear_input" id="vksets_clear_inp" onclick="val(\'vksetts_sinp\',\'\'); vkSettsFilter();"></div>\
-        <input class="search vksetts_sinp" id="vksetts_sinp" onkeyup="vkInpChange(event, this, vkSettsFilter);" onpaste="vkInpChange(event, this, vkSettsFilter);" oncut="vkInpChange(event, this, vkSettsFilter);" onfocus="addClass(\'vksetts_sbox\', \'vksets_search_focus\');" onblur="removeClass(\'vksetts_sbox\', \'vksets_search_focus\');">\
+        <div class="vk_clear_input" id="vksets_clear_inp" onclick="val(\'vksetts_sinp\',\'\'); vk_settings.filter();"></div>\
+        <input class="search vksetts_sinp" id="vksetts_sinp" onkeyup="vkInpChange(event, this, vk_settings.filter);" onpaste="vkInpChange(event, this, vk_settings.filter);" oncut="vkInpChange(event, this, vk_settings.filter);" onfocus="addClass(\'vksetts_sbox\', \'vksets_search_focus\');" onblur="removeClass(\'vksetts_sbox\', \'vksets_search_focus\');">\
       </div>\
       <div id="vksets_search_result"></div>\
       <div id="vksets_stoggle_btn" style="position:relative"><div style="position:absolute; right:0px; top:15px"><a class="vk_magglass_icon" href="#" onclick="toggle(\'vksetts_sbox\')"></a></div></div>\

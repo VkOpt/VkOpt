@@ -53,6 +53,22 @@ var VIDEO_AUTOPLAY_DISABLE=false;
 var FULL_ENCODE_FILENAME=false;
 var PHOTO_DOWNLOAD_NAMES=false;
 
+var VKOPT_CFG_LIST=[
+         'vk_upd_menu_timeout',
+         'vkMenuHideTimeout',
+         'CHECK_FAV_ONLINE_DELAY',
+         'FAVE_ONLINE_BLOCK_SHOW_COUNT',
+         'SHOW_POPUP_PROFILE_DELAY',
+         'USERMENU_SYMBOL',
+         'MOD_PROFILE_BLOCKS',
+         'CUT_VKOPT_BRACKET',
+         'MAIL_BLOCK_UNREAD_REQ',
+         'SUPPORT_STEALTH_MOD',
+         'VIDEO_AUTOPLAY_DISABLE',
+         'FULL_ENCODE_FILENAME',
+         'PHOTO_DOWNLOAD_NAMES'
+];
+
 var vkNewSettings=[88,89,90,91,92,93,94]; //"new" label on settings item
 var SetsOnLocalStore={
   'vkOVer':'c',
