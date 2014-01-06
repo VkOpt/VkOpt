@@ -585,6 +585,8 @@ function WallManForm(){
   ge('wallmgr').innerHTML=WallManager();
 }
 //end wallmgr
+
+
 function vkInitSettings(){
   vkoptHiddenSets=[]
   if (!window.vk_vid_down){
@@ -870,6 +872,65 @@ function vkCheckboxSetting(id,text,in_div){
 }
 function vkSetNY(id,is_on){	setCfg(id,is_on?'y':'n');};
 
+
+var _vk_inp_to={'__cnt_id':0};
+function vkInpChange(e,obj,callback){
+   //var val=trim(obj.value);
+   if (!obj.id){ 
+      obj.id='vkobjid_'+_vk_inp_to['__cnt_id'];
+      _vk_inp_to['__cnt_id']= _vk_inp_to['__cnt_id']+1;
+   }
+   if (_vk_inp_to[obj.id]) clearTimeout(_vk_inp_to[obj.id]);
+   _vk_inp_to[obj.id]=setTimeout(function(){
+      callback(trim(obj.value));
+   },50);
+}
+function vkSettsFilter(s){
+   if (!s || trim(s)==''){
+      ge('vksets_search_result').innerHTML='';
+      hide('vksets_clear_inp');
+      show('vksets_stoggle_btn');
+      vkMakeSettings('vksetts_tabs');
+      return;
+   }
+   hide('vksets_stoggle_btn');
+   show('vksets_clear_inp');
+   var cat=replaceEntities(s);
+   vkCheckSettLength();
+
+   var remixbit=vkgetCookie('remixbit');
+   allsett = remixbit.split('-');
+   sett = allsett[0].split('');
+
+   for (var j = 0; j <= VK_SETTS_COUNT; j++){
+      if (sett[j] == null) { if (!vkoptSetsObj[j] || !vkoptSetsObj[j][0]) sett[j] = 'n'; else sett[j] = '0'; }
+   }
+   allsett[0] = sett.join('');
+   vksetCookie('remixbit', allsett.join('-'));
+  
+   var sets=[];
+   var excluded={
+      //'Sounds':1,
+      'Help':1,
+      'Hidden':1
+   };
+   for (var key in vkoptSets){
+    var setts=vkoptSets[key];
+    if (excluded[key]) continue;
+    for (var i=0;i<setts.length;i++){
+      var txt=(setts[i].text|| '').toUpperCase()+' '+(setts[i].header|| '').toUpperCase();
+      s=s.toUpperCase();
+      if ( txt.indexOf(s)>-1 || txt.match(s) ){// TopSearch.parseLatKeys(s)
+         sets.push(setts[i]);
+      }
+    }   
+  }
+  //console.log(sets);
+  ge('vksetts_tabs').innerHTML='';
+  ge('vksets_search_result').innerHTML='<div class="sett_cat_header">'+cat+' ('+sets.length+')</div>'+vkGetSettings(sets,allsett)
+  //
+}
+
 function vkMakeSettings(el){
   vklog('Last settings index: '+VK_SETTS_COUNT,2);
   vkCheckSettLength();
@@ -958,20 +1019,30 @@ function vkMakeSettings(el){
   vkRemixBitS=function(){return "DefSetBits='"+vkgetCookie('remixbit')+"';";}
   tabs[0].active=true;
   html=vkMakeContTabs(tabs);
-  if (el) ge(el).innerHTML=html;//vkGetSettings(vkoptSets['Media'],allsett);
+  if (el) ge(el).innerHTML=html;//'<div id="vksetts_search"></div><div id="vksetts_tabs">'+html+'</div>';//vkGetSettings(vkoptSets['Media'],allsett);
   else return html;
 }
 
 function vkShowSettings(box){
+  var tpl='<div id="vksetts_search">\
+     <div id="vksetts_sbox" style="display:none;">\
+        <div class="vk_clear_input" id="vksets_clear_inp" onclick="val(\'vksetts_sinp\',\'\'); vkSettsFilter();"></div>\
+        <input class="search vksetts_sinp" id="vksetts_sinp" onkeyup="vkInpChange(event, this, vkSettsFilter);" onpaste="vkInpChange(event, this, vkSettsFilter);" oncut="vkInpChange(event, this, vkSettsFilter);" onfocus="addClass(\'vksetts_sbox\', \'vksets_search_focus\');" onblur="removeClass(\'vksetts_sbox\', \'vksets_search_focus\');">\
+      </div>\
+      <div id="vksets_search_result"></div>\
+      <div id="vksets_stoggle_btn" style="position:relative"><div style="position:absolute; right:0px; top:15px"><a class="vk_magglass_icon" href="#" onclick="toggle(\'vksetts_sbox\')"></a></div></div>\
+  </div><div id="vksetts_tabs">%html</div>';
+  
   vkDisableAjax();
   var header='Vkontakte Optimizer '+String(vVersion).split('').join('.')+'<sup><i>'+vPostfix+'</i></sup> '+'(build '+vBuild+') <b class="fl_r"><a href="javascript: hz_chooselang();">'+IDL("ChangeVkOptLang")+'</a></b>';
   if (!box){
     show('header');
 	document.title='[ VkOpt ['+String(vVersion).split('').join('.')+'] settings ]';
     ge('header').innerHTML='<h1>'+header+'</h1>';
-    vkMakeSettings('content');
+    ge('content').innerHTML=tpl.replace(/%html/g,'');
+    vkMakeSettings('vksetts_tabs');
   } else {
-    var html=vkMakeSettings();
+    var html=tpl.replace(/%html/g,vkMakeSettings());
     if (!window.vkSettingsBox || isNewLib()) vkSettingsBox = new MessageBox({title: header,closeButton:true,width:"650px"});
     var box=vkSettingsBox;
     box.removeButtons();

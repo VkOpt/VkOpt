@@ -439,6 +439,17 @@ function vkStyles(){
       #vk_sound_vol{text-align:center; width:200px; margin:0 auto;}\
       #wmdonate .sett_block{width:96%; height:110px;}\
       #wmdonate .sett_block .stext{width: 190px;}\
+      \
+      #vksetts_sbox .vksetts_sinp{width:583px;}\
+      .box_body #vksetts_sbox .vksetts_sinp {width: 592px;}\
+      .vk_clear_input{   background: url(\"http://st0.vk.me/images/icons/input_clear.gif\") 6px 6px no-repeat transparent;\
+         cursor: pointer;   display: none;   height: 19px;   margin: -1px 0px 0px 583px;   opacity: 0.6;   padding: 2px;   position: absolute;   width: 19px;   z-index: 95;\
+      }\
+      .box_body .vk_clear_input{margin-left: 595px;}\
+      .vk_clear_input:hover{   opacity: 1;}\
+      #vksetts_sbox{position: relative; height: 23px; text-align: center; padding-top:13px;}\
+      .box_body #vksetts_sbox{padding-top:0px;}\
+      .vksets_search_focus{}\
 	"; 
 	
 	var shut='\
@@ -585,6 +596,8 @@ function vkStyles(){
             transition: opacity 100ms linear;\
          }\
          .vk_opa2:hover{opacity:1}\
+         .search_bar .vk_idattach{display:none;}\
+         .search_bar:hover .vk_idattach{display:block;}\
 	";
    main_css+=vk_menu.css;
    main_css+=vk_board.css;
@@ -881,7 +894,7 @@ function vkMenu(){//vkExLeftMenu
   var vkmenu_css1='\
          #nav a .vkicon, #side_bar ol a .vkicon{float:left; width:13px; height:13px; margin-right:1px; /*background:#DDD;*/}\
          .vkico_friends, .vkico_profile, .vkico_albums,\
-         .vkico_video,.vkico_audio,.vkico_mail,.vkico_im,\
+         .vkico_video,.vkico_audio, .vkico_audios, .vkico_mail,.vkico_im,\
          .vkico_notes,.vkico_groups,.vkico_events,\
          .vkico_feed, .vkico_newsfeed,.vkico_fave,.vkico_custom_link,\
          .vkico_settings,.vkico_apps,.vkico_docs,\

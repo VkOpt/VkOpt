@@ -439,6 +439,17 @@ function vkStyles(){
       #vk_sound_vol{text-align:center; width:200px; margin:0 auto;}\
       #wmdonate .sett_block{width:96%; height:110px;}\
       #wmdonate .sett_block .stext{width: 190px;}\
+      \
+      #vksetts_sbox .vksetts_sinp{width:583px;}\
+      .box_body #vksetts_sbox .vksetts_sinp {width: 592px;}\
+      .vk_clear_input{   background: url(\"http://st0.vk.me/images/icons/input_clear.gif\") 6px 6px no-repeat transparent;\
+         cursor: pointer;   display: none;   height: 19px;   margin: -1px 0px 0px 583px;   opacity: 0.6;   padding: 2px;   position: absolute;   width: 19px;   z-index: 95;\
+      }\
+      .box_body .vk_clear_input{margin-left: 595px;}\
+      .vk_clear_input:hover{   opacity: 1;}\
+      #vksetts_sbox{position: relative; height: 23px; text-align: center; padding-top:13px;}\
+      .box_body #vksetts_sbox{padding-top:0px;}\
+      .vksets_search_focus{}\
 	"; 
 	
 	var shut='\

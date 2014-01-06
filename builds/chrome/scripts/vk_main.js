@@ -655,7 +655,7 @@ function vkProcessResponse(answer,url,q){
       if(answer[0].invites) answer[0].invites = vkModAsNode(answer[0].invites,vkProcessNodeLite,url,q);
       if(answer[0].admins) answer[0].admins = vkModAsNode(answer[0].admins,vkProcessNodeLite,url,q);
   }
-  if (q.act=='edit_audio_box' && answer[2]) answer[2]=answer[2]+'vk_audio.in_box_move("'+q.aid+'");'
+  if (q.act=='edit_audio_box' && answer[2]) answer[2]=answer[2]+'\n vk_audio.in_box_move("'+q.aid+'");';
   // 39 - highlight common groups
   if (getSet(39) == 'y' && url=='/al_profile.php' && q.act=='groups'){
       answer[1]=vkModAsNode(answer[1],vk_highlinghts.profile_groups,url,q);
@@ -841,7 +841,7 @@ function vkVidChooseProcess(answer,url,q){
    } 
   
   if (ref){
-    var node=vkCe('div',{'style':"height: 25px; padding: 4px 20px;","class":'vk_opa2'},'\
+    var node=vkCe('div',{'style':"height: 25px; padding: 4px 20px; padding-left:0px; margin-top: 33px;","class":'vk_opa2 vk_idattach'},'\
     <div class="fl_l">'+IDL('EnterLinkToVideo')+':</div>\
       <span class="fl_l"><input id="vk_link_to_video" type="text"  style="width:215px" class="s_search text"></span>\
       <div id="vk_link_to_video_button" class="button_blue fl_r"  style="vertical-align: middle;"><button onclick="vkCheckVideoLinkToMedia();">'+IDL('OK')+'</button></div>\
@@ -849,7 +849,8 @@ function vkVidChooseProcess(answer,url,q){
     ');
     /*ref.parentNode.insertBefore(node,ref);
     ref.parentNode.insertBefore(vkCe('h4'),ref);*/
-    ref.parentNode.appendChild(node);
+    //ref.parentNode.appendChild(node);
+    ref.appendChild(node);
     answer[1]=div.innerHTML;
   }
   }
@@ -884,15 +885,16 @@ function vkAudioChooseProcess(answer,url,q){
    }
   
   if (ref){
-    var node=vkCe('div',{'style':"height: 25px; padding: 4px 20px;","class":'vk_opa2'},'\
-    <div class="fl_l">'+IDL('EnterLinkToAudio')+':</div>\
+    var node=vkCe('div',{'style':"height: 25px; padding: 4px 20px; padding-left:0px; margin-top: 33px;","class":'vk_opa2 vk_idattach'},'\
+    <div class="fl_l" style="line-height:20px">'+IDL('EnterLinkToAudio')+':</div>\
       <span class="fl_l"><input id="vk_link_to_audio" type="text" style="width:190px"  class="s_search text"></span>\
       <div id="vk_link_to_audio_button" class="button_blue fl_r"  style="vertical-align: middle;"><button onclick="vkCheckAudioLinkToMedia();">'+IDL('OK')+'</button></div>\
     \
     ');
     //ref.parentNode.insertBefore(node,ref);
     //ref.parentNode.insertBefore(vkCe('h4'),ref);
-    ref.parentNode.appendChild(node);
+    ref.appendChild(node);
+    //ref.parentNode.appendChild(node);
     answer[1]=div.innerHTML;
   }
   }  

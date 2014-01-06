@@ -388,7 +388,7 @@ vk_highlinghts={
                if (id!=''){
                   mygr.push(id);
                }
-               if (isGroupAdmin(id))	addClass(nodes[i],'vk_adm_group');
+               if (isGroupAdmin(id) && common)	addClass(nodes[i],'vk_adm_group');
             }
             //var groups=mygr.join(',');
             //vkSetVal('vk_my_groups',groups);
