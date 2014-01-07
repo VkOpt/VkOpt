@@ -815,7 +815,7 @@ vk_settings = {
      //console.log(sets);
      ge('vksetts_tabs').innerHTML='';
      ge('vksets_search_result').innerHTML='<div class="sett_cat_header">'+cat+' ('+sets.length+')</div>'+vkGetSettings(sets,allsett)+
-                              (s=='EXTRA'?'<div class="sett_cat_header">Advanced settings. WARNING! DANGER!</div>'+vk_settings.cfg_override_edit():'');
+                              (s=='EXTRA'?'<div class="sett_cat_header">Advanced/unstable settings. WARNING! DANGER!</div>'+vk_settings.cfg_override_edit():'');
      //
    },
    cfg_override: function(){
