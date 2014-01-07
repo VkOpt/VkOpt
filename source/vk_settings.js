@@ -814,8 +814,94 @@ vk_settings = {
      }
      //console.log(sets);
      ge('vksetts_tabs').innerHTML='';
-     ge('vksets_search_result').innerHTML='<div class="sett_cat_header">'+cat+' ('+sets.length+')</div>'+vkGetSettings(sets,allsett)
+     ge('vksets_search_result').innerHTML='<div class="sett_cat_header">'+cat+' ('+sets.length+')</div>'+vkGetSettings(sets,allsett)+
+                              (s=='EXTRA'?'<div class="sett_cat_header">Advanced settings. WARNING! DANGER!</div>'+vk_settings.cfg_override_edit():'');
      //
+   },
+   cfg_override: function(){
+      var cfg = vkGetVal('vk_cfg_override') || '{}';
+      try{
+         cfg = JSON.parse(cfg);
+      } catch(e){ 
+         cfg = {}
+      }
+      var orig={};
+      for(var i=0; i<VKOPT_CFG_LIST.length; i++){
+         orig[VKOPT_CFG_LIST[i]] = window[VKOPT_CFG_LIST[i]];
+         if (cfg[VKOPT_CFG_LIST[i]]==='' || cfg[VKOPT_CFG_LIST[i]]==null) continue;
+         window[VKOPT_CFG_LIST[i]] = cfg[VKOPT_CFG_LIST[i]];
+      }
+      if (!window.VKOPT_CFG_LIST_ORIG) window.VKOPT_CFG_LIST_ORIG=orig;
+   },
+   cfg_override_change_val:function(el){
+      var cfg = vkGetVal('vk_cfg_override') || '{}';
+      try{
+         cfg = JSON.parse(cfg);
+      } catch(e){ 
+         cfg = {}
+      }
+      
+      var value=hasClass(el,'checkbox')?isChecked(el):val(el);
+      var cfg_name=el.getAttribute('cfg');
+      
+      var type=typeof(VKOPT_CFG_LIST_ORIG[cfg_name]);
+      //console.log(cfg_name,value,type);
+      switch(type){
+         case 'boolean':
+            cfg[cfg_name]=value?true:false;
+            break;
+         case 'string':
+            if (cfg[cfg_name]!=null && trim(value)===''){
+               //console.log('Remove: ',cfg_name,value,type);
+               delete cfg[cfg_name];
+            } else
+               cfg[cfg_name]=value;
+            break;
+         case 'number':
+            if (cfg[cfg_name] && parseInt(value)==NaN){
+               delete cfg[cfg_name];
+            } else
+               cfg[cfg_name]=parseInt(value);
+            break;                 
+      }
+      //if (cfg[cfg_name]!=null) window[cfg_name]=cfg[cfg_name];
+      cfg = JSON.stringify(cfg);
+      vkSetVal('vk_cfg_override',cfg);
+   },
+   cfg_override_edit: function(){
+      var html='';
+      // typeof(value) == 'number'
+      // typeof(PHOTO_DOWNLOAD_NAMES)=='boolean'
+      // typeof('qwwee')=='string'
+      for(var i=0; i<VKOPT_CFG_LIST.length; i++){
+         var type=typeof(VKOPT_CFG_LIST_ORIG[VKOPT_CFG_LIST[i]]);
+         //console.log(type,VKOPT_CFG_LIST[i],window[VKOPT_CFG_LIST[i]]);
+         html+='<tr><td>'+VKOPT_CFG_LIST[i]+'</td><td>\n';
+         switch(type){
+            case 'boolean':
+               //html+='\t<input type="checkbox" id="cfg_'+VKOPT_CFG_LIST[i]+'"'+(window[VKOPT_CFG_LIST[i]]?' checked="on"':'')+'>\n';
+               html+='\t<div class="checkbox '+(window[VKOPT_CFG_LIST[i]]?'on ':'')+'fl_l" id="cfg_'+VKOPT_CFG_LIST[i]+'" cfg="'+VKOPT_CFG_LIST[i]+'" onclick="checkbox(this); vk_settings.cfg_override_change_val(this);"><div></div></div>\n'
+               break;
+            case 'string':   
+            case 'number':
+               var ev='onkeyup="vk_settings.cfg_override_change_val(this)" onpaste="vk_settings.cfg_override_change_val(this)" oncut="vk_settings.cfg_override_change_val(this)"';
+               html+='\t<input type="text" id="cfg_'+VKOPT_CFG_LIST[i]+'" cfg="'+VKOPT_CFG_LIST[i]+'" '+ev+' value="'+clean((window[VKOPT_CFG_LIST[i]] || '')+'')+'">';
+               break;                 
+         }
+         html+='</td></tr>\n';
+      }
+      html='<table id="vk_adv_settings_content">'+html+'</table>';
+      html+='<div class="button_blue"><button onclick="vk_settings.cfg_override_reset();">Reset all to defaults</button></div>';
+      return html;
+   },
+   cfg_override_reset:function(){
+      if (confirm('Reset all changes in advanced setting to default values?')){
+         for(var i=0; i<VKOPT_CFG_LIST.length; i++){
+            window[VKOPT_CFG_LIST[i]] = window.VKOPT_CFG_LIST_ORIG[VKOPT_CFG_LIST[i]];
+         } 
+         vkSetVal('vk_cfg_override','{}');
+         ge('vk_adv_settings_content').parentNode.innerHTML=vk_settings.cfg_override_edit();
+      }
    }
 }
 function vksettobj(s){
@@ -1039,7 +1125,7 @@ function vkShowSettings(box){
         <input class="search vksetts_sinp" id="vksetts_sinp" onkeyup="vkInpChange(event, this, vk_settings.filter);" onpaste="vkInpChange(event, this, vk_settings.filter);" oncut="vkInpChange(event, this, vk_settings.filter);" onfocus="addClass(\'vksetts_sbox\', \'vksets_search_focus\');" onblur="removeClass(\'vksetts_sbox\', \'vksets_search_focus\');">\
       </div>\
       <div id="vksets_search_result"></div>\
-      <div id="vksets_stoggle_btn" style="position:relative"><div style="position:absolute; right:0px; top:15px"><a class="vk_magglass_icon" href="#" onclick="toggle(\'vksetts_sbox\')"></a></div></div>\
+      <div id="vksets_stoggle_btn" style="position:relative"><div style="position:absolute; right:0px; top:15px"><a class="vk_magglass_icon" href="#" onclick="toggle(\'vksetts_sbox\'); if (isVisible(\'vksetts_sbox\')) elfocus(\'vksetts_sinp\'); return false;"></a></div></div>\
   </div><div id="vksetts_tabs">%html</div>';
   
   vkDisableAjax();

@@ -225,8 +225,10 @@ function vkLocationCheck(){
 }
 
 function VkOptMainInit(){
+  vk_settings.cfg_override();
   if (vkLocationCheck()) return;
   if (InstallRelease()) return;
+  
   
   if (isNewLib() && !window.lastWindowWidth){
       setTimeout(VkOptMainInit,50);

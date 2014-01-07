@@ -13,7 +13,7 @@
 var vVersion	= 221;
 var vBuild = 140106;
 var vPostfix = ' ';
-if (!window.vk_DEBUG) var vk_DEBUG=0;
+if (!window.vk_DEBUG) var vk_DEBUG=false;
 /* EXT CONFIG */
 if (!window.DefSetBits)
 
@@ -54,6 +54,7 @@ var FULL_ENCODE_FILENAME=false;
 var PHOTO_DOWNLOAD_NAMES=false;
 
 var VKOPT_CFG_LIST=[
+         'vk_DEBUG',
          'vk_upd_menu_timeout',
          'vkMenuHideTimeout',
          'CHECK_FAV_ONLINE_DELAY',
