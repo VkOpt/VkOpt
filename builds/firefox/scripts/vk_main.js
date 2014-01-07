@@ -983,6 +983,44 @@ vk_messages={
       a2t = function(sec){
          return Math.floor(sec/60)+':'+('0'+(sec%60)).slice(-2);
       }
+      
+      make_attach=function(attach){
+         var html='';
+         if (!attach[attach.type]){ 
+            console.log('Attach broken?', attach);
+            attach[attach.type]={};
+         }
+         if(attach.type=="photo"){
+            if(attach.photo["photo_2560"]!==undefined){photolink=attach.photo["photo_2560"];}
+            else if(attach.photo["photo_1280"]!==undefined){photolink=attach.photo["photo_1280"];}
+            else if(attach.photo["photo_807"]!==undefined){photolink=attach.photo["photo_807"];}
+            else{photolink=attach.photo["photo_604"];}
+            html+='<div class="attacment"> <div class="att_ico att_photo"></div> <a target="_blank" href="'+photolink+'">[photo'+attach.photo["owner_id"]+'_'+attach.photo["id"]+'] ('+attach.photo["width"]+'x'+attach.photo["height"]+')</a> </div>';
+         }
+         else if(attach.type=="audio"){
+            html+='<div class="attacment"> <div class="att_ico att_audio"></div> <a target="_blank" href="'+attach.audio["url"]+'">[audio'+attach.audio["owner_id"]+'_'+attach.audio["id"]+'] '+attach.audio["artist"]+' - '+attach.audio["title"]+' ('+a2t(attach.audio["duration"])+')</a></div>';
+         }
+         else if(attach.type=="video"){
+            html+='<div class="attacment"> <div class="att_ico att_video"></div> <a href="http://vk.com/video'+attach.video["owner_id"]+'_'+attach.video["id"]+'" target="_blank">[video'+attach.video["owner_id"]+'_'+attach.video["id"]+'] '+attach.video["title"]+' ('+a2t(attach.video["duration"])+')</a></div>';
+         }
+         else if(attach.type=="doc"){
+            html+='<div class="attacment"> <div class="att_ico att_doc"></div> <a target="_blank" href="'+attach.doc["url"]+'">'+attach.doc["title"]+'</a></div>';
+         }
+         else if(attach.type=="wall"){
+            html+='<div class="attacment"> <div class="att_ico att_wall"></div> <a target="_blank" href="http://vk.com/wall'+attach.wall["to_id"]+'_'+attach.wall["id"]+'">[wall'+attach.wall["to_id"]+'_'+attach.wall["id"]+']</a></div>';
+         }
+         else if(attach.type=="link"){
+            html+='<div class="attacment attb_link"> <div class="att_ico att_link"></div> <a href="'+attach.link["url"]+'" target="_blank"><span>Ссылка</span> '+attach.link["title"]+'</a></div>';
+         }
+         else if(attach.type=="gift"){
+            html+='<div class="attacment"> <div class="att_ico att_gift"></div> <a target="_blank" href="'+attach.gift["thumb_256"]+'">Gift #'+attach.gift["id"]+'</a></div>';
+         }
+         else{
+            html+=JSON.stringify(attach);
+            console.log(attach.type+' is unknown');
+         }
+         return html;
+      }
 
       // write data
       html+='<hr>';
@@ -1005,39 +1043,12 @@ vk_messages={
             html+='<div class="attacments"> <b>'+IDL('HistMsgAttachments')+'</b> </div>';
             l=msg[i].attachments.length;
             for(k=0;k<l;k++){
-               if(msg[i].attachments[k].type=="photo"){
-                  if(msg[i].attachments[k].photo["photo_2560"]!==undefined){photolink=msg[i].attachments[k].photo["photo_2560"];}
-                  else if(msg[i].attachments[k].photo["photo_1280"]!==undefined){photolink=msg[i].attachments[k].photo["photo_1280"];}
-                  else if(msg[i].attachments[k].photo["photo_807"]!==undefined){photolink=msg[i].attachments[k].photo["photo_807"];}
-                  else{photolink=msg[i].attachments[k].photo["photo_604"];}
-                  html+='<div class="attacment"> <div class="att_ico att_photo"></div> <a target="_blank" href="'+photolink+'">[photo'+msg[i].attachments[k].photo["owner_id"]+'_'+msg[i].attachments[k].photo["id"]+'] ('+msg[i].attachments[k].photo["width"]+'x'+msg[i].attachments[k].photo["height"]+')</a> </div>';
-               }
-               else if(msg[i].attachments[k].type=="audio"){
-                  html+='<div class="attacment"> <div class="att_ico att_audio"></div> <a target="_blank" href="'+msg[i].attachments[k].audio["url"]+'">[audio'+msg[i].attachments[k].audio["owner_id"]+'_'+msg[i].attachments[k].audio["id"]+'] '+msg[i].attachments[k].audio["artist"]+' - '+msg[i].attachments[k].audio["title"]+' ('+a2t(msg[i].attachments[k].audio["duration"])+')</a></div>';
-               }
-               else if(msg[i].attachments[k].type=="video"){
-                  html+='<div class="attacment"> <div class="att_ico att_video"></div> <a href="http://vk.com/video'+msg[i].attachments[k].video["owner_id"]+'_'+msg[i].attachments[k].video["id"]+'" target="_blank">[video'+msg[i].attachments[k].video["owner_id"]+'_'+msg[i].attachments[k].video["id"]+'] '+msg[i].attachments[k].video["title"]+' ('+a2t(msg[i].attachments[k].video["duration"])+')</a></div>';
-               }
-               else if(msg[i].attachments[k].type=="doc"){
-                  html+='<div class="attacment"> <div class="att_ico att_doc"></div> <a target="_blank" href="'+msg[i].attachments[k].doc["url"]+'">'+msg[i].attachments[k].doc["title"]+'</a></div>';
-               }
-               else if(msg[i].attachments[k].type=="wall"){
-                  html+='<div class="attacment"> <div class="att_ico att_wall"></div> <a target="_blank" href="http://vk.com/wall'+msg[i].attachments[k].wall["to_id"]+'_'+msg[i].attachments[k].wall["id"]+'">[wall'+msg[i].attachments[k].wall["to_id"]+'_'+msg[i].attachments[k].wall["id"]+']</a></div>';
-               }
-               else if(msg[i].attachments[k].type=="link"){
-                  html+='<div class="attacment attb_link"> <div class="att_ico att_link"></div> <a href="'+msg[i].attachments[k].link["url"]+'" target="_blank"><span>Ссылка</span> '+msg[i].attachments[k].link["title"]+'</a></div>';
-               }
-               else if(msg[i].attachments[k].type=="gift"){
-                  html+='<div class="attacment"> <div class="att_ico att_gift"></div> <a target="_blank" href="'+msg[i].attachments[k].gift["thumb_256"]+'">Gift #'+msg[i].attachments[k].gift["id"]+'</a></div>';
-               }
-               else{
-                  console.log(msg[i].attachments[k].type+' is unknown');
-               }
+               html+=make_attach(msg[i].attachments[k]);
             }
          }
          //геолокаци
          if(msg[i].geo !== undefined){
-            html+='<div class="attacment"> <div class="att_ico att_geo"></div> <a href="https://maps.google.ru/maps?q='+msg[i].geo['coordinates']+'" target="_blank">'+IDL('HistMsgGeoAttach')+' '+msg[i].geo['place']['title']+'</a> </div>';
+            html+='<div class="attacment"> <div class="att_ico att_geo"></div> <a href="https://maps.google.ru/maps?q='+msg[i].geo['coordinates']+'" target="_blank">'+IDL('HistMsgGeoAttach')+' '+(msg[i].geo['place'] || {'title':''})['title']+'</a> </div>';
             //coordinates - широта долгота
             //https://maps.google.ru/maps?q=50.450108141158 30.52338187411
          }
@@ -1060,32 +1071,11 @@ vk_messages={
                html+='<div class="attacments"> <b>'+IDL('HistMsgAttachments')+'</b> </div>';
                n=msgfwd[k].attachments.length;
                for(m=0;m<n;m++){
-                  if(msgfwd[k].attachments[m].type=="photo"){
-                     if(msgfwd[k].attachments[m].photo["photo_2560"]!==undefined){photolink=msgfwd[k].attachments[m].photo["photo_2560"];}
-                     else if(msgfwd[k].attachments[m].photo["photo_1280"]!==undefined){photolink=msgfwd[k].attachments[m].photo["photo_1280"];}
-                     else if(msgfwd[k].attachments[m].photo["photo_807"]!==undefined){photolink=msgfwd[k].attachments[m].photo["photo_807"];}
-                     else{photolink=msgfwd[k].attachments[m].photo["photo_604"];}
-                     html+='<div class="attacment"> <div class="att_ico att_photo"></div> <a target="_blank" href="'+photolink+'">photo'+msgfwd[k].attachments[m].photo["owner_id"]+'_'+msgfwd[k].attachments[m].photo["id"]+'</a> </div>';
-                  }
-                  else if(msgfwd[k].attachments[m].type=="audio"){
-                     html+='<div class="attacment"> <div class="att_ico att_audio"></div> <a target="_blank" href="'+msgfwd[k].attachments[m].audio["url"]+'">[audio'+msgfwd[k].attachments[m].audio["owner_id"]+'_'+msgfwd[k].attachments[m].audio["id"]+'] '+msgfwd[k].attachments[m].audio["artist"]+' - '+msgfwd[k].attachments[m].audio["title"]+' ('+a2t(msgfwd[k].attachments[m].audio["duration"])+')</a></div>';
-                  }
-                  else if(msgfwd[k].attachments[m].type=="video"){
-                     html+='<div class="attacment"> <div class="att_ico att_video"></div> <a href="http://vk.com/video'+msgfwd[k].attachments[m].video["owner_id"]+'_'+msgfwd[k].attachments[m].video["id"]+'" target="_blank">[video'+msgfwd[k].attachments[m].video["owner_id"]+'_'+msgfwd[k].attachments[m].video["id"]+'] '+msgfwd[k].attachments[m].video["title"]+' ('+a2t(msgfwd[k].attachments[m].video["duration"])+')</a></div>';
-                  }
-                  else if(msgfwd[k].attachments[m].type=="wall"){
-                     html+='<div class="attacment"> <div class="att_ico att_wall"></div> <a target="_blank" href="http://vk.com/wall'+msgfwd[k].attachments[m].wall["to_id"]+'_'+msgfwd[k].attachments[m].wall["id"]+'">wall'+msgfwd[k].attachments[m].wall["to_id"]+'_'+msgfwd[k].attachments[m].wall["id"]+'</a></div>';
-                  }
-                  else if(msgfwd[k].attachments[m].type=="gift"){
-                     html+='<div class="attacment"> <div class="att_ico att_gift"></div> <a target="_blank" href="'+msgfwd[k].attachments[m].gift["thumb_256"]+'">Gift #'+msgfwd[k].attachments[m].gift["id"]+'</a></div>';
-                  }
-                  else{
-                     console.log('attachment "'+msgfwd[k].attachments[m].type+'" is unknown');
-                  }
+                  html+=make_attach(msgfwd[k].attachments[m]);
                }
             }
             if(msgfwd[k].geo !== undefined){
-               html+='<div class="attacment"> <div class="att_ico att_geo"></div> <a href="https://maps.google.ru/maps?q='+msgfwd[k].geo['coordinates']+'" target="_blank">'+IDL('HistMsgGeoAttach')+' '+msgfwd[k].geo['place']['title']+'</a></div>';
+               html+='<div class="attacment"> <div class="att_ico att_geo"></div> <a href="https://maps.google.ru/maps?q='+msgfwd[k].geo['coordinates']+'" target="_blank">'+IDL('HistMsgGeoAttach')+' '+(msgfwd[k].geo['place'] || {'title':''})['title']+'</a></div>';
             }
             if(msgfwd[k].fwd_messages !== undefined){
                initfwd(msgfwd[k].fwd_messages);
