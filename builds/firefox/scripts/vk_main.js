@@ -973,7 +973,7 @@ vk_messages={
          //add break
          replacedText = inputText.replace("\n","<br/>");
           //URLs starting with http://, https://, or ftp://
-          replacePattern2 = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;А-Яа-яЁё]*[-A-Z0-9+&@#\/%=~_|А-Яа-яЁё])/gim;
+          replacePattern2 = /(\b(https?|ftp):\/\/[-A-Z0-9+\&@#\\/%?=~_|!:,.;\u0410-\u042f\u0430-\u044f\u0401\u0451]*[-A-Z0-9+\&@#\/%=~_|\u0410-\u042f\u0430-\u044f\u0401\u0451])/gim; // /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;А-Яа-яЁё]*[-A-Z0-9+&@#\/%=~_|А-Яа-яЁё])/gim;
           replacedText = replacedText.replace(replacePattern2, '<a href="$1" target="_blank">$1</a>');
           //URLs starting with "www." (without // before it, or it'd re-link the ones done above).
           replacePattern3 = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
