@@ -3479,7 +3479,7 @@ function vkParseAudioInfo(_aid,node,anode){
 var vk_del_dup_check_size=false;
 function vkAudioDelDup(add_button,btn){
 	if (add_button){
-		if (nav.objLoc[0]=='audio'){
+		if (nav.objLoc[0]=='audio' || /audios-?\d+/.test(nav.objLoc[0] || '')){
 			var p=ge('audio_search_filters');
 			if (ge('vk_deldup_btn') || !p) return;
 			p.appendChild(vkCe('div',{"class":'audio_filter_sep'}));
