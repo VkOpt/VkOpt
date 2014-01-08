@@ -948,10 +948,10 @@ function vkImAddPreventHideCB(){
 vk_messages={
    html_tpl:'<!DOCTYPE html>\
    <html>\
-      <head><meta charset="utf-8"/><link rel="shortcut icon" href="http://vk.com/images/fav_chat.ico"/><title>%title</title><style>\
+      <head><meta charset="utf-8"/><link rel="shortcut icon" href="http://vk.com/images/fav_chat.ico"/><link rel="stylesheet" type="text/css" href="http://vk.com/css/al/common.css" /><title>%title</title><style>\
       body{text-align:center;font:12px/16px Verdana;margin:5px;}\
       hr{border-color:#C3D1E0;}\
-      .messages{width:950px;margin:0 auto;text-align:left;} .msg {overflow:hidden} .from,.msgbody,.attacments,.attacment,.fwd{margin-left:80px;}\
+      .messages{width:950px;margin:0 auto;text-align:left;} .msg_item {overflow:hidden} .from,.msg_body,.attacments,.attacment,.fwd{margin-left:80px;}\
       .upic{float:left} .upic img{vertical-align:top;width:70px;padding:5px;height:70px;}\
       a,a:visited{text-decoration:none;color:#2B587A} a:hover{text-decoration:underline} .att_head{color:#777;}\
       .att_ico{float:left;width:11px;height:11px;margin: 3px 3px 2px; background-image:url(\'http://vk.com/images/icons/mono_iconset.gif\');}\
@@ -971,13 +971,24 @@ vk_messages={
       t2m = function(inputText) {
          var replacedText,replacePattern2,replacePattern3;
          //add break
-         replacedText = inputText.replace("\n","<br/>");
+         replacedText = replaceEntities(inputText).replace(/</g, '&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br />').replace(/"/g, '&quot;');
+
+            /*
+                           replacedText.replace(/&#(\d\d+);/g,function(s, c) {
+                                  c=replaceEntities('&#'+c+';')
+                                  return c.replace(/</g, '&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br />').replace(/"/g, '&quot;');
+                           }
+            */
           //URLs starting with http://, https://, or ftp://
           replacePattern2 = /(\b(https?|ftp):\/\/[-A-Z0-9+\&@#\\/%?=~_|!:,.;\u0410-\u042f\u0430-\u044f\u0401\u0451]*[-A-Z0-9+\&@#\/%=~_|\u0410-\u042f\u0430-\u044f\u0401\u0451])/gim; // /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;А-Яа-яЁё]*[-A-Z0-9+&@#\/%=~_|А-Яа-яЁё])/gim;
           replacedText = replacedText.replace(replacePattern2, '<a href="$1" target="_blank">$1</a>');
           //URLs starting with "www." (without // before it, or it'd re-link the ones done above).
           replacePattern3 = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
           replacedText = replacedText.replace(replacePattern3,'$1<a href="http://$2" target="_blank">$2</a>');
+          
+         if (window.Emoji && Emoji.emojiToHTML)
+            replacedText = Emoji.emojiToHTML(replacedText,true).replace(/"\/images\//g,'"http://vk.com/images/') || replacedText;          
+          
           return replacedText;
       }
       a2t = function(sec){
@@ -1033,11 +1044,11 @@ vk_messages={
 
       // build
       for(i=0,j=msg.length;i<j;i++){
-         html+='<div id="msg'+msg[i].id+'" class="msg">';
+         html+='<div id="msg'+msg[i].id+'" class="msg_item">';
          html+='<div class="upic"><img src="'+user[msg[i].from_id].photo_100+'" alt="[photo_100]"></div>';
          html+='<div class="from"> <b> <a href="http://vk.com/id'+msg[i].from_id+'" target="_blank">'+user[msg[i].from_id].first_name+' '+user[msg[i].from_id].last_name+'</a></b> @ <a href="#msg'+msg[i].id+'">'+t2d(msg[i].date)+'</a></div>';
          if(msg[i].body != ""){
-               html+='<div class="msgbody">'+t2m(msg[i].body)+'</div>';
+               html+='<div class="msg_body">'+t2m(msg[i].body)+'</div>';
          }
          if(msg[i].attachments !== undefined){
             html+='<div class="attacments"> <b>'+IDL('HistMsgAttachments')+'</b> </div>';
@@ -1048,7 +1059,7 @@ vk_messages={
          }
          //геолокаци
          if(msg[i].geo !== undefined){
-            html+='<div class="attacment"> <div class="att_ico att_geo"></div> <a href="https://maps.google.ru/maps?q='+msg[i].geo['coordinates']+'" target="_blank">'+IDL('HistMsgGeoAttach')+' '+(msg[i].geo['place'] || {'title':''})['title']+'</a> </div>';
+            html+='<div class="attacment"> <div class="att_ico att_geo"></div> <a href="https://maps.google.ru/maps?q='+msg[i].geo['coordinates']+'" target="_blank">'+IDL('HistMsgGeoAttach')+' '+(msg[i].geo['place'] || {'title':'---'})['title']+'</a> </div>';
             //coordinates - широта долгота
             //https://maps.google.ru/maps?q=50.450108141158 30.52338187411
          }
@@ -1063,10 +1074,10 @@ vk_messages={
          html+='<div class="att_head"> <div class="att_ico att_fwd"/></div> '+IDL('HistMsgFwd')+' </div>';
          html+='<div class="fwd">';
          for(k=0,l=msgfwd.length;k<l;k++){
-            html+='<div class="msg">';
+            html+='<div class="msg_item">';
             html+='<div class="upic"><img src="'+user[msgfwd[k].user_id].photo_100+'" alt="[photo_100]"></div>';
             html+='<div class="from"> <b> <a href="http://vk.com/id'+msgfwd[k].user_id+'" target="_blank">'+user[msgfwd[k].user_id].first_name+' '+user[msgfwd[k].user_id].last_name+'</a></b> @ '+t2d(msgfwd[k].date)+'</div>';
-            html+='<div class="msgbody"> '+t2m(msgfwd[k].body)+'</div>';
+            html+='<div class="msg_body"> '+t2m(msgfwd[k].body)+'</div>';
             if(msgfwd[k].attachments !== undefined){
                html+='<div class="attacments"> <b>'+IDL('HistMsgAttachments')+'</b> </div>';
                n=msgfwd[k].attachments.length;
@@ -1075,7 +1086,7 @@ vk_messages={
                }
             }
             if(msgfwd[k].geo !== undefined){
-               html+='<div class="attacment"> <div class="att_ico att_geo"></div> <a href="https://maps.google.ru/maps?q='+msgfwd[k].geo['coordinates']+'" target="_blank">'+IDL('HistMsgGeoAttach')+' '+(msgfwd[k].geo['place'] || {'title':''})['title']+'</a></div>';
+               html+='<div class="attacment"> <div class="att_ico att_geo"></div> <a href="https://maps.google.ru/maps?q='+msgfwd[k].geo['coordinates']+'" target="_blank">'+IDL('HistMsgGeoAttach')+' '+(msgfwd[k].geo['place'] || {'title':'---'})['title']+'</a></div>';
             }
             if(msgfwd[k].fwd_messages !== undefined){
                initfwd(msgfwd[k].fwd_messages);
@@ -1093,6 +1104,7 @@ vk_messages={
       var messages = [];
       var users_ids = [];
       var history_uids={};
+      stManager.add('emoji.js');
       var collect_users=function(arr){
          for (var i=0; i<arr.length; i++){
             var msg=arr[i];
@@ -1128,7 +1140,9 @@ vk_messages={
                setTimeout(scan,350);
             } else {
                collect_users(messages);
+               ge('saveldr').innerHTML=vkProgressBar(0,100,w,'Users data... %');
                dApi.call('users.get',{user_ids:users_ids.join(','),fields:'photo,photo_100',v:'5.5'},function(r){
+                  ge('saveldr').innerHTML=vkProgressBar(90,100,w,'Users data... %');
                   var usrs=r.response;
                   var users={};
                   for (var i=0; i<usrs.length; i++)
@@ -1145,7 +1159,7 @@ vk_messages={
                   
                   var html=vk_messages.make_html(messages, users);
                   html=vk_messages.html_tpl.replace(/%messages_body/g,html);
-                  
+                  ge('saveldr').innerHTML=vkProgressBar(100,100,w,'Users data... %');
                   show('save_btn_text');
                   hide('saveldr');
                   
