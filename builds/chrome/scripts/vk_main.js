@@ -1002,11 +1002,13 @@ vk_messages={
             attach[attach.type]={};
          }
          if(attach.type=="photo"){
-            if(attach.photo["photo_2560"]!==undefined){photolink=attach.photo["photo_2560"];}
+            var photolink=attach.photo["photo_2560"] || attach.photo["photo_1280"] || attach.photo["photo_807"] || attach.photo["photo_604"];
+            var photo_size=attach.photo["width"] ? '('+attach.photo["width"]+'x'+attach.photo["height"]+')' : '';
+            /*if(attach.photo["photo_2560"]!==undefined){photolink=attach.photo["photo_2560"];}
             else if(attach.photo["photo_1280"]!==undefined){photolink=attach.photo["photo_1280"];}
             else if(attach.photo["photo_807"]!==undefined){photolink=attach.photo["photo_807"];}
-            else{photolink=attach.photo["photo_604"];}
-            html+='<div class="attacment"> <div class="att_ico att_photo"></div> <a target="_blank" href="'+photolink+'">[photo'+attach.photo["owner_id"]+'_'+attach.photo["id"]+'] ('+attach.photo["width"]+'x'+attach.photo["height"]+')</a> </div>';
+            else{photolink=attach.photo["photo_604"];}*/
+            html+='<div class="attacment"> <div class="att_ico att_photo"></div> <a target="_blank" href="'+photolink+'">[photo'+attach.photo["owner_id"]+'_'+attach.photo["id"]+'] '+photo_size+'</a> </div>';
          }
          else if(attach.type=="audio"){
             html+='<div class="attacment"> <div class="att_ico att_audio"></div> <a target="_blank" href="'+attach.audio["url"]+'">[audio'+attach.audio["owner_id"]+'_'+attach.audio["id"]+'] '+attach.audio["artist"]+' - '+attach.audio["title"]+' ('+a2t(attach.audio["duration"])+')</a></div>';
@@ -1071,7 +1073,7 @@ vk_messages={
       html+='<hr>';
 
       function initfwd(msgfwd){
-         html+='<div class="att_head"> <div class="att_ico att_fwd"/></div> '+IDL('HistMsgFwd')+' </div>';
+         html+='<div class="att_head"> <div class="att_ico att_fwd"></div> '+IDL('HistMsgFwd')+' </div>';
          html+='<div class="fwd">';
          for(k=0,l=msgfwd.length;k<l;k++){
             html+='<div class="msg_item">';
@@ -1141,7 +1143,7 @@ vk_messages={
             } else {
                collect_users(messages);
                ge('saveldr').innerHTML=vkProgressBar(0,100,w,'Users data... %');
-               dApi.call('users.get',{user_ids:users_ids.join(','),fields:'photo,photo_100',v:'5.5'},function(r){
+               dApi.call('users.get',{user_ids:users_ids.join(','),fields:'photo_100',v:'5.5'},function(r){
                   ge('saveldr').innerHTML=vkProgressBar(90,100,w,'Users data... %');
                   var usrs=r.response;
                   var users={};
