@@ -971,7 +971,7 @@ vk_messages={
       t2m = function(inputText) {
          var replacedText,replacePattern2,replacePattern3;
          //add break
-         replacedText = replaceEntities(inputText).replace(/</g, '&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br />').replace(/"/g, '&quot;');
+         replacedText = replaceEntities(inputText).replace(/</g, '&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br />').replace(/"/g, '&quot;').replace(/&/g,'&amp;');
 
             /*
                            replacedText.replace(/&#(\d\d+);/g,function(s, c) {
@@ -991,6 +991,11 @@ vk_messages={
           
           return replacedText;
       }
+		doc2text=function(t){
+			// проверка < и > в именах документов
+			t2 = t.replace(/</g, '&lt;').replace(/>/g,'&gt;').replace(/"/g, '&quot;').replace(/&/g,'&amp;');
+			return t2;
+		}
       a2t = function(sec){
          return Math.floor(sec/60)+':'+('0'+(sec%60)).slice(-2);
       }
@@ -1003,30 +1008,26 @@ vk_messages={
          }
          if(attach.type=="photo"){
             var photolink=attach.photo["photo_2560"] || attach.photo["photo_1280"] || attach.photo["photo_807"] || attach.photo["photo_604"];
-            var photo_size=attach.photo["width"] ? '('+attach.photo["width"]+'x'+attach.photo["height"]+')' : '';
-            /*if(attach.photo["photo_2560"]!==undefined){photolink=attach.photo["photo_2560"];}
-            else if(attach.photo["photo_1280"]!==undefined){photolink=attach.photo["photo_1280"];}
-            else if(attach.photo["photo_807"]!==undefined){photolink=attach.photo["photo_807"];}
-            else{photolink=attach.photo["photo_604"];}*/
-            html+='<div class="attacment"> <div class="att_ico att_photo"></div> <a target="_blank" href="'+photolink+'">[photo'+attach.photo["owner_id"]+'_'+attach.photo["id"]+'] '+photo_size+'</a> </div>';
+            var photo_size=attach.photo["width"] ? ' ('+attach.photo["width"]+'x'+attach.photo["height"]+')' : '';
+            html+='<div class="attacment"> <div class="att_ico att_photo"></div> <a target="_blank" href="'+photolink+'">[photo'+attach.photo["owner_id"]+'_'+attach.photo["id"]+']'+photo_size+'</a> </div>';
          }
          else if(attach.type=="audio"){
-            html+='<div class="attacment"> <div class="att_ico att_audio"></div> <a target="_blank" href="'+attach.audio["url"]+'">[audio'+attach.audio["owner_id"]+'_'+attach.audio["id"]+'] '+attach.audio["artist"]+' - '+attach.audio["title"]+' ('+a2t(attach.audio["duration"])+')</a></div>';
+            html+='<div class="attacment"> <div class="att_ico att_audio"></div> <a target="_blank" href="'+attach.audio["url"]+'">[audio'+attach.audio["owner_id"]+'_'+attach.audio["id"]+'] '+doc2text(attach.audio["artist"])+' - '+doc2text(attach.audio["title"])+' ('+a2t(attach.audio["duration"])+')</a></div>';
          }
          else if(attach.type=="video"){
-            html+='<div class="attacment"> <div class="att_ico att_video"></div> <a href="http://vk.com/video'+attach.video["owner_id"]+'_'+attach.video["id"]+'" target="_blank">[video'+attach.video["owner_id"]+'_'+attach.video["id"]+'] '+attach.video["title"]+' ('+a2t(attach.video["duration"])+')</a></div>';
+            html+='<div class="attacment"> <div class="att_ico att_video"></div> <a href="http://vk.com/video'+attach.video["owner_id"]+'_'+attach.video["id"]+'" target="_blank">[video'+attach.video["owner_id"]+'_'+attach.video["id"]+'] '+doc2text(attach.video["title"])+' ('+a2t(attach.video["duration"])+')</a></div>';
          }
          else if(attach.type=="doc"){
-            html+='<div class="attacment"> <div class="att_ico att_doc"></div> <a target="_blank" href="'+attach.doc["url"]+'">'+attach.doc["title"]+'</a></div>';
+            html+='<div class="attacment"> <div class="att_ico att_doc"></div> <a target="_blank" href="'+attach.doc["url"].replace(/&/g,'&amp;')+'">'+doc2text(attach.doc["title"])+'</a></div>';
          }
          else if(attach.type=="wall"){
             html+='<div class="attacment"> <div class="att_ico att_wall"></div> <a target="_blank" href="http://vk.com/wall'+attach.wall["to_id"]+'_'+attach.wall["id"]+'">[wall'+attach.wall["to_id"]+'_'+attach.wall["id"]+']</a></div>';
          }
          else if(attach.type=="link"){
-            html+='<div class="attacment attb_link"> <div class="att_ico att_link"></div> <a href="'+attach.link["url"]+'" target="_blank"><span>Ссылка</span> '+attach.link["title"]+'</a></div>';
+            html+='<div class="attacment attb_link"> <div class="att_ico att_link"></div> <a href="'+attach.link["url"]+'" target="_blank"><span>'+IDL('HistMsgAttachLink')+'</span> '+doc2text(attach.link["title"])+'</a></div>'; 
          }
          else if(attach.type=="gift"){
-            html+='<div class="attacment"> <div class="att_ico att_gift"></div> <a target="_blank" href="'+attach.gift["thumb_256"]+'">Gift #'+attach.gift["id"]+'</a></div>';
+            html+='<div class="attacment"> <div class="att_ico att_gift"></div> <a target="_blank" href="'+attach.gift["thumb_256"]+'">'+IDL('HistMsgAttachGift')+' #'+attach.gift["id"]+'</a></div>'; 
          }
          else{
             html+=JSON.stringify(attach);
@@ -1034,6 +1035,11 @@ vk_messages={
          }
          return html;
       }
+		make_geo=function(m){
+			var html='';
+         html+='<div class="attacment"> <div class="att_ico att_geo"></div> <a href="https://maps.google.ru/maps?q='+m.geo['coordinates']+'" target="_blank">'+IDL('HistMsgGeoAttach')+' '+(m.geo['place'] || {'title':'---'})['title']+'</a></div>';
+			return html;
+		}
 
       // write data
       html+='<hr>';
@@ -1060,11 +1066,9 @@ vk_messages={
             }
          }
          //геолокаци
-         if(msg[i].geo !== undefined){
-            html+='<div class="attacment"> <div class="att_ico att_geo"></div> <a href="https://maps.google.ru/maps?q='+msg[i].geo['coordinates']+'" target="_blank">'+IDL('HistMsgGeoAttach')+' '+(msg[i].geo['place'] || {'title':'---'})['title']+'</a> </div>';
-            //coordinates - широта долгота
-            //https://maps.google.ru/maps?q=50.450108141158 30.52338187411
-         }
+         if(msg[i].geo !== undefined)
+            html+=make_geo(msg[i]);
+         
          if(msg[i].fwd_messages !== undefined){
             initfwd(msg[i].fwd_messages);
          }
@@ -1087,9 +1091,9 @@ vk_messages={
                   html+=make_attach(msgfwd[k].attachments[m]);
                }
             }
-            if(msgfwd[k].geo !== undefined){
-               html+='<div class="attacment"> <div class="att_ico att_geo"></div> <a href="https://maps.google.ru/maps?q='+msgfwd[k].geo['coordinates']+'" target="_blank">'+IDL('HistMsgGeoAttach')+' '+(msgfwd[k].geo['place'] || {'title':'---'})['title']+'</a></div>';
-            }
+            if(msgfwd[k].geo !== undefined)
+               html+=make_geo(msgfwd[k]);
+
             if(msgfwd[k].fwd_messages !== undefined){
                initfwd(msgfwd[k].fwd_messages);
             }
@@ -1155,7 +1159,6 @@ vk_messages={
                            id: users_ids[i],
                            first_name: 'DELETED',
                            last_name: '',
-                           photo: 'http://vk.com/images/deactivated_b.gif',
                            photo_100: 'http://vk.com/images/deactivated_c.gif'
                         } 
                   
