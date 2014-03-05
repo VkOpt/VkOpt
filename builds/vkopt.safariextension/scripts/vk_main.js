@@ -1052,9 +1052,17 @@ vk_messages={
 
       // build
       for(i=0,j=msg.length;i<j;i++){
-         html+='<div id="msg'+msg[i].id+'" class="msg_item">';
-         html+='<div class="upic"><img src="'+user[msg[i].from_id].photo_100+'" alt="[photo_100]"></div>';
-         html+='<div class="from"> <b> <a href="http://vk.com/id'+msg[i].from_id+'" target="_blank">'+user[msg[i].from_id].first_name+' '+user[msg[i].from_id].last_name+'</a></b> @ <a href="#msg'+msg[i].id+'">'+t2d(msg[i].date)+'</a></div>';
+         var u=(user[msg[i].from_id] || {
+                           id: msgfwd[k].user_id,
+                           first_name: 'DELETED',
+                           last_name: '',
+                           photo_100: 'http://vk.com/images/deactivated_c.gif'
+                        } );
+		 html+='<div id="msg'+msg[i].id+'" class="msg_item">';
+         html+='<div class="upic"><img src="'+
+		 u.photo_100+
+		 '" alt="[photo_100]"></div>';
+         html+='<div class="from"> <b> <a href="http://vk.com/id'+msg[i].from_id+'" target="_blank">'+u.first_name+' '+u.last_name+'</a></b> @ <a href="#msg'+msg[i].id+'">'+t2d(msg[i].date)+'</a></div>';
          if(msg[i].body != ""){
                html+='<div class="msg_body">'+t2m(msg[i].body)+'</div>';
          }
@@ -1080,9 +1088,17 @@ vk_messages={
          html+='<div class="att_head"> <div class="att_ico att_fwd"></div> '+IDL('HistMsgFwd')+' </div>';
          html+='<div class="fwd">';
          for(k=0,l=msgfwd.length;k<l;k++){
-            html+='<div class="msg_item">';
-            html+='<div class="upic"><img src="'+user[msgfwd[k].user_id].photo_100+'" alt="[photo_100]"></div>';
-            html+='<div class="from"> <b> <a href="http://vk.com/id'+msgfwd[k].user_id+'" target="_blank">'+user[msgfwd[k].user_id].first_name+' '+user[msgfwd[k].user_id].last_name+'</a></b> @ '+t2d(msgfwd[k].date)+'</div>';
+            var u = (user[msgfwd[k].user_id] || {
+                           id: msgfwd[k].user_id,
+                           first_name: 'DELETED',
+                           last_name: '',
+                           photo_100: 'http://vk.com/images/deactivated_c.gif'
+                        } );
+			html+='<div class="msg_item">';
+            html+='<div class="upic"><img src="'+
+			u.photo_100+
+			'" alt="[photo_100]"></div>';
+            html+='<div class="from"> <b> <a href="http://vk.com/id'+msgfwd[k].user_id+'" target="_blank">'+u.first_name+' '+u.last_name+'</a></b> @ '+t2d(msgfwd[k].date)+'</div>';
             html+='<div class="msg_body"> '+t2m(msgfwd[k].body)+'</div>';
             if(msgfwd[k].attachments !== undefined){
                html+='<div class="attacments"> <b>'+IDL('HistMsgAttachments')+'</b> </div>';

@@ -5270,7 +5270,7 @@ vk_vid_down={
       quality = quality!=null ? quality : 3;
       var smartlink=true;
       var load=function(cback){
-         ajax.post('al_video.php', {act: 'load_videos_silent', oid: oid, offset: 0}, {
+         ajax.post('al_video.php', {act: 'load_videos_silent', oid: oid, offset: 0}, { // please_dont_ddos:2
             onDone: function(_list) {
                var list = eval('('+_list+')')['all'];
                cback(list);
@@ -5763,7 +5763,7 @@ vk_vid_down={
                encodeURIComponent(location.href) + '&el=embedded&c=web'*/
       XFR.post(url,{},function(t){   
          var obj=vk_vid_down.YTDataDecode(t);
-         var map=(/*obj.adaptive_fmts ||*/ obj.fmt_url_map || obj.url_encoded_fmt_stream_map);
+         var map=(/*obj.adaptive_fmts ||*/obj.fmt_url_map || obj.url_encoded_fmt_stream_map);
          if (!map) {
             callback([]);
             return [];
@@ -5780,7 +5780,7 @@ vk_vid_down={
          var links=[];
          for (var i=0;i<map.length;i++){
             var sig=map[i].sig //|| Qi(map[i].s);// || (decode_sig(map[i].s));
-            if (!map[i].sig) continue;// "Qi(map[i].s)" calc sig normaly, but links not valid
+            if (!map[i].sig && map[i].s) continue;// "Qi(map[i].s)" calc sig normaly, but links not valid
 
             var format=YT_video_itag_formats[map[i].itag];
             var info=(map[i].type+'').split(';')[0]+' '+(obj.fmt_list[i]+'').split('/')[1];

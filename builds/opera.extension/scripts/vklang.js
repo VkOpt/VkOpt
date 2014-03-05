@@ -1707,7 +1707,15 @@ vk_lang_en={//by Hzy
    "seAudioUntrashTitle": "Clear unnecessary symbols from audios title",
    "NewList": "New list",
    "ListTitle": "Title of the list",
-   "LinkToUser": "Link to user"
+   "LinkToUser": "Link to user",
+   "LinkToUserOrGroup": "Link to user or community",
+   "HistMsgDates": "<b>Messages dates:</b> from %start to %end",
+   "HistMsgCount": "<b>Total messages:</b> %count",
+   "HistMsgAttachments": "Attachments:",
+   "HistMsgGeoAttach": "Location:",
+   "HistMsgFwd": "Forwarded messages:",
+   "HistMsgAttachLink": "Link",
+   "HistMsgAttachGift": "Gift"
 };
  
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
@@ -2545,7 +2553,15 @@ vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
    "seAudioUntrashTitle": "\u041e\u0447\u0438\u0449\u0443\u0432\u0430\u0442\u0438 \u043d\u0430\u0437\u0432\u0438 \u0430\u0443\u0434\u0456\u043e \u0432\u0456\u0434 \u0441\u0438\u043c\u0432\u043e\u043b\u0456\u0432",
    "NewList": "\u041d\u043e\u0432\u0438\u0439 \u0441\u043f\u0438\u0441\u043e\u043a",
    "ListTitle": "\u041d\u0430\u0437\u0432\u0430 \u0441\u043f\u0438\u0441\u043a\u0443",
-   "LinkToUser": "\u041f\u043e\u0441\u0438\u043b\u0430\u043d\u043d\u044f \u043d\u0430 \u043a\u043e\u0440\u0438\u0441\u0442\u0443\u0432\u0430\u0447\u0430"
+   "LinkToUser": "\u041f\u043e\u0441\u0438\u043b\u0430\u043d\u043d\u044f \u043d\u0430 \u043a\u043e\u0440\u0438\u0441\u0442\u0443\u0432\u0430\u0447\u0430",
+   "LinkToUserOrGroup": "\u041f\u043e\u0441\u0438\u043b\u0430\u043d\u043d\u044f \u043d\u0430 \u043a\u043e\u0440\u0438\u0441\u0442\u0443\u0432\u0430\u0447\u0430 \u0430\u0431\u043e \u0433\u0440\u0443\u043f\u0443",
+   "HistMsgDates": "<b>\u0414\u0430\u0442\u0438 \u043f\u043e\u0432\u0456\u0434\u043e\u043c\u043b\u0435\u043d\u044c:</b> \u0432\u0456\u0434 %start \u043f\u043e %end",
+   "HistMsgCount": "<b>\u0412\u0441\u044c\u043e\u0433\u043e \u043f\u043e\u0432\u0456\u0434\u043e\u043c\u043b\u0435\u043d\u044c:</b> %count",
+   "HistMsgAttachments": "\u041c\u0430\u0442\u0435\u0440\u0456\u0430\u043b\u0438:",
+   "HistMsgGeoAttach": "\u041c\u0456\u0441\u0446\u0435:",
+   "HistMsgFwd": "\u041f\u0435\u0440\u0435\u0441\u043b\u0430\u043d\u0456 \u043f\u043e\u0432\u0456\u0434\u043e\u043c\u043b\u0435\u043d\u043d\u044f:",
+   "HistMsgAttachLink": "\u041f\u043e\u0441\u0438\u043b\u0430\u043d\u043d\u044f",
+   "HistMsgAttachGift": "\u041f\u043e\u0434\u0430\u0440\u0443\u043d\u043e\u043a"
 };
 
 vk_lang_by={ //by Gavr id8610702
