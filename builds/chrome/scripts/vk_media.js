@@ -5786,7 +5786,7 @@ vk_vid_down={
             var info=(map[i].type+'').split(';')[0]+' '+(obj.fmt_list[i]+'').split('/')[1];
             if (!format) vklog('<b>YT '+map[i].itag+'</b>: \n'+(map[i].stereo3d?'3D/':'')+info,1);
             format=(map[i].stereo3d?'3D/':'')+(format?format:info);
-            
+            obj.title = isArray(obj.title) ? obj.title.join('') : obj.title;
             //links.push([map[i].url+'&signature='+sig+'&'+ajx2q(params), format,info]); // sig=Qi(map[i].s)
             links.push([map[i].url+'&signature='+sig+'&quality='+map[i].quality+(obj.title?'&title='+encodeURIComponent(obj.title.replace(/\+/g,' ')):''), format,info]);
          }
