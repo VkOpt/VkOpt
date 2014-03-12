@@ -953,13 +953,15 @@ function vkGetProfile(uid,callback,no_switch_button){
 					  <div class="label fl_l">'+info_labels[i][1]+'</div>\n\
 					  <div class="labeled fl_l">'+info_labels[i][0]+'</div>\n\
 					</div>';
-		if (window.Emoji && Emoji.emojiToHTML)
-            profile.activity = Emoji.emojiToHTML(profile.activity,true) || profile.activity;//.replace(/"\/images\//g,'"http://vk.com/images/') || profile.activity;  
+		
+      var activity = profile.activity;
+      if (window.Emoji && Emoji.emojiToHTML)
+            activity = Emoji.emojiToHTML(activity,true) || activity;//.replace(/"\/images\//g,'"http://vk.com/images/') || profile.activity;  
             
       var html=VK_PROFILE_TPL.replace("%AVA_SRC%",ava_url)
 							   .replace(/%UID%/g,uid)
 							   .replace(/%USERNAME%/g,(verified==1?'<span class="vk_profile_verified"></span>':'')+username)
-							   .replace("%ACTIVITY%",profile.activity)
+							   .replace("%ACTIVITY%",activity)
 							   .replace("%RATE%",rate)
 							   .replace("%ONLINE%",online)
 							   .replace("%PROFILE_INFO%",info_html)

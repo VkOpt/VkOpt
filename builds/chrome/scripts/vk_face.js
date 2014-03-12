@@ -280,7 +280,7 @@ function vkStyles(){
 		.audios_row { margin-top: 0px !important; padding-top:0px !important;}\
 		.audios_row .actions a{padding-top:2px !important; padding-bottom:2px !important;}\
       .audio_list .audio_title_wrap { width: 315px !important;}\
-      #audio.new .audio_edit_wrap, #audio.new .audio_add_wrap, #audio.new .audio_remove_wrap, #pad_playlist .audio_add_wrap { \
+      #audio.new .audio_edit_wrap, #audio.new .audio_add_wrap, #audio.new .audio_remove_wrap, #pad_playlist .audio_add_wrap, #pad_playlist_panel .audio_add { \
          margin-bottom: 0px !important;\
          margin-top: 0px !important;\
       }\
@@ -344,7 +344,7 @@ function vkStyles(){
       #audio.new .wall_module .audio .title_wrap { width: 288px !important; }\
       #audio.new .audio .info { width: 370px !important;}\
       #pad_playlist .audio .info {width: 435px !important;}\
-      #pad_playlist .audio .title_wrap {width: 328px !important; }\
+      #pad_playlist .audio .title_wrap, #pad_playlist_panel .audio .title_wrap {width: 328px !important; }\
       #pad_playlist_panel .audio .info {width: 370px !important;}\
       #pad_playlist_panel .wall_module .audio .title_wrap { max-width:290px !important; width: auto !important;}\
       \
