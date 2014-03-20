@@ -185,7 +185,7 @@ function vkOnNewLocation(startup){
 			case 'board'   :vkBoardPage(); break;
 			case 'search'  :vk_search.page(); break;
          case 'fave'    :vk_fave.page(); break;
-         case 'im'      :vkImPage(); break;
+         case 'im'      :vk_im.page(); break;
          case 'pages'   :vkWikiPages(); break;
          case 'apps'    :vk_apps.page(); break;
          //case 'groups_list': vkGroupsListPage(); break;
@@ -307,7 +307,7 @@ function vkProccessLinks(el){
 	  if (getSet(8)=='y')  ProcessUserPhotoLink(nodes[i]);
 	  if (getSet(6)=='y')  ProcessAwayLink(nodes[i]);
 	  if (getSet(38)=='y') ProcessHighlightFriendLink(nodes[i]);
-     if (getSet(55)=='y') vkProcessIMDateLink(nodes[i]);
+     if (getSet(55)=='y') vk_im.process_date_link(nodes[i]);
      if (getSet(58)=='y') vkProcessTopicLink(nodes[i]);
      //vkProcessDocPhotoLink(nodes[i]);
 	  vk_plugins.processlink(nodes[i]);
@@ -904,46 +904,7 @@ function vkAudioChooseProcess(answer,url,q){
    
 
 /* IM */
-function vkImPage(){
-   vkImAddPreventHideCB();
-   vkMsgStatsBtn();
-}
 
-function vkProcessIMDateLink(node){
-   if (node.className=='im_date_link'){
-      var inp=vkNextEl(node); 
-      var ts=0;
-      var fmt=(node.parentNode && node.parentNode.parentNode && hasClass(node.parentNode.parentNode,'im_add_row'))?'HH:MM:ss':'d.mm.yy HH:MM:ss';
-      if (inp && (ts=parseInt(inp.value)))  node.innerHTML=(new Date((ts-vk.dt)*1000)).format(fmt); 
-   }
-}
-
-function vkImAddPreventHideCB(){
-   Inj.Wait('cur.imMedia',function(){
-      var p=geByClass('rows', cur.imMedia.menu.menuNode)[0];
-      var html='<div class="checkbox" id="vk_no_hide_add_box" onclick="checkbox(this); window.vk_prevent_addmedia_hide=isChecked(this);">'+
-                  //'<div></div>'+IDL('PreventHide')+
-                   '<table style="border-spacing:0px;"><tr><td><div></div></td>\
-                        <td>\
-                          <nobr>'+IDL('PreventHide')+'</nobr>\
-                        </td>\
-                      </tr>\
-                    </tbody>\
-                   </table>'+
-               '</div>';
-      var id='add_media_type_' +  cur.imMedia.menu.id + '_nohide';
-      if (!ge(id)){
-         // ADD WALL POST
-         var a=vkCe('a',{'onclick':'vk_im.attach_wall();','class':'add_media_item','style':"background-image: url('http://vk.com/images/icons/attach_icons.png'); background-position: 3px -130px;"},'<nobr>'+IDL('WallPost')+'</nobr>');
-         p.appendChild(a);
-         
-         var a=vkCe('a',{id:id,'style':'border-top:1px solid #DDD; padding:2px; padding-top:4px;'},html);
-         p.appendChild(a);
-
-      }
-      Inj.Before(' cur.imMedia.onChange','boxQueue','if (!window.vk_prevent_addmedia_hide)');
-   });
-}
 
 vk_messages={
    html_tpl:'<!DOCTYPE html>\
@@ -1210,8 +1171,85 @@ vk_im={
       .im_out .vk_im_reply{display:none;}\
       ';
    },
+   page: function(){
+      vk_im.add_prevent_hide_cbox();
+      vkMsgStatsBtn();
+      vk_im.add_menus();
+   },
+   add_menus:function(){
+      if (!ge('vk_im_menu')){
+  
+         var p_options = [];
+         if (getSet(40)=='y') {
+            p_options.push({l:IDL('msgdelinbox'), onClick:function(item) {
+               vkDeleteMessages();
+            }});
+            p_options.push({l:IDL('msgdeloutbox'), onClick:function(item) {
+               vkDeleteMessages(true);
+            }});
+         }
+         
+         if (p_options.length>0){
+            var el=se('<li class="t_r" id="vk_im_menu">\
+               <span class="add_media_lnk" id="vk_im_menu_actions" style="cursor: pointer;">'+IDL('Actions')+'</span><span class="divider">|</span>\
+             </li>');
+            ge('im_top_tabs').appendChild(el);            
+            
+            stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
+               cur.vkAlbumMenu = new DropdownMenu(p_options, {//
+                 target: ge('vk_im_menu_actions'),
+                 containerClass: 'dd_menu_posts',
+                 updateHeader:function(){ return IDL('Actions'); },
+                 //offsetLeft:-15,
+                 showHover:false
+               });
+            }); 
+         }         
+         
+      }
+      if (ge('vk_im_menu')){
+         if (nav.objLoc['sel'])
+            hide('vk_im_menu');
+         else
+            show('vk_im_menu');
+      }
+   },
    process_node:function(node){
       vk_im.reply_btns(node);
+   },
+   process_date_link: function (node){
+      if (node.className=='im_date_link'){
+         var inp=vkNextEl(node); 
+         var ts=0;
+         var fmt=(node.parentNode && node.parentNode.parentNode && hasClass(node.parentNode.parentNode,'im_add_row'))?'HH:MM:ss':'d.mm.yy HH:MM:ss';
+         if (inp && (ts=parseInt(inp.value)))  node.innerHTML=(new Date((ts-vk.dt)*1000)).format(fmt); 
+      }
+   },
+   add_prevent_hide_cbox: function (){
+      Inj.Wait('cur.imMedia',function(){
+         var p=geByClass('rows', cur.imMedia.menu.menuNode)[0];
+         var html='<div class="checkbox" id="vk_no_hide_add_box" onclick="checkbox(this); window.vk_prevent_addmedia_hide=isChecked(this);">'+
+                     //'<div></div>'+IDL('PreventHide')+
+                      '<table style="border-spacing:0px;"><tr><td><div></div></td>\
+                           <td>\
+                             <nobr>'+IDL('PreventHide')+'</nobr>\
+                           </td>\
+                         </tr>\
+                       </tbody>\
+                      </table>'+
+                  '</div>';
+         var id='add_media_type_' +  cur.imMedia.menu.id + '_nohide';
+         if (!ge(id)){
+            // ADD WALL POST
+            var a=vkCe('a',{'onclick':'vk_im.attach_wall();','class':'add_media_item','style':"background-image: url('http://vk.com/images/icons/attach_icons.png'); background-position: 3px -130px;"},'<nobr>'+IDL('WallPost')+'</nobr>');
+            p.appendChild(a);
+            
+            var a=vkCe('a',{id:id,'style':'border-top:1px solid #DDD; padding:2px; padding-top:4px;'},html);
+            p.appendChild(a);
+
+         }
+         Inj.Before(' cur.imMedia.onChange','boxQueue','if (!window.vk_prevent_addmedia_hide)');
+      });
    },
    attach:function(type,media,data){
       if (!isArray(cur.imPeerMedias[cur.peer])) {
