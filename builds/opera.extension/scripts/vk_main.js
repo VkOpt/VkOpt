@@ -918,7 +918,7 @@ vk_messages={
       .att_ico{float:left;width:11px;height:11px;margin: 3px 3px 2px; background-image:url(\'http://vk.com/images/icons/mono_iconset.gif\');}\
       .att_photo{background-position: 0 -30px;} .att_audio{background-position: 0 -222px;} .att_video{background-position: 0 -75px;}\
       .att_doc{background-position: 0 -280px;} .att_wall,.att_fwd{background-position: 0 -194px;} .att_gift{background-position: 0 -105px;} \
-      .att_sticker{background-position: 0 -360px;}\
+      .att_sticker{background-position: 0 -362px; width: 12px; height: 12px;}\
       .att_link{background-position: 0 -237px;} .attb_link a span{color:#777777 !important;} .att_geo{background-position: 0 -165px;}\
       .fwd{border:2px solid #C3D1E0;border-width: 0 0 0 2px;margin-left:85px;}\
       </style></head>\
@@ -968,35 +968,36 @@ vk_messages={
             console.log('Attach broken?', attach);
             attach[attach.type]={};
          }
-         if(attach.type=="photo"){
-            var photolink=attach.photo["photo_2560"] || attach.photo["photo_1280"] || attach.photo["photo_807"] || attach.photo["photo_604"];
-            var photo_size=attach.photo["width"] ? ' ('+attach.photo["width"]+'x'+attach.photo["height"]+')' : '';
-            html+='<div class="attacment"> <div class="att_ico att_photo"></div> <a target="_blank" href="'+photolink+'">[photo'+attach.photo["owner_id"]+'_'+attach.photo["id"]+']'+photo_size+'</a> </div>';
-         }
-         else if(attach.type=="audio"){
-            html+='<div class="attacment"> <div class="att_ico att_audio"></div> <a target="_blank" href="'+attach.audio["url"]+'">[audio'+attach.audio["owner_id"]+'_'+attach.audio["id"]+'] '+doc2text(attach.audio["artist"])+' - '+doc2text(attach.audio["title"])+' ('+a2t(attach.audio["duration"])+')</a></div>';
-         }
-         else if(attach.type=="video"){
-            html+='<div class="attacment"> <div class="att_ico att_video"></div> <a href="http://vk.com/video'+attach.video["owner_id"]+'_'+attach.video["id"]+'" target="_blank">[video'+attach.video["owner_id"]+'_'+attach.video["id"]+'] '+doc2text(attach.video["title"])+' ('+a2t(attach.video["duration"])+')</a></div>';
-         }
-         else if(attach.type=="doc"){
-            html+='<div class="attacment"> <div class="att_ico att_doc"></div> <a target="_blank" href="'+attach.doc["url"].replace(/&/g,'&amp;')+'">'+doc2text(attach.doc["title"])+'</a></div>';
-         }
-         else if(attach.type=="wall"){
-            html+='<div class="attacment"> <div class="att_ico att_wall"></div> <a target="_blank" href="http://vk.com/wall'+attach.wall["to_id"]+'_'+attach.wall["id"]+'">[wall'+attach.wall["to_id"]+'_'+attach.wall["id"]+']</a></div>';
-         }
-         else if(attach.type=="link"){
-            html+='<div class="attacment attb_link"> <div class="att_ico att_link"></div> <a href="'+attach.link["url"]+'" target="_blank"><span>'+IDL('HistMsgAttachLink')+'</span> '+doc2text(attach.link["title"])+'</a></div>'; 
-         }
-         else if(attach.type=="gift"){
-            html+='<div class="attacment"> <div class="att_ico att_gift"></div> <a target="_blank" href="'+attach.gift["thumb_256"]+'">'+IDL('HistMsgAttachGift')+' #'+attach.gift["id"]+'</a></div>'; 
-         }
-         else if(attach.type=="sticker"){
-            html+='<div class="attacment"> <div class="att_ico att_sticker"></div> <a target="_blank" href="'+attach.sticker["photo_256"]+'">'+IDL('HistMsgAttachSticker')+' #'+attach.sticker["id"]+'</a></div>'; 
-         }         
-         else{
-            html+=JSON.stringify(attach);
-            console.log(attach.type+' is unknown');
+         switch (attach.type){
+            case 'photo':
+               var photolink=attach.photo["photo_2560"] || attach.photo["photo_1280"] || attach.photo["photo_807"] || attach.photo["photo_604"];
+               var photo_size=attach.photo["width"] ? ' ('+attach.photo["width"]+'x'+attach.photo["height"]+')' : '';
+               html+='<div class="attacment"> <div class="att_ico att_photo"></div> <a target="_blank" href="'+photolink+'">[photo'+attach.photo["owner_id"]+'_'+attach.photo["id"]+']'+photo_size+'</a> </div>';
+               break;
+            case 'audio':
+               html+='<div class="attacment"> <div class="att_ico att_audio"></div> <a target="_blank" href="'+attach.audio["url"]+'">[audio'+attach.audio["owner_id"]+'_'+attach.audio["id"]+'] '+doc2text(attach.audio["artist"])+' - '+doc2text(attach.audio["title"])+' ('+a2t(attach.audio["duration"])+')</a></div>';
+               break;  
+            case 'video':
+               html+='<div class="attacment"> <div class="att_ico att_video"></div> <a href="http://vk.com/video'+attach.video["owner_id"]+'_'+attach.video["id"]+'" target="_blank">[video'+attach.video["owner_id"]+'_'+attach.video["id"]+'] '+doc2text(attach.video["title"])+' ('+a2t(attach.video["duration"])+')</a></div>';
+               break;
+            case 'doc':
+               html+='<div class="attacment"> <div class="att_ico att_doc"></div> <a target="_blank" href="'+attach.doc["url"].replace(/&/g,'&amp;')+'">'+doc2text(attach.doc["title"])+'</a></div>';
+               break;
+            case 'wall':
+               html+='<div class="attacment"> <div class="att_ico att_wall"></div> <a target="_blank" href="http://vk.com/wall'+attach.wall["to_id"]+'_'+attach.wall["id"]+'">[wall'+attach.wall["to_id"]+'_'+attach.wall["id"]+']</a></div>';
+               break;
+            case 'link':
+               html+='<div class="attacment attb_link"> <div class="att_ico att_link"></div> <a href="'+attach.link["url"]+'" target="_blank"><span>'+IDL('HistMsgAttachLink')+'</span> '+doc2text(attach.link["title"])+'</a></div>'; 
+               break;   
+            case 'gift':
+               html+='<div class="attacment"> <div class="att_ico att_gift"></div> <a target="_blank" href="'+attach.gift["thumb_256"]+'">'+IDL('HistMsgAttachGift')+' #'+attach.gift["id"]+'</a></div>'; 
+               break;
+            case 'sticker':
+               html+='<div class="attacment"> <div class="att_ico att_sticker"></div> <a target="_blank" href="'+attach.sticker["photo_256"]+'">'+IDL('HistMsgAttachSticker')+' #'+attach.sticker["id"]+'</a></div>'; 
+               break;               
+            default:
+               html+=JSON.stringify(attach);
+               console.log(attach.type+' is unknown');               
          }
          return html;
       }
