@@ -901,6 +901,7 @@ function vkMenu(){//vkExLeftMenu
          .vkico_feed, .vkico_newsfeed,.vkico_fave,.vkico_custom_link,\
          .vkico_settings,.vkico_apps,.vkico_docs,\
          .vkico_wall,.vkico_gifts,.vkico_vkplug,.vkico_vkopt,.vkico_app,.vkico_ads,.vkico_pages,.vkico_support{background:url("http://vk.com/images/icons/mono_iconset.gif") no-repeat;}\
+         .is_2x .vkicon{background-image: url("http://vk.com/images/icons/mono_iconset_2x.png");  background-size: 12px 374px;}\
          .left_row  .vkicon{margin: 4px 3px -4px 0px;}\
          \
          .vkico_profile{background-position:0 2px;}\
