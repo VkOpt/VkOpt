@@ -587,6 +587,9 @@ function vkAllowPost(url, q, options){
       if (url=='al_mail.php' && q.act=='show') return false;
       if (url=='al_im.php' && q.act=='a_mark_read') return false;
    }
+   if (MAIL_BLOCK_TYPING_REQ){
+      if (url=='al_im.php' && q.act=='a_typing') return false; 
+   }
    return true;
 }
 function vkCommon(){
