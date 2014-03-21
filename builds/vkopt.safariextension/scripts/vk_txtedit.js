@@ -322,7 +322,7 @@ function vkAddSmilePanel(el){
          panel.appendChild(vkTxtPanelButtons(ta.id));
          btns_count++;
       }
-      if (!hasClass(ta,'im_editable')){
+      if (!(hasClass(ta,'im_editable') || ta.id=='mail_box_editable')){
          if (getSet(95)=='y') {
             panel.appendChild(vkTxtPanelButtons(ta.id,panel));
             btns_count++;
