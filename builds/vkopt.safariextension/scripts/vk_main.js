@@ -1177,7 +1177,7 @@ vk_im={
    },
    page: function(){
       vk_im.add_prevent_hide_cbox();
-      vkMsgStatsBtn();
+      //vkMsgStatsBtn();
       vk_im.add_menus();
    },
    add_menus:function(){
@@ -1185,13 +1185,16 @@ vk_im={
   
          var p_options = [];
          if (getSet(40)=='y') {
-            p_options.push({l:IDL('msgdelinbox'), onClick:function(item) {
+            p_options.push({l:IDL('msgdelinbox',2), onClick:function(item) {
                vkDeleteMessages();
             }});
-            p_options.push({l:IDL('msgdeloutbox'), onClick:function(item) {
+            p_options.push({l:IDL('msgdeloutbox',2), onClick:function(item) {
                vkDeleteMessages(true);
             }});
          }
+         p_options.push({l:IDL('Stats',2), onClick:function(item) {
+            vkMsgStats();
+         }});         
          
          if (p_options.length>0){
             var el=se('<li class="t_r" id="vk_im_menu">\
