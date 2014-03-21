@@ -192,7 +192,7 @@ function vkTxtPanelButtons(eid,emoji){
          "onmouseover":"Emoji.ttOver(this);",
          "onmouseout":"Emoji.ttOut(this);"
       },'');*/
-      var el=se('<div class="emoji_smile fl_l" '+
+      var el=se('<div class="emoji_smile_ fl_l" '+
       'onmouseover="Emoji.ttOver(this);" '+
       'onmouseout="Emoji.ttOut(this);" '+
       'onclick="return cancelEvent(event);" '+
@@ -310,7 +310,7 @@ function vkAddSmilePanel(el){
 	var touts={};
 	if (!window.txtareas_events) txtareas_events=[];
    //if (!window.txtareas_ids) txtareas_ids=0;
-	
+	var btns_count = 0;
    var add_panel=function(ta){
 		if ((ta.getAttribute('onfocus') && ta.getAttribute('onfocus').indexOf('showEditPost')!=-1) || ta.getAttribute('vk_edit_btns') || !ta.id) 
          return;//continue;//ge('edit_btns_'+ta.id)
@@ -318,10 +318,20 @@ function vkAddSmilePanel(el){
       var panel=vkCe('div',{id:'edit_btns_'+ta.id,"class":'vk_textedit_panel emoji_no_tabs'},
 						//vkTxtPanelButtons(ta.id)+
 						'<div style="float:left; font-size:7px; margin-top:-10px; margin-right:3px;" onclick="fadeOut(\''+'edit_btns_'+ta.id+'\');">x</div>');
-		if (getSet(33)=='y') panel.appendChild(vkTxtPanelButtons(ta.id));	
-      if (getSet(95)=='y') panel.appendChild(vkTxtPanelButtons(ta.id,panel));      
+		if (getSet(33)=='y'){
+         panel.appendChild(vkTxtPanelButtons(ta.id));
+         btns_count++;
+      }
+      if (!hasClass(ta,'im_editable')){
+         if (getSet(95)=='y') {
+            panel.appendChild(vkTxtPanelButtons(ta.id,panel));
+            btns_count++;
+         }
+      }      
 		//alert(panel.innerHTML);
+      if (btns_count == 0) return;
 		ta.parentNode.insertBefore(panel,ta);
+      
       //ta.parentNode.insertBefore(vkTxtPanelButtons(ta.id,true),ta);
 		hide(panel);
 		var show_panel=function(e){
@@ -367,6 +377,7 @@ function vkAddSmilePanel(el){
 		ta.vk_txt_panel_enabled=true;
 		ta.setAttribute('vk_edit_btns', true);   
    };
+   
    add_panel(el);
 	vklog('PreparePanel time:' + (unixtime()-tstart) +'ms');
 }
