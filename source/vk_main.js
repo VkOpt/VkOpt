@@ -917,7 +917,8 @@ vk_messages={
       a,a:visited{text-decoration:none;color:#2B587A} a:hover{text-decoration:underline} .att_head{color:#777;}\
       .att_ico{float:left;width:11px;height:11px;margin: 3px 3px 2px; background-image:url(\'http://vk.com/images/icons/mono_iconset.gif\');}\
       .att_photo{background-position: 0 -30px;} .att_audio{background-position: 0 -222px;} .att_video{background-position: 0 -75px;}\
-      .att_doc{background-position: 0 -280px;} .att_wall,.att_fwd{background-position: 0 -194px;} .att_gift{background-position: 0 -105px;}\
+      .att_doc{background-position: 0 -280px;} .att_wall,.att_fwd{background-position: 0 -194px;} .att_gift{background-position: 0 -105px;} \
+      .att_sticker{background-position: 0 -360px;}\
       .att_link{background-position: 0 -237px;} .attb_link a span{color:#777777 !important;} .att_geo{background-position: 0 -165px;}\
       .fwd{border:2px solid #C3D1E0;border-width: 0 0 0 2px;margin-left:85px;}\
       </style></head>\
@@ -990,6 +991,9 @@ vk_messages={
          else if(attach.type=="gift"){
             html+='<div class="attacment"> <div class="att_ico att_gift"></div> <a target="_blank" href="'+attach.gift["thumb_256"]+'">'+IDL('HistMsgAttachGift')+' #'+attach.gift["id"]+'</a></div>'; 
          }
+         else if(attach.type=="sticker"){
+            html+='<div class="attacment"> <div class="att_ico att_sticker"></div> <a target="_blank" href="'+attach.sticker["photo_256"]+'">'+IDL('HistMsgAttachSticker')+' #'+attach.sticker["id"]+'</a></div>'; 
+         }         
          else{
             html+=JSON.stringify(attach);
             console.log(attach.type+' is unknown');
@@ -2109,7 +2113,9 @@ function vkMakeMsgHistory(uid,show_format){
                   case  "doc":
                      var a=attach.doc;
                      attach_text+=a.url+" ("+vkFileSize(a.size)+"): "+a.title+"\r\n";
-                     break; 
+                     break;
+                  default:
+                    attach_text+=JSON.stringify(attach)+'\r\n';
                   /*
                   case  "wall":
                   

@@ -863,7 +863,8 @@ vk_lang_ru={
    'HistMsgGeoAttach':'\u041c\u0435\u0441\u0442\u043e:',
    'HistMsgFwd':'\u041f\u0435\u0440\u0435\u0441\u043b\u0430\u043d\u043d\u044b\u0435 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u044f:',
    'HistMsgAttachLink':'\u0421\u0441\u044b\u043b\u043a\u0430',
-   'HistMsgAttachGift':'\u041f\u043e\u0434\u0430\u0440\u043e\u043a'
+   'HistMsgAttachGift':'\u041f\u043e\u0434\u0430\u0440\u043e\u043a',
+   'HistMsgAttachSticker':'\u0421\u0442\u0438\u043a\u0435\u0440'
 };//*/
 
 vk_lang_en={//by Hzy
