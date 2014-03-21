@@ -850,6 +850,7 @@ vk_settings = {
       switch(type){
          case 'boolean':
             cfg[cfg_name]=value?true:false;
+            window[cfg_name]=cfg[cfg_name];
             break;
          case 'string':
             if (cfg[cfg_name]!=null && trim(value)===''){
