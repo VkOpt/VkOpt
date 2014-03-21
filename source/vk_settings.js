@@ -678,6 +678,7 @@ function vkInitSettings(){
       {id:35, text:IDL("seBlocksToRightBar")},
       {id:32, text:IDL("seSkinManBtn") /*, hide: (vkbrowser.mozilla)*/},
       {id:33, text:IDL("seSmiles")+vkCheckboxSetting(63,IDL("seSmilesAlwaysShow"),true),warn:'seSmilesAlwaysShowWarning'},
+      {id:95, text:IDL("seEmojiSmiles")},
       {id:36, text:IDL("sePreventHideNotifications")},
       //{id:42, text:IDL("seSortFeedPhotos")},
       {id:53, text:IDL("seShutProfilesBlock")},
@@ -717,7 +718,7 @@ function vkInitSettings(){
    ]
   };
 
-	//LAST 94
+	//LAST 95
 	/*
       vkoptSets['advanced']=[
          'vk_upd_menu_timeout',

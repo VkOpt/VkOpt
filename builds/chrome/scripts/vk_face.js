@@ -535,8 +535,10 @@ function vkStyles(){
 			  border-radius: 4px;-moz-border-radius: 4px;-webkit-border-radius: 4px;-o-border-radius: 4px;\
 			}\
 			#side_bar ol li#myprofile a.edit {float:right;}\
-			.vk_textedit_panel{box-shadow: 0px -0px 3px #888; background:rgba(255,255,255,0.7); position:absolute; line-height:25px; padding:2px; margin-top:-35px;}\
-			a.vk_edit_btn{display:block; background-color:transparent; border:1px solid transparent; height:20px; width:20px; float:left;}\
+			.vk_textedit_panel{box-shadow: 0px -0px 3px #888; background:rgba(255,255,255,0.7); position:absolute; line-height:25px; min-height:22px; padding:2px; margin-top:-35px; padding-right:23px;}\
+         .vk_emoji_mini_icon{background: url('http://vk.com/images/icons/mono_iconset.gif') no-repeat 50% -362px; width: 12px; height: 12px; margin: 6px;}\
+         .vk_textedit_panel.emoji_no_tabs .emoji_block_cont {margin-top: 16px !important;}\
+         a.vk_edit_btn{display:block; background-color:transparent; border:1px solid transparent; height:20px; width:20px; float:left;}\
 			a.vk_edit_btn:hover{background-color:#FFF; border:1px solid #DDD;}\
 			a.smile_btn{background-image:url(\""+smile_btn_img+"\")}\
 			a.vk_edit_btn .vk_edit_sub_panel{display:none; position:absolute;z-index: 1000; margin-left:20px; background:#FFF; background:rgba(255,255,255,0.7); border:1px solid #DDD; box-shadow: 1px 1px 4px #DDD; width:445px; margin-top:-140px;}\
