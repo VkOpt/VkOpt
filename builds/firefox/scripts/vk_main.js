@@ -936,11 +936,11 @@ vk_messages={
    </html>',
    make_html: function(msg,user){
       var html='';
-      t2d = function(unix){
+      var t2d = function(unix){
          time = new Date(unix*1000);
          return time.getFullYear()+'.'+('0'+(time.getMonth()+1)).slice(-2)+'.'+('0'+time.getDate()).slice(-2)+' '+('0'+time.getHours()).slice(-2)+':'+('0'+time.getMinutes()).slice(-2)+':'+('0'+time.getSeconds()).slice(-2);
       }
-      t2m = function(inputText) {
+      var t2m = function(inputText) {
          var replacedText,replacePattern2,replacePattern3;
          //add break
          replacedText = replaceEntities(inputText).replace(/</g, '&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br />').replace(/"/g, '&quot;').replace(/&/g,'&amp;');
@@ -963,16 +963,28 @@ vk_messages={
           
           return replacedText;
       }
-		doc2text=function(t){
+		var doc2text=function(t){
 			// проверка < и > в именах документов
 			t2 = t.replace(/</g, '&lt;').replace(/>/g,'&gt;').replace(/"/g, '&quot;').replace(/&/g,'&amp;');
 			return t2;
 		}
-      a2t = function(sec){
+      var a2t = function(sec){
          return Math.floor(sec/60)+':'+('0'+(sec%60)).slice(-2);
       }
-      
-      make_attach=function(attach){
+      var chatAction=function(action_name){
+         switch(action_name){
+            case 'chat_photo_update':
+               html='<div style="color:#888888;">'+IDL('HistMsgChatAvaUpd')+'</div>';
+               break;
+            case 'chat_photo_remove':
+               html='<div style="color:#888888;">'+IDL('HistMsgChatAvaDel')+'</div>';
+               break;
+            default:
+               html='<div>action "<b>'+action_name+'"</b>" is unknown</div>'
+         }
+         return html;
+      }
+      var make_attach=function(attach){
          var html='';
          if (!attach[attach.type]){ 
             console.log('Attach broken?', attach);
@@ -1015,7 +1027,7 @@ vk_messages={
          }
          return html;
       }
-		make_geo=function(m){
+		var make_geo=function(m){
 			var html='';
          html+='<div class="attacment"> <div class="att_ico att_geo"></div> <a href="https://maps.google.ru/maps?q='+m.geo['coordinates']+'" target="_blank">'+IDL('HistMsgGeoAttach')+' '+(m.geo['place'] || {'title':'---'})['title']+'</a></div>';
 			return html;
@@ -1045,6 +1057,9 @@ vk_messages={
          html+='<div class="from"> <b> <a href="http://vk.com/id'+msg[i].from_id+'" target="_blank">'+u.first_name+' '+u.last_name+'</a></b> @ <a href="#msg'+msg[i].id+'">'+t2d(msg[i].date)+'</a></div>';
          if(msg[i].body != ""){
                html+='<div class="msg_body">'+t2m(msg[i].body)+'</div>';
+         }
+         if(msg[i].action){
+            html+=chatAction(msg[i].action);
          }
          if(msg[i].attachments !== undefined){
             html+='<div class="attacments"> <b>'+IDL('HistMsgAttachments')+'</b> </div>';
