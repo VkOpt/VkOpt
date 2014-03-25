@@ -985,7 +985,11 @@ vk_messages={
                html+='<div class="attacment"> <div class="att_ico att_photo"></div> <a target="_blank" href="'+photolink+'">[photo'+attach.photo["owner_id"]+'_'+attach.photo["id"]+']'+photo_size+'</a> </div>';
                break;
             case 'audio':
-               html+='<div class="attacment"> <div class="att_ico att_audio"></div> <a target="_blank" href="'+attach.audio["url"]+'">[audio'+attach.audio["owner_id"]+'_'+attach.audio["id"]+'] '+doc2text(attach.audio["artist"])+' - '+doc2text(attach.audio["title"])+' ('+a2t(attach.audio["duration"])+')</a></div>';
+               var url = attach.audio["url"];
+               if (!url){
+                  url = 'http://vk.com/audio?q='+encodeURIComponent(attach.audio["artist"]+' - '+attach.audio["title"]);
+               }
+               html+='<div class="attacment"> <div class="att_ico att_audio"></div> <a target="_blank" href="'+url+'">[audio'+attach.audio["owner_id"]+'_'+attach.audio["id"]+'] '+doc2text(attach.audio["artist"])+' - '+doc2text(attach.audio["title"])+' ('+a2t(attach.audio["duration"])+')</a></div>';
                break;  
             case 'video':
                html+='<div class="attacment"> <div class="att_ico att_video"></div> <a href="http://vk.com/video'+attach.video["owner_id"]+'_'+attach.video["id"]+'" target="_blank">[video'+attach.video["owner_id"]+'_'+attach.video["id"]+'] '+doc2text(attach.video["title"])+' ('+a2t(attach.video["duration"])+')</a></div>';
