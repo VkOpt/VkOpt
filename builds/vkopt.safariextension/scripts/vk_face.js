@@ -1008,10 +1008,8 @@ function vkMenu(){//vkExLeftMenu
         [['#',"showBox('/audio', extend({}, {act: 'new_audio'}), {   params: {width: '430px'}, stat: ['audio.css','audio.js'] }); return false;"],IDL("mAuN")] 
     ],
     'mail':[
-        ['/mail',IDL("mMaI")],
-        ['/mail?section=outbox',IDL("mMaO")],
-        ['/mail?section=spam',IDL("Spam")],
         ['/im',IDL('mDialogsMessages')],
+        ['/im?sel=-4',IDL("Spam")],
         ['/im?sel=-5',IDL('mImportant')]
 		//,[['im.php?act=a_box&popup=1',''],IDL('mQuickMessages')]
     ],

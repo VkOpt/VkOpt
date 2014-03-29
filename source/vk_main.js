@@ -38,7 +38,7 @@ function vkInj(file){
    case 'audioplayer.js':	vkAudioPlayer();break;
 	case 'feed.js':			vk_feed.inj();  break;
 	case 'search.js':		   vk_search.inj();break;
-	case 'profile.js':		vkProfile();	 break;
+	case 'profile.js':		vk_profile.inj();	 break;
 	case 'wall.js':			vkWall();		 break;		
 	case 'page.js':			vk_pages.inj(); break;
 	case 'friends.js':		vkFriends();	 break;
@@ -169,8 +169,8 @@ function vkOnNewLocation(startup){
 	if (cur.module){	
 		vklog(cur.module+'|'+print_r(nav.objLoc).replace(/\n/g,','));
 		switch(cur.module){
-			case 'profile':vkProfilePage(); break;
-         case 'profileEdit':vkProfileEditPage(); break;
+			case 'profile':vk_profile.page(); break;
+         case 'profileEdit':vk_profile.edit_page(); break;
 			case 'groups' :vkGroupPage(); break;
          case 'groups_edit':vk_groups.group_edit_page(); break;
 			case 'event'  :vkEventPage(); break;
@@ -373,7 +373,7 @@ function vkPublicPage(){
 	vk_graff.upload_graff_item();
    vk_photos.pz_item();
    vkWallAlbumLink();
-   vkSwitchPublicToGroup();
+   //vkSwitchPublicToGroup();
    vkWikiPagesList(true);
    vkGroupStatsBtn();
    vkUpdWallBtn();
@@ -480,14 +480,14 @@ function vkGetWikiCode(pid,gid){
    return false;
 }
 
-
+/*
 function vkSwitchPublicToGroup(){
    var p=ge('page_actions');
    if (!ge('vkpubtogroup') && p && p.innerHTML.indexOf('?act=edit')!=-1){
       var a=vkCe('a',{id:'vkpubtogroup', onclick:"showBox('al_public.php', {act:'a_switch_to_group_box',gid:Math.abs(cur.oid)}); return false;"},IDL('PublicToGroup'));
       p.appendChild(a);
    }
-}
+}*/
 function vkGetGid(){
 	if (!window.cur || cur.oid>0) return false;
 	var gid=null;
