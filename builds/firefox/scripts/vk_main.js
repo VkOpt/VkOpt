@@ -47,6 +47,7 @@ function vkInj(file){
 	case 'im.js': 			   vkIM(); 	       break;
    case 'mail.js': 			vkMail(); 	    break;
    case 'groups_list.js':  vkGroupsList(); break;
+   case 'groups_edit.js':  vk_groups.group_edit_inj(); break;
    case 'fave.js':         vk_fave.inj();  break;
    case 'photos.js':       vk_photos.inj_photos();  break;
    case 'emoji.js':        vk_features.emoji_inj(); break;
@@ -75,6 +76,7 @@ function vkProcessNode(node){
       vk_feed.process_node(node);
       vk_photos.process_node(node);
       vk_search.process_node(node);
+      vk_search.process_node_gr_req(node);
       //vk_photos.album_process_node(node);
       vk_highlinghts.process_node(node);
 		vk_plugins.processnode(node);
@@ -131,7 +133,7 @@ function vkOnNewLocation(startup){
          if (!cur.oid) cur.oid=obj[1];
          if (!cur.pid) cur.pid=obj[2];
          
-      } else if (nav.objLoc['act']=='users' && (cur.tab || "").match(/^(members|invites|admins)$/) && cur.oid<0){
+      } else if (nav.objLoc['act']=='users' && (cur.tab || "").match(/^(members|invites|admins|requests)$/) && cur.oid<0){
          cur.module='groups_edit';
       } else {
          switch(nav.objLoc[0]){

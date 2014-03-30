@@ -16,6 +16,7 @@ vk_search={
       #search_content .vk_ex_info .miniblock .labeled{position: static; width: 185px; }\
       #search_content .vk_ex_info .miniblock .label{ position: static; width: 120px;}\
       #search_content .people_row.short .info .vk_ex_info{display:none;}\
+      .gedit_user_info .vk_ex_info .label:after {content: \': \';padding-right: 5px;}\
    ',
    page:function(){
       vkAudioDelDup(true);
@@ -39,6 +40,25 @@ vk_search={
          info.appendChild(se('<div class="vk_ex_info" id="vk_exinfo_'+uid+'"><div class="labeled ">'+vkLdrMiniImg+'</div></div>'));
          uids.push(uid);
       }
+      vk_search.load_ex_info(uids);
+   },
+   process_node_gr_req:function(node){
+      console.log('process_node_gr_req');
+      if (!window.cur || cur.tab != "requests" || getSet(96)!='y') return;
+      var nodes=geByClass('gedit_user',node);
+      var uids=[];
+      console.log('gedit_user',nodes);
+      for (var i=0; i<nodes.length; i++){
+         var el=nodes[i];
+         var uid=(el.id.match(/gedit_user_requests(\d+)/) || [])[1];
+         if (!uid) continue;
+         var info=geByClass('gedit_user_btns',el)[0];
+         var ex=geByClass('vk_ex_info',el)[0];
+         if (!info || ex) continue;
+         info.parentNode.insertBefore(se('<div class="vk_ex_info" id="vk_exinfo_'+uid+'"><div class="labeled ">'+vkLdrMiniImg+'</div></div>'),info);
+         uids.push(uid);
+      }
+      //if (uids.length) stManager.add('profile.css');
       vk_search.load_ex_info(uids);
    },
    ex_info_cfg:function(){
@@ -2087,6 +2107,9 @@ vk_groups = {
          vk_groups.unban_all(true);      
       vk_groups.deactivated_edit_btn();
       vk_groups.remove_all_invites(true);
+   },
+   group_edit_inj:function(){
+      Inj.End('GroupsEdit.uShowMore','setTimeout(function(){vkProcessNode(cont);},300); console.log("uShowMore",cont);');
    },
    deactivated_edit_btn:function(){
       var p=ge('gedit_users_summaryw_members');//ge('gedit_summary_tabs');//
