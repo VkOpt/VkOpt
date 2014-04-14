@@ -192,6 +192,7 @@ var ex_ldr={
             else {   /*if (ext_browser.chrome || ext_browser.safari || ext_browser.maxthon)*/
                var js = doc.createElement('script');
                js.type = 'text/javascript';
+               js.charset = 'UTF-8';
                if (!by_src)
                   js.innerHTML=script;
                else
