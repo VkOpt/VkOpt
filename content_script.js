@@ -1,6 +1,9 @@
 // ==UserScript==
 // @include       *.*
 // ==/UserScript==
+
+(function(){ 
+
 var ext_browser={
       opera    : window.opera    && opera.extension,
       chrome   : window.chrome   && chrome.extension,
@@ -11,6 +14,7 @@ function init_content_script(win,doc,bg){
 win = win || window;
 doc = doc || document;
 bg  = bg  || {};
+var api_enabled = false;
 var ex_ldr={ 
    mark:'vkopt_loader',
    key:(Math.round(Math.random()*10000000)).toString(35),
@@ -59,7 +63,7 @@ var ex_ldr={
                opera.extension.postMessage({act:'get_scripts', url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc),key:ex_ldr.key});
                console.log('ext_content: opera.extension.postMessage get_scripts');
             }
-            
+            if (data.api_enabled) api_enabled = true;            
             
             ex_api.ready=true;
             if (data.key==ex_ldr.key){
@@ -74,6 +78,8 @@ var ex_ldr={
       } else if (ext_browser.chrome){                                              // CHROMIUM
          chrome.extension.sendRequest({act:'get_scripts', url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc),key:ex_ldr.key}, function(data) {
             if (data.key==ex_ldr.key && data.files && data.files.length>0){
+               if (data.api_enabled) 
+                  api_enabled = true;
                callback(data.files);
             }
          });
@@ -88,28 +94,15 @@ var ex_ldr={
                } 
             });
             return msg;
-         } 
-         /*                  
-         var port = chrome.runtime.connect({name: "extension_api"});
-         ex_api.post_message=function(msg){
-            msg=ex_api.prepare_data(msg);
-            port.postMessage(msg);
-            return msg;
-         }         
-         port.onMessage.addListener(function(data) {
-            if (data.key==ex_ldr.key){
-               ex_api.message_handler(data);
-            }               
-         });
-         */
-         
-         
+         }
       } else if (ext_browser.safari){
          ex_api.ready=true;
          safari.self.addEventListener("message", function(e) {                                    // SAFARI
-            if (e.message.key==ex_ldr.key && e.message.files && e.message.files.length>0)
+            if (e.message.key==ex_ldr.key && e.message.files && e.message.files.length>0){
+               if (e.message.api_enabled) 
+                  api_enabled = true;
                callback(e.message.files);  
-            
+            }
             if (e.message.key==ex_ldr.key){
                ex_api.message_handler(e.message);
             }               
@@ -127,6 +120,8 @@ var ex_ldr={
          rt.listen('scripts', function(data){
             if (data.key==ex_ldr.key && data.files && data.files.length>0){
                //console.log('scripts on '+doc.location.href,data.files);
+               if (data.api_enabled) 
+                  api_enabled = true;
                callback(data.files);
             }
          });  
@@ -145,9 +140,11 @@ var ex_ldr={
           
       } else { //if (ext_browser.mozilla)                  // MOZILLA
          
-         bg.get_scripts(doc.location.href,function(files){
+         bg.get_scripts(doc.location.href,function(files, api_allowed){
             if (files && files.length>0){
                //console.log('scripts on '+doc.location.href,data.files);
+               if (api_allowed) 
+                  api_enabled = true;
                callback(files);
             }
          },ex_ldr.is_in_frame(doc));     
@@ -202,11 +199,20 @@ var ex_ldr={
             }                         
             break;
          case 'css':
+            if (by_src){
+               cssNode = document.createElement('link');
+               cssNode.type = 'text/css';
+               cssNode.rel = 'stylesheet';
+               cssNode.setAttribute(ex_ldr.mark,info);
+               cssNode.href = script; 
+               doc.getElementsByTagName("head")[0].appendChild(cssNode);
+            } else {
                var styleElement = doc.createElement("style");
                styleElement.type = "text/css";
                styleElement.setAttribute(ex_ldr.mark,info);
                styleElement.appendChild(doc.createTextNode(script));
                doc.getElementsByTagName("head")[0].appendChild(styleElement);
+            }
             break;
       }
    },
@@ -320,6 +326,8 @@ var ex_api={
    },
    req:function(data,callback){
       var data=ex_api.post_message(data);
+      if (!api_enabled)
+         return true;
       data._sub = data._sub || {};
       var cid=data._req;
       if (callback){
@@ -348,6 +356,7 @@ if (ext_browser.opera || ext_browser.chrome || ext_browser.safari || ext_browser
 
 // in Mozilla browsers "init_content_script" called from background.js
 
+vkopt_ldr_init_content_script=init_content_script;
 /*
 in injected scripts:
 api ready check
@@ -355,3 +364,4 @@ crossdomain requests
 */
 
 
+})();

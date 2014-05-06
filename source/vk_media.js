@@ -1095,7 +1095,7 @@ function vkPVLinks(ph){
       html+='<a target="_blank" href="https://www.google.ru/searchbyimage?image_url='+src+'">'+IDL('GoogleImgSearch')+'</a>';
       html+='<a target="_blank" href="http://images.yandex.ru/yandsearch?rpt=imagecbir&img_url='+src+'">'+IDL('YandexImgSearch')+'</a>';*/
       html+='<div class="pv_info" style="padding-left:5px;">'+IDL('ImgCopySeacrh')+'</div>';
-      html+='<a target="_blank" class="fl_l" href="https://www.google.ru/searchbyimage?image_url='+src+'">Google</a>';
+      html+='<a target="_blank" class="fl_l" href="https://www.google.com/searchbyimage?image_url='+src+'">Google</a>';
       html+='<a target="_blank" class="fl_l" href="http://www.tineye.com/search?url='+src+'">TinEye</a>';
       html+='<a target="_blank" class="fl_l" href="http://images.yandex.ru/yandsearch?rpt=imagecbir&img_url='+src+'">Yandex</a>';  
       html+='<a target="_blank" class="fl_l" href="/feed?section=photos_search&q=copy%3Aphoto'+ph.id+'">VK</a>';  

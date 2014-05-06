@@ -26,7 +26,8 @@ var ex_loader = {
             "vklang.js"
          ],
          "domain":"vkontakte\\.ru|vk\\.com",
-         "exclude":"|notifier\\.php|im_frame\\.php|about:blank|i"
+         "exclude":"|notifier\\.php|im_frame\\.php|about:blank|i",
+         "api_enabled":true
       },
       {
          "files":["vk_lib.js"],
@@ -43,12 +44,9 @@ var ex_loader = {
             //"script2.js"
          ],
          "domain":"example\\.com",
-         "exclude":"|notifier\.php|im_frame\.php|about:blank|i" // RegEx "|pattern|flags" for excluding urls
-      },
-      {
-         "files":["lib.js"],
-         "domain":".*"
-      },      
+         "exclude":"|notifier\.php|im_frame\.php|about:blank|i", // RegEx "|pattern|flags" for excluding urls
+         "api_enabled":true
+      }    
    ],
    update_time: 10*60*1000, //update scripts each 4 hours
    moz_strorage_id:"http://vkopt.loader.storage",
@@ -92,8 +90,8 @@ var ex_loader = {
          opera.extension.onmessage = function(event) {
            var data = event.data;
            if (data.act=='get_scripts'){
-               ex_loader.get_scripts(data.url,function(files){
-                  event.source.postMessage({files:files,key:data.key});
+               ex_loader.get_scripts(data.url,function(files,api_allowed){
+                  event.source.postMessage({files:files, api_enabled:api_allowed,key:data.key});
                },data.in_frame);           
            }
            
@@ -111,9 +109,9 @@ var ex_loader = {
             // request.url - contain url
             if (request.act=='get_scripts' && request.url){
                var obj={};
-               ex_loader.get_scripts(request.url,function(files){
+               ex_loader.get_scripts(request.url,function(files,api_allowed){
                   //console.log({url: request.url, inframe: request.in_frame, files:files});
-                  sendResponse({files:files, key:request.key});
+                  sendResponse({files:files, api_enabled:api_allowed, key:request.key});
                },request.in_frame);           
                return;
             }
@@ -125,43 +123,14 @@ var ex_loader = {
             }
             ext_api.message_handler(request,SendResp);            
             
-         });
-         
-          
-
-         // FOR API
-         /*
-         chrome.extension.onRequest.addListener(function(msg, sender, sendResponse){
-            var SendResp=function(data){
-               data.key = msg.key;
-               data._req= msg._req;
-               sendResponse(data);
-            }
-            ext_api.message_handler(msg,SendResp);
-         });
-         */
-         /*
-         var ports=[]
-         chrome.runtime.onConnect.addListener(function(port) {
-           ports.push(port);
-           port.onMessage.addListener(function(msg) {
-             var SendResponse=function(data){
-                  data.key = msg.key;
-                  data._req= msg._req;
-                  port.postMessage(data);
-             }
-             ext_api.message_handler(msg,SendResponse);
-           });
-         });
-         */
-         
+         });         
       } else if(window.safari && safari.application){                         // SAFARI
          safari.application.addEventListener("message", function(e) {
             // e.message.url - contain url
             if (e.name === "get_scripts"){
                var obj={};
-               ex_loader.get_scripts(e.message.url,function(files){
-                  e.target.page.dispatchMessage("scripts", {files:files,key:e.message.key});
+               ex_loader.get_scripts(e.message.url,function(files,api_allowed){
+                  e.target.page.dispatchMessage("scripts", {files:files, api_enabled:api_allowed,key:e.message.key});
                },e.message.in_frame);
                
             }
@@ -179,8 +148,8 @@ var ex_loader = {
       } else if (window.external && window.external.mxGetRuntime){         // MAXTHON
             var rt = window.external.mxGetRuntime();            
             rt.listen('get_scripts', function(data){
-               ex_loader.get_scripts(data.url,function(files){
-                  rt.post('scripts',{files:files,key:data.key});
+               ex_loader.get_scripts(data.url,function(files,api_allowed){
+                  rt.post('scripts',{files:files, api_enabled:api_allowed,key:data.key});
                },data.in_frame);               
             });
             
@@ -209,7 +178,7 @@ var ex_loader = {
                      ext_api.message_handler(data,SendResponse,{win:win,doc:doc,mozilla:1});
                   }
                };
-               init_content_script(win, doc, bg);
+               vkopt_ldr_init_content_script(win, doc, bg);
          });
       }
       setInterval(function(){ //Run update checker
@@ -262,6 +231,7 @@ var ex_loader = {
       ex_loader.update_config(function(){ex_loader.init_config(callback);},true);   
    },
    get_scripts:function(url,callback,in_frame){
+      var api_allowed = false;
       var domain=url;
       if (url=='about:blank'){ 
          callback([]);
@@ -295,7 +265,9 @@ var ex_loader = {
          if (url.match(rx) && allow)
             for (var j=0;j<data[i].files.length;j++){
                var src=ex_loader.get_script_path(data[i].files[j]);//(data[i].files[j].match(/^https?:\/\//))?data[i].files[j]:ex_loader.base_path+ex_loader.scripts_path+data[i].files[j];
-               
+               if (data[i].api_enabled){
+                  api_allowed = true;
+               }
                var add=true;
                for (var z=0; z<scripts.length; z++) if (scripts[z][0]==src){
                   add=false;
@@ -319,7 +291,7 @@ var ex_loader = {
          //console.error('ext_bg: ldr',idx,'/',scripts.length);
          if (idx>=scripts.length) {
             if (scripts.length>1) console.info('ext_bg: get_scripts scr res:',result,' url:'+url);
-            callback(result);
+            callback(result, api_allowed);
             return;
          }
          
