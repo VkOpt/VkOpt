@@ -152,9 +152,12 @@ function vkGoToLink(link,mid){
 vk_users = {
    find_age:function(target_uid,callback,ops){
       var min=12
-      var max=80;
+      var max=80;   
       ops = ops || {};
-      var age=min;
+      var mid;
+      var first = min;
+      var last = max;
+      var step = 0;
       if (!ops.el){
          box=new MessageBox({title: IDL('Scaning'),closeButton:true,width:"350px"});
          box.removeButtons();
@@ -166,21 +169,30 @@ vk_users = {
       
       var fid=0; 
       var scan=function(){
-         ge(ops.el || 'vk_scan_bar').innerHTML=vkProgressBar(age-min,max-min,(ops.width || 310),' %');
-         ajax.post('/friends',{act:'filter_friends',al:1,city:0,sex:0,age_from:age,age_to:age,uid:fid},{
+         ge(ops.el || 'vk_scan_bar').innerHTML=vkProgressBar(++step,8,(ops.width || 310),' %');
+         mid = first + Math.floor( (last - first) / 2 );
+         //callback(first + ';' + last + '-' + mid);
+         ajax.post('/friends',{act:'filter_friends',al:1,city:0,sex:0,age_from:first,age_to:mid,uid:fid},{
             onDone:function(uids){
                x=inArr(uids,target_uid);
                if (x) {
-                  if (!ops.el) box.hide();
-                  callback(age);
+                  last = mid;                  
                } else {
-                  age++
-                  if (age>max){
-                     callback(null);
-                  } else {
-                     setTimeout(scan,300);
-                  }
+                  first=mid+1;                  
                }
+		
+                if (first == last && first!=80)
+                {
+                  if (!ops.el) box.hide();
+                  callback(first);
+                }
+                else		
+                if (first>last || first==80){
+                	callback(null);
+                } else {
+                	setTimeout(scan,300);
+                }
+
             }
          });
       } 
