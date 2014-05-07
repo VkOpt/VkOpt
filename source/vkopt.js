@@ -11,7 +11,7 @@
 //
 /* VERSION INFO */
 var vVersion	= 221;
-var vBuild = 140330;
+var vBuild = 140507;
 var vPostfix = ' ';
 if (!window.vk_DEBUG) var vk_DEBUG=false;
 /* EXT CONFIG */
@@ -53,6 +53,7 @@ var SUPPORT_STEALTH_MOD=true;    // прикидываемся перед ТП, 
 var VIDEO_AUTOPLAY_DISABLE=false;
 var FULL_ENCODE_FILENAME=false;
 var PHOTO_DOWNLOAD_NAMES=false;
+var ZODIAK_SIGN_OPHIUCHUS=false;
 
 var VKOPT_CFG_LIST=[
          'vk_DEBUG',
@@ -69,7 +70,8 @@ var VKOPT_CFG_LIST=[
          'SUPPORT_STEALTH_MOD',
          'VIDEO_AUTOPLAY_DISABLE',
          'FULL_ENCODE_FILENAME',
-         'PHOTO_DOWNLOAD_NAMES'
+         'PHOTO_DOWNLOAD_NAMES',
+         'ZODIAK_SIGN_OPHIUCHUS'
 ];
 
 var vkNewSettings=[88,89,90,91,92,93,94,95,96]; //"new" label on settings item

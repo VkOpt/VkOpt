@@ -826,7 +826,15 @@ function vkProcessBirthday(day,month,year){
    if (day && month){
       var zodiacs=vk_lang['zodiac_signs'];
       var idx = day>zodiac_cfg[month-1]?(month) % 12:(month-1);
+      
 		var zodiac = zodiacs[idx];
+      
+      //30 nov - 17 dec - Змееносец
+      if (ZODIAK_SIGN_OPHIUCHUS && zodiacs[12] && 
+         ((month==11 && day>29) || (month==12 && day<18))){ 
+         zodiac = zodiacs[12];
+      }
+      
       info.push(zodiac);
    }
    return info;
