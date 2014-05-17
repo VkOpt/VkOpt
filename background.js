@@ -4,7 +4,7 @@ var ex_loader = {
    base_path: 'http://vkopt.net/upd/',
    config_url:'http://vkopt.net/upd/upd/config.json',
    scripts_path:'http://vkopt.net/upd/scripts/',
-   beta_path: 'http://vkopt.googlecode.com/svn/trunk/source/',
+   beta_path: 'https://raw.githubusercontent.com/VkOpt/VkOpt/master/source/',
 
    mark:'vkopt_loader',
    packed_scripts:[
