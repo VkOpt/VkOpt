@@ -5191,7 +5191,7 @@ vk_vid_down={
       var vidname=winToUtf(mvcur.mvData.title).replace(/\?/g,'%3F').replace(/\&/g,'%26');
       vidname=vkCleanFileName(vidname);
       var vname=vidname;
-      vidname='?'+vkDownloadPostfix()+'&/'+vkEncodeFileName(vidname);//
+      vidname=vkDownloadPostfix()+'&/'+vkEncodeFileName(vidname);
       //(smartlink?vidname+'.mov')
       if (!vars) return '';
       
@@ -5199,6 +5199,7 @@ vk_vid_down={
       vars.host=vars.host+"";
       var vuid=function (uid) { var s = "" + uid; while (s.length < 5) {s = "0" + s;}  return s; }
       var get_flv=function() {
+         if (VIDEO_LINKS_WITH_EXTRA && vars["url240"]) return vars["url240"];
          if (vars.sd_link != null && vars.sd_link.length > 0) {return vars.sd_link;}
          if (vars.uid <= 0) {   
             return "http://" + vars.host + "/assets/video"+(vars.ip_subm || vars.host.indexOf('vkadre')!=-1?'':'s')+"/" + vars.vtag + "" + vars.vkid + ".vk.flv";
@@ -5210,6 +5211,7 @@ vk_vid_down={
          return host + "u" + vuid(vars.uid) + "/video"+(vars.ip_subm?'s':'')+"/" + vars.vtag + ".flv";
       }
       var pathToHD=function(res) {
+         if (VIDEO_LINKS_WITH_EXTRA && vars["url"+res]) return vars["url"+res];
          var s = (vars.host.substr(0, 4) == 'http')
            ? vars.host
            : 'http://cs' + vars.host + '.' + 'vk.com' + '/';//(vk.intnat ? 'vk.com' : 'vkontakte.ru') 
@@ -5222,30 +5224,62 @@ vk_vid_down={
            for (var i=1;i<=parseInt(vars.hd);i++){
             //vidHDurl=vkpathToHD(flash_vars,i);
             var res = "360";
-            switch(i){case 2:{res = "480"; break;}  case 3:{  res = "720"; break;}}
+            switch(i){
+               case 2: res = "480"; break;
+               case 3: res = "720"; break;
+            }
             vidHDurl=pathToHD(res);
-            s += (vidHDurl)?'<a href="'+vidHDurl+(smartlink?vidname+vkEncodeFileName(' ['+res+'p]')+'.mp4':'')+'" download="'+vname+' ['+res+'p].mp4"  title="'+vname+' ['+res+'p].mp4" onclick="return vkDownloadFile(this);" onmouseover="vk_vid_down.vkGetVideoSize(this); vkDragOutFile(this);">'+IDL("downloadHD")+' '+res+'p<small class="fl_r divide" url="'+vidHDurl+'"></small></a>':"";   
+            s += (vidHDurl)?'<a href="'+
+               vidHDurl+(smartlink?(vidHDurl.indexOf('?')==-1?'?':'')+vidname+vkEncodeFileName(' ['+res+'p]')+'.mp4':'')+'" '+
+               'download="'+vname+' ['+res+'p].mp4"  '+
+               'title="'+vname+' ['+res+'p].mp4" '+
+               'onclick="return vkDownloadFile(this);" '+
+               'onmouseover="vk_vid_down.vkGetVideoSize(this); vkDragOutFile(this);">'+
+               IDL("downloadHD")+' '+res+'p<small class="fl_r divide" url="'+vidHDurl+'"></small></a>':"";  
            }
            return s;
       }
-
-      vidurl=(vars.no_flv=='1')?pathToHD('240')+(smartlink?vidname+'.mp4':''):(get_flv()+(smartlink?vidname+'.flv':''));
-       vidurl =  '<a href="'+vidurl+'" download="'+vname+(vars.no_flv=='1'?'.mp4':'.flv')+'" title="'+vname+(vars.no_flv=='1'?'.mp4':'.flv')+'" onclick="return vkDownloadFile(this);" onmouseover="vk_vid_down.vkGetVideoSize(this); vkDragOutFile(this);">'+IDL("download")+'<small class="fl_r divide" url="'+vidurl+'"></small></a>';
-       vidurl += generateHDLinks();
-       //vidname
+      var ext='.mp4';
+      if (vars.no_flv=='1'){
+         vidurl=pathToHD('240');
+      } else {
+         vidurl=get_flv();
+         ext = '.flv';
+      }
+      if (smartlink){
+         vidurl+= (vidurl.indexOf('?')==-1?'?':'')+vidname+ext;
+      }
+      //alert(vname+'\n\n\n'+);
+      vidurl =  '<a href="'+vidurl+'" download="'+vname+ext+'" title="'+vname+ext+'" '+
+                'onclick="return vkDownloadFile(this);" '+
+                'onmouseover="vk_vid_down.vkGetVideoSize(this); vkDragOutFile(this);">'+
+                IDL("download")+
+                '<small class="fl_r divide" url="'+vidurl+'"></small></a>';
+      vidurl += generateHDLinks();
+      //vidname
       return vidurl;
    },
    vkVidDownloadLinksArray: function (vars){
        // /video.php?act=a_flash_vars&vid=39226536_159441582
       if (!vars) return '';
+      /*
+   "url240": "http:\/\/cs13429v4.vk.me\/u23411632\/videos\/1300789c13.240.mp4?extra=9OoNGuNoDd92U-6oUKdeTQd-2redX0RVXw_gNnz4lR4R2kHD0L4p8FHUUqZQqoeexZwsxVWZMM0GdUP6Am0S51H_vp8hlbwm",
+   "url360": "http:\/\/cs13429v4.vk.me\/u23411632\/videos\/1300789c13.360.mp4?extra=9OoNGuNoDd92U-6oUKdeTQd-2redX0RVXw_gNnz4lR4R2kHD0L4p8FHUUqZQqoeexZwsxVWZMM0GdUP6Am0S51H_vp8hlbwm",
+   "url480": "http:\/\/cs13429v4.vk.me\/u23411632\/videos\/1300789c13.480.mp4?extra=9OoNGuNoDd92U-6oUKdeTQd-2redX0RVXw_gNnz4lR4R2kHD0L4p8FHUUqZQqoeexZwsxVWZMM0GdUP6Am0S51H_vp8hlbwm",
+   "url720": "http:\/\/cs13429v4.vk.me\/u23411632\/videos\/1300789c13.720.mp4?extra=9OoNGuNoDd92U-6oUKdeTQd-2redX0RVXw_gNnz4lR4R2kHD0L4p8FHUUqZQqoeexZwsxVWZMM0GdUP6Am0S51H_vp8hlbwm",
+   "cache720": "http:\/\/cs9-10v4.vk.me\/p5\/a250c76ca76f.720.mp4?extra=-ZXwV8B-qUp3RG3U1BYFxDxQ4lzaKJwNmDgM_z6fSAKn6h1P3mo2dBut80EO98PAhWuU7sHd8ObY8UGNsDV0WuX-LLgTLRyz",
+   
+      */
       var result=[];
       var vuid=function (uid) { var s = "" + uid; while (s.length < 5) {s = "0" + s;}  return s; }
       var get_flv=function() {
+         if (VIDEO_LINKS_WITH_EXTRA && vars["url240"]) return vars["url240"];
          if (vars.sd_link != null && vars.sd_link.length > 0) {return vars.sd_link;}
          if (vars.uid <= 0) return "http://" + vars.host + "/assets/video"+(vars.ip_subm || vars.host.indexOf('vkadre')!=-1?'':'s')+"/" + vars.vtag + "" + vars.vkid + ".vk.flv";
          return vars.host + "u" + vuid(vars.uid) + "/video"+(vars.ip_subm?'s':'')+"/" + vars.vtag + ".flv";
       }
       var pathToHD=function(res) {
+         if (VIDEO_LINKS_WITH_EXTRA && vars["url"+res]) return vars["url"+res];
          var s = (vars.host.substr(0, 4) == 'http') ? vars.host : 'http://cs' + vars.host + '.' + 'vk.com' + '/';//(vk.intnat ? 'vk.com' : 'vkontakte.ru') 
          return s + 'u' + vars.uid + '/video'+(vars.ip_subm?'s':'')+'/' + vars.vtag + '.' + res + '.mp4';
       };
@@ -5255,9 +5289,13 @@ vk_vid_down={
          if ( parseInt(vars.hd)>0)
            for (var i=1;i<=parseInt(vars.hd);i++){
             var res = "360";
-            switch(i){case 2:{res = "480"; break;}  case 3:{  res = "720"; break;}}
-            vidHDurl=pathToHD(res);
+            switch(i){
+               case 2: res = "480"; break;
+               case 3: res = "720"; break;
+            }
+            vidHDurl = pathToHD(res);
             if (vidHDurl) result.push(vidHDurl);
+            //if (vars["cache"+res]) result.push(vars["cache"+res]); 
            }
            return s;
       }
@@ -5327,12 +5365,12 @@ vk_vid_down={
                         
                         var i=arr[quality]?quality:arr.length-1;
                            var v=arr[i];
-                           var vidext=v.substr(v.lastIndexOf('.'));  
+                           var vidext=v.substr(v.lastIndexOf('.')).split('?')[0];  
                            
                            var vidname=vkCleanFileName(winToUtf(decodeURIComponent(obj.title || obj.md_title))).replace(/\+/g,' ');
                            var vname=vidname;
 
-                           vidname='?'+vkDownloadPostfix()+'&/'+vkEncodeFileName(vidname+' ['+fmt[i]+']');
+                           vidname=(v.indexOf('?')==-1?'?':'')+vkDownloadPostfix()+'&/'+vkEncodeFileName(vidname+' ['+fmt[i]+']');
                            var vidurl=v+(smartlink?vidname+vidext:'');
                            videos.push(vidurl); 
                   } else {
@@ -5577,13 +5615,13 @@ vk_vid_down={
                var html='';
                var arr=vk_vid_down.vkVidDownloadLinksArray(obj);
                for (var i=0; i<arr.length; i++){
-                  var vidext=arr[i].substr(arr[i].lastIndexOf('.'));  
+                  var vidext=arr[i].substr(arr[i].lastIndexOf('.')).split('?')[0];  
                   var vidname=vkCleanFileName(winToUtf(decodeURIComponent(obj.title || obj.md_title))).replace(/\+/g,' ');
                   var vname=vidname;
 
-                  vidname='?'+vkDownloadPostfix()+'&/'+vkEncodeFileName(vidname+' ['+fmt[i]+']');
+                  vidname=(arr[i].indexOf('?')==-1?'?':'')+vkDownloadPostfix()+'&/'+vkEncodeFileName(vidname+' ['+fmt[i]+']');
                   var vidurl=arr[i]+(smartlink?vidname+vidext:'')
-                  html+='<a class="vk_down_icon" href="'+vidurl+'" download="'+vname+vidext+'"  title="'+vname+' ['+fmt[i]+']'+vidext+'" onclick="return vk_vid_down.vkDownloadFile(this);" onmouseover="vk_vid_down.vkGetVideoSize(this); vkDragOutFile(this);">'+fmt[i]+'<small class="divide" url="'+vidurl+'"></small></a>'; 
+                  html+='<a class="vk_down_icon" href="'+vidurl+'" download="'+vname+vidext+'"  title="'+vname+' ['+fmt[i]+']'+vidext+'" onclick="return vkDownloadFile(this);" onmouseover="vk_vid_down.vkGetVideoSize(this); vkDragOutFile(this);">'+fmt[i]+'<small class="divide" url="'+vidurl+'"></small></a>'; 
                }
                el.innerHTML=html;
             } else {
