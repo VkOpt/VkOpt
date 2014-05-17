@@ -3709,8 +3709,9 @@ function vkShowAddAudioTip(el,id){
 	}
 }
 
-function vkGetAudioSize(id,el){
-   vkShowAddAudioTip(el,id);
+function vkGetAudioSize(id,el,without_tip){
+   if (!without_tip) 
+      vkShowAddAudioTip(el,id);
 	if (getSet(43)!='y') return;
 	var WAIT_TIME=4000;
 	var el=ge("vk_asize"+id);
@@ -5975,7 +5976,13 @@ vk_au_down={
        td.setAttribute('style',"vertical-align: top;");
        td.innerHTML='<a href="'+url+'"  download="'+name+'" title="'+name+'" onmousedown="vk_audio.prevent_play();" onclick="vk_audio.prevent_play(); return vkDownloadFile(this);" onmouseover="vkDragOutFile(this);"><div onmouseover_="vkGetAudioSize(\''+id+'\',this)" class="play_new down_btn" id="down'+id+'"></div></a>';
        tr.appendChild(td);  
-       el.setAttribute('vk_ok','1');  
+       el.setAttribute('vk_ok','1'); 
+       if (AUDIO_AUTOLOAD_BITRATE){
+          setTimeout(function(){
+            if (ge('down'+id))
+               vkGetAudioSize(id,ge('down'+id),true);
+          },300);
+       }
        //vk$(this).dragout();
    },
    vkAudioPlayList: function(add_button){
