@@ -3003,11 +3003,67 @@ vk_audio={
             }
             var btn=geByClass('down_btn',anode)[0] || geByClass('play_new',anode)[0];
             if (!btn) continue;
-            btn.setAttribute('onmouseover',"vkGetAudioSize('"+id+"',this);");           
+            btn.setAttribute('onmouseover',"vk_audio.get_size('"+id+"',this);");           
          }  
      }   
    },
-   
+   thread_count:0,
+   get_size:function(id,el,without_tip){
+      if (!without_tip) 
+         vkShowAddAudioTip(el,id);
+      if (vk_audio.thread_count>=AUDIO_INFO_LOAD_THREADS_COUNT){
+         var t = setInterval(function(){
+            if (vk_audio.thread_count<AUDIO_INFO_LOAD_THREADS_COUNT){
+               clearInterval(t);
+               vk_audio.get_size(id,el,without_tip);
+            }
+         },50);
+         return;
+      }
+      var rb = true;
+      if (getSet(43)!='y') return;
+      var WAIT_TIME=4000;
+      var el=ge("vk_asize"+id);
+      if (el && !el.hasAttribute('getsize_ok')){
+         el.setAttribute('getsize_ok',true);
+         el.innerHTML=vkLdrMiniImg;
+         var dur=el.getAttribute('dur');
+         var reset=setTimeout(function(){
+            el.removeAttribute('getsize_ok');
+            el.innerHTML='';
+            vk_audio.thread_count--;
+            rb = false;
+         },WAIT_TIME);
+         vk_audio.thread_count++;
+         XFR.post(el.getAttribute('url'),{},function(h,l){
+            clearTimeout(reset);
+            if (rb){
+               vk_audio.thread_count--;
+            }
+            if (dur>0 && l>0){
+               var kbit=l/128;
+               var kbps= Math.ceil(Math.round(kbit/dur)/16)*16;
+               var info = [];
+               if (AUDIO_INFO_SHOW_FILESIZE) info.push(vkFileSize(l,1));
+               if (AUDIO_INFO_SHOW_BITRATE)  info.push(kbps+'Kbps');
+               el.innerHTML=info.join(' | ');
+               el.setAttribute('getsize_ok',true);
+               
+               var au_el = ge('audio'+id);
+               if (au_el){
+                  au_el.setAttribute('kbps',kbps);
+                  au_el.setAttribute('filesize',l);
+               }
+            } else {
+               el.innerHTML='o_O';
+            }
+            /* костыли с педалями и тормозами */
+            if (window.sorter && sorter.update && ge('audio'+id) && (ge('audio'+id).parentNode || {}).sorter)
+               sorter.update(ge('audio'+id));
+            
+         },true);	
+      }
+   },  
    
    play_blocked:false,
    prevent_play_check:function(){
@@ -3709,37 +3765,8 @@ function vkShowAddAudioTip(el,id){
 	}
 }
 
-function vkGetAudioSize(id,el,without_tip){
-   if (!without_tip) 
-      vkShowAddAudioTip(el,id);
-	if (getSet(43)!='y') return;
-	var WAIT_TIME=4000;
-	var el=ge("vk_asize"+id);
-	if (el && !el.hasAttribute('getsize_ok')){
-		el.setAttribute('getsize_ok',true);
-		el.innerHTML=vkLdrMiniImg;
-		var dur=el.getAttribute('dur');
-		var reset=setTimeout(function(){
-			el.removeAttribute('getsize_ok');
-			el.innerHTML='';
-		},WAIT_TIME);
-		XFR.post(el.getAttribute('url'),{},function(h,l){
-			clearTimeout(reset);
-			if (dur>0 && l>0){
-				var kbit=l/128;
-				var kbps= Math.ceil(Math.round(kbit/dur)/16)*16;
-				//el.innerHTML=kbps+'Kbps | '+vkFileSize(l,1);
-				el.innerHTML=vkFileSize(l,1)+' | '+kbps+'Kbps';
-			} else {
-				el.innerHTML='o_O';
-			}
-         /* костыли с педалями и тормозами */
-         if (window.sorter && sorter.update && ge('audio'+id) && (ge('audio'+id).parentNode || {}).sorter)
-            sorter.update(ge('audio'+id));
-			
-		},true);	
-	}
-}
+
+
 function vkDownloadPostfix(){
 	return '';
 	/*!
@@ -3766,7 +3793,7 @@ function vkAudioDurSearchBtn(audio,fullname,id){
 	var dur=fullname?audio:audio[4];
 	id = fullname?id:audio[0]+'_'+audio[1];
 	//var onclick='if (checkEvent(event)) return; Audio.selectPerformer(event, \''+sq+'\'); return false';'return nav.go(this, event);'
-	return '<a href="/search?c[q]='+sq+'&c[section]=audio" onmouseover="vkGetAudioSize(\''+id+'\',this)" onclick="if (checkEvent(event)) return; vk_audio.search_track(event, \''+sq+'\'); return false">'+dur+'</a>';
+	return '<a href="/search?c[q]='+sq+'&c[section]=audio" onmouseover="vk_audio.get_size(\''+id+'\',this)" onclick="if (checkEvent(event)) return; vk_audio.search_track(event, \''+sq+'\'); return false">'+dur+'</a>';
 }
 
 function vkAudioBtns(){
@@ -5974,13 +6001,13 @@ vk_au_down={
        td.appendChild(el); 
        td=document.createElement('td');
        td.setAttribute('style',"vertical-align: top;");
-       td.innerHTML='<a href="'+url+'"  download="'+name+'" title="'+name+'" onmousedown="vk_audio.prevent_play();" onclick="vk_audio.prevent_play(); return vkDownloadFile(this);" onmouseover="vkDragOutFile(this);"><div onmouseover_="vkGetAudioSize(\''+id+'\',this)" class="play_new down_btn" id="down'+id+'"></div></a>';
+       td.innerHTML='<a href="'+url+'"  download="'+name+'" title="'+name+'" onmousedown="vk_audio.prevent_play();" onclick="vk_audio.prevent_play(); return vkDownloadFile(this);" onmouseover="vkDragOutFile(this);"><div onmouseover_="vk_audio.get_size(\''+id+'\',this)" class="play_new down_btn" id="down'+id+'"></div></a>';
        tr.appendChild(td);  
        el.setAttribute('vk_ok','1'); 
        if (AUDIO_AUTOLOAD_BITRATE){
           setTimeout(function(){
             if (ge('down'+id))
-               vkGetAudioSize(id,ge('down'+id),true);
+               vk_audio.get_size(id,ge('down'+id),true);
           },300);
        }
        //vk$(this).dragout();
