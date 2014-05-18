@@ -9,6 +9,11 @@ del ..\builds\firefox\scripts\build.bat
 del ..\builds\vkopt.safariextension\scripts\build.bat
 del ..\builds\opera.extension\scripts\build.bat
 
+del ..\builds\chrome\scripts\build.sh
+del ..\builds\firefox\scripts\build.sh
+del ..\builds\vkopt.safariextension\scripts\build.sh
+del ..\builds\opera.extension\scripts\build.sh
+
 copy ..\background.js ..\builds\chrome
 copy ..\background.js ..\builds\firefox\chrome\content
 copy ..\background.js ..\builds\maxthon
