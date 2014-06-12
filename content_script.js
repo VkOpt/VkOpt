@@ -334,7 +334,8 @@ var ex_api={
          ex_api.callbacks['cb_'+cid]=function(response){
             callback(response,data._sub);
             //alert('RESPONSE!\n'+response+'\n+data._sub);
-            delete ex_api.callbacks['cb_'+cid];
+            if (!response._prevent_remove_cb)
+               delete ex_api.callbacks['cb_'+cid];
          }
       }
       //console.log('REQ_ID: '+data._req);

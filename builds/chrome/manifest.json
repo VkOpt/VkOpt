@@ -36,6 +36,8 @@
              "128": "img/icon128.png" },
   "permissions": [
                   "http://*/*","*://vk.com/*","*://*.vk.com/*","*://userapi.com/*","*://*.userapi.com/*","*://vk.me/*","*://*.vk.me/*",
-                  "unlimitedStorage"
+                  "unlimitedStorage",
+                  "webRequest",
+                  "webRequestBlocking"
                  ]
 }
