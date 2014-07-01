@@ -14,7 +14,7 @@ function init_content_script(win,doc,bg){
 win = win || window;
 doc = doc || document;
 bg  = bg  || {};
-api_enabled = false;
+var api_enabled = false;
 var ex_ldr={ 
    mark:'vkopt_loader',
    key:(Math.round(Math.random()*10000000)).toString(35),
@@ -334,7 +334,8 @@ var ex_api={
          ex_api.callbacks['cb_'+cid]=function(response){
             callback(response,data._sub);
             //alert('RESPONSE!\n'+response+'\n+data._sub);
-            delete ex_api.callbacks['cb_'+cid];
+            if (!response._prevent_remove_cb)
+               delete ex_api.callbacks['cb_'+cid];
          }
       }
       //console.log('REQ_ID: '+data._req);

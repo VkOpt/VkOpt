@@ -1,1 +1,0 @@
-need update on server "config.json" and "scripts" 

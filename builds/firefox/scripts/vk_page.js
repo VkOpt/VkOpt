@@ -826,7 +826,15 @@ function vkProcessBirthday(day,month,year){
    if (day && month){
       var zodiacs=vk_lang['zodiac_signs'];
       var idx = day>zodiac_cfg[month-1]?(month) % 12:(month-1);
+      
 		var zodiac = zodiacs[idx];
+      
+      //30 nov - 17 dec - Змееносец
+      if (ZODIAK_SIGN_OPHIUCHUS && zodiacs[12] && 
+         ((month==11 && day>29) || (month==12 && day<18))){ 
+         zodiac = zodiacs[12];
+      }
+      
       info.push(zodiac);
    }
    return info;
@@ -1952,14 +1960,17 @@ vk_groups = {
          hide('progress'+gid);
          var html='';
          var users=info.users;
-         for (var i=0; i<users.length;i++){
-            html+=item_tpl.replace(/%NAME%/g,users[i].first_name)
-                          .replace(/%UID%/g,users[i].uid)
-                          .replace(/%AVA%/g,users[i].photo_rec);
-            html+=((i+1)%IN_ROW==0)?'</tr><tr>':'';
+         if (!users.length){            
+            html='<tr><td><div class="msg">'+IDL('MembersListAccessDenied')+'</div></td></tr>';
+         } else {
+            for (var i=0; i<users.length;i++){
+               html+=item_tpl.replace(/%NAME%/g,users[i].first_name)
+                             .replace(/%UID%/g,users[i].uid)
+                             .replace(/%AVA%/g,users[i].photo_rec);
+               html+=((i+1)%IN_ROW==0)?'</tr><tr>':'';
+            }
+            html='<tr>'+html+'</tr>';
          }
-         html='<tr>'+html+'</tr>';
-         
          var pg='';
          if (info.count>PER_PAGE){
             pg=page_list(Math.ceil(offset/PER_PAGE),Math.ceil(info.count/PER_PAGE)-1,'#',"return vk_groups.show_members_page('"+gid+"',%%)",PER_PAGE);
@@ -1976,7 +1987,7 @@ vk_groups = {
    },
    requests_block:function(is_list){
       if (getSet(88)!='y') return;
-      if (!ge('page_actions') || ge('page_actions').innerHTML.indexOf('?act=edit')==-1) return;
+      if (!ge('page_actions') || !/\?act=(edit|users)/.test(ge('page_actions').innerHTML)) return;
       var oid=cur.oid;
       var gid=Math.abs(oid);
       if (!ge('vk_group_requests')){//

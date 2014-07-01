@@ -490,7 +490,7 @@ var vkMozExtension = {
    function vkCleanFileName(s){   return trim(s.replace(/[\\\/\:\*\?\"\<\>\|]/g,'_').replace(/\u2013/g,'-').replace(/&#\d+;/g,'_').replace(/\s\s/g,'').substr(0,200));   }
    function vkEncodeFileName(s){
       try {
-         if (FULL_ENCODE_FILENAME)
+         if (FULL_ENCODE_FILENAME || vkbrowser.chrome)
             return encodeURIComponent(s);
          else
             return s.replace(/([^A-Za-z\u0410-\u042f\u0430-\u044f])/g,function (str, p1, offset, s) {return encodeURIComponent(p1)});

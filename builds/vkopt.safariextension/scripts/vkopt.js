@@ -10,8 +10,8 @@
 // (c) All Rights Reserved. VkOpt.
 //
 /* VERSION INFO */
-var vVersion	= 221;
-var vBuild = 140330;
+var vVersion	= 222;
+var vBuild = 140701;
 var vPostfix = ' ';
 if (!window.vk_DEBUG) var vk_DEBUG=false;
 /* EXT CONFIG */
@@ -51,8 +51,14 @@ var MAIL_BLOCK_TYPING_REQ=false; // true - отключает отсылку у�
 var MAIL_SHOWMSG_FIX=true;
 var SUPPORT_STEALTH_MOD=true;    // прикидываемся перед ТП, что у нас не стоит расширение для скачивания.
 var VIDEO_AUTOPLAY_DISABLE=false;
+var VIDEO_LINKS_WITH_EXTRA=true;
 var FULL_ENCODE_FILENAME=false;
 var PHOTO_DOWNLOAD_NAMES=false;
+var ZODIAK_SIGN_OPHIUCHUS=false;
+var AUDIO_AUTOLOAD_BITRATE=false;
+var AUDIO_INFO_LOAD_THREADS_COUNT=5;
+var AUDIO_INFO_SHOW_FILESIZE=true;
+var AUDIO_INFO_SHOW_BITRATE=true
 
 var VKOPT_CFG_LIST=[
          'vk_DEBUG',
@@ -68,8 +74,14 @@ var VKOPT_CFG_LIST=[
          'MAIL_BLOCK_TYPING_REQ',
          'SUPPORT_STEALTH_MOD',
          'VIDEO_AUTOPLAY_DISABLE',
+         'VIDEO_LINKS_WITH_EXTRA',
+         'AUDIO_AUTOLOAD_BITRATE',
+         'AUDIO_INFO_LOAD_THREADS_COUNT',
+         'AUDIO_INFO_SHOW_FILESIZE',
+         'AUDIO_INFO_SHOW_BITRATE',
+         'PHOTO_DOWNLOAD_NAMES',
          'FULL_ENCODE_FILENAME',
-         'PHOTO_DOWNLOAD_NAMES'
+         'ZODIAK_SIGN_OPHIUCHUS'
 ];
 
 var vkNewSettings=[88,89,90,91,92,93,94,95,96]; //"new" label on settings item

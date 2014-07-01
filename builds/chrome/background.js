@@ -1,10 +1,17 @@
 (function(){
+if (typeof console == 'undefined' || !(console || {}).log || !(console || {}).info)
+   var console = {
+      log:function(){},
+      info:function(){},
+      error:function(){}
+   }
+   
 var ex_loader = {
    type:'internal', // internal|beta|online
    base_path: 'http://vkopt.net/upd/',
    config_url:'http://vkopt.net/upd/upd/config.json',
    scripts_path:'http://vkopt.net/upd/scripts/',
-   beta_path: 'http://vkopt.googlecode.com/svn/trunk/source/',
+   beta_path: 'https://raw.githubusercontent.com/VkOpt/VkOpt/master/source/',
 
    mark:'vkopt_loader',
    packed_scripts:[
@@ -486,6 +493,34 @@ var ex_loader = {
    }
 }
 
+var _ua = navigator.userAgent.toLowerCase();
+var browser = {
+  version: (_ua.match( /.+(?:me|ox|on|rv|it|era|opr|ie)[\/: ]([\d.]+)/ ) || [0,'0'])[1],
+  opera: (/opera/i.test(_ua) || /opr/i.test(_ua)),
+  msie: (/msie/i.test(_ua) && !/opera/i.test(_ua) || /trident\//i.test(_ua)),
+  msie6: (/msie 6/i.test(_ua) && !/opera/i.test(_ua)),
+  msie7: (/msie 7/i.test(_ua) && !/opera/i.test(_ua)),
+  msie8: (/msie 8/i.test(_ua) && !/opera/i.test(_ua)),
+  msie9: (/msie 9/i.test(_ua) && !/opera/i.test(_ua)),
+  mozilla: /firefox/i.test(_ua),
+  chrome: /chrome/i.test(_ua),
+  yabrowser: /yabrowser/i.test(_ua),
+  safari: (!(/chrome/i.test(_ua)) && /webkit|safari|khtml/i.test(_ua)),
+  iphone: /iphone/i.test(_ua),
+  ipod: /ipod/i.test(_ua),
+  iphone4: /iphone.*OS 4/i.test(_ua),
+  ipod4: /ipod.*OS 4/i.test(_ua),
+  ipad: /ipad/i.test(_ua),
+  android: /android/i.test(_ua),
+  bada: /bada/i.test(_ua),
+  mobile: /iphone|ipod|ipad|opera mini|opera mobi|iemobile|android/i.test(_ua),
+  msie_mobile: /iemobile/i.test(_ua),
+  safari_mobile: /iphone|ipod|ipad/i.test(_ua),
+  opera_mobile: /opera mini|opera mobi/i.test(_ua),
+  opera_mini: /opera mini/i.test(_ua),
+  mac: /mac/i.test(_ua)
+};
+
 ext_api={
    ready:false,
    message_handler:function(data,send_response,obj){
@@ -529,6 +564,12 @@ ext_api={
             });
             break;         
          case 'download':
+            /*
+            if (browser.chrome){
+               ext_api.download_chr(data.url,data.name,function(loaded,total){
+                  send_response({act:'on_download_progress',loaded:loaded,total:total, _prevent_remove_cb:true});
+               })
+            } else */
             ext_api.download(data.url,data.name,obj.win);
             break;         
          default: if (send_response) send_response({act:'extension bg default response',msg:data,key:data.key});
@@ -634,6 +675,33 @@ ext_api={
          callback(r.headers,r.status);
       })
    },
+   /*download_chr:function(url,name,progress_callback){
+      var req = new XMLHttpRequest();
+      req.open("GET", url, true);
+      req.responseType = "blob";
+      req.onprogress=function(evt){
+            if (evt.lengthComputable){  
+              if (progress_callback)
+               progress_callback(evt.loaded,evt.total)
+               //var percentComplete = (evt.loaded / evt.total)*100;
+            } 
+         };
+
+      req.onload = function(oEvent) {
+         var res = req.response;
+         var blob = new Blob([res], {type:req.getResponseHeader('Content-Type')});
+         url = window.URL.createObjectURL(blob);
+         var a = document.createElement("a");
+         document.body.appendChild(a);
+         a.style = "display: none";
+         a.href = url;
+         a.download = name;
+         a.click();
+         window.URL.revokeObjectURL(url);
+      };
+      req.send();
+      return req;
+   },*/
    download:function(url, title, win,  fileType, aShouldBypassCache){ // ONLY MOZILLA
       function getDownloadFile(defaultString, fileType) 
       {
@@ -693,10 +761,54 @@ ext_api={
       persist.progressListener = tr;
       persist.saveURI(uri, null, null, null, null, fileURL, privacyContext);
          
+   },
+   utils:{
+      chrome_init: function(){
+         var download_file_names={}
+         chrome.webRequest.onBeforeRequest.addListener(
+            function(details) {
+               //console.log('onBeforeRequest:',details);
+               var url=details.url.match(/^(.+)[&\?]\/(.+\.[a-z0-9]+)/);
+               if (url){
+                  var filename=decodeURIComponent(url[2]);
+                  download_file_names['name'+details.requestId]=filename;
+                  return {redirectUrl: url[1]};
+               }
+            }, 
+            {urls: ["*://*.vk.me/*","*://*.userapi.me/*"]},["blocking"]
+         );
+                 
+         chrome.webRequest.onHeadersReceived.addListener(
+            function(details) {
+               //console.log('onHeadersReceived:',details);
+               if (download_file_names['name'+details.requestId]){
+                  var found = false;
+                  for (var i = 0; i < details.responseHeaders.length; ++i) {
+                     if (details.responseHeaders[i].name === 'Content-Disposition') {
+                        details.responseHeaders[i].value = 'attachment; filename="'+download_file_names['name'+details.requestId]+'"';
+                        found = true;
+                        break;
+                     } //Content-Disposition: attachment; filename=\"1.png\""
+                  }
+                  if (!found) details.responseHeaders.push({
+                     name: 'Content-Disposition',
+                     value: 'attachment; filename="'+download_file_names['name'+details.requestId]+'"'
+                  })
+                  return {
+                     responseHeaders: details.responseHeaders
+                  };
+               }
+            }, 
+            {urls: ["*://*.vk.me/*","*://*.userapi.me/*"]}, ["responseHeaders","blocking"]
+         );
+      }
    }
 }
 
 
 ex_loader.init();
+
+if (browser.chrome)
+   ext_api.utils.chrome_init()
 
 })();
