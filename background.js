@@ -1,4 +1,11 @@
 (function(){
+if (typeof console == 'undefined' || !(console || {}).log || !(console || {}).info)
+   var console = {
+      log:function(){},
+      info:function(){},
+      error:function(){}
+   }
+   
 var ex_loader = {
    type:'internal', // internal|beta|online
    base_path: 'http://vkopt.net/upd/',
