@@ -1266,7 +1266,7 @@ vk_im={
    },
    add_prevent_hide_cbox: function (){
       Inj.Wait('cur.imMedia',function(){
-         var p=geByClass('rows', cur.imMedia.menu.menuNode)[0];
+         var p=geByClass('add_media_items', cur.imMedia.menu.menuNode)[0];
          var html='<div class="checkbox" id="vk_no_hide_add_box" onclick="checkbox(this); window.vk_prevent_addmedia_hide=isChecked(this);">'+
                      //'<div></div>'+IDL('PreventHide')+
                       '<table style="border-spacing:0px;"><tr><td><div></div></td>\
