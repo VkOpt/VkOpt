@@ -488,7 +488,9 @@ function vkStyles(){
    
    if (getSet(67)=='y') 
       main_css+='#left_friends{display:none !important;}';
-      
+   if (getSet(96)=='y')
+      main_css+=' .gedit_user{clear: both;} ';
+   
 	main_css+=vkmnustyle + gr_in_col+ shut +"\
 			#vkWarnMessage, .vkWarnMessage {border: 1px solid #d4bc4c;background-color: #f9f6e7;padding: 8px 11px;font-weight: 700;font-size: 11px;margin: 0px 10px 10px;}\
 			span.htitle span.hider{display:none} span.htitle:hover span.hider{display:inline}\
