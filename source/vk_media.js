@@ -1432,7 +1432,7 @@ function vkPhotosWallAlbum(){
    */
 }
 function vkWallAlbumLink(){
-   if (ge('vk_wall_album_link')) return;
+   if (!ge('page_wall_header') || ge('vk_wall_album_link')) return;
    if (isVisible('page_wall_switch') || isVisible('page_wall_suggest'))  ge('page_wall_header').appendChild(vkCe('span',{"class":'fl_r right_link divide'},'|'))
    var href=ge('page_wall_header').getAttribute('href');
    ge('page_wall_header').appendChild(vkCe('a',{
