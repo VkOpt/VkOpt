@@ -6052,6 +6052,7 @@ vk_au_down={
          var pls='[playlist]\n\n';
          var wiki='';
          var links=[];
+         var wget_links=[];
          var list=r.response;
          for (var i=(search_flag ? 1 : 0);i<list.length;i++){
             var itm=list[i];
@@ -6065,6 +6066,8 @@ vk_au_down={
             wiki+='[[audio'+itm.owner_id+'_'+itm.aid+']]\r\n';
 
             links.push(itm.url+(itm.url.indexOf('?')>0?'&/':'?/')+vkEncodeFileName(vkCleanFileName(itm.artist+" - "+itm.title))+".mp3");
+
+            wget_links.push('wget "'+itm.url+'" -O "'+winToUtf(itm.artist+" - "+itm.title).replace(/"/g,'\\"')+'.mp3"');
          }
          pls+='\nNumberOfEntries='+list.length+'\n\nVersion=2'
 
@@ -6085,12 +6088,18 @@ vk_au_down={
                <a download="playlist.txt" href="data:text/plain;base64,' + base64_encode(utf8ToWindows1251(utf8_encode(links.join('\n')))) + '">'+vkButton(IDL('.TXT'))+'</a>\
                <a download="playlist.txt" href="data:text/plain;base64,' + base64_encode(utf8_encode(links.join('\n'))) + '">'+vkButton(IDL('.TXT')+' (UTF-8)','',1)+'</a>\
                </div>';
+         wget_links_html='<div class="vk_mp3_wget_links">\
+               <textarea id="vk_mp3_wget_links_area">'+wget_links.join('\n')+'</textarea>\
+               <a download="playlist.sh" href="data:text/plain;base64,' + base64_encode(utf8ToWindows1251(utf8_encode(wget_links.join('\n')))) + '">'+vkButton(IDL('.SH'))+'</a>\
+               <a download="playlist.sh" href="data:text/plain;base64,' + base64_encode(utf8_encode(wget_links.join('\n'))) + '">'+vkButton(IDL('.SH')+' (UTF-8)','',1)+'</a>\
+               </div>';
          var tabs=[];
 
          tabs.push({name:IDL('links'),active:true, content:links_html/*'<div class="vk_mp3_links"><textarea id="vk_mp3_links_area">'+links.join('\n')+'</textarea></div>'*/});
          tabs.push({name:IDL('M3U_Playlist'),content:m3u_html});
          tabs.push({name:IDL('PLS_Playlist'),content:pls_html});
          tabs.push({name:IDL('Wiki'), content:'<div class="vk_mp3_links"><textarea id="vk_mp3_links_area">'+wiki+'</textarea></div>'});
+         tabs.push({name:IDL('wget_links'), content:wget_links_html});
          box=vkAlertBox('MP3',vkMakeContTabs(tabs));
          box.setOptions({width:"560px"});
          /*alert(links.join('\n'));
