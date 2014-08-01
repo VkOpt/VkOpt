@@ -6031,16 +6031,29 @@ vk_au_down={
       }
       vkaddcss('#vk_mp3_links_area, #vk_m3u_playlist_area,#vk_pls_playlist_area{width:520px; height:400px;}');
       var params={}; 
-      params[cur.oid>0?"uid":"gid"]=Math.abs(cur.oid);
       if (cur.album_id && cur.album_id>0) params['album_id']=cur.album_id;
       var box=vkAlertBox('',vkBigLdrImg);
-      dApi.call('audio.get',params,function(r){
+      if (cur.searchStr == "") {    // Это не страница поиска
+          var audio_method = 'audio.get';
+          if (cur.curSection && cur.curSection.indexOf('friend') == 0)  // Это страница аудиозаписей друга
+              params["uid"]=cur.audioFriend;
+          else
+              params[cur.oid>0?"uid":"gid"]=Math.abs(cur.oid);          // Это моя страница или группы
+      } else {                      // Это страница поиска
+          var search_flag = true;   // флаг для начала цикла с 1, а не с 0, т.к. 0й элемент = кол-во результатов
+          var audio_method = 'audio.search';
+          params["q"] = cur.searchStr;  // Поисковый запрос
+          if (cur.autoComplete)         // Исправление ошибок. На практике, true при живом поиске и false при обновлении страницы
+              params["auto_complete"] = 1;
+          params["sort"] = 2;           // Сортировка по популярноси. Стандартная у вконтакта.
+      }
+      dApi.call(audio_method,params,function(r){
          var res='#EXTM3U\n';
          var pls='[playlist]\n\n';
          var wiki='';
          var links=[];
          var list=r.response;
-         for (var i=0;i<list.length;i++){
+         for (var i=(search_flag ? 1 : 0);i<list.length;i++){
             var itm=list[i];
             res+='#EXTINF:'+itm.duration+','+(winToUtf(itm.artist+" - "+itm.title))+'\n';
             res+=itm.url+"\n";//+"?/"+(encodeURIComponent(itm.artist+" - "+itm.title))+".mp3"+"\n";
@@ -6050,7 +6063,7 @@ vk_au_down={
             pls+='Length'+(i+1)+'='+itm.duration+'\n\n';
             
             wiki+='[[audio'+itm.owner_id+'_'+itm.aid+']]\r\n';
-            
+
             links.push(itm.url+(itm.url.indexOf('?')>0?'&/':'?/')+vkEncodeFileName(vkCleanFileName(itm.artist+" - "+itm.title))+".mp3");
          }
          pls+='\nNumberOfEntries='+list.length+'\n\nVersion=2'
