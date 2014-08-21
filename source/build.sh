@@ -4,16 +4,6 @@ cp source/* builds/firefox/scripts
 cp source/* builds/vkopt.safariextension/scripts
 cp source/* builds/opera.extension/scripts
 
-rm builds/chrome/scripts/build.bat
-rm builds/firefox/scripts/build.bat
-rm builds/vkopt.safariextension/scripts/build.bat
-rm builds/opera.extension/scripts/build.bat
-
-rm builds/chrome/scripts/build.sh
-rm builds/firefox/scripts/build.sh
-rm builds/vkopt.safariextension/scripts/build.sh
-rm builds/opera.extension/scripts/build.sh
-
 cp background.js builds/chrome/background.js
 cp background.js builds/firefox/chrome/content/background.js
 cp background.js builds/maxthon/background.js
