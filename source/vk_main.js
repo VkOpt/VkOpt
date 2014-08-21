@@ -104,6 +104,7 @@ function vkProcessNodeLite(node){
    vk_highlinghts.process_node(node);
 	vk_plugins.processnode(node,true);
    if (getSet(63)=='y') vkSmiles(node);
+   vkPostSubscribeBtn(node);
   }  catch (e) {
 	topError(e,{dt:4});
   }
@@ -275,6 +276,7 @@ function VkOptMainInit(){
   vkClock();
   window.vk_vid_down && vk_vid_down.process_node();
   vkPollResultsBtn();
+  vkPostSubscribeBtn();
   vk_board.get_user_posts_btn();  
   vk_im.process_node();  
   vk_photos.process_node();
