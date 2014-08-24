@@ -339,10 +339,9 @@ var vkMozExtension = {
          return str;
       };
 
-      var repeat_char = function (len, char) {
+      var repeat_char = function (len, _char) {
          var str = "";
-         for(var i=0; i < len; i++) { str += char; };
-         return str;
+         for(var i=0; i < len; i++) { str += _char; };
          return str;
       };
 
@@ -2216,7 +2215,7 @@ var vk_ext_api={
             
             callback(headers);
          });        
-      },
+      }
    }
 }
 vk_ext_api.init();

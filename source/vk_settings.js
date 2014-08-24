@@ -861,7 +861,7 @@ vk_settings = {
                cfg[cfg_name]=value;
             break;
          case 'number':
-            if (cfg[cfg_name] && parseInt(value)==NaN){
+            if (cfg[cfg_name] && isNaN(parseInt(value))){
                delete cfg[cfg_name];
             } else
                cfg[cfg_name]=parseInt(value);
@@ -1005,7 +1005,7 @@ function vkSettInfo(el,text,hasover){
 		  slide: 15,
 		  //shift: [0, -3, 0],
 		  showdt: 100,
-		  hidedt: 200,
+		  hidedt: 200
 	});
 }
 function vkCheckboxSetting(id,text,in_div){

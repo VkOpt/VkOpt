@@ -619,7 +619,7 @@ vk_skinman={
          url: 'like.php',
          params: {
             act: 'a_get_stats',
-            object: 'photo' + pid,
+            object: 'photo' + pid
          },
          slide: 15,
          shift: [55, 0, 15],
@@ -635,7 +635,7 @@ vk_skinman={
    },
    like_out:function(pid){
       
-   },   
+   }
 }
 
 function vkSkinManInfo(el,text,hasover){

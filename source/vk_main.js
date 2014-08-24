@@ -582,11 +582,6 @@ function vkAllowPost(url, q, options){
       q.audio_html=q.audio_orig;
    }
    
-   if (false){ // attach docs to board as on wall, but can't attach docs from group to topic
-      if (url=='docs.php' && q.act=='a_choose_doc_box' && ((q.to_id || "")+"").indexOf('board')!=-1){
-         q.to_id=(q.to_id+"").replace('board','-');
-      }
-   }
    if (MAIL_BLOCK_UNREAD_REQ){
       if (url=='al_mail.php' && q.act=='show') return false;
       if (url=='al_im.php' && q.act=='a_mark_read') return false;
@@ -1832,7 +1827,7 @@ function vkAddDeleteLink(){
 }
 function vkAddDelMsgHistLink(){ 
   if (!ge('vk_del_history')){
-	var btn=vkCe('div', {	id:"vk_del_history", "class":"fl_l vk_mail_save_history", },
+	var btn=vkCe('div', {	id:"vk_del_history", "class":"fl_l vk_mail_save_history" },
 					'<a href="#" onclick="vkDeleteMessagesHistory('+cur.thread.id+'); return false;">'+IDL('msgclearchat')+'</a>'
 				);
 	var ref=ge('mail_history');
@@ -2078,7 +2073,7 @@ function vkDeleteMessagesHistory(uid){
 // SAVE HISTORY TO FILE
 function vkAddSaveMsgLink(){ 
   if (!ge('vk_history_to_file_block')){
-	var btn=vkCe('div', {	id:"vk_history_to_file_block", "class":"vk_mail_save_history_block", },
+	var btn=vkCe('div', {	id:"vk_history_to_file_block", "class":"vk_mail_save_history_block" },
 					'<div id="saveldr" style="display:none; padding:8px; padding-top: 14px; text-align:center; width:130px;"><img src="/images/upload.gif"></div>'+
 					'<a href="#" onclick="return false;" id="save_btn_text" class="vk_mail_save_history"><span onclick="vk_messages.get_history(); return false;">'+IDL('SaveHistory')+'</span><span class="divide">|</span><span class="fl_r" onclick="vkMakeMsgHistory(); return false;">.txt</span><div class="cfg fl_r" onclick="vkMakeMsgHistory(null,true);"></div></a>'
 				);
