@@ -1,8 +1,12 @@
 @echo off
-copy source builds\chrome\scripts
-copy source builds\firefox\scripts
-copy source builds\vkopt.safariextension\scripts
-copy source builds\opera.extension\scripts
+
+cd source
+for %%i in (*.js) do java -jar ..\compiler.jar --accept_const_keyword --compilation_level SIMPLE --js_output_file=..\builds\firefox\scripts\%%i %%i
+cd ..
+
+copy builds\firefox\scripts builds\chrome\scripts
+copy builds\firefox\scripts builds\vkopt.safariextension\scripts
+copy builds\firefox\scripts builds\opera.extension\scripts
 
 copy background.js builds\chrome
 copy background.js builds\firefox\chrome\content
