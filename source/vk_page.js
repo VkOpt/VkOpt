@@ -605,6 +605,7 @@ function vkPostSubscribeBtn(node) {      // Добавление кнопки "�
     for (var i = 0; i < els.length; i++) {
         var parentContainer = els[i];
         var id = parentContainer.innerHTML.match(/(-?\d+)_(\d+)'/);    // id владельца и записи, для которой создается кнопка
+        if (id != null)
         parentContainer.appendChild(vkCe('div', {
                 "title":    IDL('AddToSubscribtions'),
                 "class":    "post_subscribe fl_r",
