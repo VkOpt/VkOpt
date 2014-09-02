@@ -58,7 +58,7 @@ var ZODIAK_SIGN_OPHIUCHUS=false;
 var AUDIO_AUTOLOAD_BITRATE=false;
 var AUDIO_INFO_LOAD_THREADS_COUNT=5;
 var AUDIO_INFO_SHOW_FILESIZE=true;
-var AUDIO_INFO_SHOW_BITRATE=true
+var AUDIO_INFO_SHOW_BITRATE=true;
 
 var VKOPT_CFG_LIST=[
          'vk_DEBUG',
@@ -103,7 +103,7 @@ var SetsOnLocalStore={
   'menu_custom_links':'s',
   'WallsID':'s',
   'vk_sounds_vol':'s'
-}
+};
 var vk_showinstall=true;
 var vkLdrImg='<img src="/images/upload.gif">';
 var vkLdrMonoImg='<img src="/images/upload_inv_mono.gif">';
