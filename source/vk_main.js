@@ -193,6 +193,7 @@ function vkOnNewLocation(startup){
          case 'pages'   :vkWikiPages(); break;
          case 'apps'    :vk_apps.page(); break;
          //case 'groups_list': vkGroupsListPage(); break;
+			case 'docs':		vkDocsPage(); break;
 		}
 		if (startup && window.Fave) Fave.init();	
 	}
