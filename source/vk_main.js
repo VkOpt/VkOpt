@@ -172,27 +172,27 @@ function vkOnNewLocation(startup){
 	if (cur.module){	
 		vklog(cur.module+'|'+print_r(nav.objLoc).replace(/\n/g,','));
 		switch(cur.module){
-			case 'profile':vk_profile.page(); break;
-         case 'profileEdit':vk_profile.edit_page(); break;
-			case 'groups' :vkGroupPage(); break;
-         case 'groups_edit':vk_groups.group_edit_page(); break;
-			case 'event'  :vkEventPage(); break;
-			case 'public' :vkPublicPage(); break;
-			case 'wall'   :vkWallPage(); break;
-			case 'friends':vkFriendsPage(); break;
-			case 'photos' :vk_photos.page(); break;
-			case 'audio'  :vkAudioPage(); break;
-			case 'audio_edit' :vkAudioEditPage(); break;
-         case 'video'      :vkVideoPage(); break;
-         case 'video_edit' :vkVideoEditPage(); break;
-			case 'notes'   :vkNotesPage(); break;
-			case 'board'   :vkBoardPage(); break;
-			case 'search'  :vk_search.page(); break;
-         case 'fave'    :vk_fave.page(); break;
-         case 'im'      :vk_im.page(); break;
-         case 'pages'   :vkWikiPages(); break;
-         case 'apps'    :vk_apps.page(); break;
-         //case 'groups_list': vkGroupsListPage(); break;
+			case 'profile':		vk_profile.page(); break;
+			case 'profileEdit':	vk_profile.edit_page(); break;
+			case 'groups':		vkGroupPage(); break;
+			case 'groups_edit':	vk_groups.group_edit_page(); break;
+			case 'event':		vkEventPage(); break;
+			case 'public':		vkPublicPage(); break;
+			case 'wall':		vkWallPage(); break;
+			case 'friends':		vkFriendsPage(); break;
+			case 'photos':		vk_photos.page(); break;
+			case 'audio':		vkAudioPage(); break;
+			case 'audio_edit':	vkAudioEditPage(); break;
+			case 'video':		vkVideoPage(); break;
+			case 'video_edit':	vkVideoEditPage(); break;
+			case 'notes':		vkNotesPage(); break;
+			case 'board':		vkBoardPage(); break;
+			case 'search':		vk_search.page(); break;
+			case 'fave':		vk_fave.page(); break;
+			case 'im':			vk_im.page(); break;
+			case 'pages':		vkWikiPages(); break;
+			case 'apps':		vk_apps.page(); break;
+			//case 'groups_list': vkGroupsListPage(); break;
 		}
 		if (startup && window.Fave) Fave.init();	
 	}
