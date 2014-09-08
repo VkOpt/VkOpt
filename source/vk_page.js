@@ -1915,7 +1915,7 @@ function vkDocsGenList(data, onlyGifs){ // data - массив объектов 
 			vkDocsList += '<img src="'+data[i].url+'" />';
 		vkDocsListCount++;	// увеличить количество уже обработанных документов.
 	}
-	if (vkDocsListCount == data[0]) vkDocsShowBox();	// Условие окончания генерации vkDocsList
+	if (vkDocsListCount == data[0] || length == 1) vkDocsShowBox();	// Условие окончания генерации vkDocsList
 }
 
 function vkDocsShowBox() {	// создание таблички со сылкой на сгенерированную страницу
