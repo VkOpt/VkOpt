@@ -1892,6 +1892,12 @@ function vkWikiNew(){
 
 // Фунция сохранения всех документов (или только гифок)
 function vkDocsDownloadAll(_oid, tpl, onlyGifs){
+	// Как выяснилось, функция endsWith есть не во всех браузерах...
+	if (typeof String.prototype.endsWith !== 'function') {
+		String.prototype.endsWith = function(suffix) {
+			return this.indexOf(suffix, this.length - suffix.length) !== -1;
+		};
+	}
 	vkDocsLinks=[];
 	vkDocsListCount = 0;							// Количество обработанных объектов, увеличивается функцией vkDocsGenList
 	document.body.style.cursor = 'wait';			// Меняем картинку курсора на "ожидающую"
