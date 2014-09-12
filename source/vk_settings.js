@@ -395,9 +395,6 @@ function init_colorpicker(target, onselect, inhcolor){
     function pelettemdown(e){
         var target = e.target;
         e.preventDefault();
-        if(lock){
-        //    return;
-        }
         lock = 1;
         if(paldown) {
             mousepos = [mousepos[0] - mousegpos[0] + (e.pageX || e.x), mousepos[1] - mousegpos[1] + (e.pageY || e.y)];
