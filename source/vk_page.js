@@ -124,7 +124,7 @@ vk_search={
          [rel,IDL('Relation')],
 			[profile.mobile_phone, IDL('Mob_tel')],
 			[profile.home_phone, IDL('Home_tel')],
-         [profile.skype, IDL('Skype')],
+         [profile.skype, IDL('Skype')]
 		];
       var info_html='';
 		for (var i=0; i<info_labels.length;i++)
@@ -552,6 +552,69 @@ function vkWallReply(post,toMsgId, toId, event, rf,v,replyName){
       }
 }
 
+function vkPostSubscribe(oid, id_post){     // Подписаться на пост на стене путем добавления и удаления коммента
+    // Сначала запускаем перехват изменений DOM-а, чтобы удалить кнопку "добавлен 1 комментарий" и сам коммент,
+    // потому что вконтакт присылает новые комменты, даже если они были моментально удалены.
+    var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
+    var list = ge('replies'+oid+'_'+id_post);   // контейнер с комментами. Будем следить за ним.
+    var observer = new MutationObserver(function(mutations, _this) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'childList') {
+                if (mutation.addedNodes)
+                    list.removeChild(mutation.addedNodes[0]);   // удаляем добавленный коммент
+                var added_comment_link = geByClass('replies_open',list.parentNode);
+                if (added_comment_link.length)  // если есть кнопка "добавлен 1 комментарий",
+                    list.parentNode.removeChild(added_comment_link[0]); // то удаляем её.
+                _this.disconnect(); // Остановить прослушивание изменений DOM
+            }
+        });
+    });
+    observer.observe(list, { childList: true });
+    // Собственно, добавление и удаление комментария.
+    dApi.call('wall.addComment',{owner_id: oid, post_id: id_post, text: '[subscribe]'}, function(r_add){
+        if (r_add.response)
+            dApi.call('wall.deleteComment',{owner_id: oid, comment_id: r_add.response.cid}, function(r_del){
+                if (r_del.response)
+                    vkMsg(IDL('Done'));
+                else
+                    vkMsg(IDL('Error'));
+            });
+        else
+            vkMsg(IDL('Error'));
+    });
+}
+
+function vkPostSubscribeBtn(node) {      // Добавление кнопки "Подписаться на пост"
+    // при первом вызове (который без параметров) добавляем стили кнопки "подписаться"
+    if (!node) vkaddcss('                               \
+        .post_subscribe {                               \
+            padding:    5px 6px;                        \
+            cursor:     pointer;                        \
+            visibility: hidden;                         \
+        }                                               \
+        .wall_post_over .post_subscribe {               \
+            visibility: visible;                        \
+        }                                               \
+        .post_subscribe i {                             \
+            width:      11px;                           \
+            height:     11px;                           \
+            background-image: url("'+subscribe_icon+'");\
+        }');
+
+    var els = geByClass('post_full_like', node);    // все контейнеры с лайками
+    for (var i = 0; i < els.length; i++) {
+        var parentContainer = els[i];
+        var id = parentContainer.innerHTML.match(/(-?\d+)_(\d+)'/);    // id владельца и записи, для которой создается кнопка
+        if (id != null)
+        parentContainer.appendChild(vkCe('div', {
+                "title":    IDL('AddToSubscribtions'),
+                "class":    "post_subscribe fl_r",
+                "onclick":  "vkPostSubscribe(" + id[1] + ", " + id[2] + ")"
+            },
+            '<i class="sp_main fl_l"></i>'
+        ));
+    }
+}
 
 function vkPollResults(post_id,pid){
    var tpl='\
@@ -1553,11 +1616,11 @@ if (!masks[id]) return;
 	masks={'profile_full_info':vk_shuts_prof};
 	if ((el==3 && ge('profile_full_link').getAttribute('title').match('hid'))	 || el==0){ 
      addClass(c,"shut"); profile.hideFull();
-	   ge('profile_full_link') ? null : geByClass('profile_info_link')[0].id='profile_full_link';
+	   if (ge('profile_full_link') == null) geByClass('profile_info_link')[0].id='profile_full_link';
 	   ge('profile_full_link').setAttribute('title','show');
   }	else { 
      removeClass(c,"shut"); profile.showFull(cur.oid);
-	   ge('profile_full_link') ? null : geByClass('profile_info_link')[0].id='profile_full_link';
+	   if (ge('profile_full_link') == null) geByClass('profile_info_link')[0].id='profile_full_link';
 	   ge('profile_full_link').setAttribute('title','hide');
   }
   ge('profile_full_link').setAttribute('onclick','shut(\'profile_full_info\');');
@@ -2922,7 +2985,7 @@ vk_board={
       var rx=/post(-\d+)_(\d+)/;
       var last_id=parseInt(el.id.match(rx)[2]);
       var idprogr=el.id+'_progress';
-      var idres=el.id+'_other';el.id+'_results'
+      var idres=el.id+'_other';
       var idcont=el.id+'_results';
       var idctrls=el.id+'_ctrls';
       var panel=ge(idcont);

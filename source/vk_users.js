@@ -565,8 +565,7 @@ function vkBanUserFunc(user_link,gid,callback) {
 }
 
 function vkUserAbuse(oid){
-   showBox('abuse.php', {act: 'a_page_abuse_box', oid: oid}, {stat: ['page.css'],params: {width: 410}, cache: 1}); void(0);
-   
+   showBox('abuse.php', {act: 'a_page_abuse_box', oid: oid}, {stat: ['page.css'],params: {width: 410}, cache: 1});
 }
 function vk_user_init(){
 	if (ge('pageLayout')||ge('page_layout')){

@@ -104,6 +104,7 @@ function vkProcessNodeLite(node){
    vk_highlinghts.process_node(node);
 	vk_plugins.processnode(node,true);
    if (getSet(63)=='y') vkSmiles(node);
+   vkPostSubscribeBtn(node);
   }  catch (e) {
 	topError(e,{dt:4});
   }
@@ -171,27 +172,27 @@ function vkOnNewLocation(startup){
 	if (cur.module){	
 		vklog(cur.module+'|'+print_r(nav.objLoc).replace(/\n/g,','));
 		switch(cur.module){
-			case 'profile':vk_profile.page(); break;
-         case 'profileEdit':vk_profile.edit_page(); break;
-			case 'groups' :vkGroupPage(); break;
-         case 'groups_edit':vk_groups.group_edit_page(); break;
-			case 'event'  :vkEventPage(); break;
-			case 'public' :vkPublicPage(); break;
-			case 'wall'   :vkWallPage(); break;
-			case 'friends':vkFriendsPage(); break;
-			case 'photos' :vk_photos.page(); break;
-			case 'audio'  :vkAudioPage(); break;
-			case 'audio_edit' :vkAudioEditPage(); break;
-         case 'video'      :vkVideoPage(); break;
-         case 'video_edit' :vkVideoEditPage(); break;
-			case 'notes'   :vkNotesPage(); break;
-			case 'board'   :vkBoardPage(); break;
-			case 'search'  :vk_search.page(); break;
-         case 'fave'    :vk_fave.page(); break;
-         case 'im'      :vk_im.page(); break;
-         case 'pages'   :vkWikiPages(); break;
-         case 'apps'    :vk_apps.page(); break;
-         //case 'groups_list': vkGroupsListPage(); break;
+			case 'profile':		vk_profile.page(); break;
+			case 'profileEdit':	vk_profile.edit_page(); break;
+			case 'groups':		vkGroupPage(); break;
+			case 'groups_edit':	vk_groups.group_edit_page(); break;
+			case 'event':		vkEventPage(); break;
+			case 'public':		vkPublicPage(); break;
+			case 'wall':		vkWallPage(); break;
+			case 'friends':		vkFriendsPage(); break;
+			case 'photos':		vk_photos.page(); break;
+			case 'audio':		vkAudioPage(); break;
+			case 'audio_edit':	vkAudioEditPage(); break;
+			case 'video':		vkVideoPage(); break;
+			case 'video_edit':	vkVideoEditPage(); break;
+			case 'notes':		vkNotesPage(); break;
+			case 'board':		vkBoardPage(); break;
+			case 'search':		vk_search.page(); break;
+			case 'fave':		vk_fave.page(); break;
+			case 'im':			vk_im.page(); break;
+			case 'pages':		vkWikiPages(); break;
+			case 'apps':		vk_apps.page(); break;
+			//case 'groups_list': vkGroupsListPage(); break;
 		}
 		if (startup && window.Fave) Fave.init();	
 	}
@@ -275,6 +276,7 @@ function VkOptMainInit(){
   vkClock();
   window.vk_vid_down && vk_vid_down.process_node();
   vkPollResultsBtn();
+  vkPostSubscribeBtn();
   vk_board.get_user_posts_btn();  
   vk_im.process_node();  
   vk_photos.process_node();
@@ -580,11 +582,6 @@ function vkAllowPost(url, q, options){
       q.audio_html=q.audio_orig;
    }
    
-   if (false){ // attach docs to board as on wall, but can't attach docs from group to topic
-      if (url=='docs.php' && q.act=='a_choose_doc_box' && ((q.to_id || "")+"").indexOf('board')!=-1){
-         q.to_id=(q.to_id+"").replace('board','-');
-      }
-   }
    if (MAIL_BLOCK_UNREAD_REQ){
       if (url=='al_mail.php' && q.act=='show') return false;
       if (url=='al_im.php' && q.act=='a_mark_read') return false;
@@ -1830,7 +1827,7 @@ function vkAddDeleteLink(){
 }
 function vkAddDelMsgHistLink(){ 
   if (!ge('vk_del_history')){
-	var btn=vkCe('div', {	id:"vk_del_history", "class":"fl_l vk_mail_save_history", },
+	var btn=vkCe('div', {	id:"vk_del_history", "class":"fl_l vk_mail_save_history" },
 					'<a href="#" onclick="vkDeleteMessagesHistory('+cur.thread.id+'); return false;">'+IDL('msgclearchat')+'</a>'
 				);
 	var ref=ge('mail_history');
@@ -2076,7 +2073,7 @@ function vkDeleteMessagesHistory(uid){
 // SAVE HISTORY TO FILE
 function vkAddSaveMsgLink(){ 
   if (!ge('vk_history_to_file_block')){
-	var btn=vkCe('div', {	id:"vk_history_to_file_block", "class":"vk_mail_save_history_block", },
+	var btn=vkCe('div', {	id:"vk_history_to_file_block", "class":"vk_mail_save_history_block" },
 					'<div id="saveldr" style="display:none; padding:8px; padding-top: 14px; text-align:center; width:130px;"><img src="/images/upload.gif"></div>'+
 					'<a href="#" onclick="return false;" id="save_btn_text" class="vk_mail_save_history"><span onclick="vk_messages.get_history(); return false;">'+IDL('SaveHistory')+'</span><span class="divide">|</span><span class="fl_r" onclick="vkMakeMsgHistory(); return false;">.txt</span><div class="cfg fl_r" onclick="vkMakeMsgHistory(null,true);"></div></a>'
 				);
