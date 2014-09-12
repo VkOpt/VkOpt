@@ -1890,6 +1890,121 @@ function vkWikiNew(){
       nav.go("pages?act=edit&oid="+cur.oid+"&p="+encodeURIComponent(title));
 }
 
+// Фунция сохранения всех документов (или только гифок)
+function vkDocsDownloadAll(_oid, tpl, onlyGifs){
+	// Как выяснилось, функция endsWith есть не во всех браузерах...
+	if (typeof String.prototype.endsWith !== 'function') {
+		String.prototype.endsWith = function(suffix) {
+			return this.indexOf(suffix, this.length - suffix.length) !== -1;
+		};
+	}
+	vkDocsLinks=[];
+	vkDocsListCount = 0;							// Количество обработанных объектов, увеличивается функцией vkDocsGenList
+	document.body.style.cursor = 'wait';			// Меняем картинку курсора на "ожидающую"
+	var DOCS_DOWNLOAD_LIMIT = 2000;					// Сколько максимум документов может вернуть ВК
+	dApi.call('docs.get',{oid: _oid, count: DOCS_DOWNLOAD_LIMIT},function(r){	// Получение списка всех документов владельца _oid
+		if (!r.error && r.response[0]>0){			// Если у владельца есть документы и они доступны
+			vkDocsGenList(r.response, tpl, onlyGifs);	// Генерация списка ссылок на документы
+			if (r.response[0]>DOCS_DOWNLOAD_LIMIT)	// Если документов больше лимита, то вызываем дополнительно API
+				for (var _offset=DOCS_DOWNLOAD_LIMIT;_offset<r.response[0];_offset+=DOCS_DOWNLOAD_LIMIT)
+					dApi.call('docs.get',{oid: _oid, offset: _offset, count: DOCS_DOWNLOAD_LIMIT},function(r2){
+						vkDocsGenList(r2.response, tpl, onlyGifs);
+					});
+		}
+    });
+}
+
+function vkDocsGenList(data, tpl, onlyGifs){ // data - массив объектов "документ" (0-й элемент - общее количество, сколько есть у владельца)
+	var length = data.length;		// Сколько фактически вернулось документов
+	for (var i=1;i < length;i++) {	// формирование кода страницы. не-картинки отображатьсяне не будут, но все равно загрузятся.
+		var item = data[i];
+		if (!onlyGifs || data[i].ext=="gif") // Если загружаем только гифки, то проверяем расширение файла
+			vkDocsLinks.push({url: item.url, filename: item.title+(item.title.endsWith(item.ext) ? '' : '.'+item.ext)});
+		vkDocsListCount++;	// увеличить количество уже обработанных документов.
+	}
+	if (vkDocsListCount == data[0] || length == 1) vkDocsShowBox(tpl);	// Условие окончания генерации vkDocsList
+}
+
+function vkDocsShowBox(tpl) {	// создание таблички со сылкой на сгенерированную страницу либо списки ссылок
+	document.body.style.cursor = '';	// Возвращаем картинку курсора
+
+	switch (tpl) {
+		case 'imgs':
+			vkDocsList='<div style="background:#FFB; border:1px solid #AA0;  margin:20px; padding:20px;">'+IDL('HtmlPageSaveHelp')+'</div>';
+			for (var i in vkDocsLinks) {
+				vkDocsList += '<img src="'+vkDocsLinks[i].url+'" />';
+			}
+			var box = new MessageBox({title: IDL('SavingDocuments'), width: "350px"});
+			box.removeButtons();
+			box.addButton(box_close, box.hide, 'no');
+			var html = '<h4><a href="#" onclick="vkWnd(vkDocsList,\'' + document.title.replace(/['"]+/g, "") + '\'); return false;">' + IDL('ClickForShowPage') + '</a></h4>';
+			box.content(html).show();
+			break;
+		case 'links':
+			vkaddcss('.vk_docs_links_area {width:520px; height:350px;}');
+			var links = '', wget_links = '';
+			for (var i in vkDocsLinks) {
+				var item = vkDocsLinks[i];
+				links+=item.url+'&/'+vkEncodeFileName(vkCleanFileName(item.filename))+'\n';
+				wget_links+='wget "'+item.url+'" -O "'+winToUtf(item.filename).replace(/"/g,'\\"')+'"\n';
+			}
+			var links_html='<textarea class="vk_docs_links_area">'+links+'</textarea>\
+					   <a download="DocumentsLinks.txt" href="data:text/plain;base64,' + base64_encode(utf8ToWindows1251(utf8_encode(links))) + '">'+vkButton(IDL('.TXT'))+'</a>\
+					   <a download="DocumentsLinks.txt" href="data:text/plain;base64,' + base64_encode(utf8_encode(links)) + '">'+vkButton(IDL('.TXT')+' (UTF-8)','',1)+'</a>';
+			var wget_links_html='<textarea class="vk_docs_links_area">'+wget_links+'</textarea>\
+					   <a download="DownloadDocuments.sh" href="data:text/plain;base64,' + base64_encode(utf8ToWindows1251(utf8_encode(wget_links))) + '">'+vkButton(IDL('.SH'))+'</a>\
+					   <a download="DownloadDocuments.sh" href="data:text/plain;base64,' + base64_encode(utf8_encode(wget_links)) + '">'+vkButton(IDL('.SH')+' (UTF-8)','',1)+'</a>';
+			var tabs=[];
+
+			tabs.push({name:IDL('links'),		content:links_html,	active:true});
+			tabs.push({name:IDL('wget_links'),	content:wget_links_html});
+			box=vkAlertBox(document.title, vkMakeContTabs(tabs));
+			box.setOptions({width:"560px"});
+			break;
+	}
+}
+
+function vkDocsPage() {	// Добавляет кнопку "скачать всё" и "скачать все GIF" на странице "Документы"
+    var buttons = ge('docs_side_filter');	// Родительский контейнер всех кнопок, которые справа
+    if (buttons) {	// Добавление кнопок
+        buttons.insertBefore(vkCe('div',{	// Кнопка "Скачать всё"
+                "class": "side_filter",
+                "onmousedown": "vkDocsDownloadAll(cur.oid,'imgs');",
+                "onmouseover": "addClass(this, 'side_filter_over');",
+                "onmouseout":  "removeClass(this, 'side_filter_over');"
+            },
+            IDL('downloadAll')
+        ),ge('docs_section_all'));	// перед кнопкой "все документы"
+
+		buttons.insertBefore(vkCe('div',{	// Кнопка "Скачать все гифки"
+				"class": "side_filter",
+				"onmousedown": "vkDocsDownloadAll(cur.oid,'imgs',true);",
+				"onmouseover": "addClass(this, 'side_filter_over');",
+				"onmouseout":  "removeClass(this, 'side_filter_over');"
+			},
+			IDL('downloadAllGifs')
+		),ge('docs_section_all'));	// перед кнопкой "все документы"
+
+		buttons.insertBefore(vkCe('div', {	// Кнопка "Сссылки"
+				"class": "side_filter",
+				"onmousedown":	"vkDocsDownloadAll(cur.oid,'links');",
+				"onmouseover":	"addClass(this, 'side_filter_over');",
+				"onmouseout":	"removeClass(this, 'side_filter_over');"
+			},
+			IDL('Links')
+		),ge('docs_section_all'));	// перед кнопкой "все документы"
+
+		buttons.insertBefore(vkCe('div', {	// Кнопка "Сссылки на GIF"
+				"class": "side_filter",
+				"onmousedown":	"vkDocsDownloadAll(cur.oid,'links',true);",
+				"onmouseover":	"addClass(this, 'side_filter_over');",
+				"onmouseout":	"removeClass(this, 'side_filter_over');"
+			},
+			IDL('LinksGif')
+		), ge('docs_section_all'));	// перед кнопкой "все документы"
+	}
+}
+
 /* PAGES.JS */
 vk_pages={
    inj:function(){
