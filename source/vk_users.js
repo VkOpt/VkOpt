@@ -1025,15 +1025,15 @@ function vkProfileUpdOnline(uid,callback){
 
 var _vk_fr_lists_info={};
 function vkFriendUserInLists(uid,callback,only_cats){
-      var code='\
-         var uid='+uid+';\
-         var x=API.friends.areFriends({uids:uid});\
-         var user_in_lists=null;\
-         var friends=null;\
-         var lists=null;\
-         '+(_vk_fr_lists_info.friends && _vk_fr_lists_info.lists ?'':'friends=API.friends.get({fields:"uid,lists"}); lists=API.friends.getLists();')+'\
-         return {uid:uid,status:x[0].friend_status,in_lists:user_in_lists,lists:lists,friends:friends};\
-      ';
+      var code=''+
+         'var uid='+uid+';'+
+         'var x=API.friends.areFriends({uids:uid});'+
+         'var user_in_lists=null;'+
+         'var friends=null;'+
+         'var lists=null;'+
+         ''+(_vk_fr_lists_info.friends && _vk_fr_lists_info.lists ?'':'friends=API.friends.get({fields:"uid,lists"}); lists=API.friends.getLists();')+''+
+         'return {uid:uid,status:x[0].friend_status,in_lists:user_in_lists,lists:lists,friends:friends};'+
+      '';
       dApi.call('execute',{code:code},function(r){
          var x=r.response;
          if (x.friends && x.lists){
