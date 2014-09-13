@@ -557,7 +557,7 @@ function GenWallList(el){
   var lnk;
   for (var i=0; i<wall_list.length;i++){
       lnk=(wall_list[i][0] == 'g')?"wall.php?gid="+wall_list[i].split('g')[1]:"wall.php?id="+wall_list[i];
-      if (wall_list[i]=="") {lnk="wall.php?id="+remixmid(); wall_list[i]=String(remixmid());}//
+      if (wall_list[i]=="") {lnk="wall.php?id="+remixmid(); wall_list[i]=String(remixmid());}
       whtml+='<div id="wit'+wall_list[i]+'" style="width:130px"><a style="position:relative; left:120px" onclick="vkRemWall('+i+')">x</a>'+i+') <a style="width:110px;" href="'+lnk+'">'+wall_list[i]+'</a></div>';
   }
   if (!el) {return whtml;} else {ge(el).innerHTML=whtml;}
@@ -659,7 +659,7 @@ function vkInitSettings(){
     ],
     vkInterface:[
       {id:21, text:IDL("seADRem")+vkCheckboxSetting(44,IDL("seAdNotHideSugFr"),true)},
-      {id:12, text:IDL("seMenu")+'<br><a href="#" onclick="toggle(\'vkMenuCFG\'); return false;">[<b> '+IDL("Settings")+' </b>]</a><span id="vkMenuCFG" style="display:none">'+vkCheckboxSetting(80,IDL("seMenuToRight"),true)+'<div id="vkMenuCustom">'+vk_menu.custom_settings()+'</div></span>'},//
+      {id:12, text:IDL("seMenu")+'<br><a href="#" onclick="toggle(\'vkMenuCFG\'); return false;">[<b> '+IDL("Settings")+' </b>]</a><span id="vkMenuCFG" style="display:none">'+vkCheckboxSetting(80,IDL("seMenuToRight"),true)+'<div id="vkMenuCustom">'+vk_menu.custom_settings()+'</div></span>'},
       {id:20, text:IDL("seAutoUpdMenu"),info:'infoUseNetTrafic'},
       {id:14, text:IDL("seLoadFrCats")},  
       {id:15, header:IDL("seLMenuH") , text:IDL("seLMenuO"),ops:[0,1,2]},
@@ -815,7 +815,7 @@ vk_settings = {
      ge('vksetts_tabs').innerHTML='';
      ge('vksets_search_result').innerHTML='<div class="sett_cat_header">'+cat+' ('+sets.length+')</div>'+vkGetSettings(sets,allsett)+
                               (s=='EXTRA'?'<div class="sett_cat_header">Advanced/unstable settings. WARNING! DANGER!</div>'+vk_settings.cfg_override_edit():'');
-     //
+
    },
    cfg_override: function(){
       var cfg = vkGetVal('vk_cfg_override') || '{}';

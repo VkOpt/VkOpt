@@ -416,7 +416,7 @@ if(vk_EnableSwichText){
   var shiftKey;
   var pressed;
   event=window.event?window.event:event;
-  Key=event.keyCode;//
+  Key=event.keyCode;
   ctrlKey=event.ctrlKey;
   shiftKey=event.shiftKey;
   altKey=event.altKey;
