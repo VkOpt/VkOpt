@@ -160,9 +160,7 @@ var YT_video_itag_formats={
 	'141': '256kbs.aac',
 	
 	'171': '128kbs.ogg',
-	'172': '172kbs.ogg',
-
-
+	'172': '172kbs.ogg'
 }; 
  // kolobok.us
 var SmilesMap = {
