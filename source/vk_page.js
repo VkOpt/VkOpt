@@ -1965,9 +1965,11 @@ function vkDocsShowBox(tpl) {	// создание таблички со сылк
 }
 
 function vkDocsPage() {	// Добавляет кнопку "скачать всё" и "скачать все GIF" на странице "Документы"
+    if (ge('vkdocslinks')) return;			// Если кнопки уже добавлены, снова не добавлять
     var buttons = ge('docs_side_filter');	// Родительский контейнер всех кнопок, которые справа
     if (buttons) {	// Добавление кнопок
         buttons.insertBefore(vkCe('div',{	// Кнопка "Скачать всё"
+                "id" :	"vkdocslinks",		// id нужен для определения, добавлены ли уже кнопки или нет.
                 "class": "side_filter",
                 "onmousedown": "vkDocsDownloadAll(cur.oid,'imgs');",
                 "onmouseover": "addClass(this, 'side_filter_over');",
