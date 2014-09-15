@@ -6082,15 +6082,17 @@ vk_au_down={
                <a download="playlist.pls"  href="data:audio/x-scpls;base64,' + base64_encode(utf8_encode(pls)) + '">'+vkButton(IDL('download_PLS')+' (UTF-8)','',1)+'</a>\
                </div>';
                
+         var links_joined = links.join('\n');
          links_html='<div class="vk_mp3_links">\
-               <textarea id="vk_mp3_links_area">'+links.join('\n')+'</textarea>\
-               <a download="playlist.txt" href="data:text/plain;base64,' + base64_encode(utf8ToWindows1251(utf8_encode(links.join('\n')))) + '">'+vkButton(IDL('.TXT'))+'</a>\
-               <a download="playlist.txt" href="data:text/plain;base64,' + base64_encode(utf8_encode(links.join('\n'))) + '">'+vkButton(IDL('.TXT')+' (UTF-8)','',1)+'</a>\
+               <textarea id="vk_mp3_links_area">'+links_joined+'</textarea>\
+               <a download="playlist.txt" href="data:text/plain;base64,' + base64_encode(utf8ToWindows1251(utf8_encode(links_joined))) + '">'+vkButton(IDL('.TXT'))+'</a>\
+               <a download="playlist.txt" href="data:text/plain;base64,' + base64_encode(utf8_encode(links_joined)) + '">'+vkButton(IDL('.TXT')+' (UTF-8)','',1)+'</a>\
                </div>';
+         var wget_links_joined = wget_links.join('\n');
          wget_links_html='<div class="vk_mp3_wget_links">\
-               <textarea id="vk_mp3_wget_links_area">'+wget_links.join('\n')+'</textarea>\
-               <a download="playlist.sh" href="data:text/plain;base64,' + base64_encode(utf8ToWindows1251(utf8_encode(wget_links.join('\n')))) + '">'+vkButton(IDL('.SH'))+'</a>\
-               <a download="playlist.sh" href="data:text/plain;base64,' + base64_encode(utf8_encode(wget_links.join('\n'))) + '">'+vkButton(IDL('.SH')+' (UTF-8)','',1)+'</a>\
+               <textarea id="vk_mp3_wget_links_area">'+wget_links_joined+'</textarea>\
+               <a download="playlist.sh" href="data:text/plain;base64,' + base64_encode(utf8ToWindows1251(utf8_encode(wget_links_joined))) + '">'+vkButton(IDL('.SH'))+'</a>\
+               <a download="playlist.sh" href="data:text/plain;base64,' + base64_encode(utf8_encode(wget_links_joined)) + '">'+vkButton(IDL('.SH')+' (UTF-8)','',1)+'</a>\
                </div>';
          var tabs=[];
 
