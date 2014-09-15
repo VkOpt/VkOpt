@@ -1615,122 +1615,141 @@ var dApi = {
 	show_error:function(r){
 		topError(r.error.error_msg+'<br>error_code: '+r.error.error_code,{dt:2});
 	},
-	call: function(method, inputParams, callback, captcha) {
-		if (arguments.length == 2) {    callback=inputParams;     inputParams={};   }
-		if (dApi.allow_call){
-			dApi.allow_call=false;
-			dApi.allow_t=setTimeout("dApi.allow_call=true;",300);
+	call: function (method, inputParams, callback, captcha) {
+		if (arguments.length == 2) {
+			callback = inputParams;
+			inputParams = {};
+		}
+		if (dApi.allow_call) {
+			dApi.allow_call = false;
+			dApi.allow_t = setTimeout("dApi.allow_call=true;", 300);
 		} else {
-			setTimeout(function(){
+			setTimeout(function () {
 				dApi.call(method, inputParams, callback);
-			},300);
+			}, 300);
 			return;
 		}
-      if (dApi.captcha_visible && !captcha){
-         setTimeout(function(){
-            dApi.call(method, inputParams, callback);
-         },300);
-         return;
-      }
-		var apiReAuth=function(){
+		if (dApi.captcha_visible && !captcha) {
+			setTimeout(function () {
+				dApi.call(method, inputParams, callback);
+			}, 300);
+			return;
+		}
+		var apiReAuth = function () {
 			if (!remixmid()) {
-            vklog('API Error. user id not found');
-            console.log('API Error. user id not found');
-            return;
-         }
-         dApi.Auth(function(){
+				vklog('API Error. user id not found');
+				console.log('API Error. user id not found');
+				return;
+			}
+			dApi.Auth(function () {
 				dApi.call(method, inputParams, callback);
 			});
 		}
-		dApi.mid=vkgetCookie('dapi_mid');
-      dApi.sid=vkgetCookie('dapi_sid');
-      dApi.secret=vkgetCookie('dapi_secret');
-      
-		var mid=dApi.mid;
-		var sid=dApi.sid;
-		var sec=dApi.secret;
+		dApi.mid = vkgetCookie('dapi_mid');
+		dApi.sid = vkgetCookie('dapi_sid');
+		dApi.secret = vkgetCookie('dapi_secret');
 
-		if (!dApi.sid || !dApi.secret || !dApi.mid || dApi.mid!=vk.id){
-			apiReAuth();		
+		var mid = dApi.mid;
+		var sid = dApi.sid;
+		var sec = dApi.secret;
+
+		if (!dApi.sid || !dApi.secret || !dApi.mid || dApi.mid != vk.id) {
+			apiReAuth();
 			return;
 		}
-      //console.log('API mid',remixmid());
-      if (remixmid()!='' && mid!=remixmid()){
-         apiReAuth();		
-         return;
-      }
-      
-		var params = {  
+		//console.log('API mid',remixmid());
+		if (remixmid() != '' && mid != remixmid()) {
+			apiReAuth();
+			return;
+		}
+
+		var params = {
 			api_id: dApi.API_ID,
 			method: method,
-			v: '3.0',       
-			format: 'json' 
+			v: '3.0',
+			format: 'json'
 		}
-		if (inputParams) for (var i in inputParams) params[i] = inputParams[i];  
-		var lParams=[];
-		for (i in params) {  lParams.push([i,params[i]]);   }
+		if (inputParams) for (var i in inputParams) params[i] = inputParams[i];
+		var lParams = [];
+		for (i in params) {
+			lParams.push([i, params[i]]);
+		}
 
-		function sName(i, ii) {    if (i[0] > ii[0]) return 1;  else if (i[0] < ii[0]) return -1;   else  return 0;  }
+		function sName(i, ii) {
+			if (i[0] > ii[0]) return 1; else if (i[0] < ii[0]) return -1; else  return 0;
+		}
+
 		lParams.sort(sName);
 		var sig = mid;
-		for (i in lParams) sig+=lParams[i][0]+'='+lParams[i][1];
-		sig+=sec;
+		for (i in lParams) sig += lParams[i][0] + '=' + lParams[i][1];
+		sig += sec;
 
 		function pass() {
-		  params['sig']=vkMD5(sig);
-		  params['sid']=sid;
-		  //dApi.log('api.call('+method+(window.JSON?', '+JSON.stringify(inputParams):'')+')');
-        dApi.log(method);
-		  AjPost("/api.php", params,function(obj, text) {
-			if (text=='') text='{}';
-         var response = {error:{error_code:666,error_msg:'VK API EpicFail'}};
-         try{
-            response = eval("("+text+")");
-         } catch (e) {
-         
-         }
-			if (response.error){
-				if (response.error.error_code == 6){
-					setTimeout(function(){
-						dApi.call(method, inputParams, callback);
-					},500);
-				} else if ( response.error.error_code == 4 || (response.error.error_code == 3 || response.error.error_code == 7) ){
-					apiReAuth();				
-				} else if(response.error.error_code == 14) { // Captcha needed
-               dApi.captcha_visible=true;
-					dApi.captcha(response.error.captcha_sid, response.error.captcha_img, function(sid, value) {
-						inputParams['captcha_sid'] = sid;  inputParams['captcha_key'] = value;
-						dApi.call(method, inputParams, callback, true);
-					}, false, function() { 
-                     if (callback.ok){
-                           callback.ok(response,response.response,response.error);  
-                     } else
-                        callback(response,response.response,response.error);  
-               
-               });
-				}else {
-					if (!callback || !callback.error) dApi.show_error(response); 
-					if (captcha) {
-                  dApi._captchaBox.setOptions({onHide: function(){dApi.captcha_visible=false}}).hide();  
-                  //api._captchaBox.hide();  
-               }
-               
-               if (callback.error && callback.ok){
-                  if (response.error)
-                     callback.error(response,response.error);
-                  else
-                     callback.ok(response,response.response,response.error);  
-               } else
-                  callback(response,response.response,response.error);  
-				} 
-			} else { 
-				if (captcha) dApi._captchaBox.setOptions({onHide: function(){dApi.captcha_visible=false}}).hide(); //api._captchaBox.hide();  
-            if (callback.ok){
-                  callback.ok(response,response.response,response.error);  
-            } else
-               callback(response,response.response,response.error);    
-			}
-		  });
+			params['sig'] = vkMD5(sig);
+			params['sid'] = sid;
+			//dApi.log('api.call('+method+(window.JSON?', '+JSON.stringify(inputParams):'')+')');
+			dApi.log(method);
+			AjPost("/api.php", params, function (obj, text) {
+				if (text == '') text = '{}';
+				var response = {error: {error_code: 666, error_msg: 'VK API EpicFail'}};
+				try {
+					response = eval("(" + text + ")");
+				} catch (e) {
+
+				}
+				if (response.error)
+					switch (response.error.error_code) {
+						case 6:
+							setTimeout(function () {
+								dApi.call(method, inputParams, callback);
+							}, 500);
+							break;
+						case 4:
+						case 3:
+						case 7:
+							apiReAuth();
+							break;
+						case 14: // Captcha needed
+							dApi.captcha_visible = true;
+							dApi.captcha(response.error.captcha_sid, response.error.captcha_img, function (sid, value) {
+								inputParams['captcha_sid'] = sid;
+								inputParams['captcha_key'] = value;
+								dApi.call(method, inputParams, callback, true);
+							}, false, function () {
+								if (callback.ok) {
+									callback.ok(response, response.response, response.error);
+								} else
+									callback(response, response.response, response.error);
+
+							});
+							break;
+						default:
+							if (!callback || !callback.error) dApi.show_error(response);
+							if (captcha) {
+								dApi._captchaBox.setOptions({onHide: function () {
+									dApi.captcha_visible = false
+								}}).hide();
+								//api._captchaBox.hide();
+							}
+
+							if (callback.error && callback.ok) {
+								if (response.error)
+									callback.error(response, response.error);
+								else
+									callback.ok(response, response.response, response.error);
+							} else
+								callback(response, response.response, response.error);
+					}
+				else {
+					if (captcha) dApi._captchaBox.setOptions({onHide: function () {
+						dApi.captcha_visible = false
+					}}).hide(); //api._captchaBox.hide();
+					if (callback.ok) {
+						callback.ok(response, response.response, response.error);
+					} else
+						callback(response, response.response, response.error);
+				}
+			});
 		}
 		pass();
 	},
