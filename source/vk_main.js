@@ -1233,7 +1233,7 @@ vk_im={
             ge('im_top_tabs').appendChild(el);            
             
             stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
-               cur.vkAlbumMenu = new DropdownMenu(p_options, {//
+               cur.vkAlbumMenu = new DropdownMenu(p_options, {
                  target: ge('vk_im_menu_actions'),
                  containerClass: 'dd_menu_posts',
                  updateHeader:function(){ return IDL('Actions'); },

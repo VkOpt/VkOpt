@@ -1095,7 +1095,7 @@ function vkAddCleanWallLink(){
       if (!ge('vk_wall_act_cont')){
          ge('full_wall_filters').appendChild(vkCe('li',{"class":'t_r', id:'vk_wall_act_cont'},'<a href="#" id="vk_wall_act_menu">'+IDL('Actions')+'</a><span class="divide"> </span>'));
          stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
-            cur.vkFullWallMenu = new DropdownMenu(p_options, {//
+            cur.vkFullWallMenu = new DropdownMenu(p_options, {
               target: ge('vk_wall_act_menu'),
               containerClass: 'dd_menu_posts',
               updateHeader:false,
@@ -1765,9 +1765,9 @@ function vkAudioBlock(load_audios,oid){
            <tr valign="top" id="audio_tr%AID%">\
              <td style="width:100%;padding:0px;position:relative;">\
                <div id="audio_white_line%AID%" class="audio_white_line" onmousedown="audioPlayer.prClick(event);"></div>\
-               <div id="audio_load_line%AID%" class="audio_load_line" onmousedown="audioPlayer.prClick(event);"><!-- --></div>\
+               <div id="audio_load_line%AID%" class="audio_load_line" onmousedown="audioPlayer.prClick(event);"></div>\
                <div id="audio_progress_line%AID%" class="audio_progress_line" onmousedown="audioPlayer.prClick(event);">\
-                 <div id="audio_pr_slider%AID%" class="audio_pr_slider"><!-- --></div>\
+                 <div id="audio_pr_slider%AID%" class="audio_pr_slider"></div>\
                </div>\
              </td>\
              <td id="audio_vol%AID%" style="position: relative;"></td>\
@@ -2168,7 +2168,7 @@ vk_groups = {
       if (!ge('page_actions') || !/\?act=(edit|users)/.test(ge('page_actions').innerHTML)) return;
       var oid=cur.oid;
       var gid=Math.abs(oid);
-      if (!ge('vk_group_requests')){//
+      if (!ge('vk_group_requests')){
          var html='\
            <a href="/club'+gid+'?act=users&tab=requests" onclick="return nav.go(this, event)" class="module_header"><div class="header_top clear_fix">'+IDL('GroupRequests')+'</div></a>\
            <div class="module_header">\
@@ -2433,7 +2433,7 @@ vk_groups = {
             });
          }
       };
-      //
+
       var scan=function(){
          ajax.post('groupsedit.php', {act: 'get_list', id: cur.opts.id, tab: 'invites'}, {onDone: function(cnt, res) {
            var count=cnt;
@@ -2495,7 +2495,7 @@ vk_groups = {
             });  
 
       };
-      //
+
       var scan=function(){
          if (cur_offset==0) ge('vk_scan').innerHTML=vkProgressBar(2,2,310,' scaning... ');
          //dApi.call('messages.get',{out:is_out?1:0,count:100,offset:cur_offset,preview_length:1},function(r){
@@ -2697,7 +2697,7 @@ function vkGrLstFilter(){
    stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
       vkaddcss('ul.t0 .result_list ul li{float:none}');
       if (cur.vkGrLstMenu) return;
-      cur.vkGrLstMenu = new Dropdown(ge('vk_grlst_filter'),[[0,IDL("SelectGRFilter")],[1,IDL("Groups")],[2,IDL("Events")],[3,IDL("GroupsAndPublics")],[4,IDL("Publics")]], {//
+      cur.vkGrLstMenu = new Dropdown(ge('vk_grlst_filter'),[[0,IDL("SelectGRFilter")],[1,IDL("Groups")],[2,IDL("Events")],[3,IDL("GroupsAndPublics")],[4,IDL("Publics")]], {
         target: ge('vk_gr_filter'),
         resultField:'vk_grlst_filter',
         width:160,
@@ -2797,7 +2797,7 @@ vk_fave = {
          
          //p_options=p_options.concat(vk_plugins.album_actions(oid,aid));
          stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
-            cur.vkAlbumMenu = new DropdownMenu(p_options, {//
+            cur.vkAlbumMenu = new DropdownMenu(p_options, {
               target: ge('vk_favph_act_menu'),
               containerClass: 'dd_menu_posts',
               updateHeader:false,
@@ -2834,7 +2834,7 @@ vk_fave = {
          
          //p_options=p_options.concat(vk_plugins.album_actions(oid,aid));
          stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
-            cur.vkAlbumMenu = new DropdownMenu(p_options, {//
+            cur.vkAlbumMenu = new DropdownMenu(p_options, {
               target: ge('vk_favvid_act_menu'),
               containerClass: 'dd_menu_posts',
               updateHeader:false,
@@ -2873,7 +2873,7 @@ vk_fave = {
          
          //p_options=p_options.concat(vk_plugins.album_actions(oid,aid));
          stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
-            cur.vkAlbumMenu = new DropdownMenu(p_options, {//
+            cur.vkAlbumMenu = new DropdownMenu(p_options, {
               target: ge('vk_favpost_act_menu'),
               containerClass: 'dd_menu_posts',
               updateHeader:false,

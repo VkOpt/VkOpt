@@ -188,7 +188,7 @@ var vk_photos = {
                   
                p_options=p_options.concat(vk_plugins.album_actions(oid,aid));
                stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
-                  cur.vkAlbumMenu = new DropdownMenu(p_options, {//
+                  cur.vkAlbumMenu = new DropdownMenu(p_options, {
                     target: ge('vk_album_act_menu'),
                     containerClass: 'dd_menu_posts',
                     updateHeader:false,
@@ -3187,18 +3187,18 @@ vk_audio={
          <table cellspacing="0" cellpadding="0" border="0" width="100%"><tbody><tr><td style="width: 100%;">\
                <div id="audio_pr%oid_%aid_choose" class="audio_pr" onmouseover="addClass(this, \'over\')" onmouseout="removeClass(this, \'over\'); removeClass(this, \'down\')" onmousedown="addClass(this, \'down\'); audioPlayer.prClick(event);" onmouseup="removeClass(this, \'down\')">\
                  <div id="audio_white_line%oid_%aid_choose" class="audio_white_line" onmousedown="audioPlayer.prClick(event);"></div>\
-                 <div id="audio_back_line%oid_%aid_choose" class="audio_back_line" onmousedown="audioPlayer.prClick(event);"><!-- --></div>\
-                 <div id="audio_load_line%oid_%aid_choose" class="audio_load_line" onmousedown="audioPlayer.prClick(event);"><!-- --></div>\
+                 <div id="audio_back_line%oid_%aid_choose" class="audio_back_line" onmousedown="audioPlayer.prClick(event);"></div>\
+                 <div id="audio_load_line%oid_%aid_choose" class="audio_load_line" onmousedown="audioPlayer.prClick(event);"></div>\
                  <div id="audio_pr_line%oid_%aid_choose" class="audio_progress_line" onmousedown="audioPlayer.prClick(event);">\
-                   <div id="audio_pr_slider%oid_%aid_choose" class="audio_slider"><!-- --></div>\
+                   <div id="audio_pr_slider%oid_%aid_choose" class="audio_slider"></div>\
                  </div>\
                </div>\
              </td><td>\
                <div id="audio_vol%oid_%aid_choose" class="audio_vol" onmouseover="addClass(this, \'over\')" onmouseout="removeClass(this, \'over\'); removeClass(this, \'down\')" onmousedown="addClass(this, \'down\'); audioPlayer.volClick(event)" onmouseup="removeClass(this, \'down\')">\
-                 <div id="audio_vol_white_line%oid_%aid_choose" class="audio_vol_white_line" onmousedown="audioPlayer.volClick(event);"><!-- --></div>\
-                 <div id="audio_vol_back_line%oid_%aid_choose" class="audio_load_line" onmousedown="audioPlayer.volClick(event);"><!-- --></div>\
+                 <div id="audio_vol_white_line%oid_%aid_choose" class="audio_vol_white_line" onmousedown="audioPlayer.volClick(event);"></div>\
+                 <div id="audio_vol_back_line%oid_%aid_choose" class="audio_load_line" onmousedown="audioPlayer.volClick(event);"></div>\
                  <div id="audio_vol_line%oid_%aid_choose" class="audio_progress_line" onmousedown="audioPlayer.volClick(event);">\
-                   <div id="audio_vol_slider%oid_%aid_choose" class="audio_slider" onmousedown="audioPlayer.volClick(event);"><!-- --></div>\
+                   <div id="audio_vol_slider%oid_%aid_choose" class="audio_slider" onmousedown="audioPlayer.volClick(event);"></div>\
                  </div>\
                </div>\
              </td></tr></tbody></table>\

@@ -1242,7 +1242,7 @@ function vkMenu(){//vkExLeftMenu
   for (var i=0; i<ass.length;i++) items.push(ass[i]);
   for (var i=0;i<items.length;i++) if (items[i].parentNode.tagName=='LI' || items[i].parentNode.tagName=='TD'){
     var item=items[i];
-    var page=item.href.match(/\/([A-Za-z]+)(\.php|\d+|\?|$)/);//
+    var page=item.href.match(/\/([A-Za-z]+)(\.php|\d+|\?|$)/);
 	//vklog(page);
     if (item.className=='hasedit' || item.className=='hasedit fl_l' || item.id=='myprofile')
       page='profile';
@@ -1330,7 +1330,7 @@ function vkMenu(){//vkExLeftMenu
   nav.appendChild(li);*/
   if (window.vkLinks && vkLinks.length>1){
         var li=document.createElement('li');
-        var html='<a class="left_row" href="#" '+setActions()+' onclick="return false;"><span class="left_label inl_bl">'+vkLinks[0]+'</span></a><ul '+setActions()+'>';//
+        var html='<a class="left_row" href="#" '+setActions()+' onclick="return false;"><span class="left_label inl_bl">'+vkLinks[0]+'</span></a><ul '+setActions()+'>';
         for (var i=1; i<vkLinks.length; i++)  html+='<a  class="left_row" href="'+vkLinks[i][1]+'"><span class="left_label inl_bl">'+vkLinks[i][0]+'</span></a>';
         li.id='frLinks';
         li.innerHTML=html+'</ul>';
@@ -1910,7 +1910,6 @@ function vkFixSmileMap(){
        else
          SmilesMap[key]=re;
    }
-   //
 }
 
 function vkSmiles(element){ 
