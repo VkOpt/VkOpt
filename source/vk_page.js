@@ -659,25 +659,25 @@ function vkPollResults(post_id,pid){
       vkPollVoters(data.owner_id,data.poll_id);
    };
    
-   var code='\
-      var post=API.wall.getById({posts:"'+post_id+'"})[0];\
-      var attachments=post.attachments;\
-      var i=0;\
-      var b=attachments[i];\
-      var pid = 0;\
-      var oid = 0;\
-      var oid2 = 0;\
-      while(i<attachments.length){\
-         if (b.type=="poll"){\
-            pid=b.poll.poll_id;\
-            oid=post.copy_owner_id;\
-            oid2=post.to_id;\
-         };\
-         i = i + 1;\
-         b=attachments[i]; \
-      }\
-      return {oid:oid,oid2:oid2,pid:pid,p:post,poll1:API.polls.getById({owner_id:oid,poll_id:pid}),poll2:API.polls.getById({owner_id:oid2,poll_id:pid})};\
-      ';
+   var code=''+
+      'var post=API.wall.getById({posts:"'+post_id+'"})[0];'+
+      'var attachments=post.attachments;'+
+      'var i=0;'+
+      'var b=attachments[i];'+
+      'var pid = 0;'+
+      'var oid = 0;'+
+      'var oid2 = 0;'+
+      'while(i<attachments.length){'+
+         'if (b.type=="poll"){'+
+            'pid=b.poll.poll_id;'+
+            'oid=post.copy_owner_id;'+
+            'oid2=post.to_id;'+
+         '};'+
+         'i = i + 1;'+
+         'b=attachments[i]; '+
+      '}'+
+      'return {oid:oid,oid2:oid2,pid:pid,p:post,poll1:API.polls.getById({owner_id:oid,poll_id:pid}),poll2:API.polls.getById({owner_id:oid2,poll_id:pid})};'+
+      '';
       
    if (post_id && pid){
       dApi.call('polls.getById',{owner_id:post_id,poll_id:pid},function(r){
@@ -707,25 +707,25 @@ function vkPollCancelAnswer(post_id,pid){
       });
    };
    
-   var code='\
-      var post=API.wall.getById({posts:"'+post_id+'"})[0];\
-      var attachments=post.attachments;\
-      var i=0;\
-      var b=attachments[i];\
-      var pid = 0;\
-      var oid = 0;\
-      var oid2 = 0;\
-      while(i<attachments.length){\
-         if (b.type=="poll"){\
-            pid=b.poll.poll_id;\
-            oid=post.copy_owner_id;\
-            oid2=post.to_id;\
-         };\
-         i = i + 1;\
-         b=attachments[i]; \
-      }\
-      return {oid:oid,oid2:oid2,pid:pid,p:post,poll1:API.polls.getById({owner_id:oid,poll_id:pid}),poll2:API.polls.getById({owner_id:oid2,poll_id:pid})};\
-      ';
+   var code=''+
+      'var post=API.wall.getById({posts:"'+post_id+'"})[0];'+
+      'var attachments=post.attachments;'+
+      'var i=0;'+
+      'var b=attachments[i];'+
+      'var pid = 0;'+
+      'var oid = 0;'+
+      'var oid2 = 0;'+
+      'while(i<attachments.length){'+
+         'if (b.type=="poll"){'+
+            'pid=b.poll.poll_id;'+
+            'oid=post.copy_owner_id;'+
+            'oid2=post.to_id;'+
+         '};'+
+         'i = i + 1;'+
+         'b=attachments[i]; '+
+      '}'+
+      'return {oid:oid,oid2:oid2,pid:pid,p:post,poll1:API.polls.getById({owner_id:oid,poll_id:pid}),poll2:API.polls.getById({owner_id:oid2,poll_id:pid})};'+
+      '';
       
    if (post_id && pid){
       dApi.call('polls.getById',{owner_id:post_id,poll_id:pid},function(r){
@@ -744,13 +744,13 @@ function vkPollCancelAnswer(post_id,pid){
 
 
 function vkPollVoters(oid,poll_id){
-   var code='\
-     var oid='+oid+';\
-     var poll_id='+poll_id+';\
-     var poll=API.polls.getById({owner_id:oid,poll_id:poll_id});\
-     var voters=API.polls.getVoters({owner_id:oid,poll_id:poll_id,answer_ids:poll.answers@.id,fields:"first_name,last_name,online,photo_rec",offset:0,count:9});\
-     return {poll:poll,voters:voters,anwers_ids:poll.answers@.id};\
-   ';
+   var code=''+
+     'var oid='+oid+';'+
+     'var poll_id='+poll_id+';'+
+     'var poll=API.polls.getById({owner_id:oid,poll_id:poll_id});'+
+     'var voters=API.polls.getVoters({owner_id:oid,poll_id:poll_id,answer_ids:poll.answers@.id,fields:"first_name,last_name,online,photo_rec",offset:0,count:9});'+
+     'return {poll:poll,voters:voters,anwers_ids:poll.answers@.id};'+
+   '';
    dApi.call('execute',{code:code},function(r){
          var data=r.response;
          console.log(data);
@@ -2089,11 +2089,11 @@ vk_groups = {
       var IN_ROW=8;
       
       var sort="time_desc";//"time_asc";//
-      var code='\
-      var members=API.groups.getMembers({gid:'+gid+', count:'+PER_PAGE+', offset:'+offset+', sort:"'+sort+'"});\
-      var users=API.users.get({uids:members.users,fields:"photo_rec"});\
-      return {count:members.count,users:users};\
-      ';
+      var code=''+
+      'var members=API.groups.getMembers({gid:'+gid+', count:'+PER_PAGE+', offset:'+offset+', sort:"'+sort+'"});'+
+      'var users=API.users.get({uids:members.users,fields:"photo_rec"});'+
+      'return {count:members.count,users:users};'+
+      '';
 
       var item_tpl='\
          <td><div class="liked_box_row">\
@@ -2356,11 +2356,11 @@ vk_groups = {
             });
       }
       function scan(){
-         var code='\
-         var members=API.groups.getMembers({gid:'+gid+', count:'+PER_REQ+', offset:'+offset+', sort:"'+sort+'"});\
-         var users=API.users.get({uids:members.users,fields:"deactivated"});\
-         return {count:members.count,users:users};\
-         ';
+         var code=''+
+         'var members=API.groups.getMembers({gid:'+gid+', count:'+PER_REQ+', offset:'+offset+', sort:"'+sort+'"});'+
+         'var users=API.users.get({uids:members.users,fields:"deactivated"});'+
+         'return {count:members.count,users:users};'+
+         '';
          dApi.call('execute',{code:code},function(r){
             var need_run = (queue.length==0)?true:false;
             var count=r.response.count;
@@ -3712,11 +3712,11 @@ function vk_tag_api(section,url,app_id){
          var like_obj=t.parse_id(obj_id);
          obj_id=like_obj;
          var url=t.page_url+t.section+'/'+obj_id;
-         var code='\
-         var like=API.likes.getList({type:"sitepage",page_url:"'+url+'",owner_id:"'+t.app+'",count:'+count+',offset:'+offset+'});\
-         var users=API.users.get({uids:like.users,fields:"photo_rec"});\
-         return {count:like.count,users:users,uids:like.users};\
-         ';
+         var code=''+
+         'var like=API.likes.getList({type:"sitepage",page_url:"'+url+'",owner_id:"'+t.app+'",count:'+count+',offset:'+offset+'});'+
+         'var users=API.users.get({uids:like.users,fields:"photo_rec"});'+
+         'return {count:like.count,users:users,uids:like.users};'+
+         '';
          //api_for_dislikes
          api4dislike.call('execute',{code:code},function(r,t){
             if (callback) callback(r.response);

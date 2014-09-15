@@ -1,7 +1,13 @@
-cp source/* builds/chrome/scripts
-cp source/* builds/firefox/scripts
-cp source/* builds/vkopt.safariextension/scripts
-cp source/* builds/opera.extension/scripts
+cd source
+for js_file in *.js
+do
+	java -jar ../compiler.jar --accept_const_keyword --compilation_level SIMPLE --js_output_file=../builds/firefox/scripts/$js_file $js_file
+done
+cd ..
+
+cp builds/firefox/scripts/* builds/chrome/scripts
+cp builds/firefox/scripts/* builds/vkopt.safariextension/scripts
+cp builds/firefox/scripts/* builds/opera.extension/scripts
 
 cp background.js builds/chrome/background.js
 cp background.js builds/firefox/chrome/content/background.js

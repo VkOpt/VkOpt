@@ -1109,11 +1109,11 @@ function vkPVLinks(ph){
 }
 function vkPVShowTagsInfo(){
    var pid=cur.pvCurPhoto.id.split('_');
-   var code='\
-      var tags=API.photos.getTags({owner_id:'+pid[0]+',pid:'+pid[1]+'});\
-      var placers=API.getProfiles({"uids":tags@.placer_id});\
-      return {tags:tags, placers:placers};\
-   ';
+   var code=''+
+      'var tags=API.photos.getTags({owner_id:'+pid[0]+',pid:'+pid[1]+'});'+
+      'var placers=API.getProfiles({"uids":tags@.placer_id});'+
+      'return {tags:tags, placers:placers};'+
+   '';
     dApi.call('execute',{code:code},function(r){
       var data=r.response;
       var html='Not Avaliable';
