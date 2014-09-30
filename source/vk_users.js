@@ -333,7 +333,7 @@ function pupShow(event,pid,id,el) {
  pup_menu.style.left=event.pageX+"px";//pageX
  pup_menu.style.top=event.pageY+"px";//pageY
  cancelEvent(event);
- var str = '<div class="vk_popupmenu"><ul>';//"<table cellpadding=0 cellspacing=0><tr><td class='pupSide'></td><td><div class='pupBody'>";
+ var str = '<div class="vk_popupmenu" onmouseover="clearTimeout(pup_tout);" onmouseout="pup_tout=setTimeout(pupHide, 50);"><ul>';//"<table cellpadding=0 cellspacing=0><tr><td class='pupSide'></td><td><div class='pupBody'>";
  str += ExUserItems(id,el)+'%plugins';//pupItems(pid);
  str += '</ul></div>';//"</div><div class='pupBottom'></div><div class='pupBottom2'></div></td><td class='pupSide'></td></tr>";
  pup_menu.innerHTML = str;
@@ -367,7 +367,7 @@ function pupShow(event,pid,id,el) {
 		  ready=true; 
 	  }
 	  if (gid){
-		 var str2 = '<div class="vk_popupmenu"><ul>';
+		 var str2 = '<div class="vk_popupmenu" onmouseover="clearTimeout(pup_tout);" onmouseout="pup_tout=setTimeout(pupHide, 50);"><ul>';
 		 str2 += ExGroupItems(gid,el)+vk_plugins.user_menu_items(null,gid); ;
 		 str2 += '</ul></div>';	
 		 str2=str2.replace(/%GID/g,gid); 
@@ -385,8 +385,7 @@ function pupShow(event,pid,id,el) {
 }
 
 function mkExItem(id,text){
-var str = '<li onmousemove="clearTimeout(pup_tout);" onmouseout="pup_tout=setTimeout(pupHide, 400);">'+text+"</li>";
-return str;
+    return '<li>'+text+'</li>';
 }
 
 function ExGroupItems(gid,el){
