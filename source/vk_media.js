@@ -580,9 +580,9 @@ var vk_photos = {
       return false;
    },
    update_photo_btn:function(node){
-      var p=geByClass('pe_filter_buttons',node)[0];
+      var p = geByClass('pe_filter_buttons',node)[0] ? geByClass('pe_filter_buttons',node)[0] : geByClass('pv_filter_buttons',node)[0];
       if (!p) return;
-      var btn=se('<div class="button_gray fl_r" id="vk_ph_upd_btn"><button onclick="vk_photos.update_photo(cur.filterPhoto);">'+IDL('Update',2)+'</button></div>');
+      var btn = se('<div class="button_gray fl_r" id="vk_ph_upd_btn"><button onclick="vk_photos.update_photo(cur.filterPhoto);">'+IDL('Update',2)+'</button></div>');
       p.appendChild(btn);
    },
    scan_wall:function(oid,only_owner){
