@@ -2923,6 +2923,7 @@ vk_audio={
       .album_choose{display: block;float: left; padding: 6px 10px; min-width: 175px;}\
       #vk_links_to_audio_on_page{padding: 10px; text-align:center; display:block;}\
      #albumBanned .post_dislike_icon{opacity: 1;}\
+     .vk_deldup_btn_wrap{padding: 0 10px;}\
    ',
    album_cache:{},
    inj_common:function(){
@@ -3557,11 +3558,13 @@ function vkAudioDelDup(add_button,btn){
 		} else if (nav.objLoc[0]=='search' && nav.objLoc['c[section]']=='audio'){
 			var p=ge('search_filters');
 			if (ge('vk_deldup_btn') || !p) return;
-			p.appendChild(vkCe('div',{"class":'no_select filter_open',
+			var cont=vkCe('div',{"class":'vk_deldup_btn_wrap'});
+         p.appendChild(cont);
+         cont.appendChild(vkCe('div',{"class":'no_select filter_open',
 									  "onclick":"searcher.toggleFilter(this, 'vk_del_dup');",
 									  "onselectstart":"return false"},IDL('Duplicates')));
-			p.appendChild(vkCe('div',{id:"vk_del_dup"},'\
-				<div class="audio_search_filter"><div id="vk_deldup_btn"  style="text-align:center;">'+vkButton(IDL('DeleteDuplicates'),"vkAudioDelDup(null,this)")+'</div></div>\
+			cont.appendChild(vkCe('div',{id:"vk_del_dup"},'\
+				<div class="audio_search_filter"><div id="vk_deldup_btn"  style="text-align:center; margin-bottom: 5px;">'+vkButton(IDL('DeleteDuplicates'),"vkAudioDelDup(null,this)")+'</div></div>\
 				<div style="padding-top:10px;" id="deldup_by_size"></div>\
 				<div id="vk_deldup_text"  style="text-align:center;"></div>\
 				')
