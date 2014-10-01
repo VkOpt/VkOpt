@@ -855,7 +855,7 @@ var vk_photos = {
 }
 
 function vkPVPhotoMover(show_selector){
-   if (!show_selector && cur.pvCurPhoto && (cur.pvCurPhoto.actions || {}).edit && !ge('pv_album_name').innerHTML.match('vkPVPhotoMover')){
+   if (!show_selector && cur.pvCurPhoto && (cur.pvCurPhoto.actions || {}).edit && ge('pv_album_name') && !ge('pv_album_name').innerHTML.match('vkPVPhotoMover') && trim(ge('pv_album_name').innerHTML)!="" ){
       ge('pv_album_name').innerHTML= '<div id="vk_ph_album_info">'+
                                     ge('pv_album_name').innerHTML+
                                     '<div class="fl_r vk_edit_ico" onclick="return vkPVPhotoMover(true);"> </div>'+
