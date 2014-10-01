@@ -17,8 +17,7 @@ function vkPhotoViewer(){
   Inj.Before('photoview.doShow','cur.pvNarrow','vk_phviewer.proc1(ph);');
   Inj.Before('photoview.doShow','var likeop','vkProcessNode(cur.pvNarrow);');
   Inj.End('photoview.doShow','vkProcessNode(cur.pvWide);');
-  //Inj.Before('photoview.doShow','+ (ph.actions.del','+ vkPVLinks(ph) + vk_plugins.photoview_actions(ph) ');
-  Inj.Before('photoview.doShow','+ actsHtml',' + vkPVLinks(ph) + vk_plugins.photoview_actions(ph) ');
+  Inj.Before('photoview.doShow','if (ph.actions.spam)','actionsHTML += vkPVLinks(ph) + vk_plugins.photoview_actions(ph);');
   if (getSet(7)=='y') Inj.Start('photoview.afterShow','vkPVMouseScroll();');
   
   vkPVNoCheckHeight=function(){return !window.PVShowFullHeight};
@@ -73,7 +72,7 @@ function vkPVAfterShow(){
       Photoview.doShow();
 	}
 	if (ge('pv_summary')) ge('pv_summary').setAttribute('onclick','vkPVChangeView()');
-   if (ge('pv_album')){
+   if (ge('pv_album_name')){
       vkPVPhotoMover();
    }
 }
@@ -99,7 +98,7 @@ var _vk_albums_list_cache={};
 var vk_photos = {
    css:'\
       #vk_ph_save_move{width:160px}\
-      #vkmakecover{margin-top:6px; width:164px;}\
+      #vkmakecover{margin-top:6px; width:135px;}\
       .photos_choose_header a, .photos_choose_header span{color:#FFF;}\
       .photos_choose_row.c_album{position:relative; cursor:pointer; height: 100px; width: 175px;}\
       .c_album .photo_row_img{ max-width: 175px;}\
@@ -117,6 +116,7 @@ var vk_photos = {
       .vk_ph_info .vk_like_icon_white{opacity:0.5;}\
       .vk_ph_info.my_like .vk_like_icon_white, .vk_ph_info .vk_like_icon_white.my_like{opacity:1;}\
       .vk_ph_info .vk_comm_icon_white{opacity:0.5;}\
+	  #pv_hd_links{margin-top:10px;}\
    ',
    inj_photos:function(){
       Inj.Before('photos.loaded','while','vk_photos.album_process_node(d);');
@@ -855,9 +855,9 @@ var vk_photos = {
 }
 
 function vkPVPhotoMover(show_selector){
-   if (!show_selector && cur.pvCurPhoto && (cur.pvCurPhoto.actions || {}).edit && !ge('pv_album').innerHTML.match('vkPVPhotoMover')){
-      ge('pv_album').innerHTML= '<div id="vk_ph_album_info">'+
-                                    ge('pv_album').innerHTML+
+   if (!show_selector && cur.pvCurPhoto && (cur.pvCurPhoto.actions || {}).edit && !ge('pv_album_name').innerHTML.match('vkPVPhotoMover')){
+      ge('pv_album_name').innerHTML= '<div id="vk_ph_album_info">'+
+                                    ge('pv_album_name').innerHTML+
                                     '<div class="fl_r vk_edit_ico" onclick="return vkPVPhotoMover(true);"> </div>'+
                                  '</div><div id="vk_ph_album_selector"></div>';
       //appendChild(vkCe('div',{'class':'fl_r', id:'vk_ph_move', onclick:"return vkPVPhotoMover(true);"},'edit'));
@@ -886,7 +886,7 @@ function vkPVPhotoMover(show_selector){
          hide('vk_ph_album_info');
          var def_aid=aid;
          cur.vk_pvMoveToAlbum = new Dropdown(ge('vk_ph_album_selector'), albums, {
-           width: 165,
+           width: 135,
            selectedItems: [def_aid],
            autocomplete: (albums.length > 7),
            onChange: function(val) {
@@ -907,14 +907,14 @@ function vkPVPhotoMover(show_selector){
                var album='<a href="album'+oid+'_'+to_aid+'" onclick="return nav.go(this, event)">'+to_info[1]+'</a>';
                if (album) ph.album = album;
                   ph.moved = (to_aid != def_aid);
-               ge('pv_album').innerHTML=album;
+               ge('pv_album_name').innerHTML=album;
                vkPVPhotoMover();
                //r.response
              })
              
            }
          }); 
-         ge('pv_album').appendChild(btn);
+         ge('pv_album_name').appendChild(btn);
          btn.onclick=function(){
             lockButton(geByTag1('button',btn));
             dApi.call('photos.makeCover',{pid:pid,aid:aid,oid:oid},function(r){
