@@ -98,7 +98,7 @@ var _vk_albums_list_cache={};
 var vk_photos = {
    css:'\
       #vk_ph_save_move{width:160px}\
-      #vkmakecover{margin-top:6px; width:135px;}\
+      #vkmakecover{margin-top:6px; width:169px;}\
       .photos_choose_header a, .photos_choose_header span{color:#FFF;}\
       .photos_choose_row.c_album{position:relative; cursor:pointer; height: 100px; width: 175px;}\
       .c_album .photo_row_img{ max-width: 175px;}\
@@ -117,6 +117,8 @@ var vk_photos = {
       .vk_ph_info.my_like .vk_like_icon_white, .vk_ph_info .vk_like_icon_white.my_like{opacity:1;}\
       .vk_ph_info .vk_comm_icon_white{opacity:0.5;}\
 	  #pv_hd_links{margin-top:10px;}\
+	  .vkPVPhotoMoverOpen #pv_author_info{width:169px;margin-left:0}\
+	  .vkPVPhotoMoverOpen #pv_author_img{display:none;}\
    ',
    inj_photos:function(){
       Inj.Before('photos.loaded','while','vk_photos.album_process_node(d);');
@@ -878,15 +880,16 @@ function vkPVPhotoMover(show_selector){
    ge('vk_ph_album_selector').innerHTML=vkLdrImg;
    var btn=vkCe('div',{'class':'button_gray button_wide',id:'vkmakecover'},'<button>'+IDL('MakeCover')+'</button>');
    
-   //ge('vk_ph_album_selector').appendChild(btn);
-   //<div class="button_gray button_wide" style="margin-top:6px; width:164px;"><button>Сделать обложкой</button></div>
    var sel=function(){
+   
+      addClass('pv_narrow','vkPVPhotoMoverOpen');
+	  
       stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
          var albums=_vk_albums_list_cache[''+oid];
          hide('vk_ph_album_info');
          var def_aid=aid;
          cur.vk_pvMoveToAlbum = new Dropdown(ge('vk_ph_album_selector'), albums, {
-           width: 135,
+           width: 169,
            selectedItems: [def_aid],
            autocomplete: (albums.length > 7),
            onChange: function(val) {
@@ -908,8 +911,11 @@ function vkPVPhotoMover(show_selector){
                if (album) ph.album = album;
                   ph.moved = (to_aid != def_aid);
                ge('pv_album_name').innerHTML=album;
+			   
+			   removeClass('pv_narrow','vkPVPhotoMoverOpen');
+			   
                vkPVPhotoMover();
-               //r.response
+
              })
              
            }
