@@ -556,6 +556,8 @@ function vkPostSubscribe(oid, id_post){     // Подписаться на по�
     // Сначала запускаем перехват изменений DOM-а, чтобы удалить кнопку "добавлен 1 комментарий" и сам коммент,
     // потому что вконтакт присылает новые комменты, даже если они были моментально удалены.
     var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
+    if (!MutationObserver)
+      return;
     var list = ge('replies'+oid+'_'+id_post);   // контейнер с комментами. Будем следить за ним.
     var observer = new MutationObserver(function(mutations, _this) {
         mutations.forEach(function(mutation) {
@@ -586,21 +588,7 @@ function vkPostSubscribe(oid, id_post){     // Подписаться на по�
 
 function vkPostSubscribeBtn(node) {      // Добавление кнопки "Подписаться на пост"
     // при первом вызове (который без параметров) добавляем стили кнопки "подписаться"
-    if (!node) vkaddcss('                               \
-        .post_subscribe {                               \
-            padding:    5px 6px;                        \
-            cursor:     pointer;                        \
-            visibility: hidden;                         \
-        }                                               \
-        .wall_post_over .post_subscribe {               \
-            visibility: visible;                        \
-        }                                               \
-        .post_subscribe i {                             \
-            width:      11px;                           \
-            height:     11px;                           \
-            background-image: url("'+subscribe_icon+'");\
-        }');
-
+    if (!POST_SUBSCRIBE_BTN) return;
     var els = geByClass('post_full_like', node);    // все контейнеры с лайками
     for (var i = 0; i < els.length; i++) {
         var parentContainer = els[i];
@@ -608,7 +596,7 @@ function vkPostSubscribeBtn(node) {      // Добавление кнопки "�
         if (id != null)
         parentContainer.appendChild(vkCe('div', {
                 "title":    IDL('AddToSubscribtions'),
-                "class":    "post_subscribe fl_r",
+                "class":    "vk_post_subscribe fl_r",
                 "onclick":  "vkPostSubscribe(" + id[1] + ", " + id[2] + ")"
             },
             '<i class="sp_main fl_l"></i>'
@@ -1699,19 +1687,12 @@ vk_graff={
 function vkWallAddPreventHideCB(){
    Inj.Wait('cur.wallAddMedia',function(){
       var p=geByClass('rows', cur.wallAddMedia.menu.menuNode)[0];
-      var html='<div class="checkbox" id="vk_no_hide_add_box" onclick="checkbox(this); window.vk_prevent_addmedia_hide=isChecked(this);">'+
-                  //'<div></div>'+IDL('PreventHide')+
-                   '<table style="border-spacing:0px;"><tr><td><div></div></td>\
-                        <td>\
-                          <nobr>'+IDL('PreventHide')+'</nobr>\
-                        </td>\
-                      </tr>\
-                    </tbody>\
-                   </table>'+
+      var html='<div class="checkbox" id="vk_no_hide_add_box" style="padding: 7px;" onclick="checkbox(this); window.vk_prevent_addmedia_hide=isChecked(this);">'+
+                  '<div></div>'+'<nobr>'+IDL('PreventHide')+'</nobr>'+
                '</div>';
       var id='add_media_type_' +  cur.wallAddMedia.menu.id + '_nohide';
       if (!ge(id)){
-         var a=vkCe('a',{id:id,'style':'border-top:1px solid #DDD; padding:2px; padding-top:4px;'},html);
+         var a=vkCe('a',{id:id,'style':'border-top:1px solid #DDD;'},html);
          p.appendChild(a);
       }
       Inj.Replace('cur.wallAddMedia.chooseMedia',/addMedia/g,'cur.wallAddMedia');
@@ -3176,7 +3157,21 @@ vk_board={
 
 
 vk_feed={
-   css:'\
+   css:function(){
+   return '\
+      .vk_post_subscribe {                              \
+         padding:    5px 6px;                        \
+         cursor:     pointer;                        \
+         visibility: hidden;                         \
+      }                                              \
+      .wall_post_over .vk_post_subscribe {              \
+         visibility: visible;                        \
+      }                                              \
+      .vk_post_subscribe i {                            \
+         width:      11px;                           \
+         height:     11px;                           \
+         background-image: url("'+subscribe_icon+'");\
+      }\
       #vk_feed_filter .checkbox_container table, #vk_feed_filter_panel .checkbox_container table{margin: 0px;}\
       #feed_summary_wrap .divide{padding-top:3px;}\
       #vk_feed_filter .checkbox_container{width:auto !important;}\
@@ -3215,7 +3210,8 @@ vk_feed={
       .vkf_nogroup .vk_feed_group,\
       .vkf_nofriend .vk_feed_friend,\
       .vkf_norepost .vk_feed_repost{display:none !important}\
-   ',
+      ';
+   },
    inj:function(){
       Inj.Before('Feed.go','revertLastInlineVideo',"/*console.log('process go',rows);*/ rows=vkModAsNode(rows,vk_feed.process_node);")
       Inj.Before('Feed.update','var feed_rows','/*console.log("process update",rows);*/ rows=vkModAsNode(rows,vk_feed.process_node);')  
