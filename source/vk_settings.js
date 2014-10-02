@@ -234,9 +234,9 @@ function hz_chooselang(no_reload){
       about+='<b>'+lng[i][1]+'</b> - '+lng[i][2]+'<br>';
    }
    html='<div id="hz_lang">'+html+'</div>'+
-	   '<center style="clear:both;"><b><a href="javascript: toggle(\'vklang_author\')">About languages</a></b><div id="vklang_author" style="display:none">'+about+'</div></center>';
+	   '<center style="clear:both;"><b><a href="javascript: toggle(\'vklang_author\')">'+IDL('About_languages')+'</a></b><div id="vklang_author" style="display:none">'+about+'</div></center>';
    if (no_reload) return html;
-   if (!window.hz_b || isNewLib())   hz_b = new MessageBox({title: IDL('Elektu lingvon.'),closeButton:true});
+   if (!window.hz_b || isNewLib())   hz_b = new MessageBox({title: IDL("ChangeVkOptLang"),closeButton:true});
 	
 	hz_b.removeButtons();
 	hz_b.addButton(isNewLib()?'OK':{
@@ -1134,7 +1134,7 @@ function vkShowSettings(box){
          '<div class="opacity_anim" style="background:url('+IDL('LangFlag')+');"></div>'+
       '</a>'
   }
-  var header='Vkontakte Optimizer '+String(vVersion).split('').join('.')+'<sup><i>'+vPostfix+'</i></sup> '+'(build '+vBuild+') <b class="fl_r">'+change_lang_btn+'</b>';
+  var header='<b class="fl_r">'+change_lang_btn+'</b> '+'Vkontakte Optimizer '+String(vVersion).split('').join('.')+'<sup><i>'+vPostfix+'</i></sup> '+'(build '+vBuild+')';
   if (!box){
     show('header');
 	document.title='[ VkOpt ['+String(vVersion).split('').join('.')+'] settings ]';
