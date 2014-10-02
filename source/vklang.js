@@ -11,6 +11,8 @@
 
 vk_lang_ru={
    "LangAuthor": "<a href=\"http://vkopt.net/\">VkOpt</a>",
+   'LangTite':'\u0420\u0443\u0441\u0441\u043a\u0438\u0439 \u044f\u0437\u044b\u043a',
+   "LangFlag":"/images/lang_flags/0.gif",
    "LinksGet": "\u041f\u043e\u043b\u0443\u0447\u0438\u0442\u044c \u0441\u0441\u044b\u043b\u043a\u0438",
    "Error": "\u041e\u0448\u0438\u0431\u043a\u0430",
    "download": "[ \u0421\u043a\u0430\u0447\u0430\u0442\u044c ]",
@@ -710,6 +712,8 @@ vk_lang_ru={
 
 vk_lang_en={//by Hzy
 'LangAuthor':'by Hzy',
+'LangTite':'English language',
+'LangFlag':'/images/lang_flags/3.gif',
 'LinksGet':'Get links',
 'Error':'Error',
 'download':'[ Download ]',
@@ -1572,6 +1576,8 @@ vk_lang_en={//by Hzy
  
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
 'LangAuthor':'<a href="/id3476823">by Vall</a> & <a href="/vall_gorr">Vall_gorr</a>',
+'LangTite':'\u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0430 \u043c\u043e\u0432\u0430',
+'LangFlag':'/images/lang_flags/1.gif',
 'LinksGet':'\u041e\u0442\u0440\u0438\u043c\u0430\u0442\u0438 \u043f\u043e\u0441\u0438\u043b\u0430\u043d\u043d\u044f',
 'Error':'\u041f\u043e\u043c\u0438\u043b\u043a\u0430',
 'download':'[ \u0417\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0438\u0442\u0438 ]',
@@ -2420,11 +2426,17 @@ vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
    "HistMsgChatAvaDel": "\u0432\u0438\u0434\u0430\u043b\u0438\u0432(\u043b\u0430) \u0444\u043e\u0442\u043e\u0433\u0440\u0430\u0444\u0456\u044e \u0431\u0435\u0441\u0456\u0434\u0438",
    "seEmojiSmiles": "\u041f\u0430\u043d\u0435\u043b\u044c \u0432\u0441\u0442\u0430\u0432\u043a\u0438 \u0441\u043c\u0430\u0439\u043b\u0456\u0432 Emoji \u0434\u043b\u044f \u0431\u0456\u043b\u044c\u0448\u043e\u0441\u0442\u0456 \u043f\u043e\u043b\u0456\u0432 \u0432\u0432\u043e\u0434\u0443",
    "seExInfoGrReq": "\u0414\u043e\u0434. \u0456\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0456\u044f \u043f\u0440\u043e \u043a\u043e\u0440\u0438\u0441\u0442\u0443\u0432\u0430\u0447\u0456\u0432 \u043d\u0430 \u0441\u0442\u043e\u0440\u0456\u043d\u0446\u0456 \u0437\u0430\u044f\u0432\u043e\u043a \u0432 \u0433\u0440\u0443\u043f\u0443",
-   "MembersListAccessDenied": "\u0414\u043e\u0441\u0442\u0443\u043f \u0434\u043e \u0443\u0447\u0430\u0441\u043d\u0438\u043a\u0456\u0432 \u0433\u0440\u0443\u043f\u0438 \u0437\u0430\u0431\u043e\u0440\u043e\u043d\u0435\u043d\u0438\u0439, \u043c\u043e\u0436\u043b\u0438\u0432\u043e \u0443 \u0432\u0430\u0441 \u043d\u0435\u043c\u0430\u0454 \u043f\u0440\u0430\u0432 \u043c\u043e\u0434\u0435\u0440\u0430\u0442\u043e\u0440\u0430 \u0433\u0440\u0443\u043f\u0438"
+   "MembersListAccessDenied": "\u0414\u043e\u0441\u0442\u0443\u043f \u0434\u043e \u0443\u0447\u0430\u0441\u043d\u0438\u043a\u0456\u0432 \u0433\u0440\u0443\u043f\u0438 \u0437\u0430\u0431\u043e\u0440\u043e\u043d\u0435\u043d\u0438\u0439, \u043c\u043e\u0436\u043b\u0438\u0432\u043e \u0443 \u0432\u0430\u0441 \u043d\u0435\u043c\u0430\u0454 \u043f\u0440\u0430\u0432 \u043c\u043e\u0434\u0435\u0440\u0430\u0442\u043e\u0440\u0430 \u0433\u0440\u0443\u043f\u0438",
+   "downloadAll": "[ \u0417\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0438\u0442\u0438 \u0432\u0441\u0435 ]",
+   "downloadAllGifs": "[ \u0421\u043a\u0430\u0447\u0430\u0442\u0438 \u0432\u0441\u0456 GIF ]",
+   "LinksGif": "[ \u041f\u043e\u0441\u0438\u043b\u0430\u043d\u043d\u044f \u043d\u0430 GIF ]",
+   "wget_links": "\u041f\u043e\u0441\u0438\u043b\u0430\u043d\u043d\u044f \u0434\u043b\u044f wget"
 };
 
 vk_lang_by={ //by Gavr id8610702
 'LangAuthor':'<a href="/id8610702">by Gavr</a> & <a href="/trollhus">\u0418\u0433\u043e\u0440\u044c \u041a\u0443\u043b\u0438\u043a\u043e\u0432</a>',
+'LangTite':'\u0411\u0435\u043b\u0430\u0440\u0443\u0441\u043a\u0430\u044f \u043c\u043e\u0432\u0430',
+'LangFlag':'/images/lang_flags/2.gif',
 'LinksGet':'\u0410\u0442\u0440\u044b\u043c\u0430\u0446\u044c \u0441\u043f\u0430\u0441\u044b\u043b\u043a\u0456',
 'Error':'\u041f\u0430\u043c\u044b\u043b\u043a\u0430',
 'download':'[ \u0421\u043f\u0430\u043c\u043f\u0430\u0432\u0430\u0446\u044c ]',
@@ -3120,6 +3132,8 @@ vk_lang_by={ //by Gavr id8610702
 
 vk_lang_it={ //by Maybkot /id5027410 (mayboroda.com.ua)
 'LangAuthor':'<a href="http://mayboroda.com.ua">by Maybkot</a>',
+'LangFlag':'/images/lang_flags/7.gif',
+'LangTite':'Italiano language',
 'LinksGet':'Riceve collegamenti',
 'Error':'Errore',
 'download':'[ Scarica ]',
@@ -3718,6 +3732,8 @@ vk_lang_it={ //by Maybkot /id5027410 (mayboroda.com.ua)
 
 vk_lang_tat = {//by eurotat /id15202178
     'LangAuthor':'<a href="/id15202178">by eurotat</a>',
+    'LangTite':'\u0422\u0430\u0442\u0430\u0440\u0441\u043a\u0438\u0439 \u044f\u0437\u044b\u043a',
+    'LangFlag':'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAAAaCAIAAABdDBlVAAAATklEQVR42u2TMQoAMAjEbnPrm619uAX7BrNUCXJb8EBpS1G0BlDjtVtD+x0vUBqgMUdLAwBLI65h3tPC7BSdQYkMplkLQCmC0YxmNL9rLnAGNdbLnWjxAAAAAElFTkSuQmCC',
     LinksGet: "\u0421\u044b\u043b\u0442\u0430\u0443",
     Error: "\u0425\u0430­\u0442\u0430",
     download: "[ \u0421\u0430\u043a\u043b\u0430\u0440\u0433\u0430 ]",
@@ -4224,5 +4240,6 @@ vk_lang_ua['keyboard_lang']=[
 
 //DEFENITIONS
 VK_LANGS=[vk_lang_ru,vk_lang_ua,vk_lang_by,vk_lang_en,vk_lang_it,vk_lang_tat];
+VK_LANGS_IDS = ['ru','ua','by','en','it','tat'];
 
 if (!window.vkscripts_ok) vkscripts_ok=1; else vkscripts_ok++;

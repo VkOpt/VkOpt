@@ -411,6 +411,16 @@ function vkStyles(){
 	";
 	//settings 
 	main_css+="\
+      .vk_chooselang_btn{color:#FFF}\
+      .vk_chooselang_btn div{\
+         width: 34px;\
+         height: 26px;\
+         margin: -4px -5px -15px;\
+         opacity: 0.7;\
+      }\
+      .vk_chooselang_btn:hover div{\
+         opacity: 1;\
+      }\
       .vk_warning_ico,.vk_info_ico,.vk_hint_ico{width:16px; height:16px; cursor:pointer;}\
 		.vk_warning_ico{background-image:url('"+warning_img+"');}\
       .vk_info_ico{background-image:url('"+info_img+"');}\
