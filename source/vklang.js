@@ -1581,6 +1581,7 @@ vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
 'LangAuthor':'<a href="/id3476823">by Vall</a> & <a href="/vall_gorr">Vall_gorr</a>',
 'LangTite':'\u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0430 \u043c\u043e\u0432\u0430',
 'LangFlag':'/images/lang_flags/1.gif',
+"About_languages":"\u041f\u0440\u043e \u043b\u043e\u043a\u0430\u043b\u0456\u0437\u0430\u0446\u0456\u0457",
 'LinksGet':'\u041e\u0442\u0440\u0438\u043c\u0430\u0442\u0438 \u043f\u043e\u0441\u0438\u043b\u0430\u043d\u043d\u044f',
 'Error':'\u041f\u043e\u043c\u0438\u043b\u043a\u0430',
 'download':'[ \u0417\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0438\u0442\u0438 ]',
