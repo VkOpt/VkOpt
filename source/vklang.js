@@ -1571,7 +1571,8 @@ vk_lang_en={//by Hzy
    "HistMsgChatAvaDel": "deleted conversation cover",
    "seEmojiSmiles": "Emoji panel for the most of entry fields",
    "seExInfoGrReq": "Additional info about users on the community request page",
-   "MembersListAccessDenied": "Access to members list is denied, maybe you dont have moderator rights"
+   "MembersListAccessDenied": "Access to members list is denied, maybe you dont have moderator rights",
+   "wget_links": "Links for Wget"
 };
  
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
