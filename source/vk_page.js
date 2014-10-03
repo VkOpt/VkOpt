@@ -587,20 +587,27 @@ function vkPostSubscribe(oid, id_post){     // Подписаться на по�
 }
 
 function vkPostSubscribeBtn(node) {      // Добавление кнопки "Подписаться на пост"
-    // при первом вызове (который без параметров) добавляем стили кнопки "подписаться"
     if (!POST_SUBSCRIBE_BTN) return;
-    var els = geByClass('post_full_like', node);    // все контейнеры с лайками
+    var els = geByClass('post_info', node); // все контейнеры с содержимым поста
+    var reply_link;                         // ссылка "Комментировать" или "Ответить"
+    var parentContainer;                    // контейнер с лайками, репостами, ...
     for (var i = 0; i < els.length; i++) {
-        var parentContainer = els[i];
-        var id = parentContainer.innerHTML.match(/(-?\d+)_(\d+)'/);    // id владельца и записи, для которой создается кнопка
-        if (id != null)
-        parentContainer.appendChild(vkCe('div', {
-                "title":    IDL('AddToSubscribtions'),
-                "class":    "vk_post_subscribe fl_r",
-                "onclick":  "vkPostSubscribe(" + id[1] + ", " + id[2] + ")"
-            },
-            '<i class="sp_main fl_l"></i>'
-        ));
+        // Добавляем кнопку, только если это пост (а не фотка например) и справа от даты нет ссылки (.reply_link),
+        // либо, если есть, то только если это ссылка "Комментировать", а не "Ответить".
+        // Признак "Ответить" - в onclick будет Wall.likeShareCustom
+        if ((parentContainer = geByClass('post_full_like', els[i])[0]) &&
+            (!(reply_link = geByClass('reply_link', els[i], 'a')[0]) ||
+             reply_link.onclick.toString().indexOf('likeShareCustom') == -1)) {
+                var id = parentContainer.innerHTML.match(/(-?\d+)_(\d+)'/);    // id владельца и записи, для которой создается кнопка
+                if (id != null)
+                    parentContainer.appendChild(vkCe('div', {
+                            "title":    IDL('AddToSubscribtions'),
+                            "class":    "vk_post_subscribe fl_r",
+                            "onclick":  "vkPostSubscribe(" + id[1] + ", " + id[2] + ")"
+                        },
+                        '<i class="sp_main fl_l"></i>'
+                    ));
+        }
     }
 }
 
