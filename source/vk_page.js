@@ -3159,15 +3159,20 @@ vk_board={
 vk_feed={
    css:function(){
    return '\
-      .vk_post_subscribe {                              \
-         padding:    5px 6px;                        \
+      .vk_post_subscribe {                           \
+         padding:    6px 8px;                        \
+         border-radius:  5px;                        \
+         margin-top: -1px;                           \
          cursor:     pointer;                        \
          visibility: hidden;                         \
       }                                              \
-      .wall_post_over .vk_post_subscribe {              \
+      .wall_post_over .vk_post_subscribe {           \
          visibility: visible;                        \
       }                                              \
-      .vk_post_subscribe i {                            \
+      .vk_post_subscribe:hover {                     \
+         background-color: #e9edf1;                  \
+      }                                              \
+      .vk_post_subscribe i {                         \
          width:      11px;                           \
          height:     11px;                           \
          background-image: url("'+subscribe_icon+'");\
