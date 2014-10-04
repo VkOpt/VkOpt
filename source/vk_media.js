@@ -6060,7 +6060,7 @@ vk_au_down={
          var pls='[playlist]\n\n';
          var wiki='';
          var links=[];
-         var wget_links=[];
+         var wget_links=['chcp 65001'];	// для windows, чтобы нормально отображались русские имена (http://vkopt.net/forum/showpost.php?p=67184&postcount=555)
          var list=r.response;
          for (var i=(search_flag ? 1 : 0);i<list.length;i++){
             var itm=list[i];
