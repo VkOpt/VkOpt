@@ -3785,17 +3785,6 @@ function vkDownloadPostfix(){
 	*/
     return (AUDIO_DOWNLOAD_POSTFIX ? 'dl=1' : '');
 }
-function vkAudioSizeLabel(audio){
-return '<small class="duration fl_r" id="vk_asize'+audio[0]+'_'+audio[1]+'" url="'+audio[2]+'" dur="'+audio[3]+'"></small>';
-}
-
-function vkAudioDownBtn(audio){ //[oid,aid,url,3,4,performer,title]
-	var names=(getSet(1) == 'y')?true:false;
-   var aid=audio[1]?audio[0]+'_'+audio[1]:audio[0];
-   
-   var name=vkCleanFileName(audio[5]+' - '+audio[6])+'.mp3';
-	return '<a href="'+audio[2]+(names?'?'+vkDownloadPostfix()+'&/'+name:'')+'" download="'+name+'" title="'+name+'" onclick="return vkDownloadFile(this);"  onmouseover="vkDragOutFile(this);"><div class="play_new down_btn" id="down'+aid+'"></div></a>'; 
-}
 
 function vkAudioDurSearchBtn(audio,fullname,id){
 	var sq=fullname?fullname:audio[5]+' - '+audio[6];
