@@ -894,6 +894,12 @@ function vkAudioChooseProcess(answer,url,q){
          p.insertBefore(vkCe('span',{"class":'divide'},'|'),p.firstChild)
          p.insertBefore(vkCe('a',{"class":'',href:'#',onclick:'return vk_audio.choose_album('+q.to_id+');'},IDL('GroupAlbums',1)),p.firstChild)
       }
+       // Вставка галочки "Не скрывать"
+       p.insertBefore(vkCe('span', {"class": 'divide'}, '|'), p.firstChild)
+       p.insertBefore(vkCe('a', {"class": 'checkbox', onclick: 'checkbox(this); window.vk_prevent_addmedia_hide=isChecked(this);'}, '<div></div>' + IDL('PreventHide')), p.firstChild);
+       Inj.Wait('boxQueue.hideLast', function () {  // отключение скрывания окна выбора аудио при добавлении
+           Inj.Start('boxQueue.hideLast', 'if (window.vk_prevent_addmedia_hide) return;');
+       });
    }
   
   if (ref){
