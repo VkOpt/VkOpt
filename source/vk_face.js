@@ -384,7 +384,7 @@ function vkStyles(){
       .pv_dark #pv_comments_header{background-color:#222 !important; color:#AAA  !important;}\
 		.pv_dark #pv_actions a:hover {background-color:#444 !important; color:#FFF  !important;}\
       .pv_dark .pvs_act{background-color:#000 !important;}\
-      .pv_dark #pv_comment{background-color:#000 !important; color: #FFF !important;}\
+      .pv_dark #pv_comment, .pv_dark #wpe_text{background-color:#000 !important; color: #FFF !important;}\
       .pv_dark .emoji_smile_icon_on, .pv_dark .emoji_smile_icon, .pv_dark .mbe_smile_icon_on, .pv_dark .mbe_smile_icon {\
          background-image: url(/images/im_smile_cross_2x.png); background-size: 23px 48px;\
       }\
