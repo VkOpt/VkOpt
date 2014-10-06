@@ -897,6 +897,10 @@ function vkAudioChooseProcess(answer,url,q){
        // Вставка галочки "Не скрывать"
        p.insertBefore(vkCe('span', {"class": 'divide'}, '|'), p.firstChild)
        p.insertBefore(vkCe('a', {"class": 'checkbox', onclick: 'checkbox(this); window.vk_prevent_addmedia_hide=isChecked(this);'}, '<div></div>' + IDL('PreventHide')), p.firstChild);
+       vkaddcss('.audio_choose_added {' +
+                    'max-width: none !important;' +
+                    'padding: 0 !important;' +
+                '}');
        Inj.Wait('boxQueue.hideLast', function () {  // отключение скрывания окна выбора аудио при добавлении
            Inj.Start('boxQueue.hideLast', 'if (window.vk_prevent_addmedia_hide) return;');
        });
