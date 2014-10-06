@@ -1,2 +1,6 @@
-rm vkopt_firefox.xpi
-./_zip_packer.py firefox vkopt_firefox.xpi
+#!/bin/bash
+
+filename="vkopt_firefox.xpi"
+rm $filename
+cd firefox
+zip ../$filename * -r -9
