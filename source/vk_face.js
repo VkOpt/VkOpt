@@ -630,6 +630,9 @@ function vkStyles(){
    main_css+=vk_im.css();
 	main_css+=vk_plugins.css();
 
+   if (window.vk_au_down)
+      main_css+=vk_au_down.css;
+      
 	vkaddcss(main_css);
 }
 
