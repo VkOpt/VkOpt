@@ -2104,7 +2104,12 @@ var XFR={
       if (vk_ext_api.ready && url && !XFR.vk_ext_api_exclude.test(url)){
          if (only_head){
             vk_aj.head(url,function(h){
-               var l=parseInt(h['Content-Length']);
+               var l=0;
+               for (var key in h){
+                  if (key.toLowerCase()=='content-length'){
+                     l=parseInt(h[key]);
+                  }
+               }
                callback(h,l);
             });
          } else {
