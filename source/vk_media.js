@@ -3785,17 +3785,6 @@ function vkDownloadPostfix(){
 	*/
     return (AUDIO_DOWNLOAD_POSTFIX ? 'dl=1' : '');
 }
-function vkAudioSizeLabel(audio){
-return '<small class="duration fl_r" id="vk_asize'+audio[0]+'_'+audio[1]+'" url="'+audio[2]+'" dur="'+audio[3]+'"></small>';
-}
-
-function vkAudioDownBtn(audio){ //[oid,aid,url,3,4,performer,title]
-	var names=(getSet(1) == 'y')?true:false;
-   var aid=audio[1]?audio[0]+'_'+audio[1]:audio[0];
-   
-   var name=vkCleanFileName(audio[5]+' - '+audio[6])+'.mp3';
-	return '<a href="'+audio[2]+(names?'?'+vkDownloadPostfix()+'&/'+name:'')+'" download="'+name+'" title="'+name+'" onclick="return vkDownloadFile(this);"  onmouseover="vkDragOutFile(this);"><div class="play_new down_btn" id="down'+aid+'"></div></a>'; 
-}
 
 function vkAudioDurSearchBtn(audio,fullname,id){
 	var sq=fullname?fullname:audio[5]+' - '+audio[6];
@@ -5176,7 +5165,7 @@ vk_vid_down={
       ge('vk_glinks_max720p').onclick=run.pbind(3);
       
       var show_links=function(list){
-         vkaddcss('#vk_mp3_links_area, #vk_m3u_playlist_area,#vk_pls_playlist_area{width:520px; height:400px;}');
+         vkaddcss('#vk_mp3_links_area, #vk_m3u_playlist_area, #vk_pls_playlist_area, #vk_mp3_wget_links_area{width:520px; height:400px;}');
             //var res='#EXTM3U\n';
             //var pls='[playlist]\n\n';
             var links=[];
@@ -6060,10 +6049,11 @@ vk_au_down={
          var pls='[playlist]\n\n';
          var wiki='';
          var links=[];
-         var wget_links=[];
+         var wget_links=['chcp 65001'];	// для windows, чтобы нормально отображались русские имена
          var list=r.response;
          for (var i=(search_flag ? 1 : 0);i<list.length;i++){
             var itm=list[i];
+            itm.url = itm.url.replace('https','http');
             res+='#EXTINF:'+itm.duration+','+(winToUtf(itm.artist+" - "+itm.title))+'\n';
             res+=itm.url+"\n";//+"?/"+(encodeURIComponent(itm.artist+" - "+itm.title))+".mp3"+"\n";
             
