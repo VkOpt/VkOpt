@@ -613,8 +613,9 @@ ext_api={
          headers = options.headers || {},
          data = options.data || null,
          url = options.url || '',
-         contentType = headers['Content-type'] || 'x-www-form-urlencoded';
-         
+         contentType = headers['Content-type'] || 'application/x-www-form-urlencoded';
+         if (!headers['Content-type'])
+            headers['Content-type'] = contentType;
          
          if (data && (typeof data == 'object') && isEmptyObject(data)) data=null;
          if (data && (typeof data == 'object')) data=serialize(data);

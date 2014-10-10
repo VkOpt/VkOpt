@@ -219,7 +219,6 @@ function vkProcessResponseNode(node,url,q){
 }
 
 function vkLocationCheck(){
-  if (dApi.onLogin()) return true;
   if (vkCheckInstallCss()) return true;
   XFR.check();
   if (location.href.match('/away')) if (getSet(6) == 'y'){

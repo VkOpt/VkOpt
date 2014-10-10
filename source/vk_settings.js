@@ -36,9 +36,10 @@ function InstallRelease(){
   if (vbuild && vbuild<vBuild) vkCheckSettLength();
   
   if (!vbuild || vbuild<vBuild){
-      dApi.call('getUserSettings',{},function(r){
-         if(r.response!=dApi.SETTINGS){
-            dApi.Auth();
+      dApi.call('account.getAppPermissions',{},function(r){
+         if (r.response != vk_api_permissions.to_int(DAPI_APP_SCOPE)){
+            console.log('API auth reason: different scopes');
+            dApi.auth();
          }
       });  
   }
