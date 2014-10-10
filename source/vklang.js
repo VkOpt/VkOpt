@@ -1575,7 +1575,8 @@ vk_lang_en={//by Hzy
    "seEmojiSmiles": "Emoji panel for the most of entry fields",
    "seExInfoGrReq": "Additional info about users on the community request page",
    "MembersListAccessDenied": "Access to members list is denied, maybe you dont have moderator rights",
-   "wget_links": "Links for Wget"
+   "wget_links": "Links for Wget",
+   "seSubscribeToPostComments": "&#171;Subscribe&#187; to <a href=\"/feed?section=comments\">updates of post comments</a> button"
 };
  
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
@@ -2435,7 +2436,8 @@ vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
    "downloadAll": "[ \u0417\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0438\u0442\u0438 \u0432\u0441\u0435 ]",
    "downloadAllGifs": "[ \u0421\u043a\u0430\u0447\u0430\u0442\u0438 \u0432\u0441\u0456 GIF ]",
    "LinksGif": "[ \u041f\u043e\u0441\u0438\u043b\u0430\u043d\u043d\u044f \u043d\u0430 GIF ]",
-   "wget_links": "\u041f\u043e\u0441\u0438\u043b\u0430\u043d\u043d\u044f \u0434\u043b\u044f wget"
+   "wget_links": "\u041f\u043e\u0441\u0438\u043b\u0430\u043d\u043d\u044f \u0434\u043b\u044f wget",
+   "seSubscribeToPostComments": "\u041a\u043d\u043e\u043f\u043a\u0430 \u00ab\u041f\u0456\u0434\u043f\u0438\u0441\u0430\u0442\u0438\u0441\u044f\u00bb \u043d\u0430 <a href=\"/feed?section=comments\">\u0441\u0442\u0435\u0436\u0435\u043d\u043d\u044f \u0437\u0430 \u043a\u043e\u043c\u0435\u043d\u0442\u0430\u0440\u044f\u043c\u0438</a> \u0434\u043e \u043f\u043e\u0441\u0442\u0430"
 };
 
 vk_lang_by={ //by Gavr id8610702
