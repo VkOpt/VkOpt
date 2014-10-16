@@ -593,6 +593,10 @@ function vkInitSettings(){
     vkLangGet();
     vk_lang['seAudioSize']=vk_lang['seAudioSizeP'];
   }
+  var examples={
+      seSubscribeToPostComments:'<div title="'+IDL('AddToSubscribtions')+'" class="vk_post_subscribe fl_r" style="visibility:visible"><i class="sp_main fl_l"></i></div>'
+  }
+    
   vkoptSets={
     Media:[
       {id:0,  text:IDL("seLinkAu")},
@@ -690,7 +694,8 @@ function vkInitSettings(){
       {id:74, text:IDL("seLeaveGroupLinks")},
       {id:79, text:vk_settings.dislikes_icons()+IDL("seDislikes"),info:'infoUseNetTrafic'},
       {id:86, text:IDL("seDisableWallWikiBox")},
-      {id:88, text:IDL("seGroupRequestsBlock"),info:'infoUseNetTrafic'}
+      {id:88, text:IDL("seGroupRequestsBlock"),info:'infoUseNetTrafic'},
+      {id:97, text:examples.seSubscribeToPostComments+IDL("seSubscribeToPostComments")}
       //{id:64, text:IDL("seToTopOld")}
     ],
 	Sounds:[
@@ -715,7 +720,7 @@ function vkInitSettings(){
    ]
   };
 
-	//LAST 96
+	//LAST 97
 	/*
       vkoptSets['advanced']=[
          'vk_upd_menu_timeout',

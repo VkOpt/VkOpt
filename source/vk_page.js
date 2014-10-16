@@ -556,24 +556,25 @@ function vkPostSubscribe(oid, id_post){     // Подписаться на по�
     // Сначала запускаем перехват изменений DOM-а, чтобы удалить кнопку "добавлен 1 комментарий" и сам коммент,
     // потому что вконтакт присылает новые комменты, даже если они были моментально удалены.
     var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
-    if (!MutationObserver)
-      return;
+  
     var list = ge('replies'+oid+'_'+id_post);   // контейнер с комментами. Будем следить за ним.
-    var observer = new MutationObserver(function(mutations, _this) {
-        mutations.forEach(function(mutation) {
-            if (mutation.type === 'childList') {
-                if (mutation.addedNodes)
-                    list.removeChild(mutation.addedNodes[0]);   // удаляем добавленный коммент
-                var added_comment_link = geByClass('replies_open',list.parentNode);
-                if (added_comment_link.length)  // если есть кнопка "добавлен 1 комментарий",
-                    list.parentNode.removeChild(added_comment_link[0]); // то удаляем её.
-                _this.disconnect(); // Остановить прослушивание изменений DOM
-            }
-        });
-    });
-    observer.observe(list, { childList: true });
+    if (MutationObserver){
+       var observer = new MutationObserver(function(mutations, _this) {
+           mutations.forEach(function(mutation) {
+               if (mutation.type === 'childList') {
+                   if (mutation.addedNodes)
+                       list.removeChild(mutation.addedNodes[0]);   // удаляем добавленный коммент
+                   var added_comment_link = geByClass('replies_open',list.parentNode);
+                   if (added_comment_link.length)  // если есть кнопка "добавлен 1 комментарий",
+                       list.parentNode.removeChild(added_comment_link[0]); // то удаляем её.
+                   _this.disconnect(); // Остановить прослушивание изменений DOM
+               }
+           });
+       });
+       observer.observe(list, { childList: true });
+    }
     // Собственно, добавление и удаление комментария.
-    dApi.call('wall.addComment',{owner_id: oid, post_id: id_post, text: '[subscribe]'}, function(r_add){
+    dApi.call('wall.addComment',{owner_id: oid, post_id: id_post, text: '[subscribe '+Math.round(Math.random()*1000000).toString(36)+']'}, function(r_add){
         if (r_add.response)
             dApi.call('wall.deleteComment',{owner_id: oid, comment_id: r_add.response.cid}, function(r_del){
                 if (r_del.response)
@@ -587,7 +588,7 @@ function vkPostSubscribe(oid, id_post){     // Подписаться на по�
 }
 
 function vkPostSubscribeBtn(node) {      // Добавление кнопки "Подписаться на пост"
-    if (!POST_SUBSCRIBE_BTN) return;
+    if (getSet(97) != 'y') return;
     var els = geByClass('post_info', node); // все контейнеры с содержимым поста
     var reply_link;                         // ссылка "Комментировать" или "Ответить"
     var parentContainer;                    // контейнер с лайками, репостами, ...
