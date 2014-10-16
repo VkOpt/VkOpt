@@ -6050,7 +6050,7 @@ vk_au_down={
          var pls='[playlist]\n\n';
          var wiki='';
          var links=[];
-         var wget_links=['chcp 65001'];	// для windows, чтобы нормально отображались русские имена
+         var wget_links=[];
          var list=r.response;
          for (var i=(search_flag ? 1 : 0);i<list.length;i++){
             var itm=list[i];
@@ -6091,8 +6091,8 @@ vk_au_down={
          var wget_links_joined = wget_links.join('\n');
          wget_links_html='<div class="vk_mp3_wget_links">\
                <textarea id="vk_mp3_wget_links_area">'+wget_links_joined+'</textarea>\
-               <a download="playlist.sh" href="data:text/plain;base64,' + base64_encode(utf8ToWindows1251(utf8_encode(wget_links_joined))) + '">'+vkButton(IDL('.SH'))+'</a>\
-               <a download="playlist.sh" href="data:text/plain;base64,' + base64_encode(utf8_encode(wget_links_joined)) + '">'+vkButton(IDL('.SH')+' (UTF-8)','',1)+'</a>\
+               <a download="playlist.sh" href="data:text/plain;base64,' + base64_encode(utf8ToWindows1251(utf8_encode('chcp 1251\n'+wget_links_joined))) + '">'+vkButton(IDL('.SH'))+'</a>\
+               <a download="playlist.sh" href="data:text/plain;base64,' + base64_encode(utf8_encode('chcp 65001\n'+wget_links_joined)) + '">'+vkButton(IDL('.SH')+' (UTF-8)','',1)+'</a>\
                </div>';
          var tabs=[];
 
