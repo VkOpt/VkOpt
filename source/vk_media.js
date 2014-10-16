@@ -5983,7 +5983,7 @@ vk_vid_down={
 }
 
 vk_au_down={
-   css:'#vk_mp3_links_area, #vk_m3u_playlist_area,#vk_pls_playlist_area, #vk_mp3_wget_links_area{width:520px; height:400px;}',
+   css:'#vk_mp3_links_area, #vk_m3u_playlist_area,#vk_pls_playlist_area, #vk_mp3_wget_links_area, #vk_mp3_metalink_links_area{width:520px; height:400px;}',
    page:function(){
       vk_au_down.vkAudioPlayList(true);
    },
@@ -6049,6 +6049,9 @@ vk_au_down={
          var res='#EXTM3U\n';
          var pls='[playlist]\n\n';
          var wiki='';
+		 var metalinklist=['<?xml version="1.0" encoding="UTF-8" ?>',
+				'<metalink version="3.0" xmlns="http://www.metalinker.org/">',
+				'<files>'];
          var links=[];
          var wget_links=['chcp 65001'];	// для windows, чтобы нормально отображались русские имена
          var list=r.response;
@@ -6067,7 +6070,12 @@ vk_au_down={
             links.push(itm.url+(itm.url.indexOf('?')>0?'&/':'?/')+vkEncodeFileName(vkCleanFileName(itm.artist+" - "+itm.title))+".mp3");
 
             wget_links.push('wget "'+itm.url+'" -O "'+winToUtf(itm.artist+" - "+itm.title).replace(/"/g,'\\"')+'.mp3"');
+			
+			metalinklist.push('<file name="'+winToUtf(vkCleanFileName(itm.artist+" - "+itm.title))+'.mp3'+'">'
+								+'<resources><url type="http" preference="100">'+itm.url+'</url></resources>'
+							+'</file>');
          }
+		 metalinklist.push('</files></metalink>');
          pls+='\nNumberOfEntries='+list.length+'\n\nVersion=2'
 
          box.hide();
@@ -6094,6 +6102,11 @@ vk_au_down={
                <a download="playlist.sh" href="data:text/plain;base64,' + base64_encode(utf8ToWindows1251(utf8_encode(wget_links_joined))) + '">'+vkButton(IDL('.SH'))+'</a>\
                <a download="playlist.sh" href="data:text/plain;base64,' + base64_encode(utf8_encode(wget_links_joined)) + '">'+vkButton(IDL('.SH')+' (UTF-8)','',1)+'</a>\
                </div>';
+		 var metalinklist_joined = metalinklist.join('\n').replace(/&/g,'&amp;');
+         metalinklist_html='<div class="vk_mp3_wget_links">\
+               <textarea id="vk_mp3_metalink_links_area">'+metalinklist_joined.replace(/&/g,'&amp;')+'</textarea>\
+               <a download="playlist.metalink" href="data:text/plain;base64,' + base64_encode(utf8_encode(metalinklist_joined)) + '">'+vkButton(IDL('.METALINK (UTF-8)'))+'</a>\
+               </div>';
          var tabs=[];
 
          tabs.push({name:IDL('links'),active:true, content:links_html/*'<div class="vk_mp3_links"><textarea id="vk_mp3_links_area">'+links.join('\n')+'</textarea></div>'*/});
@@ -6101,6 +6114,7 @@ vk_au_down={
          tabs.push({name:IDL('PLS_Playlist'),content:pls_html});
          tabs.push({name:IDL('Wiki'), content:'<div class="vk_mp3_links"><textarea id="vk_mp3_links_area">'+wiki+'</textarea></div>'});
          tabs.push({name:IDL('wget_links'), content:wget_links_html});
+		 tabs.push({name:IDL('Metalink'), content:metalinklist_html});
          box=vkAlertBox('MP3',vkMakeContTabs(tabs));
          box.setOptions({width:"560px"});
          /*alert(links.join('\n'));
