@@ -5165,47 +5165,53 @@ vk_vid_down={
       ge('vk_glinks_max720p').onclick=run.pbind(3);
       
       var show_links=function(list){
-         //vkaddcss('#vk_mp3_links_area, #vk_m3u_playlist_area, #vk_pls_playlist_area, #vk_mp3_wget_links_area{width:520px; height:400px;}');
-            //var res='#EXTM3U\n';
-            //var pls='[playlist]\n\n';
+			
+			var smartlink=(getSet(1) == 'y')?true:false;
+	
             var links=[];
-            //var list=r.response;
+            var metalinklist=['<?xml version="1.0" encoding="UTF-8" ?>',
+                        '<metalink version="3.0" xmlns="http://www.metalinker.org/">',
+                        '<files>'];
+						
+			
             for (var i=0;i<list.length;i++){
-               var itm=list[i];
-               /*res+='#EXTINF:'+itm.duration+','+(winToUtf(itm.artist+" - "+itm.title))+'\n';
-               res+=itm.url+"\n";//+"?/"+(encodeURIComponent(itm.artist+" - "+itm.title))+".mp3"+"\n";
-               
-               pls+='File'+(i+1)+'='+itm.url+'\n';
-               pls+='Title'+(i+1)+'='+winToUtf(itm.artist+" - "+itm.title)+'\n';
-               pls+='Length'+(i+1)+'='+itm.duration+'\n\n';*/
-               
-               links.push(itm);
+			
+               var itm = list[i][0];
+               var itm_name = list[i][1];
+			   var itm_ext = list[i][2];
+			   
+			   var vidname = (itm.indexOf('?')==-1?'?':'')+vkDownloadPostfix()+'&/'+vkEncodeFileName(itm_name);
+			   var itm2uri = itm + (smartlink?vidname + itm_ext:'');
+
+               links.push(itm2uri);
+			   
+               metalinklist.push('<file name="'+itm_name+itm_ext+'">');
+               metalinklist.push('<resources>','<url type="http" preference="100">'+itm+'</url>','</resources>');
+               metalinklist.push('</file>');
+			  // console.log([itm,itm2,itm_name,smart2link]);
+			   console.log([itm,itm_name]);
+			   
             }
-            //pls+='\nNumberOfEntries='+list.length+'\n\nVersion=2'
+			
+			metalinklist.push('</files>');
+			metalinklist.push('</metalink>');
 
             box.hide();
-            /*
-               m3u_html='<div class="vk_m3u_playlist">\
-                     <textarea id="vk_m3u_playlist_area">'+res+'</textarea>\
-                     <a href="data:audio/x-mpegurl;base64,' + base64_encode(utf8ToWindows1251(utf8_encode(res))) + '">'+vkButton(IDL('download_M3U'))+'</a>\
-                     <a href="data:audio/x-mpegurl;base64,' + base64_encode(utf8_encode(res)) + '">'+vkButton(IDL('download_M3U')+' (UTF-8)','',1)+'</a>\
-                     </div>';
-               pls_html='<div class="vk_pls_playlist">\
-                     <textarea id="vk_pls_playlist_area">'+pls+'</textarea>\
-                     <a href="data:audio/x-scpls;base64,' + base64_encode(utf8ToWindows1251(utf8_encode(pls))) + '">'+vkButton(IDL('download_PLS'))+'</a>\
-                     <a href="data:audio/x-scpls;base64,' + base64_encode(utf8_encode(pls)) + '">'+vkButton(IDL('download_PLS')+' (UTF-8)','',1)+'</a>\
-                     </div>';
-            */
+			
+			var metalinklist_joined = metalinklist.join('\n').replace(/&/g,'&amp;');
+				metalinklist_html='<div class="vk_links_list">'
+					+'<textarea class="vk_video_linklist_area">'+metalinklist_joined.replace(/&/g,'&amp;')+'</textarea>'
+					+'<a download="video_playlist.metalink" href="data:text/plain;base64,' + base64_encode(utf8_encode(metalinklist_joined)) + '">'
+						+vkButton(IDL('.METALINK (UTF-8)'))
+					+'</a>'
+				+'</div>';
+			
             var tabs=[];
 
             tabs.push({name:IDL('links'),active:true, content:'<div class="vk_mp3_links"><textarea id="vk_mp3_links_area">'+links.join('\n')+'</textarea></div>'});
-            //tabs.push({name:IDL('M3U_Playlist'),content:m3u_html});
-            //tabs.push({name:IDL('PLS_Playlist'),content:pls_html});
+			tabs.push({name:IDL('Metalink'),active:false, content:metalinklist_html});
             box=vkAlertBox(IDL('links'),vkMakeContTabs(tabs));
             box.setOptions({width:"560px"});
-            /*alert(links.join('\n'));
-            alert(res);
-            */
            
       } 
    },
@@ -5390,14 +5396,14 @@ vk_vid_down={
                         
                         var i=arr[quality]?quality:arr.length-1;
                            var v=arr[i];
+						   var vidurl=v;
                            var vidext=v.substr(v.lastIndexOf('.')).split('?')[0];  
                            
+						   
                            var vidname=vkCleanFileName(winToUtf(decodeURIComponent(obj.title || obj.md_title))).replace(/\+/g,' ');
                            var vname=vidname;
-
-                           vidname=(v.indexOf('?')==-1?'?':'')+vkDownloadPostfix()+'&/'+vkEncodeFileName(vidname+' ['+fmt[i]+']');
-                           var vidurl=v+(smartlink?vidname+vidext:'');
-                           videos.push(vidurl); 
+						   
+                           videos.push([vidurl,vidname+' ['+fmt[i]+']',vidext]); 
                   } else {
                     //not vk video
                   }
@@ -5983,7 +5989,7 @@ vk_vid_down={
 }
 
 vk_au_down={
-   css:'#vk_mp3_links_area, #vk_m3u_playlist_area,#vk_pls_playlist_area, #vk_mp3_wget_links_area, #vk_mp3_metalink_links_area{width:520px; height:400px;}',
+   css:'#vk_mp3_links_area, #vk_m3u_playlist_area,#vk_pls_playlist_area, #vk_mp3_wget_links_area, #vk_mp3_metalink_links_area,.vk_video_linklist_area{width:520px; height:400px;}',
    page:function(){
       vk_au_down.vkAudioPlayList(true);
    },
@@ -6103,7 +6109,7 @@ vk_au_down={
                <a download="playlist.sh" href="data:text/plain;base64,' + base64_encode(utf8_encode('chcp 65001\n'+wget_links_joined)) + '">'+vkButton(IDL('.SH')+' (UTF-8)','',1)+'</a>\
                </div>';
 		 var metalinklist_joined = metalinklist.join('\n').replace(/&/g,'&amp;');
-         metalinklist_html='<div class="vk_mp3_wget_links">\
+         metalinklist_html='<div class="vk_mp3_metalink_links">\
                <textarea id="vk_mp3_metalink_links_area">'+metalinklist_joined.replace(/&/g,'&amp;')+'</textarea>\
                <a download="playlist.metalink" href="data:text/plain;base64,' + base64_encode(utf8_encode(metalinklist_joined)) + '">'+vkButton(IDL('.METALINK (UTF-8)'))+'</a>\
                </div>';
