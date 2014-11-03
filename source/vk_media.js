@@ -5166,7 +5166,7 @@ vk_vid_down={
       
       var show_links=function(list){
 			
-			var smartlink=(getSet(1) == 'y')?true:false;
+			var smartlink=(getSet(1) == 'y');
 	
             var links=[];
             var metalinklist=['<?xml version="1.0" encoding="UTF-8" ?>',
@@ -5180,8 +5180,8 @@ vk_vid_down={
                var itm_name = list[i][1];
 			   var itm_ext = list[i][2];
 			   
-			   var vidname = (itm.indexOf('?')==-1?'?':'')+vkDownloadPostfix()+'&/'+vkEncodeFileName(itm_name);
-			   var itm2uri = itm + (smartlink?vidname + itm_ext:'');
+			   var vidname = (itm.indexOf('?')==-1?'?':'')+vkDownloadPostfix()+'&/'+vkEncodeFileName(itm_name) + itm_ext;
+			   var itm2uri = itm + (smartlink ? vidname : '');
 
                links.push(itm2uri);
 			   
@@ -5189,8 +5189,7 @@ vk_vid_down={
                metalinklist.push('<resources>','<url type="http" preference="100">'+itm+'</url>','</resources>');
                metalinklist.push('</file>');
 			  // console.log([itm,itm2,itm_name,smart2link]);
-			   console.log([itm,itm_name]);
-			   
+
             }
 			
 			metalinklist.push('</files>');
@@ -5401,8 +5400,7 @@ vk_vid_down={
                            
 						   
                            var vidname=vkCleanFileName(winToUtf(decodeURIComponent(obj.title || obj.md_title))).replace(/\+/g,' ');
-                           var vname=vidname;
-						   
+
                            videos.push([vidurl,vidname+' ['+fmt[i]+']',vidext]); 
                   } else {
                     //not vk video
