@@ -156,7 +156,7 @@ function AddSmileBtn(rfield){
 		GetSmileItem=function (smiles,key,rfield){
 			var smile_text,big;
 			if (typeof smiles[key]!='string'){
-			  smile_text=smiles[key][0]; big=(smiles[key][2])?true:false;
+			  smile_text=smiles[key][0]; big=smiles[key][2];
 			} else {  smile_text=smiles[key]; big=false; }
 			var btn='<a href="#" onclick="return false;" class="vk_txt_smile_item" '+((big)?'style="display:block"':"")+'><img onclick="PasteSmile(\''+smile_text+'\',\''+rfield+'\',\''+key+'\')" src="'+vkSmilesLinks[key]+'" title="'+smile_text+'" alt="'+smile_text+'"></a>';
 			return btn;

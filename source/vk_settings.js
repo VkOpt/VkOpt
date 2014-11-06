@@ -851,7 +851,7 @@ vk_settings = {
       //console.log(cfg_name,value,type);
       switch(type){
          case 'boolean':
-            cfg[cfg_name]=value?true:false;
+            cfg[cfg_name]=value;
             window[cfg_name]=cfg[cfg_name];
             break;
          case 'string':

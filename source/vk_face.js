@@ -909,7 +909,7 @@ function vkMenu(){//vkExLeftMenu
   var LOAD_FR_CATS_CFG=14; //load friends categories in ext menu
   var UNREADMSG_CFG=19;//unread msg in ex menu
   var WALL_LINK = (getSet(29)=='y');
-  var exm=(getSet(12) == 'y')?true:false; //extended menu
+  var exm=(getSet(12) == 'y'); //extended menu
   var nav=(ge('sideBar') || ge('side_bar')).getElementsByTagName('ol')[0];
   if (cfg > 0) nav.innerHTML=nav.innerHTML.replace(RegExp('(">)(\u041c\u043e\u0439|\u041c\u043e\u044f|\u041c\u043e\u0438|\u041c\u043e\u0457|\u041c\u0430\u044f|\u041c\u0430\u0435|\u041c\u043e\u0435|My|Mein|Meine) ','g'),"$1");
 
