@@ -3939,7 +3939,7 @@ vkLastFM={
       fm.username=localStorage['lastfm_username'];
       fm.session_key=localStorage['lastfm_session_key'];
       fm.enable_scrobbling=parseInt(localStorage['lastfm_enable_scrobbling']);
-      if (isNaN(fm.enable_scrobbling)) fm.enable_scrobbling=1;
+      if (isNaN(fm.enable_scrobbling)) fm.enable_scrobbling=0;
       function LastFM(options){
          var apiKey=options.apiKey||'';
          var apiSecret=options.apiSecret||'';
