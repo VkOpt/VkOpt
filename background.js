@@ -809,7 +809,7 @@ ext_api={
 
 ex_loader.init();
 
-if (browser.chrome)
+if (browser.chrome && !(window.external && window.external.mxGetRuntime))
    ext_api.utils.chrome_init()
 
 })();
