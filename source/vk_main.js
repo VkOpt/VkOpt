@@ -508,8 +508,7 @@ function isGroupAdmin(gid){
 		if (!gid) gid=-(cur.oid?Math.abs(cur.oid):cur.gid);
 		var r="vk_adm_gr_"+remixmid();
 		var val=','+vkGetVal(r)+',';
-		if (val.indexOf(','+(gid || cur.oid)+',')!=-1) return true;
-		else return false;
+		return val.indexOf(','+(gid || cur.oid)+',')!=-1;
 	} else return false;
 }
 
@@ -610,7 +609,7 @@ function vkCommon(){
 	Inj.Before('ajax._post','o.onDone.apply','vkResponseChecker(answer,url,q);');// если это будет пахать нормально, то можно снести часть инъекций в другие модули.
 	Inj.Start('ajax.post','if (vkAllowPost(url, query, options)==false) return;');
    
-	Inj.Before('nav.go',"var _a = window.audioPlayer","if (strLoc) if(vkAjaxNavDisabler(strLoc)){return true;}");
+	Inj.Before('nav.go',"var _a = window.audioPlayer","if (strLoc && vkAjaxNavDisabler(strLoc)){return true;}");
 	
 	Inj.Start('renderFlash','vkOnRenderFlashVars(vars);');
 	Inj.End('nav.setLoc','setTimeout("vkOnNewLocation();",2);');

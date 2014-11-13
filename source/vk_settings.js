@@ -954,8 +954,7 @@ function vkIsNewSett(id){
     vkNewSettsObj={};
     for(var i=0;i<vkNewSettings.length;i++) { vkNewSettsObj[vkNewSettings[i]]=true;}
   }
-  if (vkNewSettsObj[id]) return true;
-  else return false;
+  return vkNewSettsObj[id];
 }
 function vkGetSettings(setts,allsett){
   var sett = allsett[0];

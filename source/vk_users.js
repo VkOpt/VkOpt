@@ -19,10 +19,8 @@ var isUserRegEx=[
 /http.{3}\w+\.vk.*\/.?/i
 ];
 function isUserLink(url){
-	if ((!(isUserRegEx[0].test(url) || isUserRegEx[1].test(url) || isUserRegEx[2].test(url) || isUserRegEx[3].test(url) || isUserRegEx[4].test(url)) || 
-		isUserRegEx[5].test(url)) && !isUserRegEx[6].test(url)){
-	  return true;
-	} else return false;
+	return (!(isUserRegEx[0].test(url) || isUserRegEx[1].test(url) || isUserRegEx[2].test(url) || isUserRegEx[3].test(url) || isUserRegEx[4].test(url)) ||
+		isUserRegEx[5].test(url)) && !isUserRegEx[6].test(url);
 }
 
 
@@ -605,7 +603,6 @@ cur_popup_url=null;
 function vkPopupAvatar(id,el,in_box){
     if (id==null) return;
     if (!window.LoadedProfiles) LoadedProfiles={};
-    if (typeof allowShowPhoto =='undefined') allowShowPhoto=true;
     allowShowPhoto=true;
     if (cur_popup_url!=id)
       cur_popup_idx++;
@@ -1433,8 +1430,7 @@ function vkHighlightFriends(){
 function vkIsFavUser(uid,list){
    if (!list)  list=vkGetVal('FavList') || '';
    list = list?'-'+list+'-':'';
-   if (list.indexOf('-'+uid+'-')!=-1) return true;
-   else return false;
+   return list.indexOf('-'+uid+'-')!=-1;
 }
 
 function vkFavAdd(uid){

@@ -154,7 +154,6 @@ function vkStyles(){
 		';
 	var calendar='#vk_calendar.calendar {	width: 120px; margin:0px; padding:0px;margin-left:-1px;}\
 		#vk_calendar .day_table {  width: 120px; table-layout: fixed; background: rgba(255, 255, 255, 0.9)}\
-		#vk_calendar .day_cell.day2, #vk_calendar  .day_cell.day4, #vk_calendar .day_cell.day6, #vk_calendar .day_head.day2, #vk_calendar .day_head.day4, #vk_calendar .day_head.day6{}\
 		#vk_calendar .day_head{overflow:hidden; width: 16px; }\
 		#vk_calendar .day_cell {width: 16px; height: 16px; background:transparent}\
 		#vk_calendar .day_cell.holiday{background-color: rgba(255, 215, 0, 0.329)}\
@@ -405,7 +404,6 @@ function vkStyles(){
 	;
 	// friens test box
 	main_css+="\
-      .vkfrupl span{}\
       .vkcheckbox_off{opacity: 0.5; margin: 3px 3px -3px 0; display:inline-block; height: 14px; width: 15px; overflow: hidden; background: transparent url(/images/icons/check.gif?1) 0px 0px no-repeat;}\
       .vkcheckbox_on{opacity: 0.5; margin: 3px 3px -3px 0; display:inline-block; height: 14px; width: 15px; overflow: hidden; background: transparent url(/images/icons/check.gif?1) 0px -14px no-repeat;}\
 	";
@@ -463,8 +461,7 @@ function vkStyles(){
       .vk_clear_input:hover{   opacity: 1;}\
       #vksetts_sbox{position: relative; height: 23px; text-align: center; padding-top:13px;}\
       .box_body #vksetts_sbox{padding-top:0px;}\
-      .vksets_search_focus{}\
-	"; 
+	";
 	
 	var shut='\
 		.shut .module_body, .shut #profile_photos_upload_wrap{	display: none !important;}\
@@ -1184,7 +1181,7 @@ function vkMenu(){//vkExLeftMenu
          div.className='moreDiv more_div';
          nav.appendChild(div);
       }
-      if (!need_delimiter) need_delimiter=true;
+      need_delimiter=true;
       
       var m_item=custom_cfg[i];
       var attr=m_item[0].match(/^https?:\/\//)?'':' onclick="return nav.go(this, event);" ';

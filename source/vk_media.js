@@ -1538,9 +1538,6 @@ vk_photoadm={
    },
    move_photos:function(oid,target_aid,pids){
       //dApi.call('photos.move',{pid:pids[idx],:target_aid,oid:oid},function(r){  });
-   },
-   check_all:function(uncheck){
-      
    }
 }
 /*
@@ -2476,10 +2473,7 @@ vk_videos = {
                   regex=regex.toLowerCase();
                   title=title.toLowerCase();
                }
-               if ((album==0 || all===true) && ((regex.indexOf?title.indexOf(regex)!=-1:title.match(regex)) || regex==null))
-                  return true;
-               else 
-                  return false;
+               return (album==0 || all===true) && ((regex.indexOf?title.indexOf(regex)!=-1:title.match(regex)) || regex==null);
             });
          }
          filter_arr(rx,(isChecked('vk_vid_filter_all')==1?false:true));
