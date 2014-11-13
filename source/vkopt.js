@@ -31,7 +31,6 @@ var SAVE_MSG_HISTORY_PATTERN="%username% (%date%):\r\n%message%\r\n%attachments%
 var SAVE_MSG_HISTORY_DATE_FORMAT="HH:MM:ss  dd/mm/yyyy";
 
 /* Delete messages config */
-var MSG_SCAN_REQ_DELAY=400; //ms  used only in vkDeleteMessages_() - disabled
 var MSG_DEL_REQ_DELAY=300; 	//ms
 var MSG_IDS_PER_DEL_REQUEST=25;
 
