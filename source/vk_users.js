@@ -16,7 +16,7 @@ var isUserRegEx=[
 /\.php($|\?)/i,
 /\/$/i,
 /id\d+/i,
-/http.{3}\w+\.vk.*\/.?/i
+/http.{3}\w+\.vk.*\/.?|http:\/\/instagram\.com|http:\/\/twitter\.com/i
 ];
 function isUserLink(url){
 	if ((!(isUserRegEx[0].test(url) || isUserRegEx[1].test(url) || isUserRegEx[2].test(url) || isUserRegEx[3].test(url) || isUserRegEx[4].test(url)) || 
