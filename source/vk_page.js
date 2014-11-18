@@ -1035,7 +1035,7 @@ function vkAddCleanWallLink(){
       p_options.push({
          l:IDL('PhotoLinks'),
          onClick:function(item) { 
-            vk_photos.scan_wall(cur.oid,(cur.wallType=="full_own"?true:false));
+            vk_photos.scan_wall(cur.oid,(cur.wallType=="full_own"));
          } 
       });
     }
@@ -2321,7 +2321,7 @@ vk_groups = {
                return;
             }
             var uid=queue.shift();
-            var need_run=(queue.length==0)?false:true;
+            var need_run=(queue.length!=0);
             ge('vk_gre_scan_queue').innerHTML=vkProgressBar(deactiv_count-queue.length,deactiv_count,590,IDL('Loading')+' %');
             var tab='members';
             ajax.post('groupsedit.php', {
@@ -2351,7 +2351,7 @@ vk_groups = {
          return {count:members.count,users:users};\
          ';
          dApi.call('execute',{code:code},function(r){
-            var need_run = (queue.length==0)?true:false;
+            var need_run = (queue.length==0);
             var count=r.response.count;
             var users=r.response.users;
             for (var i=0; i<users.length; i++){
@@ -3406,7 +3406,7 @@ vk_feed={
                      checked:enabled,  
                      label: IDL('Filter'),
                      onChange: function(state) { 
-                        var checked = (state == 1)?true:false;
+                        var checked = (state == 1);
                         setCfg(bit,checked?'y':'n');
                         if (checked){
                            vk_feed.filter_enabled=true;
@@ -3432,7 +3432,7 @@ vk_feed={
                      label: items[i][0],
                      onChange: (function(idx){
                         return function(state){
-                           var checked = (state == 1)?true:false; 
+                           var checked = (state == 1);
                            items[idx][2] = checked;
                            apply();
                         }

@@ -43,10 +43,10 @@ if (!window.Sound2){
             info.wav = elem.canPlayType('audio/wav; codecs="1"');
             info.m4a = elem.canPlayType('audio/x-m4a;') || elem.canPlayType('audio/aac;');
             
-            info.ogg = (info.ogg != "" && info.ogg != "no")?true:false;
-            info.mp3 = (info.mp3 != "" && info.mp3 != "no")?true:false;
-            info.wav = (info.wav != "" && info.wav != "no")?true:false;
-            info.m4a = (info.m4a != "" && info.m4a != "no")?true:false;
+            info.ogg = (info.ogg != "" && info.ogg != "no");
+            info.mp3 = (info.mp3 != "" && info.mp3 != "no");
+            info.wav = (info.wav != "" && info.wav != "no");
+            info.m4a = (info.m4a != "" && info.m4a != "no");
          } 
       } catch(e) { }
       return info; 

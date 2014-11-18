@@ -2482,7 +2482,7 @@ vk_videos = {
                   return false;
             });
          }
-         filter_arr(rx,(isChecked('vk_vid_filter_all')==1?false:true));
+         filter_arr(rx,(isChecked('vk_vid_filter_all')!=1));
          filtred_vids=arr;
          filtred_vids_count=filtred_vids.length;
          (filtred_vids.length>0?show:hide)('vk_move_ctrls');
@@ -2966,7 +2966,7 @@ vk_audio={
      // get mp3 url maybe from /audio?act=reload_audio&al=1&audio_id=132434853&owner_id=10723321
      
      if ((node || ge('content')).innerHTML.indexOf('play_new')==-1) return;
-     var smartlink=(getSet(1) == 'y')?true:false;
+     var smartlink=(getSet(1) == 'y');
      var download=(getSet(0) == 'y')?1:0;
      //var clean_trash=getSet(94) == 'y';
      if (!download && getSet(43) != 'y') return;
@@ -3553,7 +3553,7 @@ function vkAudioDelDup(add_button,btn){
 			var cb = new Checkbox(ge("deldup_by_size"), {  width: 150,  
 											  checked:vk_del_dup_check_size,  
 											  label: IDL('DupDelCheckSizes'),
-											  onChange: function(state) { vk_del_dup_check_size = (state == 1)?true:false; } 
+											  onChange: function(state) { vk_del_dup_check_size = (state == 1); }
 											});
 		} else if (nav.objLoc[0]=='search' && nav.objLoc['c[section]']=='audio'){
 			var p=ge('search_filters');
@@ -3573,7 +3573,7 @@ function vkAudioDelDup(add_button,btn){
 			var cb = new Checkbox(ge("deldup_by_size"), {  width: 150,  
 														  checked:vk_del_dup_check_size,  
 														  label: IDL('DupDelCheckSizes'),
-														  onChange: function(state) { vk_del_dup_check_size = (state == 1)?true:false; } 
+														  onChange: function(state) { vk_del_dup_check_size = (state == 1); }
 														});
 		}
 		return;
@@ -5217,7 +5217,7 @@ vk_vid_down={
    vkVidDownloadLinks: function(vars){
        // /video.php?act=a_flash_vars&vid=39226536_159441582
        ////
-      var smartlink=(getSet(1) == 'y')?true:false;
+      var smartlink=(getSet(1) == 'y');
       var vidname=winToUtf(mvcur.mvData.title).replace(/\?/g,'%3F').replace(/\&/g,'%26');
       vidname=vkCleanFileName(vidname);
       var vname=vidname;
