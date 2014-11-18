@@ -2014,10 +2014,7 @@ vk_pages={
       //console.log(ev);
       if (!ev) return false;
       var el= ev.target || ev.srcElement || {};
-      if (box_disable && page && page.w && (page.w+"").match(/^wall-?\d+_\d+$/) && (el.tagName=='SPAN' || el.tagName=='A')){
-         return true;
-      }
-      return false;
+      return box_disable && page && page.w && (page.w+"").match(/^wall-?\d+_\d+$/) && (el.tagName=='SPAN' || el.tagName=='A');
    }
    
 
@@ -3301,9 +3298,7 @@ vk_feed={
          if (geByClass('group_share',row)[0]) // Group Share
             types.links=true;              
          var lnk=geByClass('lnk',row)[0];
-         if (lnk){
-            if (!geByClass('video',lnk)[0]) types.links=true;
-         }
+         if (lnk && !geByClass('video',lnk)[0]) types.links=true;
          
          var b=false;
          for (var key in types)

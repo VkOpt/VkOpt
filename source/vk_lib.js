@@ -639,11 +639,7 @@ var vkMozExtension = {
 		return tmpl.replace(/\$\{([A-Za-z0-9_|.]+)\}/g, fn);
 	}
 	function vkLocalStoreReady(){
-	  if (window.localStorage || window.GM_SetValue || window.sessionStorage) {
-		return true;
-	  } else { 
-		return false; 
-	  }
+	  return window.localStorage || window.GM_SetValue || window.sessionStorage;
 	}
 
 	function vkSetVal(key,val){

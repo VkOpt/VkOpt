@@ -43,17 +43,13 @@ VK_BASE_BG_SIZES.sort(function(i1,i2){
 
 
 function vkLocalStoreReady(){
-  if (window.localStorage || window.GM_SetValue || window.sessionStorage) {
-    return true;
-  } else { 
-    return false; 
-  }
+  return window.localStorage || window.GM_SetValue || window.sessionStorage;
 }
 function vk_LSSetVal(key,val){
   if (typeof localStorage!='undefined') {localStorage[key]=val; return true;}//Chrome, FF3.5+
   else if (typeof GM_SetValue!='undefined'){ GM_SetValue(key,val); return true;}//Mozilla
   else if (typeof sessionStorage!='undefined'){sessionStorage.setItem(key, val); return true;} //Opera 10.5x+
-  else { return false }
+  else return false;
 }
 
 function vk_LSGetVal(key){

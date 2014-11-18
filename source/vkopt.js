@@ -412,7 +412,6 @@ function vkCheckLoadedScripts(){
 ////////// INIT ////////
 function vkonDOMReady(fn, ctx){
     var ready, timer;
-    var __=true;
     var onChange = function(e){
 		if (document.getElementById('footer') || document.getElementById('footer_wrap')) {
          fireDOMReady();
@@ -445,13 +444,11 @@ function vkonDOMReady(fn, ctx){
             timer = null;
         }
     };
-    if (__){
       if(document.addEventListener)
         document.addEventListener("DOMContentLoaded", onChange, false);
       document.onreadystatechange = onChange;
       timer = setInterval(onChange, 5);
       window.onload = onChange;
-    }
 };
 /////////////////////////////////
 function vkOpt_toogle(){
