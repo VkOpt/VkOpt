@@ -1401,7 +1401,6 @@ function vkFrProfile(){
   var c2 = geByClass('page_list_module')[0];
   if (c2) c2.id="page_list_module";
   
-  //els=vkArr2Arr(els);
   var mod=function(el,postfix){
     if (postfix=='online' && el.parentNode.id=='profile_friends') el.parentNode.id='profile_friends_online';
     vkNextEl(el).id='friends_profile_'+postfix;
@@ -2504,7 +2503,7 @@ vk_groups = {
                
                
                //ge('vk_scan').innerHTML=vkProgressBar(1,1,310,' ');
-               for (var i=0;i<ms.length;i++) ids.push(ms[i]);
+               ids=ms.slice();
                if (!ms[0] /*|| ids.length>=500*/){ 
                   process();	
                   return;	

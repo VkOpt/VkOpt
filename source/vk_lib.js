@@ -1147,11 +1147,6 @@ String.prototype.leftPad = function (l, c) {
 	  }
 	}
 
-	function vkArr2Arr(arr){
-	  var new_arr=[]; 
-	  for (var i=0; i<arr.length; i++) new_arr.push(arr[i]);
-	  return new_arr;
-	}
 	function vkMakeContTabs(trash){
 	  if (!window.vkContTabsCount) {
 		vkContTabsCount=1;
@@ -1161,12 +1156,11 @@ String.prototype.leftPad = function (l, c) {
 	  vkContTabsSwitch=function(idx,show_all){
 			var ids=idx.split("_");
 			if (show_all){
-			  nodes=vkArr2Arr(geByClass("noactivetab",ge('tabcontainer'+ids[0])));
-			  var nds=[]; for (var i=0; i<nodes.length; i++) nds.push(nodes[i]);
-			  for (var i=0; i<nodes.length; i++)  
+			  nodes=geByClass("noactivetab",ge('tabcontainer'+ids[0])).slice();
+			  for (var i=0; i<nodes.length; i++)
 				nodes[i].className="activetab";
 			} else {
-			  var nodes=vkArr2Arr(geByClass("activetab",ge('tabcontainer'+ids[0])));
+			  var nodes=geByClass("activetab",ge('tabcontainer'+ids[0])).slice();
 			  for (var i=0; i<nodes.length; i++) nodes[i].className="noactivetab"; 
 			  //while(nodes[0]) nodes[0].className="noactivetab";
 			}
