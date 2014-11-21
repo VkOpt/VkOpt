@@ -1247,8 +1247,7 @@ function vkMenu(){//vkExLeftMenu
   //*/
   
   
-  var ass=nav.getElementsByTagName('a');
-  var items=ass.slice();
+  var items=nav.getElementsByTagName('a');
   for (var i=0;i<items.length;i++) if (items[i].parentNode.tagName=='LI' || items[i].parentNode.tagName=='TD'){
     var item=items[i];
     var page=item.href.match(/\/([A-Za-z]+)(\.php|\d+|\?|$)/);
