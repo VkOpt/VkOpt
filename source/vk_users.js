@@ -681,56 +681,7 @@ function vkShowProfile(el,html,uid,right){
         p.style.top = top+"px";
       }
 }
-function vkShowPhoto(el, img, right,res,uid) {
-    //var sbit=getSet(73)
-      clearTimeout(allowHidePhoto);
-     // PrepLang();
-      //profileInfoVars(res.profile);
-      //var boxcont=utf2win(getTopProfileBlock(res.profile,true));
-      //vk_ProfileBox(boxcont,utf2win(username),uid);
-    if (!ge("vkbigPhoto")) {
-            var html = '<div id="vkbigPhoto" onmousemove="clearTimeout(allowHidePhoto);" onmouseout="vkHidePhoto()" style="z-index:1000;display:none;position:absolute;padding:5px;border:#CCCCCC 1px solid;background:#FFFFFF">' + '<a href="#" id="vkbigPhotoLink"><img id="vkbigPhotoImg" src="" style="" /></a>' + '</div>';
-            div = document.createElement('div');
-            var body = document.getElementsByTagName('body')[0];
-            div.innerHTML = html;
-            body.appendChild(div);
-    }
-    var p = ge('vkbigPhoto');
-    var pi = ge('vkbigPhotoImg');
-	pi.src = "http://vkontakte.ru/images/upload.gif";
-	ge('vkbigPhotoLink').href="/"+(String(uid).match(/^\d+$/)?'id':'')+uid;
-    var onload = function(){
-      if (allowShowPhoto) show('vkbigPhoto');
-      /*if (sbit==2) {
-        p.innerHTML=boxcont;
-        p.style.width="430px";
-      }*/
-      var xy=getXY(el); 
-      var height=getScrollTop()+getScrH();    
-      var top= (xy[1]+p.offsetHeight>height)?height-p.offsetHeight-10:xy[1];
-      top=(top<getScrollTop())?getScrollTop():top;
-      
-      var left=xy[0] - p.offsetWidth + 10;
-      if (left<0) left=0;
-      //alert(getScrollTop()+"\n"+getScrH()+"\n"+height+"\n"+(xy[1]+el.offsetHeight)+"\n"+el.offsetHeight);
-      if (right) {
-        p.style.left = (xy[0] + el.offsetWidth + 10) + "px";
-        p.style.top = top+"px";
-        
-      }else {
-        p.style.left = left+"px";//(xy[0] - p.offsetWidth - 10)+"px";
-        p.style.top = top+"px";
-      }
-    };
-    //if (sbit==1){
-      if(pi.src != img){
-        pi.src = img;
-      }
-    /*  addEvent(pi, 'load', onload);
-    }else*/ 
-    //}
-    onload();
-}
+
 function vkHidePhoto() {
     allowShowPhoto=false;
     clearTimeout(allowShowPhotoTimer);
