@@ -508,7 +508,7 @@ function vkShowSkinMan(filter,page){
      if (vkMyStyles[i].pid)
          vkMyStyles[i].pid=vkMyStyles[i].pid.match(/-?\d+_\d+/)[0];
      if (vkMyStyles[i].pid) pids.push(vkMyStyles[i].pid);
-     var Thumb=(vkMyStyles[i].thumb)?vkMyStyles[i].thumb:"http://vkontakte.ru/images/question_a.gif";
+     var Thumb=(vkMyStyles[i].thumb)?vkMyStyles[i].thumb:"/images/question_a.gif";
      var Screen=(vkMyStyles[i].screen)?vkMyStyles[i].screen:null;
      var Name=(vkMyStyles[i].name)?vkMyStyles[i].name:IDL("Noname");
      var Author=(vkMyStyles[i].author)?vkMyStyles[i].author:"N/A";

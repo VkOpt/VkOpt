@@ -1269,7 +1269,7 @@ vk_im={
          var id='add_media_type_' +  cur.imMedia.menu.id + '_nohide';
          if (!ge(id)){
             // ADD WALL POST
-            var a=vkCe('a',{'onclick':'vk_im.attach_wall();','class':'add_media_item','style':"background-image: url('http://vk.com/images/icons/attach_icons.png'); background-position: 3px -130px;"},'<nobr>'+IDL('WallPost')+'</nobr>');
+            var a=vkCe('a',{'onclick':'vk_im.attach_wall();','class':'add_media_item','style':"background-image: url('/images/icons/attach_icons.png'); background-position: 3px -130px;"},'<nobr>'+IDL('WallPost')+'</nobr>');
             p.appendChild(a);
             
             var a=vkCe('a',{id:id,'style':'border-top:1px solid #DDD;'},html);
