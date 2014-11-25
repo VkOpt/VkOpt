@@ -711,7 +711,8 @@ function vkInitSettings(){
 		{id:6, text:IDL("seOnAway")},
 		{id:34, text:IDL("seSwichTextChr")},
       {id:77, text:IDL("seBatchCleaners")},
-      {id:78, text:IDL("seCutBracket")}	
+      {id:78, text:IDL("seCutBracket")},
+      {id:97, header:IDL("seRegexBlock"), text:'<input type="text" style="width: 100%;" onchange="setSet(\'-\',encodeURIComponent(this.value),6)" value="'+decodeURIComponent(getSet('-',6))+'" />'}
    ],
    Hidden:[
       {id:82, text:IDL("FullThumb")},
