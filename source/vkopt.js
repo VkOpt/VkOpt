@@ -306,10 +306,10 @@ var TextPasteSmiles={
 					  position:fixed; z-index:1000; right:0px; top:0px;}\
 			#vkDebug .debugPanel{height:'+sHEIGHT+'px; background:#F0F0F0}\
 			#vkDebug .debugPanel span{line-height:18px; font-weight:bold; color:#999; padding-left:5px;}\
-			#vkDebug .mbtn{background:#FFF url("http://vkontakte.ru/images/icons/x_icon5.gif") 0px -63px no-repeat;\
+			#vkDebug .mbtn{background:#FFF url("/images/icons/x_icon5.gif") 0px -63px no-repeat;\
 					  cursor: pointer; height: 21px; width: 21px;\
 					  float:right;}\
-			#vkDebug .hbtn{background:#FFF url("http://vkontakte.ru/images/icons/x_icon5.gif") 0px -105px no-repeat;\
+			#vkDebug .hbtn{background:#FFF url("/images/icons/x_icon5.gif") 0px -105px no-repeat;\
 					  cursor: pointer; height: 21px; width: 21px;\
 					  float:right;}\
 			#vkDebug .log{border: 1px solid #DDD; margin: 5px; min-width:'+(WIDTH-10)+'px; max-height:'+HEIGHT+'px; overflow:auto;}\

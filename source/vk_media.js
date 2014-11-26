@@ -1275,9 +1275,9 @@ vk_ph_comms = {
                //*
                if (!users[com.from_id]){ 
                   if (com.from_id<0)
-                     users[com.from_id]=['Admin','http://vk.com/images/camera_c.gif'];
+                     users[com.from_id]=['Admin','/images/camera_c.gif'];
                   else
-                     users[com.from_id]=['[id'+com.from_id+']','http://vk.com/images/camera_c.gif'];
+                     users[com.from_id]=['[id'+com.from_id+']','/images/camera_c.gif'];
                }
                html+=tpl.replace(/%id/g,cur.oid+'_'+com.cid+'review')
                         .replace(/%ava/g,users[com.from_id][1])
@@ -1287,7 +1287,7 @@ vk_ph_comms = {
                         .replace(/%date/g, (new Date(com.date*1000)).format('dd.mm.yyyy HH:MM'))
                         .replace(/%pid/g,cur.oid+'_'+com.pid) //'-1_2'
                         .replace(/%oid/g,cur.oid)
-                        .replace(/%src/g,photos[com.pid+'']||"http://vk.com/images/no_photo.png");
+                        .replace(/%src/g,photos[com.pid+'']||"/images/no_photo.png");
                //*/         
             }
             callback('<div>'+html+'</div>');
@@ -2716,7 +2716,7 @@ function vkVideoAddOpsBtn(){
       var oid=cur.oid;
       var aid=((cur.vSection || "").match(/album_(\d+)/) || [])[1];
       
-      var btn=vkCe('a',{id:'vk_video_ops', "class":'nobold _fl_r'},'[ <img src="http://vk.com/images/icons/help_stest_tick.gif"> ]');
+      var btn=vkCe('a',{id:'vk_video_ops', "class":'nobold _fl_r'},'[ <img src="/images/icons/help_stest_tick.gif"> ]');
       
       var p_options = [];
       if (getSet(66)=='y'){
@@ -4461,7 +4461,7 @@ if (!window.vkopt_plugins) vkopt_plugins={};
    #vk_lastfm_small_icons{position:absolute; margin-left:-16px;}\
    #gp.reverse #vk_lastfm_small_icons{margin-left: 133px;}\
    #vk_lastfm_icons{position:absolute; margin-left:-40px; height:16px; width:40px;}\
-   .lastfm_fav_icon{cursor:pointer; background:url(\'http://vk.com/images/icons/like.gif\'); width:10px; height:10px; margin-top:4px; margin-left:1px; opacity:0.4 }\
+   .lastfm_fav_icon{cursor:pointer; background:url(\'/images/icons/like.gif\'); width:10px; height:10px; margin-top:4px; margin-left:1px; opacity:0.4 }\
    .lastfm_fav_icon:hover{opacity:0.7;}\
    .lastfm_fav_icon.loved{opacity:1;}\
    \

@@ -210,23 +210,23 @@ function vkStyles(){
    .vk_magglass_icon{background: url('/images/magglass_2x.png') no-repeat 50% 50%; background-size:11px 11px; margin-right: 4px; display: inline-block; vertical-align: middle; width: 11px; height: 11px; }\
    .vk_like_icon_white{background: url('/images/icons/like_2x.png') 1px -10px no-repeat transparent; background-size: 10px 32px; height: 10px; width: 11px; display: inline-block; vertical-align: middle;}\
    .vk_comm_icon_white{background: url('/images/fixedmenu_2x.png') 100% -282px no-repeat transparent; background-size: 11px 322px; height: 11px; width: 11px; display: inline-block; vertical-align: middle;}\
-   .vk_x_btn{background: url(http://vk.com/images/hide_to.gif) no-repeat 50% 50%; display: inline-block; vertical-align: middle; width: 10px; height: 10px; }\
+   .vk_x_btn{background: url(/images/hide_to.gif) no-repeat 50% 50%; display: inline-block; vertical-align: middle; width: 10px; height: 10px; }\
    .vk_x_btn{opacity:0.5; cursor:pointer;}\
    .vk_x_btn:hover{opacity:1;}\
    .vk_cancel_ico{\
-      background: url(http://vk.com/images/tasks_icons.gif) no-repeat 0px -69px;\
+      background: url(/images/tasks_icons.gif) no-repeat 0px -69px;\
       display: inline-block;\
       width: 13px; height: 11px;\
       margin-bottom:-2px;\
    }\
    .vk_ok_ico{\
-      background: url(http://vk.com/images/tasks_icons.gif) no-repeat 0px -43px;\
+      background: url(/images/tasks_icons.gif) no-repeat 0px -43px;\
       display: inline-block;\
       width: 13px; height: 11px;\
       margin-bottom:-2px;\
    }\
-   .vk_ok_ico{background: url(http://vk.com/images/icons/check_balanced.gif) no-repeat 0px -2px;}\
-   .vk_cancel_ico{background: url(http://vk.com/images/hide_to.gif) no-repeat 0px -2px;}\
+   .vk_ok_ico{background: url(/images/icons/check_balanced.gif) no-repeat 0px -2px;}\
+   .vk_cancel_ico{background: url(/images/hide_to.gif) no-repeat 0px -2px;}\
    .vk_profile_links a{padding:3px;}\
    .vk_profile_links a:hover{background-color:#E1E7ED; text-decoration:none;}\
    .vk_profile_links{line-height:20px;}\
@@ -454,7 +454,7 @@ function vkStyles(){
       \
       #vksetts_sbox .vksetts_sinp{width:583px;}\
       .box_body #vksetts_sbox .vksetts_sinp {width: 592px;}\
-      .vk_clear_input{   background: url(\"http://st0.vk.me/images/icons/input_clear.gif\") 6px 6px no-repeat transparent;\
+      .vk_clear_input{   background: url(\"//st0.vk.me/images/icons/input_clear.gif\") 6px 6px no-repeat transparent;\
          cursor: pointer;   display: none;   height: 19px;   margin: -1px 0px 0px 583px;   opacity: 0.6;   padding: 2px;   position: absolute;   width: 19px;   z-index: 95;\
       }\
       .box_body .vk_clear_input{margin-left: 595px;}\
@@ -466,8 +466,8 @@ function vkStyles(){
 	var shut='\
 		.shut .module_body, .shut #profile_photos_upload_wrap{	display: none !important;}\
 		.shut { padding-bottom: 3px !important; }\
-      .vk_shut_btn{ display:block; background:url("http://vkontakte.ru/images/flex_arrow_open.gif") no-repeat -6px 2px; width:20px; height:20px; margin:-4px 0; }\
-      .shut .vk_shut_btn{ background-image:url("http://vkontakte.ru/images/flex_arrow_shut.gif");}\
+      .vk_shut_btn{ display:block; background:url("/images/flex_arrow_open.gif") no-repeat -6px 2px; width:20px; height:20px; margin:-4px 0; }\
+      .shut .vk_shut_btn{ background-image:url("/images/flex_arrow_shut.gif");}\
 		#profile_wall.shut div,#profile_photos_module.shut #profile_photos{display: none !important;}\
 		#profile_wall.shut div.module_header, #profile_photos_module.shut div.module_header {display: block !important;}\
 		.module_header.shutable .header_top{ background: #e1e7ed;	}\
@@ -549,7 +549,7 @@ function vkStyles(){
 			}\
 			#side_bar ol li#myprofile a.edit {float:right;}\
 			.vk_textedit_panel{box-shadow: 0px -0px 3px #888; background:rgba(255,255,255,0.7); position:absolute; line-height:25px; min-height:22px; padding:2px; margin-top:-35px; padding-right_:23px;}\
-         .vk_emoji_mini_icon{background: url('http://vk.com/images/icons/mono_iconset.gif') no-repeat 50% -362px; width: 12px; height: 12px; margin: 6px;}\
+         .vk_emoji_mini_icon{background: url('/images/icons/mono_iconset.gif') no-repeat 50% -362px; width: 12px; height: 12px; margin: 6px;}\
          .emoji_tt_wrap{z-index:1000}\
          /*.vk_textedit_panel.emoji_no_tabs .emoji_block_cont {margin-top: 16px !important;}*/\
          a.vk_edit_btn{display:block; background-color:transparent; border:1px solid transparent; height:20px; width:20px; float:left;}\
@@ -579,7 +579,7 @@ function vkStyles(){
          .zoom_ico_white{\
             width:14px; \
             height:14px; \
-            background:url('http://st0.userapi.com/images/icons/photo_icons.png') 0 -62px;\
+            background:url('//st0.userapi.com/images/icons/photo_icons.png') 0 -62px;\
             opacity:0.75;\
             -webkit-transition: opacity 100ms linear;\
             -moz-transition: opacity 100ms linear;\
@@ -917,8 +917,8 @@ function vkMenu(){//vkExLeftMenu
          .vkico_notes,.vkico_groups,.vkico_events,\
          .vkico_feed, .vkico_newsfeed,.vkico_fave,.vkico_custom_link,\
          .vkico_settings,.vkico_apps,.vkico_docs,\
-         .vkico_wall,.vkico_gifts,.vkico_vkplug,.vkico_vkopt,.vkico_app,.vkico_ads,.vkico_pages,.vkico_support{background:url("http://vk.com/images/icons/mono_iconset.gif") no-repeat;}\
-         .is_2x .vkicon{background-image: url("http://vk.com/images/icons/mono_iconset_2x.png");  background-size: 12px 374px;}\
+         .vkico_wall,.vkico_gifts,.vkico_vkplug,.vkico_vkopt,.vkico_app,.vkico_ads,.vkico_pages,.vkico_support{background:url("/images/icons/mono_iconset.gif") no-repeat;}\
+         .is_2x .vkicon{background-image: url("/images/icons/mono_iconset_2x.png");  background-size: 12px 374px;}\
          .left_row  .vkicon{margin: 4px 3px -4px 0px;}\
          \
          .vkico_profile{background-position:0 2px;}\

@@ -956,7 +956,7 @@ function status_icq(node) { //add image-link 'check status in ICQ'
     t=el.innerHTML || '';
     t=t.replace(/\D+/g,'') || '';
     if(t.length)                                                                                                                                                   // http://kanicq.ru/invisible/favicon.ico
-      el.innerHTML+=' <a href="http://kanicq.ru/invisible/'+t+'" title="'+IDL("CheckStatus")+'" target=new><img src="http://status.icq.com/online.gif?img=26&icq='+t+'&'+Math.floor(Math.random()*(100000))+'" alt="'+IDL("CheckStatus")+'"></a>';
+      el.innerHTML+=' <a href="http://kanicq.ru/invisible/'+t+'" title="'+IDL("CheckStatus")+'" target=new><img src="'+location.protocol+'//status.icq.com/online.gif?img=26&icq='+t+'&'+Math.floor(Math.random()*(100000))+'" alt="'+IDL("CheckStatus")+'"></a>';
   } 
   //*
   if(skype) {	
@@ -4407,8 +4407,8 @@ function vk_tag_api(section,url,app_id){
 
          code += !dk.is_enabled()?"":"\
          .antilike,#al_adv_side{display:none !important}\
-         .disliked_users_loading{background: url(http://vk.com/images/upload_inv_mono.gif) no-repeat 50% 50%;}\
-         .disliked_users_big_loader{background-image: url(http://vk.com/images/progress7.gif); background-repeat:no-repeat; background-position:50% 50%;}\
+         .disliked_users_loading{background: url(/images/upload_inv_mono.gif) no-repeat 50% 50%;}\
+         .disliked_users_big_loader{background-image: url(/images/progress7.gif); background-repeat:no-repeat; background-position:50% 50%;}\
          .dislike_list{height:100%}\
          \
          .post_dislike_icon,.post_dislike_count,.post_dislike_link{\
