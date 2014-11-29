@@ -102,17 +102,17 @@ function vkLocalStorageMan(ret){
       '</div>';
     }
     return res;
-  }
+  };
   vkLsDelVal=function(key_){
     localStorage.removeItem(key_);
     ge('LsList').innerHTML=vkGetLsList();
     ge("LsEditNode").innerHTML='';
-  }
+  };
   vkLsSaveVal=function(key_){
     localStorage[key_]=ge('LsValEdit').value;
     ge('LsList').innerHTML=vkGetLsList();
     //ge("LsEditNode").innerHTML='';
-  }  
+  };  
   vkLsNewKey=function(key_){
     localStorage.removeItem(key_);
     ge('LsList').innerHTML=vkGetLsList();
@@ -121,14 +121,14 @@ function vkLocalStorageMan(ret){
                  '<u>Value:</u><br><textarea id="LsValEdit" rows=5 cols=86  style_="height:100px; width:100%;"></textarea><br>'+
                  '<div style="padding-top:5px;">'+vkRoundButton(['Save key',"javascript:vkLsSaveNewVal()"])+'</div>';
 
-  }
+  };
   vkLsSaveNewVal=function(){
     var key_=ge('LsValNameEdit').value;
     localStorage[key_]=ge('LsValEdit').value;
     ge('LsList').innerHTML=vkGetLsList();
     vkLsEdit(key_);
     //ge("LsEditNode").innerHTML='';
-  }
+  };
   vkLsEdit=function(_key){
     el=ge("LsEditNode");
     el.innerHTML='<u>Key:</u> <b>'+_key+'</b><br>'+
@@ -137,7 +137,7 @@ function vkLocalStorageMan(ret){
     el=geByClass('lsrow_sel')[0];
     if (el) el.className='lsrow';
     ge('lsrow_'+_key).className='lsrow_sel';
-  }  
+  };  
   var html='<div class="lstable" id="LsList">';
   html+=vkGetLsList();
   html+='<div style="clear:both"></div></div>';
@@ -189,7 +189,7 @@ function vkGetVkoptFullConfig(){
       VK_CURRENT_CSS_CODE:vkGetVal('VK_CURRENT_CSS_CODE'),
       WallsID:vkGetVal('WallsID'),
       vklang:vkgetCookie('vklang')
-   }
+   };
   /*
   var temp=[];
   for (var key in sets) if (sets[key]) temp.push(key+':'+'"'+sets[key]+'"');
@@ -483,12 +483,12 @@ function init_colorpicker(target, onselect, inhcolor){
 FrCol_click=function(color){
     setFrColor(color);
     ge('spct11').style.backgroundColor = color;
-}
+};
 
 MsgCol_click=function(color, id){
     setMsgColor(color);
     ge('spct10').style.backgroundColor = color;
-}
+};
 
 function getMsgColor(){
   var cl=getSet('-',3);//vkgetCookie('remixbit').split('-')[9];
@@ -584,7 +584,7 @@ function WallManForm(){
 
 
 function vkInitSettings(){
-  vkoptHiddenSets=[]
+  vkoptHiddenSets=[];
   if (!window.vk_vid_down){
     vkoptHiddenSets.push(2,66)
   }
@@ -595,7 +595,7 @@ function vkInitSettings(){
   }
   var examples={
       seSubscribeToPostComments:'<div title="'+IDL('AddToSubscribtions')+'" class="vk_post_subscribe fl_r" style="visibility:visible"><i class="sp_main fl_l"></i></div>'
-  }
+  };
     
   vkoptSets={
     Media:[
@@ -884,7 +884,7 @@ vk_settings = {
          switch(type){
             case 'boolean':
                //html+='\t<input type="checkbox" id="cfg_'+VKOPT_CFG_LIST[i]+'"'+(window[VKOPT_CFG_LIST[i]]?' checked="on"':'')+'>\n';
-               html+='\t<div class="checkbox '+(window[VKOPT_CFG_LIST[i]]?'on ':'')+'fl_l" id="cfg_'+VKOPT_CFG_LIST[i]+'" cfg="'+VKOPT_CFG_LIST[i]+'" onclick="checkbox(this); vk_settings.cfg_override_change_val(this);"><div></div></div>\n'
+               html+='\t<div class="checkbox '+(window[VKOPT_CFG_LIST[i]]?'on ':'')+'fl_l" id="cfg_'+VKOPT_CFG_LIST[i]+'" cfg="'+VKOPT_CFG_LIST[i]+'" onclick="checkbox(this); vk_settings.cfg_override_change_val(this);"><div></div></div>\n';
                break;
             case 'string':   
             case 'number':
@@ -907,7 +907,7 @@ vk_settings = {
          ge('vk_adv_settings_content').parentNode.innerHTML=vk_settings.cfg_override_edit();
       }
    }
-}
+};
 function vksettobj(s){
   vkoptSetsObj={};
   var x=0;
@@ -1066,7 +1066,7 @@ function vkMakeSettings(el){
             return;
          }
          ge('vk_sound_vol_label').innerHTML=IDL('Volume')+": "+p+"%";
-      }
+      };
       f(); 
       if (!u){
          localStorage['vk_sounds_vol']=p;
@@ -1114,7 +1114,7 @@ function vkMakeSettings(el){
 	'<br>'+vkRoundButton([IDL('SaveOnServer'),'javascript: vkSaveSettingsOnServer();'],[IDL('LoadFromServer'),'javascript: vkLoadSettingsFromServer();'])+'</div>'
   });
 
-  vkRemixBitS=function(){return "DefSetBits='"+vkgetCookie('remixbit')+"';";}
+  vkRemixBitS=function(){return "DefSetBits='"+vkgetCookie('remixbit')+"';";};
   tabs[0].active=true;
   html=vkMakeContTabs(tabs);
   if (el) ge(el).innerHTML=html;//'<div id="vksetts_search"></div><div id="vksetts_tabs">'+html+'</div>';//vkGetSettings(vkoptSets['Media'],allsett);

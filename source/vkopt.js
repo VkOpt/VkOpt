@@ -233,7 +233,7 @@ var SmilesMap = {
 //'yahoo': /\^_\^|\^\^|\*\(\)\*/gi
 //'bad': /:X|:x|:х|:Х|:-X|:-x/gi,
 
-}
+};
 //smile array for TxtFormat
 var TextPasteSmiles={
 'girl_angel':'O:-)',
@@ -286,7 +286,7 @@ var TextPasteSmiles={
 'chrome':"*Chrome*",
 'windows':"*Windows*",
 'linux':"*Linux*"
-}
+};
 
 
 	
@@ -337,17 +337,17 @@ var TextPasteSmiles={
 			  btn.onclick=tomin;
 			  btn.className='hbtn';
 			  div.style.height='auto';
-		  }
+		  };
 		  var h=getSize(wlog)[1];
 		  animate(div, {height: h+sHEIGHT,width: WIDTH}, 400, callback);
-	  }
+	  };
 	  var tomin=function(){
 		  var callback=function(){
 			btn.onclick=tomax;
 			btn.className='mbtn';
-		  }
+		  };
 		  animate(div, {height: sHEIGHT,width: sWIDTH}, 400, callback);
-	  }
+	  };
 	  btn.onclick=tomax;
 	  panel.appendChild(btn);
 	  div.appendChild(panel);
@@ -404,8 +404,8 @@ function vkCheckLoadedScripts(){
       "vk_users"     :!!window.ProcessUserPhotoLink,
       "vklang"       :!!window.vk_lang_en,
       "vkopt"        :!!window.vkonDOMReady
-   }
-   console.log('result:',obj)
+   };
+   console.log('result:',obj);
   //vkLastFM.get_loved
 }
 

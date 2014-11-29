@@ -81,7 +81,7 @@ EnableSetStyle=true;
 }
 VkStyleMainInit();
 
-if (!window.ge) ge=function(q) {return document.getElementById(q);}
+if (!window.ge) ge=function(q) {return document.getElementById(q);};
 
 
 function vkSetBodyScrResolution(){
@@ -100,7 +100,7 @@ function vkSetBodyScrResolution(){
          } else {
             setTimeout(add_scr_info,2);
          }
-      }
+      };
       add_scr_info();
 }
 
@@ -121,7 +121,7 @@ function vkStyle(url){
       }
       head.appendChild(node);
    
-   }  
+   };  
    
    if (need_xhr && vk_ext_api.ready){
       vk_aj.get(url,function(css){
@@ -632,7 +632,7 @@ vk_skinman={
    like_out:function(pid){
       
    }
-}
+};
 
 function vkSkinManInfo(el,text,hasover){
 	showTooltip(el, {

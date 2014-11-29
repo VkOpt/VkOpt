@@ -149,7 +149,7 @@ function vkGoToLink(link,mid){
 
 vk_users = {
    find_age:function(target_uid,callback,ops){
-      var min=12
+      var min=12;
       var max=80;   
       ops = ops || {};
       var mid;
@@ -193,7 +193,7 @@ vk_users = {
 
             }
          });
-      } 
+      }; 
       dApi.call('friends.get',{uid:target_uid,count:10},function(r){
          if (!r.response || !r.response[0]){
             alert('Sorry... Mission impossible...');
@@ -205,7 +205,7 @@ vk_users = {
          scan();
       })
    }
-}
+};
 
 //////////////////////////////////
 // ExUserMenu by KiberInfinity //
@@ -223,7 +223,7 @@ function GetUserMenuSett() {
     makeCbox = function(idx, name, state) {
         var cb = (state == '1') ? 'checked': '';
         return '<input type="checkbox" onclick="ChangeUserMenuSet();" id="ums' + idx + '" ' + cb + ' value=""> ' + name + '<br>';
-    }
+    };
     var ItemNames = [
                      IDL("Page"),
                      IDL('txMessage'),  
@@ -506,7 +506,7 @@ name	id1
 function vkBanUser(user_link,gid){
    if (gid || cur.gid || cur.oid<0){
       if (!gid) gid=cur.oid?Math.abs(cur.oid):cur.gid;
-      var name = trim(user_link)
+      var name = trim(user_link);
       showBox('al_groups.php', {act: 'bl_edit', name: name, gid: gid}, {stat: ['page.css', 'ui_controls.js', 'ui_controls.css'], dark: 1});
    }
 }
@@ -816,7 +816,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 			'<div class="vkpercent" style="width:'+fullwidth+'px;">'+rate_text+'</div>'+
 		  '</div>';
 		return html;
-	  }
+	  };
 	  //make_rate(361);
 	  var MakeProfile = function(r){
 		if (!r.response || !r.response.profile) return;
@@ -1414,7 +1414,7 @@ function vkFavChekUserAndToArray(mid,array,item){
    */
    if (getSet(8)=='y') item=item.replace('<img','<img onmouseover="vkPopupAvatar(\''+mid+'\',this);" onmouseout="vkHidePhoto();"');
    if (vkIsFavUser(mid)){ 
-      item=item.replace('class="fc_contact','class="fc_contact vk_faved_user')
+      item=item.replace('class="fc_contact','class="fc_contact vk_faved_user');
       //array.splice(0,0,item);
    }
    //else  array.push(item);
@@ -1450,7 +1450,7 @@ vk_fav={
       curFastChat.friends=new_list;
       
    }
-}
+};
 
 
 function vkFastChatSortUsers(a,b){
@@ -1510,7 +1510,7 @@ function vkFavOnlineChecker(on_storage){
    //case 'fav_users_statuses':vkFavOnlineChecker(true); break;
    if (getSet(49)!='y')return;
    clearTimeout(window.vk_upd_favonl_timeout);
-   var timeout=function(){vk_upd_favonl_timeout=setTimeout("vkFavOnlineChecker();",vkGenDelay(CHECK_FAV_ONLINE_DELAY,on_storage || !window.curNotifier));}
+   var timeout=function(){vk_upd_favonl_timeout=setTimeout("vkFavOnlineChecker();",vkGenDelay(CHECK_FAV_ONLINE_DELAY,on_storage || !window.curNotifier));};
 
    var ignore=false;
    var list= vkGetVal('FavList') || '';
@@ -1578,7 +1578,7 @@ function vkFavUsersList(add_button){
             '<div class="button_blue"><button onclick="vkFavUsersList();">'+IDL('FavUsers')+'</button></div>'
             //'<a onclick="return vkFavUsersList();">'+IDL('FavUsers')+'</a>'
             );
-      insertAfter(x,p)
+      insertAfter(x,p);
       return;
    }
    var p=ge('content');
@@ -1630,7 +1630,7 @@ function vkFaveOnlineChecker(on_storage){
    //case 'fave_users_statuses':vkFaveOnlineChecker(true); break;
    if (getSet(52)!='y') return;
    clearTimeout(window.vk_upd_faveonl_timeout);
-   var timeout=function(){vk_upd_faveonl_timeout=setTimeout("vkFaveOnlineChecker();",vkGenDelay(CHECK_FAV_ONLINE_DELAY,on_storage || !window.curNotifier));}
+   var timeout=function(){vk_upd_faveonl_timeout=setTimeout("vkFaveOnlineChecker();",vkGenDelay(CHECK_FAV_ONLINE_DELAY,on_storage || !window.curNotifier));};
 
    var ignore=false;
    var list= vkGetVal('FavList') || '';
@@ -1675,7 +1675,7 @@ function vkFaveOnlineChecker(on_storage){
          }
          vkCmd('fave_users_statuses','ok');
          timeout();
-      })
+      });
       
       /*
       vkApis.faves(function(r,onl){
@@ -1775,6 +1775,6 @@ vk_friends={
       }
       cur.friendsList['deleted'] = list;   
    }
-}
+};
 
 if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
