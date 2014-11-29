@@ -608,9 +608,8 @@ vk_skinman={
          //vk_skinman.like_over(pid);
       })
    },   
-   like_over:function(pid,el){
-      var icon=ge('s_like_icon'+pid),
-          count=ge('s_like_count'+pid);
+   like_over:function(pid){
+      var icon=ge('s_like_icon'+pid);
       showTooltip(icon.parentNode, {
          url: 'like.php',
          params: {
@@ -622,11 +621,7 @@ vk_skinman={
          ajaxdt: 100,
          showdt: 400,
          hidedt: 200,
-         className: 'rich like_tt',
-         init: function(tt) {
-            if (!tt.container)
-               return;
-         }
+         className: 'rich like_tt'
       });
    },
    like_out:function(pid){
