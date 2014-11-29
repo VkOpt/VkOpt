@@ -706,7 +706,7 @@ function vkInitSettings(){
    ],
    Others:[
 		{id:9,  header:IDL("seTestFr"), text:IDL("seRefList"), sub:{id:1, text:'<br>'+IDL("now")+': <b>%cur</b> '+IDL("day")+'<br>'+IDL("set")+': %sets'+
-            '<br><a onClick="javascript:vkFriendsCheck();" style="cursor: hand;">'+IDL('seCreList')+'</a>',
+            '<br><a onClick="vkFriendsCheck();" style="cursor: hand;">'+IDL('seCreList')+'</a>',
             ops:[1,2,3,4,5,6,7]}},
 		{id:6, text:IDL("seOnAway")},
 		{id:34, text:IDL("seSwichTextChr")},
