@@ -243,7 +243,7 @@ var vk_photos = {
                if (!el) continue;
                //   onclick="vk_skinman.like(\''+pid+'\'); event.cancelBubble = true;" onmouseout="vk_skinman.like_out(\''+pid+'\')"
                el.innerHTML='<span class="info_wrap">\
-                               <span class="vk_ph_likes_count" onmouseover="vk_photos.like_over(\''+pid+'\',this)">\
+                               <span class="vk_ph_likes_count" onmouseover="vk_photos.like_over(\''+pid+'\')">\
                                  <i class="vk_like_icon_white'+(p.likes.user_likes?' my_like':'')+'" id="s_like_icon'+pid+'"></i>\
                                  <span id="s_like_count'+pid+'">'+p.likes.count+'</span>\
                                </span>'+
@@ -260,9 +260,8 @@ var vk_photos = {
       });
       //ge('vk_exinfo_'+uid)
    },
-   like_over:function(pid,el){
-      var icon=ge('s_like_icon'+pid),
-          count=ge('s_like_count'+pid);
+   like_over:function(pid){
+      var icon=ge('s_like_icon'+pid);
       showTooltip(icon.parentNode, {
          url: 'like.php',
          params: {
@@ -274,11 +273,7 @@ var vk_photos = {
          ajaxdt: 100,
          showdt: 400,
          hidedt: 200,
-         className: 'rich like_tt',
-         init: function(tt) {
-            if (!tt.container)
-               return;
-         }
+         className: 'rich like_tt'
       });
    },
    
