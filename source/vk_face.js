@@ -635,7 +635,7 @@ function vkStyles(){
 
 function vkNotifierWrapMove(){
    var bit=getSet(54);
-   var css='#notifiers_wrap {'
+   var css='#notifiers_wrap {';
    switch(bit){
       case '1': css+='top: auto !important;\
                       bottom:0px !important;\
@@ -896,7 +896,7 @@ vk_menu={
       ge('vkMenuCustom').innerHTML=vk_menu.custom_settings();
    }
 
-}
+};
 
 function vkMenu(){//vkExLeftMenu
   var CSS_ICONS=false;
@@ -1159,15 +1159,15 @@ function vkMenu(){//vkExLeftMenu
     var cur=elem.parentNode.getElementsByTagName('ul')[0];
     if (vkMenuCurrentSub!=cur) {  vkMenuHide();  show(cur);   vkMenuCurrentSub=cur; }
     clearTimeout(vkMenuHider);
-  }
-  vkMenuItemOut=function(e,elem){ clearTimeout(vkMenuHider);  vkMenuHider=setTimeout(vkMenuHide,vkMenuHideTimeout); }
-  vkMenuHide=function(){if (vkMenuCurrentSub){ hide(vkMenuCurrentSub); vkMenuCurrentSub=null; }}
+  };
+  vkMenuItemOut=function(e,elem){ clearTimeout(vkMenuHider);  vkMenuHider=setTimeout(vkMenuHide,vkMenuHideTimeout); };
+  vkMenuHide=function(){if (vkMenuCurrentSub){ hide(vkMenuCurrentSub); vkMenuCurrentSub=null; }};
   var setActions=function(elem){
       if (elem){
         elem.setAttribute('onmousemove','vkMenuItemHover(event,this)');
         elem.setAttribute('onmouseout','vkMenuItemOut(event,this)');  
       } else return ' onmousemove="vkMenuItemHover(event,this)" onmouseout="vkMenuItemOut(event,this)" ';
-  }
+  };
   var more_div=(ge('l_ap')||{}).previousSibling;
   var need_delimiter=true;
   if (more_div &&  more_div.className=='more_div' && !isVisible(more_div)){
@@ -1230,7 +1230,7 @@ function vkMenu(){//vkExLeftMenu
   if (WALL_LINK){
       var li=vkCe('li',{},'<a class="left_row" href="/wall'+remixmid()+'" onclick="return nav.go(this, event);"><span class="left_label inl_bl">'+IDL('wall')+'</span><span></span></a>');
       var md=geByClass('more_div',nav)[0];
-      if (md) insertAfter(li,md) 
+      if (md) insertAfter(li,md); 
       else nav.appendChild(li);
   }
   
@@ -1353,7 +1353,7 @@ function vkMenu(){//vkExLeftMenu
   
   /* Calc menu generation time */
   tend=unixtime()-tstart;
-  vklog('Menu creating time:' + tend +'ms')
+  vklog('Menu creating time:' + tend +'ms');
   return tend;
 }
 
@@ -1361,10 +1361,10 @@ function vkCheckNewMessages(data){
 	var unread_in_exmenu=getSet(19);
 	var make_list=function(msg_list){
 		var sort_msg=function(a, b){
-		  if(a[0]>b[0]) return -1 
-		  if(a[0]<b[0]) return 1 
+		  if(a[0]>b[0]) return -1; 
+		  if(a[0]<b[0]) return 1; 
 		  return 0
-		}
+		};
 		msg_list.sort(sort_msg);
 			
 		var mel=ge('vkm_mail') || ge('vkm_im');
@@ -1377,7 +1377,7 @@ function vkCheckNewMessages(data){
 				html+='<a class="left_row" href="/mail?act=show&id='+msg_list[i][0]+'" onclick="return nav.go(this, event);"><span class="left_label inl_bl">-- '+msg_list[i][1]+'</span></a>';
 			p.innerHTML=html;
 		}
-	}
+	};
 	if (data.messages.count && unread_in_exmenu=='y'){
 		var ms=data.messages.items;
 		var msg_list=[];
@@ -1411,7 +1411,7 @@ function UpdateCounters(only_msg,data){
 		"offers": 	{id:'mat',lnk:'matches.php',add:null},   
 		"opinions": {id:'op',lnk:'opinions.php',add:null},
 		"questions":{id:'ques',lnk:'questions.php',add:null}*/
-	}
+	};
 	var HL=[];
 	if (!window.VK_LAST_COUNTERS) {
 		//ol=sideBarMenu();
@@ -1504,7 +1504,7 @@ function vkHighlightCounters(){
 			},MENU_HIGHLIGHT_DELAY);
 		});		
 		*/
-	}
+	};
 	for (var i=0;i<VK_MENU_LAST_HIGHLIGHT.length;i++) vkMenuHighlightEl(VK_MENU_LAST_HIGHLIGHT[i]);
 }
 
@@ -1513,7 +1513,7 @@ function vkMoneyBoxAddHide(){
 	if (!mb) return;
 	var lmb=vkCe('div',{id:'left_block_money',onmouseover:"leftBlockOver('_money')",onmouseout:"leftBlockOut('_money')"});
 	var hb=vkCe('div',{id:'left_hide_money', "class":"left_hide", onmouseover:"leftBlockOver(this)",onmouseout:"leftBlockOut(this)",onclick:"hide('left_block_money')"});
-	mb.parentNode.insertBefore(lmb,mb)
+	mb.parentNode.insertBefore(lmb,mb);
 	lmb.appendChild(hb);
 	lmb.appendChild(mb);
 }
@@ -1556,7 +1556,7 @@ function UserOnlineStatus(status) {// ADD LAST STATUS
 		//}
 		/* vkGenDelay() -random для рассинхронизации запросов разных вкладок, иначе запросы со всех вкладок будут одновременно слаться. */
 		vk_check_online_timeout=setTimeout(UserOnlineStatus,vkGenDelay(vk_upd_menu_timeout,status!=null));
-	}
+	};
 	if (status!=null){
 		show_status(status);
 		//vklog('[onStorage] Online status');
@@ -1851,7 +1851,7 @@ function clock(){
   // write Hours
   ctx.strokeStyle = strelkaH;
   ctx.save();
-  ctx.rotate( hr*(Math.PI/6) + (Math.PI/360)*min + (Math.PI/21600)*sec )
+  ctx.rotate( hr*(Math.PI/6) + (Math.PI/360)*min + (Math.PI/21600)*sec );
   ctx.lineWidth = 14;
   ctx.beginPath();
   ctx.moveTo(-20,0);
@@ -1862,7 +1862,7 @@ function clock(){
   // write Minutes
   ctx.strokeStyle = strelkaM;
   ctx.save();
-  ctx.rotate( (Math.PI/30)*min + (Math.PI/1800)*sec +(Math.PI/1800000)*ms)
+  ctx.rotate( (Math.PI/30)*min + (Math.PI/1800)*sec +(Math.PI/1800000)*ms);
   ctx.lineWidth = 10;
   ctx.beginPath();
   ctx.moveTo(-20,0);
@@ -1895,13 +1895,13 @@ function clock(){
 
 function makeClock(){
 s=sideBar();
-d=document.createElement('span')
-c=document.createElement('canvas')
-c.id='canvas'
-c.width=115
-c.height=150
-d.appendChild(c)
-s.appendChild(d)
+d=document.createElement('span');
+c=document.createElement('canvas');
+c.id='canvas';
+c.width=115;
+c.height=150;
+d.appendChild(c);
+s.appendChild(d);
 clock();
 setInterval(clock,1000);
 }
@@ -1949,7 +1949,7 @@ function SmileNode(mainNode,childItem,searchWord){
       //if (searchWord) console.log(searchWord);
       var f='';
       var l='';
-      var val=''
+      var val='';
       
       if (searchWord){
          f=searchWord[1]?searchWord[1]:'';

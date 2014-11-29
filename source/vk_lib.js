@@ -203,7 +203,7 @@ var vkbrowser = {
   opera_mobile: /opera mini|opera mobi/i.test(_ua_),
   opera_mini: /opera mini/i.test(_ua_),
   mac: /mac/i.test(_ua_)
-}
+};
 if (window.opera) {vkbrowser.mozilla=false; vkbrowser.opera=true;}
 
 
@@ -271,14 +271,14 @@ var vkMozExtension = {
          } else {
             el.setUserData(field, data, null);
          }
-      }
+      };
       var get_data = function (el, field) {
          if(el.dataset) {
             return JSON.parse(el.dataset[field]);
          } else {
             return el.getUserData(field);
          }
-      }
+      };
       var request = null;
       request = document.createElement("div");
       set_data(request, "data", data);
@@ -307,7 +307,7 @@ var vkMozExtension = {
    callback: function (response) {
       return alert("response: " + (response && response.toSource ? response.toSource() : response));
    }
-}
+};
 /* FUNCTIONS. LEVEL 1 */
 	//LANG   
    function print_r( array, return_val ) {
@@ -384,7 +384,7 @@ var vkMozExtension = {
          return decodeURI(val);
        } catch(e) { }
        return val;
-     }
+     };
 	  if (vk_lang[i]) return vkCutBracket(dec(vk_lang[i]),bracket);
 	  if (vk_lang_ru[i]) return vkCutBracket(dec(vk_lang_ru[i]),bracket);
 	  if (window.vk_lang_add && vk_lang_add[i]) return vkCutBracket(dec(vk_lang_add[i]),bracket);
@@ -564,8 +564,8 @@ var vkMozExtension = {
 	}
 
 	function vkNextEl(cur_el){
-	  var next_el=cur_el.nextSibling
-	  while(next_el && next_el.nodeType==3) next_el=next_el.nextSibling
+	  var next_el=cur_el.nextSibling;
+	  while(next_el && next_el.nodeType==3) next_el=next_el.nextSibling;
 	  return next_el;
 	}
 	function vkaddcss(addcss,id) {
@@ -811,7 +811,7 @@ var vkMozExtension = {
 			var h=Array.prototype.join.call(args, '#_#');
 			var hs=h.replace(/[^A-Za-z0-9]+/g,"");
 			if (code.indexOf(hs)!=-1) return;
-			var ac='\n_inj_label="'+hs+'";\n'
+			var ac='\n_inj_label="'+hs+'";\n';
 			//try{
          eval(func+'=function('+arg+'){'+ac+code+'}');        
 			//} catch(e){	vklog('Inj_Error: '+func+'=function('+arg+'){'+ac+code+'}',1);	}
@@ -867,7 +867,7 @@ var vkMozExtension = {
 		  s[2]=s[2].replace(rep_str,inj_code);//split(rep_str).join(inj_code);
 		  Inj.Make(func,s[1], s[2],arguments);
 		}
-	}
+	};
 	
 	/* Storage broadcast */
 	vkBroadcast={
@@ -994,7 +994,7 @@ var vkMozExtension = {
                if (id)
                   element.id=id;
                document.getElementsByTagName('head')[0].appendChild(element);
-            }
+            };
             request.onreadystatechange = function() {
                if(request.readyState == 4 && request.responseText!=''){
                   //alert('JS loaded');
@@ -1087,7 +1087,7 @@ String.prototype.leftPad = function (l, c) {
 			  '</span><b class="nc"><b class="nc2"><b></b></b><b class="nc1"><b></b></b></b></li>';*/
 		html+='<a class="vk_button" href="'+param[1]+'">'+param[0]+'</a>';
 	  }
-	  html+='</div>'//'</ul>';
+	  html+='</div>';//'</ul>';
 	  return html;
 	}
 	function vkButton(caption,onclick_attr,gray){
@@ -1164,7 +1164,7 @@ String.prototype.leftPad = function (l, c) {
 		   var el=ge("tabcontent"+idx);
 		   //if (!show_all) 
 		   el.className=(!show_all)?"activetab":"noactivetab";
-	  }
+	  };
 	  var menu=[];
 	  var tabs="";
 	  for (var i=0;i<trash.length;i++){
@@ -1314,7 +1314,7 @@ vk_hor_slider={
    var cid=parseInt(ge(id+'_slider_scale').getAttribute('callback'));
    if (cid) vk_hor_slider.callbacks[cid](parseInt(ge(id+'_position').value),parseInt(ge(id+'_select').value));
   }
-}  
+};  
 
 vk_v_slider={
  default_percent:50,
@@ -1461,7 +1461,7 @@ vk_v_slider={
    var cid=parseInt(ge(id+'_slider_scale').getAttribute('callback'));
    if (cid) vk_v_slider.callbacks[cid](parseInt(ge(id+'_position').value),parseInt(ge(id+'_select').value));
   }
-} 
+}; 
 
 //vk_v_slider.init('photos_albums_container',100,20,function(){},function(){},100);  
  
@@ -1495,7 +1495,7 @@ function vkShowCaptcha(sid, img, onClick, onShow, onHide) {
     onClick(sid, key.value);
     hide('captchaKey');
     show('captchaLoader');
-  }
+  };
 
   box.addButton(getLang('captcha_cancel'), function(){
     removeEvent(key, 'keypress');
@@ -1582,7 +1582,7 @@ function vk_oauth_api(app_id,scope){
                      }
                      if (callback) callback(api.mid,api.access_token);
                   }
-            }
+            };
             window.addEventListener("message", onmess,false);                     
          });
       },
@@ -1632,7 +1632,7 @@ function vk_oauth_api(app_id,scope){
             api.auth(function(){
                api.call(method, inputParams, callback);
             });
-         }
+         };
          api.access_token=vkgetCookie('api'+api.API_ID+'_atoken');
          api.mid=vkgetCookie('api'+api.API_ID+'_mid');
          api.secret=vkgetCookie('api'+api.API_ID+'_secret');
@@ -1666,7 +1666,7 @@ function vk_oauth_api(app_id,scope){
                      api.call(method, inputParams, callback);
                   },500);
                } else if ( response.error.error_code == 4 || (response.error.error_code == 3 || response.error.error_code == 7 || response.error.error_code == 5) ){
-                  console.log('reauth reason: error_code', response.error.error_code, response)
+                  console.log('reauth reason: error_code', response.error.error_code, response);
                   apiReAuth();				
                } else if(response.error.error_code == 14) { // Captcha needed
                   api.captcha_visible=true;
@@ -1748,7 +1748,7 @@ function vk_oauth_api(app_id,scope){
             hide('captchaKey'+rnd);
             show('captchaLoader'+rnd);
             //box.hide();
-         }
+         };
          box.addButton(getLang('captcha_cancel'), function(){
             removeEvent(key, 'keypress');
             box.hide(); 
@@ -1767,7 +1767,7 @@ function vk_oauth_api(app_id,scope){
          addEvent(ge('refreshCaptcha'+rnd), 'click', onClickHandler);
          key.focus();
       }
-   }
+   };
    return api;
 }
  
@@ -1798,7 +1798,7 @@ var vk_api_permissions = {
    // Преобразует числовые права доступа приложения в строку, где права разделённы запятой
    to_str: function(int_scope){
       var str_scope = [];
-      var types = vk_api_permissions.types
+      var types = vk_api_permissions.types;
       for (key in types){
          if (int_scope & types[key])
             str_scope.push(key);
@@ -1809,14 +1809,14 @@ var vk_api_permissions = {
    to_int: function(str_scope){
       var str_scope = str_scope.replace(/^\s+|\s+$/g, '').split(/\s*,\s*/);
       var int_scope = 0;
-      var types = vk_api_permissions.types
+      var types = vk_api_permissions.types;
       for (var i = 0; i < str_scope.length; i++){
          if (types[str_scope[i]])
             int_scope += types[str_scope[i]];
       }
       return int_scope;
    }
-}
+};
 
 
 function vkApiCall(method,params,callback){
@@ -1883,7 +1883,7 @@ vkApis={
                setTimeout(function(){next=true;},5000); // активируем костыль
             }
          });
-		}
+		};
       var next=true;
       var nxt=function(){next=true;};
       var ti=setInterval(function(){ // знаю... этот ужасный костыль для избежания наращивания стека вызовов... 
@@ -1903,7 +1903,7 @@ vkApis={
          } else callback(null,null);
       });
    }
-}
+};
 
 function vkMD5(string) {
 	function RotateLeft(lValue, iShiftBits) {		return (lValue<<iShiftBits) | (lValue>>>(32-iShiftBits));	}
@@ -2038,7 +2038,7 @@ var vk_ext_api={
          vk_ext_api.callbacks['cb_'+cid]=function(response){
             callback(response);
             delete vk_ext_api.callbacks['cb_'+cid];            
-         }
+         };
       window.postMessage(data,"*");
    },
    ajax:{
@@ -2068,7 +2068,7 @@ var vk_ext_api={
          });        
       }
    }
-}
+};
 vk_ext_api.init();
 vk_ext_api.req({act:'check_ext'},function(){vk_ext_api.ready=true;});
 vk_aj=vk_ext_api.ajax;
@@ -2268,7 +2268,7 @@ var XFR2 = {
                            response: r,
                            request_done: true
                         }, "*");
-                     }
+                     };
                   try {
                      xhr.open(method, url, false);
 
@@ -2284,7 +2284,7 @@ var XFR2 = {
                            response.status = xhr.status;
                            callback(response);
                         }
-                     }
+                     };
                      
                      xhr.send(data);
                      
@@ -2369,12 +2369,12 @@ function vkLoadTxt(callback,mask){
 		//alert(text);
       Box.hide();
 		setTimeout(function(){callback(text);},10);	
-	}
+	};
 	vkOnInitDataLoader=function(w,h){
 	  ge("vkdataloader").style.width=w+2;
 			ge("vkdataloader").style.height=h;
 			hide("vkdlldr"); show("vkloadtext");
-	}
+	};
 	var html = '<div><span id="vkdlldr"><div class="box_loader"></div></span>'+
 		 '<span id="vkloadtext" style="display:none">'+IDL("ClickForLoad")+'</span>'+
 		 '<div id="dlcontainer" style="display:inline-block;position:relative;top:8px;"></div>'+
@@ -2444,7 +2444,7 @@ function vkMsg(text,show_timeout){
 		  }
 		});
 	  }, out);
-	}
+	};
 	showDoneBox(text,{out: show_timeout});
 /*
 vkaddcss("/* Box notify * /\
@@ -2488,7 +2488,7 @@ vkLdr={
 		vkLdr.box.hide();
 		hide(boxLoader);
 	}
-}
+};
 
 function vkAlertBox(title, text, callback, confirm) {// [callback] - "Yes" or "Close" button; [confirm] - "No" button
   var aBox = new MessageBox({title: title});
@@ -2794,7 +2794,7 @@ vk_plugins={
 		}		
 		return r;		   
    }
-}
+};
 vkopt_plugin_run=vk_plugins.run;
 
 /*! CONNECT PLUGIN CODE
@@ -2902,7 +2902,7 @@ function WMPursesList(result_el){
 		else 
 			html+='<a href=# class="purse_yad_link" onclick="ge(\''+result_el+'\').innerHTML=YMDonateForm('+purses[i][1]+',\''+yad+'\'); return false"><div class="purse_yad_link_img" ></div>'+yad+'<span style="float:right">\u042f\u043d\u0434\u0435\u043a\u0441.\u0414\u0435\u043d\u044c\u0433\u0438</span></a>';	 
 	}
-   html+='<a href=# class="purse_ad_link" id="purse_ad_link" style="display:none;" onclick="ge(\''+result_el+'\').innerHTML=AdDonateForm(); return false"><div class="purse_ad_link_img" ></div>\u0420\u0435\u043a\u043b\u0430\u043c\u0430</a>'
+   html+='<a href=# class="purse_ad_link" id="purse_ad_link" style="display:none;" onclick="ge(\''+result_el+'\').innerHTML=AdDonateForm(); return false"><div class="purse_ad_link_img" ></div>\u0420\u0435\u043a\u043b\u0430\u043c\u0430</a>';
 	html+='</div>';
 	return html;
 }
@@ -2913,10 +2913,10 @@ if (!window.winToUtf) winToUtf=function(text) {
     if (code >= 32 && ('&#' + code + ';' == val)) text = text.replace(val, String.fromCharCode(code));
   }  text = text.replace(/&quot;/gi, '"').replace(/&amp;/gi, '&').replace(/&lt;/gi, '<').replace(/&gt;/gi, '>');
   return text;
-}
-if (!window.ge) ge=function(q) {return document.getElementById(q);}
-if (!window.geByTag) geByTag=function(searchTag, node) {return (node || document).getElementsByTagName(searchTag);}
-if (!window.geByTag1) geByTag1=function(searchTag, node) {return geByTag(searchTag, node)[0];}
+};
+if (!window.ge) ge=function(q) {return document.getElementById(q);};
+if (!window.geByTag) geByTag=function(searchTag, node) {return (node || document).getElementsByTagName(searchTag);};
+if (!window.geByTag1) geByTag1=function(searchTag, node) {return geByTag(searchTag, node)[0];};
 
 var dloc=document.location.href.split('/')[2] || '';
 

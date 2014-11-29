@@ -160,7 +160,7 @@ function AddSmileBtn(rfield){
 			} else {  smile_text=smiles[key]; big=false; }
 			var btn='<a href="#" onclick="return false;" class="vk_txt_smile_item" '+((big)?'style="display:block"':"")+'><img onclick="PasteSmile(\''+smile_text+'\',\''+rfield+'\',\''+key+'\')" src="'+vkSmilesLinks[key]+'" title="'+smile_text+'" alt="'+smile_text+'"></a>';
 			return btn;
-		}
+		};
 		var smiles=TextPasteSmiles;
 		var DivCode='<div>'+
 		 '<h4>'+IDL('sm_SelectSmile')+'</h4><div class="smilemenu">';

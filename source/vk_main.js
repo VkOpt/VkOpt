@@ -128,7 +128,7 @@ function vkOnNewLocation(startup){
       if (cur.gid && nav.objLoc['act']=='blacklist' && (cur.moreParams || {}).act=="blacklist"){
          cur.module='groups_edit';
       }else if (nav.objLoc[0].match(/page-?\d+_\d+/)){
-         var obj=nav.objLoc[0].match(/page(-?\d+)_(\d+)/)
+         var obj=nav.objLoc[0].match(/page(-?\d+)_(\d+)/);
          cur.module='pages';
          if (!cur.gid) cur.gid=Math.abs(obj[1]);
          if (!cur.oid) cur.oid=obj[1];
@@ -465,7 +465,7 @@ function vkGetWikiCode(pid,gid){
 	//var dloc=document.location.href;
 	//var gid=dloc.match(/o=-(\d+)/);
 	//gid=gid?gid[1]:null;
-   var params={gid:gid}
+   var params={gid:gid};
    if ((pid+"").match(/^\d+$/)){
       params['pid']=pid;
    } else {
@@ -704,7 +704,7 @@ vk_features={
          Inj.Replace('Emoji.addEmoji','Emoji.cssEmoji[code][1]','(Emoji.cssEmoji[code]?Emoji.cssEmoji[code][1]:Emoji.codeToChr(code))');
       }
    }
-}
+};
 
 vk_ch_media={
    photo:function(id,img,w,h){
@@ -761,7 +761,7 @@ vk_ch_media={
       });
    
    }
-}
+};
 function vkPhChooseProcess(answer,url,q){
   vkCheckPhotoLinkToMedia=function(){
     var btn=ge('vk_link_to_photo_button');
@@ -796,7 +796,7 @@ function vkPhChooseProcess(answer,url,q){
      var p=geByClass('photos_choose_header_title',div)[0];
      if (p && !p.innerHTML.match('choose_album')){
       p.innerHTML='';
-      p.appendChild(vkCe('a',{"class":'fl_l_',href:'#',onclick:'return vk_photos.choose_album();'},IDL('mPhM',1)))
+      p.appendChild(vkCe('a',{"class":'fl_l_',href:'#',onclick:'return vk_photos.choose_album();'},IDL('mPhM',1)));
       console.log(q);
       if (q.to_id && q.to_id<0){
          p.appendChild(vkCe('span',{"class":'fl_l_ divider'},'|'));
@@ -841,11 +841,11 @@ function vkVidChooseProcess(answer,url,q){
    
    var p=geByClass('choose_close',div)[0];
    if (p && !p.innerHTML.match('choose_album')){
-         p.insertBefore(vkCe('span',{"class":'divide'},'|'),p.firstChild)
+         p.insertBefore(vkCe('span',{"class":'divide'},'|'),p.firstChild);
          p.insertBefore(vkCe('a',{"class":'',href:'#',onclick:'return vk_videos.choose_album();'},IDL('mPhM',1)),p.firstChild);
          //console.log(q);
       if (q.to_id && q.to_id<0){
-         p.insertBefore(vkCe('span',{"class":'divide'},'|'),p.firstChild)
+         p.insertBefore(vkCe('span',{"class":'divide'},'|'),p.firstChild);
          p.insertBefore(vkCe('a',{"class":'',href:'#',onclick:'return vk_videos.choose_album('+q.to_id+');'},IDL('GroupAlbums',1)),p.firstChild)
       }
    } 
@@ -885,11 +885,11 @@ function vkAudioChooseProcess(answer,url,q){
    
    var p=geByClass('choose_close',div)[0];
    if (p && !p.innerHTML.match('choose_album')){
-         p.insertBefore(vkCe('span',{"class":'divide'},'|'),p.firstChild)
+         p.insertBefore(vkCe('span',{"class":'divide'},'|'),p.firstChild);
          p.insertBefore(vkCe('a',{"class":'',href:'#',onclick:'return vk_audio.choose_album();'},IDL('mPhM',1)),p.firstChild);
          //console.log(q);
       if (q.to_id && q.to_id<0){
-         p.insertBefore(vkCe('span',{"class":'divide'},'|'),p.firstChild)
+         p.insertBefore(vkCe('span',{"class":'divide'},'|'),p.firstChild);
          p.insertBefore(vkCe('a',{"class":'',href:'#',onclick:'return vk_audio.choose_album('+q.to_id+');'},IDL('GroupAlbums',1)),p.firstChild)
       }
    }
@@ -937,7 +937,7 @@ vk_messages={
       var t2d = function(unix){
          time = new Date(unix*1000);
          return time.getFullYear()+'.'+('0'+(time.getMonth()+1)).slice(-2)+'.'+('0'+time.getDate()).slice(-2)+' '+('0'+time.getHours()).slice(-2)+':'+('0'+time.getMinutes()).slice(-2)+':'+('0'+time.getSeconds()).slice(-2);
-      }
+      };
       var t2m = function(inputText) {
          var replacedText,replacePattern2,replacePattern3;
          //add break
@@ -960,15 +960,15 @@ vk_messages={
             replacedText = Emoji.emojiToHTML(replacedText,true).replace(/"\/images\//g,'"http://vk.com/images/') || replacedText;          
           
           return replacedText;
-      }
+      };
 		var doc2text=function(t){
 			// проверка < и > в именах документов
 			t2 = t.replace(/</g, '&lt;').replace(/>/g,'&gt;').replace(/"/g, '&quot;').replace(/&/g,'&amp;');
 			return t2;
-		}
+		};
       var a2t = function(sec){
          return Math.floor(sec/60)+':'+('0'+(sec%60)).slice(-2);
-      }
+      };
       var chatAction=function(action_name){
          switch(action_name){
             case 'chat_photo_update':
@@ -981,7 +981,7 @@ vk_messages={
                html='<div>action "<b>'+action_name+'</b>" is unknown</div>'
          }
          return html;
-      }
+      };
       var make_attach=function(attach){
          var html='';
          if (!attach[attach.type]){ 
@@ -1024,12 +1024,12 @@ vk_messages={
                //console.log(attach.type+' is unknown');               
          }
          return html;
-      }
+      };
 		var make_geo=function(m){
 			var html='';
          html+='<div class="attacment"> <div class="att_ico att_geo"></div> <a href="https://maps.google.ru/maps?q='+m.geo['coordinates']+'" target="_blank">'+IDL('HistMsgGeoAttach')+' '+(m.geo['place'] || {'title':'---'})['title']+'</a></div>';
 			return html;
-		}
+		};
 
       // write data
       html+='<hr>';
@@ -1131,7 +1131,7 @@ vk_messages={
                collect_users(msg.fwd_messages);
                //for (var i=0; i<msg.fwd_messages.length; i++)
          }
-      } 
+      }; 
       var scan=function(){
          hide('save_btn_text');
          show('saveldr');
@@ -1169,7 +1169,7 @@ vk_messages={
                            first_name: 'DELETED',
                            last_name: '',
                            photo_100: 'http://vk.com/images/deactivated_c.gif'
-                        } 
+                        }; 
                   
                   var html=vk_messages.make_html(messages, users);
                   html=vk_messages.html_tpl.replace(/%messages_body/g,html);
@@ -1190,10 +1190,10 @@ vk_messages={
                //alert(users);
             }
          });
-      }
+      };
       scan();
    }
-}
+};
 
 vk_im={
    css:function(){
@@ -1318,7 +1318,7 @@ vk_im={
          aBox.removeButtons();
          aBox.addButton(getLang('box_cancel'),function(){  
             aBox.hide();	 
-         }, 'no')
+         }, 'no');
          aBox.addButton('OK',function(){ 
             add();            
          },'yes');
@@ -1334,7 +1334,7 @@ vk_im={
             if (ev.keyCode == 13) {
                add();
             }    
-         }
+         };
          
          add=function(){
             var val=(inp.value || '').match(/(wall)(-?\d+_\d+)/);// ^\[([^\|\[\]]+)\|([^\|\[\]]+)\]$
@@ -1346,7 +1346,7 @@ vk_im={
             } else {
                alert(IDL('IncorrectWallPostLink'))
             }
-         }         
+         };         
       return false;
    },
    
@@ -1451,7 +1451,7 @@ vk_im={
          var textArea = IM.getTxt();
          var val = textArea.value;
 
-         var text = code
+         var text = code;
          var endIndex, range;
          if (textArea.selectionStart != undefined && textArea.selectionEnd != undefined) {
            endIndex = textArea.selectionEnd;
@@ -1465,7 +1465,7 @@ vk_im={
          }
        }
    }
-}
+};
 
 function vkIM(){
    Inj.Before('IM.addTab','cur.tabs','vkProcessNodeLite(txtWrap);');
@@ -1550,7 +1550,7 @@ function vkImTypingEvent(uid,need_close){
    _vk_im_typings[uid]=vkNow();
    
    // UPDATE INFO
-   var new_to_store={}
+   var new_to_store={};
    for (var key in _vk_im_typings){
       if ((_vk_im_typings[uid]+NOTIFY_TIMEOUT)>vkNow())
          new_to_store[key]=_vk_im_typings[key];
@@ -1578,7 +1578,7 @@ function vkImTypingEvent(uid,need_close){
             text+=time;
             //if (vk_DEBUG) text+='<br>'+document.title;            
             vkShowEvent({sound:'none', hide_in_current_tab:cur.peer==uid ,id:'vk_typing_'+uid,title:info.name, text:text,author_photo:info.photo_rec});
-         }
+         };
          
          if (!chat) {
             show();
@@ -1601,7 +1601,7 @@ function vkIMwrapFrModSort(text){
          if (!at && bt) return 1;
       }
       return 0;
-   }
+   };
    text.sort(mysort);
    return text.join('');
 }
@@ -1679,7 +1679,7 @@ function vkNotifier(){
 	  Inj.Replace('Notifier.unfreezeEvents','5000','vk_notifier_show_timeout');
 	  */
      
-    if (getSet(62)=='y')  FastChat.selectPeer=function(mid,e){return showWriteMessageBox(e, mid)}
+    if (getSet(62)=='y')  FastChat.selectPeer=function(mid,e){return showWriteMessageBox(e, mid)};
     Inj.Start('FastChat.imChecked','vkFcEvents(response);');    
 }
 
@@ -1887,7 +1887,7 @@ function vkDeleteMessages(is_out){
 		var html='<div id="vk_del_msg" style="padding-bottom:10px;"></div><div id="vk_scan_msg"></div>';
 		box.content(html).show();	
 		scan();
-	}
+	};
 	vkAlertBox(IDL('DeleteMessages'),IDL('msgdelconfirm'),run,true);
 }
 
@@ -1910,7 +1910,7 @@ function vkDeleteMessagesHistory(uid){
 			mark_hash=t.split('"mark_hash":"')[1].split('"')[0];
 			callback();
 		});
-	}
+	};
 	var del=function(callback){	
 		if (abort) return;
 		var del_count=mids.length;
@@ -1962,7 +1962,7 @@ function vkDeleteMessagesHistory(uid){
 		var html='<div id="vk_del_msg" style="padding-bottom:10px;"></div><div id="vk_scan_msg"></div>';
 		box.content(html).show();	
 		scan();
-	}
+	};
 	vkAlertBox(IDL('DeleteMessages'),IDL('msgdelconfirm'),run,true);
 }
 
@@ -2007,10 +2007,10 @@ function vkMakeMsgHistory(uid,show_format){
 			var count=msgs.shift();
 			msgs.reverse();
 			var msg=null;
-			var res=''
+			var res='';
          var make_msg=function(msg,level){
             level=level || 0;
-            var from_id= msg.from_id || msg.uid
+            var from_id= msg.from_id || msg.uid;
             if (msg.from_id) history_uids['%'+msg.from_id+'%']='1';
             if (!users['%'+from_id+'%']){
                users['%'+from_id+'%']='id'+from_id+' DELETED';
@@ -2068,7 +2068,7 @@ function vkMakeMsgHistory(uid,show_format){
             for (var i=0; i<msg.fwd_messages.length; i++)
                ret+=make_msg(msg.fwd_messages[i],level+1);
             return ret;
-         }
+         };
 			for (var i=0;i<msgs.length;i++){
 				msg=msgs[i];
             res+=make_msg(msg);
@@ -2082,7 +2082,7 @@ function vkMakeMsgHistory(uid,show_format){
 				callback(result);
 			}
 		});
-	}
+	};
 	var run=function(){     
 			collect(function(t){
             dApi.call('getProfiles',{uids:users_ids.join(',')/*remixmid()+','+uid*/},function(r){
@@ -2106,12 +2106,12 @@ function vkMakeMsgHistory(uid,show_format){
             });            
 			});
 	
-	}
+	};
 	
 	if (show_format){
 		var aBox = new MessageBox({title: IDL('SaveHistoryCfg')});
 		aBox.removeButtons();
-		aBox.addButton(IDL('Hide'), aBox.hide, 'no')
+		aBox.addButton(IDL('Hide'), aBox.hide, 'no');
 		aBox.addButton(IDL('OK'),function(){  
 			msg_pattern=ge('vk_msg_fmt').value;
 			date_fmt=ge('vk_msg_date_fmt').value;
@@ -2223,7 +2223,7 @@ function vkCleanNotes(){
 	var hideLoader=function(){
 		loader_box.hide();
 		hide(boxLoader);
-	}
+	};
 	
 	showLoader();
 	stManager.add(['ui_controls.js','ui_controls.css','datepicker.js','datepicker.css','events.css'], function() {
