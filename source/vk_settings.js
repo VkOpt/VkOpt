@@ -331,7 +331,7 @@ function init_colorpicker(target, onselect, inhcolor){
         inhcolor = inhcolor.substr(1, 6);
     }
     var 
-        incolor = HexToRGB(inhcolor);
+        incolor = HexToRGB(inhcolor),
         hsb = RGBToHSB(incolor),
         bhsb = {h: hsb.h, s: 100, b: 100};
 
@@ -370,7 +370,7 @@ function init_colorpicker(target, onselect, inhcolor){
     ]})); 
     cursor.style.top = ((255 - hsb.b / 100 * 255 + 30) | 0) + "px";
     cursor.style.left = ((hsb.s / 100 * 255) | 0) + "px";
-    arrows.style.top = ((hsb.h / 360 * 255) | 0 + 30) + "px";
+    arrows.style.top = ((hsb.h / 360 * 255) | 30) + "px";
 	var mousegpos = [0, 0],
     mousenpos = [0, 0],
     mousepos = [0, 0],
@@ -402,11 +402,9 @@ function init_colorpicker(target, onselect, inhcolor){
             window.addEventListener("mousemove", pelettemdown, true);
             window.addEventListener("mouseup", bodyup, true);
             mousepos = [(e.offsetX || e.layerX), (e.offsetY || e.layerY)];
-            while(target.tagName != "DIV"){
+            if(target.tagName != "DIV"){
                 mousepos[0] += target.offsetLeft;
                 mousepos[1] += target.offsetTop;
-                target = target.parentNode;
-                break;
             }
             mousepos[1] -= offsetcol;
         }
@@ -433,11 +431,9 @@ function init_colorpicker(target, onselect, inhcolor){
             window.addEventListener("mousemove", slidermdown, true);
             window.addEventListener("mouseup", bodyup, true);
             mousepos = [(e.offsetX || e.layerX), (e.offsetY || e.layerY - offsetcol)];
-            while(target.tagName != "DIV"){
+            if(target.tagName != "DIV"){
                 mousepos[0] += target.offsetLeft;
                 mousepos[1] += target.offsetTop;
-                target = target.parentNode;
-                break;
             }
             mousepos[1] -= offsetcol + 4;
         }
