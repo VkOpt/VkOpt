@@ -61,12 +61,6 @@ vk_search={
       //if (uids.length) stManager.add('profile.css');
       vk_search.load_ex_info(uids);
    },
-   ex_info_cfg:function(){
-      var p=ge('search_filters');
-      if (!p || ge('ex_info_cfg')) return;
-      
-
-   },
    load_ex_info:function(uids,cnt){
       if (!uids || uids.length==0) return;
       if (!ge('vk_exinfo_'+uids[0])){
@@ -2503,7 +2497,6 @@ vk_groups = {
                ids=ms.slice();
                if (!ms[0] /*|| ids.length>=500*/){ 
                   process();	
-                  return;	
                } else {
                   cur_offset+=25; 
                   setTimeout(scan,10);
@@ -2793,8 +2786,6 @@ vk_fave = {
             });
          });			
       }
-      
-      return;
    },
    videos_menu:function(){
       var e=ge('fave_likes_tabs');
@@ -2830,8 +2821,6 @@ vk_fave = {
             });
          });			
       }
-      
-      return;
    },
    posts_menu:function(){
       var e=ge('fave_notes_tab_wrap');//fave_likes_tabs
@@ -2869,8 +2858,6 @@ vk_fave = {
             });
          });			
       }
-      
-      return;
    },
    remove_likes_photo:function(){
       var REQ_CNT=100;//100;
@@ -3896,7 +3883,6 @@ function vk_tag_api(section,url,app_id){
                (params.action==1?dk.storage.mark:dk.storage.unmark)(params.object,gu);
            } else gu();
          }
-         return;
          /*
          var ts=Math.round(new Date().getTime());
          if (ts-dk.last_req_ts<dk.delay){ // проверка времени последнего запроса
