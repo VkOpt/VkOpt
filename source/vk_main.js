@@ -2252,7 +2252,7 @@ function vkCleanNotes(){
 		var cb = new Checkbox(ge("notes_del_by_time"), {  width: 270,  
 														  checked:by_time,  
 														  label: IDL('DelCreatedAfterTime'),
-														  onChange: function(state) { by_time = (state == 1)?true:false; } 
+														  onChange: function(state) { by_time = (state == 1); } 
 														})
 	});	
 }
