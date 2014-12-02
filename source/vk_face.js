@@ -1979,7 +1979,7 @@ function SmileNode(mainNode,childItem,searchWord){
  
           mainNode.replaceChild(smile,mainNode.childNodes[childItem+1]);
           //childItem = childItem*1+2;
-          if(mainNode.childNodes[childItem] && mainNode.childNodes[childItem].nodeValue.match(regex)!=-1){
+          if(mainNode.childNodes[childItem] && regex.test(mainNode.childNodes[childItem].nodeValue)){
               childItem = SmileNode(mainNode,childItem,searchWord);
           }
       }

@@ -221,7 +221,7 @@ function vkProcessResponseNode(node,url,q){
 function vkLocationCheck(){
   if (vkCheckInstallCss()) return true;
   XFR.check();
-  if (location.href.match('/away')) if (getSet(6) == 'y'){
+  if (/\/away/.test(location.href) && getSet(6) == 'y'){
 	location.href=unescape(vkLinksUnescapeCyr(location.href.split('to=')[1].split(/&h=.{18}/)[0]).split('&post=')[0]);
 	return true;
   }
@@ -258,7 +258,7 @@ function VkOptMainInit(){
  
   vk_plugins.init();
   addEvent(document, 'mouseup', vkOnDocumentClick);
-  if (location.href.match('act=vkopt'))	vkShowSettings();
+  if (/act=vkopt/.test(location.href))	vkShowSettings();
   if (window.topMsg){
 	vkStManHook();
 	for (var key in StaticFiles)  if (key.indexOf('.js') != -1) vkInj(key); 
@@ -351,7 +351,7 @@ function ProcessAwayLink(node){
   if (href && href.indexOf('away.php?')!=-1){ 
 	var lnk=vkLinksUnescapeCyr(href).split('?to=')[1];
    if (!lnk) return;
-   var lnk=lnk.split('&h=')[0].split('&post=')[0];
+   lnk=lnk.split('&h=')[0].split('&post=')[0];
 	node.setAttribute('href',unescape(lnk).replace(/&h=[\da-z]{18}/i,''));
    //node.href=unescape(lnk).replace(/&h=[\da-z]{18}/i,'');
    /*
@@ -408,7 +408,7 @@ function vkGroupPage(){
 
 function vkGroupStatsBtn(){
       var p=ge('page_actions') || ge('unsubscribe');
-      if (p && !ge('vk_stats_list') && !(ge('page_actions') && ge('page_actions').innerHTML.match(/stats\?gid\=/))){
+      if (p && !ge('vk_stats_list') && !(ge('page_actions') && /stats\?gid=/.test(ge('page_actions').innerHTML))){
          var wklink=function(id){
             return vkCe('a',{id:id, onclick:"return nav.go(this, event)", href:"/stats?gid="+Math.abs(cur.oid)},IDL('Stats',1))
          };
@@ -524,8 +524,8 @@ function vkCheckGroupsAdmin(){
          }
       }
       if (gids.length>0){
-         var r="vk_adm_gr_"+remixmid();
-         vkSetVal(r,gids.join(','));
+         var k="vk_adm_gr_"+remixmid();
+         vkSetVal(k,gids.join(','));
       }
       //alert(gids.join('\n'));
    });
@@ -794,7 +794,7 @@ function vkPhChooseProcess(answer,url,q){
      var ref=q.act=="a_choose_photo_box"?geByClass('summary',div)[0]:geByClass('photos_choose_rows',div)[0];
      //*
      var p=geByClass('photos_choose_header_title',div)[0];
-     if (p && !p.innerHTML.match('choose_album')){
+     if (p && !/choose_album/.test(p.innerHTML)){
       p.innerHTML='';
       p.appendChild(vkCe('a',{"class":'fl_l_',href:'#',onclick:'return vk_photos.choose_album();'},IDL('mPhM',1)));
       console.log(q);
@@ -840,7 +840,7 @@ function vkVidChooseProcess(answer,url,q){
   var ref=geByClass('summary',div)[0] || geByClass('search_bar',div)[0] || geByClass('choose_search_cont',div)[0];
    
    var p=geByClass('choose_close',div)[0];
-   if (p && !p.innerHTML.match('choose_album')){
+   if (p && !/choose_album/.test(p.innerHTML)){
          p.insertBefore(vkCe('span',{"class":'divide'},'|'),p.firstChild);
          p.insertBefore(vkCe('a',{"class":'',href:'#',onclick:'return vk_videos.choose_album();'},IDL('mPhM',1)),p.firstChild);
          //console.log(q);
@@ -884,7 +884,7 @@ function vkAudioChooseProcess(answer,url,q){
   var ref=geByClass('summary',div)[0] || geByClass('search_bar',div)[0];
    
    var p=geByClass('choose_close',div)[0];
-   if (p && !p.innerHTML.match('choose_album')){
+   if (p && !/choose_album/.test(p.innerHTML)){
          p.insertBefore(vkCe('span',{"class":'divide'},'|'),p.firstChild);
          p.insertBefore(vkCe('a',{"class":'',href:'#',onclick:'return vk_audio.choose_album();'},IDL('mPhM',1)),p.firstChild);
          //console.log(q);
@@ -1272,7 +1272,7 @@ vk_im={
             var a=vkCe('a',{'onclick':'vk_im.attach_wall();','class':'add_media_item','style':"background-image: url('/images/icons/attach_icons.png'); background-position: 3px -130px;"},'<nobr>'+IDL('WallPost')+'</nobr>');
             p.appendChild(a);
             
-            var a=vkCe('a',{id:id,'style':'border-top:1px solid #DDD;'},html);
+            a=vkCe('a',{id:id,'style':'border-top:1px solid #DDD;'},html);
             p.appendChild(a);
 
          }
@@ -1427,7 +1427,7 @@ vk_im={
          } else {
            var rCont = false;
          }
-         el = rCont;
+         var el = rCont;
          while(el && el != editable) {
            el = el.parentNode;
          }

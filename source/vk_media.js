@@ -852,7 +852,7 @@ var vk_photos = {
 };
 
 function vkPVPhotoMover(show_selector){
-   if (!show_selector && cur.pvCurPhoto && (cur.pvCurPhoto.actions || {}).edit && ge('pv_album_name') && !ge('pv_album_name').innerHTML.match('vkPVPhotoMover') && trim(ge('pv_album_name').innerHTML)!="" ){
+   if (!show_selector && cur.pvCurPhoto && (cur.pvCurPhoto.actions || {}).edit && ge('pv_album_name') && !/vkPVPhotoMover/.test(ge('pv_album_name').innerHTML) && trim(ge('pv_album_name').innerHTML)!="" ){
       ge('pv_album_name').innerHTML= '<div id="vk_ph_album_info">'+
                                     ge('pv_album_name').innerHTML+
                                     '<div class="fl_r vk_edit_ico" onclick="return vkPVPhotoMover(true);"> </div>'+
@@ -2956,7 +2956,7 @@ vk_audio={
      
      if ((node || ge('content')).innerHTML.indexOf('play_new')==-1) return;
      var smartlink=(getSet(1) == 'y');
-     var download=(getSet(0) == 'y')?1:0;
+     var download=(getSet(0) == 'y');
      //var clean_trash=getSet(94) == 'y';
      if (!download && getSet(43) != 'y') return;
      var SearchLink=true;
@@ -2978,7 +2978,6 @@ vk_audio={
             //if (clean_trash) vk_audio.process_node(anode);
              var el=geByClass("duration",anode )[0];
              var spans=el.parentNode.getElementsByTagName('span');
-             var span_title=null;
              var span_title=geByClass('title',anode )[0];
              if (window.nav && nav.objLoc[0]=='search' && !span_title){
                 for (var x=0; x<spans.length;x++)
@@ -3004,14 +3003,14 @@ vk_audio={
      }   
    },
    thread_count:0,
-   get_size:function(id,el,without_tip){
+   get_size:function(id,_el,without_tip){
       if (!without_tip) 
-         vkShowAddAudioTip(el,id);
+         vkShowAddAudioTip(_el,id);
       if (vk_audio.thread_count>=AUDIO_INFO_LOAD_THREADS_COUNT){
          var t = setInterval(function(){
             if (vk_audio.thread_count<AUDIO_INFO_LOAD_THREADS_COUNT){
                clearInterval(t);
-               vk_audio.get_size(id,el,without_tip);
+               vk_audio.get_size(id,_el,without_tip);
             }
          },50);
          return;
@@ -3442,7 +3441,7 @@ function vkCleanAudios(){
 	vkAlertBox(IDL('DelAudios'),'<b><a href="/'+owner+'">'+owner+'</a></b><br>'+IDL('DelAllAutiosConfirm'),run,true);
 }
 vkAudioEd = {
-   Delete:function(id,aid,el){
+   Delete:function(id,aid,_el){
     var el = ge('audio' + aid);
     var h = getSize(geByClass1('play_btn', el))[1];
     stManager.add(['audio_edit.js']);
@@ -3927,8 +3926,7 @@ vkLastFM={
       fm.token=localStorage['lastfm_token'];
       fm.username=localStorage['lastfm_username'];
       fm.session_key=localStorage['lastfm_session_key'];
-      fm.enable_scrobbling=parseInt(localStorage['lastfm_enable_scrobbling']);
-      if (isNaN(fm.enable_scrobbling)) fm.enable_scrobbling=0;
+      fm.enable_scrobbling=parseInt(localStorage['lastfm_enable_scrobbling']) || false;
       function LastFM(options){
          var apiKey=options.apiKey||'';
          var apiSecret=options.apiSecret||'';
@@ -4268,7 +4266,7 @@ vkLastFM={
       if (fm.enable_scrobbling){
          fm.enable_scrobbling=0;
       }*/
-      fm.enable_scrobbling=fm.enable_scrobbling?0:1;
+      fm.enable_scrobbling=!fm.enable_scrobbling;
       var els=geByClass('vk_lastfm_icon');
       for (var i=0; i<els.length;i++){
          var el=els[i];//ge('vk_lastfm_icon');
