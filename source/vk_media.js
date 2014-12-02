@@ -547,9 +547,8 @@ var vk_photos = {
                      //lockButton
                   },
                   onUploadComplete: function(u,res){
-                     var upload=res;
                      var params = {
-                        '_query' 	 : upload,
+                        '_query' 	 : res,
                         'act' 	 	 : 'save_desc',
                         'aid' 	 	 : aid,
                         'al' 	 	    : 1,
@@ -1336,8 +1335,7 @@ function vkGetLinksToPhotos(oid,aid){
 		  var src=phot[i];
         if (PHOTO_DOWNLOAD_NAMES){
            var num=('_000000000000'+i).substr(-len);
-           var name=(src.indexOf('?')>0?'&/':'?&/')+num+'_'+src.split('/').pop();
-           src+=name;
+           src+=(src.indexOf('?')>0?'&/':'?&/')+num+'_'+src.split('/').pop();
         }
         parr.push('<a href="'+src+'">'+src+'</a>');
         txt+=src+'\r\n';
@@ -5384,13 +5382,12 @@ vk_vid_down={
                         
                         var i=arr[quality]?quality:arr.length-1;
                            var v=arr[i];
-						   var vidurl=v;
                            var vidext=v.substr(v.lastIndexOf('.')).split('?')[0];  
                            
 						   
                            var vidname=vkCleanFileName(winToUtf(decodeURIComponent(obj.title || obj.md_title))).replace(/\+/g,' ');
 
-                           videos.push([vidurl,vidname+' ['+fmt[i]+']',vidext]); 
+                           videos.push([v,vidname+' ['+fmt[i]+']',vidext]);
                   } else {
                     //not vk video
                   }

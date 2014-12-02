@@ -34,14 +34,14 @@ if (!window.Sound2){
    //alert(sound);
    var audioObj = vkCe('audio');
    var test_audio = function() {
-      var elem = audioObj, info = null;
+      var info = null;
       try {
-         if ( info = !!elem.canPlayType ) {
+         if ( info = !!audioObj.canPlayType ) {
             info = {};
-            info.ogg = elem.canPlayType('audio/ogg; codecs="vorbis"');
-            info.mp3 = elem.canPlayType('audio/mpeg;');
-            info.wav = elem.canPlayType('audio/wav; codecs="1"');
-            info.m4a = elem.canPlayType('audio/x-m4a;') || elem.canPlayType('audio/aac;');
+            info.ogg = audioObj.canPlayType('audio/ogg; codecs="vorbis"');
+            info.mp3 = audioObj.canPlayType('audio/mpeg;');
+            info.wav = audioObj.canPlayType('audio/wav; codecs="1"');
+            info.m4a = audioObj.canPlayType('audio/x-m4a;') || audioObj.canPlayType('audio/aac;');
             
             info.ogg = (info.ogg != "" && info.ogg != "no");
             info.mp3 = (info.mp3 != "" && info.mp3 != "no");

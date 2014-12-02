@@ -810,12 +810,11 @@ function vkGetProfile(uid,callback,no_switch_button){
 		if(rate>=90000) rate_text=rate+'$';
 
 		var percentwidth=rate*(1/Math.pow(10,level<3?2:level))*fullwidth;
-		var html='<div class="vkrate '+lvl_class+'">'+
+		return '<div class="vkrate '+lvl_class+'">'+
 			'<div class="vk_rate_left" style="width:'+percentwidth+'px;">  </div>'+
 			'<div class="vk_rate_right" style="width:'+fullwidth+'px;"> </div>'+
 			'<div class="vkpercent" style="width:'+fullwidth+'px;">'+rate_text+'</div>'+
 		  '</div>';
-		return html;
 	  };
 	  //make_rate(361);
 	  var MakeProfile = function(r){

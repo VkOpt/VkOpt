@@ -290,16 +290,15 @@ function init_colorpicker(target, onselect, inhcolor){
         if(s == 0) {
             rgb.r = rgb.g = rgb.b = v;
         } else {
-            var t1 = v;
             var t2 = (255-s)*v/255;
-            var t3 = (t1-t2)*(h%60)/60;
+            var t3 = (v-t2)*(h%60)/60;
             if(h==360) h = 0;
-            if(h<60) {rgb.r=t1; rgb.b=t2; rgb.g=t2+t3;}
-            else if(h<120) {rgb.g=t1; rgb.b=t2; rgb.r=t1-t3;}
-            else if(h<180) {rgb.g=t1; rgb.r=t2; rgb.b=t2+t3;}
-            else if(h<240) {rgb.b=t1; rgb.r=t2; rgb.g=t1-t3;}
-            else if(h<300) {rgb.b=t1; rgb.g=t2; rgb.r=t2+t3;}
-            else if(h<360) {rgb.r=t1; rgb.g=t2; rgb.b=t1-t3;}
+            if(h<60) {rgb.r=v; rgb.b=t2; rgb.g=t2+t3;}
+            else if(h<120) {rgb.g=v; rgb.b=t2; rgb.r=v-t3;}
+            else if(h<180) {rgb.g=v; rgb.r=t2; rgb.b=t2+t3;}
+            else if(h<240) {rgb.b=v; rgb.r=t2; rgb.g=v-t3;}
+            else if(h<300) {rgb.b=v; rgb.g=t2; rgb.r=t2+t3;}
+            else if(h<360) {rgb.r=v; rgb.g=t2; rgb.b=v-t3;}
             else {rgb.r=0; rgb.g=0; rgb.b=0;}
         }
         return {r:Math.round(rgb.r), g:Math.round(rgb.g), b:Math.round(rgb.b)};
@@ -564,13 +563,12 @@ function WallManager(){
   for (var i=0; i<wall_list.length;i++){
       whtml+='<div id="wit'+wall_list[i]+'" style="width:130px"><a>'+wall_list[i]+'</a><a style="float:right" onclick="vkRemWall('+i+')">x</a></div>';
   }*/
-  var res='<a href="#" onclick="toggle(\'vkExWallMgr\'); ge(\'vkwalllist\').innerHTML=GenWallList(); return false;"><b>'+IDL("Settings")+'</b></a>'+
+  return '<a href="#" onclick="toggle(\'vkExWallMgr\'); ge(\'vkwalllist\').innerHTML=GenWallList(); return false;"><b>'+IDL("Settings")+'</b></a>'+
           '<div id="vkExWallMgr" style="display:none;"><div style="text-align:left;">'+//GetUserMenuSett()+'</span></span>'+
           '<input type="text" style="width:90px;" id="vkaddwallid" onkeydown="if(13==event.keyCode){vkAddWall(); this.value=\'\'; return false;}" size="20"> <a href=# onclick="vkAddWall(); return false;">'+IDL('add')+'</a><br>'+
           '<div id="vkwalllist">'+
           //GenWallList()+
           '</div></div><small class="divider">'+IDL('wallsHelp')+'</div></small>';
-  return res;
 }
 
 function WallManForm(){
