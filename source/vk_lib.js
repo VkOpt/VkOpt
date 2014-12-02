@@ -392,9 +392,9 @@ var vkMozExtension = {
 	}
    
    function vkopt_brackets(s){
-      var s=vkCutBracket(s,2);
-      if (!CUT_VKOPT_BRACKET) s='[ '+s+' ]';
-      return s;
+      var s1=vkCutBracket(s,2);
+      if (!CUT_VKOPT_BRACKET) s1='[ '+s1+' ]';
+      return s1;
    }
 
 	function vkExtendLang(obj) {
@@ -666,7 +666,7 @@ var vkMozExtension = {
 		if (nDays==null || nDays==0) nDays=365;
 		expire.setTime(today.getTime()+ 3600000*24*nDays);
 		document.cookie = cookieName+ "="+ escape(cookieValue)+
-		";expires="+ expire.toGMTString()+
+		";expires="+ expire.toUTCString()+
 		((domain) ? ";domain=" + domain : ";domain="+location.host);
 		}
 		if (cookieName=='remixbit') SettBit=cookieValue;//vksetCookie('remixbit',SettBit);
@@ -1587,8 +1587,8 @@ function vk_oauth_api(app_id,scope){
       },
       check:function(){
          var dloc=document.location.href;
-         if (dloc.match(/\?xfr_query=/) || !dloc.match(/access_token/)) return;
-         if (dloc.match("login_success\.html") || dloc.match("blank\.html")){		
+         if (/\?xfr_query=/.test(dloc) || !/access_token/.test(dloc)) return;
+         if (/login_success\.html/.test(dloc) || /blank\.html/.test(dloc)){
                parent.window.postMessage({act:"oapi_login_success",href:dloc},"*");	
          }
       },
@@ -1805,8 +1805,8 @@ var vk_api_permissions = {
       return str_scope.join(',');
    },
    // Преобразует числовые права доступа приложения в число
-   to_int: function(str_scope){
-      var str_scope = str_scope.replace(/^\s+|\s+$/g, '').split(/\s*,\s*/);
+   to_int: function(_str_scope){
+      var str_scope = _str_scope.replace(/^\s+|\s+$/g, '').split(/\s*,\s*/);
       var int_scope = 0;
       var types = vk_api_permissions.types;
       for (var i = 0; i < str_scope.length; i++){
@@ -2163,12 +2163,11 @@ var XFR={
 					var all=r.getAllResponseHeaders();
 					var len=r.getResponseHeader('Content-Length');
 					var data=['xfr',req_id,all,len];
-					parent.window.postMessage(JSON.Str(data),"*");
 				} else {
 					var data=['xfr',req_id,t];
-					parent.window.postMessage(JSON.Str(data),"*");
 					//callback(t);
 				}
+				parent.window.postMessage(JSON.Str(data),"*");
 			});
 		}
 	}
