@@ -92,8 +92,7 @@ obj.focus();
    if (obj.selectionStart!=obj.selectionEnd){
      var start = obj.selectionStart;
      var end = obj.selectionEnd;
-     var len=end-start;
-     return len;
+     return end-start;
    }
  } else if (obj.contentEditable=="true"){
    var sel=window.getSelection(); 
@@ -158,8 +157,7 @@ function AddSmileBtn(rfield){
 			if (typeof smiles[key]!='string'){
 			  smile_text=smiles[key][0]; big=smiles[key][2];
 			} else {  smile_text=smiles[key]; big=false; }
-			var btn='<a href="#" onclick="return false;" class="vk_txt_smile_item" '+((big)?'style="display:block"':"")+'><img onclick="PasteSmile(\''+smile_text+'\',\''+rfield+'\',\''+key+'\')" src="'+vkSmilesLinks[key]+'" title="'+smile_text+'" alt="'+smile_text+'"></a>';
-			return btn;
+			return '<a href="#" onclick="return false;" class="vk_txt_smile_item" '+((big)?'style="display:block"':"")+'><img onclick="PasteSmile(\''+smile_text+'\',\''+rfield+'\',\''+key+'\')" src="'+vkSmilesLinks[key]+'" title="'+smile_text+'" alt="'+smile_text+'"></a>';
 		};
 		var smiles=TextPasteSmiles;
 		var DivCode='<div>'+
@@ -231,9 +229,7 @@ function vkTxtPanelButtons(eid,emoji){
             need_gen=false;
          }
       });
-      var el=vkCe('a',{"class":"vk_edit_btn smile_btn",href:"#","onmouseover":"vk_gen_smiles_funcs["+idx+"](this);"},'<div class="vk_edit_sub_panel">qqwe'+/*AddSmileBtn(eid)+*/'</div>');
-      //el.getElementsByTagName('div').innerHTML=AddSmileBtn(eid);
-      return el;//'<a class="vk_edit_btn smile_btn" href="#"><div class="vk_edit_sub_panel">'+AddSmileBtn(eid)+'</div></a>';
+      return vkCe('a',{"class":"vk_edit_btn smile_btn",href:"#","onmouseover":"vk_gen_smiles_funcs["+idx+"](this);"},'<div class="vk_edit_sub_panel">qqwe'+/*AddSmileBtn(eid)+*/'</div>');
    }
 }
 /*

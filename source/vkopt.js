@@ -378,8 +378,7 @@ var TextPasteSmiles={
 
 		if (LAST_LOG_MSG==s){
 			LAST_EQ_LOG_MSG_COUNT++;
-			var r='<span class="count">'+LAST_EQ_LOG_MSG_COUNT+'</span>'+div.innerHTML;
-			node.lastChild.innerHTML=r;
+			node.lastChild.innerHTML='<span class="count">'+LAST_EQ_LOG_MSG_COUNT+'</span>'+div.innerHTML;
 		} else {
 			LAST_EQ_LOG_MSG_COUNT=0;
 			node.appendChild(div);

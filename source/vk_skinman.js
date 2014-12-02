@@ -569,12 +569,10 @@ vk_skinman={
       .skin_like .my_like.sm_like_icon {  opacity: 1;  }\
    ',
    get_like_html:function(pid,count){
-      var like_wrap=
-'<div class="skin_like fl_l" onmouseover="vk_skinman.like_over(\''+pid+'\',this)" onmouseout="vk_skinman.like_out(\''+pid+'\')" onclick="vk_skinman.like(\''+pid+'\'); event.cancelBubble = true;">\
+      return '<div class="skin_like fl_l" onmouseover="vk_skinman.like_over(\''+pid+'\',this)" onmouseout="vk_skinman.like_out(\''+pid+'\')" onclick="vk_skinman.like(\''+pid+'\'); event.cancelBubble = true;">\
 <i class="sm_like_icon fl_l" id="s_like_icon'+pid+'"></i>\
 <span class="sm_like_count fl_l" id="s_like_count'+pid+'">'+(count||'')+'</span>\
-</div>'; 
-      return like_wrap;
+</div>';
    },
    likes_load:function(pids){
       dApi.call('photos.getById',{photos:pids.join(','),extended:1},function(r){

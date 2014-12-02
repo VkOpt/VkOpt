@@ -1451,16 +1451,15 @@ vk_im={
          var textArea = IM.getTxt();
          var val = textArea.value;
 
-         var text = code;
          var endIndex, range;
          if (textArea.selectionStart != undefined && textArea.selectionEnd != undefined) {
            endIndex = textArea.selectionEnd;
-           textArea.value = val.slice(0, textArea.selectionStart) + text + val.slice(endIndex);
-           textArea.selectionStart = textArea.selectionEnd = endIndex + text.length;
+           textArea.value = val.slice(0, textArea.selectionStart) + code + val.slice(endIndex);
+           textArea.selectionStart = textArea.selectionEnd = endIndex + code.length;
          } else if (typeof document.selection != 'undefined' && typeof document.selection.createRange != 'undefined') {
            textArea.focus();
            range = document.selection.createRange();
-           range.text = text;
+           range.text = code;
            range.select();
          }
        }
