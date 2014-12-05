@@ -2562,7 +2562,7 @@ function vkShowNotify(params){
          params.id  
       ];
       Notifier.lcSend('feed',{events:[notify.join('<!>')],full:true,sound:params.sound});
-      Notifier.pushEvents([notify.join('<!>')],null,params.sound);
+      Notifier.pushEvents([notify.join('<!>')],false,params.sound);
    });
 }
 
@@ -2618,7 +2618,7 @@ function vkShowEvent(obj){ // vkShowEvent({id:'vk_typing_123',title:'%USERNAME%'
                                     }, response));
       curNotifier.timestamp = vkNow();
       if (!obj.hide_in_current_tab){
-         Notifier.pushEvents(events,null,obj.sound);
+         Notifier.pushEvents(events,false,obj.sound);
       }
       //console.log(response);
       //*/
