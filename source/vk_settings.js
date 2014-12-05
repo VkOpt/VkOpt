@@ -517,7 +517,7 @@ function vkAddWall(wid) {
     var wid = (!wid) ? ge('vkaddwallid').value: wid;
     wid = String(wid);
 
-    if (wid.length > 0 && (wid.match(/^\d+$/i) || wid.match(/^g\d+$/i))) {
+    if (wid.length > 0 && (/^g?\d+$/i.test(wid))) {
         var dub = false;
         for (var i = 0; i < wall_list.length; i++) if (String(wall_list[i]) == wid) {
             dub = true;
@@ -804,7 +804,7 @@ vk_settings = {
        for (var i=0;i<setts.length;i++){
          var txt=(setts[i].text|| '').toUpperCase()+' '+(setts[i].header|| '').toUpperCase();
          s=s.toUpperCase();
-         if ( txt.indexOf(s)>-1 || txt.match(s) ){// TopSearch.parseLatKeys(s)
+         if ( txt.indexOf(s)>-1 || s.test(txt)){// TopSearch.parseLatKeys(s)
             sets.push(setts[i]);
          }
        }   

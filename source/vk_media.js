@@ -33,7 +33,7 @@ function vkPhotoViewer(){
   
 
   //*
-  if (nav.strLoc.match(/photo-?\d+_\d+/))  { 
+  if (/photo-?\d+_\d+/.test(nav.strLoc))  {
     setTimeout(function(){
       if (!isVisible(cur.pvAlbumsWrap) && !isVisible(cur.pvAlbumWrap)) photoview.doShow();
     },70);
@@ -430,7 +430,7 @@ var vk_photos = {
    url:function(url){
       if (!url) url=prompt('Image URL');
       
-      if (url && url.match(/(vk\.com|vk\.me|userapi\.com)\//)){
+      if (url && /(vk\.com|vk\.me|userapi\.com)\//.test(url)){
          vkPhotoUrlUpload(url);
          return;
       }
@@ -530,7 +530,7 @@ var vk_photos = {
       var box=vkAlertBox(IDL('Upload'),'<center><div id="vk_upd_photo"></div><div id="vk_upd_photo_progress"></div></center>');
       stManager.add('upload.js',function(){
          var photo=photo_id;
-         if (photo.match(/photo-?\d+_\d+/)) photo=photo.match(/photo(-?\d+_\d+)/)[1];
+         if (/photo-?\d+_\d+/.test(photo)) photo=photo.match(/photo(-?\d+_\d+)/)[1];
          AjPost('/al_photos.php',{'act':'edit_photo', 'al': 1, 'photo': photo},function(r,t){
                var upload_url=t.match(/"upload_url":"(.*)"/);
                var hash=t.match(/', '([a-f0-9]{18})'\)/);
@@ -649,7 +649,7 @@ var vk_photos = {
             return;
          }
          oid=list[lid]+'';
-         if (oid.match(/^-?\d+$/)){
+         if (/^-?\d+$/.test(oid)){
             type='owner_id';
          } else {
             var m=oid.match(/(^|\/)(club|public|event|id)(\d+)/);
@@ -1542,7 +1542,7 @@ function vkAlbumAdminItems(){
    var a=[];
    var p=geByClass('photos_tabs')[0];
    var oid=(location.href.match(/album(-\d+)_00/) || [])[1];
-	if (p && (p.innerHTML.match(/album-?\d+_\d+\?act=edit/i) || (oid && isGroupAdmin(oid)) || vk_DEBUG)){
+	if (p && (/album-?\d+_\d+\?act=edit/i.test(p.innerHTML) || (oid && isGroupAdmin(oid)) || vk_DEBUG)){
 		
 		a.push({l:IDL('paCheckUnik'), onClick:vkAlbumCheckDublicatUser, s:{borderColor:"#DDDDDD", borderTop:"1px", borderTopStyle:"solid"}});
 		a.push({l:IDL('paGetPByUser'), onClick:vkGetPhotoByUserBox});
@@ -1556,7 +1556,7 @@ function vkPVAdminItems(data){
    if (!(data ||{}).author) return;
    //console.log(data);
 	var user=(data.author.split('href="')[1] || "").split('"')[0];
-	return (user && user!='' && ge('photos_container') && (cur.moreFrom || '').match(/album(-?\d+)_(\d+)/))?'<a href="#" onclick="photoview.hide(); vkGetPhotoByUser(\''+user+'\'); return false;">'+IDL('paAllUserPhotos')+'<span id="vkphloader" style="display:none"><img src="/images/upload.gif"></span></a>':'';
+	return (user && user!='' && ge('photos_container') && /album(-?\d+)_(\d+)/.test(cur.moreFrom || ''))?'<a href="#" onclick="photoview.hide(); vkGetPhotoByUser(\''+user+'\'); return false;">'+IDL('paAllUserPhotos')+'<span id="vkphloader" style="display:none"><img src="/images/upload.gif"></span></a>':'';
 }
 
 function vkDisableAlbumScroll(){
@@ -2466,7 +2466,7 @@ vk_videos = {
                   regex=regex.toLowerCase();
                   title=title.toLowerCase();
                }
-               return (album==0 || all===true) && ((regex.indexOf?title.indexOf(regex)!=-1:title.match(regex)) || regex==null);
+               return (album==0 || all===true) && ((regex.indexOf?title.indexOf(regex)!=-1:regex.test(title)) || regex==null);
             });
          }
          filter_arr(rx,(isChecked('vk_vid_filter_all')!=1));
@@ -2929,7 +2929,7 @@ vk_audio={
          for (var i=0; i<nodes.length; i++){
             FindAndProcessTextNodes(nodes[i],function(mainNode,childItem){
                var el = mainNode.childNodes[childItem];
-               if (el.nodeValue && !el.nodeValue.match(/^[\u2013\s]+$/)){
+               if (el.nodeValue && !/^[\u2013\s]+$/.test(el.nodeValue)){
                   //console.log('>>',el.nodeValue);
                   el.nodeValue=vk_audio.remove_trash(el.nodeValue);
                   //console.log('<<',el.nodeValue);
@@ -5073,7 +5073,7 @@ vk_vid_down={
    },
    ivi_links:function(ivi_id){
       ivi_id=ivi_id+"";
-      if (!ivi_id.match(/^\d+$/)){
+      if (!/^\d+$/.test(ivi_id)){
          ivi_id=(ivi_id.match(/videoId=(\d+)/)||[])[1];// + may be need parse siteId=s132 ...
       }
       vk_vid_down.get_ivi_links(ivi_id,function(r){

@@ -701,7 +701,7 @@ function vkMakeRightBar(){
 		if (ge("left_money_box")) bar.appendChild(ge("left_money_box"));
 		if (ge("left_blocks")) bar.appendChild(ge("left_blocks"));
 		var b=geByClass('left_box',ge('side_bar'))[0];
-      if (b && b.parentNode && (b.parentNode.id || "").match(/left_block\d+_\d+/)) b = b.parentNode;
+        if (b && b.parentNode && /left_block\d+_\d+/.test(b.parentNode.id || "")) b = b.parentNode;
 		if (b) bar.appendChild(b);
 	}
    updSideTopLink(true);
@@ -868,7 +868,7 @@ vk_menu={
    check_link:function(link){
       link=trim(link);
       if (link=='') return;
-      if (link.match(/^[a-z0-9_-]+\.[a-z]{2,7}(\/|$)/)) link='http://'+link;
+      if (/^[a-z0-9_-]+\.[a-z]{2,7}(\/|$)/.test(link)) link='http://'+link;
       return  link;
    },
    add_checkkey:function(ev,to_id){
@@ -1184,7 +1184,7 @@ function vkMenu(){//vkExLeftMenu
       need_delimiter=true;
       
       var m_item=custom_cfg[i];
-      var attr=m_item[0].match(/^https?:\/\//)?'':' onclick="return nav.go(this, event);" ';
+      var attr=/^https?:\/\//.test(m_item[0])?'':' onclick="return nav.go(this, event);" ';
       var li=vkCe('li',{"class":'vk_custom_item'},'<a class="left_row vk_custom_link" href="'+m_item[0]+'" '+attr+'><span class="left_label inl_bl">'+m_item[1]+'</span><span></span></a>');
       var item=geByTag('a',li)[0];
       /*

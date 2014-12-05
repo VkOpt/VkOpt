@@ -567,8 +567,8 @@ function VkOptInit(ignore_login){
 
 var dloc=document.location.href;
 var vk_domain=document.location.host;
-if (vk_domain.match('vk\\.com') || vk_domain.match('vkontakte\\.ru')){
-   if (!dloc.match(/\/m\.vk\.com|login\.vk\.com|oauth\.vk\.com|al_index\.php|frame\.php|widget_.+php|notifier\.php|audio\?act=done_add/i)){
+if (/vk\.com/.test(vk_domain) || /vkontakte\.ru/.test(vk_domain)){
+   if (!/\/m\.vk\.com|login\.vk\.com|oauth\.vk\.com|al_index\.php|frame\.php|widget_.+php|notifier\.php|audio\?act=done_add/i.test(dloc)){
        vkonDOMReady(VkOptInit); 
    }
 }

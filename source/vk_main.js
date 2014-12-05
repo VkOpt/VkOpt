@@ -127,14 +127,14 @@ function vkOnNewLocation(startup){
    if (!cur.module){
       if (cur.gid && nav.objLoc['act']=='blacklist' && (cur.moreParams || {}).act=="blacklist"){
          cur.module='groups_edit';
-      }else if (nav.objLoc[0].match(/page-?\d+_\d+/)){
+      }else if (/page-?\d+_\d+/.test(nav.objLoc[0])){
          var obj=nav.objLoc[0].match(/page(-?\d+)_(\d+)/);
          cur.module='pages';
          if (!cur.gid) cur.gid=Math.abs(obj[1]);
          if (!cur.oid) cur.oid=obj[1];
          if (!cur.pid) cur.pid=obj[2];
          
-      } else if (nav.objLoc['act']=='users' && (cur.tab || "").match(/^(members|invites|admins|requests)$/) && cur.oid<0){
+      } else if (nav.objLoc['act']=='users' && /^(members|invites|admins|requests)$/.test(cur.tab || "") && cur.oid<0){
          cur.module='groups_edit';
       } else {
          switch(nav.objLoc[0]){
@@ -164,7 +164,7 @@ function vkOnNewLocation(startup){
 		case 'feed':   vk_feed.on_page(); break;
       case 'groups': vkGroupsListPage();  break;
       default:
-         if (nav.objLoc[0].match(/write\d+/)) vkMailPage();
+         if (/write\d+/.test(nav.objLoc[0])) vkMailPage();
 	}
 
 
@@ -466,7 +466,7 @@ function vkGetWikiCode(pid,gid){
 	//var gid=dloc.match(/o=-(\d+)/);
 	//gid=gid?gid[1]:null;
    var params={gid:gid};
-   if ((pid+"").match(/^\d+$/)){
+   if (/^\d+$/.test(pid+"")){
       params['pid']=pid;
    } else {
       params['title']=pid;
@@ -497,7 +497,7 @@ function vkGetGid(){
 	var gid=null;
 	if (cur.gid || cur.oid<0) 
 		gid=(cur.oid?Math.abs(cur.oid):cur.gid);
-	if (!gid && cur.topic && cur.topic.match(/-(\d+)_/)) 
+	if (!gid && cur.topic && /-(\d+)_/.test(cur.topic))
 		gid=cur.topic.match(/-(\d+)_/)[1];
 	if (!gid && cur.pvListId && cur.pvListId.indexOf('album-')!=-1) 
 		gid=cur.pvListId.match(/album-(\d+)/)[1];
@@ -568,7 +568,7 @@ function vkCheckGroupAdmin(){
 function vkAjaxNavDisabler(strLoc){
 	if (strLoc.indexOf('ATTRIBUTE_NODE')>-1) return true;
 	var regex=/(video.+section=search|video-?\d+_\d+|photo-?\d+_\d+)/;
-	var exc= strLoc.match(regex) || nav.strLoc.match(regex);
+	var exc= regex.test(strLoc) || regex.test(nav.strLoc);
 	if(getSet(5)=='y' && !exc){
 		location.href='/'+strLoc;
 		return true;
@@ -1762,7 +1762,7 @@ function vkMailSendFix(){
    if (nav.objLoc['act']=='show' && !cur.addMailMedia) setTimeout("mail.showMessage(nav.objLoc['id']);",100);
 }
 function vkMailPage(){
-	if(nav.objLoc['act']=='show' || nav.objLoc[0].match(/write\d+/)) {
+	if(nav.objLoc['act']=='show' || /write\d+/.test(nav.objLoc[0])) {
 		vkAddSaveMsgLink();
 		if (getSet(40)=='y') vkAddDelMsgHistLink();
 		vkProcessNode();
