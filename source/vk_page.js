@@ -3221,7 +3221,7 @@ vk_feed={
       .vkf_nogroup .vk_feed_group,\
       .vkf_nofriend .vk_feed_friend,\
       .vkf_noregexp .vk_feed_regexp,\
-      .vkf_norepost .vk_feed_repost{border:2px solid red !important}\
+      .vkf_norepost .vk_feed_repost{'+(FEEDFILTER_DEBUG ? 'border:2px solid red' : 'display:none')+' !important}\
       ';
    },
    inj:function(){
@@ -3293,21 +3293,26 @@ vk_feed={
          if (geByClass('published_by',row)[0]) 
             types.repost=true;  
          //Text
-         if (t) 
+         if (t) {
             types.text=true;
-         // Regexpressions
-         var regex_pattern = decodeURIComponent(getSet('-',6));
-         if (regex_pattern && geByTag('div',row)[1].innerHTML.match(regex_pattern))
-            types.regexp=true;
-         
+             // Regexpressions
+             switch (block_mode) {
+                 case block_modes.REGEXP:
+                     types.regexp=block_conditions.test(t.innerHTML); break;
+                 case block_modes.KEYWORDS:
+                     for (var i = 0;i < block_conditions.length && !types.regexp;i++)
+                         types.regexp = (t.innerHTML.indexOf(block_conditions[i]) > -1);
+                     break;
+             }
+         }
          //Links
-         if (t && geByTag('a',t).length>0) 
+         if (t && geByTag('a',t).length>0)
             types.links=true;
          if (geByClass('group_share',row)[0]) // Group Share
-            types.links=true;              
+            types.links=true;
          var lnk=geByClass('lnk',row)[0];
          if (lnk && !geByClass('video',lnk)[0]) types.links=true;
-         
+
          var b=false;
          for (var key in types)
             if (types[key]){
@@ -3318,7 +3323,24 @@ vk_feed={
             addClass(row,'vk_feed_filter');
             //console.log(row.id);
       }
-      
+
+       // подготовка к проверке текста постов по регулярке или ключевым словам
+       var stop_list = decodeURIComponent(getSet('-',6));
+       var block_conditions;
+       var block_modes = {REGEXP:1, KEYWORDS: 2};
+       var block_mode = null;
+       if (stop_list) {
+           var matches = stop_list.match(/^\/(.+)\/(g?i?m?)$/);
+           if (matches && matches.length == 3) {
+               block_conditions = new RegExp(matches[1],matches[2]);
+               block_mode = block_modes.REGEXP;
+           }
+           else {
+               block_conditions = stop_list.split('|');
+               block_mode = block_modes.KEYWORDS;
+           }
+       }
+
       for (var i=0; i<nodes.length; i++){
          var row=nodes[i];
          if (!geByClass('post',row)[0]){
