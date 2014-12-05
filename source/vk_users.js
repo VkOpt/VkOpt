@@ -26,7 +26,7 @@ function isUserLink(url){
 
 function getUserID(url,callback){
  url=String(url);
- if (url.match(/^\d+$/)){callback(url);  return;}
+ if (/^\d+$/.test(url)){callback(url);  return;}
  if (vkUsersDomain[url]){callback(vkUsersDomain[url]);  return; }
  AjGet('/groups_ajax.php?act=a_inv_by_link&page='+url,function(r){ // payments.php?act=votes_transfer_get_person&page=durov -captcha
     r=r.responseText;
@@ -39,12 +39,12 @@ function getUserID(url,callback){
 var vkUsersGroupsDomain={};
 function getGidUid(url,callback){ //callback(uid,gid)
 	url=String(url);
-	if (url.match(/^\d+$/)){callback(url);  return;}
-	if (url.match(/^u\d+$/)){callback(url.match(/^u(\d+)$/)[1],null);  return;}
-	if (url.match(/(^|\/)id\d+$/)){callback(url.match(/(^|\/)id(\d+)$/)[2],null);  return;}
+	if (/^\d+$/.test(url)){callback(url);  return;}
+	if (/^u\d+$/.test(url)){callback(url.match(/^u(\d+)$/)[1],null);  return;}
+	if (/(^|\/)id\d+$/.test(url)){callback(url.match(/(^|\/)id(\d+)$/)[2],null);  return;}
 	
-	if (url.match(/^g\d+$/)){callback(null,url.match(/^g(\d+)$/)[1]);  return;}
-	if (url.match(/(^|\/)club\d+$/)){callback(null,url.match(/(^|\/)club(\d+)$/)[2]);  return;}
+	if (/^g\d+$/.test(url)){callback(null,url.match(/^g(\d+)$/)[1]);  return;}
+	if (/(^|\/)club\d+$/.test(url)){callback(null,url.match(/(^|\/)club(\d+)$/)[2]);  return;}
 	
 	if (vkUsersGroupsDomain[url]){callback(vkUsersGroupsDomain[url][0],vkUsersGroupsDomain[url][1]);  return; }
    
@@ -276,7 +276,7 @@ vkumlnks=0;
 function vkProcessUserLink(link){
 	if (link.hasAttribute('exuser')) return;
    var cn=link.className || '';
-   if (cn.match(/audio_friend_status|audio_popular_owner/)) return;
+   if (/audio_friend_status|audio_popular_owner/.test(cn)) return;
    var cl_name=(link.className.indexOf('fl_r')!=-1?' fl_r':'');
    if (cn.indexOf('audio_friend_name_now')!=-1) cl_name+=' fl_r';
    
@@ -584,7 +584,7 @@ function vk_user_init(){
 
 function ProcessUserPhotoLink(node){
   var hr=node.href;
-  if (node.innerHTML.match(/img/i) && !node.innerHTML.match(/showPhoto/i) && !(node.parentNode.id && node.parentNode.id=='myprofile')) { 
+  if (/img/i.test(node.innerHTML) && !/showPhoto/i.test(node.innerHTML) && !(node.parentNode.id && node.parentNode.id=='myprofile')) {
   if (hr && isUserLink(hr) && !node.getAttribute("onmouseover")){
       var uid=node.innerHTML.match(/http.{3}cs.+\/u(\d+)\//i);
       if (uid) uid=uid[1];
@@ -1120,7 +1120,7 @@ function vkFriendsCheck(nid){
 		notes.shift();
 		var note=0;
 		for(var i=0; i<notes.length;i++)	
-			if (notes[i].title.match(/friends_ok_\d+/) && notes[i].text.match(/[\d-]+/))	{note=notes[i]; nid=note.nid; break;}
+			if (/friends_ok_\d+/.test(notes[i].title) && /[\d-]+/.test(notes[i].text))	{note=notes[i]; nid=note.nid; break;}
 			
 		if (note){
 		  box.removeButtons();
@@ -1766,7 +1766,7 @@ vk_friends={
       for (var i = 0; i < data.length; i++) {
          var ava=data[i][1];
          var name=data[i][5];
-         if (ava.match(/deactivated/) || name=="DELETED" )
+         if (/deactivated/.test(ava) || name=="DELETED" )
             list.push(data[i]);
       }
       cur.friendsList['deleted'] = list;   

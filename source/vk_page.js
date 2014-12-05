@@ -492,7 +492,7 @@ vk_notes={  // <a onclick="showBox('wkview.php', {act: 'notes_old_privacy', nid:
                   vkMsg('<a href="/'+note+'">'+note+'</a>')
                }
                box.hide(); 
-               if (nav.objLoc[0].match(/notes\d+/)){
+               if (/notes\d+/.test(nav.objLoc[0])){
                   nav.reload();
                }
             })
@@ -924,12 +924,12 @@ function vkProcessProfileBday(node){
 
       var links=node.getElementsByTagName('a');
       for (var i=0;i<links.length;i++){
-         if (links[i].href && links[i].href.match(rmd)) 
+         if (links[i].href && rmd.test(links[i].href))
             links[i].parentNode.appendChild(vkCe('span',{"class":"vk_bday_info"},info.replace(/%age_el/g,'vkage0')));
       }
       if (cur.options.info) {
          var r1 = /(c\[byear\]=[^>]+>[^<>]+<\/a>)/;
-         r1 = cur.options.info[0].match(r1) ? r1 : /(c\[bmonth\]=[^>]+>[^<>]+<\/a>)/;
+         r1 = r1.test(cur.options.info[0]) ? r1 : /(c\[bmonth\]=[^>]+>[^<>]+<\/a>)/;
          cur.options.info[0] = cur.options.info[0].replace(r1, "$1" + info.replace(/%age_el/g,'vkage1'));
          cur.options.info[1] = cur.options.info[1].replace(r1, "$1" + info.replace(/%age_el/g,'vkage2'));
       }     
@@ -1454,7 +1454,7 @@ function vkFrProfile(){
       var key=els[i].parentNode.id;
       if (key!='profile_wall'){
          for (var key in fr_match){
-             if (els[i].href.match(fr_match[key])) {mod_l=true; mod(els[i],key);}  
+             if (fr_match[key].test(els[i].href)) {mod_l=true; mod(els[i],key);}
          }
          if (!mod_l) mod_lite(els[i]);
          var key=els[i].parentNode.id;
@@ -1603,7 +1603,7 @@ if (!masks[id]) return;
 } else {
 	if (!el) el=3;
 	masks={'profile_full_info':vk_shuts_prof};
-	if ((el==3 && ge('profile_full_link').getAttribute('title').match('hid'))	 || el==0){ 
+	if ((el==3 && /hid/.test(ge('profile_full_link').getAttribute('title')))	 || el==0){
      addClass(c,"shut"); profile.hideFull();
 	   if (ge('profile_full_link') == null) geByClass('profile_info_link')[0].id='profile_full_link';
 	   ge('profile_full_link').setAttribute('title','show');
@@ -2008,7 +2008,7 @@ vk_pages={
       //console.log(ev);
       if (!ev) return false;
       var el= ev.target || ev.srcElement || {};
-      return box_disable && page && page.w && (page.w+"").match(/^wall-?\d+_\d+$/) && (el.tagName=='SPAN' || el.tagName=='A');
+      return box_disable && page && page.w && /^wall-?\d+_\d+$/.test(page.w+"") && (el.tagName=='SPAN' || el.tagName=='A');
    }
    
 
@@ -2606,7 +2606,7 @@ function vkGroupDecliner(node){// [name, gid, href, thumb, count, type, hash, fr
    if (nav.objLoc['id'] && nav.objLoc['id']!=vk.id) return;
    var nodes=geByClass('group_list_row',node);
    for (var i=0; i<nodes.length; i++){
-      if (!nodes[i].id || nodes[i].innerHTML.match('vkGroupLeave')) continue;
+      if (!nodes[i].id || /vkGroupLeave/.test(nodes[i].innerHTML)) continue;
       var p=geByClass('group_row_info',nodes[i])[0];
       if (!p) continue;
       var gid=(nodes[i].id || "").match(/\d+/);
@@ -2742,7 +2742,7 @@ vk_fave = {
    },
    new_link_fix:function(){
       var link = ge('fave_new_link').value;
-      if (link.match(/^https?:\/\/[^\/]+\//) && !link.match(/https?:\/\/(vk\.com|vkontakte\.ru)/)){
+      if (/^https?:\/\/[^\/]+\//.test(link) && !/https?:\/\/(vk\.com|vkontakte\.ru)/.test(link)){
          ge('fave_new_link').value='vk.com/away.php?to='+link;
       }
    },
@@ -3249,7 +3249,7 @@ vk_feed={
          var t=geByClass('wall_post_text',row)[0];
          if (p){ 
             var id=p.getAttribute('id');
-            if (id.match(/-\d+/)) 
+            if (/-\d+/.test(id))
                types.group=true;
             else
                types.friend=true;
@@ -3607,7 +3607,7 @@ function vk_tag_api(section,url,app_id){
                var _pageQuery=(t.match(/_pageQuery\s*=\s*'([a-f0-9]+)'/) || [])[1];
                var likeHash=(t.match(/likeHash\s*=\s*'([a-f0-9]+)'/) || [])[1];
                if (!_pageQuery || !likeHash){
-                  if (ret<5 && t.match('db_err')){
+                  if (ret<5 && /db_err/.test(t)){
                      ret++;
                      console.log('widget_req error... retry '+ret+'... ');
                      setTimeout(req,3000);
@@ -3669,7 +3669,7 @@ function vk_tag_api(section,url,app_id){
       parse_id:function(obj_id){
          //console.log('>>>',obj_id);
          var like_obj=obj_id;
-         if (obj_id.match(/^([a-z_]+)(-?\d+)_(\d+)/)){
+         if (/^([a-z_]+)(-?\d+)_(\d+)/.test(obj_id)){
             //console.log('<<<',like_obj);
             return like_obj;
          }
