@@ -941,7 +941,7 @@ vk_messages={
       var t2m = function(inputText) {
          var replacedText,replacePattern2,replacePattern3;
          //add break
-         replacedText = replaceEntities(inputText).replace(/</g, '&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br />').replace(/"/g, '&quot;').replace(/&/g,'&amp;');
+         replacedText = replaceEntities(inputText).replace(/&/g,'&amp;').replace(/</g, '&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br />').replace(/"/g, '&quot;');
 
             /*
                            replacedText.replace(/&#(\d\d+);/g,function(s, c) {
