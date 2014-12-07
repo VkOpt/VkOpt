@@ -920,7 +920,7 @@ vk_messages={
       <head><meta charset="utf-8"/><link rel="shortcut icon" href="http://vk.com/images/fav_chat.ico"/><link rel="stylesheet" type="text/css" href="http://vk.com/css/al/common.css" /><title>%title</title><style>\
       body{text-align:center;font:12px/16px Verdana;margin:5px;}\
       hr{border-color:#C3D1E0;}\
-      .messages{width:950px;margin:0 auto;text-align:left;} .msg_item {overflow:hidden} .from,.msg_body,.attacments,.attacment,.fwd{margin-left:80px;}\
+      .messages{width:950px;margin:0 auto;text-align:left;} .msg_item {overflow:hidden} .from,.msg_body,.att_head,.attacments,.attacment,.fwd{margin-left:80px;}\
       .upic{float:left} .upic img{vertical-align:top;width:70px;padding:5px;height:70px;}\
       a,a:visited{text-decoration:none;color:#2B587A} a:hover{text-decoration:underline} .att_head{color:#777;}\
       .att_ico{float:left;width:11px;height:11px;margin: 3px 3px 2px; background-image:url(\'http://vk.com/images/icons/mono_iconset.gif\');}\
