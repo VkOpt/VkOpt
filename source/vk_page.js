@@ -1435,9 +1435,9 @@ function vkFrProfile(){
     insertAfter(div,el);
   };
   var fr_match={
-  'online':'section=online',
+  'online':/section=online/,
   'all':/friends(\?|$)(?!section).*/,
-  'common':'section=common'
+  'common':/section=common/
   };
   var mod_el={
     'profile_albums':function(el){

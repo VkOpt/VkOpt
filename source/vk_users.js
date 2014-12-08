@@ -252,12 +252,7 @@ function GetUserMenuSett() {
                     ];
     
     var res="";
-    var bits = vkgetCookie('remixumbit');
-    if (!bits) {
-        bits = DefExUserMenuCfg;
-        vksetCookie('remixumbit', DefExUserMenuCfg);
-    }
-    var ExUserMenuCfg = bits.split('');
+    var ExUserMenuCfg = GetUserMenuCfg();
 
     for (var i = 0; i < ItemNames.length; i++) {
         res+=makeCbox(i, ItemNames[i], ExUserMenuCfg[i]);
@@ -268,7 +263,7 @@ function GetUserMenuSett() {
 function GetUserMenuCfg(){
   var bits=vkgetCookie('remixumbit');
   if (!bits) {bits=DefExUserMenuCfg; vksetCookie('remixumbit',DefExUserMenuCfg);}
-  ExUserMenuCfg=bits.split('');
+  return bits.split('');
 }
 
 //vkProcessUserLink_mask=/([^<]*<small>[^<]*<\/small>|[^<]*<strong>[^<]*<\/strong>|[^<]*<em>[^<]*<\/em>)/;
@@ -413,32 +408,38 @@ function ExUserItems(id,el){
 	}
 	if (uitems!='') uitems+='<li><div class="vk_user_menu_divider"></div></li>';
 
-	var fl_pr='<a href="#" onclick_="return false;" onmouseover_="vkPopupAvatar(\'%uid\',this);" onclick="vkPopupAvatar(\'%uid\',this,true); return false;" onmouseout="vkHidePhoto();" class="fl_r">&gt;</a>';
-	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,fl_pr+'<a href="/id%uid" onclick="return nav.go(this, event);">'+IDL('Page')+'</a>'):i++;// onclick="AlternativeProfile(\'%uid\'); return false;"
-	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="#" class="fl_r" onclick="TopSearch.writeBox(%uid); return false;">'+IDL("Chat")+'</a><a class="fl_r" href="/im?sel=%uid" onclick="return nav.go(this, event);">'+IDL('Dialog')+'</a><a href="/write%uid" onclick="return showWriteMessageBox(event, %uid);">'+IDL('txMessage')+'</a>'):i++;
-	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/wall%uid" onclick="return nav.go(this, event);">'+IDL("clWa")+'</a>'):i++;
-	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/tag%uid" onclick="return nav.go(this, event);">'+IDL("clPhW")+'</a>'):i++;
-	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/video?id=%uid&section=tagged" onclick="return nav.go(this, event);">'+IDL("clViW")+'</a>'):i++;
-	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/albums%uid" onclick="return nav.go(this, event);">'+IDL("clPh")+'</a>'):i++;
-	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/audio?id=%uid" onclick="return nav.go(this, event);">'+IDL("clAu")+'</a>'):i++;
-	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/app545941_%uid" onclick="return nav.go(this, event);">player '+IDL("clAu")+'</a>'):i++; //audio application
-	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/videos%uid" onclick="return nav.go(this, event);">'+IDL("clVi")+'</a>'):i++;
-	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/groups?id=%uid" onclick="return nav.go(this, event);">'+IDL("clGr")+'</a>'):i++;
-	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/friends?id=%uid" onclick="return nav.go(this, event);">'+IDL("fris")+'</a>'):i++;
-	//(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/questions.php?mid=%uid">'+IDL("clQu")+'</a>'):i++;
-	//(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/apps.php?mid=%uid">'+IDL("clAp")+'</a>'):i++;
-	//(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/events.php?id=%uid">'+IDL("clEv")+'</a>'):i++;
-	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/notes%uid" onclick="return nav.go(this, event);">'+IDL("clNo")+'</a>'):i++;
-	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/gifts%uid">'+IDL("clGi")+'</a>'):i++;
-	//(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/rate.php?act=vote&id=%uid">'+IDL("clRa")+'</a>'):i++;
-   (ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/feed?section=source&source=%uid">'+IDL("mNeP")+'</a>'):i++;
-	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="/feed?owner=%uid&section=owner" onClick="return nav.go(this,event);">'+IDL("clNews")+'</a>'):i++;
-	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkRemoveFriend(%uid);" class="fl_r">&times;</a><a href="javascript:vkAddToFriends(%uid);">'+IDL("clAddFr")+'</a>'):i++;
-	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkAddToFave(%uid,1);" class="fl_r">&times;</a><a href="javascript:vkAddToFave(%uid);">'+IDL("clAddToFav")+'</a>'):i++;
-	(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="#" style="cursor: hand;" onClick="vkAddToBL(%uid); return false;">'+IDL("addblack")+'</a>'):i++;
-   (ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="#" style="cursor: hand;" onClick="vkUserAbuse(%uid); return false;">'+IDL("SendAbuse")+'</a>'):i++;
-   //(ExUserMenuCfg[i]==1)?uitems+=mkExItem(i++,'<a href="javascript:vkAddToSubscribtions(%uid,1);" class="fl_r">x</a><a href="#" style="cursor: hand;" onClick="vkAddToSubscribtions(%uid); return false;">'+IDL("AddToSubscribtions")+'</a>'):i++;
-   uitems+=mkExItem(0,'<a href="javascript:vkFavAddDel(%uid,1);" class="fl_r">&times;</a><a href="#" style="cursor: hand;" onClick="vkFavAddDel(%uid); return false;">'+IDL("FavAddUser")+'</a>');
+    var ExItems = ['<a href="#" onclick_="return false;" onmouseover_="vkPopupAvatar(\'%uid\',this);" onclick="vkPopupAvatar(\'%uid\',this,true); return false;" onmouseout="vkHidePhoto();" class="fl_r">&gt;</a><a href="/id%uid" onclick="return nav.go(this, event);">' + IDL('Page') + '</a>', // onclick="AlternativeProfile(\'%uid\'); return false;"
+        '<a href="#" class="fl_r" onclick="TopSearch.writeBox(%uid); return false;">' + IDL("Chat") + '</a><a class="fl_r" href="/im?sel=%uid" onclick="return nav.go(this, event);">' + IDL('Dialog') + '</a><a href="/write%uid" onclick="return showWriteMessageBox(event, %uid);">' + IDL('txMessage') + '</a>',
+        '<a href="/wall%uid" onclick="return nav.go(this, event);">' + IDL("clWa") + '</a>',
+        '<a href="/tag%uid" onclick="return nav.go(this, event);">' + IDL("clPhW") + '</a>',
+        '<a href="/video?id=%uid&section=tagged" onclick="return nav.go(this, event);">' + IDL("clViW") + '</a>',
+        '<a href="/albums%uid" onclick="return nav.go(this, event);">' + IDL("clPh") + '</a>',
+        '<a href="/audio?id=%uid" onclick="return nav.go(this, event);">' + IDL("clAu") + '</a>',
+        '<a href="/app545941_%uid" onclick="return nav.go(this, event);">player ' + IDL("clAu") + '</a>',//audio application
+        '<a href="/videos%uid" onclick="return nav.go(this, event);">' + IDL("clVi") + '</a>',
+        '<a href="/groups?id=%uid" onclick="return nav.go(this, event);">' + IDL("clGr") + '</a>',
+        '<a href="/friends?id=%uid" onclick="return nav.go(this, event);">' + IDL("fris") + '</a>',
+        //'<a href="/questions.php?mid=%uid">'+IDL("clQu")+'</a>',
+        //'<a href="/apps.php?mid=%uid">'+IDL("clAp")+'</a>',
+        //'<a href="/events.php?id=%uid">'+IDL("clEv")+'</a>',
+        '<a href="/notes%uid" onclick="return nav.go(this, event);">' + IDL("clNo") + '</a>',
+        '<a href="/gifts%uid">' + IDL("clGi") + '</a>',
+        //'<a href="/rate.php?act=vote&id=%uid">'+IDL("clRa")+'</a>',
+        '<a href="/feed?section=source&source=%uid">' + IDL("mNeP") + '</a>',
+        '<a href="/feed?owner=%uid&section=owner" onClick="return nav.go(this,event);">' + IDL("clNews") + '</a>',
+        '<a href="javascript:vkRemoveFriend(%uid);" class="fl_r">&times;</a><a href="javascript:vkAddToFriends(%uid);">' + IDL("clAddFr") + '</a>',
+        '<a href="javascript:vkAddToFave(%uid,1);" class="fl_r">&times;</a><a href="javascript:vkAddToFave(%uid);">' + IDL("clAddToFav") + '</a>',
+        '<a href="#" style="cursor: hand;" onClick="vkAddToBL(%uid); return false;">' + IDL("addblack") + '</a>',
+        '<a href="#" style="cursor: hand;" onClick="vkUserAbuse(%uid); return false;">' + IDL("SendAbuse") + '</a>',
+        //'<a href="javascript:vkAddToSubscribtions(%uid,1);" class="fl_r">x</a><a href="#" style="cursor: hand;" onClick="vkAddToSubscribtions(%uid); return false;">'+IDL("AddToSubscribtions")+'</a>',
+        '<a href="javascript:vkFavAddDel(%uid,1);" class="fl_r">&times;</a><a href="#" style="cursor: hand;" onClick="vkFavAddDel(%uid); return false;">' + IDL("FavAddUser") + '</a>'
+    ];
+
+    var ExUserMenuCfg = GetUserMenuCfg();
+    for (var i = 0; i < ExItems.length; i++)
+        if (ExUserMenuCfg[i] == 1)
+            uitems += mkExItem(i, ExItems[i]);
+
 	return uitems;
 }
 /*
