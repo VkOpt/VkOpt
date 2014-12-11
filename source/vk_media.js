@@ -510,7 +510,7 @@ var vk_photos = {
       var p=geByTag('body')[0];
       if (apply){
          if (getSet(82)=='y') addClass(p,'vk_full_thumbs_photos');
-         return;
+         return false;
       }
       setCfg(82,hasClass(p,'vk_full_thumbs_photos')?'n':'y');
       toggleClass(p,'vk_full_thumbs_photos');
@@ -863,7 +863,7 @@ function vkPVPhotoMover(show_selector){
    var a=(cur.pvCurPhoto.album || "").match(/album(-?\d+)_(\d+)/);
    if (!a){
       alert('album detect error');
-      return;
+      return false;
    }
    var oid=parseInt(a[1]);
    var aid=parseInt(a[2]);
@@ -1553,7 +1553,7 @@ function vkAlbumAdminItems(){
 }
 function vkPVAdminItems(data){
 	//alert(print_r(data));
-   if (!(data ||{}).author) return;
+   if (!(data ||{}).author) return '';
    //console.log(data);
 	var user=(data.author.split('href="')[1] || "").split('"')[0];
 	return (user && user!='' && ge('photos_container') && /album(-?\d+)_(\d+)/.test(cur.moreFrom || ''))?'<a href="#" onclick="photoview.hide(); vkGetPhotoByUser(\''+user+'\'); return false;">'+IDL('paAllUserPhotos')+'<span id="vkphloader" style="display:none"><img src="/images/upload.gif"></span></a>':'';
@@ -4169,7 +4169,7 @@ vkLastFM={
    },
    audio_info:function(){
       var fm=vkLastFM;
-      if (!(window.audioPlayer && audioPlayer.lastSong)) return;
+      if (!(window.audioPlayer && audioPlayer.lastSong)) return {};
       var a = audioPlayer.lastSong || [];
       return {
          title    :fm.clean(a[6]),
@@ -5817,7 +5817,7 @@ vk_vid_down={
          var map=(/*obj.adaptive_fmts ||*/obj.fmt_url_map || obj.url_encoded_fmt_stream_map);
          if (!map) {
             callback([]);
-            return [];
+            return;
          }
          /*
          var params={
@@ -5845,7 +5845,7 @@ vk_vid_down={
       });
    },
    vkYTVideoLinks: function(link){
-      if (String(link).indexOf('youtube.com')==-1) return;
+      if (String(link).indexOf('youtube.com')==-1) return '';
       var vid=String(link).split('?')[0].split('/').pop();
       vk_vid_down.vkGetYoutubeLinks(vid,function(r){
          //alert(JSON.Str(r));
@@ -5895,7 +5895,7 @@ vk_vid_down={
       }); 
    },
    vkVimeoVideoLinks: function(link){
-      if (String(link).indexOf('vimeo.com')==-1) return;
+      if (String(link).indexOf('vimeo.com')==-1) return '';
       var vid=String(link).split('?')[0].split('/').pop();
       vk_vid_down.vkGetVimeoLinks(vid,function(r){
          if (!r) return;

@@ -1620,7 +1620,6 @@ function vkFavUsersList(add_button){
       p.innerHTML='<div id="vk_fav_users_cont" style="padding:10px;">'+html+'</div>';
       vkProcessNode(p);
    });
-   return false;
 }
 
 ////
