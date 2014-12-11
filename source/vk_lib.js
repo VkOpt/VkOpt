@@ -1288,7 +1288,7 @@ vk_hor_slider={
     addEvent(document, selectEvent, cancelEvent);
     setStyle(bodyNode, 'cursor', 'pointer');
     setStyle(scale, 'cursor', 'pointer');
-    return false;
+    return;
   },
   sliderSelectChanged: function (id) {
     var percent = ge(id+'_select').value;
@@ -1431,7 +1431,7 @@ vk_v_slider={
     addEvent(document, selectEvent, cancelEvent);
     setStyle(bodyNode, 'cursor', 'pointer');
     setStyle(scale, 'cursor', 'pointer');
-    return false;
+    return;
   },
   sliderSelectChanged: function (id) {
     var percent = ge(id+'_select').value;

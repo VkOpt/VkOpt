@@ -2339,7 +2339,7 @@ function vkTopicTooltip(el,gid,topic,post,type){
 
 function vkTopicSubscribe(add_link){
 	if (add_link){
-		if (ge('vksubscribetopic')) return;
+		if (ge('vksubscribetopic')) return false;
 		if (nav.objLoc[0].indexOf('topic-')!=-1){
 			 var divider=(ge('privacy_edit_topic_action') && ge('privacy_edit_topic_action').parentNode && isVisible(ge('privacy_edit_topic_action').parentNode))?'<span class="divide">|</span>':'';
 			 geByClass('t0')[0].appendChild(vkCe('li',{"class":"t_r"},'<a href="#" id="vksubscribetopic" onclick="return vkTopicSubscribe();">'+IDL('addtop')+'</a>'+divider))

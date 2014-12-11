@@ -867,7 +867,7 @@ vk_menu={
    },
    check_link:function(link){
       link=trim(link);
-      if (link=='') return;
+      if (link=='') return '';
       if (/^[a-z0-9_-]+\.[a-z]{2,7}(\/|$)/.test(link)) link='http://'+link;
       return  link;
    },

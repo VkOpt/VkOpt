@@ -804,7 +804,7 @@ vk_settings = {
        for (var i=0;i<setts.length;i++){
          var txt=(setts[i].text|| '').toUpperCase()+' '+(setts[i].header|| '').toUpperCase();
          s=s.toUpperCase();
-         if ( txt.indexOf(s)>-1 || s.test(txt)){// TopSearch.parseLatKeys(s)
+         if ( txt.indexOf(s)>-1 || txt.search(s)>-1){// TopSearch.parseLatKeys(s)
             sets.push(setts[i]);
          }
        }   
