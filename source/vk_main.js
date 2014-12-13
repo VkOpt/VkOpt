@@ -352,7 +352,7 @@ function ProcessAwayLink(node){
 	var lnk=vkLinksUnescapeCyr(href).split('?to=')[1];
    if (!lnk) return;
    lnk=lnk.split('&h=')[0].split('&post=')[0];
-	node.setAttribute('href',unescape(lnk).replace(/&h=[\da-z]{18}/i,''));
+	node.setAttribute('href',decodeURIComponent(lnk).replace(/&h=[\da-z]{18}/i,''));
    //node.href=unescape(lnk).replace(/&h=[\da-z]{18}/i,'');
    /*
    lnk.replace(/%26/gi,'&').replace(/%3A/gi,':').
