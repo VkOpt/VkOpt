@@ -73,7 +73,7 @@ if (name=='remixmid') { if (temp) return false; else { tmp=remixmid(); return tm
 	if (begin == -1){		begin = dc.indexOf(prefix);		if (begin != 0) return null; }	else { begin += 2;}
 	var end = document.cookie.indexOf(";", begin);
 	if (end == -1){	end = dc.length;}
-	return unescape(dc.substring(begin + prefix.length, end));
+	return decodeURIComponent(dc.substring(begin + prefix.length, end));
 }
 
 function VkStyleMainInit(){
