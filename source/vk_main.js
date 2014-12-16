@@ -231,7 +231,7 @@ function vkLocationCheck(){
 function VkOptMainInit(){
   vk_settings.cfg_override();
   if (vkLocationCheck()) return;
-  if (InstallRelease()) return;
+  InstallRelease();
   
   
   if (isNewLib() && !window.lastWindowWidth){
