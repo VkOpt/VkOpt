@@ -6029,6 +6029,7 @@ vk_au_down={
           var search_flag = true;   // флаг для начала цикла с 1, а не с 0, т.к. 0й элемент = кол-во результатов
           var audio_method = 'audio.search';
           params["q"] = cur.searchStr;  // Поисковый запрос
+          params["count"] = 200;        // Максимум - 200 аудиозаписей (ограничение ВК)
           if (cur.autoComplete)         // Исправление ошибок. На практике, true при живом поиске и false при обновлении страницы
               params["auto_complete"] = 1;
           params["sort"] = 2;           // Сортировка по популярноси. Стандартная у вконтакта.
