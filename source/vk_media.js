@@ -107,6 +107,7 @@ var vk_photos = {
       .vk_full_thumbs_photos #photos_container .photo_row,\
       .vk_full_thumbs_photos .pva_photo_link,\
       .vk_full_thumbs_photos .pva_photo{height: auto !important;}\
+      .vk_full_thumbs_photos #photos_container .photo_row_up a {position: inherit !important;}\
       #vk_ph_upd_btn{opacity:0.1}\
       #vk_ph_upd_btn:hover{opacity:1}\
       .vk_albums_list a{display:block; padding-left:10px; padding-bottom:3px; border-bottom:1px solid rgba(100,100,100,0.1)}\
