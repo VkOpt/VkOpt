@@ -3215,12 +3215,14 @@ vk_feed={
       Inj.Before('Feed.pushEvent','others.insertBefore(first','vkProcessNode(first);'); 
       Inj.Before('Feed.pushEvent','cont.insertBefore(frow','vkProcessNode(frow);');
       Inj.Before('Feed.pushEvent','cont.insertBefore(newEl','vkProcessNode(newEl);');
+      Inj.Before('Feed.editList','stat:','onDone: vk_feed.hang_handler, ');  // После загрузки окна редактирования списка источников новостей вызвать vk_feed.hang_handler
+      Inj.Before('Feed.addList','stat:','onDone: vk_feed.hang_handler, ');  // После загрузки окна создания списка источников новостей вызвать vk_feed.hang_handler
+      Inj.Start('Feed.onListSave','white=white.concat(vk_feed.additional_owners);'); // Перед сохранением списка источников новостей присоединить к нему vk_feed.additional_owners
       //      
    },
    on_page:function(){
       //vkSortFeedPhotos();
       vk_feed.filter_init();
-      vk_feed.new_list_btn();
    },
    process_node:function(node){
       if (!vk_feed.filter_enabled) return;
@@ -3423,128 +3425,72 @@ vk_feed={
                         
       });
 
-   }, 
-   new_list_btn:function(){
-      var r=ge('filter_t_newlist');
-      if (!r || ge('filter_t_vknewlist')) return;
-      var el=se('<div class="feed_filter_tabs_row clear_fix feed_newlist_filter_row" id="filter_t_vknewlist" onmouseover="addClass(this, \'feed_filter_tabs_row_over\');" onmouseout="removeClass(this, \'feed_filter_tabs_row_over\');" onclick="vk_feed.new_list();">\
-        <div class="feed_filter_tabs_icon fl_l feed_icon_newlist"></div>\
-        <div class="feed_filter_tabs_title fl_l noselect" onselectstart="return false;">'+IDL('NewList',1)+'</div>\
-        <div class="feed_filter_tabs_check fl_l"></div>\
-      </div>');
-      r.parentNode.appendChild(el);
-      //vk_feed.new_list();
    },
-   new_list:function(){
-      var box = new MessageBox({title: IDL('NewList')});
-      
-      var users_list=[];
-      
-      var save = function(white,title) {
-            var list_id = -1; // create new
-            ajax.post('al_feed.php', {
-               act: 'a_save_list',
-               hash: cur.tabs_hash,
-               White: white.join(','),
-               title: title,
-               list_id: list_id,
-               no_reposts: 1
-            }, {
-               onDone: function(new_list_id) {
-                  if (list_id > 0) {
-                     Feed.switchList(list_id);
-                  } else {
-                     nav.go({
-                        '0': 'feed',
-                        section: 'list',
-                        list: new_list_id
-                     }, null, {
-                        nocur: true
-                     });
-                  }
-                  box.hide();
-               },
-               showProgress: box.showProgress,
-               hiderogress: box.hideProgress
-            });
-
-      };
-      
-      var tpl='<a href="/%LINK" class="olist_item_wrap" id="olist_item_wrap%UID">\
-        <div class="olist_item clear_fix">\
-          <!--<span class="olist_checkbox fl_r"></span>-->\
-          <span class="olist_item_photo fl_l">\
-            <img class="olist_item_photo" src="%PHOTO" width="40" height="40">\
-          </span>\
-          <span class="olist_item_name fl_l">%NAME</span>\
-        </div>\
-      </a>';
-      var search_group=function(gid){
-         dApi.call('groups.getById',{group_id:gid},function(r){
-            if (!r.response || !r.response[0]) return;
-            var u=r.response[0];
-            if (users_list.indexOf('-'+u.gid)!=-1) return;
-            users_list.push('-'+u.gid);
-            var el=se(tpl.replace(/%UID/g,u.gid)
-               .replace(/%LINK/g,u.screen_name)
-               .replace(/%PHOTO/g,u.photo)
-               .replace(/%NAME/g,u.name));
-            val('vk_feed_list_user','');   
-            ge('vk_feed_users_list').appendChild(el);
-         })
-         
-      };
-      
-      var search_user=function(){
-         var v=val('vk_feed_list_user');
-         var sn=v.split('#')[0].split('?')[0].split('/').pop();
-         if (!sn) return;
-         dApi.call('users.get',{user_ids:sn,fields:'photo_50,screen_name'},{
-            ok:function(r){
-               if (!r.response || !r.response[0]){ 
-                  search_group(sn);
-                  return;
-               }
-               var u=r.response[0];
-               if (users_list.indexOf(u.uid)!=-1) return;
-               users_list.push(u.uid);
-               var el=se(tpl.replace(/%UID/g,u.uid)
-                  .replace(/%LINK/g,u.screen_name)
-                  .replace(/%PHOTO/g,u.photo_50)
-                  .replace(/%NAME/g,u.first_name+' '+u.last_name));
-               val('vk_feed_list_user','');   
-               ge('vk_feed_users_list').appendChild(el);
-            },
-            error:function(r){ search_group(sn); }
-         })
-      };
-
-      box.removeButtons();   
-      box.addButton(getLang('box_no'),box.hide, 'no');
-      box.addButton(getLang('box_save'),function(){
-         save(users_list,val('vk_feed_list_title'));
-      },'yes');
-      box.content('<div>\
-      <h2>'+IDL('ListTitle')+'</h2>\
-      <input type="text" id="vk_feed_list_title" value="'+Math.round((new Date()).getTime()/1000).toString(36)+'" class="text" style="width:370px; margin-bottom:15px;">\
-      <h2>'+IDL('LinkToUserOrGroup')+'</h2>\
-      <div class="fl_r"><div class="button_blue" id="vk_feed_search_btn"><button><span class="vk_magglass_icon"></span></button></div></div>\
-      <div><input type="text" id="vk_feed_list_user" class="text olist_filter" style="margin-top:2px; width: 305px;"></div>\
-      <div id="vk_feed_users_list"></div>\
-      </div>');
-      stManager.add(['privacy.css','ui_controls.css','boxes.css']);
-      box.show();
-      
-      var inp=ge('vk_feed_list_user');
-      inp.onkeydown=function(ev){
+    /* <Работа со списком источников новостей> */
+    additional_owners: [],  // массив айдишников тех, кого нашли через прямой адрес странички
+    hang_handler: function (box) {  // Повесить на поле ввода "Быстрый поиск", которое в окне box, обработчик нажатия клавиш
+        var input = geByClass('olist_filter', box.tabContent)[0];    // поле ввода "Быстрый поиск"
+        if (input) {
+            input.onkeyup = vk_feed.input_handler;
+            input.onfocus = function () {   // Подсказка о действии клавиши Enter
+                vkSettInfo(input, IDL('EnterToSearch'));
+            }
+        }
+        vk_feed.additional_owners = [];
+    },
+    input_handler: function (ev) {  // Обработчик нажатия Enter в поле ввода.
         ev = ev || window.event;
         if (ev.keyCode == 10 || ev.keyCode == 13) {
-          search_user();
-          cancelEvent(ev);
+            cancelEvent(ev);
+            var tpl = '<a id="olist_item_wrap%UID" class="olist_item_wrap" href="/%LINK" \
+            onclick="vk_feed.olist_click(this); return false;">\
+                  <div class="olist_item clear_fix">\
+                    <span class="olist_checkbox fl_r"></span>\
+                    <span class="olist_item_photo fl_l">\
+                      <img width="40" height="40" src="%PHOTO" class="olist_item_photo">\
+                    </span>\
+                    <span class="olist_item_name fl_l">%NAME</span>\
+                  </div>\
+                </a>'
+            var input = ev.target;  // поле ввода "Быстрый поиск"
+            var url = val(input);
+            vk_feed.search_user(url, function (r) {     // поиск владельца по url
+                if (r.response && r.response[0]) {
+                    var u = r.response[0];
+                    // вместо надписи о том, что ничего не найдено, вставить строчку с владельцем странички
+                    geByClass('olist')[0].innerHTML = tpl.replace(/%UID/g, u.uid || '-' + u.gid)
+                        .replace(/%LINK/g, u.screen_name)
+                        .replace(/%PHOTO/g, u.photo_50 || u.photo)
+                        .replace(/%NAME/g, u.name || u.first_name + ' ' + u.last_name);
+                    val(input, ''); // очистить поле ввода (а надо ли?)
+                }
+            });
         }
-      };
-      ge('vk_feed_search_btn').onclick=search_user;
-   }
+    },
+    search_user: function (url, callback) { // Поиск страницы по url и вызов callback с ответом от API в качестве аргумента
+        if (/^(https?:\/\/vk\.com\/)?[\w\.]+$/.test(url)) {    // если это действительно адрес странички, ищем
+            var sn = url.split('/').pop();
+            if (!sn) return;
+            dApi.call('execute', {
+                code: 'var u=API.users.get({user_ids: "' + sn + '", fields: "photo_50,screen_name"});' +
+                    'if (u) return u;' +
+                    'else return API.groups.getById({group_id: "' + sn + '", fields: "photo,screen_name"});'
+            }, {
+                ok: callback,
+                error: function () {
+                    vkMsg(IDL('Error'));
+                }
+            });
+        }
+    },
+    olist_click: function (el) {    // При клике на нашу вставленную строчку добавить (или удалить) id в массив дополнительных idшников
+        var id = el.id.substr(15);  // Вычленяем id из ссылки вида olist_item_wrap%UID
+        if (el.className.indexOf('_on') == -1)  // если пункт не выбран, значит сейчас мы его как раз и выбираем
+            vk_feed.additional_owners.push(id);
+        else                                    // галочка снимается; удаляем id из массива дополнительных idшников 
+            vk_feed.additional_owners.splice(vk_feed.additional_owners.indexOf(id), 1);
+    }
+    /* </ Работа со списком источников новостей> */
 };
 
 /* FEED */
