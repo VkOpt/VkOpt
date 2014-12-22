@@ -979,9 +979,12 @@ var vkMozExtension = {
 		return true;
 	}
    
-   function AjCrossAttachJS(url,id) {
+   function AjCrossAttachJS(url,id, callback) {
       	if (vk_ext_api.ready && (url || '').replace(/^\s+|\s+$/g, '')){
-            vk_aj.get(url,function(t){window.eval(t)});
+            vk_aj.get(url, function (t) {
+                window.eval(t);
+                if (isFunction(callback)) callback();
+            });
             return true;
          } else {
             var request = PrepReq();
@@ -993,12 +996,15 @@ var vkMozExtension = {
                element.src = url;
                if (id)
                   element.id=id;
+               if (isFunction(callback))
+                  element.onload = callback;
                document.getElementsByTagName('head')[0].appendChild(element);
             };
             request.onreadystatechange = function() {
                if(request.readyState == 4 && request.responseText!=''){
                   //alert('JS loaded');
                   window.eval(request.responseText);
+                  if (isFunction(callback)) callback();
                }
             };
             request.open('GET', url, true);
@@ -2064,6 +2070,11 @@ var vk_ext_api={
             }
             
             callback(headers);
+         });        
+      },
+      ajax:function(options,callback){
+         vk_ext_api.req({act:'ajax',options:options},function(r){
+            callback(r.response);
          });        
       }
    }
