@@ -348,28 +348,6 @@ var vkMozExtension = {
       output = formatArray(array, 0, pad_val, pad_char);
          return output;
    }
-	function vkTimer(callback, delay) {
-       /* Example:
-         var timer = new Timer(function() {
-             alert("Done!");
-         }, 1000);
-         timer.pause();
-         timer.resume();         
-       */ 
-       var timerId, start, remaining = delay;
-
-       this.pause = function() {
-           window.clearTimeout(timerId);
-           remaining -= new Date() - start;
-       };
-
-       this.resume = function() {
-           start = new Date();
-           timerId = window.setTimeout(callback, remaining);
-       };
-
-       this.resume();
-   }
    function isArray(obj) { return Object.prototype.toString.call(obj) === '[object Array]'; }
 	function vkCutBracket(s,bracket){
       if (isArray(s)) return s;
@@ -498,11 +476,6 @@ var vkMozExtension = {
       }
    }
    
-   function num_to_text(s){
-      s+='';
-      return s.length<4?s:s.split('').reverse().join('').replace(/(\d{3})/g,'$1 ').split('').reverse().join('').replace(/^\s+/,'');
-   }
-
 	function vkLinksUnescapeCyr(str){
 	  var escaped=["%B8", "%E9", "%F6", "%F3", "%EA", "%E5", "%ED", "%E3", "%F8", "%F9", "%E7", "%F5", "%FA", "%F4", "%FB", "%E2", "%E0", "%EF", "%F0", "%EE", "%EB", "%E4", "%E6", "%FD", "%FF", "%F7", "%F1", "%EC", "%E8", "%F2", "%FC", "%E1", "%FE","%A8", "%C9", "%D6", "%D3", "%CA", "%C5", "%CD", "%C3", "%D8", "%D9", "%C7", "%D5", "%DA", "%D4", "%DB", "%C2", "%C0", "%CF", "%D0", "%CE", "%CB", "%C4", "%C6", "%DD", "%DF", "%D7", "%D1", "%CC", "%C8", "%D2", "%DC", "%C1", "%DE"];
 	  var unescaped=["\u0451", "\u0439", "\u0446", "\u0443", "\u043a", "\u0435", "\u043d", "\u0433", "\u0448", "\u0449", "\u0437", "\u0445", "\u044a", "\u0444", "\u044b", "\u0432", "\u0430", "\u043f", "\u0440", "\u043e", "\u043b", "\u0434", "\u0436", "\u044d", "\u044f", "\u0447", "\u0441", "\u043c", "\u0438", "\u0442", "\u044c", "\u0431", "\u044e","\u0401", "\u0419", "\u0426", "\u0423", "\u041a", "\u0415", "\u041d", "\u0413", "\u0428", "\u0429", "\u0417", "\u0425", "\u042a", "\u0424", "\u042b", "\u0412", "\u0410", "\u041f", "\u0420", "\u041e", "\u041b", "\u0414", "\u0416", "\u042d", "\u042f", "\u0427", "\u0421", "\u041c", "\u0418", "\u0422", "\u042c", "\u0411", "\u042e"];
@@ -551,10 +524,6 @@ var vkMozExtension = {
 	  for (var key in attr)  el.setAttribute(key,attr[key]);
 	  if (inner) el.innerHTML=inner;
 	  return el;
-	}
-	function DelElem(el)	{
-		var Node = ge(el);
-		if(Node) Node.parentNode.removeChild(Node);
 	}
 
 	function insertAfter(node, ref_node) {
@@ -619,24 +588,6 @@ var vkMozExtension = {
 				   b[i] = a.snapshotItem(i);
 		   }
 		   return b;
-	}
-	function $xp(s, t){
-		return new DOMParser().parseFromString(s, "text/xml");
-	}
-	function $hp(s){
-		var a = document.createElement("div");
-		a.innerHTML = s;
-		return a;
-	}
-	function $rnd(tmpl, ns) {
-		var fn = function(w, g) {
-			g = g.split("|");
-			var cnt = ns[g[0]];
-			for(var i = 1; i < g.length; i++)
-				cnt = eval(g[i])(cnt);
-			return cnt || w;
-		};
-		return tmpl.replace(/\$\{([A-Za-z0-9_|.]+)\}/g, fn);
 	}
 	function vkLocalStoreReady(){
 	  return window.localStorage || window.GM_SetValue || window.sessionStorage;
@@ -738,15 +689,6 @@ var vkMozExtension = {
 	vksetCookie('remixbit',SettBit);
 	}
 
-	function vkAddScript(jsrc){
-	  for (var i=0;i<arguments.length;i++){  
-		var js = document.createElement('script');
-		js.type = 'text/javascript';
-		js.src = arguments[i];
-		document.getElementsByTagName('head')[0].appendChild(js);
-	  }
-	}
-   
 	function vkRand(){return Math.round((Math.random() * (100000000 - 1)));}
 	function unixtime() { return Math.round(new Date().getTime());}
 	function getScrH(){ return window.innerHeight ? window.innerHeight : (document.documentElement.clientHeight ? document.documentElement.clientHeight : document.body.offsetHeight);}
@@ -1050,19 +992,6 @@ String.prototype.leftPad = function (l, c) {
 
 /* VK GUI */
 	//javascript:   var x=0;  setInterval("ge('content').innerHTML=vkProgressBar(x++,100,600,'Выполнено %');",100);  void(0);  
-	function vkProgressBarOld(val,max,width,text){
-			if (val>max) val=max;
-		var pos=(val*100/max).toFixed(2);;
-			var perw=(val/max)*width;
-			text=(text || '%').replace("%",pos+'%');
-			html='<div class="vkProgBar vkPBFrame" style="width: '+perw+'px;">'+
-					'<div class="vkProgBar vkProgBarFr" style="width: '+width+'px;">'+text+'</div>'+
-				'</div>'+
-				'<div  class="vkProgBar vkProgBarBgFrame" style="width: '+width+'px;">'+
-					'<div class="vkProgBar vkProgBarBg" style="width: '+width+'px;">'+text+'</div>'+
-				'</div>';
-			return html;
-	}
 	
 	function vkProgressBar(val,max,width,text){
 			if (val>max) val=max;
@@ -1290,12 +1219,6 @@ vk_hor_slider={
     setStyle(scale, 'cursor', 'pointer');
     return;
   },
-  sliderSelectChanged: function (id) {
-    var percent = ge(id+'_select').value;
-    var pos=ge(id+'_position').value;
-    vk_hor_slider.sliderUpdate(percent,pos,id);
-    vk_hor_slider.sliderApply(id);
-  },
   sliderUpdate: function (percent, val,id) {
       percent = intval(percent);
       ge(id+'_select').value=percent;
@@ -1433,12 +1356,6 @@ vk_v_slider={
     setStyle(scale, 'cursor', 'pointer');
     return;
   },
-  sliderSelectChanged: function (id) {
-    var percent = ge(id+'_select').value;
-    var pos=ge(id+'_position').value;
-    vk_v_slider.sliderUpdate(percent,pos,id);
-    vk_v_slider.sliderApply(id);
-  },
   sliderUpdate: function (percent, val,id) {
       percent = intval(percent);
       ge(id+'_select').value=percent;
@@ -1478,40 +1395,6 @@ function vkSetMouseScroll(el,next,back){
 }
 
 
-function sideBarMenu(){
-	return ge('side_bar').getElementsByTagName('ol')[0];
-}
-
-function vkShowCaptcha(sid, img, onClick, onShow, onHide) {
-  vk_captchaBox = new MessageBox({title: getLang('captcha_enter_code'), width: 300});
-  var box = vk_captchaBox;
-  box.removeButtons();
-  var key;
-  var base_domain = base_domain || "/";
-  var onClickHandler = function() {
-    key = ge('captchaKey');
-    removeEvent(key, 'keypress');
-    onClick(sid, key.value);
-    hide('captchaKey');
-    show('captchaLoader');
-  };
-
-  box.addButton(getLang('captcha_cancel'), function(){
-    removeEvent(key, 'keypress');
-    box.hide();
-  },'no');
-  
-  box.addButton(getLang('captcha_send'),onClickHandler);
-  box.setOptions({onHide: onHide, bodyStyle: 'padding: 16px 14px'});
-  box.content('<div style="text-align: center; height: 76px"><a href="#" id="refreshCaptcha"><img id="captchaImg" class="captchaImg" src="'+img+ '"/></a><div></div><input id="captchaKey" class="inputText" name="captcha_key" type="text" style="width: 120px; margin: 3px 0px 0px;" maxlength="7"/><img id="captchaLoader" src="'+base_domain+'images/progress7.gif" style="display:none; margin-top: 13px;" /></div>');
-  box.show();
-  if (isFunction(onShow)) onShow();
-
-  key = ge('captchaKey');
-  addEvent(key, 'keypress', function(e) { if(e.keyCode==13 || e.keyCode==10){ onClickHandler(); }});
-  addEvent(ge('refreshCaptcha'), 'click', onClickHandler);
-  key.focus();
-}
 
 /* VK API */
 function vk_oauth_api(app_id,scope){
@@ -2312,9 +2195,6 @@ function vkFileSize(size,c){
 	return size ? (size/Math.pow(1024, (i = Math.floor(Math.log(size)/Math.log(1024))))).toFixed(c).replace(x,'')+filesizename[i] : '0 Bytes';
 }
 
-function vkattachScript(id, c) {
- document.getElementsByTagName('head')[0].appendChild(  vkCe('script', {id: id, type: 'text/javascript', src: c})  );
-}
 
 
 // DATA SAVER
@@ -2389,12 +2269,6 @@ function vkLoadTxt(callback,mask){
 }
 //END DATA LOADER
 
-function vkSwitchHost(){
-   var vk='//vk.com/';
-   var vko='//vkontakte.ru/';
-   var v= (location.href.indexOf(vk)==-1);
-   location.assign(location.href.split(v?vko:vk).join(v?vk:vko));
-}
 function vkDisableAjax(){
   if (window.nav && nav.go) Inj.Before('nav.go',"var _a = window.audioPlayer","{ location.href='/'+strLoc; return true;};");
 }
@@ -2859,16 +2733,6 @@ function YMDonateForm(Amount,purse_id,submit_text){
     </td></tr></tbody></table></form></div>';
 }
 
-function YM5DonateForm(purse_id,submit_text){
- submit_text=submit_text?submit_text:IDL('Donate');
- var type=purse_id.match(/(\w)\d+/)[1].toLowerCase();
- var wm='WM'+type.toUpperCase();
- return '<div style="margin:0 auto; display: table;"><img src="data:image/gif;base64,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"/><form style="margin: 0; padding: 0 0 2px;" action="https://money.yandex.ru/donate.xml" method="post">\
-  <input type="hidden" name="to" value="'+purse_id+'"/>\
-  <input type="hidden" name="s5" value="5rub"/>\
-  <input type="submit" value="'+submit_text+'"/>\
-  </form></div>';
-}
 
 function AdDonateForm(){
    return vkopt_add_cfg;

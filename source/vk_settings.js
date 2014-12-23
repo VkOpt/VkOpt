@@ -556,24 +556,6 @@ function GenWallList(el){
   }
   if (!el) {return whtml;} else {ge(el).innerHTML=whtml;}
 }
-function WallManager(){
-  var wall_list=ReadWallsCfg();
-  //wall_list=wall_list.sort();
-  /*var whtml="";
-  for (var i=0; i<wall_list.length;i++){
-      whtml+='<div id="wit'+wall_list[i]+'" style="width:130px"><a>'+wall_list[i]+'</a><a style="float:right" onclick="vkRemWall('+i+')">x</a></div>';
-  }*/
-  return '<a href="#" onclick="toggle(\'vkExWallMgr\'); ge(\'vkwalllist\').innerHTML=GenWallList(); return false;"><b>'+IDL("Settings")+'</b></a>'+
-          '<div id="vkExWallMgr" style="display:none;"><div style="text-align:left;">'+//GetUserMenuSett()+'</span></span>'+
-          '<input type="text" style="width:90px;" id="vkaddwallid" onkeydown="if(13==event.keyCode){vkAddWall(); this.value=\'\'; return false;}" size="20"> <a href=# onclick="vkAddWall(); return false;">'+IDL('add')+'</a><br>'+
-          '<div id="vkwalllist">'+
-          //GenWallList()+
-          '</div></div><small class="divider">'+IDL('wallsHelp')+'</div></small>';
-}
-
-function WallManForm(){
-  ge('wallmgr').innerHTML=WallManager();
-}
 //end wallmgr
 
 

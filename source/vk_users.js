@@ -8,7 +8,6 @@
 
 
 //  functions for work with users
-var vkUsersDomain={}; 
 var isUserRegEx=[
 /(^|\/)(reg|regstep|club|event|photo|photos|album|albums|audios|video|videos|note|notes|app|page|board|topic|write|public|publics|groups|wall|graffiti|tag\d|doc|gifts)-?\d+/i,
 /(^|\/)(events|changemail|mail|im([^a-z0-9]|$)|audio|apps|editapp|feed|friends|friendsphotos|search|invite|settings|edit|fave|stats|video|groups|notes|docs|gifts|support|bugs|dev)(\?.*#?|#|$)/i,
@@ -21,19 +20,6 @@ var isUserRegEx=[
 function isUserLink(url){
 	return (!(isUserRegEx[0].test(url) || isUserRegEx[1].test(url) || isUserRegEx[2].test(url) || isUserRegEx[3].test(url) || isUserRegEx[4].test(url)) ||
 		isUserRegEx[5].test(url)) && !isUserRegEx[6].test(url);
-}
-
-
-function getUserID(url,callback){
- url=String(url);
- if (/^\d+$/.test(url)){callback(url);  return;}
- if (vkUsersDomain[url]){callback(vkUsersDomain[url]);  return; }
- AjGet('/groups_ajax.php?act=a_inv_by_link&page='+url,function(r){ // payments.php?act=votes_transfer_get_person&page=durov -captcha
-    r=r.responseText;
-    var uid=(r)?r.match(/name=.id..value=.(\d+)/)[1]:null;
-    vkUsersDomain[url]=uid;
-    callback(uid);
- });
 }
 
 var vkUsersGroupsDomain={};
@@ -141,11 +127,6 @@ function vkGetUserInfo(uid,callback){
 }
 
 // <a href=# onclick="vkGoToLink('albums%id','kiberinfinity'); return false;">
-function vkGoToLink(link,mid){
-  getUserID(mid,function(uid){
-    document.location.href=link.replace(/%id/g,uid);
-  });
-}
 
 vk_users = {
    find_age:function(target_uid,callback,ops){
@@ -473,17 +454,6 @@ function vkAddToFave(uid,is_del){ // Turn you to online
 	});
 }
 
-function vkAddToSubscribtions(uid,is_del){
-   if (is_del)
-      dApi.call('subscriptions.unfollow',{uid:uid},function(r){
-         vkMsg('<b>OK</b>',2000);
-      });   
-   else 
-      dApi.call('subscriptions.follow',{uid:uid},function(r){
-         vkMsg('<b>OK</b>',2000);
-      });
-}
-
 function vkAddToBL(uid){
 	vkMsg(vkLdrMonoImg,1000);
 	AjGet('/settings?act=blacklist&al=1',function(r,t){
@@ -512,30 +482,6 @@ function vkBanUser(user_link,gid){
    }
 }
   
-function vkBanUser_(user_link,gid) {// old
-	if (gid || cur.gid || cur.oid<0){
-		if (!gid) gid=cur.oid?Math.abs(cur.oid):cur.gid;
-		var ban=function(){
-			vkLdr.show();
-			AjGet('/club'+gid+'?act=blacklist&al=1',function(r,t){
-				var hash=t.split("hash: '")[1];
-				if (!hash){
-					vkLdr.hide();
-					vkMsg(IDL('Error'),2000);
-					return;
-				}
-				hash=hash.split("',")[0];
-				ajax.post('al_groups.php', {act: 'bl_user', name: user_link, gid: gid, hash: hash}, {onDone: function(text, mid, html) {
-					  vkLdr.hide();
-					  vkMsg(text,3000);
-					}
-				});//, showProgress: lockButton.pbind(btn), hideProgress: unlockButton.pbind(btn)
-			});
-		};
-		vkAlertBox(IDL('ban'),IDL('BanConfirm'),ban,true);
-	}
-}
-
 function vkBanUserFunc(user_link,gid,callback) {
 	if (gid || cur.gid || cur.oid<0){
 		if (!gid) gid=cur.oid?Math.abs(cur.oid):cur.gid;
@@ -1248,12 +1194,6 @@ function vkHideRemAddFrBlock(){
 //  UPD_END  //
 //////////////
 //*
-function vkFriendsIdsGet(callback){
-		dApi.call('friends.get',{},function(r){
-			callback(r.response);
-		});
-}
-
 
 function vkFriendsBySex(add_link){
 	if (add_link  && !ge('section_slists')){
@@ -1452,37 +1392,6 @@ vk_fav={
 };
 
 
-function vkFastChatSortUsers(a,b){
-   var x=0;
-   var y=0;
-   
-  
-   af=(a.indexOf('vk_faved_user')!=-1);
-   ao=(a.indexOf('fc_contact_online')!=-1);
-   
-   bf=(b.indexOf('vk_faved_user')!=-1);
-   bo=(b.indexOf('fc_contact_online')!=-1);   
-   
-   /*
-   if (af && bf) return 1;
-   else if (!af && bf) return 1;
-   else return 0; */
-   /*
-   else if (!af && !ao) return 1;
-   //else if (!bf && !bo) return 1;
-   else if (af && bf){
-      if (ao && !bo) return -1;
-      else if (!ao && bo) return 1;
-      else return 0;
-   } else {
-      if (ao && !bo) return -1;
-      else if (!ao && bo) return 1;
-      else return 0; 
-   }*/
-
-   
-   //vkFastChatSortUsers
-}
 /*
 function vkNotifyUserCheckAndShow(params){
    params = params || {};
