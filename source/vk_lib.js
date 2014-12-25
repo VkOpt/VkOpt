@@ -375,7 +375,7 @@ var vkMozExtension = {
       return s1;
    }
 
-	function vkExtendLang(obj) {
+	function vkExtendLang(obj) {    // Используется в некоторых плагинах к вкопту. Там узкоспециализированные скрипты по мелочам. Человек 5 использует.
 	  if (!window.vk_lang_add) vk_lang_add={};
 	  for (var key in obj)  vk_lang_add[key]=obj[key]; 
 	}
@@ -969,7 +969,7 @@ String.prototype.leftPad = function (l, c) {
       if (hex.length==3) hex=hex.replace(/([A-Z0-9])([A-Z0-9])([A-Z0-9])/i,'$1$1$2$2$3$3');
 		return [parseInt(hex.substr(0, 2), 16), parseInt(hex.substr(2, 2), 16), parseInt(hex.substr(4, 2), 16)];
 	}
-   function hex2rgba(hexcolor,ret_struct){
+   function hex2rgba(hexcolor,ret_struct){  // Используется при разработке тем оформления
       var rgb=hex2rgb(hexcolor);
       var r=rgb[0];
       var g=rgb[1];
@@ -1701,7 +1701,7 @@ var vk_api_permissions = {
 };
 
 
-function vkApiCall(method,params,callback){
+function vkApiCall(method,params,callback){ // Функция позволяет юзать методы без авторизации. TODO: добавить получение инфы через эту функцию для всплывающего профиля, если тебя этот чел в свой ЧС занёс.
    params = params || {};
    params['oauth'] = 1;
    params['method'] = method;
@@ -2204,7 +2204,7 @@ var VKFDS_SWF_HTTPS_LINK='https://pp.vk.me/c6147/u13391307/c0b944fc2c34a1.zip';
 var VKTextToSave="QweQwe Test File"; var VKFNameToSave="vkontakte.txt";
   
 function vkOnSaveDebug(t,n){/*alert(n+"\n"+t)*/}
-function vkOnResizeSaveBtn(w,h){
+function vkOnResizeSaveBtn(w,h){        // Вызывается из флешки как и vkOnSaveDebug
 			ge("vkdatasaver").setAttribute("height",h);
 			ge("vkdatasaver").setAttribute("width",w+2);
 			hide("vkdsldr"); show("vksavetext");
