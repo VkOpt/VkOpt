@@ -1727,11 +1727,11 @@ function vkClock() {
 	if (getSet(30) > 0) {
 		if (getSet(30) < 3) {
 			var sidebar=sideBar();
-			var div=vkCe('div',{id:"vkCl","class":"left_box",style:"color: #2b587a; font-size: 22px; font-family: arial; font-weight: bold;"},new Date().toLocaleString().match(/\d+:\d+:\d+/i));
+			var div=vkCe('div',{id:"vkCl","class":"left_box",style:"color: #2b587a; font-size: 22px; font-family: arial; font-weight: bold;"},new Date().toString().match(/\d+:\d+:\d+/i));
 			sidebar.appendChild(div);
 		}
       if (ge('vkCl')){
-         if (getSet(30) ==1) setInterval(function(){var c=ge('vkCl'); if (c) c.innerHTML=new Date().toLocaleString().match(/\d+:\d+:\d+/i);},1000);
+         if (getSet(30) ==1) setInterval(function(){var c=ge('vkCl'); if (c) c.innerHTML=new Date().toString().match(/\d+:\d+:\d+/i);},1000);
          if (getSet(30) ==2) setInterval(function(){var c=ge('vkCl'); if (c) c.innerHTML=wr_date();},1000);
       }
 		if (getSet(30) ==3) makeClock();
