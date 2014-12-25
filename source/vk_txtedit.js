@@ -24,7 +24,7 @@ function vkInsertToField(field,text,html){
 		obj.setValue((obj2.innerHTML || obj.value)+' '+text);//appenChild(vkCe('span'),{},html);
 	}
 }*/
-function vkInsertToField(field,text,html){
+function vkInsertToField(field,text){
 	var obj=ge(field);
    if (obj && obj.contentEditable=="true"){
       var s=document.getSelection()+"";
@@ -146,7 +146,7 @@ function replaceSelectedText(obj,cbFunc){
 }
 ///////////////////////////
 
-function PasteSmile(text,rfield,key){
+function PasteSmile(text,rfield){
 	vkInsertToField(rfield,text);
 }
 
@@ -302,7 +302,6 @@ function vkPrepareTxtPanels(node){
 function vkAddSmilePanel(el){
 	if (getSet(33)!='y' && getSet(95)!='y') return;
 	var tstart=unixtime();
-	var te_btn_count=0;
 	var touts={};
 	if (!window.txtareas_events) txtareas_events=[];
    //if (!window.txtareas_ids) txtareas_ids=0;
@@ -344,7 +343,6 @@ function vkAddSmilePanel(el){
 		};
 		var panel_mousemove=function(e){
 			var pid=e.target.id;
-			var panel=ge(pid);
 			clearTimeout(touts[pid]);
 		};
 		txtareas_events.push(panel_mousemove);
@@ -395,7 +393,7 @@ function SwichKeybText(str){
 			var messer=str.substr(i,1);
 		    for (var u=0; u < alfeng.length; u++) {
 					if(messer==alfeng[u]){
-						var messer=messer.replace(alfeng[u],alfrus[u]);
+						messer=messer.replace(alfeng[u],alfrus[u]);
 						break;
 					}
 		    }
@@ -410,7 +408,6 @@ if(vk_EnableSwichText){
   var Key;
   var ctrlKey;
   var shiftKey;
-  var pressed;
   event=window.event?window.event:event;
   Key=event.keyCode;
   ctrlKey=event.ctrlKey;

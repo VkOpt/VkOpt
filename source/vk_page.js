@@ -206,7 +206,7 @@ vk_profile={
    fr_in_cats:function(){
       var el=ge('profile_am_subscribed');
       if (!el || el.innerHTML.indexOf('section=list')!=-1) return;
-      vkFriendUserInLists(cur.oid,function(html,status){
+      vkFriendUserInLists(cur.oid,function(html){
          if (html=='') return;
          if (html=='' || !el || el.innerHTML.indexOf('section=list')!=-1) return;
          el.innerHTML+='<br>[ '+html+' ]';
@@ -378,7 +378,7 @@ vk_highlinghts={
       };
       var gl=vkGetVal('vk_my_groups');
       if (!gl || gl=='' || (common && cur.oid==remixmid())){ 
-         vk_highlinghts.update_my_gr_list(function(r){
+         vk_highlinghts.update_my_gr_list(function(){
             hl();
          });
       } else {
@@ -645,7 +645,7 @@ function vkPollResults(post_id,pid){
          </div>\
       </div>';   
       
-      var box=vkAlertBox(IDL('ViewResults'),html);
+      vkAlertBox(IDL('ViewResults'),html);
       vkPollVoters(data.owner_id,data.poll_id);
    };
    
@@ -785,7 +785,6 @@ function vkPollResultsBtn(node){
       if (!el || !c) continue;
       var id=(el.id || "").match(/(-?\d+)_(\d+)/);
       if (!id) continue;
-      var oid=id[1];
       id=id[0];
       if (c.innerHTML.indexOf('vkPollResults')!=-1) continue;
       c.insertBefore(vkCe('span',{"class":"divider fl_r"},"|"),c.firstChild);
@@ -975,7 +974,7 @@ function vkAddCleanWallLink(){
     if (!rx){
       p_options.push({
          l:IDL('PhotoLinks'),
-         onClick:function(item) { 
+         onClick:function() { 
             vk_photos.scan_wall(cur.oid,(cur.wallType=="full_own"));
          } 
       });
@@ -984,18 +983,17 @@ function vkAddCleanWallLink(){
    var allow_clean=(cur.oid==remixmid() || isGroupAdmin(cur.oid));
 	if (allow_clean && !rw && !ge('vk_clean_wall') && ge('full_wall_filters')){
 		
-      var link='';
       if (rx && rx[1]==remixmid()){
          //link='<a href="#" onclick="vkCleanNotes(); return false;">'+IDL('DelAllNotes')+'</a>';
          p_options.push({
             l:IDL('DelAllNotes'),
-            onClick:function(item) { 
+            onClick:function() { 
                vkCleanNotes();
             } 
          });
          p_options.push({
             l:IDL('NoteNew'),
-            onClick:function(item) { 
+            onClick:function() { 
                vk_notes.add_new();
             } 
          });
@@ -1005,7 +1003,7 @@ function vkAddCleanWallLink(){
          //link='<a href="#" onclick="vkCleanWall('+cur.oid+'); return false;">'+IDL("wallClear")+'</a><span class="divide">|</span>';
          p_options.push({
             l:IDL('wallClear'),
-            onClick:function(item) { 
+            onClick:function() { 
                vkCleanWall(cur.oid);
             } 
          });         
@@ -1090,7 +1088,7 @@ function vkDelWallPostComments(oid,pid){
 			del_offset=0;
 			callback();
 		} else
-		dApi.call('wall.deleteComment', {owner_id:oid,cid:pid},function(r,t){
+		dApi.call('wall.deleteComment', {owner_id:oid,cid:pid},function(){
 			del_offset++;
 			setTimeout(function(){del(callback);},WALL_DEL_REQ_DELAY);
 		});
@@ -1123,7 +1121,7 @@ function vkDelWallPostComments(oid,pid){
 	var run=function(){
 		box=new MessageBox({title: IDL('DelComments'),closeButton:true,width:"350px"});
 		box.removeButtons();
-		box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no');
+		box.addButton(IDL('Cancel'),function(){abort=true; box.hide();},'no');
 		var html='<div id="vk_del_msg" style="padding-bottom:10px;"></div><div id="vk_scan_msg"></div>';
 		box.content(html).show();	
 		scan();
@@ -1156,7 +1154,7 @@ function vkCleanWall(oid){
 			del_offset=0;
 			callback();
 		} else
-		dApi.call('wall.delete', {owner_id:oid, post_id:pid},function(r,t){
+		dApi.call('wall.delete', {owner_id:oid, post_id:pid},function(){
 			del_offset++;
 			setTimeout(function(){del(callback);},WALL_DEL_REQ_DELAY);
 		});
@@ -1191,7 +1189,7 @@ function vkCleanWall(oid){
 		start_offset=soffset?soffset:0;
 		box=new MessageBox({title: IDL('ClearWall'),closeButton:true,width:"350px"});
 		box.removeButtons();
-		box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no');
+		box.addButton(IDL('Cancel'),function(){abort=true; box.hide();},'no');
 		var html='<div id="vk_del_msg" style="padding-bottom:10px;"></div><div id="vk_scan_msg"></div>';
 		box.content(html).show();	
 		scan();
@@ -1364,7 +1362,7 @@ function vkFrProfile(){
   };
   
   
-  var mod_lite=function(el,postfix){
+  var mod_lite=function(el){
     var hdr=geByClass('p_header_bottom',el)[0];
     if (!hdr) return;
 	var rlink=geByClass('right_link',el)[0];
@@ -1542,10 +1540,9 @@ function shut(id,el) {
   var c = ge(id);
   if (!c) return true;
   var masks = vk_shuts_mask;
-  var cookie_key = 'closed_tabs';
   var closed_tabs = parseInt(vkgetCookie('remixbit',1).split('-')[12]);
 if (id!='profile_full_info') {
-var newClass = hasClass(c,"shut") ? removeClass(c,"shut") : addClass(c,"shut");
+hasClass(c,"shut") ? removeClass(c,"shut") : addClass(c,"shut");
 if (!masks[id]) return;
 } else {
 	if (!el) el=3;
@@ -1624,7 +1621,6 @@ vk_graff={
       if (ge('vk_wall_post_type0')) return;
       var vk__addMediaIndex=0;
       if (window.__addMediaIndex) vk__addMediaIndex=__addMediaIndex;
-      var lnkId = ++vk__addMediaIndex;
       if (ge('page_add_media')){
          Inj.Wait("geByClass('add_media_rows')[0]",AddGraffItem,300,10);
       }   
@@ -1931,9 +1927,7 @@ vk_pages={
    is_wiki_box_disabled:function(args){
       var box_disable=(getSet(86)=='y');
       var page=args[0], 
-          edit=args[1], 
-          ev = args[2], 
-          opts=args[3];
+          ev = args[2];
       //console.log(ev);
       if (!ev) return false;
       var el= ev.target || ev.srcElement || {};
@@ -2036,7 +2030,6 @@ vk_groups = {
          return html; 
       };
       
-      var data=null;
       var load_info = function(){ 
          show('progress'+gid);
          dApi.call('execute',{code:code},function(r){
@@ -2164,7 +2157,7 @@ vk_groups = {
       if (el)
          el.innerHTML=vkLdrMiniImg;
       ajax.post('groupsedit.php', {act: 'user_action', id: gid, addr: mid, hash: hash, action: 1}, {
-         onDone: function(row) {
+         onDone: function() {
             //alert(row);
             if (el){ 
                el.innerHTML='OK';
@@ -2185,7 +2178,7 @@ vk_groups = {
       if (el)
          el.innerHTML=vkLdrMiniImg;
       ajax.post('groupsedit.php', {act: 'user_action', id: gid, addr: mid, hash: hash, action: -1}, {
-         onDone: function(row) {
+         onDone: function() {
             //alert(row);
             if (el){ 
                el.innerHTML='OK';
@@ -2297,7 +2290,6 @@ vk_groups = {
    },
    remove_all_invites:function(add_btn){
       if (add_btn){
-         var btn=ge('vkillinv');
          var p=ge('gedit_users_summaryw_invites');//ge('gedit_summary_tabs');//
          if (!p || ge('vkillinv')) return;
          var el=se('<a class="fl_r nobold" id="vkillinv" href="#" onmouseover="showTooltip(this, {text: \'max 500 per day\', showdt: 0, black: 1});" onclick="return vk_groups.remove_all_invites();">'+IDL('Kill_Invitation')+'</a>');
@@ -2308,9 +2300,7 @@ vk_groups = {
       var box=null;
       var ids=[];
       var del_offset=0;
-      var cur_offset=0;
       var abort=false;	
-      var restored=[];
       
       var process=function(){	    
          //*
@@ -2332,11 +2322,11 @@ vk_groups = {
                hash: ids[del_offset][7],
                action: -1
             }, {
-               onDone: function(row) {
+               onDone: function() {
                   del_offset++;
                   setTimeout(process,10);         
                },
-               onFail:function(row) {
+               onFail:function() {
                   del_offset++;
                   setTimeout(process,5000);         
                }
@@ -2346,7 +2336,6 @@ vk_groups = {
 
       var scan=function(){
          ajax.post('groupsedit.php', {act: 'get_list', id: cur.opts.id, tab: 'invites'}, {onDone: function(cnt, res) {
-           var count=cnt;
            ids=res;
            process();
          }});
@@ -2354,7 +2343,7 @@ vk_groups = {
       var run=function(){
          box=new MessageBox({title: IDL('deleting'),closeButton:true,width:"350px"});
          box.removeButtons(); 
-         box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no'); 
+         box.addButton(IDL('Cancel'),function(){abort=true; box.hide();},'no'); 
          var html='<div id="vk_scan"></div>'; box.content(html).show();	
          scan();
       };
@@ -2382,7 +2371,6 @@ vk_groups = {
       var del_offset=0;
       var cur_offset=0;
       var abort=false;	
-      var restored=[];
       
       var process=function(){	    
          //*
@@ -2398,7 +2386,7 @@ vk_groups = {
          } 
          else     
             ajax.post('al_groups.php', {act: 'bl_user', mid: ids[del_offset][0], gid: cur.gid, hash: cur.hash}, {
-               onDone: function(res) {
+               onDone: function() {
                   del_offset++;
                   setTimeout(process,10);         
                }
@@ -2437,7 +2425,7 @@ vk_groups = {
       var run=function(){
          box=new MessageBox({title: IDL('deleting'),closeButton:true,width:"350px"});
          box.removeButtons(); 
-         box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no'); 
+         box.addButton(IDL('Cancel'),function(){abort=true; box.hide();},'no'); 
          var html='<div id="vk_scan"></div>'; box.content(html).show();	
          scan();
       };
@@ -2475,13 +2463,12 @@ vk_groups = {
             del_offset=0;
             callback();
          } else
-         dApi.call('groups.leave', {gid:item_id},function(r,t){
+         dApi.call('groups.leave', {gid:item_id},function(){
             del_offset++;
             setTimeout(function(){del(callback);},DEL_REQ_DELAY);
          });
       };
       
-      var _count=0;
       var cur_offset=0;
       var scan=function(){
          if (cur_offset==0) ge('vk_scan_msg').innerHTML=vkProgressBar(cur_offset,2,310,IDL('listreq')+' %');
@@ -2504,7 +2491,7 @@ vk_groups = {
          
          box=new MessageBox({title: IDL('LeaveGroups'),closeButton:true,width:"350px"});
          box.removeButtons();
-         box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no');
+         box.addButton(IDL('Cancel'),function(){abort=true; box.hide();},'no');
          var html='</br><div id="vk_del_msg" style="padding-bottom:10px;"></div><div id="vk_scan_msg"></div>';
          box.content(html).show();	
          scan();
@@ -2610,7 +2597,7 @@ function vkGrLstFilter(){
         target: ge('vk_gr_filter'),
         resultField:'vk_grlst_filter',
         width:160,
-        onChange: function(val){
+        onChange: function(){
             //alert(val);
             cur.scrollList.offset=0;
             var cont = ge(cur.scrollList.prefix + cur.scrollList.tab);
@@ -2667,14 +2654,14 @@ vk_fave = {
          insertAfter(a,p);
          
          var p_options = [];
-         p_options.push({l:IDL('SaveAlbumAsHtml'), onClick:function(item) {
+         p_options.push({l:IDL('SaveAlbumAsHtml'), onClick:function() {
             vkGetPageWithPhotos('liked'+vk.id,null);
          }});
-         p_options.push({l:IDL('Links'), onClick:function(item) {
+         p_options.push({l:IDL('Links'), onClick:function() {
                vkGetLinksToPhotos('liked'+vk.id,null);
          }});
          
-         p_options.push({l:IDL('DelLikes'), onClick:function(item) {
+         p_options.push({l:IDL('DelLikes'), onClick:function() {
                vk_fave.remove_likes_photo();
          }});         
          
@@ -2709,7 +2696,7 @@ vk_fave = {
          
          var p_options = [];
          
-         p_options.push({l:IDL('DelLikes'), onClick:function(item) {
+         p_options.push({l:IDL('DelLikes'), onClick:function() {
                vk_fave.remove_likes_video();
          }});         
          
@@ -2746,7 +2733,7 @@ vk_fave = {
          
          var p_options = [];
          
-         p_options.push({l:IDL('DelLikes'), onClick:function(item) {
+         p_options.push({l:IDL('DelLikes'), onClick:function() {
                vk_fave.remove_likes_posts();
          }});         
          
@@ -2785,7 +2772,7 @@ vk_fave = {
             del_offset=0;
             callback();
          } else
-         dApi.call('likes.delete', {type:'photo', owner_id:obj[0], item_id:obj[1]},function(r,t){
+         dApi.call('likes.delete', {type:'photo', owner_id:obj[0], item_id:obj[1]},function(){
             del_offset++;
             setTimeout(function(){del(callback);},DEL_REQ_DELAY);
          });
@@ -2819,7 +2806,7 @@ vk_fave = {
       var run=function(){
          box=new MessageBox({title: IDL('DelPhotosLikes'),closeButton:true,width:"350px"});
          box.removeButtons();
-         box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no');
+         box.addButton(IDL('Cancel'),function(){abort=true; box.hide();},'no');
          var html='<div id="vk_del_info" style="padding-bottom:10px;"></div><div id="vk_scan_info"></div>';
          box.content(html).show();	
          scan();
@@ -2848,7 +2835,7 @@ vk_fave = {
             del_offset=0;
             callback();
          } else
-         dApi.call('likes.delete', {type:'video', owner_id:obj[0], item_id:obj[1]},function(r,t){
+         dApi.call('likes.delete', {type:'video', owner_id:obj[0], item_id:obj[1]},function(){
             del_offset++;
             setTimeout(function(){del(callback);},DEL_REQ_DELAY);
          });
@@ -2882,7 +2869,7 @@ vk_fave = {
       var run=function(){
          box=new MessageBox({title: IDL('DelVideosLikes'),closeButton:true,width:"350px"});
          box.removeButtons();
-         box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no');
+         box.addButton(IDL('Cancel'),function(){abort=true; box.hide();},'no');
          var html='<div id="vk_del_info" style="padding-bottom:10px;"></div><div id="vk_scan_info"></div>';
          box.content(html).show();	
          scan();
@@ -2911,7 +2898,7 @@ vk_fave = {
             del_offset=0;
             callback();
          } else
-         dApi.call('likes.delete', {type:'post', owner_id:obj[0], item_id:obj[1]},function(r,t){
+         dApi.call('likes.delete', {type:'post', owner_id:obj[0], item_id:obj[1]},function(){
             del_offset++;
             setTimeout(function(){del(callback);},DEL_REQ_DELAY);
          });
@@ -2945,7 +2932,7 @@ vk_fave = {
       var run=function(){
          box=new MessageBox({title: IDL('DelPostsLikes'),closeButton:true,width:"350px"});
          box.removeButtons();
-         box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no');
+         box.addButton(IDL('Cancel'),function(){abort=true; box.hide();},'no');
          var html='<div id="vk_del_info" style="padding-bottom:10px;"></div><div id="vk_scan_info"></div>';
          box.content(html).show();	
          scan();
@@ -2998,7 +2985,7 @@ vk_board={
             done();
          } else {
             ajax.post("/topic"+cur.topic, {local:1,offset:cur_offset}, {
-               onDone: function(count, from, rows, offset, pages, preload) { 
+               onDone: function(count, from, rows) { 
                   //console.log(arguments);
                   if (abort){
                      done();
@@ -3288,7 +3275,7 @@ vk_feed={
       }
       stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
          
-         var cb = new Checkbox(ge("vkf_filter_chk"), {  
+         new Checkbox(ge("vkf_filter_chk"), {  
                      width: 100,  
                      checked:enabled,  
                      label: IDL('Filter'),
@@ -3313,7 +3300,7 @@ vk_feed={
          for (var i=0; i<items.length; i++){
             var el=vkCe('span',{'class':'fl_l'},'<div></div>');
             panel.appendChild(el);
-            var chk=new Checkbox(el.firstChild, {  
+            new Checkbox(el.firstChild, {  
                      width: 200,  
                      checked:items[i][2],  
                      label: items[i][0],
@@ -3532,7 +3519,7 @@ function vk_tag_api(section,url,app_id){
       },
       mark:function(obj_id,callback){
          var like_obj=t.parse_id(obj_id);
-         t.widget_req(like_obj,true,function(num){
+         t.widget_req(like_obj,true,function(){
             t.get_users(like_obj,0,6,callback);
             t.widget_req(like_obj+'|'+vk.id,true,function(num){});// костыль
          });
@@ -3540,7 +3527,7 @@ function vk_tag_api(section,url,app_id){
       },
       unmark:function(obj_id,callback){
          var like_obj=t.parse_id(obj_id);
-         t.widget_req(like_obj,false,function(num){
+         t.widget_req(like_obj,false,function(){
             t.get_users(like_obj,0,6,callback);
             t.widget_req(like_obj+'|'+vk.id,false,function(num){});// костыль
          });
@@ -3558,7 +3545,7 @@ function vk_tag_api(section,url,app_id){
          return {count:like.count,users:users,uids:like.users};\
          ';
          //api_for_dislikes
-         api4dislike.call('execute',{code:code},function(r,t){
+         api4dislike.call('execute',{code:code},function(r){
             if (callback) callback(r.response);
          });
          //api4dislike.call('likes.getList',{type:'sitepage', page_url:url,owner_id:t.app},console.log)
@@ -3577,7 +3564,7 @@ function vk_tag_api(section,url,app_id){
          var get=function(){
             //api_for_dislikes
             api4dislike.call('execute',{code:code},{
-                  ok:function(r,t){
+                  ok:function(r){
                      if (callback) callback(r.response);
                   },
                   error:function(r,err){
@@ -3792,7 +3779,7 @@ function vk_tag_api(section,url,app_id){
          //console.log('cached:',JSON.stringify(cached));
          setTimeout(function(){
             for (var i=0; i<cached.length;i++){
-               var r=dk.update_dislike_view(cached[i],dk.cache[cached[i]].value);
+               dk.update_dislike_view(cached[i],dk.cache[cached[i]].value);
             }
          },50);
          //dk.queue=dk.queue.concat(uncached); // новые в конец очереди
@@ -4019,7 +4006,6 @@ function vk_tag_api(section,url,app_id){
       },
       dislike_over:function(post,parent,act){
          var icon = ge('dislike_icon' + post),
-            link = ge('dislike_link' + post),
             count = ge('dislike_count' + post);
          var item_tpl='<td><a class="like_tt_usr" title="%NAME%" href="/id%UID%"><img class="like_tt_stats_photo" src="%AVA%" width="30" height="30" /></a></td>';
          

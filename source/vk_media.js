@@ -161,10 +161,10 @@ var vk_photos = {
                
                var p_options = [];
                //if (!vkbrowser.chrome && !vkbrowser.safari)
-                  p_options.push({l:IDL('SaveAlbumAsHtml'), onClick:function(item) {
+                  p_options.push({l:IDL('SaveAlbumAsHtml'), onClick:function() {
                      vkGetPageWithPhotos(oid,aid);
                   }});
-               p_options.push({l:IDL('Links'), onClick:function(item) {
+               p_options.push({l:IDL('Links'), onClick:function() {
                      vkGetLinksToPhotos(oid,aid);
                }});
                if (cur.statsPhotoAddHash)
@@ -173,7 +173,7 @@ var vk_photos = {
                
                p_options.push({
                   l:IDL('FullThumb'),
-                  onClick:function(item) { 
+                  onClick:function() { 
                      vk_photos.toggle_thumb_size();
                   } 
                });
@@ -181,7 +181,7 @@ var vk_photos = {
                if (aid=='photos')
                   p_options.push({
                      l:IDL('mPhC'),
-                     onClick:function(item) { 
+                     onClick:function() { 
                         cur.oid=oid;
                         vk_ph_comms.init();
                      } 
@@ -342,7 +342,7 @@ var vk_photos = {
       //*/
       return false;
    },
-   choose_album_item:function(oid,aid,offset){
+   choose_album_item:function(oid,aid){
       var PER_PAGE=20;
       //vkMakePageList(0,100,'#','return page(%%);',PER_PAGE,true)
       ge('photos_choose_rows').innerHTML=vkBigLdrImg;
@@ -352,7 +352,6 @@ var vk_photos = {
      var photos=null;
      var photos_reverse=null;
      var cur_photos=null;
-     var count=null;
       
       dApi.call('photos.get',params,function(r){
          photos=r.response;
@@ -490,7 +489,7 @@ var vk_photos = {
                aBox.addButton(getLang('box_save'),function(){  
                   aBox.hide();
                   ajax.post('docs.php', {act: 'a_add', doc: data[1], hash: hash}, {
-                     onDone: function(text, tooltip) {
+                     onDone: function(text) {
                         showDoneBox(text);
                      }
                   });
@@ -844,7 +843,6 @@ var vk_photos = {
       if (ge('vk_wall_post_type1')) return;
       var vk__addMediaIndex=0;
       if (window.__addMediaIndex) vk__addMediaIndex=__addMediaIndex;
-      var lnkId = ++vk__addMediaIndex;
       if (ge('page_add_media')){
          Inj.Wait("geByClass('add_media_rows')[0]",AddItem,300,10);
       }   
@@ -896,7 +894,7 @@ function vkPVPhotoMover(show_selector){
              var to_info=cur.vk_pvMoveToAlbum.val_full();
              show('vk_ph_album_info');
              ge('vk_ph_album_info').innerHTML=vkLdrImg;
-             dApi.call('photos.move',{pid:pid,target_aid:to_aid,oid:oid},function(r){
+             dApi.call('photos.move',{pid:pid,target_aid:to_aid,oid:oid},function(){
                hide('vk_ph_album_info');
                
                var listId = cur.pvListId, index = cur.pvIndex;
@@ -957,7 +955,6 @@ function vkPVSaveAndMover(){
    }*/
    var oid=vk.id;
    var aid=vkGetVal('vk_pru_album') || 0;//0;		
-   var pid=parseInt(cur.pvCurPhoto.id.match(/(-?\d+)_(\d+)/)[2]);
 
    ge('vk_ph_save_move').innerHTML='<div id="vk_save_selector_label">'+IDL('SelectAlbum')+'</div><div id="vk_ph_save_move_ok"></div><div id="vk_save_selector">'+vkLdrImg+'</div>';
    
@@ -978,7 +975,7 @@ function vkPVSaveAndMover(){
                   t=t.replace(/<a[^<>]+>[^<>]+<\/a>/,'<a href="/album'+oid+'_'+to_aid+'" class="vk_album_done_link">'+to_info[1]+'</a>');
                   dApi.call('photos.get',{uid:vk.id,aid:'saved'},function(r){
                      var ph=r.response.pop();
-                     dApi.call('photos.move',{pid:ph.pid,target_aid:to_aid,oid:oid},function(r){
+                     dApi.call('photos.move',{pid:ph.pid,target_aid:to_aid,oid:oid},function(){
                         vkSetVal('vk_pru_album',to_aid);
                         //ge('vk_save_selector_label').innerHTML=IDL('Add');
                         ge('vk_ph_save_move').innerHTML='';//'ok - album'+oid+'_'+to_aid;
@@ -1025,9 +1022,9 @@ function vkPVSaveAndMover(){
 }
 
 
-function vkPVMouseScroll(img){
+function vkPVMouseScroll(){
     vkPVAllowMouseScroll=true;
-    var on_scroll=function(is_next,ev){
+    var on_scroll=function(is_next){
       if (vkPVAllowMouseScroll && isVisible('pv_right_nav') && isVisible('pv_left_nav')){
         //(is_next?ge('pv_right_nav'):ge('pv_left_nav')).onmousedown(event);
 		
@@ -1676,10 +1673,9 @@ function vkDeletePhotosList(list,idx,uid){
 }
 
 function vkDelOnePhoto(pid, callback) {
-	var q = {act:'a_delete_photo', pid:pid, sure:1};
 	//ajax.post('al_photos.php', {act: 'show', photo: photoId, list: listId}
 	ajax.post('al_photos.php', {act: 'show', photo: pid, list:cur.moreFrom},{ 
-		onDone:function(listId, count, offset, data, opts){
+		onDone:function(listId, count, offset, data){
 			//alert(pid+'\n\n'+print_r(data));
 			var hash='';
 			for (var i=0; i<data.length; i++)
@@ -1690,10 +1686,10 @@ function vkDelOnePhoto(pid, callback) {
 			//alert(hash);
 			ajax.post('al_photos.php', {act: 'delete_photo', photo: pid, hash: hash},{ 
 					onDone:function(text){ if (callback) callback(text);}, 
-					onFail:function(res, text){ if (callback) callback('FAIL');}
+					onFail:function(){ if (callback) callback('FAIL');}
 			});
 		},
-		onFail:function(res, text){ if (callback) callback('FAIL');}
+		onFail:function(){ if (callback) callback('FAIL');}
 	});
 }
 
@@ -1777,7 +1773,7 @@ function vkDoCheck(check,className){
 }
 
 
-function vkRunAllBanAndDelPhotos(el,gid){
+function vkRunAllBanAndDelPhotos(gid){
   var ch=geByClass("vkphcheck");
   var list=[];
   for (var i=0;i<ch.length;i++){
@@ -1839,7 +1835,7 @@ return '<div id="BanDialog'+uid+'" style="padding:20px">'+
 }
 
 
-function vkRunBanAll(el,gid){
+function vkRunBanAll(gid){
   var idss=ge("banallusers").getAttribute("id_list");
   //alert(idss);
   if (idss){
@@ -1969,9 +1965,9 @@ function vkAlbumCheckDublicatUser(){//oid,aid
                                   '<span class="divider">|</span>'+
                                   '<a style="cursor: hand;" onClick="vkDoCheck(0,\'vkphcheck\'); return false;">'+IDL('UncheckAll')+'</a>'+
                                   '<span class="divider">|</span>'+
-                                  '<a id="banallusers" style="cursor: hand;" onClick="vkRunBanAll(this,'+oid.match(/\d+/)[0]+'); return false;">'+IDL('paBanAll')+'</a>'+
+                                  '<a id="banallusers" style="cursor: hand;" onClick="vkRunBanAll('+oid.match(/\d+/)[0]+'); return false;">'+IDL('paBanAll')+'</a>'+
                                   '<span class="divider">|</span>'+
-                                  '<a id="bandelallusers" style="cursor: hand;" onClick="vkRunAllBanAndDelPhotos(this,'+oid.match(/\d+/)[0]+'); return false;">'+IDL('paBanAllAndDelPhotos')+'</a>'+
+                                  '<a id="bandelallusers" style="cursor: hand;" onClick="vkRunAllBanAndDelPhotos('+oid.match(/\d+/)[0]+'); return false;">'+IDL('paBanAllAndDelPhotos')+'</a>'+
                                   '<br><br>';
                        
     for (var i=0; i<list.length; i++){
@@ -2165,7 +2161,7 @@ vk_videos = {
       //*/
       return false;
    },
-   choose_album_item:function(oid,aid,offset){
+   choose_album_item:function(oid,aid){
       var PER_PAGE=12;
       //vkMakePageList(0,100,'#','return page(%%);',PER_PAGE,true)
 
@@ -2177,7 +2173,6 @@ vk_videos = {
          params[oid<0?'gid':'uid']=Math.abs(oid);
         
         var items=null;
-        var count=null;
 
          dApi.call('video.get',params,function(r){
             items=r.response;
@@ -2190,7 +2185,6 @@ vk_videos = {
             </div>';
             html+=pages_html;
             
-            var max_offset=Math.min(offset+PER_PAGE,count);
             for (var i=0; i<items.length; i++){
                var v=items[i];                
                html+=vk_videos.tpl.replace(/%oid/g,v.owner_id)
@@ -2235,13 +2229,12 @@ vk_videos = {
             del_offset=0;
             callback();
          } else
-         dApi.call('video.delete', {oid:cur.oid,vid:item_id},function(r,t){
+         dApi.call('video.delete', {oid:cur.oid,vid:item_id},function(){
             del_offset++;
             setTimeout(function(){del(callback);},DEL_REQ_DELAY);
          });
       };
       
-      var _count=0;
       var cur_offset=0;
       var scan=function(){
          if (cur_offset==0) ge('vk_scan_msg').innerHTML=vkProgressBar(cur_offset,2,310,IDL('listreq')+' %');
@@ -2266,7 +2259,7 @@ vk_videos = {
          
          box=new MessageBox({title: IDL('DelVideos'),closeButton:true,width:"350px"});
          box.removeButtons();
-         box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no');
+         box.addButton(IDL('Cancel'),function(){abort=true; box.hide();},'no');
          var html='</br><div id="vk_del_msg" style="padding-bottom:10px;"></div><div id="vk_scan_msg"></div>';
          box.content(html).show();	
          scan();
@@ -2276,13 +2269,11 @@ vk_videos = {
       vkAlertBox(IDL('DelVideos'),'<b><a href="/'+owner+'">'+owner+'</a></b><br>'+IDL('DelAllVideosConfirm'),run,true);
    },
    get_description:function(oid,vid,el){
-      var p=ge('video_row'+oid+'_'+vid);
       var cont=ge('video_cont'+oid+'_'+vid);
       hide(el);
       dApi.call('video.get',{videos:oid+'_'+vid},function(r){
          var v=(r.response ||[])[1];
          if (!v) return;
-         var c=geByClass('video_raw_info_name',p)[0].parentNode;
          var div=vkCe('div',{'class':'vid_descr fl_r'},v.description);//'video_raw_info_name'
          addClass(cont,'vk_full_vid_info');
          cont.appendChild(div);
@@ -2433,9 +2424,7 @@ vk_videos = {
          function filter_arr(regex,all){
             arr=arr.filter(function(video){
                var title=winToUtf(video[3]);
-               var decr=video[4];
                var album=video[6];
-               var dur=video[3];
                if (regex.indexOf){
                   regex=regex.toLowerCase();
                   title=title.toLowerCase();
@@ -2833,7 +2822,7 @@ vk_audio_player={
         
             },10)
          };
-         vk_v_slider.init('gp_vol_panel',100,cur_vol,function(vol){removeClass(el,'vis');},function(vol){ set(vol);  },50); 
+         vk_v_slider.init('gp_vol_panel',100,cur_vol,function(){removeClass(el,'vis');},function(vol){ set(vol);  },50); 
          removeClass(el,'vis');
       }
       //vk_v_slider.sliderUpdate(vol,vol,'gp_vol_panel');
@@ -2903,8 +2892,6 @@ vk_audio={
      var download=(getSet(0) == 'y');
      //var clean_trash=getSet(94) == 'y';
      if (!download && getSet(43) != 'y') return;
-     var SearchLink=true;
-     var trim=function(text) { return (text || "").replace(/^\s+|\s+$/g, " "); };
      //InitAudiosMenu();
      
      var divs = geByClass('play_new',node);
@@ -3185,7 +3172,7 @@ vk_audio={
       //*/
       return false;
    },
-   choose_album_item:function(oid,aid,offset){
+   choose_album_item:function(oid,aid){
       var PER_PAGE=20;
       //vkMakePageList(0,100,'#','return page(%%);',PER_PAGE,true)
       ge('choose_audio_rows').innerHTML=vkBigLdrImg;
@@ -3193,7 +3180,6 @@ vk_audio={
       params[oid<0?'gid':'uid']=Math.abs(oid);
      
      var items=null;
-     var count=null;
 
       dApi.call('audio.get',params,function(r){
          items=r.response;
@@ -3326,7 +3312,7 @@ function vkCleanAudioLink(){
 }
 
 function vkCleanAudios(){
-	var REQ_CNT=100;
+	
 	var WALL_DEL_REQ_DELAY=400;
 	var box=null;
 	var mids=[];
@@ -3346,12 +3332,12 @@ function vkCleanAudios(){
 			del_offset=0;
 			callback();
 		} else
-		dApi.call('audio.delete', {oid:cur.oid,aid:aid},function(r,t){
+		dApi.call('audio.delete', {oid:cur.oid,aid:aid},function(){
 			del_offset++;
 			setTimeout(function(){del(callback);},WALL_DEL_REQ_DELAY);
 		});
 	};
-	var msg_count=0;
+	
 	var scan=function(){
 		mids=[];
 		ge('vk_del_msg').innerHTML=vkProgressBar(1,1,310,' ');
@@ -3375,7 +3361,7 @@ function vkCleanAudios(){
 		
       box=new MessageBox({title: IDL('DelAudios'),closeButton:true,width:"350px"});
 		box.removeButtons();
-		box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no');
+		box.addButton(IDL('Cancel'),function(){abort=true; box.hide();},'no');
 		var html='</br><div id="vk_del_msg" style="padding-bottom:10px;"></div><div id="vk_scan_msg"></div>';
 		box.content(html).show();	
 		scan();
@@ -3385,7 +3371,7 @@ function vkCleanAudios(){
 	vkAlertBox(IDL('DelAudios'),'<b><a href="/'+owner+'">'+owner+'</a></b><br>'+IDL('DelAllAutiosConfirm'),run,true);
 }
 vkAudioEd = {
-   Delete:function(id,aid,_el){
+   Delete:function(id,aid){
     var el = ge('audio' + aid);
     var h = getSize(geByClass1('play_btn', el))[1];
     stManager.add(['audio_edit.js']);
@@ -3419,7 +3405,7 @@ vkAudioEd = {
     cur.restoring = true;
     var el = ge('audio' + aid);
     ajax.post(Audio.address, {act: 'restore_audio', oid: cur.oid, aid: id, hash: cur.hashes.restore_hash}, {
-      onDone: function(text) {
+      onDone: function() {
         cur.restoring = false;
         el.innerHTML = cur.deletedAudios[id];
         //el.style.cursor = 'move';
@@ -3482,7 +3468,7 @@ function vkAudioDelDup(add_button,btn){
 			p.appendChild(vkCe('div',{"style":'padding-top:10px;', id:"deldup_by_size"}));
 			p.appendChild(vkCe('div',{"class":'audio_search_filter'},'<div id="vk_deldup_text"  style="text-align:center;"></div>' ));
 
-			var cb = new Checkbox(ge("deldup_by_size"), {  width: 150,  
+			new Checkbox(ge("deldup_by_size"), {  width: 150,  
 											  checked:vk_del_dup_check_size,  
 											  label: IDL('DupDelCheckSizes'),
 											  onChange: function(state) { vk_del_dup_check_size = (state == 1); }
@@ -3502,7 +3488,7 @@ function vkAudioDelDup(add_button,btn){
 				')
 			);
 			
-			var cb = new Checkbox(ge("deldup_by_size"), {  width: 150,  
+			new Checkbox(ge("deldup_by_size"), {  width: 150,  
 														  checked:vk_del_dup_check_size,  
 														  label: IDL('DupDelCheckSizes'),
 														  onChange: function(state) { vk_del_dup_check_size = (state == 1); }
@@ -3844,7 +3830,7 @@ vkLastFM={
          var apiSecret=options.apiSecret||'';
          // https://ws.audioscrobbler.com/2.0/
          var apiUrl=options.apiUrl||'http://ws.audioscrobbler.com/2.0/';
-         var cache=options.cache||undefined;var debug=typeof(options.debug)=='undefined'?false:options.debug;this.setApiKey=function(_apiKey){apiKey=_apiKey};this.setApiSecret=function(_apiSecret){apiSecret=_apiSecret};this.setApiUrl=function(_apiUrl){apiUrl=_apiUrl};this.setCache=function(_cache){cache=_cache};var internalCall=function(params,callbacks,requestMethod){if(requestMethod=='POST'){var html=document.getElementsByTagName('html')[0];var frameName='lastfmFrame_'+new Date().getTime();var iframe=document.createElement('iframe');html.appendChild(iframe);iframe.contentWindow.name=frameName;iframe.style.display="none";var doc;var formState='init';iframe.width=1;iframe.height=1;iframe.style.border='none';iframe.onload=function(){if(formState=='sent'){if(!debug){setTimeout(function(){html.removeChild(iframe);html.removeChild(form)},1500)}};formState='done';if(typeof(callbacks.success)!='undefined'){callbacks.success()}};var form=document.createElement('form');form.target=frameName;form.action=apiUrl;form.method="POST";form.acceptCharset="UTF-8";html.appendChild(form);for(var param in params){var input=document.createElement("input");input.type="hidden";input.name=param;input.value=params[param];form.appendChild(input)};formState='sent';form.submit()}else{var jsonp='jsonp'+new Date().getTime();var hash=auth.getApiSignature(params);if(typeof(cache)!='undefined'&&cache.contains(hash)&&!cache.isExpired(hash)){if(typeof(callbacks.success)!='undefined'){callbacks.success(cache.load(hash))}return}params.callback=jsonp;params.format='json';window[jsonp]=function(data){if(typeof(cache)!='undefined'){var expiration=cache.getExpirationTime(params);if(expiration>0){cache.store(hash,data,expiration)}}if(typeof(data.error)!='undefined'){if(typeof(callbacks.error)!='undefined'){callbacks.error(data.error,data.message)}}else if(typeof(callbacks.success)!='undefined'){callbacks.success(data)}window[jsonp]=undefined;try{delete window[jsonp]}catch(e){}if(head){head.removeChild(script)}};var head=document.getElementsByTagName("head")[0];var script=document.createElement("script");var array=[];for(var param in params){array.push(encodeURIComponent(param)+"="+encodeURIComponent(params[param]))}script.src=apiUrl+'?'+array.join('&').replace(/%20/g,'+');head.appendChild(script)}};var call=function(method,params,callbacks,requestMethod){params=params||{};callbacks=callbacks||{};requestMethod=requestMethod||'GET';params.method=method;params.api_key=apiKey;internalCall(params,callbacks,requestMethod)};var signedCall=function(method,params,session,callbacks,requestMethod){params=params||{};callbacks=callbacks||{};requestMethod=requestMethod||'GET';params.method=method;params.api_key=apiKey;if(session&&typeof(session.key)!='undefined'){params.sk=session.key}params.api_sig=auth.getApiSignature(params);internalCall(params,callbacks,requestMethod)};this.album={addTags:function(params,session,callbacks){if(typeof(params.tags)=='object'){params.tags=params.tags.join(',')}signedCall('album.addTags',params,session,callbacks,'POST')},getBuylinks:function(params,callbacks){call('album.getBuylinks',params,callbacks)},getInfo:function(params,callbacks){call('album.getInfo',params,callbacks)},getTags:function(params,session,callbacks){signedCall('album.getTags',params,session,callbacks)},removeTag:function(params,session,callbacks){signedCall('album.removeTag',params,session,callbacks,'POST')},search:function(params,callbacks){call('album.search',params,callbacks)},share:function(params,session,callbacks){if(typeof(params.recipient)=='object'){params.recipient=params.recipient.join(',')}signedCall('album.share',params,callbacks)}};this.artist={addTags:function(params,session,callbacks){if(typeof(params.tags)=='object'){params.tags=params.tags.join(',')}signedCall('artist.addTags',params,session,callbacks,'POST')},getCorrection:function(params,callbacks){call('artist.getCorrection',params,callbacks)},getEvents:function(params,callbacks){call('artist.getEvents',params,callbacks)},getImages:function(params,callbacks){call('artist.getImages',params,callbacks)},getInfo:function(params,callbacks){call('artist.getInfo',params,callbacks)},getPastEvents:function(params,callbacks){call('artist.getPastEvents',params,callbacks)},getPodcast:function(params,callbacks){call('artist.getPodcast',params,callbacks)},getShouts:function(params,callbacks){call('artist.getShouts',params,callbacks)},getSimilar:function(params,callbacks){call('artist.getSimilar',params,callbacks)},getTags:function(params,session,callbacks){signedCall('artist.getTags',params,session,callbacks)},getTopAlbums:function(params,callbacks){call('artist.getTopAlbums',params,callbacks)},getTopFans:function(params,callbacks){call('artist.getTopFans',params,callbacks)},getTopTags:function(params,callbacks){call('artist.getTopTags',params,callbacks)},getTopTracks:function(params,callbacks){call('artist.getTopTracks',params,callbacks)},removeTag:function(params,session,callbacks){signedCall('artist.removeTag',params,session,callbacks,'POST')},search:function(params,callbacks){call('artist.search',params,callbacks)},share:function(params,session,callbacks){if(typeof(params.recipient)=='object'){params.recipient=params.recipient.join(',')}signedCall('artist.share',params,session,callbacks,'POST')},shout:function(params,session,callbacks){signedCall('artist.shout',params,session,callbacks,'POST')}};this.auth={getMobileSession:function(params,callbacks){params={username:params.username,authToken:md5(params.username+md5(params.password))};signedCall('auth.getMobileSession',params,null,callbacks)},getSession:function(params,callbacks){signedCall('auth.getSession',params,null,callbacks)},getToken:function(callbacks){signedCall('auth.getToken',null,null,callbacks)},getWebSession:function(callbacks){var previuousApiUrl=apiUrl;apiUrl='http://ext.last.fm/2.0/';signedCall('auth.getWebSession',null,null,callbacks);apiUrl=previuousApiUrl}};this.chart={getHypedArtists:function(params,session,callbacks){call('chart.getHypedArtists',params,callbacks)},getHypedTracks:function(params,session,callbacks){call('chart.getHypedTracks',params,callbacks)},getLovedTracks:function(params,session,callbacks){call('chart.getLovedTracks',params,callbacks)},getTopArtists:function(params,session,callbacks){call('chart.getTopArtists',params,callbacks)},getTopTags:function(params,session,callbacks){call('chart.getTopTags',params,callbacks)},getTopTracks:function(params,session,callbacks){call('chart.getTopTracks',params,callbacks)}};this.event={attend:function(params,session,callbacks){signedCall('event.attend',params,session,callbacks,'POST')},getAttendees:function(params,session,callbacks){call('event.getAttendees',params,callbacks)},getInfo:function(params,callbacks){call('event.getInfo',params,callbacks)},getShouts:function(params,callbacks){call('event.getShouts',params,callbacks)},share:function(params,session,callbacks){if(typeof(params.recipient)=='object'){params.recipient=params.recipient.join(',')}signedCall('event.share',params,session,callbacks,'POST')},shout:function(params,session,callbacks){signedCall('event.shout',params,session,callbacks,'POST')}};this.geo={getEvents:function(params,callbacks){call('geo.getEvents',params,callbacks)},getMetroArtistChart:function(params,callbacks){call('geo.getMetroArtistChart',params,callbacks)},getMetroHypeArtistChart:function(params,callbacks){call('geo.getMetroHypeArtistChart',params,callbacks)},getMetroHypeTrackChart:function(params,callbacks){call('geo.getMetroHypeTrackChart',params,callbacks)},getMetroTrackChart:function(params,callbacks){call('geo.getMetroTrackChart',params,callbacks)},getMetroUniqueArtistChart:function(params,callbacks){call('geo.getMetroUniqueArtistChart',params,callbacks)},getMetroUniqueTrackChart:function(params,callbacks){call('geo.getMetroUniqueTrackChart',params,callbacks)},getMetroWeeklyChartlist:function(params,callbacks){call('geo.getMetroWeeklyChartlist',params,callbacks)},getMetros:function(params,callbacks){call('geo.getMetros',params,callbacks)},getTopArtists:function(params,callbacks){call('geo.getTopArtists',params,callbacks)},getTopTracks:function(params,callbacks){call('geo.getTopTracks',params,callbacks)}};this.group={getHype:function(params,callbacks){call('group.getHype',params,callbacks)},getMembers:function(params,callbacks){call('group.getMembers',params,callbacks)},getWeeklyAlbumChart:function(params,callbacks){call('group.getWeeklyAlbumChart',params,callbacks)},getWeeklyArtistChart:function(params,callbacks){call('group.getWeeklyArtistChart',params,callbacks)},getWeeklyChartList:function(params,callbacks){call('group.getWeeklyChartList',params,callbacks)},getWeeklyTrackChart:function(params,callbacks){call('group.getWeeklyTrackChart',params,callbacks)}};this.library={addAlbum:function(params,session,callbacks){signedCall('library.addAlbum',params,session,callbacks,'POST')},addArtist:function(params,session,callbacks){signedCall('library.addArtist',params,session,callbacks,'POST')},addTrack:function(params,session,callbacks){signedCall('library.addTrack',params,session,callbacks,'POST')},getAlbums:function(params,callbacks){call('library.getAlbums',params,callbacks)},getArtists:function(params,callbacks){call('library.getArtists',params,callbacks)},getTracks:function(params,callbacks){call('library.getTracks',params,callbacks)}};this.playlist={addTrack:function(params,session,callbacks){signedCall('playlist.addTrack',params,session,callbacks,'POST')},create:function(params,session,callbacks){signedCall('playlist.create',params,session,callbacks,'POST')},fetch:function(params,callbacks){call('playlist.fetch',params,callbacks)}};this.radio={getPlaylist:function(params,session,callbacks){signedCall('radio.getPlaylist',params,session,callbacks)},search:function(params,session,callbacks){signedCall('radio.search',params,session,callbacks)},tune:function(params,session,callbacks){signedCall('radio.tune',params,session,callbacks)}};this.tag={getInfo:function(params,callbacks){call('tag.getInfo',params,callbacks)},getSimilar:function(params,callbacks){call('tag.getSimilar',params,callbacks)},getTopAlbums:function(params,callbacks){call('tag.getTopAlbums',params,callbacks)},getTopArtists:function(params,callbacks){call('tag.getTopArtists',params,callbacks)},getTopTags:function(callbacks){call('tag.getTopTags',null,callbacks)},getTopTracks:function(params,callbacks){call('tag.getTopTracks',params,callbacks)},getWeeklyArtistChart:function(params,callbacks){call('tag.getWeeklyArtistChart',params,callbacks)},getWeeklyChartList:function(params,callbacks){call('tag.getWeeklyChartList',params,callbacks)},search:function(params,callbacks){call('tag.search',params,callbacks)}};this.tasteometer={compare:function(params,callbacks){call('tasteometer.compare',params,callbacks)},compareGroup:function(params,callbacks){call('tasteometer.compareGroup',params,callbacks)}};this.track={addTags:function(params,session,callbacks){signedCall('track.addTags',params,session,callbacks,'POST')},ban:function(params,session,callbacks){signedCall('track.ban',params,session,callbacks,'POST')},getBuylinks:function(params,callbacks){call('track.getBuylinks',params,callbacks)},getCorrection:function(params,callbacks){call('track.getCorrection',params,callbacks)},getFingerprintMetadata:function(params,callbacks){call('track.getFingerprintMetadata',params,callbacks)},getInfo:function(params,callbacks){call('track.getInfo',params,callbacks)},getShouts:function(params,callbacks){call('track.getShouts',params,callbacks)},getSimilar:function(params,callbacks){call('track.getSimilar',params,callbacks)},getTags:function(params,session,callbacks){signedCall('track.getTags',params,session,callbacks)},getTopFans:function(params,callbacks){call('track.getTopFans',params,callbacks)},getTopTags:function(params,callbacks){call('track.getTopTags',params,callbacks)},love:function(params,session,callbacks){signedCall('track.love',params,session,callbacks,'POST')},removeTag:function(params,session,callbacks){signedCall('track.removeTag',params,session,callbacks,'POST')},scrobble:function(params,session,callbacks){if(params.constructor.toString().indexOf("Array")!=-1){var p={};for(i in params){for(j in params[i]){p[j+'['+i+']']=params[i][j]}}params=p}signedCall('track.scrobble',params,session,callbacks,'POST')},search:function(params,callbacks){call('track.search',params,callbacks)},share:function(params,session,callbacks){if(typeof(params.recipient)=='object'){params.recipient=params.recipient.join(',')}signedCall('track.share',params,session,callbacks,'POST')},unban:function(params,session,callbacks){signedCall('track.unban',params,session,callbacks,'POST')},unlove:function(params,session,callbacks){signedCall('track.unlove',params,session,callbacks,'POST')},updateNowPlaying:function(params,session,callbacks){signedCall('track.updateNowPlaying',params,session,callbacks,'POST')}};this.user={getArtistTracks:function(params,callbacks){call('user.getArtistTracks',params,callbacks)},getBannedTracks:function(params,callbacks){call('user.getBannedTracks',params,callbacks)},getEvents:function(params,callbacks){call('user.getEvents',params,callbacks)},getFriends:function(params,callbacks){call('user.getFriends',params,callbacks)},getInfo:function(params,callbacks){call('user.getInfo',params,callbacks)},getLovedTracks:function(params,callbacks){call('user.getLovedTracks',params,callbacks)},getNeighbours:function(params,callbacks){call('user.getNeighbours',params,callbacks)},getNewReleases:function(params,callbacks){call('user.getNewReleases',params,callbacks)},getPastEvents:function(params,callbacks){call('user.getPastEvents',params,callbacks)},getPersonalTracks:function(params,callbacks){call('user.getPersonalTracks',params,callbacks)},getPlaylists:function(params,callbacks){call('user.getPlaylists',params,callbacks)},getRecentStations:function(params,session,callbacks){signedCall('user.getRecentStations',params,session,callbacks)},getRecentTracks:function(params,callbacks){call('user.getRecentTracks',params,callbacks)},getRecommendedArtists:function(params,session,callbacks){signedCall('user.getRecommendedArtists',params,session,callbacks)},getRecommendedEvents:function(params,session,callbacks){signedCall('user.getRecommendedEvents',params,session,callbacks)},getShouts:function(params,callbacks){call('user.getShouts',params,callbacks)},getTopAlbums:function(params,callbacks){call('user.getTopAlbums',params,callbacks)},getTopArtists:function(params,callbacks){call('user.getTopArtists',params,callbacks)},getTopTags:function(params,callbacks){call('user.getTopTags',params,callbacks)},getTopTracks:function(params,callbacks){call('user.getTopTracks',params,callbacks)},getWeeklyAlbumChart:function(params,callbacks){call('user.getWeeklyAlbumChart',params,callbacks)},getWeeklyArtistChart:function(params,callbacks){call('user.getWeeklyArtistChart',params,callbacks)},getWeeklyChartList:function(params,callbacks){call('user.getWeeklyChartList',params,callbacks)},getWeeklyTrackChart:function(params,callbacks){call('user.getWeeklyTrackChart',params,callbacks)},shout:function(params,session,callbacks){signedCall('user.shout',params,session,callbacks,'POST')}};this.venue={getEvents:function(params,callbacks){call('venue.getEvents',params,callbacks)},getPastEvents:function(params,callbacks){call('venue.getPastEvents',params,callbacks)},search:function(params,callbacks){call('venue.search',params,callbacks)}};var auth={getApiSignature:function(params){var keys=[];var string='';for(var key in params){keys.push(key)}keys.sort();for(var index in keys){var key=keys[index];string+=key+params[key]}string+=apiSecret;return md5(string)}}}
+         var cache=options.cache||undefined;var debug=typeof(options.debug)=='undefined'?false:options.debug;this.setApiKey=function(_apiKey){apiKey=_apiKey};this.setApiSecret=function(_apiSecret){apiSecret=_apiSecret};this.setApiUrl=function(_apiUrl){apiUrl=_apiUrl};this.setCache=function(_cache){cache=_cache};var internalCall=function(params,callbacks,requestMethod){if(requestMethod=='POST'){var html=document.getElementsByTagName('html')[0];var frameName='lastfmFrame_'+new Date().getTime();var iframe=document.createElement('iframe');html.appendChild(iframe);iframe.contentWindow.name=frameName;iframe.style.display="none";var formState='init';iframe.width=1;iframe.height=1;iframe.style.border='none';iframe.onload=function(){if(formState=='sent'){if(!debug){setTimeout(function(){html.removeChild(iframe);html.removeChild(form)},1500)}};formState='done';if(typeof(callbacks.success)!='undefined'){callbacks.success()}};var form=document.createElement('form');form.target=frameName;form.action=apiUrl;form.method="POST";form.acceptCharset="UTF-8";html.appendChild(form);for(var param in params){var input=document.createElement("input");input.type="hidden";input.name=param;input.value=params[param];form.appendChild(input)};formState='sent';form.submit()}else{var jsonp='jsonp'+new Date().getTime();var hash=auth.getApiSignature(params);if(typeof(cache)!='undefined'&&cache.contains(hash)&&!cache.isExpired(hash)){if(typeof(callbacks.success)!='undefined'){callbacks.success(cache.load(hash))}return}params.callback=jsonp;params.format='json';window[jsonp]=function(data){if(typeof(cache)!='undefined'){var expiration=cache.getExpirationTime(params);if(expiration>0){cache.store(hash,data,expiration)}}if(typeof(data.error)!='undefined'){if(typeof(callbacks.error)!='undefined'){callbacks.error(data.error,data.message)}}else if(typeof(callbacks.success)!='undefined'){callbacks.success(data)}window[jsonp]=undefined;try{delete window[jsonp]}catch(e){}if(head){head.removeChild(script)}};var head=document.getElementsByTagName("head")[0];var script=document.createElement("script");var array=[];for(var param in params){array.push(encodeURIComponent(param)+"="+encodeURIComponent(params[param]))}script.src=apiUrl+'?'+array.join('&').replace(/%20/g,'+');head.appendChild(script)}};var call=function(method,params,callbacks,requestMethod){params=params||{};callbacks=callbacks||{};requestMethod=requestMethod||'GET';params.method=method;params.api_key=apiKey;internalCall(params,callbacks,requestMethod)};var signedCall=function(method,params,session,callbacks,requestMethod){params=params||{};callbacks=callbacks||{};requestMethod=requestMethod||'GET';params.method=method;params.api_key=apiKey;if(session&&typeof(session.key)!='undefined'){params.sk=session.key}params.api_sig=auth.getApiSignature(params);internalCall(params,callbacks,requestMethod)};this.album={addTags:function(params,session,callbacks){if(typeof(params.tags)=='object'){params.tags=params.tags.join(',')}signedCall('album.addTags',params,session,callbacks,'POST')},getBuylinks:function(params,callbacks){call('album.getBuylinks',params,callbacks)},getInfo:function(params,callbacks){call('album.getInfo',params,callbacks)},getTags:function(params,session,callbacks){signedCall('album.getTags',params,session,callbacks)},removeTag:function(params,session,callbacks){signedCall('album.removeTag',params,session,callbacks,'POST')},search:function(params,callbacks){call('album.search',params,callbacks)},share:function(params,session,callbacks){if(typeof(params.recipient)=='object'){params.recipient=params.recipient.join(',')}signedCall('album.share',params,callbacks)}};this.artist={addTags:function(params,session,callbacks){if(typeof(params.tags)=='object'){params.tags=params.tags.join(',')}signedCall('artist.addTags',params,session,callbacks,'POST')},getCorrection:function(params,callbacks){call('artist.getCorrection',params,callbacks)},getEvents:function(params,callbacks){call('artist.getEvents',params,callbacks)},getImages:function(params,callbacks){call('artist.getImages',params,callbacks)},getInfo:function(params,callbacks){call('artist.getInfo',params,callbacks)},getPastEvents:function(params,callbacks){call('artist.getPastEvents',params,callbacks)},getPodcast:function(params,callbacks){call('artist.getPodcast',params,callbacks)},getShouts:function(params,callbacks){call('artist.getShouts',params,callbacks)},getSimilar:function(params,callbacks){call('artist.getSimilar',params,callbacks)},getTags:function(params,session,callbacks){signedCall('artist.getTags',params,session,callbacks)},getTopAlbums:function(params,callbacks){call('artist.getTopAlbums',params,callbacks)},getTopFans:function(params,callbacks){call('artist.getTopFans',params,callbacks)},getTopTags:function(params,callbacks){call('artist.getTopTags',params,callbacks)},getTopTracks:function(params,callbacks){call('artist.getTopTracks',params,callbacks)},removeTag:function(params,session,callbacks){signedCall('artist.removeTag',params,session,callbacks,'POST')},search:function(params,callbacks){call('artist.search',params,callbacks)},share:function(params,session,callbacks){if(typeof(params.recipient)=='object'){params.recipient=params.recipient.join(',')}signedCall('artist.share',params,session,callbacks,'POST')},shout:function(params,session,callbacks){signedCall('artist.shout',params,session,callbacks,'POST')}};this.auth={getMobileSession:function(params,callbacks){params={username:params.username,authToken:md5(params.username+md5(params.password))};signedCall('auth.getMobileSession',params,null,callbacks)},getSession:function(params,callbacks){signedCall('auth.getSession',params,null,callbacks)},getToken:function(callbacks){signedCall('auth.getToken',null,null,callbacks)},getWebSession:function(callbacks){var previuousApiUrl=apiUrl;apiUrl='http://ext.last.fm/2.0/';signedCall('auth.getWebSession',null,null,callbacks);apiUrl=previuousApiUrl}};this.chart={getHypedArtists:function(params,session,callbacks){call('chart.getHypedArtists',params,callbacks)},getHypedTracks:function(params,session,callbacks){call('chart.getHypedTracks',params,callbacks)},getLovedTracks:function(params,session,callbacks){call('chart.getLovedTracks',params,callbacks)},getTopArtists:function(params,session,callbacks){call('chart.getTopArtists',params,callbacks)},getTopTags:function(params,session,callbacks){call('chart.getTopTags',params,callbacks)},getTopTracks:function(params,session,callbacks){call('chart.getTopTracks',params,callbacks)}};this.event={attend:function(params,session,callbacks){signedCall('event.attend',params,session,callbacks,'POST')},getAttendees:function(params,session,callbacks){call('event.getAttendees',params,callbacks)},getInfo:function(params,callbacks){call('event.getInfo',params,callbacks)},getShouts:function(params,callbacks){call('event.getShouts',params,callbacks)},share:function(params,session,callbacks){if(typeof(params.recipient)=='object'){params.recipient=params.recipient.join(',')}signedCall('event.share',params,session,callbacks,'POST')},shout:function(params,session,callbacks){signedCall('event.shout',params,session,callbacks,'POST')}};this.geo={getEvents:function(params,callbacks){call('geo.getEvents',params,callbacks)},getMetroArtistChart:function(params,callbacks){call('geo.getMetroArtistChart',params,callbacks)},getMetroHypeArtistChart:function(params,callbacks){call('geo.getMetroHypeArtistChart',params,callbacks)},getMetroHypeTrackChart:function(params,callbacks){call('geo.getMetroHypeTrackChart',params,callbacks)},getMetroTrackChart:function(params,callbacks){call('geo.getMetroTrackChart',params,callbacks)},getMetroUniqueArtistChart:function(params,callbacks){call('geo.getMetroUniqueArtistChart',params,callbacks)},getMetroUniqueTrackChart:function(params,callbacks){call('geo.getMetroUniqueTrackChart',params,callbacks)},getMetroWeeklyChartlist:function(params,callbacks){call('geo.getMetroWeeklyChartlist',params,callbacks)},getMetros:function(params,callbacks){call('geo.getMetros',params,callbacks)},getTopArtists:function(params,callbacks){call('geo.getTopArtists',params,callbacks)},getTopTracks:function(params,callbacks){call('geo.getTopTracks',params,callbacks)}};this.group={getHype:function(params,callbacks){call('group.getHype',params,callbacks)},getMembers:function(params,callbacks){call('group.getMembers',params,callbacks)},getWeeklyAlbumChart:function(params,callbacks){call('group.getWeeklyAlbumChart',params,callbacks)},getWeeklyArtistChart:function(params,callbacks){call('group.getWeeklyArtistChart',params,callbacks)},getWeeklyChartList:function(params,callbacks){call('group.getWeeklyChartList',params,callbacks)},getWeeklyTrackChart:function(params,callbacks){call('group.getWeeklyTrackChart',params,callbacks)}};this.library={addAlbum:function(params,session,callbacks){signedCall('library.addAlbum',params,session,callbacks,'POST')},addArtist:function(params,session,callbacks){signedCall('library.addArtist',params,session,callbacks,'POST')},addTrack:function(params,session,callbacks){signedCall('library.addTrack',params,session,callbacks,'POST')},getAlbums:function(params,callbacks){call('library.getAlbums',params,callbacks)},getArtists:function(params,callbacks){call('library.getArtists',params,callbacks)},getTracks:function(params,callbacks){call('library.getTracks',params,callbacks)}};this.playlist={addTrack:function(params,session,callbacks){signedCall('playlist.addTrack',params,session,callbacks,'POST')},create:function(params,session,callbacks){signedCall('playlist.create',params,session,callbacks,'POST')},fetch:function(params,callbacks){call('playlist.fetch',params,callbacks)}};this.radio={getPlaylist:function(params,session,callbacks){signedCall('radio.getPlaylist',params,session,callbacks)},search:function(params,session,callbacks){signedCall('radio.search',params,session,callbacks)},tune:function(params,session,callbacks){signedCall('radio.tune',params,session,callbacks)}};this.tag={getInfo:function(params,callbacks){call('tag.getInfo',params,callbacks)},getSimilar:function(params,callbacks){call('tag.getSimilar',params,callbacks)},getTopAlbums:function(params,callbacks){call('tag.getTopAlbums',params,callbacks)},getTopArtists:function(params,callbacks){call('tag.getTopArtists',params,callbacks)},getTopTags:function(callbacks){call('tag.getTopTags',null,callbacks)},getTopTracks:function(params,callbacks){call('tag.getTopTracks',params,callbacks)},getWeeklyArtistChart:function(params,callbacks){call('tag.getWeeklyArtistChart',params,callbacks)},getWeeklyChartList:function(params,callbacks){call('tag.getWeeklyChartList',params,callbacks)},search:function(params,callbacks){call('tag.search',params,callbacks)}};this.tasteometer={compare:function(params,callbacks){call('tasteometer.compare',params,callbacks)},compareGroup:function(params,callbacks){call('tasteometer.compareGroup',params,callbacks)}};this.track={addTags:function(params,session,callbacks){signedCall('track.addTags',params,session,callbacks,'POST')},ban:function(params,session,callbacks){signedCall('track.ban',params,session,callbacks,'POST')},getBuylinks:function(params,callbacks){call('track.getBuylinks',params,callbacks)},getCorrection:function(params,callbacks){call('track.getCorrection',params,callbacks)},getFingerprintMetadata:function(params,callbacks){call('track.getFingerprintMetadata',params,callbacks)},getInfo:function(params,callbacks){call('track.getInfo',params,callbacks)},getShouts:function(params,callbacks){call('track.getShouts',params,callbacks)},getSimilar:function(params,callbacks){call('track.getSimilar',params,callbacks)},getTags:function(params,session,callbacks){signedCall('track.getTags',params,session,callbacks)},getTopFans:function(params,callbacks){call('track.getTopFans',params,callbacks)},getTopTags:function(params,callbacks){call('track.getTopTags',params,callbacks)},love:function(params,session,callbacks){signedCall('track.love',params,session,callbacks,'POST')},removeTag:function(params,session,callbacks){signedCall('track.removeTag',params,session,callbacks,'POST')},scrobble:function(params,session,callbacks){if(params.constructor.toString().indexOf("Array")!=-1){var p={};for(i in params){for(j in params[i]){p[j+'['+i+']']=params[i][j]}}params=p}signedCall('track.scrobble',params,session,callbacks,'POST')},search:function(params,callbacks){call('track.search',params,callbacks)},share:function(params,session,callbacks){if(typeof(params.recipient)=='object'){params.recipient=params.recipient.join(',')}signedCall('track.share',params,session,callbacks,'POST')},unban:function(params,session,callbacks){signedCall('track.unban',params,session,callbacks,'POST')},unlove:function(params,session,callbacks){signedCall('track.unlove',params,session,callbacks,'POST')},updateNowPlaying:function(params,session,callbacks){signedCall('track.updateNowPlaying',params,session,callbacks,'POST')}};this.user={getArtistTracks:function(params,callbacks){call('user.getArtistTracks',params,callbacks)},getBannedTracks:function(params,callbacks){call('user.getBannedTracks',params,callbacks)},getEvents:function(params,callbacks){call('user.getEvents',params,callbacks)},getFriends:function(params,callbacks){call('user.getFriends',params,callbacks)},getInfo:function(params,callbacks){call('user.getInfo',params,callbacks)},getLovedTracks:function(params,callbacks){call('user.getLovedTracks',params,callbacks)},getNeighbours:function(params,callbacks){call('user.getNeighbours',params,callbacks)},getNewReleases:function(params,callbacks){call('user.getNewReleases',params,callbacks)},getPastEvents:function(params,callbacks){call('user.getPastEvents',params,callbacks)},getPersonalTracks:function(params,callbacks){call('user.getPersonalTracks',params,callbacks)},getPlaylists:function(params,callbacks){call('user.getPlaylists',params,callbacks)},getRecentStations:function(params,session,callbacks){signedCall('user.getRecentStations',params,session,callbacks)},getRecentTracks:function(params,callbacks){call('user.getRecentTracks',params,callbacks)},getRecommendedArtists:function(params,session,callbacks){signedCall('user.getRecommendedArtists',params,session,callbacks)},getRecommendedEvents:function(params,session,callbacks){signedCall('user.getRecommendedEvents',params,session,callbacks)},getShouts:function(params,callbacks){call('user.getShouts',params,callbacks)},getTopAlbums:function(params,callbacks){call('user.getTopAlbums',params,callbacks)},getTopArtists:function(params,callbacks){call('user.getTopArtists',params,callbacks)},getTopTags:function(params,callbacks){call('user.getTopTags',params,callbacks)},getTopTracks:function(params,callbacks){call('user.getTopTracks',params,callbacks)},getWeeklyAlbumChart:function(params,callbacks){call('user.getWeeklyAlbumChart',params,callbacks)},getWeeklyArtistChart:function(params,callbacks){call('user.getWeeklyArtistChart',params,callbacks)},getWeeklyChartList:function(params,callbacks){call('user.getWeeklyChartList',params,callbacks)},getWeeklyTrackChart:function(params,callbacks){call('user.getWeeklyTrackChart',params,callbacks)},shout:function(params,session,callbacks){signedCall('user.shout',params,session,callbacks,'POST')}};this.venue={getEvents:function(params,callbacks){call('venue.getEvents',params,callbacks)},getPastEvents:function(params,callbacks){call('venue.getPastEvents',params,callbacks)},search:function(params,callbacks){call('venue.search',params,callbacks)}};var auth={getApiSignature:function(params){var keys=[];var string='';for(var key in params){keys.push(key)}keys.sort();for(var index in keys){var key=keys[index];string+=key+params[key]}string+=apiSecret;return md5(string)}}}
       fm.lastfm = new LastFM({
 					apiKey: fm.api_key,
 					apiSecret: fm.api_secret,
@@ -3888,7 +3874,7 @@ vkLastFM={
          localStorage['lastfm_username'] = fm.username;
          localStorage['lastfm_session_key'] = fm.session_key;
          if (callback) callback();
-      }, error: function(code, message){
+      }, error: function(code){
          if (code == 4)// токен сдох
             if (!fm.connect_box || !fm.connect_box.isVisible()){
                fm.connect_box=vkAlertBox(IDL('AuthBoxTitle'), IDL('AuthBoxText'), function(){
@@ -3935,7 +3921,7 @@ vkLastFM={
       {
          key: fm.session_key
       },
-      {success: function(data){
+      {success: function(){
          fm.set_icon(audio_info,'scrobled'); 
       }, error: function(code, message){
          if (code==4 || code==9) fm.auth();
@@ -3965,7 +3951,7 @@ vkLastFM={
       },
       {
          success: function(data){}, 
-         error: function(code, message){
+         error: function(code){
             if (code==4 || code==9) fm.auth();
          }
       });
@@ -4011,7 +3997,6 @@ vkLastFM={
       });      
    },
    set_love_icon:function(is_loved){
-      var fm=vkLastFM;
       var els=geByClass('lastfm_fav_icon');
       for (var i=0; i<els.length;i++){ 
          var el=els[i];
@@ -4202,8 +4187,6 @@ vkLastFM={
       }
    },
    set_icon:function(audio_info,icon){
-      var togglers=["ac"];//vk_lastfm_icon
-      var icons=["ac"];
       var fm=vkLastFM;
       /*
       var p=ge('gp_vol');
@@ -4606,7 +4589,7 @@ vk_aalbum={
                   q      : winToUtf(name)
                };
          ajax.post(Audio.address, query, {
-            onDone: function(res, preload, options) {
+            onDone: function(res) {
                var div=vkCe('div',{},res);
                var els=geByClass('audio',div);
                var au=els[0];
@@ -4645,9 +4628,9 @@ vk_aalbum={
       addClass(cur.searchCont, 'loading');
       //cur.aContent.innerHTML = '';
       
-      box=new MessageBox({title: IDL('Searching...'),closeButton:true,width:"350px", onHide:function(r){abort=true; get_track();} });
+      box=new MessageBox({title: IDL('Searching...'),closeButton:true,width:"350px", onHide:function(){abort=true; get_track();} });
       box.removeButtons();
-      box.addButton(IDL('Cancel'),function(r){abort=true; box.hide(); get_track();},'no');
+      box.addButton(IDL('Cancel'),function(){abort=true; box.hide(); get_track();},'no');
       var html='</br><div id="vk_scan_msg"></div><div id="vk_scan_info" style="padding-bottom:10px;"></div>';
       box.content(html).show();
 
@@ -4704,7 +4687,7 @@ function vkAlbumCollectPlaylist(){
                q      : name
             };
       ajax.post(Audio.address, query, {
-         onDone: function(res, preload, options) {
+         onDone: function(res) {
             var div=vkCe('div',{},res);
             var els=geByClass('audio',div);
             var au=els[0];
@@ -4732,9 +4715,9 @@ function vkAlbumCollectPlaylist(){
    addClass(cur.searchCont, 'loading');
    //cur.aContent.innerHTML = '';
    
-   box=new MessageBox({title: IDL('Searching...'),closeButton:true,width:"350px", onHide:function(r){abort=true; get_track();}});
+   box=new MessageBox({title: IDL('Searching...'),closeButton:true,width:"350px", onHide:function(){abort=true; get_track();}});
    box.removeButtons();
-   box.addButton(IDL('Cancel'),function(r){abort=true; box.hide(); get_track();},'no');
+   box.addButton(IDL('Cancel'),function(){abort=true; box.hide(); get_track();},'no');
    var html='</br><div id="vk_scan_msg"></div><div id="vk_scan_info" style="padding-bottom:10px;"></div>';
    box.content(html).show();
 
@@ -4877,7 +4860,7 @@ vk_apps = {
    },
    view_adm_apps: function() {
       var list = cur.appsList[cur.curList] || [];
-      var summaries = [ge('apps_summary'), ge('app_site_summary'), ge('app_desktop_summary'), ge('app_edit_summary')];
+      
       var contents = [ge('app_rows'), ge('app_site_list'), ge('app_desktop_list'), ge('app_edit_list')];
       var more_buttons = [ge('more_link'), ge('site_more_link'), ge('desktop_more_link'), ge('edit_more_link')];
       var results = [ge('app_rows'), ge('app_site_results'), ge('app_desktop_results'), ge('app_edit_results')];
@@ -4894,7 +4877,7 @@ vk_apps = {
       var html = [];
       for (k in apps) {
          var app = apps[k];
-         var edit = (i == 3);
+         
          html.push(Apps.drawApp(app, false, true));
       }
       var au = ce('div', {
@@ -5235,7 +5218,6 @@ vk_vid_down={
    videos: function(oid,aid,quality,callback,progress){// quality: 0 - 240p; 1 - 360p;  2 - 480p;  3 - 720p;
       aid = parseInt(aid) || 0;
       quality = quality!=null ? quality : 3;
-      var smartlink=true;
       var load=function(cback){
          ajax.post('al_video.php', {act: 'load_videos_silent', oid: oid, offset: 0}, { // please_dont_ddos:2
             onDone: function(_list) {
@@ -5254,7 +5236,7 @@ vk_vid_down={
             dApi.call('video.get',params,function(r){
                var data=r.response;
                if (data.length>1){
-                  var count=data.shift();
+                  data.shift();
                   for (var i=0; i<data.length; i++){
                      var v=data[i];
                      album_list.push([v.owner_id,v.vid,v.image,v.title,v.description,'',v.album,0,0,v.duration,'']);
@@ -5388,7 +5370,7 @@ vk_vid_down={
          p.appendChild(div);  
       }
        
-      var addlink=function(el,class_name){
+      var addlink=function(el){
          if (el && el.innerHTML.indexOf('vk_vid_down.vkVidLoadLinks')!=-1) return;
          if (geByClass('video_row',el)[0]) return;
          var v=geByClass('video',el)[0] || geByClass('image_div',el)[0];
@@ -5431,7 +5413,7 @@ vk_vid_down={
          var div=vkCe('span',{'class':"download_cont"},'<a href="#" onclick="vk_vid_down.vkVidLoadLinks('+vid[1]+','+vid[2]+',this.parentNode'+(vid[3]?", '"+vid[3]+"','"+type+"'":'')+'); return false;">'+IDL('download')+'</a>');
          p.appendChild(div);              
       };
-      var add_link_to_thumb=function(el,classname){
+      var add_link_to_thumb=function(el){
          var v_el=geByClass('video_row_relative',el)[0];
          //if (!v_el && el.href) v_el=el;
          if (!v_el) return;
@@ -5821,7 +5803,7 @@ vk_vid_down={
       return '<span id="vkyoutubelinks"></span>';
    },
    /*END OF VIMEO FUNCTIONS */
-   vkVidLinks: function(data){	
+   vkVidLinks: function(){	
       if (ge('mv_actions')){
          var vid=((window.mvcur || {}).videoRaw || '').split('_');
          if (vid[0] && ge('mv_actions').innerHTML.indexOf('vkVidAddToGroup')==-1)
