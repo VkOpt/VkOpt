@@ -35,7 +35,6 @@ var MSG_DEL_REQ_DELAY=300; 	//ms
 var MSG_IDS_PER_DEL_REQUEST=25;
 
 var SEARCH_AUDIO_LYRIC_LINK='http://yandex.ru/yandsearch?text=%AUDIO_NAME%+%28%2Bsite%3Alyrics.mp3s.ru+%7C+%2Bsite%3Alyrics-keeper.com+%7C+%2Bsite%3Aalloflyrics.com++%7C+%2Bsite%3A2song.net++%7C+%2Bsite%3Amegalyrics.ru+%7C+%2Bsite%3Aakkords.ru%29';
-var INJ_AUDIOPLAYER_DUR_MOD=true; //enable JS-injections to player functions, for duration label modification
 /* API SETTINGS PAGE: http://vkontakte.ru/login.php?app=2168679&layout=popup&type=browser&settings=15615 */
 
 var FAVE_ALLOW_EXTERNAL_LINKS=true;
@@ -105,7 +104,6 @@ var SetsOnLocalStore={
   'WallsID':'s',
   'vk_sounds_vol':'s'
 };
-var vk_showinstall=true;
 var vkLdrImg='<img src="/images/upload.gif">';
 var vkLdrMonoImg='<img src="/images/upload_inv_mono.gif">';
 var vkLdrMiniImg='<img src="/images/upload_inv_mini.gif">';

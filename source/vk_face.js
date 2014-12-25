@@ -708,13 +708,6 @@ function vkMakeRightBar(){
    setTimeout("updSideTopLink(true);",500);
 }
 //if (getSet(44)=='y') vkMoveSuggFrBox();
-function vkMoveSuggFrBox(){
-	var e=geByClass('ad_box_friend',ge('left_ads'))[0]; 
-	if (!e) return;
-	var e2=vkNextEl(e); 
-	ge('left_blocks').appendChild(e); 
-	if (!e2) ge('left_blocks').appendChild(e2);
-}
 
 function vkFrCat2Menu(ret){
   var str='';
@@ -1479,34 +1472,6 @@ function UpdateCounters(only_msg,data){
 	}
 }
 
-function vkHighlightCounters(){
-	var vkMenuHighlightEl=function(e){
-		//*
-      /* REPLACE TO CSS ANIMATION
-      var MENU_HIGHLIGHT_DELAY=2000;      //(ms) yellow highlight in menu on changed counters
-      var SIDEBAR_ITEM_HIGHLIGHT_COLOR = "#fcf78a";
-      
-		var e=vk$(e); 
-		var backcolor=e.css('backgroundColor'); 
-		e.animate({backgroundColor:SIDEBAR_ITEM_HIGHLIGHT_COLOR},700,function(){//rgb(255,255,0)
-			setTimeout(function(){
-				e.animate({backgroundColor:backcolor},700,function(){e.css('backgroundColor',"")});
-			},MENU_HIGHLIGHT_DELAY);
-		});*/
-      
-      
-		//*/
-		/*
-		var backcolor=getStyle(e, 'backgroundColor');
-		animate(e, {backgroundColor: SIDEBAR_ITEM_HIGHLIGHT_COLOR}, 700,function(){//rgb(255,255,0)
-			setTimeout(function(){
-				animate(e,{backgroundColor:backcolor},700,function(){setStyle(e,{backgroundColor: ''})});
-			},MENU_HIGHLIGHT_DELAY);
-		});		
-		*/
-	};
-	for (var i=0;i<VK_MENU_LAST_HIGHLIGHT.length;i++) vkMenuHighlightEl(VK_MENU_LAST_HIGHLIGHT[i]);
-}
 
 function vkMoneyBoxAddHide(){
 	var mb=ge('left_money_box');

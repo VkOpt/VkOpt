@@ -810,59 +810,6 @@ function vkPrepareProfileInfo(){
 	}
 }
 
-function checkAgeFunc(_this,_id,_day,_month){
-  /*
-  if(getSet(27)!='y'){
-    alert(unescape('%u041D%u0443%u0436%u043D%u043E%20%u0432%u043A%u043B%u044E%u0447%u0438%u0442%u044C%20%u043A%u0430%u043B%u0435%u043D%u0434%u0430%u0440%u044C%21'));
-    return;
-  }*/
-  var getAge=function(){
-       var full_years=0;
-       var _tmp=vk_cur.vk_calEvents[_month][_day];
-       for(var i in _tmp){
-         if(_tmp[i][0]==_id){
-           if(_tmp[i][3]){
-             var bDay = new Date(_tmp[i][3] * 1000);
-             var nowDay = new Date();
-             var curDay = new Date(nowDay.getFullYear(), _month-1, _day);
-             if(bDay.getFullYear() != nowDay.getFullYear()){
-               var years = Number(curDay.getFullYear() - bDay.getFullYear());
-               if(nowDay.getMonth()<bDay.getMonth()){
-                 full_years=years-1;
-               }else if(nowDay.getMonth()==bDay.getMonth()){
-                 if(nowDay.getDate()<bDay.getDate()){
-                   full_years=years-1;
-                 }else{
-                   full_years=years;
-                 }
-               }else{
-                 full_years=years;
-               }
-             }
-           }
-         }
-       }
-         
-       if(full_years>0)
-         ge('checkAge').innerHTML='<b>'+langNumeric(full_years, vk_lang["vk_year"])+'</b>';
-       else
-         ge('checkAge').innerHTML=IDL('AgeNA');  
-  };
-  
-  if(vk_cur.vk_calEvents){
-      getAge();
-  }else{
-      _this.innerHTML=vkLdrImg;
-      vkGetCalendarInfo(function(month, year, events, holidays){
-         if (!window.vk_cur) vk_cur={};
-         vk_cur.vk_calEvents=events;
-         getAge();
-      });
-    //setTimeout(function(){checkAgeFunc(_this,_id,_day,_month)},100);
-  }
-}
-
-
 function vkProcessBirthday(day,month,year){
    var zodiac_cfg=[20,19,20,20,21,21,22,23,23,23,22,21];// days
    //'zodiac_signs':['Козерог','Водолей','Рыбы','Овен','Телец','Близнецы','Рак','Лев','Дева','Весы','Скорпион','Стрелец']
@@ -1683,24 +1630,6 @@ vk_graff={
       }   
    }
 };
-
-
-function vkWallAddPreventHideCB(){
-   Inj.Wait('cur.wallAddMedia',function(){
-      var p=geByClass('rows', cur.wallAddMedia.menu.menuNode)[0];
-      var html='<div class="checkbox" id="vk_no_hide_add_box" style="padding: 7px;" onclick="checkbox(this); window.vk_prevent_addmedia_hide=isChecked(this);">'+
-                  '<div></div>'+'<nobr>'+IDL('PreventHide')+'</nobr>'+
-               '</div>';
-      var id='add_media_type_' +  cur.wallAddMedia.menu.id + '_nohide';
-      if (!ge(id)){
-         var a=vkCe('a',{id:id,'style':'border-top:1px solid #DDD;'},html);
-         p.appendChild(a);
-      }
-      Inj.Replace('cur.wallAddMedia.chooseMedia',/addMedia/g,'cur.wallAddMedia');
-      Inj.Before('cur.wallAddMedia.chooseMedia','boxQueue','if (!window.vk_prevent_addmedia_hide)');
-   });
-}
-
 
 function vkModGroupBlocks(){
    var el=ge('group_albums');// || ge('public_albums');
@@ -2692,31 +2621,6 @@ function vkGrLstFilter(){
       (nav.objLoc['tab']=='admin'?hide:show)('vk_gr_filter');
 	});	
    //*/
-}
-
-function vkToTopBackLink(){
-   window._stlMousedown = function (e) {
-     e = e || window.event;
-     if (checkEvent(e)) {
-       return;
-     }
-     if (!__afterFocus) {
-       var y = _stlSaved;
-       _stlSaved = y ? 0 : scrollGetY();
-       _stlBack=_stlSaved;
-       _stlText.className = (y || !_stlSaved) ? '' : 'down';
-       scrollToY(y, 0);
-     }
-     return cancelEvent(e);
-   };
-
-
-   window._stlSaved=0;
-   var s = {
-      onmousedown: _stlMousedown
-   };
-   if (window._stlLeft) extend(_stlLeft, s);
-   if (window._stlSide)  extend(_stlSide, s);
 }
 
 // FAVE
@@ -4112,10 +4016,6 @@ function vk_tag_api(section,url,app_id){
             dk.dislike_over(obj_id,parent_post,my?'undislike':'dislike');         
          },400);        
 
-      },
-      dislike_out:function(post){
-         var icon = ge('dislike_icon' + post);
-         triggerEvent(icon.parentNode, 'mouseout');
       },
       dislike_over:function(post,parent,act){
          var icon = ge('dislike_icon' + post),

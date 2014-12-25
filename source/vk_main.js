@@ -326,26 +326,6 @@ function vkProccessLinks(el){
  vklog('ProcessLinks time:' + (unixtime()-tstart) +'ms');
 }
 
-
-function vkProcessDocPhotoLink(node){
-   if (hasClass(node,'page_doc_photo_href') && !node.getAttribute('zoombtn')){
-      var h=geByClass('page_doc_photo_hint',node)[0];
-      if (h && h.innerHTML.toLowerCase().indexOf('.gif')!=-1){
-         var btn=vkCe('div',{'class':'fl_l zoom_ico_white',onclick:"vkDocImageInlineView(this,'"+node.href+"',event);"});//<div class="fl_l zoom_ico_white"></div>
-         h.appendChild(btn);
-         node.setAttribute('zoombtn',1);
-      }
-   }
-   
-}
-function vkDocImageInlineView(el,href,e){
-   cancelEvent(e);
-   var a=el.parentNode.parentNode;
-   var img=a.getElementsByTagName('img')[0];
-   if (img) img.src=href;
-   hide(el);
-   addClass(a,'doc_gif_anim');
-}
 function ProcessAwayLink(node){
   var href=node.getAttribute('href');
   if (href && href.indexOf('away.php?')!=-1){ 
@@ -628,7 +608,6 @@ function vkCommon(){
 }
 
 function vkProcessOnFramegot(h){ if (h && h.indexOf('vk_usermenu_btn')==-1 && h.indexOf('vkPopupAvatar')==-1) return vkModAsNode(h,vkProcessNodeLite); }
-function vkProcessOnReceive(h){	if (h.innerHTML && h.innerHTML.indexOf('vk_usermenu_btn')==-1 && h.indexOf('vkPopupAvatar')==-1) {	vkProcessNode(h);}}
 
 function vkResponseChecker(answer,url,q){// detect HTML in response and prosessing
 	//var rx=/div.+class.+[^\\]"/;
@@ -1720,7 +1699,6 @@ function vkFriends(){
    //Inj.Replace('Friends.acceptRequest','text;','text+vkFrLstSel(mid); alert(text);');
    Inj.Replace('Friends.acceptRequest','text;','vkFrReqDoneAddUserLists(text,mid);');
 }
-function vkFrLstSel(mid){ return '<div class="actions"><a class="lists_select" onmousedown="return Friends.ddShow('+mid+', this, event)">'+IDL('AddFrToList')+'</a></div>'; }
 function vkFrReqDoneAddUserLists(text,mid){
    var div=vkCe('div',{},text);
    var el=geByClass('friends_added',div)[0] || geByClass('friends_added_text',div)[0];
