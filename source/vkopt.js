@@ -385,7 +385,7 @@ var TextPasteSmiles={
 	  }
 	}
 
-function vkCheckLoadedScripts(){
+function vkCheckLoadedScripts(){    // Функция для ручного вызова, чтобы на опере 12 определить, какой из файлов сфейлился на первичной интерпретации.
    var obj={
       "vk_face"      :!!window.SmileNode,
       "vk_lib"       :!!window.vkApis,

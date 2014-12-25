@@ -353,7 +353,7 @@ function vkMakeCatMenu(cats){
 	},
 
 */
-function vkOnSkinList(Skins){
+function vkOnSkinList(Skins){   // Вызывается из подгружаемого js файла со списком 
   var arr=[];
   for (var i=0; i<Skins.length; i++){
       var smv=parseInt(Skins[i].skinman_ver) || 0;
