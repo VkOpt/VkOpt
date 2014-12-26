@@ -170,7 +170,7 @@ vk_profile={
                ge('pr_notes_count').innerHTML=(r.response || '0');
             });
       }
-      html='<a class="notes" onclick="return nav.go(this, event);" href="/notes'+cur.oid+'" onmouseover="vk_profile.wall_notes_link(true);">\
+      var html='<a class="notes" onclick="return nav.go(this, event);" href="/notes'+cur.oid+'" onmouseover="vk_profile.wall_notes_link(true);">\
       <span class="fl_r thumb"></span><span class="fl_r" id="pr_notes_count"></span>'+IDL('clNo',1)+'</a>';
       if (ge('profile_counts') && !ge('pr_notes_count')){
          ge('profile_counts').appendChild(vkCe('div',{},html));
@@ -501,7 +501,7 @@ vk_notes={  // <a onclick="showBox('wkview.php', {act: 'notes_old_privacy', nid:
          },'yes',true);
          save_btn=geByTag1('button',save_btn);
          
-         html='<div class="wk_page_title_cont"><input id="wk_page_title" class="text" value="" placeholder="Title"><br><br></div>';
+         var html='<div class="wk_page_title_cont"><input id="wk_page_title" class="text" value="" placeholder="Title"><br><br></div>';
          html+='<div id="editor_cont">\
          <textarea id="wke_textarea" class="wk_wiki_text wke_textarea" style="width: 630px; overflow-x: hidden; overflow-y: hidden; resize: none; height: 300px; display: block;"></textarea>\
          </div>';
@@ -1456,7 +1456,7 @@ function vkFriends_get(idx){
 	'all':'friends.get',
 	'common':'friends.getMutual'
   };
-  code='var a=API.'+methods[idx]+'({uid:'+cur.oid+',target_uid:'+cur.oid+'});'+
+  var code='var a=API.'+methods[idx]+'({uid:'+cur.oid+',target_uid:'+cur.oid+'});'+
   'var r=API.getProfiles({"uids":a,fields:"uid,first_name,last_name"});'+
   'return r;';
   dApi.call('execute',{code:code},function(r){
@@ -1563,7 +1563,7 @@ if (!masks[id]) return;
 }
     if (!hasClass(c,"shut")) closed_tabs = isNaN(closed_tabs) ? 0 : closed_tabs & ~masks[id];
     else closed_tabs = isNaN(closed_tabs) ? masks[id] : closed_tabs | masks[id];
-	sett=vkgetCookie('remixbit',1).split('-');
+	var sett=vkgetCookie('remixbit',1).split('-');
 	sett[12]=closed_tabs;
 	vksetCookie('remixbit', sett.join('-'));
     //c.className = newClass;
@@ -1711,7 +1711,7 @@ function vkAudioBlock(load_audios,oid){
 		for (var i=0;i<list.length;i++){
 			var itm=list[i];
 			var aid=cur.oid+'_'+itm.aid+'_'+irand(0,10);
-         dur=(new Date(itm.duration*1000)).format('MM:ss');
+         var dur=(new Date(itm.duration*1000)).format('MM:ss');
          html+=audio_tpl.replace(/%AID%/g,aid)
                         .replace(/%ARTIST%/g,itm.artist)
                         .replace(/%TITLE%/g,itm.title)
@@ -4024,7 +4024,7 @@ function vk_tag_api(section,url,app_id){
          var item_tpl='<td><a class="like_tt_usr" title="%NAME%" href="/id%UID%"><img class="like_tt_stats_photo" src="%AVA%" width="30" height="30" /></a></td>';
          
          var cnt=parseInt(count.innerHTML) || 0;
-         html=dk.tip_tpl.replace(/%OBJ_ID%/g,post)
+         var html=dk.tip_tpl.replace(/%OBJ_ID%/g,post)
                         .replace(/%USERS_DISLIKE%/g,langNumeric(cnt,IDL('users_dislike')));
 
          var data=null;

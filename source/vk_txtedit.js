@@ -97,7 +97,7 @@ obj.focus();
  } else if (obj.contentEditable=="true"){
    var sel=window.getSelection(); 
    var r=sel.getRangeAt(0);  
-   el=r.commonAncestorContainer;
+   var el=r.commonAncestorContainer;
    while(el && el.contentEditable!="true") {
         el = el.parentNode;
    }
@@ -131,7 +131,7 @@ function replaceSelectedText(obj,cbFunc){
  } else if (obj.contentEditable=="true"){
    var sel=window.getSelection(); 
    var r=sel.getRangeAt(0);
-   el=r.commonAncestorContainer;
+   var el=r.commonAncestorContainer;
    while(el && el.contentEditable!="true") {
         el = el.parentNode;
    }   
@@ -163,7 +163,7 @@ function AddSmileBtn(rfield){
 		var DivCode='<div>'+
 		 '<h4>'+IDL('sm_SelectSmile')+'</h4><div class="smilemenu">';
 		 var i=0;
-		 for (key in smiles){
+		 for (var key in smiles){
 		  i++;
 		  DivCode+=GetSmileItem(smiles,key,rfield);
 		  //if (i % 15 == 0) DivCode+='<br>';
@@ -415,11 +415,11 @@ if(vk_EnableSwichText){
   Key=event.keyCode;
   ctrlKey=event.ctrlKey;
   shiftKey=event.shiftKey;
-  altKey=event.altKey;
+  var altKey=event.altKey;
 
-  pressedCtrlKey=ctrlKey;
-  pressedAltKey=altKey;
-  pressedShiftKey=shiftKey;
+  var pressedCtrlKey=ctrlKey;
+  var pressedAltKey=altKey;
+  var pressedShiftKey=shiftKey;
   //topMsg(Key+'\n'+pressedCtrlKey);
   if (pressedCtrlKey){ //pressedCtrlKey
     var processedEvent=false;
@@ -444,7 +444,7 @@ if(vk_EnableSwichText){
     }
   }
   if (processedEvent){
-    e=event;//window.event;
+    var e=event;//window.event;
     e.returnValue=false;
     window.status="";
     return false;

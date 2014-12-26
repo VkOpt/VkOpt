@@ -200,7 +200,7 @@ var ex_ldr={
             break;
          case 'css':
             if (by_src){
-               cssNode = document.createElement('link');
+               var cssNode = document.createElement('link');
                cssNode.type = 'text/css';
                cssNode.rel = 'stylesheet';
                cssNode.setAttribute(ex_ldr.mark,info);

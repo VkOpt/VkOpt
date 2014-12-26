@@ -444,7 +444,7 @@ var vk_photos = {
          o=eval('('+o+')');
          //alert(o.timehash);
          re(ge('vk_url_upldr_form'));
-         checkURLForm = ce('div', {url:'vk_url_upldr_form', innerHTML: '<iframe name="vk_url_upldr_form_iframe"></iframe>'});
+         var checkURLForm = ce('div', {url:'vk_url_upldr_form', innerHTML: '<iframe name="vk_url_upldr_form_iframe"></iframe>'});
          utilsNode.appendChild(checkURLForm);
          var parseForm = checkURLForm.appendChild(ce('form', {
            action: 'share.php?act=url_attachment',
@@ -1386,7 +1386,7 @@ function vkGetPageWithPhotos(oid,aid){
 	box.content('<div id="ph_ldr_progress"><center>'+vkBigLdrImg+'</center></div>').show();
 	
     vkApis.photos_hd(oid,aid,function(r){
-		vkImgsList=MakeImgsList(r).join('<br>');
+		var vkImgsList=MakeImgsList(r).join('<br>');
 		if (!vkImgsList.length)
 			var html='<h4>No images</h4>';
 		else {
@@ -1571,7 +1571,7 @@ function vkDisableAlbumScroll(){
 function vkGetPhotoByUserBox() {
   var vkMsgBox = new MessageBox({title: IDL('paSearchUserPhotos'),width:"250px"});
   vkMsgBox.removeButtons();
-  vkMsgBox.addButton(IDL('Cancel'),function(){ msgret=vkMsgBox.hide(200);  vkMsgBox.content('');},'no');
+  vkMsgBox.addButton(IDL('Cancel'),function(){ var msgret=vkMsgBox.hide(200);  vkMsgBox.content('');},'no');
   var onQ=function(){ 
         var q=ge('byuserlink').value;
         if (trim(q)=='') {
@@ -2429,7 +2429,7 @@ vk_videos = {
          if (x){
             rx=new RegExp(x[1],x[2]);
          }
-         arr=cur.videoList['all'];
+         var arr=cur.videoList['all'];
          function filter_arr(regex,all){
             arr=arr.filter(function(video){
                var title=winToUtf(video[3]);
@@ -3448,7 +3448,7 @@ function vkParseAudioInfo(_aid,node,anode){
 	  
 	  var art, title, nfo = geByClass1('info', a_node);
       art = geByTag1('b', nfo);
-      l = geByTag1('a', art);
+      var l = geByTag1('a', art);
       if (l) art = l;
       var reArr = ['<span>', '</span>', '<span class="match">'];
       var re = new RegExp(reArr.join('|'), "gi");
@@ -3459,7 +3459,7 @@ function vkParseAudioInfo(_aid,node,anode){
       if (l) title = l.innerHTML;
       else title = title.innerHTML;
       title = title.replace(re,'').replace(sr,'');
-      dur = geByClass1('duration', nfo).innerHTML;
+      var dur = geByClass1('duration', nfo).innerHTML;
       var data=a_info.value.split(',');
       var url=data[0];
       var duration=parseInt(data[1]);
@@ -4532,7 +4532,7 @@ function vkGetSongInfoFromNode(node) {
     else title = title.innerHTML;
     title = title.replace(re, '');
     var data = geByTag1('input',node).value.split(','), url = data[0], duration = parseInt(data[1]);
-    dur = duration;//audioPlayer.formatTime
+    var dur = duration;//audioPlayer.formatTime
     data = aid.split('_');
     var oid = data[0], aid = data[1], res = {
       0: oid,
@@ -4892,7 +4892,7 @@ vk_apps = {
       contents[i].innerHTML='';
       hide(more_buttons[i]);
       var html = [];
-      for (k in apps) {
+      for (var k in apps) {
          var app = apps[k];
          var edit = (i == 3);
          html.push(Apps.drawApp(app, false, true));
@@ -4976,7 +4976,7 @@ vk_vid_down={
      
       // XFR2.send({ url:'http: //api.digitalaccess.ru/api/json/', method: 'POST', data:JSON.stringify(data)},function(r){ alert(r.text);  });
 
-      xhr = new XMLHttpRequest();
+      var xhr = new XMLHttpRequest();
       xhr.open('POST', 'http://api.digitalaccess.ru/api/json/', true);
       xhr.onreadystatechange = function(){         
          if (xhr.readyState == 4) {
@@ -5034,7 +5034,7 @@ vk_vid_down={
 
       var box=vkAlertBox(IDL('Links'),'<div id="vk_links_container">'+vkBigLdrImg+'</div>');
       box.setOptions({width:"325px"});
-      div=ge('vk_links_container');
+      var div=ge('vk_links_container');
       var q=3;
       
       
@@ -5097,7 +5097,7 @@ vk_vid_down={
             box.hide();
 			
 			var metalinklist_joined = metalinklist.join('\n').replace(/&/g,'&amp;');
-				metalinklist_html='<div class="vk_links_list">'
+				var metalinklist_html='<div class="vk_links_list">'
 					+'<textarea class="vk_video_linklist_area">'+metalinklist_joined.replace(/&/g,'&amp;')+'</textarea>'
 					+'<a download="video_playlist.metalink" href="data:text/plain;base64,' + base64_encode(utf8_encode(metalinklist_joined)) + '">'
 						+vkButton(IDL('.METALINK (UTF-8)'))
@@ -5170,9 +5170,9 @@ vk_vid_down={
       };
       var ext='.mp4';
       if (vars.no_flv=='1'){
-         vidurl=pathToHD('240');
+         var vidurl=pathToHD('240');
       } else {
-         vidurl=get_flv();
+         var vidurl=get_flv();
          ext = '.flv';
       }
       if (smartlink){
@@ -5980,31 +5980,31 @@ vk_au_down={
          pls+='\nNumberOfEntries='+list.length+'\n\nVersion=2';
 
          box.hide();
-         m3u_html='<div class="vk_m3u_playlist">\
+         var m3u_html='<div class="vk_m3u_playlist">\
                <textarea id="vk_m3u_playlist_area">'+res+'</textarea>\
                <a download="playlist.m3u" href="data:audio/x-mpegurl;base64,' + base64_encode(utf8ToWindows1251(utf8_encode(res))) + '">'+vkButton(IDL('download_M3U'))+'</a>\
                <a download="playlist.m3u" href="data:audio/x-mpegurl;base64,' + base64_encode(utf8_encode(res)) + '">'+vkButton(IDL('download_M3U')+' (UTF-8)','',1)+'</a>\
                </div>';
-         pls_html='<div class="vk_pls_playlist">\
+         var pls_html='<div class="vk_pls_playlist">\
                <textarea id="vk_pls_playlist_area">'+pls+'</textarea>\
                <a download="playlist.pls" href="data:audio/x-scpls;base64,' + base64_encode(utf8ToWindows1251(utf8_encode(pls))) + '">'+vkButton(IDL('download_PLS'))+'</a>\
                <a download="playlist.pls"  href="data:audio/x-scpls;base64,' + base64_encode(utf8_encode(pls)) + '">'+vkButton(IDL('download_PLS')+' (UTF-8)','',1)+'</a>\
                </div>';
                
          var links_joined = links.join('\n');
-         links_html='<div class="vk_mp3_links">\
+         var links_html='<div class="vk_mp3_links">\
                <textarea id="vk_mp3_links_area">'+links_joined+'</textarea>\
                <a download="playlist.txt" href="data:text/plain;base64,' + base64_encode(utf8ToWindows1251(utf8_encode(links_joined))) + '">'+vkButton(IDL('.TXT'))+'</a>\
                <a download="playlist.txt" href="data:text/plain;base64,' + base64_encode(utf8_encode(links_joined)) + '">'+vkButton(IDL('.TXT')+' (UTF-8)','',1)+'</a>\
                </div>';
          var wget_links_joined = wget_links.join('\n');
-         wget_links_html='<div class="vk_mp3_wget_links">\
+         var wget_links_html='<div class="vk_mp3_wget_links">\
                <textarea id="vk_mp3_wget_links_area">'+wget_links_joined+'</textarea>\
                <a download="playlist.sh" href="data:text/plain;base64,' + base64_encode(utf8ToWindows1251(utf8_encode('chcp 1251\n'+wget_links_joined))) + '">'+vkButton(IDL('.SH'))+'</a>\
                <a download="playlist.sh" href="data:text/plain;base64,' + base64_encode(utf8_encode('chcp 65001\n'+wget_links_joined)) + '">'+vkButton(IDL('.SH')+' (UTF-8)','',1)+'</a>\
                </div>';
 		 var metalinklist_joined = metalinklist.join('\n').replace(/&/g,'&amp;');
-         metalinklist_html='<div class="vk_mp3_metalink_links">\
+         var metalinklist_html='<div class="vk_mp3_metalink_links">\
                <textarea id="vk_mp3_metalink_links_area">'+metalinklist_joined.replace(/&/g,'&amp;')+'</textarea>\
                <a download="playlist.metalink" href="data:text/plain;base64,' + base64_encode(utf8_encode(metalinklist_joined)) + '">'+vkButton(IDL('.METALINK (UTF-8)'))+'</a>\
                </div>';

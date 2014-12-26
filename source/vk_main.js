@@ -496,7 +496,7 @@ function vkCheckGroupsAdmin(){
    dApi.call('groups.get',{extended:1},function(r){
       var data=r.response || [0];
       var count=data.shift();
-      gids=[];
+      var gids=[];
       for (var i=0; i<data.length; i++){
          var g=data[i];
          if (g.is_admin==1){
@@ -914,7 +914,7 @@ vk_messages={
    make_html: function(msg,user){
       var html='';
       var t2d = function(unix){
-         time = new Date(unix*1000);
+         var time = new Date(unix*1000);
          return time.getFullYear()+'.'+('0'+(time.getMonth()+1)).slice(-2)+'.'+('0'+time.getDate()).slice(-2)+' '+('0'+time.getHours()).slice(-2)+':'+('0'+time.getMinutes()).slice(-2)+':'+('0'+time.getSeconds()).slice(-2);
       };
       var t2m = function(inputText) {
@@ -942,7 +942,7 @@ vk_messages={
       };
 		var doc2text=function(t){
 			// проверка < и > в именах документов
-			t2 = t.replace(/</g, '&lt;').replace(/>/g,'&gt;').replace(/"/g, '&quot;').replace(/&/g,'&amp;');
+			var t2 = t.replace(/</g, '&lt;').replace(/>/g,'&gt;').replace(/"/g, '&quot;').replace(/&/g,'&amp;');
 			return t2;
 		};
       var a2t = function(sec){
@@ -1020,7 +1020,7 @@ vk_messages={
       // http://vk.com/images/icons/mono_iconset.gif
 
       // build
-      for(i=0,j=msg.length;i<j;i++){
+      for(var i=0,j=msg.length;i<j;i++){
          var u=(user[msg[i].from_id] || {
                            id: msgfwd[k].user_id,
                            first_name: 'DELETED',
@@ -1040,8 +1040,8 @@ vk_messages={
          }
          if(msg[i].attachments !== undefined){
             html+='<div class="attacments"> <b>'+IDL('HistMsgAttachments')+'</b> </div>';
-            l=msg[i].attachments.length;
-            for(k=0;k<l;k++){
+            var l=msg[i].attachments.length;
+            for(var k=0;k<l;k++){
                html+=make_attach(msg[i].attachments[k]);
             }
          }
@@ -1059,7 +1059,7 @@ vk_messages={
       function initfwd(msgfwd){
          html+='<div class="att_head"> <div class="att_ico att_fwd"></div> '+IDL('HistMsgFwd')+' </div>';
          html+='<div class="fwd">';
-         for(k=0,l=msgfwd.length;k<l;k++){
+         for(var k=0,l=msgfwd.length;k<l;k++){
             var u = (user[msgfwd[k].user_id] || {
                            id: msgfwd[k].user_id,
                            first_name: 'DELETED',
@@ -1074,8 +1074,8 @@ vk_messages={
             html+='<div class="msg_body"> '+t2m(msgfwd[k].body)+'</div>';
             if(msgfwd[k].attachments !== undefined){
                html+='<div class="attacments"> <b>'+IDL('HistMsgAttachments')+'</b> </div>';
-               n=msgfwd[k].attachments.length;
-               for(m=0;m<n;m++){
+               var n=msgfwd[k].attachments.length;
+               for(var m=0;m<n;m++){
                   html+=make_attach(msgfwd[k].attachments[m]);
                }
             }
@@ -1350,8 +1350,8 @@ vk_im={
       
       var selMsgs=[];
       // Add to attached mails
-      curPeerMedia = cur.imPeerMedias[cur.peer];
-      for (i in curPeerMedia) {
+      var curPeerMedia = cur.imPeerMedias[cur.peer];
+      for (var i in curPeerMedia) {
         if (curPeerMedia[i][0] == 'mail') {
           selMsgs=(curPeerMedia[i][1]+"").split(';');
           cur.imMedia.unchooseMedia(i);
@@ -1570,7 +1570,7 @@ function vkImTypingEvent(uid,need_close){
 }
 
 function vkIMwrapFrModSort(text){
-   mysort=function(a,b){
+   var mysort=function(a,b){
       if (String(a).indexOf('im_friend')!=-1 && String(b).indexOf('im_friend')!=-1){
          var at=(String(a).indexOf('vk_faved_user')!=-1);
          var bt=(String(b).indexOf('vk_faved_user')!=-1);
@@ -2100,7 +2100,7 @@ function vkMakeMsgHistory(uid,show_format){
 			run();	 
 		},'yes');
 		vkaddcss('.vk_save_hist_cfg textarea{width:370px;}');
-		html ='<h4>'+IDL('SaveMsgFormat')+'<a class="fl_r" onclick="ge(\'vk_msg_fmt\').value=SAVE_MSG_HISTORY_PATTERN;">'+
+		var html ='<h4>'+IDL('SaveMsgFormat')+'<a class="fl_r" onclick="ge(\'vk_msg_fmt\').value=SAVE_MSG_HISTORY_PATTERN;">'+
 					IDL('Reset')+'</a></h4><textarea id="vk_msg_fmt" onfocus="autosizeSetup(this,{});">'+msg_pattern+'</textarea><br><br>';
 					
 		html+='<h4>'+IDL('SaveMsgDateFormat')+'<a class="fl_r" onclick="ge(\'vk_msg_date_fmt\').value=SAVE_MSG_HISTORY_DATE_FORMAT;">'+
@@ -2205,7 +2205,7 @@ function vkCleanNotes(){
 	showLoader();
 	stManager.add(['ui_controls.js','ui_controls.css','datepicker.js','datepicker.css','events.css'], function() {
 		hideLoader();
-		html='<div class="clear_fix info_table page_add_event_info public_add_event_box"><div class="clear_fix">\
+		var html='<div class="clear_fix info_table page_add_event_info public_add_event_box"><div class="clear_fix">\
 		  <div style="padding-top:10px;" id="notes_del_by_time"></div>\
 		  <div class="labeled fl_l">\
 			<div class="fl_l"><input type="hidden" id="notes_del_after_date" name="notes_del_after_date"/></div>\
@@ -2324,7 +2324,7 @@ function vkTopicSubscribe(add_link){
 		}
 		return false;
 	}
-	progr_el=ge('vksubscribetopic');
+	var progr_el=ge('vksubscribetopic');
 	var text='[subscribe]';
 	var last = ((cur.pgCont.childNodes[cur.pgNodesCount - 1].id || '').match(/\d+$/) || [0])[0];
 	ajax.post('al_board.php', {act: 'post_comment',topic: cur.topic,last: last,hash: cur.hash,comment: text},{
