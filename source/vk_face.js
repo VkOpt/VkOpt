@@ -13,7 +13,7 @@ function GetUnReadColorCss(){
 	var textcolor=rgb2hex(Array(rr,gg,bb));
 	//alert(bgcolor+'\n'+textcolor);
 												 //#E2E9FF
-	mailcss= '#mail_rows_t tr.new_msg { background-color: '+bgcolor+' !important;}\n\
+	var mailcss= '#mail_rows_t tr.new_msg { background-color: '+bgcolor+' !important;}\n\
 	#mail_rows_t tr.new_msg a { color: '+textcolor+' !important;}\n\
 	.im_new_msg, .im_new_msg .im_log_author, .im_new_msg .im_log_body, .im_new_msg .im_log_date { color: #000 !important; background-color: '+bgcolor+' !important; }\
 	#im_dialogs .new_msg a,.im_new_msg, .dialogs_new_msg, .dialogs_new_msg .dialogs_msg_body, .fc_msgs_unread, .fc_msg_unread{ color: '+textcolor+' !important;  background-color: '+bgcolor+' !important;}\
@@ -893,7 +893,7 @@ vk_menu={
 
 function vkMenu(){//vkExLeftMenu
   var CSS_ICONS=false;
-  var tstart=tend=unixtime();
+  var tstart=unixtime();
   var cfg=getSet(15);
   var MFR_CFG=13; //mod my friends
   var LOAD_FR_CATS_CFG=14; //load friends categories in ext menu
@@ -1345,7 +1345,7 @@ function vkMenu(){//vkExLeftMenu
   if (getSet(LOAD_FR_CATS_CFG)=='y') vkFrCat2Menu();
   
   /* Calc menu generation time */
-  tend=unixtime()-tstart;
+  var tend=unixtime()-tstart;
   vklog('Menu creating time:' + tend +'ms');
   return tend;
 }
@@ -1443,7 +1443,7 @@ function UpdateCounters(only_msg,data){
                if (window.handlePageCount){
                   handlePageCount(menu_vars[key].id, v,menu_vars[key].lnk,menu_vars[key].add);
                } else {
-                  toAdd = (v && menu_vars[key].add) ? ('?' + menu_vars[key].add) : '';
+                  var toAdd = (v && menu_vars[key].add) ? ('?' + menu_vars[key].add) : '';
                   geByTag1('span', e.firstChild).innerHTML = v ? ('(<b>' + v + '</b>)') : '';
                   e.firstChild.href = '/' + menu_vars[key].lnk + toAdd;
                   e.firstChild.onclick = function (ev) { return nav.go(this, ev);}; 
@@ -1757,11 +1757,11 @@ function clock(){
   var ctx = document.getElementById('canvas').getContext('2d');
   ctx.save();
 
-  fon='rgba(255,255,255,0.7)';
-  strelkaH='#222';
-  strelkaM='#444';
-  strelkaS='#666';
-  metki='#000';
+  var fon='rgba(255,255,255,0.7)';
+  var strelkaH='#222';
+  var strelkaM='#444';
+  var strelkaS='#666';
+  var metki='#000';
 
   ctx.clearRect(0,0,150,150);
   ctx.translate(57,75);
@@ -1781,7 +1781,7 @@ function clock(){
 
   // Hour marks
   ctx.save();
-  for (i=0;i<12;i++){
+  for (var i=0;i<12;i++){
     ctx.beginPath();
     ctx.rotate(Math.PI/6);
     ctx.moveTo(100,0);
@@ -1793,7 +1793,7 @@ function clock(){
   // Minute marks
   ctx.save();
   ctx.lineWidth = 5;
-  for (i=0;i<60;i++){
+  for (var i=0;i<60;i++){
     if (i%5!=0) {
       ctx.beginPath();
       ctx.moveTo(117,0);
@@ -1859,9 +1859,9 @@ function clock(){
 }
 
 function makeClock(){
-s=sideBar();
-d=document.createElement('span');
-c=document.createElement('canvas');
+var s=sideBar();
+var d=document.createElement('span');
+var c=document.createElement('canvas');
 c.id='canvas';
 c.width=115;
 c.height=150;
@@ -1875,7 +1875,7 @@ setInterval(clock,1000);
 
 /* SMILES */
 function vkFixSmileMap(){
-   for (key in SmilesMap){
+   for (var key in SmilesMap){
        var re=(SmilesMap[key][0])?SmilesMap[key][0]:SmilesMap[key];
        re= new RegExp("(\\s|^)("+re.source+")([\\s\\.,]|$)", (re.ignoreCase?'i':''));
        if (SmilesMap[key][0])
@@ -1905,8 +1905,8 @@ function FindAndProcessTextNodes(node,func){
     }
 }          
 function SmileNode(mainNode,childItem,searchWord){
-    node = mainNode.childNodes[childItem];
-    for (key in SmilesMap){ 
+    var node = mainNode.childNodes[childItem];
+    for (var key in SmilesMap){ 
       var regex=(SmilesMap[key][0])?SmilesMap[key][0]:SmilesMap[key];
       //new_regex= new RegExp("(\\s|^)("+regex.source+")([\\s\\.,]|$)", (regex.ignoreCase?'i':''));
       

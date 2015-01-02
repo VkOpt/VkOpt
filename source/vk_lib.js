@@ -626,7 +626,7 @@ var vkMozExtension = {
 
 	function vkgetCookie(name,temp){
 	  if (name=='remixbit' && SettBit && !temp) return SettBit;
-	  if (name=='remixmid') { if (temp) return false; else { tmp=remixmid(); return tmp; } }
+	  if (name=='remixmid') { if (temp) return false; else { var tmp=remixmid(); return tmp; } }
 	  if (vkLocalStoreReady() && (SetsOnLocalStore[name] || /api\d+_[a-z]+/.test(name))){
 		var val=vkGetVal(name);
 		if (val) return val;
@@ -673,7 +673,7 @@ var vkMozExtension = {
 
 	function setSet(num,type,setting) {
 	if (!setting) setting=0;
-	settings=vkgetCookie('remixbit').split('-');
+	var settings=vkgetCookie('remixbit').split('-');
 	if (num=='-') settings[setting]=type;
 	else settings[setting][num]=type;
 	SettBit = settings.join('-');
@@ -681,8 +681,8 @@ var vkMozExtension = {
 	}
 
 	function setCfg(num,type) {
-	allsett=vkgetCookie('remixbit').split('-');
-	sett=allsett[0].split('');
+	var allsett=vkgetCookie('remixbit').split('-');
+	var sett=allsett[0].split('');
 	sett[num]=type;
 	allsett[0]=sett.join('');
 	SettBit = allsett.join('-');//settings.allsett('-');
@@ -702,7 +702,7 @@ var vkMozExtension = {
 	
 	function vkCheckUpdates(){
 		var heads = document.getElementsByTagName("head");
-		nows=  new  Date(); var datsig=nows.getYear()+"_"+nows.getMonth()+"_"+nows.getDate()+"_";
+		var nows=  new  Date(); var datsig=nows.getYear()+"_"+nows.getMonth()+"_"+nows.getDate()+"_";
 		datsig+=Math.floor(nows.getHours()/4); //raz v 4 chasa
 		//    http://kiberinfinity.narod.ru/
 		var updhost='htt'+'p:/'+'/vko'+'pt.n'+'et/upd/';
@@ -735,7 +735,7 @@ var vkMozExtension = {
 			return;
 		  }
 		  if (check_count) check_count--;
-		  func_=func;
+		  var func_=func;
 		  if (typeof func == 'string') func_=eval(func);
 		  if (!check_timeout) check_timeout=1000;
 		  if (func_) callback(func_);
@@ -998,7 +998,7 @@ String.prototype.leftPad = function (l, c) {
 			var pos=(val*100/max).toFixed(2).replace(/\.00/,'');
 			var perw=(val/max)*width;
 			text=(text || '%').replace("%",pos+'%');
-			html='<div class="vkProg_Bar vkPB_Frame" style="width: '+perw+'px;">'+
+			var html='<div class="vkProg_Bar vkPB_Frame" style="width: '+perw+'px;">'+
 					'<div class="vkProg_Bar vkProg_BarFr" style="width: '+width+'px;">'+text+'</div>'+
 				'</div>'+
 				'<div  class="vkProg_Bar vkProg_BarBgFrame" style="width: '+width+'px;">'+
@@ -1077,7 +1077,7 @@ String.prototype.leftPad = function (l, c) {
 		vkContTabsCount=1;
 		vkaddcss(".activetab{display:block} .noactivetab{display:none} ")
 	  } else vkContTabsCount++;
-	  j=vkContTabsCount;
+	  var j=vkContTabsCount;
 	  vkContTabsSwitch=function(idx,show_all){
 			var ids=idx.split("_");
 			if (show_all){
@@ -1681,7 +1681,7 @@ var vk_api_permissions = {
    to_str: function(int_scope){
       var str_scope = [];
       var types = vk_api_permissions.types;
-      for (key in types){
+      for (var key in types){
          if (int_scope & types[key])
             str_scope.push(key);
       }
@@ -1739,7 +1739,7 @@ vkApis={
       
 		var get=function(){
 			if (progress) progress(cur,count);
-			vk_ph_xhr=ajax.post('al_photos.php', {act: 'show', list: listId, offset: cur}, {
+			ajax.post('al_photos.php', {act: 'show', list: listId, offset: cur}, {
             onDone: function(listId, ph_count, offset, data, opts) {
                if (!count) count=ph_count;
                for(var i=0; i<data.length;i++){
@@ -1823,7 +1823,7 @@ function utf8_encode ( str_data ) {
 }
 
  function utf8ToWindows1251(str){ //function from SaveFrom.Net extension
-    var res = '', i = 0, c = c1 = c2 = 0;
+    var res = '', i = 0, c = 0, c2 = 0;
     var a = {
       208: {
         160: 208, 144: 192, 145: 193, 146: 194,
@@ -2063,7 +2063,7 @@ var XFR2 = {
    req_options: [],
    fr_handler: null,
    send: function(options, callback) {
-      url = options.url || '';
+      var url = options.url || '';
       var domain = 'http://' + url.split('/')[2];
       if (domain.indexOf('youtube.com') != -1) domain += '/embed/';
 
@@ -2190,7 +2190,7 @@ var XFR2 = {
 
 function vkFileSize(size,c){
 	c = (c==null)?2:c;
-	x=[]; x[c]=''; x='.'+x.join('0');
+	var x=[]; x[c]=''; x='.'+x.join('0');
 	var filesizename = [" Bytes", " KB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB"];
 	return size ? (size/Math.pow(1024, (i = Math.floor(Math.log(size)/Math.log(1024))))).toFixed(c).replace(x,'')+filesizename[i] : '0 Bytes';
 }
@@ -2418,7 +2418,7 @@ function vkNotifyCustomSInit(){
 }
 function vkShowNotify(params){ 
    params = params || {};
-   vk_nf_id=unixtime()+vkRand();//window.vk_nf_id || 0;
+   var vk_nf_id=unixtime()+vkRand();//window.vk_nf_id || 0;
    params.id='vk_nf_id_'+vk_nf_id;//(++);
    params.type='vkopt';
    Inj.Wait('curNotifier.version',function(){
@@ -2479,7 +2479,7 @@ function vkShowEvent(obj){ // vkShowEvent({id:'vk_typing_123',title:'%USERNAME%'
          obj.custom || "" // script >-> ev.custom = eval('('+msg[12]+')');
       ];
       //console.log(msg.join('<!>'));
-      events=[msg.join('<!>')];
+      var events=[msg.join('<!>')];
       
       //Notifier.lcSend('feed', extend({full: curNotifier.idle_manager && curNotifier.idle_manager.is_idle && !this.canNotifyUi(), key: curNotifier.key}, response));
       //Notifier.pushEvents(events);
