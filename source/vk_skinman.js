@@ -133,7 +133,7 @@ function vkStyle(url){
          var base_domain=t[0]+'//'+t[2];
          //*
          var replaced=0;
-         css=css.replace(/(url\(['"]?)(.{6})/g,function(str,p1,p2,offset,s){
+         css=css.replace(/(url\(['"]?)(.{6})/g,function(str,p1,p2){
             if (p2!='http:/' && p2!='https:'){
                //console.log('"'+p2+'"', str);
                replaced++;
@@ -500,7 +500,6 @@ function vkShowSkinMan(filter,page){
             '</div>'+
   '<div id="vkSkinMan">'+
   '<div id="searchResults" class="searchResults clearFix"><div class="skin_table">';
-  var COL_COUNT=3;
   var from=VK_THEMES_ON_PAGE*page;
   var to=Math.min(VK_THEMES_ON_PAGE*(page+1),vkMyStyles.length); 
   var pids=[];
@@ -578,7 +577,6 @@ vk_skinman={
       dApi.call('photos.getById',{photos:pids.join(','),extended:1},function(r){
          var data=r.response;
          for (var i=0; i<data.length; i++){
-            var p=data[i];
             var cnt=data[i].likes.count;
             var my_like=data[i].likes.user_likes;
             var pid=data[i].owner_id+'_'+data[i].pid;
