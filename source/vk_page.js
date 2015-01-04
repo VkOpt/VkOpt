@@ -470,7 +470,43 @@ vk_wall = {
       var inp=ge('reply_to' + post);   
       val(inp, '');
       val(title, '');
-   }
+   },
+    process_node: function (node) {
+        if (getSet(98) == 'y') {    // Показывать все комментарии к посту при разворачивании
+            var anchors = geByClass('wr_header', node); // Ссылки "развернуть"
+            var labels = geByClass('wrh_text', node);   // текст внутри них
+
+            for (var i = 0; i < anchors.length; i++) {  // Меняем обработчики: второй аргумент - оч. большое число
+                anchors[i].setAttribute('onclick', anchors[i].getAttribute('onclick').replace("', false", "', 99999"))
+                if (!hasClass(anchors[i], 'wrh_all'))   // Если сейчас в свернутом состоянии, то меняем текст
+                    labels[i].innerHTML = IDL('showAllComments')+' ('+anchors[i].getAttribute('offs').split('/')[1]+')';
+            }
+        }
+        if (getSet(99) == 'y') {    // Функция сортировки комментариев по количеству лайков
+            stManager.add(['wkview.css']);  // нужно для кнопочки со стрелками в разные стороны
+            vkaddcss('.margin5 {margin: 5px;}');    // отступ от краев кнопки "развернуть комментарии"
+            var replies_wrap = geByClass('replies_wrap', node);
+            for (var i = 0; i < replies_wrap.length; i++) { // Создание кнопочек сортировки
+                var link = vkCe('a', {
+                    class: 'fl_r margin5',
+                    tooltip: IDL('sortByLikes'),
+                    onmouseover: "showTooltip(this, {text: this.getAttribute('tooltip')})",
+                    onclick: "vk_wall.sortByLikes('" + replies_wrap[i].id.replace('_wrap', '') + "')"
+                }, '<div class="wl_replies_header_toggler_icon fl_r"></div><div class="post_like_icon fl_l"></div>');
+                replies_wrap[i].insertBefore(link, replies_wrap[i].firstChild);
+            }
+        }
+    },
+    sortByLikes: function (repliesContainerId) {    // Сортировка комментариев по количеству лайков 
+        var repliesContainer = ge(repliesContainerId);
+        var replies = geByClass('reply', repliesContainer); // массив элементов, содержащих комменты. его и будем сортировать.
+        var SortFunc = function (a, b) {
+            return geByClass('like_count', b)[0].innerText - geByClass('like_count', a)[0].innerText;
+        };
+        replies = replies.sort(SortFunc);
+        for (var i = 0; i < replies.length; i++)    // перевставляем комменты в контейнер уже в правильном порядке
+            repliesContainer.appendChild(replies[i]);
+    }
 };
 
 vk_notes={  // <a onclick="showBox('wkview.php', {act: 'notes_old_privacy', nid: 11661199});">Privacy settings</a>
