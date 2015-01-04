@@ -2407,7 +2407,7 @@ vk_videos = {
                console.log(r);
                //*
                //filtred_vids[i][6]
-               var arr=cur.videoList['all'];
+               var arr=cur.videoList['all']['list'];
                for (var j=0;j<arr.length; j++){
                   for (var i=0;i<vids.length; i++){
                      if (arr[j] && arr[j][1]==vids[i]) arr[j][6]=to_album;
@@ -2428,7 +2428,7 @@ vk_videos = {
          if (x){
             rx=new RegExp(x[1],x[2]);
          }
-         var arr=cur.videoList['all'];
+         var arr=cur.videoList['all']['list'];
          function filter_arr(regex,all){
             arr=arr.filter(function(video){
                var title=winToUtf(video[3]);
@@ -2606,6 +2606,18 @@ function vkVideShowAdder(){
 var _vk_vid_adm_gr=null;
 var _vk_vid_add_box=null;
 function vkVidAddToGroup(oid,vid,to_gid){
+      /*
+      // From Dec 2014 
+      if (!to_gid){
+         // TODO: make fake mvcur.mvData object
+         showBox('/video', { act: 'add_to_club_pl_box', oid: oid, vid: vid }, {params: {width: 480, dark: 1, bodyStyle: 'padding: 0'},
+           onDone: function(box) {
+           }
+         });
+         return;
+      }
+      */
+      // Old solution for add to group
       if (to_gid){
          if (_vk_vid_add_box) _vk_vid_add_box.hide();
          var _vid='http://vk.com/video'+oid+'_'+vid;
@@ -2675,7 +2687,7 @@ function vkVidAddToGroup(oid,vid,to_gid){
 }
 
 function vkVideoAddOpsBtn(){
-   var p=ge('video_summary');
+   var p=geByClass('t_r',ge('video_tabs'))[0];
    if (!ge('vk_video_ops')){
       var oid=cur.oid;
       var aid=((cur.vSection || "").match(/album_(\d+)/) || [])[1];
@@ -2687,10 +2699,12 @@ function vkVideoAddOpsBtn(){
          p_options.push({l:IDL('AddMod'), onClick:vkVideShowAdder}); 
       }
       if (getSet(77)=='y')
-         p_options.push({l:IDL('DelAll'), onClick:vk_videos.clean}); 
+         p_options.push({l:IDL('DelAll',2), onClick:vk_videos.clean}); 
       if (cur.canEditAlbums) 
          p_options.push({l:IDL('VideoMove'), onClick:vk_videos.mass_move_box}); 
       
+      if (window.vk_vid_down)
+         p_options.push(vk_vid_down.vkVideoGetLinksBtn());
       /*
       p_options.push({l:IDL('Links'), onClick:function(item) {
             //
@@ -2701,8 +2715,8 @@ function vkVideoAddOpsBtn(){
       
       p_options=p_options.concat(vk_plugins.videos_actions(oid,aid));
       if (p_options.length>0){
-         p.appendChild(vkCe('span',{'class':'divide'},'|'));
-		 p.appendChild(btn);
+         p.insertBefore(vkCe('span',{'class':'divide fl_l'},'&nbsp;'),p.firstChild);
+		 p.insertBefore(btn,p.firstChild);
          stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
             cur.vkAlbumMenu = new DropdownMenu(p_options, {
               target: ge('vk_video_ops'),
@@ -4992,6 +5006,14 @@ vk_vid_down={
    },
    vkVideoGetLinksBtn: function(){
       if (getSet(2)!='y') return;
+      
+      return {
+         l:IDL('Links',2), 
+         onClick:function(){
+            vk_vid_down.vkVideoGetLinks(cur.oid,((nav.objLoc['section'] || "").match(/\d+/) || 0));
+         }
+      
+      }
       /*
       var p=ge('video_albums_list');
       if (p && !ge('video_get_links')){
@@ -5016,7 +5038,8 @@ vk_vid_down={
          p.appendChild(vkCe('span',{"class":'divide'},'|'));
         p.appendChild(vkCe('a',attrs,IDL('Links')));
         
-      } 
+      }
+      
       var btn=ge('video_get_links');
       btn.setAttribute('onclick',"vk_vid_down.vkVideoGetLinks("+cur.oid+","+((nav.objLoc['section'] || "").match(/\d+/) || 0)+"); return false;");
    },
@@ -5227,9 +5250,9 @@ vk_vid_down={
       aid = parseInt(aid) || 0;
       quality = quality!=null ? quality : 3;
       var load=function(cback){
-         ajax.post('al_video.php', {act: 'load_videos_silent', oid: oid, offset: 0}, { // please_dont_ddos:2
+         ajax.post('al_video.php', {act: 'load_videos_silent', oid: oid, offset: 0, section:'all'}, { // please_dont_ddos:2
             onDone: function(_list) {
-               var list = eval('('+_list+')')['all'];
+               var list = eval('('+_list+')')['all']['list'];
                cback(list);
             }
          });
