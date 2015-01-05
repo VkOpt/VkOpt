@@ -626,7 +626,7 @@ var vkMozExtension = {
 
 	function vkgetCookie(name,temp){
 	  if (name=='remixbit' && SettBit && !temp) return SettBit;
-	  if (name=='remixmid') { if (temp) return false; else { var tmp=remixmid(); return tmp; } }
+	  if (name=='remixmid') { var tmp=remixmid(); if (tmp) return tmp; }
 	  if (vkLocalStoreReady() && (SetsOnLocalStore[name] || /api\d+_[a-z]+/.test(name))){
 		var val=vkGetVal(name);
 		if (val) return val;
@@ -651,42 +651,36 @@ var vkMozExtension = {
 	}
 	
 	function getSet(num,type) {
-	  var sett=vkgetCookie('remixbit');
-	  if (!sett) {
-		vksetCookie('remixbit',DefSetBits);
-		sett=DefSetBits;
-	  }
-	  
 	  /*if (!SettBit){
 	  if (!vkgetCookie('remixbit')) return null;}*/
-	  if (!SettBit) SettBit=vkgetCookie('remixbit');
-	  if (!type || type==null) type=0;
-	  if (num=='-')	return (SettBit.split('-')[type] || DefSetBits.split('-')[type]);
-	  
+      if (!SettBit) {
+          SettBit = vkgetCookie('remixbit');
+          if (!SettBit)
+              vksetCookie('remixbit', DefSetBits);  // vksetCookie изменяет SettBit, если имя 'remixbit'
+      }
+	  if (!type) type=0;
+	  if (num=='-')	return SettBit.split('-')[type];
 	  
 	  
 	  var bit=SettBit.split('-')[type].charAt(num);
-	  if (!bit) bit=DefSetBits.split('-')[type].charAt(num);
-	  if (!bit) return 'n';
+	  if (!bit) {
+	    bit=DefSetBits.split('-')[type].charAt(num);
+	    if (!bit) return 'n';
+      }
 	  else return bit;
 	}
 
-	function setSet(num,type,setting) {
+	function setSet(num,val,setting) {
 	if (!setting) setting=0;
 	var settings=vkgetCookie('remixbit').split('-');
-	if (num=='-') settings[setting]=type;
-	else settings[setting][num]=type;
+	if (num=='-') settings[setting]=val;
+	else settings[setting][num]=val;
 	SettBit = settings.join('-');
 	vksetCookie('remixbit',SettBit);
 	}
 
-	function setCfg(num,type) {
-	var allsett=vkgetCookie('remixbit').split('-');
-	var sett=allsett[0].split('');
-	sett[num]=type;
-	allsett[0]=sett.join('');
-	SettBit = allsett.join('-');//settings.allsett('-');
-	vksetCookie('remixbit',SettBit);
+	function setCfg(num,val) {
+	    setSet(num,val,0);
 	}
 
 	function vkRand(){return Math.round((Math.random() * (100000000 - 1)));}
