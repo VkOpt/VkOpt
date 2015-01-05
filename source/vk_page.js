@@ -500,9 +500,14 @@ vk_wall = {
     sortByLikes: function (repliesContainerId) {    // Сортировка комментариев по количеству лайков 
         var repliesContainer = ge(repliesContainerId);
         var replies = geByClass('reply', repliesContainer); // массив элементов, содержащих комменты. его и будем сортировать.
-        var SortFunc = function (a, b) {
-            return geByClass('like_count', b)[0].innerText - geByClass('like_count', a)[0].innerText;
-        };
+        if (vkbrowser.chrome)   // Хром использует нестабильную сортировку, поэтому используем другую функцию сравнения
+            var SortFunc = function (a, b) {
+                return (geByClass('like_count', b)[0].innerText - geByClass('like_count', a)[0].innerText) || (a.id.split('_')[1] - b.id.split('_')[1]);
+            };
+        else
+            var SortFunc = function (a, b) {
+                return geByClass('like_count', b)[0].innerText - geByClass('like_count', a)[0].innerText;
+            };
         replies = replies.sort(SortFunc);
         for (var i = 0; i < replies.length; i++)    // перевставляем комменты в контейнер уже в правильном порядке
             repliesContainer.appendChild(replies[i]);
