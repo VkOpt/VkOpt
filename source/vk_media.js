@@ -2122,6 +2122,47 @@ vk_videos = {
       if (getSet(92)=='y') Inj.Start('Videoview.hide','if (!mvcur.minimized) force=true;');
       videoview.enabledResize=function(){return true;}
    },
+   show_null_album:function(){
+      var albumed = [];
+      var fake_id = 1;// c нулевым какие-то траблы. не разбирался.
+      
+      var sec_idx = -1;
+      for (var i=0; i<cur.sections.length; i++){
+         if (cur.sections[i][0] == fake_id) sec_idx = i;
+      }
+      if (sec_idx == -1){
+         for (var section in cur.videoList){ // собираем списко видео добавленных в любые альбомы
+            var isAlbum = section.substr(0, 6) == 'album_';
+            if (!isAlbum) continue;
+            var vids=cur.videoList[section].list;
+            for (var i=0; i<vids.length; i++){
+               var vid = vids[i][0]+'_'+vids[i][1]
+               if (albumed.indexOf(vid) == -1)
+                  albumed.push(vid);
+            }         
+         }
+         
+         var data = {count:0, list:[], silent: false};
+         var vids=cur.videoList['all']['list'];
+         for (var i=0; i<vids.length; i++){ // собираем в список видео вне альбомов
+            var vid = vids[i][0]+'_'+vids[i][1];
+            if (albumed.indexOf(vid) == -1)
+               data.list.push(vids[i]);
+         }
+         data.count = data.list.length;
+         cur.videoList['album_'+fake_id] = data; // делаем фейковый альбом
+         
+         if (sec_idx == -1){ // добавляем инфу о фейковом альбоме
+            cur.sections.push([fake_id, IDL('NotInAlbums'), "/images/icons/playlist_folder.png", 0, 0, "", 0]);
+            sec_idx = cur.sections.length -1;
+         }
+      }
+      
+      cur.sections[sec_idx][3] = cur.videoList['album_'+fake_id].list.length;
+      //Video.onSwitchTabs('album_'+fake_id);
+      nav.change({section:'album_'+fake_id});
+      return false;
+   },
    change_show_video_params:function(opts){
       if (!opts || !opts.params) return;
       var params=opts.params;
@@ -2510,31 +2551,17 @@ vk_videos = {
 };
 
 function vkVideoNullAlbum(){
-   /*
-   var p=ge('video_albums_list');
+   var p=ge('video_summary_tabs');
    if (p && !ge('video_section_album_0')){
-      var attrs={
-         'id':"video_section_album_0",
-         'class':"side_filter",
-         'onmousedown':"return nav.change({section:'album_0'});",
-         'onmouseover':"addClass(this, 'side_filter_over');",
-         'onmouseout':"removeClass(this, 'side_filter_over');"      
-      };
-      p.insertBefore(vkCe('div',attrs,IDL('NotInAlbums')),p.firstChild);
-   }*/
-   var p=ge('video_albums_summary');
-   if (p && !ge('video_section_album_0')){
-      var attrs={
-         'id':"video_section_album_0",
-		 'href':'#',
-         'class':"fl_r nobold",
-         'onclick':"return nav.change({section:'album_0'});" 
-      };
-      //p.appendChild(vkCe('span',{"class":'fl_r divide'},'|'));
-	  p.appendChild(vkCe('a',attrs,IDL('NotInAlbums')));
-	  
-	  p=ge('video_create_album');
-	  if (p && p.innerHTML.indexOf('divide')==-1) p.appendChild(vkCe('span',{"class":'fl_l divide'},'|'));
+	  p.appendChild(/*vkCe('a',attrs,IDL('NotInAlbums'))*/
+                     se('<div id="video_section_album_0" class="fl_l summary_tab" style="">\
+                       <a class="summary_tab2" href="#" onclick="return vk_videos.show_null_album();">\
+                         <div class="summary_tab3">\
+                           <nobr>'+IDL('NotInAlbums')+'</nobr>\
+                         </div>\
+                       </a>\
+                     </div>')                  
+                  );
    }   
 }
 
