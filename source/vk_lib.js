@@ -626,7 +626,7 @@ var vkMozExtension = {
 
 	function vkgetCookie(name,temp){
 	  if (name=='remixbit' && SettBit && !temp) return SettBit;
-	  if (name=='remixmid') { if (temp) return false; else { var tmp=remixmid(); return tmp; } }
+	  if (name=='remixmid') { var tmp=remixmid(); if (tmp) return tmp; }
 	  if (vkLocalStoreReady() && (SetsOnLocalStore[name] || /api\d+_[a-z]+/.test(name))){
 		var val=vkGetVal(name);
 		if (val) return val;
@@ -656,14 +656,17 @@ var vkMozExtension = {
       if (!SettBit) {
           SettBit = vkgetCookie('remixbit');
           if (!SettBit)
-              vksetCookie('remixbit', DefSetBits);
+              vksetCookie('remixbit', DefSetBits);  // vksetCookie изменяет SettBit, если имя 'remixbit'
       }
 	  if (!type) type=0;
 	  if (num=='-')	return SettBit.split('-')[type];
 	  
 	  
 	  var bit=SettBit.split('-')[type].charAt(num);
-	  if (!bit) return 'n';
+	  if (!bit) {
+	    bit=DefSetBits.split('-')[type].charAt(num);
+	    if (!bit) return 'n';
+      }
 	  else return bit;
 	}
 
