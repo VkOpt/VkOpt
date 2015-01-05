@@ -2153,7 +2153,7 @@ vk_videos = {
          cur.videoList['album_'+fake_id] = data; // делаем фейковый альбом
          
          if (sec_idx == -1){ // добавляем инфу о фейковом альбоме
-            cur.sections.push([fake_id, IDL('NotInAlbums'), "/images/icons/playlist_folder.png", 0, 0, "", 0]);
+            cur.sections.push([fake_id, IDL('NotInAlbums'), false, 0, Math.round(new Date().getTime()/1000), "", 0]);
             sec_idx = cur.sections.length -1;
          }
       }
