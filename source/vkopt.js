@@ -58,6 +58,7 @@ var AUDIO_INFO_LOAD_THREADS_COUNT=5;
 var AUDIO_INFO_SHOW_FILESIZE=true;
 var AUDIO_INFO_SHOW_BITRATE=true;
 var AUDIO_DOWNLOAD_POSTFIX=false;
+var FEEDFILTER_DEBUG=false;
 
 var VKOPT_CFG_LIST=[
          'vk_DEBUG',
@@ -81,7 +82,8 @@ var VKOPT_CFG_LIST=[
          'PHOTO_DOWNLOAD_NAMES',
          'FULL_ENCODE_FILENAME',
          'ZODIAK_SIGN_OPHIUCHUS',
-         'AUDIO_DOWNLOAD_POSTFIX'
+         'AUDIO_DOWNLOAD_POSTFIX',
+         'FEEDFILTER_DEBUG'
 ];
 
 var vkNewSettings=[94,95,96,97]; //"new" label on settings item
