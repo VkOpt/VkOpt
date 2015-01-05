@@ -105,6 +105,7 @@ function vkProcessNodeLite(node){
 	vk_plugins.processnode(node,true);
    if (getSet(63)=='y') vkSmiles(node);
    vkPostSubscribeBtn(node);
+   vk_wall.process_node(node);
   }  catch (e) {
 	topError(e,{dt:4});
   }
@@ -281,6 +282,7 @@ function VkOptMainInit(){
   vk_im.process_node();  
   vk_photos.process_node();
   vk_plugins.processnode();
+  vk_wall.process_node();
   if (getSet(34)=='y' && !window.setkev){ InpTexSetEvents(); setkev=true;}
   if (getSet(27)=='y') vkGetCalendar();
   if (getSet(20) == 'y') vk_updmenu_timeout=setTimeout("UpdateCounters();",vk_upd_menu_timeout);

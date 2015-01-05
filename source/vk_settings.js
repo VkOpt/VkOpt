@@ -670,7 +670,9 @@ function vkInitSettings(){
       {id:79, text:vk_settings.dislikes_icons()+IDL("seDislikes"),info:'infoUseNetTrafic'},
       {id:86, text:IDL("seDisableWallWikiBox")},
       {id:88, text:IDL("seGroupRequestsBlock"),info:'infoUseNetTrafic'},
-      {id:97, text:examples.seSubscribeToPostComments+IDL("seSubscribeToPostComments")}
+      {id:97, text:examples.seSubscribeToPostComments+IDL("seSubscribeToPostComments")},
+      {id:98, text:IDL("seShowAllComments")},
+      {id:99, text:IDL("seSortByLikes")}
       //{id:64, text:IDL("seToTopOld")}
     ],
 	Sounds:[
@@ -695,7 +697,7 @@ function vkInitSettings(){
    ]
   };
 
-	//LAST 97
+	//LAST 99
 	/*
       vkoptSets['advanced']=[
          'vk_upd_menu_timeout',
