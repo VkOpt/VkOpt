@@ -943,8 +943,7 @@ vk_messages={
       };
 		var doc2text=function(t){
 			// проверка < и > в именах документов
-			var t2 = t.replace(/</g, '&lt;').replace(/>/g,'&gt;').replace(/"/g, '&quot;').replace(/&/g,'&amp;');
-			return t2;
+			return t.replace(/</g, '&lt;').replace(/>/g,'&gt;').replace(/"/g, '&quot;').replace(/&/g,'&amp;');
 		};
       var a2t = function(sec){
          return Math.floor(sec/60)+':'+('0'+(sec%60)).slice(-2);

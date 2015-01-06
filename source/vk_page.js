@@ -261,7 +261,7 @@ vk_profile={
                callback([]);
             }
          });
-      };
+      }
       
       get_users(function(list){
          var to=3;
@@ -2139,14 +2139,13 @@ vk_groups = {
          ge("vk_gr_req_all_link").href="javascript:vk_groups.requests_block(true)";
          removeClass('vk_gr_req_all_link','as_list')
       }
-      ajax.post('groupsedit.php', {act: 'get_list', id: Math.abs(cur.oid), tab: 'requests'}, {onDone: function(cnt, res) {
+      ajax.post('groupsedit.php', {act: 'get_list', id: Math.abs(cur.oid), tab: 'requests'}, {onDone: function(cnt, udata) {
             //console.log('gr_requests',cnt, res);
             if (cnt<=0) {
                hide('vk_group_requests');
                return;
             }
             show('vk_group_requests');
-            var udata=res;
             var to=3;
             var count=is_list?udata.length:Math.min(udata.length,FAVE_ONLINE_BLOCK_SHOW_COUNT);
             var users='';
@@ -2325,7 +2324,7 @@ vk_groups = {
             }
             
          });
-      }; 
+      }
       scan();
       return false;
    },
@@ -3628,8 +3627,7 @@ function vk_tag_api(section,url,app_id){
       get_users:function(obj_id,offset,count,callback){
          offset = offset || 0;
          count = count || 6;
-         var like_obj=t.parse_id(obj_id);
-         obj_id=like_obj;
+         obj_id=t.parse_id(obj_id);
          var url=t.page_url+t.section+'/'+obj_id;
          var code='\
          var like=API.likes.getList({type:"sitepage",page_url:"'+url+'",owner_id:"'+t.app+'",count:'+count+',offset:'+offset+'});\

@@ -264,7 +264,7 @@ function vkSwichStyle(url,el,js){
   
   if (!window.geByClass) return true;
   var nodes=geByClass('current_skin');
-  for (var i=0;i<nodes.length;i++){ nodes[i].setAttribute("class","noselected_skin"); };  
+  for (var i=0;i<nodes.length;i++){ nodes[i].setAttribute("class","noselected_skin"); }  
   if (el){
     var node=el.parentNode.parentNode;
     node.setAttribute("class",'current_skin');
