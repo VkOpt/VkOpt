@@ -1020,7 +1020,6 @@ function vkMakeSettings(el){
   allsett[0] = sett.join('');
   vksetCookie('remixbit', allsett.join('-'));
  
-  var html="";
   var tabs=[];
   var excluded={
    'Sounds':1,
@@ -1093,7 +1092,7 @@ function vkMakeSettings(el){
 
   vkRemixBitS=function(){return "DefSetBits='"+vkgetCookie('remixbit')+"';";};
   tabs[0].active=true;
-  html=vkMakeContTabs(tabs);
+  var html=vkMakeContTabs(tabs);
   if (el) ge(el).innerHTML=html;//'<div id="vksetts_search"></div><div id="vksetts_tabs">'+html+'</div>';//vkGetSettings(vkoptSets['Media'],allsett);
   else return html;
 }
