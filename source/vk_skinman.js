@@ -112,7 +112,7 @@ function vkStyle(url){
    var vkcssNode=ge("vkStyleCSS");
    if (vkcssNode) vkcssNode.parentNode.removeChild(vkcssNode);
 
-   var vkcssNode = null;
+   vkcssNode = null;
    var set = function(node){
       var head = document.getElementsByTagName('head')[0];
       if (!head){ 
