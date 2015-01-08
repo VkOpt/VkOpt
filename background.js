@@ -613,6 +613,7 @@ ext_api={
          headers = options.headers || {},
          data = options.data || null,
          url = options.url || '',
+         responseType = options.responseType,
          contentType = headers['Content-type'] || 'application/x-www-form-urlencoded';
          if (!headers['Content-type'])
             headers['Content-type'] = contentType;
@@ -638,12 +639,15 @@ ext_api={
                xhr.setRequestHeader(i, headers[i]);
             }
 
+            xhr.responseType = responseType;
+
             xhr.onreadystatechange = function() {
                if (xhr.readyState == 4) {
                   var response = {};
-                  response.text = xhr.responseText;
+                  if (!responseType || responseType=='text') response.text = xhr.responseText;
                   response.headers = xhr.getAllResponseHeaders();
                   response.status = xhr.status;
+                  response.raw = xhr.response;
                   callback(response);
                }
             }

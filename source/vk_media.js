@@ -167,6 +167,9 @@ var vk_photos = {
                p_options.push({l:IDL('Links'), onClick:function() {
                      vkGetLinksToPhotos(oid,aid);
                }});
+               p_options.push({l:IDL('SaveAlbumAsZip'), onClick:function(item) {
+                     vkGetZipWithPhotos(oid,aid);
+               }});
                if (cur.statsPhotoAddHash)
                   p_options.push({l:IDL('Add'), h:'/album'+oid+'_'+aid+'?act=add' /*onClick:function(item) { vkGetLinksToPhotos(oid,aid);}*/
                   });
@@ -1366,6 +1369,67 @@ function vkGetLinksToPhotos(oid,aid){
 		ge('vk_links_container').innerHTML=vkProgressBar(c,f,600);
 		//document.title=c+"/"+f
 	});
+}
+function vkGetZipWithPhotos(oid, aid) {
+    /* < Создание прогресс-бара > */
+    if (!ge('vk_links_container')) {
+        var div = vkCe('div', {id: "vk_links_container", "class": "clear_fix", style: "padding:10px;"}, '<center>' + vkBigLdrImg + '</center>');
+        var ref = ge('photos_container') || ge('likes_photo_content');
+        if (ref)
+            ref.parentNode.insertBefore(div, ref);
+        else
+            div = null;
+    } else var div = ge('vk_links_container');
+    var box = null;
+    if (!div) {
+        box = vkAlertBox(IDL('Links'), '<div id="vk_links_container"></div>');
+        box.setOptions({width: "640px"});
+        div = ge('vk_links_container');
+    }
+    /* </ Создание прогресс-бара > */
+
+    var zip;            // переменная для объекта JSZip
+    var links;          // переменная для массива ссылок на фотки
+    var links_length;   // длина этого массива. Чтобы каждый раз не дергать .length
+    var dlphoto = function (i) {  // рекурсивная функция скачивания фоток. i - номер ссылки в массиве
+        if (i > -1) // условие остановки рекурсии
+            vk_aj.ajax({url: links[i], method: 'GET', responseType: 'arraybuffer'}, function (response) { // Скачивание файла через background
+                if (response.status == 200)
+                    zip.file(i + ".jpg", response.raw);     // Добавление скачанного файла в объект JSZip
+                Progress(links_length - i, links_length);   // Потому что скачивание идет задом наперед
+                dlphoto(--i);                // продолжаем рекурсию 
+            });
+        else {      // При завершении скачивания сохраняем сгенерированный архивчик
+            var content = zip.generate({type: "blob"});
+            saveAs(content, "photos_" + vkCleanFileName((oid || '') + '_' + (aid || '')).substr(0, 250) + ".zip");
+            div.innerHTML = ''; // очистить прогрессбар
+        }
+    }
+    var Progress = function (c, f) {    // обновление прогрессбара
+        if (!f) f = 1;
+        ge('vk_links_container').innerHTML = vkProgressBar(c, f, 600);
+    };
+    // 3. Когда все библиотеки подключены, 
+    var JsZipOnload = function () {
+        zip = new JSZip();                          // Создание объекта JSZip в ранее объявленную переменную
+        vkApis.photos_hd(oid, aid, function (r) {   // Получение списка ссылок
+            links = r;
+            links_length = links.length;
+            dlphoto(links_length - 1);              // Запуск рекурсии с последней ссылки
+        }, Progress);
+    }
+    // 2. Подключение библиотеки JSZip
+    var FileSaverOnload = function () {
+        if (typeof JSZip != "undefined")
+            JsZipOnload();
+        else
+            AjCrossAttachJS('http://vkopt.net/jszip', 'JsZip', JsZipOnload);
+    }
+    // 1. Подключение библиотеки FileSaver.js
+    if (typeof saveAs != "undefined")
+        FileSaverOnload();
+    else
+        AjCrossAttachJS('http://vkopt.net/FileSaver', 'FileSaver', FileSaverOnload);
 }
 
 function vkGetPageWithPhotos(oid,aid){  
