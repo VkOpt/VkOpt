@@ -59,6 +59,8 @@ var AUDIO_INFO_SHOW_FILESIZE=true;
 var AUDIO_INFO_SHOW_BITRATE=true;
 var AUDIO_DOWNLOAD_POSTFIX=false;
 var FEEDFILTER_DEBUG=false;
+var SHOW_OID_IN_TITLES=false;
+
 
 var VKOPT_CFG_LIST=[
          'vk_DEBUG',
@@ -83,7 +85,8 @@ var VKOPT_CFG_LIST=[
          'FULL_ENCODE_FILENAME',
          'ZODIAK_SIGN_OPHIUCHUS',
          'AUDIO_DOWNLOAD_POSTFIX',
-         'FEEDFILTER_DEBUG'
+         'FEEDFILTER_DEBUG',
+         'SHOW_OID_IN_TITLES'
 ];
 
 var vkNewSettings=[94,95,96,97]; //"new" label on settings item
