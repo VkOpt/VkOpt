@@ -841,8 +841,6 @@ var vk_photos = {
       };
 
       if (ge('vk_wall_post_type1')) return;
-      var vk__addMediaIndex=0;
-      if (window.__addMediaIndex) vk__addMediaIndex=__addMediaIndex;
       if (ge('page_add_media')){
          Inj.Wait("geByClass('add_media_rows')[0]",AddItem,300,10);
       }   
@@ -1568,7 +1566,7 @@ function vkDisableAlbumScroll(){
 function vkGetPhotoByUserBox() {
   var vkMsgBox = new MessageBox({title: IDL('paSearchUserPhotos'),width:"250px"});
   vkMsgBox.removeButtons();
-  vkMsgBox.addButton(IDL('Cancel'),function(){ var msgret=vkMsgBox.hide(200);  vkMsgBox.content('');},'no');
+  vkMsgBox.addButton(IDL('Cancel'),function(){ vkMsgBox.hide(200);  vkMsgBox.content('');},'no');
   var onQ=function(){ 
         var q=ge('byuserlink').value;
         if (trim(q)=='') {
@@ -4131,9 +4129,9 @@ vkLastFM={
    tip:function(el,text, opts){ 
          var dx, dy1, dy2;
          opts = opts || {};
-         dx=dx||7;
-         dy1=dy1||-13;
-         dy2=dy2||-12;
+         dx=7;
+         dy1=-13;
+         dy2=-12;
          if (el.tt && el.tt.container) {
             val(geByClass1('gp_tip_text', el.tt.container), text);
          }
@@ -5875,8 +5873,8 @@ vk_vid_down={
       var acts = geByClass('mv_share_actions',ctrls)[0];
       
       if (acts && !ge('vk_more_acts')){
-         var vid=((window.mvcur || {}).videoRaw || '').split('_');
          /* Added by VK in Dec 2014
+         var vid=((window.mvcur || {}).videoRaw || '').split('_');
          if (vid[0] && acts.innerHTML.indexOf('vkVidAddToGroup')==-1)
             acts.innerHTML+='<a href="#" onclick="return vkVidAddToGroup('+vid[0]+','+vid[1]+');">'+IDL('AddToGroup',1)+'</a>';
          */
