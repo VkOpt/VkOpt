@@ -279,8 +279,7 @@ var vkMozExtension = {
             return el.getUserData(field);
          }
       };
-      var request = null;
-      request = document.createElement("div");
+      var request = document.createElement("div");
       set_data(request, "data", data);
       if(callback) {
          var callback_idx = vkMozExtension.callbacks.length;
@@ -311,7 +310,7 @@ var vkMozExtension = {
 /* FUNCTIONS. LEVEL 1 */
 	//LANG   
    function print_r( array) {
-      var output = "", pad_char = " ", pad_val = 4;
+      var pad_char = " ", pad_val = 4;
 
       var formatArray = function (obj, cur_depth, pad_val, pad_char) {
          if(cur_depth > 0)
@@ -334,18 +333,18 @@ var vkMozExtension = {
             str += base_pad + "]\n";
          } else {
             str = obj.toString();
-         };
+         }
 
          return str;
       };
 
       var repeat_char = function (len, _char) {
          var str = "";
-         for(var i=0; i < len; i++) { str += _char; };
+         for(var i=0; i < len; i++) { str += _char; }
          return str;
       };
 
-      output = formatArray(array, 0, pad_val, pad_char);
+      var output = formatArray(array, 0, pad_val, pad_char);
          return output;
    }
    function isArray(obj) { return Object.prototype.toString.call(obj) === '[object Array]'; }
@@ -436,8 +435,7 @@ var vkMozExtension = {
       }
       var preescape="" + str;
       var escaped="";
-      var i=0;
-      for(i=0;i<preescape.length;i++){
+      for(var i=0;i<preescape.length;i++){
          escaped=escaped+encodeCharx(preescape.charAt(i));
       }
       return escaped;         
@@ -543,7 +541,6 @@ var vkMozExtension = {
       if (id) styleElement.setAttribute('mark',id);
 		styleElement.appendChild(document.createTextNode(addcss));
 		document.getElementsByTagName("head")[0].appendChild(styleElement);
-		addcss='';
 	}
 	
 	function $c(type,params){
@@ -992,13 +989,12 @@ String.prototype.leftPad = function (l, c) {
 			var pos=(val*100/max).toFixed(2).replace(/\.00/,'');
 			var perw=(val/max)*width;
 			text=(text || '%').replace("%",pos+'%');
-			var html='<div class="vkProg_Bar vkPB_Frame" style="width: '+perw+'px;">'+
+			return '<div class="vkProg_Bar vkPB_Frame" style="width: '+perw+'px;">'+
 					'<div class="vkProg_Bar vkProg_BarFr" style="width: '+width+'px;">'+text+'</div>'+
 				'</div>'+
 				'<div  class="vkProg_Bar vkProg_BarBgFrame" style="width: '+width+'px;">'+
 					'<div class="vkProg_Bar vkProg_BarBg" style="width: '+width+'px;">'+text+'</div>'+
 				'</div>';
-			return html;
 	}	
 	
 	function vkRoundButton(){ //vkRoundButton(['caption','href'],['caption2','href2'])
@@ -1210,7 +1206,6 @@ vk_hor_slider={
     addEvent(document, selectEvent, cancelEvent);
     setStyle(bodyNode, 'cursor', 'pointer');
     setStyle(scale, 'cursor', 'pointer');
-    return;
   },
   sliderUpdate: function (percent, val,id) {
       percent = intval(percent);
@@ -1345,7 +1340,6 @@ vk_v_slider={
     addEvent(document, selectEvent, cancelEvent);
     setStyle(bodyNode, 'cursor', 'pointer');
     setStyle(scale, 'cursor', 'pointer');
-    return;
   },
   sliderUpdate: function (percent, val,id) {
       percent = intval(percent);

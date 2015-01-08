@@ -262,7 +262,7 @@ vk_profile={
                callback([]);
             }
          });
-      };
+      }
       
       get_users(function(list){
          var to=3;
@@ -1661,8 +1661,6 @@ vk_graff={
       };
 
       if (ge('vk_wall_post_type0')) return;
-      var vk__addMediaIndex=0;
-      if (window.__addMediaIndex) vk__addMediaIndex=__addMediaIndex;
       if (ge('page_add_media')){
          Inj.Wait("geByClass('add_media_rows')[0]",AddGraffItem,300,10);
       }   
@@ -1678,9 +1676,8 @@ function vkModGroupBlocks(){
       //el.innerHTML+='<a href="/photos'+cur.oid+'" onmousedown="event.cancelBubble = true;" onclick="event.cancelBubble = true; return nav.go(this, event);">[ '+IDL("obzor")+' ]</a>';
    }
 }
-function vkAudioBlock(load_audios,oid){
+function vkAudioBlock(load_audios){
    if (ge('group_audios')) return; 
-   oid = oid || cur.oid;
    var mini_tpl='<a href="/audio?id='+cur.oid+'" onclick="return nav.go(this, event);" class="module_header"><div class="header_top clear_fix">'+
                      IDL('clAu',1)+
                   '</div></a>';
@@ -2146,14 +2143,13 @@ vk_groups = {
          ge("vk_gr_req_all_link").href="javascript:vk_groups.requests_block(true)";
          removeClass('vk_gr_req_all_link','as_list')
       }
-      ajax.post('groupsedit.php', {act: 'get_list', id: Math.abs(cur.oid), tab: 'requests'}, {onDone: function(cnt, res) {
+      ajax.post('groupsedit.php', {act: 'get_list', id: Math.abs(cur.oid), tab: 'requests'}, {onDone: function(cnt, udata) {
             //console.log('gr_requests',cnt, res);
             if (cnt<=0) {
                hide('vk_group_requests');
                return;
             }
             show('vk_group_requests');
-            var udata=res;
             var to=3;
             var count=is_list?udata.length:Math.min(udata.length,FAVE_ONLINE_BLOCK_SHOW_COUNT);
             var users='';
@@ -2332,7 +2328,7 @@ vk_groups = {
             }
             
          });
-      }; 
+      }
       scan();
       return false;
    },
@@ -3635,8 +3631,7 @@ function vk_tag_api(section,url,app_id){
       get_users:function(obj_id,offset,count,callback){
          offset = offset || 0;
          count = count || 6;
-         var like_obj=t.parse_id(obj_id);
-         obj_id=like_obj;
+         obj_id=t.parse_id(obj_id);
          var url=t.page_url+t.section+'/'+obj_id;
          var code='\
          var like=API.likes.getList({type:"sitepage",page_url:"'+url+'",owner_id:"'+t.app+'",count:'+count+',offset:'+offset+'});\
@@ -3741,7 +3736,7 @@ function vk_tag_api(section,url,app_id){
       },
       auth:function(callback){
          var auth_data=localStorage[dk.ls_val] || '{}';
-         var auth_obj=null;
+         var auth_obj;
          try {
             auth_obj=JSON.parse(auth_data);
             if (auth_data.auth_key && auth_data.api_id && auth_data.viewer_id){

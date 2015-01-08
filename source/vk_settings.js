@@ -315,12 +315,12 @@ function init_colorpicker(target, onselect, inhcolor){
             return val;
         });
         return hex.join('');
-    };
+    }
 
     function HexToRGB(hex) {
-        var hex = parseInt(((hex.indexOf('#') > -1) ? hex.substring(1) : hex), 16);
+        hex = parseInt(((hex.indexOf('#') > -1) ? hex.substring(1) : hex), 16);
         return {r: hex >> 16, g: (hex & 0x00FF00) >> 8, b: (hex & 0x0000FF)};
-    };
+    }
 //end /
     if (typeof(inhcolor) != "string") {
         inhcolor = "ff0000";
@@ -989,7 +989,7 @@ function vkCheckboxSetting(id,text,in_div){
 	var cfg=getSet(id)=='y'; 
 	return (in_div?'<div class="vk_checkbox_cont">':'')+'<input class="vk_checkbox" type="checkbox" '+(cfg?'checked="on"':'')+' style="margin-left:0px;" onchange="vkSetNY('+id+',this.checked)">'+text+(in_div?'</div>':'');
 }
-function vkSetNY(id,is_on){	setCfg(id,is_on?'y':'n');};
+function vkSetNY(id,is_on){	setCfg(id,is_on?'y':'n');}
 
 
 var _vk_inp_to={'__cnt_id':0};
@@ -1020,7 +1020,6 @@ function vkMakeSettings(el){
   allsett[0] = sett.join('');
   vksetCookie('remixbit', allsett.join('-'));
  
-  var html="";
   var tabs=[];
   var excluded={
    'Sounds':1,
@@ -1093,7 +1092,7 @@ function vkMakeSettings(el){
 
   vkRemixBitS=function(){return "DefSetBits='"+vkgetCookie('remixbit')+"';";};
   tabs[0].active=true;
-  html=vkMakeContTabs(tabs);
+  var html=vkMakeContTabs(tabs);
   if (el) ge(el).innerHTML=html;//'<div id="vksetts_search"></div><div id="vksetts_tabs">'+html+'</div>';//vkGetSettings(vkoptSets['Media'],allsett);
   else return html;
 }
@@ -1126,7 +1125,7 @@ function vkShowSettings(box){
   } else {
     var html=tpl.replace(/%html/g,vkMakeSettings());
     if (!window.vkSettingsBox || isNewLib()) vkSettingsBox = new MessageBox({title: header,closeButton:true,width:"650px", dark:true, forceNoBtn:true});
-    var box=vkSettingsBox;
+    box=vkSettingsBox;
     box.removeButtons();
     box.addButton(isNewLib()?IDL('Hide'):{
       onClick: function(){ box.hide(200); },

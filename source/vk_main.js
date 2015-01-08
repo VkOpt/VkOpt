@@ -933,7 +933,7 @@ vk_messages={
                            }
             */
           //URLs starting with http://, https://, or ftp://
-          replacePattern2 = /(\b(https?|ftp):\/\/[-A-Z0-9+\&@#\\/%?=~_|!:,.;\u0410-\u042f\u0430-\u044f\u0401\u0451]*[-A-Z0-9+\&@#\/%=~_|\u0410-\u042f\u0430-\u044f\u0401\u0451])/gim; // /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;А-Яа-яЁё]*[-A-Z0-9+&@#\/%=~_|А-Яа-яЁё])/gim;
+          replacePattern2 = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\\/%?=~_|!:,.;\u0410-\u042f\u0430-\u044f\u0401\u0451]*[-A-Z0-9+&@#\/%=~_|\u0410-\u042f\u0430-\u044f\u0401\u0451])/gim; // /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;А-Яа-яЁё]*[-A-Z0-9+&@#\/%=~_|А-Яа-яЁё])/gim;
           replacedText = replacedText.replace(replacePattern2, '<a href="$1" target="_blank">$1</a>');
           //URLs starting with "www." (without // before it, or it'd re-link the ones done above).
           replacePattern3 = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
@@ -946,8 +946,7 @@ vk_messages={
       };
 		var doc2text=function(t){
 			// проверка < и > в именах документов
-			var t2 = t.replace(/</g, '&lt;').replace(/>/g,'&gt;').replace(/"/g, '&quot;').replace(/&/g,'&amp;');
-			return t2;
+			return t.replace(/</g, '&lt;').replace(/>/g,'&gt;').replace(/"/g, '&quot;').replace(/&/g,'&amp;');
 		};
       var a2t = function(sec){
          return Math.floor(sec/60)+':'+('0'+(sec%60)).slice(-2);
@@ -1026,7 +1025,7 @@ vk_messages={
       // build
       for(var i=0,j=msg.length;i<j;i++){
          var u=(user[msg[i].from_id] || {
-                           id: msgfwd[k].user_id,
+                           id: msgfwd[i].user_id,
                            first_name: 'DELETED',
                            last_name: '',
                            photo_100: 'http://vk.com/images/deactivated_c.gif'
@@ -1237,7 +1236,7 @@ vk_im={
    process_date_link: function (node){
       if (node.className=='im_date_link'){
          var inp=vkNextEl(node); 
-         var ts=0;
+         var ts;
          var fmt=(node.parentNode && node.parentNode.parentNode && hasClass(node.parentNode.parentNode,'im_add_row'))?'HH:MM:ss':'d.mm.yy HH:MM:ss';
          if (inp && (ts=parseInt(inp.value)))  node.innerHTML=(new Date((ts-vk.dt)*1000)).format(fmt); 
       }
@@ -1277,9 +1276,9 @@ vk_im={
             ge('im_sdocs_preview')
          ], curPeerMedia = cur.imPeerMedias[cur.peer];
 
-      var contIndex = 0, cont, cls;
+      var contIndex = 0, cont;
       var ind = curPeerMedia.length,
-          mediaHtml = '<div class="im_preview_' + type + '_wrap im_preview_ind%ind% ' + cls + '"' + attrs + '>' + preview + '<div nosorthandle="1" class="im_media_x inl_bl" '+ (browser.msie ? 'title' : 'tooltip') + '="' + getLang('dont_attach') + '" onmouseover="if (browser.msie) return; showTooltip(this, {text: this.getAttribute(\'tooltip\'), shift: [14, 3, 3], black: 1})" onclick="cur.addMedia[%lnkId%].unchooseMedia(%ind%); return cancelEvent(event);"><div class="im_x" nosorthandle="1"></div></div>' + postview + '</div>',
+          mediaHtml = '<div class="im_preview_' + type + '_wrap im_preview_ind%ind%"' + attrs + '>' + preview + '<div nosorthandle="1" class="im_media_x inl_bl" '+ (browser.msie ? 'title' : 'tooltip') + '="' + getLang('dont_attach') + '" onmouseover="if (browser.msie) return; showTooltip(this, {text: this.getAttribute(\'tooltip\'), shift: [14, 3, 3], black: 1})" onclick="cur.addMedia[%lnkId%].unchooseMedia(%ind%); return cancelEvent(event);"><div class="im_x" nosorthandle="1"></div></div>' + postview + '</div>',
           mediaEl = se(rs(mediaHtml, {lnkId: cur.imMedia.lnkId, ind: ind}));
       if (data.upload_ind !== undefined) re('upload' + data.upload_ind + '_progress_wrap');
       (cont = conts[contIndex]).appendChild(mediaEl);
@@ -1344,7 +1343,7 @@ vk_im={
       }
    },
    reply:function(el,ev,msg_id){
-      ev = ev || window.event;
+      //ev = ev || window.event;
       
       var scrll=IM.scrollOn;
       IM.scrollOn=function(){};
