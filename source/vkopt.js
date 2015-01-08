@@ -444,7 +444,7 @@ function vkonDOMReady(fn, ctx){
       document.onreadystatechange = onChange;
       timer = setInterval(onChange, 5);
       window.onload = onChange;
-};
+}
 /////////////////////////////////
 function vkOpt_toogle(){
   var off=(vkgetCookie('vkopt_disable')=='1');

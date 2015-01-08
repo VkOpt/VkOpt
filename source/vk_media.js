@@ -2969,7 +2969,7 @@ vk_audio={
 
               var name=el.parentNode.getElementsByTagName('b')[0].innerText+' - '+(span_title || ge('title'+id) || spans[1] || spans[0]).innerText;
               name=vkCleanFileName(name);
-              if (smartlink) {url+=(url.indexOf('?')>0?'':'?')+vkDownloadPostfix()+'&/'+vkEncodeFileName(name)+'.mp3';};//normal name
+              if (smartlink) {url+=(url.indexOf('?')>0?'':'?')+vkDownloadPostfix()+'&/'+vkEncodeFileName(name)+'.mp3';}//normal name
               //if (SearchLink && el){el.innerHTML=vkAudioDurSearchBtn(el.innerText,name,id);/* "<a href='/search?c[section]=audio&c[q]="+name+"'>"+el.innerText+"</a>";*/}
             if (download){ 
                divs[i].setAttribute('style','width:17px;'); 
@@ -4311,7 +4311,7 @@ vkLastFM={
                show(el);
                if (el.tt) el.tt.hide();
                el.onmouseover=function(){
-                  fm.tip(el, IDL('TrackScrobbled'));;
+                   fm.tip(el, IDL('TrackScrobbled'));
                };
                addClass(el,'vk_lastfm_ok_icon');//el.className='vk_lastfm_ok_icon';
                break; 
@@ -5000,7 +5000,7 @@ vk_vid_down={
                   links[i].url,
                   links[i].content_format
                ]);
-         };
+         }
          callback(res);
          //console.log(r);
       };

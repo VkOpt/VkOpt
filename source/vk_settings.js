@@ -315,12 +315,12 @@ function init_colorpicker(target, onselect, inhcolor){
             return val;
         });
         return hex.join('');
-    };
+    }
 
     function HexToRGB(hex) {
         hex = parseInt(((hex.indexOf('#') > -1) ? hex.substring(1) : hex), 16);
         return {r: hex >> 16, g: (hex & 0x00FF00) >> 8, b: (hex & 0x0000FF)};
-    };
+    }
 //end /
     if (typeof(inhcolor) != "string") {
         inhcolor = "ff0000";
@@ -989,7 +989,7 @@ function vkCheckboxSetting(id,text,in_div){
 	var cfg=getSet(id)=='y'; 
 	return (in_div?'<div class="vk_checkbox_cont">':'')+'<input class="vk_checkbox" type="checkbox" '+(cfg?'checked="on"':'')+' style="margin-left:0px;" onchange="vkSetNY('+id+',this.checked)">'+text+(in_div?'</div>':'');
 }
-function vkSetNY(id,is_on){	setCfg(id,is_on?'y':'n');};
+function vkSetNY(id,is_on){	setCfg(id,is_on?'y':'n');}
 
 
 var _vk_inp_to={'__cnt_id':0};
