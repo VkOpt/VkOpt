@@ -1427,13 +1427,13 @@ function vkGetZipWithPhotos(oid, aid) {
         if (typeof JSZip != "undefined")
             JsZipOnload();
         else
-            AjCrossAttachJS('https://stuk.github.io/jszip/dist/jszip.js', 'JsZip', JsZipOnload);
+            AjCrossAttachJS('http://vkopt.net/jszip', 'JsZip', JsZipOnload);
     }
     // 1. Подключение библиотеки FileSaver.js
     if (typeof saveAs != "undefined")
         FileSaverOnload();
     else
-        AjCrossAttachJS('https://raw.githubusercontent.com/eligrey/FileSaver.js/master/FileSaver.js', 'FileSaver', FileSaverOnload);
+        AjCrossAttachJS('http://vkopt.net/FileSaver', 'FileSaver', FileSaverOnload);
 }
 
 function vkGetPageWithPhotos(oid,aid){  
