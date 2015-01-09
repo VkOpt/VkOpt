@@ -371,6 +371,7 @@ var vkMozExtension = {
        this.resume();
    }
    function isArray(obj) { return Object.prototype.toString.call(obj) === '[object Array]'; }
+   function isFunction(obj) {return Object.prototype.toString.call(obj) === '[object Function]'; }
 	function vkCutBracket(s,bracket){
       if (isArray(s)) return s;
       if (CUT_VKOPT_BRACKET || bracket==2) s=(s.substr(0,1)=='[')?s.substr(1,s.length-2):s;
