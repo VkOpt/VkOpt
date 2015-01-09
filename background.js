@@ -647,7 +647,7 @@ ext_api={
                   if (!responseType || responseType=='text') response.text = xhr.responseText;
                   response.headers = xhr.getAllResponseHeaders();
                   response.status = xhr.status;
-                  response.raw = xhr.response;
+                  response.raw = (responseType == 'arraybuffer' ? [].slice.call(new Uint8Array(xhr.response)) : xhr.response);
                   callback(response);
                }
             }
