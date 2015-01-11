@@ -475,13 +475,12 @@ vk_wall = {
     process_node: function (node) {
         if (getSet(98) == 'y') {    // Показывать все комментарии к посту при разворачивании
             var anchors = geByClass('wr_header', node); // Ссылки "развернуть"
-            var labels = geByClass('wrh_text', node);   // текст внутри них
 
-            for (var i = 0; i < anchors.length; i++) {  // Меняем обработчики: второй аргумент - оч. большое число
-                anchors[i].setAttribute('onclick', anchors[i].getAttribute('onclick').replace("', false", "', 99999"))
-                if (!hasClass(anchors[i], 'wrh_all'))   // Если сейчас в свернутом состоянии, то меняем текст
-                    labels[i].innerHTML = IDL('showAllComments')+' ('+anchors[i].getAttribute('offs').split('/')[1]+')';
-            }
+            for (var i = 0; i < anchors.length; i++)  // Меняем обработчики: второй аргумент - оч. большое число
+                if (!hasClass(anchors[i], 'feed_reposts_more_link') && !hasClass(anchors[i], 'wrh_all')) {  // Исключаем ссылки "показать похожие записи" и "Скрыть комментарии"
+                    anchors[i].setAttribute('onclick', anchors[i].getAttribute('onclick').replace("', false", "', 99999"))
+                    anchors[i].firstElementChild.innerHTML = IDL('showAllComments')+' ('+anchors[i].getAttribute('offs').split('/')[1]+')';
+                }
         }
         if (getSet(99) == 'y') {    // Функция сортировки комментариев по количеству лайков
             stManager.add(['wkview.css']);  // нужно для кнопочки со стрелками в разные стороны
