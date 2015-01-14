@@ -672,7 +672,7 @@ var vkMozExtension = {
 	if (!setting) setting=0;
 	var settings=vkgetCookie('remixbit').split('-');
 	if (num=='-') settings[setting]=val;
-	else settings[setting][num]=val;
+	else settings[setting] = settings[setting].replace(new RegExp('^(.{'+num+'}).'), '$1'+val);
 	SettBit = settings.join('-');
 	vksetCookie('remixbit',SettBit);
 	}
