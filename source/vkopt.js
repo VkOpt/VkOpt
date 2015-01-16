@@ -46,7 +46,6 @@ var MOD_PROFILE_BLOCKS=true;
 var CUT_VKOPT_BRACKET=false;     // true - убирает из надписей вкопта скобки "[" и "]"
 var MAIL_BLOCK_UNREAD_REQ=false; // true - отключает отсылку отчёта о прочтении сообщения, при его открытии из /mail
 var MAIL_BLOCK_TYPING_REQ=false; // true - отключает отсылку уведомления собеседнику о наборе текста
-var MAIL_SHOWMSG_FIX=true;
 var SUPPORT_STEALTH_MOD=true;    // прикидываемся перед ТП, что у нас не стоит расширение для скачивания.
 var VIDEO_AUTOPLAY_DISABLE=false;
 var VIDEO_LINKS_WITH_EXTRA=true;
