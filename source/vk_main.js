@@ -45,7 +45,6 @@ function vkInj(file){
 	case 'notifier.js': 	   vkNotifier(); 	 break;
 	case 'common.js': 		vkCommon(); 	 break;
 	case 'im.js': 			   vkIM(); 	       break;
-   case 'mail.js': 			vkMail(); 	    break;
    case 'groups_list.js':  vkGroupsList(); break;
    case 'groups_edit.js':  vk_groups.group_edit_inj(); break;
    case 'fave.js':         vk_fave.inj();  break;
@@ -1731,9 +1730,6 @@ function vkModAsNode(text,func,url,q){ //url,q - for processing response
 
 
 /* MAIL */
-function vkMail(){
-   if (MAIL_SHOWMSG_FIX) Inj.Before('mail.showMessage','return false;','vkMailSendFix();');
-}
 function vkMailSendFix(){
    if (nav.objLoc['act']=='show' && !cur.addMailMedia) setTimeout("mail.showMessage(nav.objLoc['id']);",100);
 }
