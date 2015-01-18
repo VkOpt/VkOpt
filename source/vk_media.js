@@ -2137,6 +2137,9 @@ function vkVideoEditPage(){
    vkVidEditAlbumTitle(null,true);
 }
 
+var _vk_vid_adm_gr=null;
+var _vk_vid_add_box=null;
+
 vk_videos = {
    css:function(){
       var full_titles=(getSet(76)=='y');
@@ -2186,7 +2189,7 @@ vk_videos = {
    },
    show_null_album:function(){
       var albumed = [];
-      var fake_id = 1;// c нулевым какие-то траблы. не разбирался.
+      var fake_id = 10000000001;// c нулевым какие-то траблы. не разбирался.
       
       var sec_idx = -1;
       for (var i=0; i<cur.sections.length; i++){
@@ -2497,6 +2500,8 @@ vk_videos = {
             console.log(filtred_vids.length);
             //
             ge('vid_move_progress').innerHTML=vkProgressBar(filtred_vids_count-filtred_vids.length,filtred_vids_count,310,(filtred_vids_count-filtred_vids.length)+'/'+filtred_vids_count);
+            var vid = filtred_vids.shift();
+            /*
             var part=filtred_vids.splice(0,30);
             
             var vids=[];
@@ -2506,16 +2511,17 @@ vk_videos = {
             if (cur.oid<0){
                params['gid']=Math.abs(cur.oid);
             }
-            dApi.call('video.moveToAlbum',params,function(r){
+            */
+            // 
+            dApi.call('video.addToAlbum', {target_id: cur.oid, album_id:to_album, owner_id: vid[0], video_id: vid[1]},function(r){
                console.log(r);
-               //*
-               //filtred_vids[i][6]
+               /* тут должно быть обновление инфы об альбомах, где это видео располагается.
                var arr=cur.videoList['all']['list'];
                for (var j=0;j<arr.length; j++){
                   for (var i=0;i<vids.length; i++){
                      if (arr[j] && arr[j][1]==vids[i]) arr[j][6]=to_album;
-                  }//*/
-               }
+                  }
+               }*/
                move(callback);
             });
          } else {
@@ -2531,18 +2537,43 @@ vk_videos = {
          if (x){
             rx=new RegExp(x[1],x[2]);
          }
+         /*
+         get not in albums list
+         */
+         function get_albumed_list(){
+            var albumed = [];
+            var fake_id = 10000000001;// наш фейковый
+
+            for (var section in cur.videoList){ // собираем списко видео добавленных в любые альбомы
+               var isAlbum = section.substr(0, 6) == 'album_';
+               if (!isAlbum) continue;
+               var album = section.substr(6, 20);
+               if (album == fake_id) continue;
+               var vids=cur.videoList[section].list;
+               for (var i=0; i<vids.length; i++){
+                  var vid = vids[i][1]
+                  if (albumed.indexOf(vid) == -1)
+                     albumed.push(vid);
+               }         
+            }
+            return albumed;
+         }
+         ///////
+         var in_albums_list = [];
          var arr=cur.videoList['all']['list'];
          function filter_arr(regex,all){
             arr=arr.filter(function(video){
                var title=winToUtf(video[3]);
-               var album=video[6];
+               var vid=video[1];
                if (regex.indexOf){
                   regex=regex.toLowerCase();
                   title=title.toLowerCase();
                }
-               return (album==0 || all===true) && ((regex.indexOf?title.indexOf(regex)!=-1:regex.test(title)) || regex==null);
+               return (in_albums_list.indexOf(vid)==-1 || all===true) && ((regex.indexOf?title.indexOf(regex)!=-1:regex.test(title)) || regex==null);
             });
          }
+         if (isChecked('vk_vid_filter_all'))
+            in_albums_list = get_albumed_list();
          filter_arr(rx,(isChecked('vk_vid_filter_all')!=1));
          filtred_vids=arr;
          filtred_vids_count=filtred_vids.length;
@@ -2609,6 +2640,98 @@ vk_videos = {
          }
       }
       return [album_id,album_link,vid_data];
+   },
+   add_to_group: function(oid,vid,to_gid){
+      /*
+      // Native add box to groop from Dec 2014 
+      if (!to_gid){
+         // TODO: make fake mvcur.mvData object
+         showBox('/video', { act: 'add_to_club_pl_box', oid: oid, vid: vid }, {params: {width: 480, dark: 1, bodyStyle: 'padding: 0'},
+           onDone: function(box) {
+           }
+         });
+         return;
+      }
+      */
+      if (to_gid){
+         if (_vk_vid_add_box) _vk_vid_add_box.hide();
+         dApi.call('video.add',{target_id:-to_gid,video_id:vid, owner_id:oid},function(r){
+            var _vid='http://vk.com/video'+oid+'_'+vid;
+            vkMsg('<b>OK</b><br>'+_vid+' -> club'+to_gid);         
+         })
+         return false;
+      }
+      
+      
+      
+      // Old solution for add to group. Broken.
+      /*
+      if (to_gid){
+         if (_vk_vid_add_box) _vk_vid_add_box.hide();
+         var _vid='http://vk.com/video'+oid+'_'+vid;
+         AjPost('al_search.php',{al:1,"c[q]":_vid,"c[section]":"video","c[sort]":2,"gid":to_gid,"no_adult":0},function(r,t){
+             var params=t.match(/\{act:'a_add'[^\}]+\}/);
+             if (params){
+                params=eval('('+params[0]+')');
+                ajax.post('al_video.php', params, {onDone: function(label) {
+                  //vkMsg('Ololo');
+                  label=label.replace(/color\:\s*#[A-Z0-9]+;?/i,"");
+                  //alert(label);
+                  vkMsg('<b>'+label+'</b><br>'+_vid+' -> club'+to_gid);
+                }});     
+             } else {
+               //document.title('error')
+               alert(_vid);
+             }     
+         });       
+         return false;
+      }
+      */
+      var show_box=function(){
+         var html='';
+         html+='<h4>'+IDL('EnterLinkToGroup')+'</h4><div class="clear_fix">\
+           <input id="vidtogrouplink" type="text" placeholder="http://vk.com/club123" class="text fl_l" style="width:336px">\
+           <div class="button_blue fl_l"><button style="padding: 2px 8px;" id="vidtogroup">OK</button></div>\
+         </div><br>';
+         html+='<h4>'+IDL('SelectGroup')+'</h4>';
+         for (var i=0; i<_vk_vid_adm_gr.length;i++){
+            html+='<a href="/'+_vk_vid_adm_gr[i].screen_name+'" onclick="return vk_videos.add_to_group('+oid+','+vid+','+_vk_vid_adm_gr[i].gid+');">'+_vk_vid_adm_gr[i].name+'</a><br>';
+         }
+         _vk_vid_add_box=vkAlertBox(IDL('Add'),html);
+         var btn=ge('vidtogroup');
+         var old_val=localStorage['vk_vid_to_group'];
+         if (old_val) ge('vidtogrouplink').value=old_val;
+         btn.onclick=function(){
+            var url=ge('vidtogrouplink').value;
+            if (!url || trim(url)=='') {
+               alert('Incorrect link');
+               return;
+            }
+            lockButton(btn);
+            getGidUid(url,function(uid,gid){
+               if (gid){
+                  localStorage['vk_vid_to_group']=url;
+                  vk_videos.add_to_group(oid,vid,gid);
+               } else {
+                  alert('Incorrect link');
+                  unlockButton(btn);
+               }
+               
+            });
+         }
+      };
+      
+      if (_vk_vid_adm_gr==null){
+      dApi.call('groups.get',{extended:1,filter:'admin'},function(r){
+         //console.log(r)
+         r.response.shift();
+         _vk_vid_adm_gr=r.response;
+         show_box();
+         });
+      } else {
+         show_box();
+      }
+      return false;
    }
 };
 
@@ -2627,7 +2750,7 @@ function vkVideoNullAlbum(){
    }   
 }
 
-function vkVidEditAlbumTitle(album_id,add_buttons){
+function vkVidEditAlbumTitle(album_id,add_buttons){ // Вероятно устарело. Не мешало бы прикрутить в новый интерфейс на превьюшку альбома
    if (cur.editmode && cur.albums){
       if (add_buttons){
          for (var aid in cur.albums){
@@ -2691,88 +2814,6 @@ function vkVideShowAdder(){
          addClass(els[i],aclass);
          window.vk_vid_list_adder=b;
       }
-}
-var _vk_vid_adm_gr=null;
-var _vk_vid_add_box=null;
-function vkVidAddToGroup(oid,vid,to_gid){
-      /*
-      // From Dec 2014 
-      if (!to_gid){
-         // TODO: make fake mvcur.mvData object
-         showBox('/video', { act: 'add_to_club_pl_box', oid: oid, vid: vid }, {params: {width: 480, dark: 1, bodyStyle: 'padding: 0'},
-           onDone: function(box) {
-           }
-         });
-         return;
-      }
-      */
-      // Old solution for add to group
-      if (to_gid){
-         if (_vk_vid_add_box) _vk_vid_add_box.hide();
-         var _vid='http://vk.com/video'+oid+'_'+vid;
-         AjPost('al_search.php',{al:1,"c[q]":_vid,"c[section]":"video","c[sort]":2,"gid":to_gid,"no_adult":0},function(r,t){
-             var params=t.match(/\{act:'a_add'[^\}]+\}/);
-             if (params){
-                params=eval('('+params[0]+')');
-                ajax.post('al_video.php', params, {onDone: function(label) {
-                  //vkMsg('Ololo');
-                  label=label.replace(/color\:\s*#[A-Z0-9]+;?/i,"");
-                  //alert(label);
-                  vkMsg('<b>'+label+'</b><br>'+_vid+' -> club'+to_gid);
-                }});     
-             } else {
-               //document.title('error')
-               alert(_vid);
-             }     
-         });       
-         return false;
-      }
-      var show_box=function(){
-         var html='';
-         html+='<h4>'+IDL('EnterLinkToGroup')+'</h4><div class="clear_fix">\
-           <input id="vidtogrouplink" type="text" placeholder="http://vk.com/club123" class="text fl_l" style="width:336px">\
-           <div class="button_blue fl_l"><button style="padding: 2px 8px;" id="vidtogroup">OK</button></div>\
-         </div><br>';
-         html+='<h4>'+IDL('SelectGroup')+'</h4>';
-         for (var i=0; i<_vk_vid_adm_gr.length;i++){
-            html+='<a href="/'+_vk_vid_adm_gr[i].screen_name+'" onclick="return vkVidAddToGroup('+oid+','+vid+','+_vk_vid_adm_gr[i].gid+');">'+_vk_vid_adm_gr[i].name+'</a><br>';
-         }
-         _vk_vid_add_box=vkAlertBox(IDL('Add'),html);
-         var btn=ge('vidtogroup');
-         var old_val=localStorage['vk_vid_to_group'];
-         if (old_val) ge('vidtogrouplink').value=old_val;
-         btn.onclick=function(){
-            var url=ge('vidtogrouplink').value;
-            if (!url || trim(url)=='') {
-               alert('Incorrect link');
-               return;
-            }
-            lockButton(btn);
-            getGidUid(url,function(uid,gid){
-               if (gid){
-                  localStorage['vk_vid_to_group']=url;
-                  vkVidAddToGroup(oid,vid,gid);
-               } else {
-                  alert('Incorrect link');
-                  unlockButton(btn);
-               }
-               
-            });
-         }
-      };
-      
-      if (_vk_vid_adm_gr==null){
-      dApi.call('groups.get',{extended:1,filter:'admin'},function(r){
-         //console.log(r)
-         r.response.shift();
-         _vk_vid_adm_gr=r.response;
-         show_box();
-         });
-      } else {
-         show_box();
-      }
-
-   return false;
 }
 
 function vkVideoAddOpsBtn(){
@@ -5433,7 +5474,7 @@ vk_vid_down={
          if (getSet(2)!='y' ||  getSet(66)=='n') return res.replace(/%download%/g,'');
          res=res.replace(/%download%/,'<div class="vk_vid_acts_panel"><div class="download_cont">\
             <span><a href="#" onclick="vk_vid_down.vkVidLoadLinks('+vid[0]+','+vid[1]+',this.parentNode); return false;">'+IDL('download')+'</a></span>\
-            <small class="fl_r '+(!window.vk_vid_list_adder?'vk_vid_add_hidden':'vk_vid_add_visible')+'"><a href="#" onclick="return vkVidAddToGroup('+vid[0]+','+vid[1]+');">'+IDL('AddToGroup')+'</a>'+(cur_oid!=oid?'<span class="divide">|</span>':'')+'</small>\
+            <small class="fl_r '+(!window.vk_vid_list_adder?'vk_vid_add_hidden':'vk_vid_add_visible')+'"><a href="#" onclick="return vk_videos.add_to_group('+vid[0]+','+vid[1]+');">'+IDL('AddToGroup')+'</a>'+(cur_oid!=oid?'<span class="divide">|</span>':'')+'</small>\
             </div></div>'); 
          res=res.replace(/"video_raw_info_name">/,'"video_raw_info_name"><span class="vk_txt_icon" onclick="cancelEvent(event); vk_videos.get_description('+vid[0]+','+vid[1]+',this);"></span>');
          //alert(res);
@@ -5448,7 +5489,7 @@ vk_vid_down={
 
       return s+'<div class="download_cont">\
       <a href="#" onclick="vk_vid_down.vkVidLoadLinks('+vid[0]+','+vid[1]+',this.parentNode); return false;">'+IDL('download')+'</a>\
-      <small class="fl_r '+(!window.vk_vid_list_adder?'vk_vid_add_hidden':'vk_vid_add_visible')+'"><a href="#" onclick="return vkVidAddToGroup('+vid[0]+','+vid[1]+');">'+IDL('AddToGroup')+'</a>'+(cur_oid!=oid?'<span class="divide">|</span>':'')+'</small>\
+      <small class="fl_r '+(!window.vk_vid_list_adder?'vk_vid_add_hidden':'vk_vid_add_visible')+'"><a href="#" onclick="return vk_videos.add_to_group('+vid[0]+','+vid[1]+');">'+IDL('AddToGroup')+'</a>'+(cur_oid!=oid?'<span class="divide">|</span>':'')+'</small>\
       </div>';
    },
    vkVidAddGetLink: function(node){
@@ -5470,7 +5511,7 @@ vk_vid_down={
          if (cur_oid!=oid)
             p.appendChild(vkCe('small',{'class':'fl_r owner_cont'},'<a href="/'+href+'" onmouseover="vkVidShowOwnerName('+oid+',this)">'+href+'</a>'),div.firstChild);
          p.appendChild(vkCe('small',{'class':'fl_r '+(!window.vk_vid_list_adder?'vk_vid_add_hidden':'vk_vid_add_visible')},
-               '<a href="#" onclick="return vkVidAddToGroup('+vid[1]+','+vid[2]+');">'+IDL('AddToGroup')+'</a>'+(cur_oid!=oid?'<span class="divide">|</span>':'')),
+               '<a href="#" onclick="return vk_videos.add_to_group('+vid[1]+','+vid[2]+');">'+IDL('AddToGroup')+'</a>'+(cur_oid!=oid?'<span class="divide">|</span>':'')),
                div.firstChild);
          p.appendChild(div);  
       }
@@ -5512,7 +5553,7 @@ vk_vid_down={
             /*
             if (geByClass('video_results',node)[0])      
                p.appendChild(vkCe('small',{'class':'fl_r '+(!window.vk_vid_list_adder?'vk_vid_add_hidden':'vk_vid_add_visible')},
-                     '<a href="#" onclick="return vkVidAddToGroup('+vid[1]+','+vid[2]+');">'+IDL('AddToGroup')+'</a><span class="divide">|</span>'),
+                     '<a href="#" onclick="return vk_videos.add_to_group('+vid[1]+','+vid[2]+');">'+IDL('AddToGroup')+'</a><span class="divide">|</span>'),
                      div.firstChild);*/
             else v.parentNode.appendChild(div);//v.insertBefore(div,v.firstChild);
             return;
@@ -5533,7 +5574,7 @@ vk_vid_down={
            var c=vkCe('div',{'class':'vk_vid_acts_panel' /*, 'onclick':'cancelEvent(event);'*/});
            var div=vkCe('span',{'class':"download_cont"},
             '<span><a href="#" onclick="vk_vid_down.vkVidLoadLinks('+vid[1]+','+vid[2]+',this.parentNode'+(vid[3]?", '"+vid[3]+"','"+type+"'":'')+'); return false;">'+IDL('download')+'</a></span>\
-            <small class="fl_r '+(!window.vk_vid_list_adder?'vk_vid_add_hidden':'vk_vid_add_visible')+'"><a href="#" onclick="return vkVidAddToGroup('+vid[1]+','+vid[2]+');">'+IDL('AddToGroup')+'</a>'+(cur_oid!=oid?'<span class="divide">|</span>':'')+'</small>\
+            <small class="fl_r '+(!window.vk_vid_list_adder?'vk_vid_add_hidden':'vk_vid_add_visible')+'"><a href="#" onclick="return vk_videos.add_to_group('+vid[1]+','+vid[2]+');">'+IDL('AddToGroup')+'</a>'+(cur_oid!=oid?'<span class="divide">|</span>':'')+'</small>\
             ');
             // '<span class="vk_txt_icon" onclick="cancelEvent(event); vk_videos.get_description('+vid[1]+','+vid[2]+',this);"></span>'
            c.appendChild(div);     
@@ -5924,8 +5965,8 @@ vk_vid_down={
       if (acts && !ge('vk_more_acts')){
          /* Added by VK in Dec 2014
          var vid=((window.mvcur || {}).videoRaw || '').split('_');
-         if (vid[0] && acts.innerHTML.indexOf('vkVidAddToGroup')==-1)
-            acts.innerHTML+='<a href="#" onclick="return vkVidAddToGroup('+vid[0]+','+vid[1]+');">'+IDL('AddToGroup',1)+'</a>';
+         if (vid[0] && acts.innerHTML.indexOf('vk_videos.add_to_group')==-1)
+            acts.innerHTML+='<a href="#" onclick="return vk_videos.add_to_group('+vid[0]+','+vid[1]+');">'+IDL('AddToGroup',1)+'</a>';
          */
          //console.log('Cur video',(window.mvcur || {}).videoRaw); 
          var links='';
