@@ -3417,7 +3417,7 @@ vk_feed={
         var input = geByClass('olist_filter', box.tabContent)[0];    // поле ввода "Быстрый поиск"
         if (input) {
             input.onkeyup = vk_feed.input_handler;
-            input.onfocus = function () {   // Подсказка о действии клавиши Enter
+            input.onclick = function () {   // Подсказка о действии клавиши Enter
                 vkSettInfo(input, IDL('EnterToSearch'));
             }
         }
