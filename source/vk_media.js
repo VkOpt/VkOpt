@@ -2283,8 +2283,8 @@ vk_videos = {
       var page=function(offset){
          
          ge('choose_video_rows').innerHTML=vkBigLdrImg;
-         var params={aid:aid,width:130,count:PER_PAGE,offset:offset};// count, offset
-         params[oid<0?'gid':'uid']=Math.abs(oid);
+         var params={owner_id:oid, album_id:aid,width:130,count:PER_PAGE,offset:offset};// count, offset
+         //params[oid<0?'gid':'uid']=Math.abs(oid);
         
         var items=null;
 
