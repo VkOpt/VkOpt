@@ -789,7 +789,11 @@ vk_menu={
       try {
          return (JSON.parse(vkGetVal('menu_custom_links') || '[]') || []);
       } catch(e) { 
-         return [];
+         try {
+            return (eval(vkGetVal('menu_custom_links') || '[]') || []);
+         } catch(e) { 
+            return [];
+         }
       }
    },
    custom_settings:function(){

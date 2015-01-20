@@ -1159,7 +1159,7 @@ function vkSaveSettingsOnServer(){
    var cfg={
       'remixbits':sett,
       'vklang':vkgetCookie('vklang'),
-      'menu_custom_links':vk_string_escape(vkGetVal('menu_custom_links') || ""),
+      'menu_custom_links':vkGetVal('menu_custom_links') || "",
       'vk_sounds_vol':vkGetVal("vk_sounds_vol") || "",
       //'FavList':vkGetVal('FavList'),
       'VK_CURRENT_CSS_URL':vkGetVal("VK_CURRENT_CSS_URL") || "",
@@ -1173,7 +1173,7 @@ function vkSaveSettingsOnServer(){
    
    var code=[];
    for (var key in cfg)
-      code.push(key+':API.storage.set({key:"'+key+'",value:"'+cfg[key]+'"})');
+      code.push(key+':API.storage.set({key:"'+key+'",value:'+JSON.stringify(cfg[key])+'})');
    code="return {"+code.join(',')+"};";
    //alert(code);
    dApi.call('execute',{code:code},function(r){
@@ -1211,7 +1211,8 @@ function vkLoadSettingsFromServer(check,callback){
 			if (r.response && r.response!=''){
 				var scfg={};
             for (var i=0; i<r.response.length; i++)
-               scfg[r.response[i].key]=r.response[i].value;
+               if (r.response[i].value != "null")
+                  scfg[r.response[i].key]=r.response[i].value;
             console.log('vkopt config from API server',scfg);
             // vkopt settings
             var cfg=scfg['remixbits'].split('|');
