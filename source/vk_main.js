@@ -2252,6 +2252,7 @@ function vkCleanNotes(){
  */ 
 function vkBoardPage(){
  vkTopicSubscribe(true);
+ if (getSet(100)=='y') vkTopicSearch.UI();
  //vkTopicsTip();
 }
 
@@ -2341,6 +2342,81 @@ function vkTopicSubscribe(add_link){
 	});
 	return false;
 }
+
+var vkTopicSearch = {
+    total: 0,   // Общее количество комментариев. нужно для отображения прогрессбара
+    topic_id: 0,// id текущей темы, чтобы каждый раз не вычислять заново
+    query: '',  // поисковый запрос
+    step: 100,  // количество комментов, запрашиваемых за раз. ограничение VK API = 100
+    cache: [],  // кэш комментариев, для ускорения повторного поиска. Двумерный массив, где по строкам - id тем, по столбцам - номера комментариев
+    tpl: '<div class="bp_post" id="post%OID%_%POSTID%"><table cellspacing="0" cellpadding="0" class="bp_table"><tbody><tr>'+
+            '<td class="bp_info">'+
+                '<div id="bp_data%OID%_%POSTID%"><div class="bp_text">%TEXT%</div></div>'+
+                '<div class="bp_bottom clear_fix">'+
+                    '<div class="fl_l"><a onclick="return nav.go(this, event)" href="/topic%OID%_%TOPICID%?post=%POSTID%" class="bp_date">%DATE%</a></div>'+
+                '</div>'+
+            '</td>'+
+          '</tr></tbody></table></div>',    // шаблон одного сообщения в результатах поиска
+    UI: function () {   // функция отображения текстового поля для поиска
+        var header = geByClass('bt_header')[0];
+        if (header && !ge('vkTopicSearchProgress')) {
+            var textfield = vkCe('div', { class: 'fl_r ts' },
+                '<input onkeyup="vkTopicSearch.keyup(event)" id="ts_input" type="text" class="text" placeholder="'+IDL('mMaS')+'..."><div id="vkTopicSearchProgress"></div>');
+            header.insertBefore(textfield, header.firstChild);
+        }
+    },
+    keyup: function (ev) {  // Обработчик нажатия Enter в поле ввода.
+        ev = ev || window.event;
+        if (ev.keyCode == 10 || ev.keyCode == 13) {
+            cancelEvent(ev);
+            vkTopicSearch.topic_id = (cur.pgUrl || nav.objLoc[0]).split('_')[1]; // два источника id темы на всякий случай
+            vkTopicSearch.query = val(ev.target);
+            cur.pgCont.innerHTML = '';  // удалить все комменты со страницы
+            ge('bt_summary').innerHTML = IDL('SearchResults');
+            cur.pgNodesCount = 0;       // нужно, чтобы в консоль не сыпались ошибки от pagination.js
+            if (vkTopicSearch.cache[vkTopicSearch.topic_id])    // если есть кэш для текущей темы - ищем в нём, иначе грузим из API
+                vkTopicSearch.check(vkTopicSearch.cache[vkTopicSearch.topic_id]);
+            else
+                vkTopicSearch.run(0);
+        }
+    },
+    run: function (_offset) {   // рекурсивная функция получения порции комментариев начиная с _offset
+        vkTopicSearch.progress(_offset, vkTopicSearch.total);
+        dApi.call('board.getComments', {
+            group_id: -1 * cur.owner,
+            topic_id: vkTopicSearch.topic_id,
+            offset: _offset,
+            count: vkTopicSearch.step
+        }, function (r, response) {
+            vkTopicSearch.total = response.comments.shift(); // нулевой элемент - общее количество комментов в теме.
+            if (response.comments.length > 0) {
+                vkTopicSearch.cache[vkTopicSearch.topic_id] = (vkTopicSearch.cache[vkTopicSearch.topic_id] || []).concat(response.comments);
+                vkTopicSearch.check(response.comments);
+                vkTopicSearch.run(_offset + vkTopicSearch.step);
+            }
+            else    // поиск окончен
+                ge('vkTopicSearchProgress').innerHTML = '';
+        });
+    },
+    check: function (comments) {    // проверить массив комментариев на существование подходящего комментария. Это может быть порция от API либо кэш целиком.
+        for (var i in comments)
+            if (comments[i].text.indexOf(vkTopicSearch.query) > -1) {
+                cur.pgCont.innerHTML += rs(vkTopicSearch.tpl, {
+                    OID: cur.owner,
+                    POSTID: comments[i].id,
+                    TEXT: comments[i].text,
+                    TOPICID: vkTopicSearch.topic_id,
+                    DATE: dateFormat(comments[i].date * 1000, "dd.mm.yyyy HH:MM:ss")
+                })
+                    .replace(/\[id[^\|]+\|([^\]]+)\]/g, "$1") // замена кодов обращений на просто имя
+                    .replace(vkTopicSearch.query, '<b>' + vkTopicSearch.query + '</b>'); // выделить жирным запрос
+            }
+    },
+    progress: function (current, total) {   // обновление прогрессбара
+        if (!total) total = 1;
+        ge('vkTopicSearchProgress').innerHTML = vkProgressBar(current, total, 200);
+    }
+};
 
 var vkstarted = (new Date().getTime());
 

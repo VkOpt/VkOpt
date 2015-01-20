@@ -672,7 +672,8 @@ function vkInitSettings(){
       {id:88, text:IDL("seGroupRequestsBlock"),info:'infoUseNetTrafic'},
       {id:97, text:examples.seSubscribeToPostComments+IDL("seSubscribeToPostComments")},
       {id:98, text:IDL("seShowAllComments")},
-      {id:99, text:IDL("seSortByLikes")}
+      {id:99, text:IDL("seSortByLikes")},
+      {id:100, text:IDL("seTopicSearch")}
       //{id:64, text:IDL("seToTopOld")}
     ],
 	Sounds:[
@@ -697,7 +698,7 @@ function vkInitSettings(){
    ]
   };
 
-	//LAST 99
+	//LAST 100
 	/*
       vkoptSets['advanced']=[
          'vk_upd_menu_timeout',
