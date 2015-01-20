@@ -108,6 +108,7 @@ var vk_photos = {
       .vk_full_thumbs_photos .pva_photo_link,\
       .vk_full_thumbs_photos .pva_photo{height: auto !important;}\
       .vk_full_thumbs_photos #photos_container .photo_row_up a {position: inherit !important;}\
+      .vk_full_thumbs_photos #photos_container .photo_row_up a.bg {display: none !important;}\
       #vk_ph_upd_btn{opacity:0.1}\
       #vk_ph_upd_btn:hover{opacity:1}\
       .vk_albums_list a{display:block; padding-left:10px; padding-bottom:3px; border-bottom:1px solid rgba(100,100,100,0.1)}\
@@ -521,7 +522,7 @@ var vk_photos = {
    },
    process_node:function(node){
       //vk_photos.toggle_thumb_size();
-      var p=geByClass('pvsa_summary_author',node)[0]; 
+      var p=geByClass('pvsa_summary_author',node)[0] || geByClass('photos_period',node)[0]; 
       if (!p){
          p=geByClass('photos_summary',node)[0] || geByClass('pva_summary',node)[0];
          if (p) p=geByClass('summary',p)[0];
@@ -2283,10 +2284,9 @@ vk_videos = {
       var page=function(offset){
          
          ge('choose_video_rows').innerHTML=vkBigLdrImg;
-         var params={owner_id:oid, album_id:aid,width:130,count:PER_PAGE,offset:offset};// count, offset
-         //params[oid<0?'gid':'uid']=Math.abs(oid);
-        
-        var items=null;
+         var params={owner_id:oid, album_id:aid, width:130, count:PER_PAGE, offset:offset};
+
+         var items=null;
 
          dApi.call('video.get',params,function(r){
             items=r.response;
