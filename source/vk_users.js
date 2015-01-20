@@ -858,7 +858,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 					</div>';
 		
       var activity = profile.activity;
-      if (window.Emoji && Emoji.emojiToHTML)
+      if (window.Emoji && Emoji.emojiToHTML && activity)
             activity = Emoji.emojiToHTML(activity,true) || activity;//.replace(/"\/images\//g,'"http://vk.com/images/') || profile.activity;  
             
       var html=VK_PROFILE_TPL.replace("%AVA_SRC%",ava_url)
