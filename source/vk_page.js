@@ -3518,7 +3518,6 @@ function vk_tag_api(section,url,app_id){
       app:app_id,
       widget_req:function(obj_id,like,callback){
          var app=t.app;
-         var send=t.send;
          var params={
             "app": app,
             "url": t.page_url+t.section+'/'+obj_id,
@@ -3530,8 +3529,11 @@ function vk_tag_api(section,url,app_id){
             "description": t.section,
             "image": "",
             "text": "",
-            "h": "22"
-         }; 
+            "h": "22",
+            "_ver": "1",
+            "color": ""
+         };
+     
          var ret=0;
          var req=function(){
             AjPost(location.protocol+'//vk.com/widget_like.php',params,function(r,t){
@@ -3548,51 +3550,20 @@ function vk_tag_api(section,url,app_id){
                }
                var like_params={
                   value:like?1:0,
+                  act:'a_like',
+                  s:0,
+                  verb:0,
+                  al:1,
                   hash:likeHash,
                   pageQuery:_pageQuery,
                   app:app
                };
-               send(location.protocol+'//vk.com/widget_like.php?act=a_like',like_params,function(obj){
-                  if (callback) callback(obj.num);
-                  //alert(obj.num);
-               });
-               
-            });
-         };
-         req();
-      },
-      send:function(url,params,callback){
-         var send=t.send;
-         var ret=0;
-         var req=function(){
-            AjPost(url,params,function(r,t){
-               try { 
-                  var obj=JSON.parse(t); 
-               } catch (e) {
-                  if (ret<5){
-                     ret++;
-                     console.log('send error... retry '+ret+'... ');
-                     setTimeout(req,3000);
-                  } else 
-                     console.log('send error ',params);
-                  return;
-               }
-               if (obj.ok && obj.ok==-2){
-                  var difficulty = '';
-                  if (obj.difficult === undefined) obj.difficult = 0;
-                  if (obj.difficult !== undefined) {
-                    difficulty = intval(r.difficult) ? '' : 's=1&';
-                  }
-                  var captcha_img = 'http://vk.com/captcha.php?'+difficulty+'sid='+obj.captcha_sid;
-                  dApi.captcha(obj.captcha_sid, captcha_img, function(sid, key){
-                     params['captcha_sid']=sid;
-                     params['captcha_key']=key;
-                     if (vk_api_captchaBox) vk_api_captchaBox.hide();
-                     send(url,params,callback);
-                  });
-               } else {
-                  callback(obj);
-               }
+               ajax.post('widget_like.php',like_params,{
+                  onDone : function (stats) {
+                     if (callback) callback(stats.num);
+                  }, 
+                  onFail : function (text) {}
+               });               
             });
          };
          req();
@@ -3615,7 +3586,6 @@ function vk_tag_api(section,url,app_id){
          var like_obj=t.parse_id(obj_id);
          t.widget_req(like_obj,true,function(){
             t.get_users(like_obj,0,6,callback);
-            t.widget_req(like_obj+'|'+vk.id,true,function(num){});// костыль
          });
          
       },
@@ -3623,7 +3593,6 @@ function vk_tag_api(section,url,app_id){
          var like_obj=t.parse_id(obj_id);
          t.widget_req(like_obj,false,function(){
             t.get_users(like_obj,0,6,callback);
-            t.widget_req(like_obj+'|'+vk.id,false,function(num){});// костыль
          });
          
       },
@@ -3644,15 +3613,15 @@ function vk_tag_api(section,url,app_id){
          //api4dislike.call('likes.getList',{type:'sitepage', page_url:url,owner_id:t.app},console.log)
       },
       get_tags:function(obj_ids,callback){
+         var code = '';
          var tmp=[];
          for (var i=0; i<obj_ids.length; i++){
             var like_obj=t.parse_id(obj_ids[i]);
             var url=t.page_url+t.section+'/'+like_obj;
-            var a1='API.likes.getList({type:"sitepage",page_url:"'+url+'",owner_id:"'+t.app+'",count:1,offset:0}).count';
-            var a2='API.likes.getList({type:"sitepage",page_url:"'+url+'|'+vk.id+'",owner_id:"'+t.app+'",count:1,offset:0}).count';
-            tmp.push('"'+obj_ids[i]+'":{count:'+a1+',my:'+a2+'}');
+            code += 'var likes'+obj_ids[i]+' = API.likes.getList({type:"sitepage",page_url:"'+url+'",owner_id:"'+t.app+'",count:1,offset:0}); ';
+            tmp.push('"'+obj_ids[i]+'":{count:likes'+obj_ids[i]+'.count, my:likes'+obj_ids[i]+'.users[0]=='+vk.id+'}');
          }
-         var code='return {'+tmp.join(',')+'};';
+         code += 'return {'+tmp.join(',')+'};';
          var retry_count=0;
          var get=function(){
             //api_for_dislikes
