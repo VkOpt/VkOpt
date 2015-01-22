@@ -2349,8 +2349,13 @@ var vkTopicSearch = {
     query: '',  // поисковый запрос
     step: 100,  // количество комментов, запрашиваемых за раз. ограничение VK API = 100
     cache: [],  // кэш комментариев, для ускорения повторного поиска. Двумерный массив, где по строкам - id тем, по столбцам - номера комментариев
+    usersCache: {}, // кэш информации о пользоваелях-авторах
     tpl: '<div class="bp_post" id="post%OID%_%POSTID%"><table cellspacing="0" cellpadding="0" class="bp_table"><tbody><tr>'+
+            '<td class="bp_thumb_td">'+
+                '<a onclick="return nav.go(this, event)" href="/id%UID%" class="bp_thumb"><img width="50" src="%AVA%"></a>'+
+            '</td>'+
             '<td class="bp_info">'+
+                '<div class="bp_author_wrap"><a onclick="return nav.go(this, event)" href="/id%UID%" class="bp_author" exuser="true">%USERNAME%</a></div>'+
                 '<div id="bp_data%OID%_%POSTID%"><div class="bp_text">%TEXT%</div></div>'+
                 '<div class="bp_bottom clear_fix">'+
                     '<div class="fl_l"><a onclick="return nav.go(this, event)" href="/topic%OID%_%TOPICID%?post=%POSTID%" class="bp_date">%DATE%</a></div>'+
@@ -2361,8 +2366,9 @@ var vkTopicSearch = {
         var header = geByClass('bt_header')[0];
         if (header && !ge('vkTopicSearchProgress')) {
             var textfield = vkCe('div', { class: 'fl_r ts' },
-                '<input onkeyup="vkTopicSearch.keyup(event)" id="ts_input" type="text" class="text" placeholder="'+IDL('mMaS')+'..."><div id="vkTopicSearchProgress"></div>');
+                '<input onkeyup="vkTopicSearch.keyup(event)" type="text" class="text search" placeholder="'+IDL('mMaS')+'..."><div id="vkTopicSearchProgress"></div>');
             header.insertBefore(textfield, header.firstChild);
+            vkaddcss('#bt_title {max-width: 397px;}');
         }
     },
     keyup: function (ev) {  // Обработчик нажатия Enter в поле ввода.
@@ -2370,12 +2376,14 @@ var vkTopicSearch = {
         if (ev.keyCode == 10 || ev.keyCode == 13) {
             cancelEvent(ev);
             vkTopicSearch.topic_id = (cur.pgUrl || nav.objLoc[0]).split('_')[1]; // два источника id темы на всякий случай
-            vkTopicSearch.query = val(ev.target);
+            vkTopicSearch.query = val(ev.target).toLowerCase(); // для регистронезависимого поиска
             cur.pgCont.innerHTML = '';  // удалить все комменты со страницы
             ge('bt_summary').innerHTML = IDL('SearchResults');
             cur.pgNodesCount = 0;       // нужно, чтобы в консоль не сыпались ошибки от pagination.js
-            if (vkTopicSearch.cache[vkTopicSearch.topic_id])    // если есть кэш для текущей темы - ищем в нём, иначе грузим из API
+            if (vkTopicSearch.cache[vkTopicSearch.topic_id]) {   // если есть кэш для текущей темы - ищем в нём, иначе грузим из API
                 vkTopicSearch.check(vkTopicSearch.cache[vkTopicSearch.topic_id]);
+                vkTopicSearch.end();
+            }
             else
                 vkTopicSearch.run(0);
         }
@@ -2386,31 +2394,45 @@ var vkTopicSearch = {
             group_id: -1 * cur.owner,
             topic_id: vkTopicSearch.topic_id,
             offset: _offset,
+            extended: 1,    // чтобы возвращалась информация об авторах
             count: vkTopicSearch.step
         }, function (r, response) {
             vkTopicSearch.total = response.comments.shift(); // нулевой элемент - общее количество комментов в теме.
             if (response.comments.length > 0) {
                 vkTopicSearch.cache[vkTopicSearch.topic_id] = (vkTopicSearch.cache[vkTopicSearch.topic_id] || []).concat(response.comments);
+                for (var i in response.profiles)    // кешируем инфу об авторах
+                    if (!vkTopicSearch.usersCache[response.profiles[i].uid])
+                        vkTopicSearch.usersCache[response.profiles[i].uid] = {
+                            username: response.profiles[i].first_name + ' ' + response.profiles[i].last_name,
+                            photo: response.profiles[i].photo
+                        };
                 vkTopicSearch.check(response.comments);
                 vkTopicSearch.run(_offset + vkTopicSearch.step);
             }
-            else    // поиск окончен
+            else {   // поиск окончен
                 ge('vkTopicSearchProgress').innerHTML = '';
+                vkTopicSearch.end();
+            }
         });
     },
+    end: function () { // плашка отделяет результаты поиска от сообщений следуюущей страницы
+        cur.pgCont.innerHTML += '<a class="wr_header" style="text-align: center">' + IDL('NoMoreResults') + '</a>';
+    },
     check: function (comments) {    // проверить массив комментариев на существование подходящего комментария. Это может быть порция от API либо кэш целиком.
+        var k;
         for (var i in comments)
-            if (comments[i].text.indexOf(vkTopicSearch.query) > -1) {
+            if ((k=comments[i].text.toLowerCase().indexOf(vkTopicSearch.query)) > -1)
                 cur.pgCont.innerHTML += rs(vkTopicSearch.tpl, {
                     OID: cur.owner,
+                    UID: comments[i].from_id,
+                    USERNAME: vkTopicSearch.usersCache[comments[i].from_id].username,
+                    AVA: vkTopicSearch.usersCache[comments[i].from_id].photo,
                     POSTID: comments[i].id,
-                    TEXT: comments[i].text,
+                    TEXT: (comments[i].text.substr(0,k)+'<b>'+comments[i].text.substr(k,vkTopicSearch.query.length)+'</b>'+comments[i].text.substr(k+vkTopicSearch.query.length)) // выделить жирным запрос
+                        .replace(/\[id[^\|]+\|([^\]]+)\]/g, "$1"), // замена кодов обращений на просто имя
                     TOPICID: vkTopicSearch.topic_id,
                     DATE: dateFormat(comments[i].date * 1000, "dd.mm.yyyy HH:MM:ss")
-                })
-                    .replace(/\[id[^\|]+\|([^\]]+)\]/g, "$1") // замена кодов обращений на просто имя
-                    .replace(vkTopicSearch.query, '<b>' + vkTopicSearch.query + '</b>'); // выделить жирным запрос
-            }
+                });
     },
     progress: function (current, total) {   // обновление прогрессбара
         if (!total) total = 1;
