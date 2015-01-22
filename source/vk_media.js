@@ -132,7 +132,7 @@ var vk_photos = {
          vkAddAlbumCommentsLinks();
          if (cur.oid<0){
             vkPhotosWallAlbum();
-            vk_ph_comms.browse_comments_btn();
+            vk_ph_comms.browse_comments_btn(); // Устарело. Вк активировали родной раздел обзора комментов к фото группы.
          }
       } else if (nav.objLoc[0].indexOf('album')!=-1 || nav.objLoc[0].indexOf('tag')!=-1 || nav.objLoc[0].indexOf('photos')!=-1){
          
@@ -1140,13 +1140,13 @@ function vkPVShowTagsInfo(){
 }
  
 
-vk_ph_comms = {
+vk_ph_comms = { // Устарело. Оставить можно только если для примера реализации подгружаемых с API страниц при прокрутке .
    users:{},
    photos:{},
    browse_comments_btn:function(){
       if (cur.oid>0 || ge('vk_php_comm')) return;
       var p=geByClass('summary',ge('photos_albums'))[0];
-      if (!p) return;
+      if (!p || p.innerHTML.indexOf('?act=comments')>-1) return;
       p.appendChild(se('<span class="fl_r" id="vk_php_comm"><a href="#" onclick="return vk_ph_comms.init();">'+IDL('mPhC',1)+'</a><span class="divider">|</span></span>'))
    },
    init:function(){
