@@ -4331,7 +4331,7 @@ vkLastFM={
          }
       
       }
-      localStorage['lastfm_enable_scrobbling']=fm.enable_scrobbling;
+      localStorage['lastfm_enable_scrobbling']=fm.enable_scrobbling?1:0;
       fm.set_icon(); 
       for (var i=0; i<els.length && !hide_tooltip ;i++){
          els[i].onmouseover();
