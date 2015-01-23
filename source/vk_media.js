@@ -1506,62 +1506,61 @@ function vkWallAlbumLink(){
 }
 
 
-var VKPRU_SWF_LINK='http://cs4320.vk.com/u13391307/ac8f5bbe4ce7a8.zip';
-var VKPRU_SWF_HTTPS_LINK='https://pp.userapi.com/c4320/u13391307/ac8f5bbe4ce7a8.zip';
+var VKPRU_SWF_LINK='http://app.vk.com/c420730/u13391307/6360944486b815.swf';
+var VKPRU_SWF_HTTPS_LINK='https://app.vk.com/c420730/u13391307/6360944486b815.swf';
 
 function vkPhotoUrlUpload(url){
-	PRUBox = new MessageBox({title: IDL('PhotoUpload'),width:"290px"});
-	var Box = PRUBox;
-	
-	vk_vkpru_on_debug=function(msg){
-		vklog(msg);
-	};
-	vk_vkpru_on_done=function(pid,aid){
-		Box.hide();
-		vkSetVal('vk_pru_album',aid);
-		vkMsg('<a href="/'+pid+'">'+IDL('PhotoUploaded')+': '+pid+'</a>',3000);
-	};
-	vk_vkpru_on_init=function(){
-		hide('vkpruldr');
-		Box.setOptions({});
-		disableRightClick(ge('prucontainer'));
-	};	
-		
-	var html = '<div><span id="vkpruldr"><div class="box_loader"></div></span>'+
+   PRUBox = new MessageBox({title: IDL('PhotoUpload'),width:"290px"});
+   var Box = PRUBox;
+   
+   vk_vkpru_on_debug=function(msg){
+      vklog(msg);
+   };
+   vk_vkpru_on_done=function(pid,aid){
+      Box.hide();
+      vkSetVal('vk_pru_album',aid);
+      vkMsg('<a href="/'+pid+'">'+IDL('PhotoUploaded')+': '+pid+'</a>',3000);
+   };
+   vk_vkpru_on_init=function(){
+      hide('vkpruldr');
+      Box.setOptions({});
+      disableRightClick(ge('prucontainer'));
+   };   
+      
+   var html = '<div><span id="vkpruldr"><div class="box_loader"></div></span>'+
              '<div id="prucontainer" style_="display:inline-block;position:relative;top:8px;"></div>'+
              '</div>';
 
-	vkOnSavedFile=function(){Box.hide(200);};
-	Box.removeButtons();
-	Box.addButton(IDL('Cancel'),Box.hide,'no');
-	Box.content(html).show(); 
-	Box.setOptions({});
-	var domain=location.href.match(/vk\.com|vkontakte\.ru/)[0];
-	dApi.call('photos.getAlbumsCount',{},function(){
-		var flashvars = {
-			api_id:dApi.api_id,
-			viewer_id:vkgetCookie('dapi_mid'),
-			user_id:vkgetCookie('dapi_mid'),
-			api_url:'http://api.'+domain+'/api.php',
-			api_sid:vkgetCookie('dapi_sid'),
-			api_secret:vkgetCookie('dapi_secret'),
-			image_url: url,
-			album_id:vkGetVal('vk_pru_album') || 0,
-			onFlashReady:"vk_vkpru_on_init", 
-			onUploadComplete:"vk_vkpru_on_done", 
-			onDebug:"vk_vkpru_on_debug",
-      "lang.button_upload":IDL('puUploadImageBtn'),
-      "lang.choice_album":IDL('puChoiceAlbum'),
-      "lang.loading_info":IDL('puLoadingInfoWait')
-			//,"lang.button_upload":'Загрузить фотографию'
-		};
+   vkOnSavedFile=function(){Box.hide(200);};
+   Box.removeButtons();
+   Box.addButton(IDL('Cancel'),Box.hide,'no');
+   Box.content(html).show(); 
+   Box.setOptions({});
+   var domain=location.href.match(/vk\.com|vkontakte\.ru/)[0];
+   dApi.call('photos.getAlbumsCount',{},function(){
+      var flashvars = {
+         api_id:dApi.API_ID,
+         access_token:dApi.access_token,
+         viewer_id:dApi.mid,
+         user_id:dApi.mid,
+         api_url:'https://api.'+domain+'/method/',
+         image_url: url,
+         album_id:vkGetVal('vk_pru_album') || 0,
+         onFlashReady:"vk_vkpru_on_init", 
+         onUploadComplete:"vk_vkpru_on_done", 
+         onDebug:"vk_vkpru_on_debug",
+         "lang.button_upload":IDL('puUploadImageBtn'),
+         "lang.choice_album":IDL('puChoiceAlbum'),
+         "lang.loading_info":IDL('puLoadingInfoWait')
+         //,"lang.button_upload":'Загрузить фотографию'
+      };
       var swf=location.protocol=='https:'?VKPRU_SWF_HTTPS_LINK:VKPRU_SWF_LINK;
-		var params={width:260, height:345, allowscriptaccess: 'always',"wmode":"transparent","preventhide":"1","scale":"noScale"};
-		renderFlash('prucontainer',
-			{url:swf,id:"vkphoto_reuploader"},
-			params,flashvars
-		); 
-	});
+      var params={width:260, height:345, allowscriptaccess: 'always',"wmode":"transparent","preventhide":"1","scale":"noScale"};
+      renderFlash('prucontainer',
+         {url:swf,id:"vkphoto_reuploader"},
+         params,flashvars
+      ); 
+   });
 }
 //vkPhotoUrlUpload('http://cs9543.vk.com/u3457516/124935920/w_5603bf45.jpg')
 

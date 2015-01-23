@@ -5,13 +5,11 @@
     public class Config extends Object
     {
         private static var _config:Object = {
-			api_url:"http://api.vkontakte.ru/api.php",
 			api_id: 2168679,
+			access_token: '',
 			viewer_id:0,
 			user_id: 0,
-			api_url: 'http://api.vkontakte.ru/api.php',
-			api_sid:'',
-			api_secret:'',
+			api_url: 'https://api.vk.com/method/',
 			image_url: 'http://cs4296.vk.com/u3457516/124935920/w_0003bc4e.jpg',
 			album_id: 0,
 			onFlashReady:"onFlashReady", 

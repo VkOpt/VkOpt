@@ -7,12 +7,11 @@ package vk.api {
   import vk.api.serialization.json.*;
   
   public class APIProvider {
-    public const API_SERVER_URL: String = "http://api.vkontakte.ru/api.php";
+    public const API_SERVER_URL: String = "https://api.vk.com/method/";
     
 	private var _api_url: String;
     private var _api_id: Number;
-    private var _api_secret: String;
-	private var _api_sid: String;
+	private var _api_access_token: String;
     private var _viewer_id: Number;
     private var _test_mode: Boolean;
     private var _request_params: Array;
@@ -21,13 +20,12 @@ package vk.api {
     
     
     
-    public function APIProvider(api_id: Number, api_secret: String,api_sid: String, viewer_id: Number, api_url:String, test_mode: Boolean = false) {
+    public function APIProvider(api_id: Number, api_access_token: String, viewer_id: Number, api_url:String, test_mode: Boolean = false) {
       _api_id     = api_id;
-      _api_secret = api_secret;
       _viewer_id  = viewer_id;
       _test_mode  = test_mode;
 	  _api_url	  = api_url;
-	  _api_sid	  = api_sid;
+	  _api_access_token	  = api_access_token;
     }
     
     public function setup(options: Object): void {
@@ -53,8 +51,8 @@ package vk.api {
     private function _sendRequest(method:String, options:Object):void {
       var self:Object = this;
       
-      var request_params: Object = {method: method};
-      request_params.api_id = _api_id;
+      var request_params: Object = { }; //{method: method};
+      //request_params.api_id = _api_id;
       request_params.format = "JSON";
 	  request_params.v = "3.0";
       if (_test_mode) {
@@ -70,10 +68,10 @@ package vk.api {
       for (var j: String in request_params) {
         variables[j] = request_params[j];
       }
-      variables['sig'] = _generate_signature(request_params);
-      variables['sid'] = _api_sid;
+      //variables['sig'] = _generate_signature(request_params);
+      variables['access_token'] = _api_access_token;
       var request:URLRequest = new URLRequest();
-      request.url = _api_url;
+      request.url = _api_url+method;
       request.method = URLRequestMethod.POST;
       request.data = variables;
       
@@ -124,7 +122,7 @@ package vk.api {
         signature += sorted_array[key];
       }
 			if (_viewer_id > 0) signature = _viewer_id.toString() + signature;
-      signature += _api_secret;
+      //signature += _api_secret;
       return MD5.encrypt(signature);
     }
   }

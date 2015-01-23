@@ -61,8 +61,7 @@ package vk.photo{
     private var viewer_id:uint = 0;
 	private var app_id:uint = 0;
 	private var api_url:String = "";
-	private var api_sid:String = "";
-	private var api_secret:String = "";
+	private var api_access_token:String = "";
 	
 	private var image_url:String = "";
 	private var album_id:uint = 0;
@@ -84,13 +83,13 @@ package vk.photo{
 			
 			contextMenu = new ContextMenu();
             contextMenu.hideBuiltInItems();
-			var ciVkOpt:ContextMenuItem = new ContextMenuItem("VkOpt PhotoUp v1.0");
+			var ciVkOpt:ContextMenuItem = new ContextMenuItem("VkOpt PhotoUp v1.2");
 				contextMenu.customItems.push(ciVkOpt);
 				ciVkOpt.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, function (e:Event): void{ navigateToURL(new URLRequest("http://vkopt.net"), "_blank");});
             
 			var ciKiberInfinity:ContextMenuItem = new ContextMenuItem("Made by Raevskiy Mihail");
 				contextMenu.customItems.push(ciKiberInfinity);
-				ciKiberInfinity.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, function (e:Event): void { navigateToURL(new URLRequest("http://vkontakte.ru/id13391307"), "_blank"); } );
+				ciKiberInfinity.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, function (e:Event): void { navigateToURL(new URLRequest("http://vk.com/id13391307"), "_blank"); } );
 			
 				
 			// Read FlashVars	  
@@ -98,22 +97,18 @@ package vk.photo{
 			user_id   = config.user_id;
 			viewer_id = config.viewer_id;
 			api_url = config.api_url;
-			api_sid = config.api_sid;
-			api_secret = config.api_secret;
+			api_access_token = config.access_token;
 			image_url = config.image_url;
 			album_id = config.album_id;
       
 			if ( viewer_id == 0 ) {
-				api_url = "http://api.vkontakte.ru/api.php";
 				app_id = 2168679;
 				viewer_id = 13391307;
 				user_id = 13391307;
-				api_url = 'http://api.vkontakte.ru/api.php';
-				api_sid = '';
-				api_secret = '';
+				api_url = 'https://api.vk.com/method/';
+				api_access_token = '';
 				image_url = 'http://cs4296.vk.com/u3457516/124935920/w_0003bc4e.jpg';
 			}
-
 			if ( user_id == 0 )  user_id = viewer_id;
 			////////////////////////////////////////////	
 			app = new Object();
@@ -157,8 +152,8 @@ package vk.photo{
 			updView();   
 			showLoader();
 			//viewer_id,user_id,app_id,api_url   // api_secret,api_sid
-			dp = new APIProvider(app_id, api_secret,api_sid,viewer_id,api_url,TEST_MODE);//app.parameters.viewer_id
-			dp.setup( { onError: function(error: String): void {debug("Error: " + error); }});	  	 
+			dp = new APIProvider(app_id, api_access_token, viewer_id, api_url,TEST_MODE);//app.parameters.viewer_id
+			dp.setup( { onError: function(error: Object): void {debug("Error: " + JSON.encode(error)); }});	  	 
 			UploadBytes = new ByteArray();
 			var imgurlLoader:URLLoader = new URLLoader;
 			imgurlLoader.addEventListener(Event.COMPLETE, function(e:Event):void {
