@@ -623,7 +623,7 @@ function vkInitSettings(){
     ],
 
     Messages:[
-     {id:19, text:IDL("seQAns")},
+     //{id:19, text:IDL("seQAns")},
 	  {id:28, text:'<table><tr><td> <table><tr><td width=20 height=20 id="spct10" bgcolor=' + getMsgColor() + '></td></tr></table> <td>'+
       '<span class="cltool"><a onclick="init_colorpicker(this.parentNode,MsgCol_click,\'' + getMsgColor() + '\')">'+IDL("seHLMail")+'</a></span>'+
       '</td></tr></table>'},
@@ -638,7 +638,7 @@ function vkInitSettings(){
     vkInterface:[
       {id:21, text:IDL("seADRem")+vkCheckboxSetting(44,IDL("seAdNotHideSugFr"),true)},
       {id:12, text:IDL("seMenu")+'<br><a href="#" onclick="toggle(\'vkMenuCFG\'); return false;">[<b> '+IDL("Settings")+' </b>]</a><span id="vkMenuCFG" style="display:none">'+vkCheckboxSetting(80,IDL("seMenuToRight"),true)+'<div id="vkMenuCustom">'+vk_menu.custom_settings()+'</div></span>'},
-      {id:20, text:IDL("seAutoUpdMenu"),info:'infoUseNetTrafic'},
+      //{id:20, text:IDL("seAutoUpdMenu"),info:'infoUseNetTrafic'},
       {id:14, text:IDL("seLoadFrCats")},  
       {id:15, header:IDL("seLMenuH") , text:IDL("seLMenuO"),ops:[0,1,2]},
       {id:29, text:IDL("seLMenuWallLink")},
@@ -698,23 +698,10 @@ function vkInitSettings(){
    ]
   };
 
-	//LAST 100
-	/*
-      vkoptSets['advanced']=[
-         'vk_upd_menu_timeout',
-         'vkMenuHideTimeout',
-         'CHECK_FAV_ONLINE_DELAY',
-         'FAVE_ONLINE_BLOCK_SHOW_COUNT',
-         'SHOW_POPUP_PROFILE_DELAY',
-         'USERMENU_SYMBOL',
-         'MOD_PROFILE_BLOCKS',
-         'CUT_VKOPT_BRACKET',
-         'MAIL_BLOCK_UNREAD_REQ',
-         'SUPPORT_STEALTH_MOD',
-         'FULL_ENCODE_FILENAME'
-      ];
-   */
-	vkSetsType={
+   //LAST 100
+   //FREE 19,20
+
+   vkSetsType={
       "on"  :[IDL('on'),'y'],
       "off" :[IDL('of'),'n'],
       "ru"  :[IDL('ru'),'y'],

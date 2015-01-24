@@ -899,7 +899,6 @@ function vkMenu(){//vkExLeftMenu
   var cfg=getSet(15);
   var MFR_CFG=13; //mod my friends
   var LOAD_FR_CATS_CFG=14; //load friends categories in ext menu
-  var UNREADMSG_CFG=19;//unread msg in ex menu
   var WALL_LINK = (getSet(29)=='y');
   var exm=(getSet(12) == 'y'); //extended menu
   var nav=(ge('sideBar') || ge('side_bar')).getElementsByTagName('ol')[0];
@@ -1101,7 +1100,6 @@ function vkMenu(){//vkExLeftMenu
       ['notes?act=comments',IDL("mNoC")]
 	],	
     'vkopt':[
-         [["#","UpdateCounters(); return false;"],IDL("updateLMenu")],
          ["http://vkopt.net/",'<b>VkOpt Forum</b>']
     ]
   };
@@ -1318,7 +1316,6 @@ function vkMenu(){//vkExLeftMenu
   div.id='vkstatus';
   nav.appendChild(div);
   /* Call others functions */ 
-  if (getSet(UNREADMSG_CFG)=='y') UpdateCounters(true);
   if (getSet(LOAD_FR_CATS_CFG)=='y') vkFrCat2Menu();
   
   /* Calc menu generation time */
@@ -1326,129 +1323,6 @@ function vkMenu(){//vkExLeftMenu
   vklog('Menu creating time:' + tend +'ms');
   return tend;
 }
-
-function vkCheckNewMessages(data){
-	var unread_in_exmenu=getSet(19);
-	var make_list=function(msg_list){
-		var sort_msg=function(a, b){
-		  if(a[0]>b[0]) return -1; 
-		  if(a[0]<b[0]) return 1; 
-		  return 0
-		};
-		msg_list.sort(sort_msg);
-			
-		var mel=ge('vkm_mail') || ge('vkm_im');
-		var p=ge('vk_msg_list');
-		if (mel){ 
-			if (!p) mel.innerHTML+='<li id="vk_msg_list"></li>';
-			p=ge('vk_msg_list');
-			var html='';
-			for (var i=0;i<msg_list.length;i++)
-				html+='<a class="left_row" href="/mail?act=show&id='+msg_list[i][0]+'" onclick="return nav.go(this, event);"><span class="left_label inl_bl">-- '+msg_list[i][1]+'</span></a>';
-			p.innerHTML=html;
-		}
-	};
-	if (data.messages.count && unread_in_exmenu=='y'){
-		var ms=data.messages.items;
-		var msg_list=[];
-		for (var key in ms) msg_list.push([parseInt(key),ms[key]]);
-		make_list(msg_list);
-	} else if (data.messages.count==0){
-		var p=ge('vk_msg_list');
-		if (p) p.innerHTML='';
-	}
-}
-
-var vk_updmenu_timeout=0;
-var VK_MENU_LAST_HIGHLIGHT=[];
-
-
-
-function UpdateCounters(only_msg,data){	
-	var AUTO_UPD_MENU=20; //cfg bit id
-	clearTimeout(vk_updmenu_timeout);
-	var menu_vars = { 
-		"friends": 	{i:0, id:'fr',lnk:'friends',add:null},
-		"photos": 	{i:1, id:'ph',lnk:'albums' + vk.id,add:'act=added'},
-		"videos": 	{i:2, id:'vid',lnk:'video',add:'section=tagged'},	
-		"messages": {i:3, id:'msg',lnk:'mail',add:null},
-		"groups": 	{i:5, id:'gr',lnk:'groups',add:'tab=inv'}	
-		
-		/*OLDEST INACTIVE* /
-      "notes": 	{i:4, id:'nts',lnk:'notes',add:'act=comments'},
-      "events": 	{i:6, id:'ev',lnk:'events',add:'tab=inv'},
-		"gifts": 	{id:'wsh',lnk:'gifts.php?act=wishlist',add:null},
-		"offers": 	{id:'mat',lnk:'matches.php',add:null},   
-		"opinions": {id:'op',lnk:'opinions.php',add:null},
-		"questions":{id:'ques',lnk:'questions.php',add:null}*/
-	};
-	var HL=[];
-	if (!window.VK_LAST_COUNTERS) {
-		//ol=sideBarMenu();
-		var cnt=[0,0,0,0,0,0,0];
-		if (!only_msg){
-			for (var key in menu_vars){
-            var e=menu_vars[key];
-            var el=ge('l_'+e.id);
-            if (!el) return;
-            var v = (geByClass1('left_count', el.firstChild, 'span') || geByTag1('span', el.firstChild)).innerHTML.match(/\d+/);
-				console.log(v);
-            v=v?v:0;
-				cnt[e.i]=v;
-			}
-			window.VK_LAST_COUNTERS=cnt.join('-');
-		}
-	}
-	//javascript: vkCmd('menu_counters','{"friends":{"count":3041},"messages":{"count":0},"events":{"count":0},"groups":{"count":1153},"photos":{"count":0},"videos":{"count":100},"notes":{"count":0},"opinions":{"count":0},"offers":{"count":0},"questions":{"count":0},"gifts":{"count":0}}');
-	var onupdate = function(r,t){
-		if (t.indexOf('messages')!=-1){
-			if (r) vkCmd('menu_counters',t);
-			var c=eval('('+t+')');
-			var cnt=[0,0,0,0,0,0,0];
-			for (var key in c)
-				if (menu_vars[key]) cnt[menu_vars[key].i]=c[key].count; 
-				
-			vkCheckNewMessages(c);		
-			
-			if (only_msg) return;
-			if (VK_LAST_COUNTERS!=cnt.join('-')){
-				//if (VK_LAST_COUNTERS!=t)
-				var old=VK_LAST_COUNTERS.split('-');
-				for (var key in menu_vars){
-					var e = ge('l_' + menu_vars[key].id);
-					var v=c[key].count;
-               if (window.handlePageCount){
-                  handlePageCount(menu_vars[key].id, v,menu_vars[key].lnk,menu_vars[key].add);
-               } else {
-                  var toAdd = (v && menu_vars[key].add) ? ('?' + menu_vars[key].add) : '';
-                  geByTag1('span', e.firstChild).innerHTML = v ? ('(<b>' + v + '</b>)') : '';
-                  e.firstChild.href = '/' + menu_vars[key].lnk + toAdd;
-                  e.firstChild.onclick = function (ev) { return nav.go(this, ev);}; 
-                  if (parseInt(old[menu_vars[key].i])!=v) {
-                     HL.push(e.firstChild);
-                     //vkMenuHighlightEl(e.firstChild);
-                  }
-               }
-					
-				}
-				VK_LAST_COUNTERS=cnt.join('-');
-				VK_MENU_LAST_HIGHLIGHT=HL;
-				//vkHighlightCounters();
-				vklog('Menu counters are updated');
-			}
-		}
-		//vkCmd('menu_counters',res.response[0].online);
-		//vkGenDelay(vk_upd_menu_timeout,r)
-
-		if (getSet(AUTO_UPD_MENU) == 'y') vk_updmenu_timeout=setTimeout("UpdateCounters();",vkGenDelay(vk_upd_menu_timeout,r));	
-	};
-	if (data){
-		onupdate(null,data);
-	} else {
-		AjGet('feed2.php?mask=m'+vkRand(),onupdate);
-	}
-}
-
 
 function vkMoneyBoxAddHide(){
 	var mb=ge('left_money_box');

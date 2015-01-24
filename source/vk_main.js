@@ -115,7 +115,6 @@ function vkOnStorage(id,cmd){
 	//vklog('id: '+id+'\n\n'+JSON.stringify(cmd));
 	switch(id){
 		case 'user_online_status': UserOnlineStatus(cmd); break;
-		case 'menu_counters':UpdateCounters(false,cmd); break;
 		case 'upd_sounds':vkUpdateSounds(true); break;
       case 'fav_users_statuses':vkFavOnlineChecker(cmd); break;
       case 'fave_users_statuses':vkFaveOnlineChecker(cmd); break;
@@ -284,7 +283,6 @@ function VkOptMainInit(){
   vk_wall.process_node();
   if (getSet(34)=='y' && !window.setkev){ InpTexSetEvents(); setkev=true;}
   if (getSet(27)=='y') vkGetCalendar();
-  if (getSet(20) == 'y') vk_updmenu_timeout=setTimeout("UpdateCounters();",vk_upd_menu_timeout);
   if (getSet(16) == 'y') UserOnlineStatus();
   vkFavOnlineChecker();
   vkFaveOnlineChecker();
