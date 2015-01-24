@@ -10,8 +10,8 @@
 // (c) All Rights Reserved. VkOpt.
 //
 /* VERSION INFO */
-var vVersion	= 223;
-var vBuild = 141010;
+var vVersion	= 230;
+var vBuild = 150125;
 var vPostfix = ' ';
 if (!window.vk_DEBUG) var vk_DEBUG=false;
 /* EXT CONFIG */
@@ -88,7 +88,7 @@ var VKOPT_CFG_LIST=[
          'SHOW_OID_IN_TITLES'
 ];
 
-var vkNewSettings=[94,95,96,97]; //"new" label on settings item
+var vkNewSettings=[98,99,100,79]; //"new" label on settings item
 var SetsOnLocalStore={
   'vkOVer':'c',
   'remixbit':'c',
