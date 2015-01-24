@@ -2213,7 +2213,6 @@ var _vk_vid_add_box=null;
 
 vk_videos = {
    css:function(){
-      var full_titles=(getSet(76)=='y');
       var code='\
       .vk_vid_acts_panel{  position:absolute; z-index:20; padding:5px;max-width:288px; border-radius:0 0 6px 0; background:rgba(0,0,0,0.5);  }\
       .video_compact_view .video_can_edit .vk_vid_acts_panel{ max-width:230px;}\
@@ -2234,10 +2233,6 @@ vk_videos = {
       #vk_more_acts .idd_item a{padding: 3px 0;}\
       #vk_more_acts .idd_item:hover{background-color:rgba(0, 51, 102, 0.117);}\
       ';
-      if (full_titles)  code+='\
-      .video_album_text { height: auto !important; white-space: normal !important;}\
-      .video_raw_info_name, .video_row_info_line {height: auto !important; white-space: normal !important;}\
-      .video_row_info_line{bottom:0px !important;}';
       
       code+='\
          .vid_filt_link{display:inline-block; min-width:350px;}\
