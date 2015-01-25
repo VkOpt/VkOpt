@@ -3613,21 +3613,28 @@ function vk_tag_api(section,url,app_id){
          //api4dislike.call('likes.getList',{type:'sitepage', page_url:url,owner_id:t.app},console.log)
       },
       get_tags:function(obj_ids,callback){
-         var code = '';
          var tmp=[];
          for (var i=0; i<obj_ids.length; i++){
             var like_obj=t.parse_id(obj_ids[i]);
             var url=t.page_url+t.section+'/'+like_obj;
-            code += 'var likes'+obj_ids[i]+' = API.likes.getList({type:"sitepage",page_url:"'+url+'",owner_id:"'+t.app+'",count:1,offset:0}); ';
-            tmp.push('"'+obj_ids[i]+'":{count:likes'+obj_ids[i]+'.count, my:likes'+obj_ids[i]+'.users[0]=='+vk.id+'}');
+            tmp.push('"'+obj_ids[i]+'": API.likes.getList({type:"sitepage",page_url:"'+url+'",owner_id:"'+t.app+'",count:1,offset:0}) ');
          }
-         code += 'return {'+tmp.join(',')+'};';
+         var code = 'return {'+tmp.join(',')+'};';
          var retry_count=0;
          var get=function(){
             //api_for_dislikes
             api4dislike.call('execute',{code:code},{
                   ok:function(r){
-                     if (callback) callback(r.response);
+                     var raw = r.response;
+                     var data = {};
+                     for (var key in raw){
+                        if (!raw[key]) continue;
+                        data[key] = {
+                           count: raw[key].count,
+                           my: raw[key].users[0]==vk.id
+                        };
+                     }
+                     if (callback) callback(data);
                   },
                   error:function(r,err){
                      console.log('api marks error',obj_ids,err);
