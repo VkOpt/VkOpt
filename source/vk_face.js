@@ -1754,8 +1754,8 @@ function FindAndProcessTextNodes(node,func){
     }
 }          
 function SmileNode(mainNode,childItem){
-    var node = mainNode.childNodes[childItem];
-    for (var key in SmilesMap){ 
+   var node = mainNode.childNodes[childItem];
+   for (var key in SmilesMap){
       var regex=(SmilesMap[key][0])?SmilesMap[key][0]:SmilesMap[key];
       //new_regex= new RegExp("(\\s|^)("+regex.source+")([\\s\\.,]|$)", (regex.ignoreCase?'i':''));
       
@@ -1775,27 +1775,27 @@ function SmileNode(mainNode,childItem){
          searchWord=false;
       if (searchWord){   
          var startIndex = node.nodeValue.indexOf(searchWord)+f.length;
+         var endIndex = searchWord.length-f.length-l.length;
          if(startIndex!=-1){
-          
-          
-         // var smilepath=(SmilesMap[key][0])?SmilesMap[key][1]:'icq';
-          
-          var smile = mainNode.ownerDocument.createElement('img');
-          smile.setAttribute('style',"margin-bottom:-0.3em; border:0px;");
-          //smile.src='http://kolobok.us/smiles/'+smilepath+'/'+key+'.gif';
-          smile.src=vkSmilesLinks[key];//'http://vkoptcss.narod.ru/smiles/'+key+'.gif';
-          smile.setAttribute("onclick","RemoveSmile(this);");
-          smile.alt=val;
-          smile.title=val;
- 
-          mainNode.replaceChild(smile,mainNode.childNodes[childItem+1]);
-          //childItem = childItem*1+2;
-          if(mainNode.childNodes[childItem] && regex.test(mainNode.childNodes[childItem].nodeValue)){
-              childItem = SmileNode(mainNode,childItem);
-          }
+            var secondNode = node.splitText(startIndex); 
+            secondNode.splitText(endIndex);
+
+             var smile = mainNode.ownerDocument.createElement('img');
+             smile.setAttribute('style',"margin-bottom:-0.3em; border:0px;");
+             //smile.src='http://kolobok.us/smiles/'+smilepath+'/'+key+'.gif';
+             smile.src=vkSmilesLinks[key];
+             smile.setAttribute("onclick","RemoveSmile(this);");
+             smile.alt=val;
+             smile.title=val;
+    
+             mainNode.replaceChild(smile,mainNode.childNodes[childItem+1]);
+             //childItem = childItem*1+2;
+             if(mainNode.childNodes[childItem] && regex.test(mainNode.childNodes[childItem].nodeValue)){
+                 childItem = SmileNode(mainNode,childItem);
+             }
+         }
       }
-    }
-  }
+   }
   return childItem;
 }
 /* END OF SMILES */
