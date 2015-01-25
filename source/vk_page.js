@@ -633,7 +633,7 @@ function vkPostSubscribeBtn(node) {      // Добавление кнопки "�
         // Признак "Ответить" - в onclick будет Wall.likeShareCustom
         if ((parentContainer = geByClass('post_full_like', els[i])[0]) &&
             (!(reply_link = geByClass('reply_link', els[i], 'a')[0]) ||
-             reply_link.onclick.toString().indexOf('likeShareCustom') == -1)) {
+             (reply_link.onclick || "").toString().indexOf('likeShareCustom') == -1)) {
                 var id = parentContainer.innerHTML.match(/(-?\d+)_(\d+)'/);    // id владельца и записи, для которой создается кнопка
                 if (id != null)
                     parentContainer.appendChild(vkCe('div', {
