@@ -3919,12 +3919,25 @@ function vk_tag_api(section,url,app_id){
       get_dislike_element:function(obj_id,count, my_dislike){
            //if (obj_id=='wiki')
            // this.getAttribute(\'dislike_id\') - да-да... я не знаком с data- атрибутами
+           
+           var wrap;
+           switch(obj_id){
+              case 'video':
+                wrap = ['<div class="fl_l"><button class="clear_fix flat_button post_dislike"','</button><div class="mv_rtl_divider fl_l" style=""></div></div>'];
+                break;
+              case 'wiki':
+                wrap = ['<a class="wl_post_action_link fl_l post_dislike" href="#"','</a>'];
+                break;
+              default:
+                wrap = ['<div class="post_dislike fl_r"','</div>'];
+           }
+
            return se(
-              (obj_id=='wiki'?'<div class="button_gray fl_l"><button':'<div')+' dislike_id="'+obj_id+'" class="post_dislike fl_r" onclick="vk_dislike.dislike(this.getAttribute(\'dislike_id\'));" onmouseover="vk_dislike.dislike_over(this.getAttribute(\'dislike_id\'));" id="post_dislike'+obj_id+'">\
+              wrap[0]+' dislike_id="'+obj_id+'" onclick="vk_dislike.dislike(this.getAttribute(\'dislike_id\')); return false;" onmouseover="vk_dislike.dislike_over(this.getAttribute(\'dislike_id\'));" id="post_dislike'+obj_id+'">\
                 <span class="post_dislike_link fl_l" id="dislike_link'+obj_id+'">'+IDL('dislike')+'</span>\
                 <i class="post_dislike_icon no_dislikes fl_l'+(my_dislike?' my_dislike':'')+'" id="dislike_icon'+obj_id+'"></i>\
                 <span class="post_dislike_count fl_l" id="dislike_count'+obj_id+'">'+(count|| '')+'</span>\
-              '+(obj_id=='wiki'?'</button></div>':'</div>')
+              '+wrap[1]
            );
       },
       types:{ // getting like_id from scripts
@@ -3991,10 +4004,10 @@ function vk_tag_api(section,url,app_id){
                   el.parentNode.insertBefore(dislike,el);
                   break;
                case 'wiki':
+               case 'video':
                   insertAfter(dislike,el); 
                   break;
                case 'photo':
-               case 'video':
                   el.parentNode.insertBefore(dislike,el);
                   break;                  
                default:
@@ -4034,6 +4047,8 @@ function vk_tag_api(section,url,app_id){
             add(ge('pv_like_wrap'),'photo');
          if (node.innerHTML.indexOf('mv_like_wrap')>-1 && ge('mv_like_wrap'))
             add(ge('mv_like_wrap'),'video');
+         if (node.innerHTML.indexOf('mv_like_count')>-1 && ge('mv_like_count'))
+            add(ge('mv_like_count').parentNode.parentNode,'video');
          
          if (obj_ids.length>0)
             dk.get_dislikes(obj_ids);
@@ -4350,20 +4365,28 @@ function vk_tag_api(section,url,app_id){
          #mv_comments .mv_comment .post_dislike{float:right; margin: 4px 1px 0px; padding: 0px 6px;}\
          #mv_comments .mv_comment .post_dislike:hover{background:transparent;}\
          #mv_wide .mv_comment .post_dislike_link{display:none;}\
-         .mv_comment .no_dislikes.post_dislike_icon{opacity:0;}\
-         .mv_comment:hover .no_dislikes.post_dislike_icon{opacity:0.4;}\
-         .mv_comment .like_link{display:none !important;}\
+         #mv_comments .mv_comment .no_dislikes.post_dislike_icon{opacity:0;}\
+         #mv_comments .mv_comment:hover .no_dislikes.post_dislike_icon{opacity:0.4;}\
+         #mv_comments .mv_comment:hover .no_dislikes.post_dislike_icon:hover{opacity:0.9;}\
+         #mv_comments .mv_comment .my_dislike.post_dislike_icon{opacity:1;}\
+         #mv_comments .mv_comment .like_link{display:none !important;}\
          .review_comment .post_dislike{margin: 0px 1px 0px !important; padding: 0px 6px !important;}\
          .review_comment .post_dislike:hover{background:transparent;}\
          .review_comment .post_dislike:hover .post_dislike_icon{opacity:0.9;}\
          \
          #mv_wide .post_dislike_link {display:inline; font-size:11px; opacity:1; color: #2F5879; }\
-         #mv_controls_line .post_dislike .post_dislike_icon, #mv_controls_line .post_dislike_link, #mv_controls_line .post_dislike_count  { opacity:0.4;}\
+         \
+         #mv_controls .post_dislike .post_dislike_icon, #mv_controls_line .post_dislike_link, #mv_controls_line .post_dislike_count  { opacity:0.4;}\
          #mv_controls_line .post_dislike:hover .post_dislike_icon, #mv_controls_line .post_dislike:hover .post_dislike_link, #mv_controls_line .post_dislike:hover .post_dislike_count { opacity:1;}\
          #mv_controls_line .post_dislike .my_dislike.post_dislike_icon{opacity:0.9;}\
          #mv_controls_line .post_dislike{float:left; padding: 1px 6px; background:transparent;}\
          #mv_controls_line .post_dislike_link, #mv_controls_line .post_dislike_count {display:inline; font-size:11px; color: #FFF; }\
          #mv_controls_line .post_dislike_icon{ background-position:1px -11px;}\
+         \
+         #mv_controls .mv_info_panel .post_dislike{margin-top:0px; padding: 6px 7px;}\
+         #mv_controls .mv_info_panel .post_dislike:hover .post_dislike_icon{opacity:0.9;}\
+         #mv_controls .mv_info_panel .post_dislike .my_dislike.post_dislike_icon{opacity:1;}\
+         #mv_controls .mv_info_panel .post_dislike:hover {background-color:rgba(0, 39, 95, 0.125);}\
          \
          #bt_rows .bp_post .post_dislike{float:right; margin: 0px 1px; padding: 0px 1px;}\
          #bt_rows .bp_post .post_dislike:hover{background:transparent;}\

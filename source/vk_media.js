@@ -2247,7 +2247,7 @@ vk_videos = {
    },
    inj_videoview:function(){
       window.vk_vid_down && vk_vid_down.inj_vidview();
-      Inj.End('videoview.showVideo','vkProcessNode(mvcur.mvWide);');
+      Inj.End('videoview.showVideo','vkProcessNode(mvcur.mvControls);');
       if (getSet(71)=='y') 
          Inj.Before('Videoview.commentTo','if (!v', 'vk_phviewer.reply_to(comm, toId, event, rf,v,replyName); if(false)' );
       if (getSet(92)=='y') Inj.Start('Videoview.hide','if (!mvcur.minimized) force=true;');
