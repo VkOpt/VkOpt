@@ -228,8 +228,9 @@ function GetUserMenuSett() {
                      IDL("clAddFr"), 
                      IDL("clAddToFav"), 
                      IDL("addblack"),
-                     IDL("SendAbuse")
+                     IDL("SendAbuse"),
                      //IDL("AddToSubscribtions")
+                     IDL("FavAddUser")
                     ];
     
     var res="";
