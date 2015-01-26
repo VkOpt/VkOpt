@@ -5612,9 +5612,11 @@ vk_vid_down={
          if (!vid) return;
          if (!p){
             //<div style="right:auto; bottom:auto; "></div>
-            p=geByClass('info',el)[1] || geByClass('info',el)[0];
+            if (geByClass('post_video_title',el)[0]) return;
+            p = geByClass('info',el)[1] || geByClass('info',el)[0];
             var div=vkCe('div',{"class":"vk_vid_download_t"},'<span class="fl_l"><a href="#" onclick="vk_vid_down.vkVidLoadLinks('+vid[1]+','+vid[2]+',this.parentNode'+(vid[3]?", '"+vid[3]+"','"+type+"'":'')+'); cancelEvent(event); return false;">'+IDL('download')+'</a></span>');         
             if (p) p.appendChild(div);
+            
             /*
             if (geByClass('video_results',node)[0])      
                p.appendChild(vkCe('small',{'class':'fl_r '+(!window.vk_vid_list_adder?'vk_vid_add_hidden':'vk_vid_add_visible')},
@@ -5628,7 +5630,7 @@ vk_vid_down={
       };
       var add_link_to_thumb=function(el){
          var v_el=geByClass('video_row_relative',el)[0];
-         if (!v_el) v_el =geByTag('a', el)[0];
+         if (!v_el) v_el = geByTag('a', el)[0];
          //if (!v_el && el.href) v_el=el;
          if (!v_el) return;
          var h=v_el.href;
@@ -5673,10 +5675,10 @@ vk_vid_down={
       for (var i=0; i<els.length; i++) add_link_to_thumb(els[i]); 
       
       
-      /*
-      els=geByClass('page_post_video_duration',node);
-      for (var i=0; i<els.length; i++) add_link_to_thumb(els[i].parentNode,'page_post_video_duration');
-      */
+      
+      els=geByClass('page_post_video_play_inline',node);
+      for (var i=0; i<els.length; i++) add_link_to_thumb(els[i].parentNode.parentNode,'page_post_video_play_inline');
+      
    },
    vkVidLoadLinks: function(oid,vid,el,yid,type){
        var smartlink=true;//(getSet(1) == 'y')?true:false;
