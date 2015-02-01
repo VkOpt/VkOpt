@@ -5430,9 +5430,13 @@ vk_vid_down={
       aid = parseInt(aid) || 0;
       quality = quality!=null ? quality : 3;
       var load=function(cback){
-         ajax.post('al_video.php', {act: 'load_videos_silent', oid: oid, offset: 0, section:'all'}, { // please_dont_ddos:2
+         var section = 'all'
+         if (aid>0)
+            section = 'album_'+aid;
+         
+         ajax.post('al_video.php', {act: 'load_videos_silent', oid: oid, offset: 0, section:section}, { // please_dont_ddos:2
             onDone: function(_list) {
-               var list = eval('('+_list+')')['all']['list'];
+               var list = eval('('+_list+')')[section]['list'];
                cback(list);
             }
          });
@@ -5442,8 +5446,7 @@ vk_vid_down={
          var album_list=[];
          var cur_offset=0;
          var scan=function(){
-            var params={aid:aid,count:200,offset:cur_offset};
-            params[oid>0?'uid':'gid']=Math.abs(oid);
+            var params={aid:aid,count:200,offset:cur_offset, owner_id:oid};
             dApi.call('video.get',params,function(r){
                var data=r.response;
                if (data.length>1){
@@ -5505,6 +5508,7 @@ vk_vid_down={
       var process=function(vids){
          //console.log('aid:',aid,'  oid:',oid,' quality:',quality/*,' vids:',vids*/);  
          var result=[];
+         /* фильтрация по альбому. устаревший код.
          if (aid>0){ 
             for (var i=0; i<vids.length; i++){
                //console.log(vids[i][6]);
@@ -5512,6 +5516,7 @@ vk_vid_down={
                   result.push(vids[i]);
             }
          } else 
+         */
             result=vids; 
          
          //console.log('List:',result);  
