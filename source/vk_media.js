@@ -1452,9 +1452,13 @@ function vkGetPageWithPhotos(oid,aid){
 		else {
 			vkImgsList='<div style="background:#FFB; border:1px solid #AA0;  margin:20px; padding:20px;">'+IDL('HtmlPageSaveHelp')+'</div>'+vkImgsList;
          //vkImgsList=vkImgsList.replace(/#/g,'%23');
-			var html='<h4><a href="#" onclick="vkWnd(vkImgsList,\''+document.title.replace(/['"]+/g,"")+'\'); return false;">'+IDL('ClickForShowPage')+'</a></h4>';
+			var html='<h4><a href="#" id="vkGetPageWithPhotos">'+IDL('ClickForShowPage')+'</a></h4>';
 		}
 		box.content(html).show();
+        if (vkImgsList.length)
+            ge('vkGetPageWithPhotos').onclick = function () {
+                vkWnd(vkImgsList, document.title.replace(/['"]+/g, ""));
+            };
     },function(c,f){
 		if (!f) f=1;
 		ge('ph_ldr_progress').innerHTML=vkProgressBar(c,f,310);
@@ -1880,7 +1884,7 @@ getGidUid(u,function(userid,groupid){
        }
        html+='</table>';
        html='<div style="padding:0px; border:1px solid #808080;" id="photos_container"><b><u><span id="vkusername'+uid+'"><a href="/id'+uid+'">'+users[uid]+'</a></span></u></b> '+
-                '<a id="ban'+uid+'" style="cursor: hand;" onClick="javascript:vkBanUser(\''+uid+'\',\''+oid.match(/\d+/)[0]+'\')">[ '+IDL('banit')+' ]</a>'+
+                '<a id="ban'+uid+'" style="cursor: hand;" onClick="vkBanUser(\''+uid+'\',\''+oid.match(/\d+/)[0]+'\')">[ '+IDL('banit')+' ]</a>'+
                 '<a id="delBtn'+uid+'" style="cursor: hand;" onClick="ge(\'vkDelUBox'+uid+'\').innerHTML=vkSubmDelPhotosBox('+del_list.length+',\''+del_list.join(',')+'\',\''+uid+'\'); return false;">'+IDL('paDelAllUserPhotos')+'</a>'+
                 '<a id="delchecked" style="cursor: hand;" onClick="vkRunDelCheckedPhotosList(); return false;">'+IDL('paDelChecked')+'</a>'+
                 ':<br>'+'<div id="vkDelUBox'+uid+'"></div>'+html;
@@ -2136,7 +2140,7 @@ function vkAlbumCheckDublicatUser(){//oid,aid
         html+='</table>';
         //.replace(/^0+/,"")
         html='<div style="padding:0px; border:1px solid #808080;"><b><u><span style="padding:5px;" id="vkusername'+uid+'"><a href="/id'+uid+'">'+users[uid]+'</a> ('+uids[uid].ph.length+')</span></u></b>'+
-             '<a id="ban'+uid+'" style="cursor: hand;" onClick="javascript:vkBanUser(\''+uid+'\',\''+oid.match(/\d+/)[0]+'\'); return false;">[ '+IDL('banit')+' ]</a>'+
+             '<a id="ban'+uid+'" style="cursor: hand;" onClick="vkBanUser(\''+uid+'\',\''+oid.match(/\d+/)[0]+'\'); return false;">[ '+IDL('banit')+' ]</a>'+
              '<a id="delBtn'+uid+'" style="cursor: hand;" onClick="ge(\'vkDelUBox'+uid+'\').innerHTML=vkSubmDelPhotosBox('+del_list.length+',\''+del_list.join(',')+'\',\''+uid+'\'); return false;">'+IDL('paDelAllUserPhotos')+'</a>'+
              ':<br>'+
              '<div id="vkDelUBox'+uid+'"></div>'+html;//vkSubmDelPhotosBox(del_list.length,del_list.join(','));
