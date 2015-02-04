@@ -59,6 +59,7 @@ var AUDIO_INFO_SHOW_BITRATE=true;
 var AUDIO_DOWNLOAD_POSTFIX=false;
 var FEEDFILTER_DEBUG=false;
 var SHOW_OID_IN_TITLES=false;
+var ENABLE_HOTFIX=true;
 
 
 var VKOPT_CFG_LIST=[
@@ -86,6 +87,7 @@ var VKOPT_CFG_LIST=[
          'AUDIO_DOWNLOAD_POSTFIX',
          'FEEDFILTER_DEBUG',
          'SHOW_OID_IN_TITLES'
+         , 'ENABLE_HOTFIX'
 ];
 
 var vkNewSettings=[98,99,100,79]; //"new" label on settings item
