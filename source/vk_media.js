@@ -5315,7 +5315,7 @@ vk_vid_down={
        // /video.php?act=a_flash_vars&vid=39226536_159441582
        ////
       var smartlink=(getSet(1) == 'y');
-      var vidname=winToUtf(mvcur.mvData.title).replace(/\?/g,'%3F').replace(/\&/g,'%26');
+      var vidname=winToUtf(mvcur.mvData.title).replace(/\?/g,'%3F').replace(/&/g,'%26');
       vidname=vkCleanFileName(vidname);
       var vname=vidname;
       vidname=vkDownloadPostfix()+'&/'+vkEncodeFileName(vidname);

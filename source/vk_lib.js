@@ -463,7 +463,7 @@ var vkMozExtension = {
       return s;
    }
    
-   function vkCleanFileName(s){   return trim(s.replace(/[\\\/\:\*\?\"\<\>\|]/g,'_').replace(/\u2013/g,'-').replace(/&#\d+;/g,'_').replace(/\s\s/g,'').substr(0,200));   }
+   function vkCleanFileName(s){   return trim(s.replace(/[\\\/:\*\?"<>\|]/g,'_').replace(/\u2013/g,'-').replace(/&#\d+;/g,'_').replace(/\s\s/g,'').substr(0,200));   }
    function vkEncodeFileName(s){
       try {
          if (FULL_ENCODE_FILENAME || vkbrowser.chrome)
