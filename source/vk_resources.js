@@ -26,7 +26,7 @@ if (!window.Sound2){
    var test_audio = function() {
       var info = null;
       try {
-         if ( info = !!audioObj.canPlayType ) {
+         if (!!audioObj.canPlayType ) {
             info = {};
             info.ogg = audioObj.canPlayType('audio/ogg; codecs="vorbis"');
             info.mp3 = audioObj.canPlayType('audio/mpeg;');
