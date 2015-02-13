@@ -593,6 +593,7 @@ function vkInitSettings(){
       {id:4,  text:IDL("seMoreDarkViewer")},      
       {id:7,  text:IDL("seScroolPhoto")},
       {id:93, text:IDL("seAlbumPhotosExInfo"),info:'infoUseNetTrafic'}
+      , {id:101, text:IDL("seUseHtml5ForVideo"),info:'infoOnlyForCompatible'}
     ],
     Users:[
       {id:10, text:IDL("seExUserMenu")+'<br><a href="#" onclick="toggle(\'vkExUMenuCFG\'); return false;">[<b> '+IDL("Settings")+' </b>]</a>'+
@@ -698,7 +699,7 @@ function vkInitSettings(){
    ]
   };
 
-   //LAST 100
+   //LAST 101
    //FREE 19,20,76,
 
    vkSetsType={
