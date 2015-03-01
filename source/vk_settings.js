@@ -797,7 +797,7 @@ vk_settings = {
       var orig={};
       for(var i=0; i<VKOPT_CFG_LIST.length; i++){
          orig[VKOPT_CFG_LIST[i]] = window[VKOPT_CFG_LIST[i]];
-         if (cfg[VKOPT_CFG_LIST[i]]==='' || cfg[VKOPT_CFG_LIST[i]]==null) continue;
+         if (cfg[VKOPT_CFG_LIST[i]]==null) continue;
          window[VKOPT_CFG_LIST[i]] = cfg[VKOPT_CFG_LIST[i]];
       }
       if (!window.VKOPT_CFG_LIST_ORIG) window.VKOPT_CFG_LIST_ORIG=orig;
