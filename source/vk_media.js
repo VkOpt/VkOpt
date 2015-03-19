@@ -168,9 +168,13 @@ var vk_photos = {
                p_options.push({l:IDL('Links'), onClick:function() {
                      vkGetLinksToPhotos(oid,aid);
                }});
-               p_options.push({l:IDL('SaveAlbumAsZip'), onClick:function(item) {
-                     vkGetZipWithPhotos(oid,aid);
-               }});
+               try {
+                   var isFileSaverSupported = !!new Blob;   // проверка возможности браузера сохранять файлы
+               } catch (e) {}
+               if (isFileSaverSupported)    // если возможность есть, выводим ссылку на функцию сохранения альбома в ZIP
+                   p_options.push({l:IDL('SaveAlbumAsZip'), onClick:function(item) {
+                         vkGetZipWithPhotos(oid,aid);
+                   }});
                if (cur.statsPhotoAddHash)
                   p_options.push({l:IDL('Add'), h:'/album'+oid+'_'+aid+'?act=add' /*onClick:function(item) { vkGetLinksToPhotos(oid,aid);}*/
                   });
@@ -1421,10 +1425,16 @@ function vkGetZipWithPhotos(oid, aid) {
     }
     // 2. Подключение библиотеки JSZip
     var FileSaverOnload = function () {
-        if (typeof JSZip != "undefined")
-            JsZipOnload();
+        try {
+            var blobSupported = !!URL.createObjectURL;  // Проверка поддержки Blob для подключения Blob.js в старых браузерах (Opera < 15 и Firefox < 20)
+        } catch (e) {}
+        if (!blobSupported)
+            AjCrossAttachJS('https://raw.githubusercontent.com/eligrey/Blob.js/master/Blob.js', 'BlobJs', FileSaverOnload);
         else
-            AjCrossAttachJS('http://vkopt.net/jszip', 'JsZip', JsZipOnload);
+            if (typeof JSZip != "undefined")
+                JsZipOnload();
+            else
+                AjCrossAttachJS('http://vkopt.net/jszip', 'JsZip', JsZipOnload);
     }
     // 1. Подключение библиотеки FileSaver.js
     if (typeof saveAs != "undefined")
