@@ -1429,7 +1429,7 @@ function vkGetZipWithPhotos(oid, aid) {
             var blobSupported = !!URL.createObjectURL;  // Проверка поддержки Blob для подключения Blob.js в старых браузерах (Opera < 15 и Firefox < 20)
         } catch (e) {}
         if (!blobSupported)
-            AjCrossAttachJS('https://raw.githubusercontent.com/eligrey/Blob.js/master/Blob.js', 'BlobJs', FileSaverOnload);
+            AjCrossAttachJS('http://vkopt.net/blob', 'BlobJs', FileSaverOnload);
         else
             if (typeof JSZip != "undefined")
                 JsZipOnload();
