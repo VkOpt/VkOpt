@@ -2,4 +2,5 @@ builds/chrome/scripts/*
 builds/firefox/scripts/*
 builds/opera.extension/scripts/*
 builds/vkopt.safariextension/scripts/*
+builds/firefoxJetpack/resources/vkopt/data/scripts/*
 !.gitignore

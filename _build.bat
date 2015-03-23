@@ -3,6 +3,7 @@ copy source builds\chrome\scripts\
 copy source builds\firefox\scripts\
 copy source builds\vkopt.safariextension\scripts\
 copy source builds\opera.extension\scripts\
+copy source builds\firefoxJetpack\resources\vkopt\data\scripts\
 
 copy background.js builds\chrome\
 copy background.js builds\firefox\chrome\content\
