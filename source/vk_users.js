@@ -618,7 +618,7 @@ function vkShowProfile(el,html,uid,right){
       top=(top<getScrollTop())?getScrollTop():top;
       
       var left=xy[0] - pb.offsetWidth + 5;
-      if (left<0) left=0;
+      if (left < 0) right = true;
       //alert(getScrollTop()+"\n"+getScrH()+"\n"+height+"\n"+(xy[1]+el.offsetHeight)+"\n"+el.offsetHeight);
       if (right) {
         p.style.left = (xy[0] + el.offsetWidth + 10) + "px";
