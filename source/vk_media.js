@@ -147,10 +147,10 @@ var vk_photos = {
                   vk_photos.albums_links(cur.oid);  // Функция получения ссылок на все фотографии с группировкой по альбомам. (в виде скрипта)
               }});
               stManager.add(['ui_controls.js', 'ui_controls.css'], function () {
-                  cur.vkAlbumMenu = new DropdownMenu(p_options, {
+                  cur.vkAlbumsMenu = new DropdownMenu(p_options, {
                       target: ge('vk_albums_act_menu'),
                       containerClass: 'dd_menu_posts',
-                      updateHeader: false,
+                      updateTarget: false,
                       offsetLeft: -15,
                       showHover: false
                   });
