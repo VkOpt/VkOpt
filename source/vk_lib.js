@@ -1702,11 +1702,39 @@ function vkApiCall(method,params,callback){ // Функция позволяет
 }
 
 vkApis={
-	photos:function(oid,aid,callback){
-		var params={aid:aid};
-		params[oid<0?'gid':'uid']=Math.abs(oid);		
-		dApi.call('photos.get',params,callback);
-	},
+    /* получение всех фотографий из альбома aid владельца oid через API.
+     * callback: function( [{pid, src}, ...] )
+     * progress: function(cur, total)
+     */
+    photos: function (oid, aid, callback, progress) {
+        var result = [];
+        var total = 0;      // Общее количество фотографий
+        var PER_REQ = 1000; // Ограничение Вконтакта (см. https://vk.com/dev/photos.get)
+        var run = function (i) {
+            if (isFunction(progress)) progress(i * PER_REQ, total);
+            var params = {owner_id: oid,
+                          album_id: aid,
+                          offset: i * PER_REQ,
+                          count: PER_REQ,
+                          v: '4.1'};
+            dApi.call('photos.get', params, function (r) {
+                total = r.response[0];
+                for (var j = 1; j < r.response.length; j++)
+                    result.push({pid: r.response[j].pid,
+                          src: r.response[j].src_xxxbig
+                            || r.response[j].src_xxbig
+                            || r.response[j].src_xbig
+                            || r.response[j].src_big
+                            || r.response[j].src
+                            || r.response[j].src_small});
+                if (++i * PER_REQ < total)  //Условие продолжения рекурсии - количество обработанных записей меньше общего количества
+                    run(i);
+                else
+                    callback(result);
+            });
+        }
+        run(0);
+    },
 	photos_hd:function(oid,aid,callback,progress){
 		var listId=(aid=='tag' || aid=='photos') ?  aid+oid : "album"+oid+"_"+aid;
       if (aid==null) listId=oid;
@@ -1763,6 +1791,37 @@ vkApis={
          get();
       },100);
 	},
+
+    /* получение всех фотографий владельца oid с группировкой по альбомам.
+     * callback: function( [{title, list: [{pid, src}, ...]}, ...] )
+     * progress: function(cur, total) для альбомов и фоток внутри них
+     */
+    albums: function (oid, callback, progress_albums, progress_photos) {
+        var result = [];
+        var data;   // здесь будет инфа об альбомах, полученная из API
+        var run = function (i) {
+            if (isFunction(progress_albums)) progress_albums(i, data.length);
+            if (i == data.length)   // условие окончания рекурсии
+                callback(result);
+            else if (data[i].size > 0) {
+                switch (data[i].aid) {  // замена отрицательных айдишников системных альбомов на пригодные к скачиванию.
+                    case -6:    data[i].aid = 'profile'; break;
+                    case -7:    data[i].aid = 'wall'; break;
+                    case -15:   data[i].aid = 'saved'; break;
+                }
+                vkApis.photos(oid, data[i].aid, function (_list) {
+                    result.push({title: data[i].title, list: _list});
+                    run(++i);   // продолжение рекурсии. рекурсия здесь используется для превращения асинхронного цикла в синхронный.
+                }, progress_photos);
+            } else run(++i);
+        };
+
+        dApi.call('photos.getAlbums', {oid: oid, need_system: 1}, function (r) {
+            data = r.response;
+            if (data) run(0);   // запуск рекурсии с первого альбома.
+            else callback(result);
+        });
+    },
    faves:function(callback){
       AjGet('/fave?section=users&al=1',function(r,t){
          var r=t.match(/"faveUsers"\s*:\s*(\[[^\]]+\])/);
