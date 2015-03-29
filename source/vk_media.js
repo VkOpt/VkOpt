@@ -220,7 +220,7 @@ var vk_photos = {
                   cur.vkAlbumMenu = new DropdownMenu(p_options, {
                     target: ge('vk_album_act_menu'),
                     containerClass: 'dd_menu_posts',
-                    updateHeader:false,
+                    updateTarget:false,
                     offsetLeft:-15,
                     showHover:false
                   });
@@ -2995,7 +2995,7 @@ function vkVideoAddOpsBtn(){
             cur.vkAlbumMenu = new DropdownMenu(p_options, {
               target: ge('vk_video_ops'),
               containerClass: 'dd_menu_posts',
-              updateHeader:false,
+              updateTarget:false,
               //offsetLeft:-15,
               showHover:false
             });

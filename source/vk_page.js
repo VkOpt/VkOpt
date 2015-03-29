@@ -1074,7 +1074,7 @@ function vkAddCleanWallLink(){
             cur.vkFullWallMenu = new DropdownMenu(p_options, {
               target: ge('vk_wall_act_menu'),
               containerClass: 'dd_menu_posts',
-              updateHeader:false,
+              updateTarget:false,
               offsetLeft:-15,
               showHover:false
             });
@@ -2714,7 +2714,7 @@ vk_fave = {
             cur.vkAlbumMenu = new DropdownMenu(p_options, {
               target: ge('vk_favph_act_menu'),
               containerClass: 'dd_menu_posts',
-              updateHeader:false,
+              updateTarget:false,
               offsetLeft:-15,
               showHover:false
             });
@@ -2749,7 +2749,7 @@ vk_fave = {
             cur.vkAlbumMenu = new DropdownMenu(p_options, {
               target: ge('vk_favvid_act_menu'),
               containerClass: 'dd_menu_posts',
-              updateHeader:false,
+              updateTarget:false,
               offsetLeft:-15,
               showHover:false
             });
@@ -2786,7 +2786,7 @@ vk_fave = {
             cur.vkAlbumMenu = new DropdownMenu(p_options, {
               target: ge('vk_favpost_act_menu'),
               containerClass: 'dd_menu_posts',
-              updateHeader:false,
+              updateTarget:false,
               offsetLeft:-15,
               showHover:false
             });
