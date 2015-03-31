@@ -6240,6 +6240,8 @@ vk_au_down={
           var search_flag = true;   // флаг для начала цикла с 1, а не с 0, т.к. 0й элемент = кол-во результатов
           var audio_method = 'audio.search';
           params["q"] = cur.searchStr;  // Поисковый запрос
+          if (nav.objLoc.performer)     // Поиск по исполнителю
+              params["performer_only"] = 1;
           params["count"] = 300;        // Максимум аудиозаписей (ограничение ВК)
           if (cur.autoComplete)         // Исправление ошибок. На практике, true при живом поиске и false при обновлении страницы
               params["auto_complete"] = 1;
