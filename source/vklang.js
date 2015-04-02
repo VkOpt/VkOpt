@@ -1601,7 +1601,9 @@ vk_lang_en={//by Hzy
    "NoMoreResults": "No more results",
    "seRules": "Rules:",
    "with_ad": "with ads",
-   'DontRemoveAlbumCover': "Don't remove album cover"
+   'DontRemoveAlbumCover': "Don't remove album cover",
+   "seUseHtml5ForVideo": "Use HTML5 as video player",
+   "infoOnlyForCompatible": "Only <a href=\"//html5test.com/compare/feature/video-h264.html\" target=\"_blank\">H.264-compatible</a> browsers"
 };
  
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
