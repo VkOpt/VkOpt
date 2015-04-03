@@ -16,7 +16,8 @@
    "requirements": {
     "chrome": "chrome", 
     "sdk/page-mod": "sdk/page-mod", 
-    "sdk/self": "sdk/self"
+    "sdk/self": "sdk/self",
+    "sdk/window/utils": "sdk/window/utils"
    }, 
    "sectionName": "lib"
   }

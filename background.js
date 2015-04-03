@@ -66,7 +66,11 @@ var ex_loader = {
             if (window.opera && opera.extension) spath='scripts/'+filename;
             else if (window.chrome && chrome.extension) spath=chrome.extension.getURL('scripts/'+filename);
             else if (window.safari && safari.extension) spath=safari.extension.baseURI+'scripts/'+filename;
-            else if (window.navigator.userAgent.match('Mozilla')) spath='resource://vkopt/'+filename
+            else if (window.navigator.userAgent.match('Mozilla'))
+                if (!Components.classes) // Firefox Jetpack
+                    spath = 'resource://vkopt-at-vkopt-dot-net/vkopt/data/scripts/' + filename;
+                else
+                    spath = 'resource://vkopt/' + filename;
             break;
          case 'beta':
             spath= (ex_loader.beta_path.match(/^https?:\/\//)?'':ex_loader.base_path)+ex_loader.beta_path+filename;
@@ -194,21 +198,25 @@ var ex_loader = {
       },ex_loader.update_time);
    },
    moz_ldr:function(callback){
-      var srv={
-         observe:function(aSubject, aTopic, aData) {
-           switch (aTopic) {
-             case 'document-element-inserted':
-               var doc = aSubject;
-               if (null === doc.location) break;
-               var win = doc.defaultView;
-               callback(doc,win);
-               break;
-           }
-         }
-      };
-      var observerService = Components.classes['@mozilla.org/observer-service;1']
-        .getService(Components.interfaces.nsIObserverService);
-      observerService.addObserver(srv, 'document-element-inserted', false);
+       if (!Components.classes) // Firefox Jetpack
+           callback(document, document.defaultView);
+       else {
+           var srv = {
+               observe: function (aSubject, aTopic, aData) {
+                   switch (aTopic) {
+                       case 'document-element-inserted':
+                           var doc = aSubject;
+                           if (null === doc.location) break;
+                           var win = doc.defaultView;
+                           callback(doc, win);
+                           break;
+                   }
+               }
+           };
+           var observerService = Components.classes['@mozilla.org/observer-service;1']
+               .getService(Components.interfaces.nsIObserverService);
+           observerService.addObserver(srv, 'document-element-inserted', false);
+       }
    },
    is_packed_available:function(){
       if ((window.external && window.external.mxGetRuntime) || ex_loader.online_update){         // MAXTHON
@@ -394,7 +402,7 @@ var ex_loader = {
       //return req.status==200?req.responseText:null;
    },
    get:function(key){
-      if (window.navigator.userAgent.match('Mozilla')  && typeof Components !="undefined"){
+      if (window.navigator.userAgent.match('Mozilla')  && typeof Components.classes !="undefined"){
          var url = ex_loader.moz_strorage_id;
          var ios = Components.classes["@mozilla.org/network/io-service;1"]
                    .getService(Components.interfaces.nsIIOService);
@@ -708,64 +716,67 @@ ext_api={
       return req;
    },*/
    download:function(url, title, win,  fileType, aShouldBypassCache){ // ONLY MOZILLA
-      function getDownloadFile(defaultString, fileType) 
-      {
-          var nsIFilePicker = Components.interfaces.nsIFilePicker;
+       if (!Components.classes) // Firefox Jetpack
+           self.port.emit("download", url, title);
+       else {
+           function getDownloadFile(defaultString, fileType) {
+               var nsIFilePicker = Components.interfaces.nsIFilePicker;
 
-          var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
-          fp.init(window, "Save As", nsIFilePicker.modeSave);
-          try {
-              var urlExt = defaultString.substr(defaultString.lastIndexOf(".")+1, 3);
-              if (urlExt!=fileType) defaultString += "." + fileType
-          }catch(ex){}
+               var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+               fp.init(window, "Save As", nsIFilePicker.modeSave);
+               try {
+                   var urlExt = defaultString.substr(defaultString.lastIndexOf(".") + 1, 3);
+                   if (urlExt != fileType) defaultString += "." + fileType
+               } catch (ex) {
+               }
 
-          fp.defaultString = defaultString;
+               fp.defaultString = defaultString;
 
-          fp.appendFilter(fileType, "*." + fileType);
-          var rv = fp.show();
-          if (rv == nsIFilePicker.returnOK || rv == nsIFilePicker.returnReplace) {
-            var file = fp.file;
-            var path = fp.file.path;
-            return file;
-          }
-          return null;
-      }
+               fp.appendFilter(fileType, "*." + fileType);
+               var rv = fp.show();
+               if (rv == nsIFilePicker.returnOK || rv == nsIFilePicker.returnReplace) {
+                   var file = fp.file;
+                   var path = fp.file.path;
+                   return file;
+               }
+               return null;
+           }
 
-      if (!fileType)
-         fileType=url.substr(url.lastIndexOf(".")+1, 3);
+           if (!fileType)
+               fileType = url.substr(url.lastIndexOf(".") + 1, 3);
 
-      var file = getDownloadFile(title, fileType);
-      var persist = Components.classes['@mozilla.org/embedding/browser/nsWebBrowserPersist;1'].createInstance(Components.interfaces.nsIWebBrowserPersist);  
-      var ios = Components.classes['@mozilla.org/network/io-service;1'].getService(Components.interfaces.nsIIOService);  
-      var uri = ios.newURI(url, null, null); 
+           var file = getDownloadFile(title, fileType);
+           var persist = Components.classes['@mozilla.org/embedding/browser/nsWebBrowserPersist;1'].createInstance(Components.interfaces.nsIWebBrowserPersist);
+           var ios = Components.classes['@mozilla.org/network/io-service;1'].getService(Components.interfaces.nsIIOService);
+           var uri = ios.newURI(url, null, null);
 
-      var fileURL = ios.newFileURI(file);
+           var fileURL = ios.newFileURI(file);
 
-      var persist = makeWebBrowserPersist();
-      const nsIWBP = Components.interfaces.nsIWebBrowserPersist;
-      const flags = nsIWBP.PERSIST_FLAGS_REPLACE_EXISTING_FILES;
-      
-      if (win && "undefined" != typeof(PrivateBrowsingUtils) && PrivateBrowsingUtils.privacyContextFromWindow) {
-         var privacyContext = PrivateBrowsingUtils.privacyContextFromWindow(win);
-         var isPrivate = privacyContext.usePrivateBrowsing;
-      } else {
-         // older than Firefox 19 or couldn't get window.
-         var privacyContext = null;
-         var isPrivate = false;
-      }
-      
-      
-      persist.persistFlags = flags;
-      if (aShouldBypassCache) {
-         persist.persistFlags |= nsIWBP.PERSIST_FLAGS_BYPASS_CACHE;
-      }
-      persist.persistFlags |= nsIWBP.PERSIST_FLAGS_AUTODETECT_APPLY_CONVERSION;
-      persist.persistFlags |= nsIWBP.PERSIST_FLAGS_DONT_CHANGE_FILENAMES
-      var tr = Components.classes["@mozilla.org/transfer;1"].createInstance(Components.interfaces.nsITransfer);
-      tr.init(uri, fileURL, "", null, null, null, persist, isPrivate);
-      persist.progressListener = tr;
-      persist.saveURI(uri, null, null, null, null, fileURL, privacyContext);
-         
+           var persist = makeWebBrowserPersist();
+           const nsIWBP = Components.interfaces.nsIWebBrowserPersist;
+           const flags = nsIWBP.PERSIST_FLAGS_REPLACE_EXISTING_FILES;
+
+           if (win && "undefined" != typeof(PrivateBrowsingUtils) && PrivateBrowsingUtils.privacyContextFromWindow) {
+               var privacyContext = PrivateBrowsingUtils.privacyContextFromWindow(win);
+               var isPrivate = privacyContext.usePrivateBrowsing;
+           } else {
+               // older than Firefox 19 or couldn't get window.
+               var privacyContext = null;
+               var isPrivate = false;
+           }
+
+
+           persist.persistFlags = flags;
+           if (aShouldBypassCache) {
+               persist.persistFlags |= nsIWBP.PERSIST_FLAGS_BYPASS_CACHE;
+           }
+           persist.persistFlags |= nsIWBP.PERSIST_FLAGS_AUTODETECT_APPLY_CONVERSION;
+           persist.persistFlags |= nsIWBP.PERSIST_FLAGS_DONT_CHANGE_FILENAMES
+           var tr = Components.classes["@mozilla.org/transfer;1"].createInstance(Components.interfaces.nsITransfer);
+           tr.init(uri, fileURL, "", null, null, null, persist, isPrivate);
+           persist.progressListener = tr;
+           persist.saveURI(uri, null, null, null, null, fileURL, privacyContext);
+       }
    },
    utils:{
       chrome_init: function(){
