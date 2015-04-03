@@ -57,21 +57,28 @@ var ex_loader = {
    ],
    update_time: 10*60*1000, //update scripts each 4 hours
    moz_strorage_id:"http://vkopt.loader.storage",
-   
+   browsers:{
+      mozilla:(function(){try{return Components.interfaces.nsIObserverService!=null} catch(e){return false}; })(),
+      opera: window.opera && opera.extension,
+      chrome: window.chrome && chrome.extension,
+      safari: window.safari && safari.extension,
+      maxthon: (function(){try{return window.external.mxGetRuntime!=null} catch(e){return false}; })() //without try{}catch it fail script on Firefox
+   },
    get_script_path:function(filename){
       var spath='';
       if (filename.match(/^https?:\/\//)) return filename;
+      var b = ex_loader.browsers;
       switch (ex_loader.type){
          case 'internal': //
-            if (window.opera && opera.extension) spath='scripts/'+filename;
-            else if (window.chrome && chrome.extension) spath=chrome.extension.getURL('scripts/'+filename);
-            else if (window.safari && safari.extension) spath=safari.extension.baseURI+'scripts/'+filename;
-            else if (window.navigator.userAgent.match('Mozilla'))
+            if (b.opera) spath='scripts/'+filename;
+            else if (b.chrome) spath=chrome.extension.getURL('scripts/'+filename);
+            else if (b.safari) spath=safari.extension.baseURI+'scripts/'+filename;
+            else if (b.mozilla) spath='resource://vkopt/'+filename
                 if (!Components.classes) // Firefox Jetpack
                     spath = 'resource://vkopt-at-vkopt-dot-net/vkopt/data/scripts/' + filename;
                 else
                     spath = 'resource://vkopt/' + filename;
-            break;
+             break;
          case 'beta':
             spath= (ex_loader.beta_path.match(/^https?:\/\//)?'':ex_loader.base_path)+ex_loader.beta_path+filename;
             break;
@@ -88,12 +95,15 @@ var ex_loader = {
       
    },
    init:function(){
-      if (ex_loader.type=='internal' && window.external && window.external.mxGetRuntime){         // MAXTHON
+      var b = ex_loader.browsers;   
+      
+      if (ex_loader.type=='internal' && b.maxthon){         // MAXTHON
          ex_loader.type='online';        // Maxthon 4 doesn't support inject scripts from internal resources
       }
       
       ex_loader.init_config();
-      if (window.opera && opera.extension){                                   // OPERA
+      
+      if (b.opera){                                   // OPERA
          opera.extension.onconnect = function(event)  {
             ext_api.ready=true;
             event.source.postMessage({act:'connected'}); 
@@ -114,7 +124,7 @@ var ex_loader = {
             ext_api.message_handler(data,SendResponse);
          };
          
-      } else if (window.chrome && chrome.extension){                          // CHROME
+      } else if (b.chrome){                          // CHROME         
          ext_api.ready=true;
          chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
             // request.url - contain url
@@ -135,7 +145,7 @@ var ex_loader = {
             ext_api.message_handler(request,SendResp);            
             
          });         
-      } else if(window.safari && safari.application){                         // SAFARI
+      } else if(b.safari){                         // SAFARI
          safari.application.addEventListener("message", function(e) {
             // e.message.url - contain url
             if (e.name === "get_scripts"){
@@ -156,7 +166,7 @@ var ex_loader = {
          }, false);
          ext_api.ready=true;
          
-      } else if (window.external && window.external.mxGetRuntime){         // MAXTHON
+      } else if (b.maxthon){         // MAXTHON
             var rt = window.external.mxGetRuntime();            
             rt.listen('get_scripts', function(data){
                ex_loader.get_scripts(data.url,function(files,api_allowed){
@@ -176,7 +186,7 @@ var ex_loader = {
             });     
             ext_api.ready=true;   
             
-      } else if (window.navigator.userAgent.match('Mozilla')){                // MOZILLA 
+      } else if (b.mozilla){                // MOZILLA 
          ex_loader.moz_ldr(function(doc,win){
                var bg={
                   get_scripts:ex_loader.get_scripts,
@@ -775,8 +785,10 @@ ext_api={
            var tr = Components.classes["@mozilla.org/transfer;1"].createInstance(Components.interfaces.nsITransfer);
            tr.init(uri, fileURL, "", null, null, null, persist, isPrivate);
            persist.progressListener = tr;
-           persist.saveURI(uri, null, null, null, null, fileURL, privacyContext);
-       }
+           if (browser.version < 36)
+               persist.saveURI(uri, null, null, null, null, fileURL, privacyContext);
+           else // В новых FF добавлен четвертый параметр aReferrerPolicy
+               persist.saveURI(uri, null, null, null, null, null, fileURL, privacyContext);       }
    },
    utils:{
       chrome_init: function(){

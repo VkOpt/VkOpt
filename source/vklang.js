@@ -1601,7 +1601,9 @@ vk_lang_en={//by Hzy
    "NoMoreResults": "No more results",
    "seRules": "Rules:",
    "with_ad": "with ads",
-   'DontRemoveAlbumCover': "Don't remove album cover"
+   'DontRemoveAlbumCover': "Don't remove album cover",
+   "seUseHtml5ForVideo": "Use HTML5 as video player",
+   "infoOnlyForCompatible": "Only <a href=\"//html5test.com/compare/feature/video-h264.html\" target=\"_blank\">H.264-compatible</a> browsers"
 };
  
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
@@ -1610,7 +1612,6 @@ vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
 'LangFlag':'/images/lang_flags/1.gif',
 "About_languages":"\u041f\u0440\u043e \u043b\u043e\u043a\u0430\u043b\u0456\u0437\u0430\u0446\u0456\u0457",
 'LinksGet':'\u041e\u0442\u0440\u0438\u043c\u0430\u0442\u0438 \u043f\u043e\u0441\u0438\u043b\u0430\u043d\u043d\u044f',
-'Error':'\u041f\u043e\u043c\u0438\u043b\u043a\u0430',
 'download':'[ \u0417\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0438\u0442\u0438 ]',
 'downloadHD':'[ \u0417\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0438\u0442\u0438 HD ]',
 'delete':'[ \u0412\u0438\u0434\u0430\u043b\u0438\u0442\u0438 ]',
@@ -2478,7 +2479,6 @@ vk_lang_by={ //by Gavr id8610702
 'LangTite':'\u0411\u0435\u043b\u0430\u0440\u0443\u0441\u043a\u0430\u044f \u043c\u043e\u0432\u0430',
 'LangFlag':'/images/lang_flags/2.gif',
 'LinksGet':'\u0410\u0442\u0440\u044b\u043c\u0430\u0446\u044c \u0441\u043f\u0430\u0441\u044b\u043b\u043a\u0456',
-'Error':'\u041f\u0430\u043c\u044b\u043b\u043a\u0430',
 'download':'[ \u0421\u043f\u0430\u043c\u043f\u0430\u0432\u0430\u0446\u044c ]',
 'downloadHD':'[ \u0421\u043f\u0430\u043c\u043f\u0430\u0432\u0430\u0446\u044c HD ]',
 'delete':'[ \u0412\u044b\u0434\u0430\u043b\u0456\u0446\u044c ]',
@@ -3174,7 +3174,6 @@ vk_lang_it={ //by Maybkot /id5027410 (mayboroda.com.ua)
 'LangFlag':'/images/lang_flags/7.gif',
 'LangTite':'Italiano language',
 'LinksGet':'Riceve collegamenti',
-'Error':'Errore',
 'download':'[ Scarica ]',
 'downloadHD':'[ Scarica HD ]',
 'delete':'[ Rimuovi ]',
@@ -3644,8 +3643,6 @@ vk_lang_it={ //by Maybkot /id5027410 (mayboroda.com.ua)
 'Sounds':'Suoni',
 'seRemVidDuplicate':'Rimuovere i duplicati dei video in ricerca',
 'seAvaArrows':'Frecce da sfogliare degli avatar sul profilo',
-'seExpland_ProfileInfo':'L\'informazione dettagliata sui profili:',
-'seExplandProfileInfoText':'0 - non cambia<br>1 - memorizza l\'ultimo stato<br>2 - sempre espande<br>3 - sempre ridurre',
 'seMovPopupMsgRight':'La lista dei nuovi messaggi a destra',
 'seDisableAjaxNav':'Disabilitare comune Ajax-navigazione',
 'ConfigBackupRestore':'Salvazione/recupero della riserva con le impostazioni:',
@@ -3698,7 +3695,6 @@ vk_lang_it={ //by Maybkot /id5027410 (mayboroda.com.ua)
 'Page':'La pagina',
 'TinEyeSearch':'[ Ricerca i duplicati  (TinEye) ]',
 'seCompactAudio':'Ridurre gli spazi tra le righe d\'audio',
-'seMoreDarkViewer':'\u0427\u0451\u0440\u043d\u044b\u0439 \u043f\u0440\u043e\u0441\u043c\u043e\u0442\u043e\u0440\u0449\u0438\u043a \u0444\u043e\u0442\u043e \u0432 \u0440\u0435\u0436\u0438\u043c\u0435 \u043d\u043e\u0447\u044c',
 	'seCompactFave':'Diminuire gli avatar nei segnalibri',
 'seLMenuWallLink':'Il link al muro nel men%C3%B9 sinistro',
 'seCfgBackupDate':'Data di creazione della riserva:',
@@ -3773,7 +3769,6 @@ vk_lang_tat = {//by eurotat /id15202178
     'LangTite':'\u0422\u0430\u0442\u0430\u0440\u0441\u043a\u0438\u0439 \u044f\u0437\u044b\u043a',
     'LangFlag':'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAAAaCAIAAABdDBlVAAAATklEQVR42u2TMQoAMAjEbnPrm619uAX7BrNUCXJb8EBpS1G0BlDjtVtD+x0vUBqgMUdLAwBLI65h3tPC7BSdQYkMplkLQCmC0YxmNL9rLnAGNdbLnWjxAAAAAElFTkSuQmCC',
     LinksGet: "\u0421\u044b\u043b\u0442\u0430\u0443",
-    Error: "\u0425\u0430­\u0442\u0430",
     download: "[ \u0421\u0430\u043a\u043b\u0430\u0440\u0433\u0430 ]",
     downloadHD: "[ HD \u0444\u043e\u0440\u043c\u0430\u0442\u0442\u0430 \u0441\u0430\u043a\u043b\u0430\u0440\u0433\u0430 ]",
     "delete": "[ \u0411\u0435\u0442\u0435\u0440\u0435\u0440\u0433\u04d9 ]",

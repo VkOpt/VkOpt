@@ -134,6 +134,28 @@ var vk_photos = {
             vkPhotosWallAlbum();
             vk_ph_comms.browse_comments_btn(); // Устарело. Вк активировали родной раздел обзора комментов к фото группы.
          }
+          if (!ge('vk_albums_actions')) {
+              // Создание меню "Действия" для страницы "альбомы"
+              var li = vkCe('li', {id: 'vk_albums_actions', "class": 't_r'},
+                  '<a href="#" onclick="return false;"  id="vk_albums_act_menu" class_="fl_r summary_right">' + IDL('Actions') + '</a>' +
+                      (geByClass('summary_right')[0] ? '<span class="divide">|</span>' : ''));
+              geByClass('t0')[0].appendChild(li);
+
+              var p_options = [];
+
+              p_options.push({l: IDL('Links'), onClick: function () {
+                  vk_photos.albums_links(cur.oid);  // Функция получения ссылок на все фотографии с группировкой по альбомам. (в виде скрипта)
+              }});
+              stManager.add(['ui_controls.js', 'ui_controls.css'], function () {
+                  cur.vkAlbumsMenu = new DropdownMenu(p_options, {
+                      target: ge('vk_albums_act_menu'),
+                      containerClass: 'dd_menu_posts',
+                      updateTarget: false,
+                      offsetLeft: -15,
+                      showHover: false
+                  });
+              });
+          }
       } else if (nav.objLoc[0].indexOf('album')!=-1 || nav.objLoc[0].indexOf('tag')!=-1 || nav.objLoc[0].indexOf('photos')!=-1){
          
          var m=nav.objLoc[0].match(/album(-?\d+)_(\d+)/);
@@ -168,9 +190,13 @@ var vk_photos = {
                p_options.push({l:IDL('Links'), onClick:function() {
                      vkGetLinksToPhotos(oid,aid);
                }});
-               p_options.push({l:IDL('SaveAlbumAsZip'), onClick:function(item) {
-                     vkGetZipWithPhotos(oid,aid);
-               }});
+               try {
+                   var isFileSaverSupported = !!new Blob;   // проверка возможности браузера сохранять файлы
+               } catch (e) {}
+               if (isFileSaverSupported)    // если возможность есть, выводим ссылку на функцию сохранения альбома в ZIP
+                   p_options.push({l:IDL('SaveAlbumAsZip'), onClick:function(item) {
+                         vkGetZipWithPhotos(oid,aid);
+                   }});
                if (cur.statsPhotoAddHash)
                   p_options.push({l:IDL('Add'), h:'/album'+oid+'_'+aid+'?act=add' /*onClick:function(item) { vkGetLinksToPhotos(oid,aid);}*/
                   });
@@ -198,7 +224,7 @@ var vk_photos = {
                   cur.vkAlbumMenu = new DropdownMenu(p_options, {
                     target: ge('vk_album_act_menu'),
                     containerClass: 'dd_menu_posts',
-                    updateHeader:false,
+                    updateTarget:false,
                     offsetLeft:-15,
                     showHover:false
                   });
@@ -763,6 +789,59 @@ var vk_photos = {
          p.innerHTML='<div class="vk_albums_list">'+html+'</div>';  
       });
    },
+    albums_links: function (oid) {   // Реализация функции получения ссылок на все фотографии с группировкой по альбомам. (в виде скрипта)
+        var box = vkAlertBox(document.title, '<div id="vk_links_container1"></div><br/><div id="vk_links_container2"></div>');
+        var Progress = function (c, f) {    // обновление прогрессбара для альбомов
+            if (!f) f = 1;
+            ge('vk_links_container1').innerHTML = vkProgressBar(c, f, 350);
+        };
+        var Progress2 = function (c, f) {    // обновление прогрессбара для фоток внутри альбомов
+            if (!f) f = 1;
+            ge('vk_links_container2').innerHTML = vkProgressBar(c, f, 350);
+        };
+        vkApis.albums(oid, function (albums) {
+            var wget_strings = [], wget_strings_nix = [],
+                metalinklist = ['<?xml version="1.0" encoding="UTF-8" ?>',
+                    '<metalink version="3.0" xmlns="http://www.metalinker.org/">',
+                    '<files>'];
+            for (var i in albums) {
+                albums[i].title = albums[i].title.replace(/"/g,'\\"');            
+                wget_strings_nix.push('mkdir "' + albums[i].title + '"');   // создание директории с названием, равным названию альбома
+                wget_strings_nix.push('cd "' + albums[i].title + '"');      // переход в неё
+                albums[i].title = vkCleanFileName(albums[i].title);         // для Windows удаляются неподдерживаемые символы
+                wget_strings.push('mkdir "' + albums[i].title + '"');
+                wget_strings.push('cd "' + albums[i].title + '"');
+                for (var j = 0; j < albums[i].list.length; j++) {
+                    var filename = albums[i].list[j].pid + '.jpg';
+                    var wget_cmd = 'wget -O ' + filename + ' ' + albums[i].list[j].src;
+                    wget_strings_nix.push(wget_cmd);
+                    wget_strings.push(wget_cmd);
+                    
+                    metalinklist.push('<file name="' + albums[i].title + '/' + filename + '">'
+                        + '<resources><url type="http" preference="100">' + albums[i].list[j].src + '</url></resources>'
+                        + '</file>');
+                }
+                wget_strings.push('cd ..');                             // возврат в родительскую директорию
+                wget_strings_nix.push('cd ..');
+            }
+            metalinklist.push('</files></metalink>');
+            var wget_strings_joined = wget_strings.join('\n');
+            var metalinklist_joined = metalinklist.join('\n').replace(/&/g,'&amp;');
+
+            var wget_links_html = '<textarea id="vk_mp3_wget_links_area">' + wget_strings_joined + '</textarea>\
+               <a download="DownloadPhotos' + oid + '.bat" href="data:text/plain;base64,' + base64_encode(utf8ToWindows1251(utf8_encode('chcp 1251\n' + wget_strings_joined))) + '">' + vkButton('.BAT') + '</a>\
+               <a download="DownloadPhotos' + oid + '.bat" href="data:text/plain;base64,' + base64_encode(utf8_encode('chcp 65001\n' + wget_strings_joined)) + '">' + vkButton('.BAT (UTF-8)', '', 1) + '</a>\
+               <a download="DownloadPhotos' + oid + '.sh" href="data:text/plain;base64,' + base64_encode(utf8_encode(wget_strings_nix.join('\n'))) + '">' + vkButton('.SH (UTF-8)', '', 1) + '</a>';
+            var metalinklist_html = '<textarea id="vk_mp3_metalink_links_area">' + metalinklist_joined + '</textarea>\
+               <a download="DownloadPhotos' + oid + '.metalink" href="data:text/plain;base64,' + base64_encode(utf8_encode(metalinklist_joined)) + '">' + vkButton('.METALINK (UTF-8)') + '</a>';
+            var tabs = [];
+
+            tabs.push({name: IDL('wget_links'), content: wget_links_html, active: true});
+            tabs.push({name: IDL('Metalink'), content: metalinklist_html});
+            box.content(vkMakeContTabs(tabs));
+            box.setOptions({width: "560px"});
+        }, Progress, Progress2);
+    },
    VKPZL_SWF_LINK:"http://app.vk.com/c6130/u13391307/8c0797eea18120.swf",
    VKPZL_SWF_HTTPS_LINK:"https://app.vk.com/c6130/u13391307/8c0797eea18120.swf",
    pz_box:function(){
@@ -1421,10 +1500,16 @@ function vkGetZipWithPhotos(oid, aid) {
     }
     // 2. Подключение библиотеки JSZip
     var FileSaverOnload = function () {
-        if (typeof JSZip != "undefined")
-            JsZipOnload();
+        try {
+            var blobSupported = !!URL.createObjectURL;  // Проверка поддержки Blob для подключения Blob.js в старых браузерах (Opera < 15 и Firefox < 20)
+        } catch (e) {}
+        if (!blobSupported)
+            AjCrossAttachJS('http://vkopt.net/blob', 'BlobJs', FileSaverOnload);
         else
-            AjCrossAttachJS('http://vkopt.net/jszip', 'JsZip', JsZipOnload);
+            if (typeof JSZip != "undefined")
+                JsZipOnload();
+            else
+                AjCrossAttachJS('http://vkopt.net/jszip', 'JsZip', JsZipOnload);
     }
     // 1. Подключение библиотеки FileSaver.js
     if (typeof saveAs != "undefined")
@@ -2920,7 +3005,7 @@ function vkVideoAddOpsBtn(){
             cur.vkAlbumMenu = new DropdownMenu(p_options, {
               target: ge('vk_video_ops'),
               containerClass: 'dd_menu_posts',
-              updateHeader:false,
+              updateTarget:false,
               //offsetLeft:-15,
               showHover:false
             });
@@ -6165,6 +6250,8 @@ vk_au_down={
           var search_flag = true;   // флаг для начала цикла с 1, а не с 0, т.к. 0й элемент = кол-во результатов
           var audio_method = 'audio.search';
           params["q"] = cur.searchStr;  // Поисковый запрос
+          if (nav.objLoc.performer)     // Поиск по исполнителю
+              params["performer_only"] = 1;
           params["count"] = 300;        // Максимум аудиозаписей (ограничение ВК)
           if (cur.autoComplete)         // Исправление ошибок. На практике, true при живом поиске и false при обновлении страницы
               params["auto_complete"] = 1;
