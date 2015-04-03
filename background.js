@@ -774,8 +774,10 @@ ext_api={
       var tr = Components.classes["@mozilla.org/transfer;1"].createInstance(Components.interfaces.nsITransfer);
       tr.init(uri, fileURL, "", null, null, null, persist, isPrivate);
       persist.progressListener = tr;
+      if (browser.version < 36)
       persist.saveURI(uri, null, null, null, null, fileURL, privacyContext);
-         
+      else // В новых FF добавлен четвертый параметр aReferrerPolicy
+        persist.saveURI(uri, null, null, null, null, null, fileURL, privacyContext);
    },
    utils:{
       chrome_init: function(){
