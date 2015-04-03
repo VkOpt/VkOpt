@@ -57,16 +57,23 @@ var ex_loader = {
    ],
    update_time: 10*60*1000, //update scripts each 4 hours
    moz_strorage_id:"http://vkopt.loader.storage",
-   
+   browsers:{
+      mozilla:(function(){try{return Components.interfaces.nsIObserverService!=null} catch(e){return false}; })(),
+      opera: window.opera && opera.extension,
+      chrome: window.chrome && chrome.extension,
+      safari: window.safari && safari.extension,
+      maxthon: (function(){try{return window.external.mxGetRuntime!=null} catch(e){return false}; })() //without try{}catch it fail script on Firefox
+   },
    get_script_path:function(filename){
       var spath='';
       if (filename.match(/^https?:\/\//)) return filename;
+      var b = ex_loader.browsers;
       switch (ex_loader.type){
          case 'internal': //
-            if (window.opera && opera.extension) spath='scripts/'+filename;
-            else if (window.chrome && chrome.extension) spath=chrome.extension.getURL('scripts/'+filename);
-            else if (window.safari && safari.extension) spath=safari.extension.baseURI+'scripts/'+filename;
-            else if (window.navigator.userAgent.match('Mozilla')) spath='resource://vkopt/'+filename
+            if (b.opera) spath='scripts/'+filename;
+            else if (b.chrome) spath=chrome.extension.getURL('scripts/'+filename);
+            else if (b.safari) spath=safari.extension.baseURI+'scripts/'+filename;
+            else if (b.mozilla) spath='resource://vkopt/'+filename
             break;
          case 'beta':
             spath= (ex_loader.beta_path.match(/^https?:\/\//)?'':ex_loader.base_path)+ex_loader.beta_path+filename;
@@ -84,12 +91,15 @@ var ex_loader = {
       
    },
    init:function(){
-      if (ex_loader.type=='internal' && window.external && window.external.mxGetRuntime){         // MAXTHON
+      var b = ex_loader.browsers;   
+      
+      if (ex_loader.type=='internal' && b.maxthon){         // MAXTHON
          ex_loader.type='online';        // Maxthon 4 doesn't support inject scripts from internal resources
       }
       
       ex_loader.init_config();
-      if (window.opera && opera.extension){                                   // OPERA
+      
+      if (b.opera){                                   // OPERA
          opera.extension.onconnect = function(event)  {
             ext_api.ready=true;
             event.source.postMessage({act:'connected'}); 
@@ -110,7 +120,7 @@ var ex_loader = {
             ext_api.message_handler(data,SendResponse);
          };
          
-      } else if (window.chrome && chrome.extension){                          // CHROME
+      } else if (b.chrome){                          // CHROME         
          ext_api.ready=true;
          chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
             // request.url - contain url
@@ -131,7 +141,7 @@ var ex_loader = {
             ext_api.message_handler(request,SendResp);            
             
          });         
-      } else if(window.safari && safari.application){                         // SAFARI
+      } else if(b.safari){                         // SAFARI
          safari.application.addEventListener("message", function(e) {
             // e.message.url - contain url
             if (e.name === "get_scripts"){
@@ -152,7 +162,7 @@ var ex_loader = {
          }, false);
          ext_api.ready=true;
          
-      } else if (window.external && window.external.mxGetRuntime){         // MAXTHON
+      } else if (b.maxthon){         // MAXTHON
             var rt = window.external.mxGetRuntime();            
             rt.listen('get_scripts', function(data){
                ex_loader.get_scripts(data.url,function(files,api_allowed){
@@ -172,7 +182,7 @@ var ex_loader = {
             });     
             ext_api.ready=true;   
             
-      } else if (window.navigator.userAgent.match('Mozilla')){                // MOZILLA 
+      } else if (b.mozilla){                // MOZILLA 
          ex_loader.moz_ldr(function(doc,win){
                var bg={
                   get_scripts:ex_loader.get_scripts,

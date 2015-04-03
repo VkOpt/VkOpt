@@ -5,10 +5,11 @@
 (function(){ 
 
 var ext_browser={
-      opera    : window.opera    && opera.extension,
-      chrome   : window.chrome   && chrome.extension,
-      safari   : window.safari   && safari.self,
-      maxthon  : window.external && external.mxGetRuntime
+   mozilla:(function(){try{return Components.interfaces.nsIObserverService!=null} catch(e){return false}; })(),
+   opera: window.opera && opera.extension,
+   chrome: window.chrome && chrome.extension,
+   safari: window.safari   && safari.self,
+   maxthon: (function(){try{return window.external.mxGetRuntime!=null} catch(e){return false}; })() //without try{}catch it fail script on Firefox
 }
 function init_content_script(win,doc,bg){
 win = win || window;
