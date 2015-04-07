@@ -17,7 +17,8 @@
     "chrome": "chrome", 
     "sdk/page-mod": "sdk/page-mod", 
     "sdk/self": "sdk/self",
-    "sdk/window/utils": "sdk/window/utils"
+    "sdk/window/utils": "sdk/window/utils",
+    "sdk/net/xhr": "sdk/net/xhr"
    }, 
    "sectionName": "lib"
   }
