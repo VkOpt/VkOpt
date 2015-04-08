@@ -829,8 +829,8 @@ var vk_photos = {
             var metalinklist_joined = metalinklist.join('\n').replace(/&/g,'&amp;');
 
             var wget_links_html = '<textarea id="vk_mp3_wget_links_area">' + wget_strings_joined + '</textarea>\
-               <a download="DownloadPhotos' + oid + '.bat" href="data:text/plain;base64,' + base64_encode(utf8ToWindows1251(utf8_encode('chcp 1251\n' + wget_strings_joined))) + '">' + vkButton('.BAT') + '</a>\
-               <a download="DownloadPhotos' + oid + '.bat" href="data:text/plain;base64,' + base64_encode(utf8_encode('chcp 65001\n' + wget_strings_joined)) + '">' + vkButton('.BAT (UTF-8)', '', 1) + '</a>\
+               <a download="DownloadPhotos' + oid + '.bat" href="data:application/x-download;base64,' + base64_encode(utf8ToWindows1251(utf8_encode('chcp 1251\n' + wget_strings_joined))) + '">' + vkButton('.BAT') + '</a>\
+               <a download="DownloadPhotos' + oid + '.bat" href="data:application/x-download;base64,' + base64_encode(utf8_encode('chcp 65001\n' + wget_strings_joined)) + '">' + vkButton('.BAT (UTF-8)', '', 1) + '</a>\
                <a download="DownloadPhotos' + oid + '.sh" href="data:text/plain;base64,' + base64_encode(utf8_encode(wget_strings_nix.join('\n'))) + '">' + vkButton('.SH (UTF-8)', '', 1) + '</a>';
             var metalinklist_html = '<textarea id="vk_mp3_metalink_links_area">' + metalinklist_joined + '</textarea>\
                <a download="DownloadPhotos' + oid + '.metalink" href="data:text/plain;base64,' + base64_encode(utf8_encode(metalinklist_joined)) + '">' + vkButton('.METALINK (UTF-8)') + '</a>';
@@ -6312,8 +6312,8 @@ vk_au_down={
          var wget_links_joined = wget_links.join('\n');
          var wget_links_html='<div class="vk_mp3_wget_links">\
                <textarea id="vk_mp3_wget_links_area">'+wget_links_joined+'</textarea>\
-               <a download="playlist.bat" href="data:text/plain;base64,' + base64_encode(utf8ToWindows1251(utf8_encode('chcp 1251\n'+wget_links_joined))) + '">'+vkButton(IDL('.BAT'))+'</a>\
-               <a download="playlist.bat" href="data:text/plain;base64,' + base64_encode(utf8_encode('chcp 65001\n'+wget_links_joined)) + '">'+vkButton(IDL('.BAT')+' (UTF-8)','',1)+'</a>\
+               <a download="playlist.bat" href="data:application/x-download;base64,' + base64_encode(utf8ToWindows1251(utf8_encode('chcp 1251\n'+wget_links_joined))) + '">'+vkButton(IDL('.BAT'))+'</a>\
+               <a download="playlist.bat" href="data:application/x-download;base64,' + base64_encode(utf8_encode('chcp 65001\n'+wget_links_joined)) + '">'+vkButton(IDL('.BAT')+' (UTF-8)','',1)+'</a>\
                <a download="playlist.sh" href="data:text/plain;base64,' + base64_encode(utf8_encode(wget_links_nix.join('\n'))) + '">'+vkButton(IDL('.SH')+' (UTF-8)','',1)+'</a>\
                </div>';
 		 var metalinklist_joined = metalinklist.join('\n').replace(/&/g,'&amp;');
