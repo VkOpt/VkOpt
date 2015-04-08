@@ -3224,7 +3224,7 @@ vk_feed={
                      types.ad=block_conditions.test(t.innerHTML); break;
                  case block_modes.KEYWORDS:
                      for (var i = 0;i < block_conditions.length && !types.ad;i++)
-                         types.ad = (t.innerHTML.toLowerCase().indexOf(block_conditions[i].trim().toLocaleLowerCase()) > -1);
+                         types.ad = (t.innerHTML.toLowerCase().indexOf(block_conditions[i]) > -1);
                      break;
              }
          }
@@ -3262,6 +3262,11 @@ vk_feed={
                var indexOf_comma = stop_list.indexOf(',');
                var indexOf_pipe = stop_list.indexOf('|');
                block_conditions = stop_list.split(indexOf_comma != -1 && (indexOf_pipe != -1 && indexOf_comma < indexOf_pipe || indexOf_pipe == -1) ? ',' : '|');
+               for (var i = 0; i < block_conditions.length; i++) {  // предварительная подготовка ключевых слов
+                   block_conditions[i] = block_conditions[i].trim().toLocaleLowerCase();
+                   if (block_conditions[i] == '')  // Защита от пустых правил. Их надо удалить.
+                       block_conditions.splice(i--, 1);
+               }
                block_mode = block_modes.KEYWORDS;
            }
        }
