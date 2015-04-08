@@ -5,12 +5,12 @@
 (function(){ 
 
 var ext_browser={
-   mozilla:(function(){try{return Components.interfaces.nsIObserverService!=null} catch(e){return false}; })(),
+   mozilla:(function(){try{return Components.interfaces.nsIObserverService!=null} catch(e){return false} })(),
    opera: window.opera && opera.extension,
    chrome: window.chrome && chrome.extension,
    safari: window.safari   && safari.self,
-   maxthon: (function(){try{return window.external.mxGetRuntime!=null} catch(e){return false}; })() //without try{}catch it fail script on Firefox
-}
+   maxthon: (function(){try{return window.external.mxGetRuntime!=null} catch(e){return false} })() //without try{}catch it fail script on Firefox
+};
 function init_content_script(win,doc,bg){
 win = win || window;
 doc = doc || document;
@@ -40,7 +40,7 @@ var ex_ldr={
                ex_ldr.inj_script(file[0],file[2],file[4]);//file[3] - run_at
                //console.log('inj:'+file[2]);
             }
-         }
+         };
          //console.log('inj at start',run_at_start.length);
          inj(run_at_start);
          doc.addEventListener("DOMContentLoaded", function(){
@@ -131,7 +131,7 @@ var ex_ldr={
             msg=ex_api.prepare_data(msg);
             rt.post('extension_bg_api',msg);
             return msg;
-         }
+         };
          rt.listen('extension_api', function(data){
             if (data.key==ex_ldr.key){
                ex_api.message_handler(data);
@@ -174,9 +174,9 @@ var ex_ldr={
          case 0: 
             return true; // include all
          case 1: 
-            return inframe?false:true; // exclude frames
+            return !inframe; // exclude frames
          case 2:
-            return inframe?true:false; // only in frames
+            return !!inframe; // only in frames
          case 3:
             return false;  // disable scripts
       }
@@ -220,10 +220,10 @@ var ex_ldr={
    init_keys:function(){
       var done=function(){
          informer.show(ex_ldr.mark+" scripts updated",2000,doc); 
-      }
-      var keyhandler = function(e){ 
-         if (!e){  var e = event; };
-         if (e.altKey && e.ctrlKey){    
+      };
+      var keyhandler = function(e){
+         if (!e){  e = event; }
+         if (e.altKey && e.ctrlKey){
             switch (e.keyCode){            
                case 85: /*case 1075: case 1043: case 117://alert("Alt+Ctrl+U"); */          
                   ex_api.req({act:'update_scripts'},function(){
@@ -234,7 +234,7 @@ var ex_ldr={
                   
                   break;
             }
-         };
+         }
       };
       if (doc.addEventListener){
          doc.addEventListener('keydown', keyhandler, false);
@@ -242,10 +242,10 @@ var ex_ldr={
          doc.attachEvent('keydown', keyhandler);
       } else {
          doc.onkeydown = keyhandler;
-      };   
+      }
    }
 
-}
+};
 
 var informer={
    delay:2000,
@@ -269,14 +269,14 @@ var informer={
          visible=false;
          div.style.left=old_left;
          setTimeout(function(){div.parentNode.removeChild(div);},400);      
-      }
+      };
       a.onclick=hide;
       setTimeout(function(){div.style.left='0px';},1);
       setTimeout(function(){
          hide();
       },delay);
    }
-}
+};
 
 //  win.postMessage({act:'get',url:'http://vkopt.net/download'},"*")
 var ex_api={
@@ -342,7 +342,7 @@ var ex_api={
       //console.log('REQ_ID: '+data._req);
    }
    
-}
+};
 
 
 ex_ldr.init();
