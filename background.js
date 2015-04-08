@@ -603,7 +603,7 @@ ext_api={
             headers: if headers['Content-type']=='multipart/form-data'  use data as Uint8Array
          }
       */
-      if (!Components.classes) {    // Firefox Jetpack
+      if (browser.mozilla && !Components.classes) {    // Firefox Jetpack
           self.port.emit("ajax", options);
           self.port.on("ajax_response", callback);
       }
