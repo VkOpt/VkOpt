@@ -1425,7 +1425,7 @@ function vkGetCalendar(){
 
 function vkGetCalendarInfo(callback,cnt){ //callback(month, year, events, holidays)    
 	cnt=cnt || 1;
-   AjPost('/wkview.php',{act:'show', al:1, loc:'feed', w:'calendar'},function(r,t){//al_events.php?act=calendar&al=1
+   AjPost('/wkview.php',{act:'show', al:1, loc:'feed', w:'calendar'},function(t){//al_events.php?act=calendar&al=1
 		var res=t.split('Calendar.init(')[1];
       if (!res){
          if (cnt<5)

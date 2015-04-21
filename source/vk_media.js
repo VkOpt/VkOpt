@@ -467,7 +467,7 @@ var vk_photos = {
       url=encodeURI(url);
       
       
-      AjGet('/wall'+vk.id+'?offset=100000000',function(r,t){
+      AjGet('/wall'+vk.id+'?offset=100000000',function(t){
          var o=(t.match(/"share":(\{[^}]+\})/)||[])[1];
          if (!o) {alert('hash error'); return;}
          o=eval('('+o+')');
@@ -561,7 +561,7 @@ var vk_photos = {
       stManager.add('upload.js',function(){
          var photo=photo_id;
          if (/photo-?\d+_\d+/.test(photo)) photo=photo.match(/photo(-?\d+_\d+)/)[1];
-         AjPost('/al_photos.php',{'act':'edit_photo', 'al': 1, 'photo': photo},function(r,t){
+         AjPost('/al_photos.php',{'act':'edit_photo', 'al': 1, 'photo': photo},function(t){
                var upload_url=t.match(/"upload_url":"(.*)"/);
                var hash=t.match(/', '([a-f0-9]{18})'\)/);
                var aid=t.match(/selectedItems:\s*\[(-?\d+)\]/)[1];
@@ -5569,7 +5569,7 @@ vk_vid_down={
             };
             var _oid=vids_info[idx][0];
             var _vid=vids_info[idx][1];
-            AjGet('/video.php?act=a_flash_vars&vid='+_oid+'_'+_vid,function(r,t){
+            AjGet('/video.php?act=a_flash_vars&vid='+_oid+'_'+_vid,function(t){
                if(!t || t=='NO_ACCESS'){
                   next();
                } else {
@@ -5779,7 +5779,7 @@ vk_vid_down={
        var fmt=['240p','360p','480p','720p'];
        el=ge(el);
        el.innerHTML=vkLdrImg;
-       AjGet('/video.php?act=a_flash_vars&vid='+oid+'_'+vid,function(r,t){
+       AjGet('/video.php?act=a_flash_vars&vid='+oid+'_'+vid,function(t){
          //console.log(t);
          // if (t=='NO_ACCESS')
          var getyt=function(youid){

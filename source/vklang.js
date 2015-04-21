@@ -724,6 +724,8 @@ vk_lang_ru={
    "DontRemoveAlbumCover":"\u041d\u0435 \u0443\u0434\u0430\u043b\u044f\u0442\u044c \u043e\u0431\u043b\u043e\u0436\u043a\u0443 \u0430\u043b\u044c\u0431\u043e\u043c\u0430"
    ,"seUseHtml5ForVideo":"\u0418\u0441\u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u044c HTML5 \u0432\u0438\u0434\u0435\u043e \u043f\u043b\u0435\u0435\u0440"
    ,"infoOnlyForCompatible":'\u0422\u043e\u043b\u044c\u043a\u043e \u0434\u043b\u044f <a href="//html5test.com/compare/feature/video-h264.html" target="_blank">H.264-\u0441\u043e\u0432\u043c\u0435\u0441\u0442\u0438\u043c\u044b\u0445</a> \u0431\u0440\u0430\u0443\u0437\u0435\u0440\u043e\u0432'
+   ,"seUseCache":"\u0418\u0441\u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u044c \u043a\u044d\u0448 \u0434\u043b\u044f \u0441\u0435\u0442\u0435\u0432\u044b\u0445 \u0437\u0430\u043f\u0440\u043e\u0441\u043e\u0432"
+   ,"infoUseCache":"\u0423\u0441\u043a\u043e\u0440\u044f\u0435\u0442 \u0437\u0430\u043f\u0440\u043e\u0441\u044b \u043f\u0440\u0438 \u043c\u0435\u0434\u043b\u0435\u043d\u043d\u043e\u043c \u0438\u043d\u0442\u0435\u0440\u043d\u0435\u0442-\u0441\u043e\u0435\u0434\u0438\u043d\u0435\u043d\u0438\u0438, \u043d\u043e \u0442\u0440\u0435\u0431\u0443\u0435\u0442 \u0431\u043e\u043b\u044c\u0448\u0435 \u043e\u043f\u0435\u0440\u0430\u0442\u0438\u0432\u043d\u043e\u0439 \u043f\u0430\u043c\u044f\u0442\u0438"
 };
 
 vk_lang_en={//by Hzy
@@ -1604,6 +1606,8 @@ vk_lang_en={//by Hzy
    'DontRemoveAlbumCover': "Don't remove album cover",
    "seUseHtml5ForVideo": "Use HTML5 as video player",
    "infoOnlyForCompatible": "Only <a href=\"//html5test.com/compare/feature/video-h264.html\" target=\"_blank\">H.264-compatible</a> browsers"
+   ,"seUseCache": "Use cache for network requests"
+   ,"infoUseCache":"Speeds up requests with a slow Internet connection, but requires more RAM"
 };
  
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)

@@ -690,7 +690,8 @@ function vkInitSettings(){
 		{id:6, text:IDL("seOnAway")},
 		{id:34, text:IDL("seSwichTextChr")},
       {id:77, text:IDL("seBatchCleaners")},
-      {id:78, text:IDL("seCutBracket")}	
+      {id:78, text:IDL("seCutBracket")}
+    , {id:102, text:IDL("seUseCache"), info:'infoUseCache'}
    ],
    Hidden:[
       {id:82, text:IDL("FullThumb")},
@@ -699,7 +700,7 @@ function vkInitSettings(){
    ]
   };
 
-   //LAST 101
+   //LAST 102
    //FREE 19,20,76,
 
    vkSetsType={
