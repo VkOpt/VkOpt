@@ -2401,7 +2401,7 @@ vkLdr={
 	box:null,
 	show:function(){
 		vkLdr.box=new MessageBox({title:''});
-		vkLdr.box.setOptions({title: false, hideButtons: true,onHide:__bq.hideAll}).show(); 
+		vkLdr.box.setOptions({title: false, hideButtons: true,onHide:__bq.hideLast}).show();
 		hide(vkLdr.box.bodyNode); 
 		show(boxLoader);
 		boxRefreshCoords(boxLoader);	
