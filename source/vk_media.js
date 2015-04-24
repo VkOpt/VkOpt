@@ -3071,6 +3071,7 @@ vk_audio_player={
    inj:function(){
       if (getSet(75)=='y') vk_audio_player.gpCtrlsInit();
       Inj.Start('audioPlayer.scrollToTrack','if (!vk_audio_player.scroll_to_track_enabled) return;');
+      if (getSet(104)=='y') Inj.Before('audioPlayer.initPlayer','browser.flash','false && ');
    },  
    init:function(){
       if (getSet(85)=='y') vk_audio_player.scroll_to_track_enabled=false;

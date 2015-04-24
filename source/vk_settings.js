@@ -594,6 +594,7 @@ function vkInitSettings(){
       {id:7,  text:IDL("seScroolPhoto")},
       {id:93, text:IDL("seAlbumPhotosExInfo"),info:'infoUseNetTrafic'}
       , {id:101, text:IDL("seUseHtml5ForVideo"),info:'infoOnlyForCompatible'}
+      , {id:104, text:IDL("seUseHtml5ForAudio")}
     ],
     Users:[
       {id:10, text:IDL("seExUserMenu")+'<br><a href="#" onclick="toggle(\'vkExUMenuCFG\'); return false;">[<b> '+IDL("Settings")+' </b>]</a>'+
@@ -699,8 +700,8 @@ function vkInitSettings(){
    ]
   };
 
-   //LAST 101
-   //FREE 19,20,76,
+   //LAST 104
+   //FREE 19,20,76,102,103
 
    vkSetsType={
       "on"  :[IDL('on'),'y'],
