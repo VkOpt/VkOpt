@@ -4439,5 +4439,46 @@ if (!window.vkopt_plugins) vkopt_plugins={};
 })();
 */
 
+if (!window.vkopt_plugins) vkopt_plugins = {};
+(function () {
+    var PLUGIN_ID = 'PostSort';
+    vkopt_plugins[PLUGIN_ID] = {
+        Name: 'Loaded Posts Sorting',
+        el_id: 'vk_sort_posts',
+        onLocation: function (nav_obj, cur_module_name) {   // при открытии страницы группы или паблика
+            if (!ge(this.el_id) && (cur_module_name == 'groups' || cur_module_name == 'public'))
+                this.UI();
+        },
+        UI: function () {   // Добавление ссылки на сортировку
+            var a = vkCe('a', {id:this.el_id}, IDL("sortByLikes", 1));
+            a.onclick = this.onclick;
+            var parent;
+            if (parent = ge('page_actions')) {
+                parent.appendChild(a);
+            }
+            else if (parent = (ge('unsubscribe') || ge('subscribe'))) {
+                parent.appendChild(vkCe('br'));
+                parent.appendChild(a);
+            }
+        },
+        onclick: function () {  // Нажатие на ссылку для сортировки
+            var likeCountClass = 'post_like_count';
+            var postsContainer = ge('page_wall_posts');
+            var posts = geByClass('post', postsContainer); // массив элементов, содержащих посты. его и будем сортировать.
+            if (vkbrowser.chrome)   // Хром использует нестабильную сортировку, поэтому используем другую функцию сравнения
+                var SortFunc = function (a, b) {
+                    return (geByClass(likeCountClass, b)[0].innerText - geByClass(likeCountClass, a)[0].innerText) || (a.id.split('_')[1] - b.id.split('_')[1]);
+                };
+            else
+                var SortFunc = function (a, b) {
+                    return geByClass(likeCountClass, b)[0].innerText - geByClass(likeCountClass, a)[0].innerText;
+                };
+            posts = posts.sort(SortFunc);
+            for (var i = 0; i < posts.length; i++)    // перевставляем посты в контейнер уже в правильном порядке
+                postsContainer.appendChild(posts[i]);
+        }
+    };
+    if (window.vkopt_ready) vkopt_plugin_run(PLUGIN_ID);
+})();
 
 if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
