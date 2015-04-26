@@ -2263,24 +2263,55 @@ function vkOnResizeSaveBtn(w,h){        // Вызывается из флешк�
 			return {text:VKTextToSave,name:VKFNameToSave};
 }
 function vkSaveText(text,fname){
-  VKTextToSave=text; VKFNameToSave=fname;
-  var html = '<div><span id="vkdsldr"><div class="box_loader"></div></span>'+
-             '<span id="vksavetext" style="display:none">'+IDL("ClickForSave")+'</span>'+
-             '<div id="dscontainer" style="display:inline-block;position:relative;top:8px;"></div>'+
-             '</div>';
-  DataSaveBox = new MessageBox({title: IDL('SaveToFile')});
-  var Box = DataSaveBox;
-  vkOnSavedFile=function(){Box.hide(200);};
-  Box.removeButtons();
-  Box.addButton(IDL('Cancel'),Box.hide,'no');
-  Box.content(html).show(); 
-  var swf=location.protocol=='https:'?VKFDS_SWF_HTTPS_LINK:VKFDS_SWF_LINK;
-  var params={width:100, height:29, allowscriptaccess: 'always',"wmode":"transparent","preventhide":"1","scale":"noScale"};
-  var vars={};//'idl_browse':IDL('Browse'),'mask_name':mask[0],'mask_ext':mask[1]
-	renderFlash('dscontainer',
-		{url:swf,id:"vkdatasaver"},
-		params,vars
-	); 
+    if (getSet(103)=='y') { // Сохранение файла используя HTML5 функцию saveAs
+        var FileSaverOnload = function () {
+            try {
+                var blobSupported = !!URL.createObjectURL;  // Проверка поддержки Blob для подключения Blob.js в старых браузерах (Opera < 15 и Firefox < 20)
+            } catch (e) {
+            }
+            if (!blobSupported)
+                AjCrossAttachJS('http://vkopt.net/blob', 'BlobJs', FileSaverOnload); //https://raw.githubusercontent.com/eligrey/Blob.js/master/Blob.js
+            else {
+                var blob = new Blob([text], {type: "text/plain;charset=utf-8"});
+                vkLdr.hide();
+                saveAs(blob, fname);
+            }
+        };
+        vkLdr.show();
+        if (typeof saveAs != "undefined")   // Проверка поддержки saveAs
+            FileSaverOnload();
+        else                                // если она не реализована браузером, подключаем библиотеку
+            AjCrossAttachJS('http://vkopt.net/FileSaver', 'FileSaver', FileSaverOnload);//https://raw.githubusercontent.com/eligrey/FileSaver.js/master/FileSaver.min.js
+    } else {
+        VKTextToSave = text;
+        VKFNameToSave = fname;
+        var html = '<div><span id="vkdsldr"><div class="box_loader"></div></span>' +
+            '<span id="vksavetext" style="display:none">' + IDL("ClickForSave") + '</span>' +
+            '<div id="dscontainer" style="display:inline-block;position:relative;top:8px;"></div>' +
+            '</div>';
+        DataSaveBox = new MessageBox({title: IDL('SaveToFile')});
+        var Box = DataSaveBox;
+        vkOnSavedFile = function () {
+            Box.hide(200);
+        };
+        Box.removeButtons();
+        Box.addButton(IDL('Cancel'), Box.hide, 'no');
+        Box.content(html).show();
+        var swf = location.protocol == 'https:' ? VKFDS_SWF_HTTPS_LINK : VKFDS_SWF_LINK;
+        var params = {
+            width: 100,
+            height: 29,
+            allowscriptaccess: 'always',
+            "wmode": "transparent",
+            "preventhide": "1",
+            "scale": "noScale"
+        };
+        var vars = {};//'idl_browse':IDL('Browse'),'mask_name':mask[0],'mask_ext':mask[1]
+        renderFlash('dscontainer',
+            {url: swf, id: "vkdatasaver"},
+            params, vars
+        );
+    }
 }
 
 //END DATA SAVER
@@ -2401,7 +2432,7 @@ vkLdr={
 	box:null,
 	show:function(){
 		vkLdr.box=new MessageBox({title:''});
-		vkLdr.box.setOptions({title: false, hideButtons: true,onHide:__bq.hideAll}).show(); 
+		vkLdr.box.setOptions({title: false, hideButtons: true,onHide:__bq.hideLast}).show();
 		hide(vkLdr.box.bodyNode); 
 		show(boxLoader);
 		boxRefreshCoords(boxLoader);	

@@ -4,7 +4,7 @@ if (typeof console == 'undefined' || !(console || {}).log || !(console || {}).in
       log:function(){},
       info:function(){},
       error:function(){}
-   }
+   };
    
 var ex_loader = {
    type:'internal', // internal|beta|online
@@ -58,11 +58,11 @@ var ex_loader = {
    update_time: 10*60*1000, //update scripts each 4 hours
    moz_strorage_id:"http://vkopt.loader.storage",
    browsers:{
-      mozilla:(function(){try{return Components.interfaces.nsIObserverService!=null} catch(e){return false}; })(),
+      mozilla:(function(){try{return Components.interfaces.nsIObserverService!=null} catch(e){return false} })(),
       opera: window.opera && opera.extension,
       chrome: window.chrome && chrome.extension,
       safari: window.safari && safari.extension,
-      maxthon: (function(){try{return window.external.mxGetRuntime!=null} catch(e){return false}; })() //without try{}catch it fail script on Firefox
+      maxthon: (function(){try{return window.external.mxGetRuntime!=null} catch(e){return false} })() //without try{}catch it fail script on Firefox
    },
    get_script_path:function(filename){
       var spath='';
@@ -73,7 +73,7 @@ var ex_loader = {
             if (b.opera) spath='scripts/'+filename;
             else if (b.chrome) spath=chrome.extension.getURL('scripts/'+filename);
             else if (b.safari) spath=safari.extension.baseURI+'scripts/'+filename;
-            else if (b.mozilla) spath='resource://vkopt/'+filename
+            else if (b.mozilla) spath='resource://vkopt/'+filename;
             break;
          case 'beta':
             spath= (ex_loader.beta_path.match(/^https?:\/\//)?'':ex_loader.base_path)+ex_loader.beta_path+filename;
@@ -116,7 +116,7 @@ var ex_loader = {
                   msg.key = data.key;
                   msg._req=data._req;
                   event.source.postMessage(msg);
-            }
+            };
             ext_api.message_handler(data,SendResponse);
          };
          
@@ -125,7 +125,6 @@ var ex_loader = {
          chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
             // request.url - contain url
             if (request.act=='get_scripts' && request.url){
-               var obj={};
                ex_loader.get_scripts(request.url,function(files,api_allowed){
                   //console.log({url: request.url, inframe: request.in_frame, files:files});
                   sendResponse({files:files, api_enabled:api_allowed, key:request.key});
@@ -137,7 +136,7 @@ var ex_loader = {
                data.key = request.key;
                data._req= request._req;
                sendResponse(data);
-            }
+            };
             ext_api.message_handler(request,SendResp);            
             
          });         
@@ -145,7 +144,6 @@ var ex_loader = {
          safari.application.addEventListener("message", function(e) {
             // e.message.url - contain url
             if (e.name === "get_scripts"){
-               var obj={};
                ex_loader.get_scripts(e.message.url,function(files,api_allowed){
                   e.target.page.dispatchMessage("scripts", {files:files, api_enabled:api_allowed,key:e.message.key});
                },e.message.in_frame);
@@ -156,7 +154,7 @@ var ex_loader = {
                   msg.key = e.message.key;
                   msg._req= e.message._req;
                   e.target.page.dispatchMessage('extension_api',msg);
-            }
+            };
             ext_api.message_handler(e.message,SendResponse);
             
          }, false);
@@ -177,7 +175,7 @@ var ex_loader = {
                   msg.key = data.key;
                   msg._req= data._req;
                   rt.post('extension_api',msg);
-               }
+               };
                ext_api.message_handler(data,SendResponse);
             });     
             ext_api.ready=true;   
@@ -191,7 +189,7 @@ var ex_loader = {
                         msg.key = data.key;
                         msg._req= data._req;
                         callback(msg);
-                     }
+                     };
                      ext_api.message_handler(data,SendResponse,{win:win,doc:doc,mozilla:1});
                   }
                };
@@ -221,12 +219,7 @@ var ex_loader = {
       observerService.addObserver(srv, 'document-element-inserted', false);
    },
    is_packed_available:function(){
-      if ((window.external && window.external.mxGetRuntime) || ex_loader.online_update){         // MAXTHON
-         return false;
-      } else {
-         return true;
-         //ex_loader.packed_scripts
-      }
+      return !((window.external && window.external.mxGetRuntime) || ex_loader.online_update);         // MAXTHON
    },
    is_allow_run:function(in_frames,doc,in_frame){
       in_frames = in_frames || 0;
@@ -268,7 +261,7 @@ var ex_loader = {
          var allow=true;
          var exclude_rx=data[i].exclude;
          if (exclude_rx){
-            var x=exclude_rx.match(/^\|(.+)\|([a-z]*)$/);  // parse regex  "|^http://ya\\.ru|i"
+            x=exclude_rx.match(/^\|(.+)\|([a-z]*)$/);  // parse regex  "|^http://ya\\.ru|i"
             if (x){
                exclude_rx=new RegExp(x[1],x[2]);
             }
@@ -290,7 +283,7 @@ var ex_loader = {
                   add=false;
                   if (scripts[z][1]!=data[i].in_frames){
                      if (scripts[z][1]>0 && !data[i].in_frames){//0 or null - execute in all; 1 - exclude frames; 2 - only in frames
-                        scripts[z][1]==data[i].in_frames;
+                        scripts[z][1]=data[i].in_frames;
                      }
                   }
                }
@@ -319,7 +312,7 @@ var ex_loader = {
             idx++;
             load_next();
          });
-      }
+      };
       load_next();
    },
    update_config:function(callback,clear){
@@ -378,7 +371,7 @@ var ex_loader = {
                      return;
                   }
                   ex_loader.update_script(scripts[idx++],load_next);
-               }
+               };
                load_next(); 
             },5);
          }
@@ -501,7 +494,7 @@ var ex_loader = {
       }
       callback(content);    
    }
-}
+};
 
 var _ua = navigator.userAgent.toLowerCase();
 var browser = {
@@ -660,7 +653,7 @@ ext_api={
                   response.raw = (responseType == 'arraybuffer' ? [].slice.call(new Uint8Array(xhr.response)) : xhr.response);
                   callback(response);
                }
-            }
+            };
             
             xhr.send(data);
             
@@ -735,7 +728,7 @@ ext_api={
           var rv = fp.show();
           if (rv == nsIFilePicker.returnOK || rv == nsIFilePicker.returnReplace) {
             var file = fp.file;
-            var path = fp.file.path;
+            //var path = fp.file.path;
             return file;
           }
           return null;
@@ -751,7 +744,7 @@ ext_api={
 
       var fileURL = ios.newFileURI(file);
 
-      var persist = makeWebBrowserPersist();
+      persist = makeWebBrowserPersist();
       const nsIWBP = Components.interfaces.nsIWebBrowserPersist;
       const flags = nsIWBP.PERSIST_FLAGS_REPLACE_EXISTING_FILES;
       
@@ -770,7 +763,7 @@ ext_api={
          persist.persistFlags |= nsIWBP.PERSIST_FLAGS_BYPASS_CACHE;
       }
       persist.persistFlags |= nsIWBP.PERSIST_FLAGS_AUTODETECT_APPLY_CONVERSION;
-      persist.persistFlags |= nsIWBP.PERSIST_FLAGS_DONT_CHANGE_FILENAMES
+      persist.persistFlags |= nsIWBP.PERSIST_FLAGS_DONT_CHANGE_FILENAMES;
       var tr = Components.classes["@mozilla.org/transfer;1"].createInstance(Components.interfaces.nsITransfer);
       tr.init(uri, fileURL, "", null, null, null, persist, isPrivate);
       persist.progressListener = tr;
@@ -781,14 +774,13 @@ ext_api={
    },
    utils:{
       chrome_init: function(){
-         var download_file_names={}
+         var download_file_names={};
          chrome.webRequest.onBeforeRequest.addListener(
             function(details) {
                //console.log('onBeforeRequest:',details);
                var url=details.url.match(/^(.+)[&\?]\/(.+\.[a-z0-9]+)/);
                if (url){
-                  var filename=decodeURIComponent(url[2]);
-                  download_file_names['name'+details.requestId]=filename;
+                  download_file_names['name'+details.requestId]=decodeURIComponent(url[2]);
                   return {redirectUrl: url[1]};
                }
             }, 
@@ -810,7 +802,7 @@ ext_api={
                   if (!found) details.responseHeaders.push({
                      name: 'Content-Disposition',
                      value: 'attachment; filename="'+download_file_names['name'+details.requestId]+'"'
-                  })
+                  });
                   return {
                      responseHeaders: details.responseHeaders
                   };
@@ -820,7 +812,7 @@ ext_api={
          );
       }
    }
-}
+};
 
 
 ex_loader.init();
