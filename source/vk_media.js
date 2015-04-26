@@ -6198,6 +6198,7 @@ vk_au_down={
       vk_au_down.vkAudioPlayList(true);
    },
    make_d_btn:function(url,el,id,name){
+       url = url.replace(/https:\/\//,'http://');
        var table=document.createElement('table');
        table.className="vkaudio_down";
        var tr=document.createElement('tr');
