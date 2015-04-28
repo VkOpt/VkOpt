@@ -90,7 +90,7 @@ var VKOPT_CFG_LIST=[
          , 'ENABLE_HOTFIX'
 ];
 
-var vkNewSettings=[98,99,100,79]; //"new" label on settings item
+var vkNewSettings=[98,99,100,79,102]; //"new" label on settings item
 var SetsOnLocalStore={
   'vkOVer':'c',
   'remixbit':'c',
