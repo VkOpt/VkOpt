@@ -674,7 +674,8 @@ function vkInitSettings(){
       {id:97, text:examples.seSubscribeToPostComments+IDL("seSubscribeToPostComments")},
       {id:98, text:IDL("seShowAllComments")},
       {id:99, text:IDL("seSortByLikes")},
-      {id:100, text:IDL("seTopicSearch")}
+      {id:100, text:IDL("seTopicSearch")},
+      {id:102, text:IDL("removeRecommendedFromNews")}
       //{id:64, text:IDL("seToTopOld")}
     ],
 	Sounds:[
@@ -700,8 +701,8 @@ function vkInitSettings(){
    ]
   };
 
-   //LAST 103
-   //FREE 19,20,76,102
+   //LAST 102
+   //FREE 19,20,76
 
    vkSetsType={
       "on"  :[IDL('on'),'y'],
