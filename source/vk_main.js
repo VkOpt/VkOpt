@@ -362,6 +362,7 @@ function vkPublicPage(){
    vkUpdWallBtn();
    vk_groups.show_members_btn();
    vk_groups.show_oid();
+   vkScrollPosts('page_wall_posts');
 }
 /* EVENTS */
 function vkEventPage(){
@@ -386,6 +387,7 @@ function vkGroupPage(){
    vk_groups.show_members_btn();
    vk_groups.requests_block();
    vk_groups.show_oid();
+   vkScrollPosts('page_wall_posts');
 }
 
 function vkGroupStatsBtn(){
