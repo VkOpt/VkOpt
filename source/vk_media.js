@@ -4777,7 +4777,8 @@ function vkViewAlbumInfo(artist,track){
       if (tracks){
          vk_current_album_info=data;
          for (var i=0; i<tracks.length;i++){
-            var track_name=(data.artist || data.name)+' - '+tracks[i];
+            var track_artist = data.artist || data.name;
+            var track_name = (track_artist == 'Various Artists' ? '' : track_artist + ' - ') + tracks[i];
             html+='<li><a href="/search?c[q]='+encodeURIComponent(track_name)+'&c[section]=audio" '+
                'onclick="if (checkEvent(event)) { event.cancelBubble = true; return}; '+
                   'vk_audio.search_track(event, \''+track_name.replace(/'/,'\\\'')+'\'); return false">'+tracks[i]+'</a></li>';
@@ -4986,7 +4987,8 @@ function vkAlbumCollectPlaylist(){
       ge('vk_scan_msg').innerHTML=vkProgressBar(idx,vk_current_album_info.tracks.length,310, '['+idx+'/'+vk_current_album_info.tracks.length+'] %');  
 
       //progressbar
-      var name=(vk_current_album_info.artist || vk_current_album_info.name)+ '-'+vk_current_album_info.tracks[idx];
+      var track_artist = (vk_current_album_info.artist || vk_current_album_info.name);
+      var name = (track_artist == 'Various Artists' ? '' : track_artist + ' - ') + vk_current_album_info.tracks[idx];
       var query={
                act: "search", offset: 0, sort: 0, performer: 0,
                id     : cur.id, 
@@ -5070,7 +5072,10 @@ function vkGetAlbumInfo(artist,track,callback){
                            var tracks=[];
                            for (var i=0; i<data.tracks.track.length;i++){
                               var t=data.tracks.track[i];
-                              tracks.push(t.name);
+                              if (data.artist == 'Various Artists')
+                                  tracks.push(t.artist.name + ' - ' + t.name);
+                              else
+                                  tracks.push(t.name);
                               if (!in_cache(artist,t.name)){
                                  vk_album_info_cache.push({
                                     artist: artist,
