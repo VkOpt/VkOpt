@@ -4788,7 +4788,7 @@ function vkViewAlbumInfo(artist,track){
       if (data.act!='artist_info'){
          var year=(new Date(data.releasedate)).getFullYear();
          html=preview_album_info_tpl.replace(/%ALBUM%/g,IDL('Album'))
-                                    .replace(/%NAME%/g,data.name+(year?' ('+year+')':''))
+                                    .replace(/%NAME%/g,'<a href="'+data.url+'" target="_blank">'+data.name+(year?' ('+year+')':'')+'</a>')
                                     .replace(/%ARTIST%/g,data.artist)
                                     .replace(/%IMG%/g,data.image[1]['#text'] || '/images/question_c.gif')
                                     .replace(/%IMG2%/g,data.image[2]['#text'] || '/images/question_c.gif')
