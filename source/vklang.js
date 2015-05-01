@@ -724,6 +724,7 @@ vk_lang_ru={
    "DontRemoveAlbumCover":"\u041d\u0435 \u0443\u0434\u0430\u043b\u044f\u0442\u044c \u043e\u0431\u043b\u043e\u0436\u043a\u0443 \u0430\u043b\u044c\u0431\u043e\u043c\u0430"
    ,"seUseHtml5ForVideo":"\u0418\u0441\u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u044c HTML5 \u0432\u0438\u0434\u0435\u043e \u043f\u043b\u0435\u0435\u0440"
    ,"infoOnlyForCompatible":'\u0422\u043e\u043b\u044c\u043a\u043e \u0434\u043b\u044f <a href="//html5test.com/compare/feature/video-h264.html" target="_blank">H.264-\u0441\u043e\u0432\u043c\u0435\u0441\u0442\u0438\u043c\u044b\u0445</a> \u0431\u0440\u0430\u0443\u0437\u0435\u0440\u043e\u0432'
+   ,"seUseHtml5ForAudio":"\u0418\u0441\u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u044c HTML5 \u0430\u0443\u0434\u0438\u043e \u043f\u043b\u0435\u0435\u0440"
    ,"seUseHTML5ForSave":"\u0418\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C HTML5 \u0434\u043B\u044F \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u044F \u0444\u0430\u0439\u043B\u043E\u0432"
 };
 
@@ -1605,7 +1606,8 @@ vk_lang_en={//by Hzy
    'DontRemoveAlbumCover': "Don't remove album cover",
    "seUseHtml5ForVideo": "Use HTML5 as video player",
    "infoOnlyForCompatible": "Only <a href=\"//html5test.com/compare/feature/video-h264.html\" target=\"_blank\">H.264-compatible</a> browsers"
-   ,"seUseHTML5ForSave":"Use HTML5 for file saving"
+  ,"seUseHtml5ForAudio":"Use HTML5 as audio player"
+  ,"seUseHTML5ForSave":"Use HTML5 for file saving"
 };
  
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
