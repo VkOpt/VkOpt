@@ -155,9 +155,9 @@ function vkSettingsPage(){
 	if (!ge('vkopt_settings_tab') && ge('settings_filters')){
 		var li=vkCe('li',{id:'vkopt_settings_tab'});
 		li.innerHTML='\
-			<a href="/settings?act=vkopt" onclick="return checkEvent(event)" onmousedown="return vkShowSettings();">\
+			<a href="/settings?act=vkopt" onclick="return checkEvent(event)" onmousedown="return vkShowSettings();" title="VkOpt">\
 			<b class="tl1"><b></b></b><b class="tl2"></b>\
-			<b class="tab_word">VkOpt</b>\
+			<b class="tab_word">&nbsp;</b>\
 			</a>'; 
 		ge('settings_filters').appendChild(li);
 	}
@@ -719,6 +719,14 @@ function vkInitSettings(){
 }
 
 vk_settings = {
+   css:'\
+      #vkopt_settings_tab a{\
+        background-image: url("http://vkopt.net/favicon.ico");\
+        background-repeat: no-repeat;\
+        background-position: 50% 50%;\
+        width: 32px;\
+      }\
+   ',
    dislikes_icons:function(){
       var html='\
       <div class="dislikes_icons fl_r dislike_icon_%cur">\
