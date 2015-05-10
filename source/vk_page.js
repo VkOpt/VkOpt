@@ -159,7 +159,8 @@ vk_profile={
       vk_profile.only4friends_checkbox();
       vk_highlinghts.groups_block();
       vk_highlinghts.profile_groups();
-      vk_groups.show_oid();      
+      vk_groups.show_oid();
+      vkScrollPosts('page_wall_posts');
    },
    inj:function(){
       Inj.After('profile.init','});','setTimeout("vkProcessNode();",2);');
@@ -3160,6 +3161,7 @@ vk_feed={
    on_page:function(){
       //vkSortFeedPhotos();
       vk_feed.filter_init();
+      vkScrollPosts('feed_rows');
    },
    process_node:function(node){
       if (!vk_feed.filter_enabled) return;
@@ -3510,10 +3512,79 @@ function vkSortFeedPhotos(node){
 	vklog('Sort feed photos time:' + (unixtime()-tstart) +'ms');
 }
 
+function vkScrollPosts(parent_id) {  // Добавление панельки с кнопками перемотки на следующий и предыдущий посты. parent_id - id контейнера с постами
+    if (getSet(19)=='y' && !ge('vk_scroll_parent')) {
+        var prev = vkCe('div', {'class': 'vk_scroll prev fl_l'});   // Кнопка "предыдущий"
+        var previousPost = function () {
+            var elem = ge(parent_id).firstElementChild;   // первый пост
+            if (elem) {
+                while (elem && elem.getBoundingClientRect().top < -1 || elem.tagName != 'DIV')
+                    elem = elem.nextElementSibling;
+                elem = elem.previousElementSibling;         // в этом месте elem был текущим постом, а стал предыдущим
+                if (elem) scrollToY(getXY(elem)[1], 100);
+                window.scrollAnimation = false;
+                wall.scrollCheck(); // для подгрузки стены
+            }
+        };
+        prev.onclick = previousPost;
 
+        var next = vkCe('div', {'class': 'vk_scroll next fl_r'});   // Кнопка "следующий"
+        var nextPost = function () {
+            var elem = ge(parent_id).firstElementChild;   // первый пост
+            if (elem) {
+                while (elem && elem.getBoundingClientRect().top < 1)
+                    elem = elem.nextElementSibling;
+                if (elem) scrollToY(getXY(elem)[1], 100);   // здесь elem - следующий пост
+                window.scrollAnimation = false;
+                wall.scrollCheck(); // для подгрузки стены
+            }
+        };
+        next.onclick = nextPost;
 
-
-
+        document.body.onkeydown = function(ev){             // биндим кнопки A и D на функции предыдущего и следующего поста
+            if (document.activeElement == document.body) {  // Срабатывать только если пользователь сейчас не пишет текст
+                if (ev.keyCode == 65) previousPost();       // A
+                if (ev.keyCode == 68) nextPost();           // D
+            }
+        };
+        var separator = vkCe('div', {'class': 'separator fl_l'});   // разделительная палочка
+        var parent = vkCe('div', {'id': 'vk_scroll_parent'});       // родительский контейнер для кнопок и разделителя
+        parent.appendChild(prev);
+        parent.appendChild(separator);
+        parent.appendChild(next);
+        var css = '.vk_scroll {\
+                border-right:1px solid #73A5C5;\
+                border-bottom:1px solid #73A5C5;\
+                width:10px;\
+                height:10px;\
+                margin: 8px;\
+                cursor: pointer;\
+            }\
+            .vk_scroll.next {\
+                transform: rotate(-45deg);\
+            }\
+            .vk_scroll.prev {\
+                transform: rotate(135deg);\
+            }\
+            #vk_scroll_parent {\
+                background-color: #fafafa;\
+                border-radius: 0 0 6px 6px;\
+                box-shadow: 0 0 2px #a3a3a3;\
+                padding: 5px;\
+                position: fixed;\
+                right: 3%;\
+                top: 0;\
+                z-index: 100;\
+            }\
+            #vk_scroll_parent .separator {\
+                border-right: 1px solid #E4E4E4;\
+                height: 15px;\
+                margin: 5px;\
+            }';
+        vkaddcss(css);
+        ge('wrap3').appendChild(parent);    // вставка идет не в body, чтобы кнопки удалялись при переходе в раздел без постов.
+    }
+}
 
 
 function vk_tag_api(section,url,app_id){

@@ -677,6 +677,7 @@ function vkInitSettings(){
       {id:99, text:IDL("seSortByLikes")},
       {id:100, text:IDL("seTopicSearch")}
       //{id:64, text:IDL("seToTopOld")}
+     ,{id:19, text:IDL("seTurningPosts")}
     ],
 	Sounds:[
 	  {id:48, text:IDL("ReplaceVkSounds")}	
@@ -702,7 +703,7 @@ function vkInitSettings(){
   };
 
    //LAST 104
-   //FREE 19,20,76,102
+   //FREE 20,76,102
 
    vkSetsType={
       "on"  :[IDL('on'),'y'],
