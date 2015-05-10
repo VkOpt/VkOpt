@@ -202,7 +202,8 @@ var vkbrowser = {
   safari_mobile: /iphone|ipod|ipad/i.test(_ua_),
   opera_mobile: /opera mini|opera mobi/i.test(_ua_),
   opera_mini: /opera mini/i.test(_ua_),
-  mac: /mac/i.test(_ua_)
+  mac: /mac/i.test(_ua_),
+  linux: /linux/.test(_ua_)
 };
 if (window.opera) {vkbrowser.mozilla=false; vkbrowser.opera=true;}
 
