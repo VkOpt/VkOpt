@@ -134,7 +134,7 @@ function vkStyle(url){
          //*
          var replaced=0;
          css=css.replace(/(url\(['"]?)(.{6})/g,function(str,p1,p2){
-            if (p2!='http:/' && p2!='https:'){
+            if (!/^(https?:|data:|\/\/)/.test(p2)){ // don't replace for absolute links  http:, https:, data:, //domain
                //console.log('"'+p2+'"', str);
                replaced++;
                return p1+(p2[0]=='/'?base_domain:base_url+'/')+p2;
