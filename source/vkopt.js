@@ -60,7 +60,7 @@ var AUDIO_DOWNLOAD_POSTFIX=false;
 var FEEDFILTER_DEBUG=false;
 var SHOW_OID_IN_TITLES=false;
 var ENABLE_HOTFIX=true;
-
+var ENABLE_CACHE=false;
 
 var VKOPT_CFG_LIST=[
          'vk_DEBUG',
@@ -88,6 +88,7 @@ var VKOPT_CFG_LIST=[
          'FEEDFILTER_DEBUG',
          'SHOW_OID_IN_TITLES'
          , 'ENABLE_HOTFIX'
+         , 'ENABLE_CACHE'
 ];
 
 var vkNewSettings=[98,99,100,79]; //"new" label on settings item

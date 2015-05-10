@@ -6389,7 +6389,7 @@ if (!window.vkopt_plugins) vkopt_plugins = {};
                 part: 1,
                 offset: _offset,
                 w: this.cur_w
-            }, function (r, text) {
+            }, function (text) {
                 var arr = text.split('<!>');
 
                 var json = JSON.parse(arr[arr.length - 3].replace('<!json>', ''));

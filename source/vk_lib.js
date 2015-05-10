@@ -889,13 +889,13 @@ var vkMozExtension = {
     var AjCache={};
     function AjGet(url, callback, unsyn) {
         var hash;
-        if (getSet(102)=='n' || !AjCache[hash = vkMD5(url)]) {
+        if (!ENABLE_CACHE || !AjCache[hash = vkMD5(url)]) {
             var request = (vkAjTransport.readyState == 4 || vkAjTransport.readyState == 0) ? vkAjTransport : PrepReq();
             vkAjTransport = request;
             if (!request) return false;
             request.onreadystatechange = function () {
                 if (request.readyState == 4 && callback) {
-                    if (getSet(102)=='y') AjCache[hash] = request.responseText;
+                    if (ENABLE_CACHE) AjCache[hash] = request.responseText;
                     callback(request.responseText);
                 }
             };
@@ -911,12 +911,12 @@ var vkMozExtension = {
 
     function AjPost(url, data, callback) {
         var hash;
-        if (getSet(102)=='n' || !AjCache[hash = vkMD5(url + JSON.stringify(data))]) {
+        if (!ENABLE_CACHE || !AjCache[hash = vkMD5(url + JSON.stringify(data))]) {
             var request = PrepReq();
             if (!request) return false;
             request.onreadystatechange = function () {
                 if (request.readyState == 4 && callback) {
-                    if (getSet(102)=='y') AjCache[hash] = request.responseText;
+                    if (ENABLE_CACHE) AjCache[hash] = request.responseText;
                     callback(request.responseText);
                 }
             };
