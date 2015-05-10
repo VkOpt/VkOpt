@@ -155,9 +155,9 @@ function vkSettingsPage(){
 	if (!ge('vkopt_settings_tab') && ge('settings_filters')){
 		var li=vkCe('li',{id:'vkopt_settings_tab'});
 		li.innerHTML='\
-			<a href="/settings?act=vkopt" onclick="return checkEvent(event)" onmousedown="return vkShowSettings();">\
+			<a href="/settings?act=vkopt" onclick="return checkEvent(event)" onmousedown="return vkShowSettings();" title="VkOpt">\
 			<b class="tl1"><b></b></b><b class="tl2"></b>\
-			<b class="tab_word">VkOpt</b>\
+			<b class="tab_word">&nbsp;</b>\
 			</a>'; 
 		ge('settings_filters').appendChild(li);
 	}
@@ -594,6 +594,7 @@ function vkInitSettings(){
       {id:7,  text:IDL("seScroolPhoto")},
       {id:93, text:IDL("seAlbumPhotosExInfo"),info:'infoUseNetTrafic'}
       , {id:101, text:IDL("seUseHtml5ForVideo"),info:'infoOnlyForCompatible'}
+      , {id:104, text:IDL("seUseHtml5ForAudio")}
     ],
     Users:[
       {id:10, text:IDL("seExUserMenu")+'<br><a href="#" onclick="toggle(\'vkExUMenuCFG\'); return false;">[<b> '+IDL("Settings")+' </b>]</a>'+
@@ -676,6 +677,7 @@ function vkInitSettings(){
       {id:99, text:IDL("seSortByLikes")},
       {id:100, text:IDL("seTopicSearch")}
       //{id:64, text:IDL("seToTopOld")}
+     ,{id:19, text:IDL("seTurningPosts")}
     ],
 	Sounds:[
 	  {id:48, text:IDL("ReplaceVkSounds")}	
@@ -691,7 +693,7 @@ function vkInitSettings(){
 		{id:34, text:IDL("seSwichTextChr")},
       {id:77, text:IDL("seBatchCleaners")},
       {id:78, text:IDL("seCutBracket")}
-    , {id:102, text:IDL("seUseCache"), info:'infoUseCache'}
+    , {id:103, text:IDL("seUseHTML5ForSave")}
    ],
    Hidden:[
       {id:82, text:IDL("FullThumb")},
@@ -700,8 +702,8 @@ function vkInitSettings(){
    ]
   };
 
-   //LAST 102
-   //FREE 19,20,76,
+   //LAST 104
+   //FREE 20,76,102
 
    vkSetsType={
       "on"  :[IDL('on'),'y'],
@@ -717,6 +719,14 @@ function vkInitSettings(){
 }
 
 vk_settings = {
+   css:'\
+      #vkopt_settings_tab a{\
+        background-image: url("http://vkopt.net/favicon.ico");\
+        background-repeat: no-repeat;\
+        background-position: 50% 50%;\
+        width: 32px;\
+      }\
+   ',
    dislikes_icons:function(){
       var html='\
       <div class="dislikes_icons fl_r dislike_icon_%cur">\

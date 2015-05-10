@@ -615,6 +615,7 @@ function vkStyles(){
          .search_bar:hover .vk_idattach{display:block;}\
 	";
    main_css+=vk_menu.css;
+   main_css+=vk_settings.css;   
    main_css+=vk_board.css;
    main_css+=vk_photos.css;
    main_css+=vk_audio.css;
