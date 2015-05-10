@@ -574,131 +574,132 @@ function vkInitSettings(){
     
   vkoptSets={
     Media:[
-      {id:0,  text:IDL("seLinkAu")},
-      {id:1,  text:IDL("seAudioDownloadName")},
+      {id:0,   text: "seLinkAu"},
+      {id:1,   text: "seAudioDownloadName"},
       
-      {id:2,  text:IDL("seLinkVi")},
-      {id:66, text:IDL("seVidDownloadLinks")},
-      {id:92,  text:IDL("seVideoHideConfirm")},
-      //{id:76, text:IDL("seVideoFullTitles")},
+      {id:2,   text: "seLinkVi"},
+      {id:66,  text: "seVidDownloadLinks"},
+      {id:92,   text: "seVideoHideConfirm"},
+      //{id:76,  text: "seVideoFullTitles"},
       
-      {id:3,  text:IDL("seCompactAudio")},
-      {id:90, text:IDL("seAudioFullTitles")},
-      {id:73, text:IDL("seLoadAudioAlbumInfo")},
-      {id:75, text:IDL("seAPlayerCtrls")},
-      {id:85, text:IDL("seAutoScrollToTrack")},
-      {id:43, text:IDL("seAudioSize")},
-      {id:94, text:IDL("seAudioUntrashTitle")},
+      {id:3,   text: "seCompactAudio"},
+      {id:90,  text: "seAudioFullTitles"},
+      {id:73,  text: "seLoadAudioAlbumInfo"},
+      {id:75,  text: "seAPlayerCtrls"},
+      {id:85,  text: "seAutoScrollToTrack"},
+      {id:43,  text: "seAudioSize"},
+      {id:94,  text: "seAudioUntrashTitle"},
       
-      {id:4,  text:IDL("seMoreDarkViewer")},      
-      {id:7,  text:IDL("seScroolPhoto")},
-      {id:93, text:IDL("seAlbumPhotosExInfo"),info:'infoUseNetTrafic'}
-      , {id:101, text:IDL("seUseHtml5ForVideo"),info:'infoOnlyForCompatible'}
-      , {id:104, text:IDL("seUseHtml5ForAudio")}
+      {id:4,   text: "seMoreDarkViewer"},      
+      {id:7,   text: "seScroolPhoto"},
+      {id:93,  text: "seAlbumPhotosExInfo",info:'infoUseNetTrafic'}
+      , {id:101,  text: "seUseHtml5ForVideo",info:'infoOnlyForCompatible'}
+      , {id:104,  text: "seUseHtml5ForAudio"}
     ],
     Users:[
-      {id:10, text:IDL("seExUserMenu")+'<br><a href="#" onclick="toggle(\'vkExUMenuCFG\'); return false;">[<b> '+IDL("Settings")+' </b>]</a>'+
+      // Явно указваем идентификатор wiki-страницы, т.к из параметра text не получить:
+      {id:10, wiki:"seExUserMenu", text:IDL("seExUserMenu")+'<br><a href="#" onclick="toggle(\'vkExUMenuCFG\'); return false;">[<b> '+IDL("Settings")+' </b>]</a>'+
                                            '<span id="vkExUMenuCFG" style="display:none"><div>'+vkCheckboxSetting(11,IDL("seExUMClik"))+'</div><hr />'+GetUserMenuSett()+'</span>'},
-      //{id:11, text:IDL("seExUMClik")},
-      {id:8, text:IDL("seZoomPhoto")},// {id:8, header:IDL("seZoomPhoto") , text:IDL("seZoomPhHelp"),ops:[0,1,2]},
-      {id:38, text:'<table><tr><td> <table><tr><td width=20 height=20 id="spct11" bgcolor='+getFrColor()+'></td></tr></table> <td>'+
+      //{id:11,  text: "seExUMClik"},
+      {id:8,  text: "seZoomPhoto"},// {id:8,  header: "seZoomPhoto" ,  text: "seZoomPhHelp",ops:[0,1,2]},
+      {id:38, wiki:"seLightFriends", text:'<table><tr><td> <table><tr><td width=20 height=20 id="spct11" bgcolor='+getFrColor()+'></td></tr></table> <td>'+
          '<span class="cltool"><a onclick="init_colorpicker(this.parentNode,FrCol_click,\'' + getFrColor() + '\')">'+IDL("seLightFriends")+'</a></span>'+
          '</td></tr></table>'},       
       //{id 23 - store "is expland" profile} 
-      //{id:24, text:IDL("seAvaArrows")},
-      {id:25, text:IDL("seICQico")},
-      {id:41, header:IDL("seExpland_ProfileInfo"), text:IDL("seExplandProfileInfoText"),ops:[0,1,2,3]},      
-      {id:26, text:IDL("seCalcAge")},
-      {id:39, text:IDL("seGrCom")},
-      {id:45, text:IDL("seSortNam"), ops:['name','last','none']},
-      {id:46,  text:IDL("seLoadOnl"), sub:{id:5, text:'<br>'+IDL("now")+': <b>%cur</b> '+IDL("min")+'<br>'+IDL("set")+': %sets',ops:[1,2,3,4,5,10,15]},ops:['au','ru']},
-      {id:47, text:IDL("seLoadCom"), ops:["au","ru"]},
-      {id:49, text:IDL("seFavOn")},
-      {id:50, text:IDL("seFavOnline")+'<span style="padding-left:10px;">'+vkCheckboxSetting(57,IDL("seOnRightPart"))+'</span>',info:'infoUseNetTrafic'},
-      {id:51, text:IDL("seFavToTopIm")},
-      {id:52, text:IDL("seFaveOnline"),info:'infoUseNetTrafic'},
-      {id:72, text:IDL("seFriendCatsOnProfile")},
-      {id:87, text:IDL("seSearchExInfo"),info:'infoUseNetTrafic'},
-      {id:91, text:IDL("seFaveFr"),info:'infoUseNetTrafic'},
-      {id:96, text:IDL("seExInfoGrReq"),info:'infoUseNetTrafic'}
-      //{id:65, text:IDL("seShowLastActivity"),info:'infoUseNetTrafic'}
+      //{id:24,  text: "seAvaArrows"},
+      {id:25,  text: "seICQico"},
+      {id:41,  header: "seExpland_ProfileInfo",  text: "seExplandProfileInfoText",ops:[0,1,2,3]},      
+      {id:26,  text: "seCalcAge"},
+      {id:39,  text: "seGrCom"},
+      {id:45,  text: "seSortNam", ops:['name','last','none']},
+      {id:46,   text: "seLoadOnl", sub:{id:5, text:'<br>'+IDL("now")+': <b>%cur</b> '+IDL("min")+'<br>'+IDL("set")+': %sets',ops:[1,2,3,4,5,10,15]},ops:['au','ru']},
+      {id:47,  text: "seLoadCom", ops:["au","ru"]},
+      {id:49,  text: "seFavOn"},
+      {id:50, wiki:"seFavOnline", text:IDL("seFavOnline")+'<span style="padding-left:10px;">'+vkCheckboxSetting(57,IDL("seOnRightPart"))+'</span>',info:'infoUseNetTrafic'},
+      {id:51,  text: "seFavToTopIm"},
+      {id:52,  text: "seFaveOnline",info:'infoUseNetTrafic'},
+      {id:72,  text: "seFriendCatsOnProfile"},
+      {id:87,  text: "seSearchExInfo",info:'infoUseNetTrafic'},
+      {id:91,  text: "seFaveFr",info:'infoUseNetTrafic'},
+      {id:96,  text: "seExInfoGrReq",info:'infoUseNetTrafic'}
+      //{id:65,  text: "seShowLastActivity",info:'infoUseNetTrafic'}
     ],
 
     Messages:[
-     //{id:19, text:IDL("seQAns")},
-	  {id:28, text:'<table><tr><td> <table><tr><td width=20 height=20 id="spct10" bgcolor=' + getMsgColor() + '></td></tr></table> <td>'+
+     //{id:19,  text: "seQAns"},
+	  {id:28, wiki:"seHLMail", text:'<table><tr><td> <table><tr><td width=20 height=20 id="spct10" bgcolor=' + getMsgColor() + '></td></tr></table> <td>'+
       '<span class="cltool"><a onclick="init_colorpicker(this.parentNode,MsgCol_click,\'' + getMsgColor() + '\')">'+IDL("seHLMail")+'</a></span>'+
       '</td></tr></table>'},
-	  {id:40, text:IDL("seMasDelPMsg")},
-     {id:55, text:IDL("seIMFullTime")},
-     {id:56, text:IDL("seIMAlwaysShowTime")},
-     {id:62, text:IDL("seWriteBoxWithoutFastChat")},
-     {id:68, text:IDL("seTypingNotify")},
-     {id:81, text:IDL("seDialogsReplyBtn")},
-     {id:89, text:IDL("seDisableIMFavicon")}
+	  {id:40,  text: "seMasDelPMsg"},
+     {id:55,  text: "seIMFullTime"},
+     {id:56,  text: "seIMAlwaysShowTime"},
+     {id:62,  text: "seWriteBoxWithoutFastChat"},
+     {id:68,  text: "seTypingNotify"},
+     {id:81,  text: "seDialogsReplyBtn"},
+     {id:89,  text: "seDisableIMFavicon"}
     ],
     vkInterface:[
-      {id:21, text:IDL("seADRem")+vkCheckboxSetting(44,IDL("seAdNotHideSugFr"),true)},
-      {id:12, text:IDL("seMenu")+'<br><a href="#" onclick="toggle(\'vkMenuCFG\'); return false;">[<b> '+IDL("Settings")+' </b>]</a><span id="vkMenuCFG" style="display:none">'+vkCheckboxSetting(80,IDL("seMenuToRight"),true)+'<div id="vkMenuCustom">'+vk_menu.custom_settings()+'</div></span>'},
-      //{id:20, text:IDL("seAutoUpdMenu"),info:'infoUseNetTrafic'},
-      {id:14, text:IDL("seLoadFrCats")},  
-      {id:15, header:IDL("seLMenuH") , text:IDL("seLMenuO"),ops:[0,1,2]},
-      {id:29, text:IDL("seLMenuWallLink")},
-      {id:22, text:IDL("seGInCol")},
-      {id:13, header:IDL("seMyFrLink") , text:IDL("seMyFrLnkOps"),ops:[0,1,2]},
-      {id:5, text:IDL("seDisableAjaxNav"),warn:true},
-      {id:17, text:IDL("seCompactFave")},
-      {id:16, text:IDL("seOnlineStatus"),info:'infoUseNetTrafic'},
-      {id:18, header:IDL("seFixLeftMenu"), text:IDL("seFixLeftMenuText"),ops:[0,1,2]},
-      {id:27, text:IDL("seCalend")},
-      {id:30, header:IDL("seClockH") , text:IDL("seClockO"),ops:[0,1,2,3]},
-      {id:31, text:IDL("seRightBar")+vkCheckboxSetting(37,IDL("seRightBarFixAsSideBar"),true)},
-      {id:35, text:IDL("seBlocksToRightBar")},
-      {id:32, text:IDL("seSkinManBtn") /*, hide: (vkbrowser.mozilla)*/},
-      {id:33, text:IDL("seSmiles")+vkCheckboxSetting(63,IDL("seSmilesAlwaysShow"),true),warn:'seSmilesAlwaysShowWarning'},
-      {id:95, text:IDL("seEmojiSmiles")},
-      {id:36, text:IDL("sePreventHideNotifications")},
-      //{id:42, text:IDL("seSortFeedPhotos")},
-      {id:53, text:IDL("seShutProfilesBlock")},
-      {id:54, header:IDL("seMoveNotifier") , text:IDL("seMoveNotifierText"),ops:[0,1,2,3]},
-      {id:58, text:IDL("sePopupBoardInfo")},
-      {id:59, text:IDL("seExplandGroupNews")},
-      {id:60, text:IDL("seProfileMoveAudioBlock")},
-      {id:61, text:IDL("seProfileGroups"),info:'infoUseNetTrafic'},
-      {id:67, text:IDL("seHideLeftFrendsBlock")},
-      {id:70, text:IDL("seHideBigLike")},
-      {id:71, text:IDL("seWallReplyMod")},
-      {id:74, text:IDL("seLeaveGroupLinks")},
-      {id:79, text:vk_settings.dislikes_icons()+IDL("seDislikes"),info:'infoUseNetTrafic'},
-      {id:86, text:IDL("seDisableWallWikiBox")},
-      {id:88, text:IDL("seGroupRequestsBlock"),info:'infoUseNetTrafic'},
-      {id:97, text:examples.seSubscribeToPostComments+IDL("seSubscribeToPostComments")},
-      {id:98, text:IDL("seShowAllComments")},
-      {id:99, text:IDL("seSortByLikes")},
-      {id:100, text:IDL("seTopicSearch")}
-      //{id:64, text:IDL("seToTopOld")}
-     ,{id:19, text:IDL("seTurningPosts")}
+      {id:21,  wiki:"seADRem", text:IDL("seADRem")+vkCheckboxSetting(44,IDL("seAdNotHideSugFr"),true)},
+      {id:12,  wiki:"seMenu", text:IDL("seMenu")+'<br><a href="#" onclick="toggle(\'vkMenuCFG\'); return false;">[<b> '+IDL("Settings")+' </b>]</a><span id="vkMenuCFG" style="display:none">'+vkCheckboxSetting(80,IDL("seMenuToRight"),true)+'<div id="vkMenuCustom">'+vk_menu.custom_settings()+'</div></span>'},
+      //{id:20,  text: "seAutoUpdMenu",info:'infoUseNetTrafic'},
+      {id:14,  text: "seLoadFrCats"},  
+      {id:15,  header: "seLMenuH" ,  text: "seLMenuO",ops:[0,1,2]},
+      {id:29,  text: "seLMenuWallLink"},
+      {id:22,  text: "seGInCol"},
+      {id:13,  header: "seMyFrLink" ,  text: "seMyFrLnkOps",ops:[0,1,2]},
+      {id:5,   text: "seDisableAjaxNav",warn:true},
+      {id:17,  text: "seCompactFave"},
+      {id:16,  text: "seOnlineStatus",info:'infoUseNetTrafic'},
+      {id:18,  header: "seFixLeftMenu",  text: "seFixLeftMenuText",ops:[0,1,2]},
+      {id:27,  text: "seCalend"},
+      {id:30,  header: "seClockH" ,  text: "seClockO",ops:[0,1,2,3]},
+      {id:31,  wiki:"seRightBar", text:IDL("seRightBar")+vkCheckboxSetting(37,IDL("seRightBarFixAsSideBar"),true)},
+      {id:35,  text: "seBlocksToRightBar"},
+      {id:32,  text:"seSkinManBtn" /*, hide: (vkbrowser.mozilla)*/},
+      {id:33,  wiki:"seSmiles", text:IDL("seSmiles")+vkCheckboxSetting(63,IDL("seSmilesAlwaysShow"),true),warn:'seSmilesAlwaysShowWarning'},
+      {id:95,  text: "seEmojiSmiles"},
+      {id:36,  text: "sePreventHideNotifications"},
+      //{id:42,  text: "seSortFeedPhotos"},
+      {id:53,  text: "seShutProfilesBlock"},
+      {id:54,  header: "seMoveNotifier" ,  text: "seMoveNotifierText",ops:[0,1,2,3]},
+      {id:58,  text: "sePopupBoardInfo"},
+      {id:59,  text: "seExplandGroupNews"},
+      {id:60,  text: "seProfileMoveAudioBlock"},
+      {id:61,  text: "seProfileGroups",info:'infoUseNetTrafic'},
+      {id:67,  text: "seHideLeftFrendsBlock"},
+      {id:70,  text: "seHideBigLike"},
+      {id:71,  text: "seWallReplyMod"},
+      {id:74,  text: "seLeaveGroupLinks"},
+      {id:79,  wiki:"seDislikes", text:vk_settings.dislikes_icons()+IDL("seDislikes"),info:'infoUseNetTrafic'},
+      {id:86,  text: "seDisableWallWikiBox"},
+      {id:88,  text: "seGroupRequestsBlock",info:'infoUseNetTrafic'},
+      {id:97,  wiki:"seSubscribeToPostComments", text:examples.seSubscribeToPostComments+IDL("seSubscribeToPostComments")},
+      {id:98,  text: "seShowAllComments"},
+      {id:99,  text: "seSortByLikes"},
+      {id:100,  text: "seTopicSearch"}
+      //{id:64,  text: "seToTopOld"}
+     ,{id:19,  text: "seTurningPosts"}
     ],
 	Sounds:[
-	  {id:48, text:IDL("ReplaceVkSounds")}	
+	  {id:48,   text: "ReplaceVkSounds"}	
 	],
    Help:[
-     {id:69, text:IDL("HelpAds")}
+     {id:69,   text: "HelpAds"}
    ],
    Others:[
-		{id:9,  header:IDL("seTestFr"), text:IDL("seRefList"), sub:{id:1, text:'<br>'+IDL("now")+': <b>%cur</b> '+IDL("day")+'<br>'+IDL("set")+': %sets'+
+		{id:9,   header: "seTestFr",  text: "seRefList", sub:{id:1, text:'<br>'+IDL("now")+': <b>%cur</b> '+IDL("day")+'<br>'+IDL("set")+': %sets'+
             '<br><a onClick="vkFriendsCheck();" style="cursor: hand;">'+IDL('seCreList')+'</a>',
             ops:[1,2,3,4,5,6,7]}},
-		{id:6, text:IDL("seOnAway")},
-		{id:34, text:IDL("seSwichTextChr")},
-      {id:77, text:IDL("seBatchCleaners")},
-      {id:78, text:IDL("seCutBracket")}
-    , {id:103, text:IDL("seUseHTML5ForSave")}
+		{id:6,   text: "seOnAway"},
+		{id:34,  text: "seSwichTextChr"},
+      {id:77,  text: "seBatchCleaners"},
+      {id:78,  text: "seCutBracket"}
+    , {id:103,  text: "seUseHTML5ForSave"}
    ],
    Hidden:[
-      {id:82, text:IDL("FullThumb")},
-      {id:83, text:IDL("seDislikesIcon"), ops:[0,1,2,3]},
-      {id:84, text:IDL("seFeedFilter")}
+      {id:82,  text: "FullThumb"},
+      {id:83,  text: "seDislikesIcon", ops:[0,1,2,3]},
+      {id:84,  text: "seFeedFilter"}
    ]
   };
 
@@ -726,6 +727,28 @@ vk_settings = {
         background-position: 50% 50%;\
         width: 32px;\
       }\
+      .vk_sett_help_link a{\
+         display: block;\
+         position: absolute;\
+         background: rgba(0, 46, 92, 0.086);\
+         padding: 0px 0px;\
+         border-radius: 10px;\
+         color: #607387;\
+         font-weight: bold;\
+         width: 14px;\
+         height: 14px;\
+         line-height: 14px;\
+         font-size: 9px;\
+         opacity: 0;\
+      }\
+      .vk_sett_help_link a:hover{\
+         text-decoration: none;\
+         color: #FFF;\
+         background:#45688E;\
+      }\
+      .sett_block:hover .vk_sett_help_link a{ \
+         opacity: 1;\
+      }\
    ',
    dislikes_icons:function(){
       var html='\
@@ -751,6 +774,9 @@ vk_settings = {
         addClass(el.parentNode,'dislike_icon_'+idx);
       }
       return false;
+   },
+   lng: function(s){
+      return /^[a-z0-9_\-]+$/i.test(s || '') ? IDL(s) : s ;
    },
    filter:function(s){
       if (!s || trim(s)==''){
@@ -781,11 +807,12 @@ vk_settings = {
          'Help':1,
          'Hidden':1
       };
+      var lng_rx=/^[a-z0-9_\-]+$/;
       for (var key in vkoptSets){
        var setts=vkoptSets[key];
-       if (excluded[key]) continue;
+       if (excluded[key]) continue; 
        for (var i=0;i<setts.length;i++){
-         var txt=(setts[i].text|| '').toUpperCase()+' '+(setts[i].header|| '').toUpperCase();
+         var txt = vk_settings.lng(setts[i].text).toUpperCase()+' '+vk_settings.lng(setts[i].header).toUpperCase();
          s=s.toUpperCase();
          if ( txt.indexOf(s)>-1 || txt.search(s)>-1){// TopSearch.parseLatKeys(s)
             sets.push(setts[i]);
@@ -892,7 +919,7 @@ function vksettobj(){
     var setts=vkoptSets[key];
     for (var i=0;i<setts.length;i++){
       x=Math.max(x,setts[i].id);
-      vkoptSetsObj[setts[i].id]=[setts[i].ops,setts[i].text];
+      vkoptSetsObj[setts[i].id]=[setts[i].ops,vk_settings.lng(setts[i].text)];
     }   
   }
   VK_SETTS_COUNT=x;    
@@ -947,7 +974,13 @@ function vkGetSettings(setts,allsett){
       
       var ops=(set.ops)?set.ops:["on","off"];
       
-      html+='<div id="settBlock'+id+'" class="sett_block'+(vkIsNewSett(id)?' sett_new':'')+'" '+(ops.length>2?'style="float:right; margin-right:4px;"':'')+'>'+(set.header?'<div class="scaption">'+set.header+'</div>':'')+'<div class="btns" id="sbtns'+id+'">';
+      html+='<div id="settBlock'+id+'" class="sett_block'+(vkIsNewSett(id)?' sett_new':'')+'" '+(ops.length>2?'style="float:right; margin-right:4px;"':'')+'>'+
+         (set.header?'<div class="scaption">'+vk_settings.lng(set.header)+'</div>':'')+
+      '<div class="btns" id="sbtns'+id+'">';
+      
+      if (VKSETTINGS_WITH_WIKI_LINKS)
+         html+='<div class="vk_sett_help_link fl_r"><a target="_blank" href="https://github.com/VkOpt/VkOpt/wiki/'+encodeURIComponent(set.wiki || set.header || set.text)+'">?</a></div>';
+      
       //html+='<b>'+id+': '+sett[id]+'</b><br>';
       for (var i=0;i<ops.length;i++){ 
         if (typeof ops[i]=='number'){   
@@ -969,7 +1002,7 @@ function vkGetSettings(setts,allsett){
         for (var i=0;i<sops.length;i++) subsets.push('<a href="javascript:vkSwitchSet('+set.sub.id+','+sops[i]+',true);">'+sops[i]+'</a>');
         sub = set.sub.text.replace("%cur",'<span id="vkcurset'+set.sub.id+'">'+allsett[set.sub.id]+'</span>').replace("%sets",subsets.join(" - "));
       }
-      html+='</div><div class="stext">'+warn+info +set.text+sub+'</div></div>\r\n';
+      html+='</div><div class="stext">'+warn+info +vk_settings.lng(set.text)+sub+'</div></div>\r\n';
   }
   return '<div style="display: inline-block; width:100%;">'+html+"</div>";
   
