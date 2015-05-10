@@ -721,7 +721,7 @@ function vkInitSettings(){
 vk_settings = {
    css:'\
       #vkopt_settings_tab a{\
-        background-image: url("http://vkopt.net/favicon.ico");\
+        background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB/0lEQVR42mNkQAP+TZvkgFQsEP/YWOfXC+RXA9l6QDwZyD+Crp4RXcCvcZMrkNoFxB+BuAyI64BYGogjgHgTEHtsqvdbj2KAX+MGNiC1HYhvAvFZIJ7DgAlAtv8FYnsgrtxUH9ABN8C3YT3MVmIAyBDnzQ2BB1G84FO3diaQSoNyQa4o3tIUfBAozgNkhwBxOxBLAHEuUHwK3AvetWuygLQpEDsBMSgATwGxAxAzQzUe2doccgeoTh1qwUGoYcuAeB6jd82qLUCGN5IT3aAaQTHBCVK4tSUsGiYJVL8USEVBuXsZvapW2AAZRUAcCBXkhfIbkfyst60t4hpQLcjAV0DMA5WLAIeBZ+UyUFy3QAVloFF4D4hFoWIrt7dHRQDVgSxZBxV7B4peRo/yJdOAjEwkLxTs6IyZCBTPB7InILnCEIgrkJw/Bagul9G9bBHIrzOhtkpAaWcgvgzEt6EBCwJboQHNCeWb7OyKO8voVrKAdVdPwm8gDQqLw1DJX0DcBMSvoYajg5tAPRrwdOBaPA8UZQeA2AYtwWhADZVAM6Bpd29SPUpCci2amwaN30Qgzoc6dyIQPwXiLjQD9Hb3JV9GMQAEXApn8+zpT/0CpFcAueHQRBMKxA+R/P4IqEYenhKx+I/BuWCWHtQ7x/dOSDsP5CcA2dpQ6fNAsWUwtQDLf5r+QnMJOwAAAABJRU5ErkJggg==");\
         background-repeat: no-repeat;\
         background-position: 50% 50%;\
         width: 32px;\
