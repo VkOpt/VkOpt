@@ -982,7 +982,7 @@ function vkMenu(){//vkExLeftMenu
         ['/albums'+vkmid+'?act=added',vk_lang["mTags"],true]
     ], 
     'video':[
-        ['/video',IDL("mViM")],
+        ['/video?section=all',IDL("mViM")],
         ['/video?section=tagged',IDL("mViW")],
         ['/video?section=uploaded',IDL("mViUploaded")],
         ['/video?section=comments',IDL("mPhC")],
