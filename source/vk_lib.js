@@ -2788,10 +2788,10 @@ function WMDonateForm(Amount,purse_id,descr_text,submit_text){
  var type=purse_id.match(/(\w)\d+/)[1].toLowerCase();
  var wm='WM'+type.toUpperCase();
  return '<div style="margin:0 auto; display: table;"><FORM action="wmk:payto" style="padding:0; margin:0px" method="get">\
-	<table><tr><td><IMG src="http://www.webmoney.ru/img/wmkeeper_48x48.png"></td><td>\
+	<table><tr><td><IMG src="'+wmkeeper_img+'"></td><td>\
 	<b>'+purse_id+'</b><br><INPUT type=hidden value="'+purse_id+'" name=Purse>\
 	<INPUT style="\
-	width:40px; padding:2px 2px 2px 22px; border:1px solid #DDD; background:url(http://www.webmoney.ru/img/icons/wm'+type+'.gif) 2px 2px no-repeat; text-align:right;\
+	width:40px; padding:2px 2px 2px 22px; border:1px solid #DDD; background:url(\''+wmicons_img[type]+'\') 2px 2px no-repeat; text-align:right;\
 	" size=4 value="'+Amount+'" name=Amount> '+wm+' <BR>\
 	<INPUT type=hidden value="'+descr_text+'" name=Desc>\
 	<INPUT type=hidden value=Y name=BringToFront>\
@@ -2838,7 +2838,7 @@ function WMPursesList(result_el){
 		var type=purses[i][0].match(/(\w)(\d+)/)[1].toLowerCase();
 		var yad=purses[i][0].split('*')[1];
 		if (!yad)
-			html+='<a href=# class="purse_link" onclick="ge(\''+result_el+'\').innerHTML=WMDonateForm('+purses[i][1]+',\''+purses[i][0]+'\'); return false" style="background:url(http://www.webmoney.ru/img/icons/wm'+type+'.gif) 0px 0px no-repeat;">'+purses[i][0]+'<span style="float:right">WebMoney</span></a>';
+			html+='<a href=# class="purse_link" onclick="ge(\''+result_el+'\').innerHTML=WMDonateForm('+purses[i][1]+',\''+purses[i][0]+'\'); return false" style="background:url(\''+wmicons_img[type]+'\') 0px 0px no-repeat;">'+purses[i][0]+'<span style="float:right">WebMoney</span></a>';
 		else 
 			html+='<a href=# class="purse_yad_link" onclick="ge(\''+result_el+'\').innerHTML=YMDonateForm('+purses[i][1]+',\''+yad+'\'); return false"><div class="purse_yad_link_img" ></div>'+yad+'<span style="float:right">\u042f\u043d\u0434\u0435\u043a\u0441.\u0414\u0435\u043d\u044c\u0433\u0438</span></a>';	 
 	}

@@ -444,7 +444,7 @@ function vkStyles(){
 		.sett_cat_header{display: inline-block; width:100%; text-align: center; font-weight:bold; border: 1px solid #B1BDD6; color: #255B8E; background: rgba(0, 55, 96, 0.145); line-height: 25px;}\
 		.vk_sounds_settrings .sett_block{border-bottom:0px; width: 300px;}\
 		#vkTestSounds a{  margin: 0px;  padding: 3px; padding-left:25px; line-height:20px; display: inline-block; width:225px;  \
-						  background: url(http:\/\/vk.com\/images\/play.gif) 4px 5px no-repeat;\
+						  background: url(/images/play.gif) 4px 5px no-repeat;\
 						  border-bottom_: solid 1px #CCD3DA; }\
 		#vkTestSounds a:hover {  text-decoration: none;  background-color: #DAE1E8; }\
       #vk_sound_vol{text-align:center; width:200px; margin:0 auto;}\

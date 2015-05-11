@@ -692,7 +692,7 @@ vk_ch_media={
    photo:function(id,img,w,h){
       var sizes=null;
       
-      img=img || "http://vk.com/images/no_photo.png";
+      img=img || "/images/no_photo.png";
       if (img){
          w = w || 115;
          h = h || 87;
@@ -708,7 +708,7 @@ vk_ch_media={
          } 
       
       } else {
-         img="http://vk.com/images/no_photo.png";
+         img="/images/no_photo.png";
          sizes={
             "s": [img, 57, 43],
             "m": [img, 115, 87],
@@ -731,12 +731,12 @@ vk_ch_media={
    },
    video:function(vid){
       cur.chooseMedia('video', vid, {
-         "thumb": "http://vk.com/images/video_s.png",
+         "thumb": "/images/video_s.png",
          "editable": {
             "sizes": {
-               "s": ["http://vk.com/images/video_s.png", 130, 98],
-               "m": ["http://vk.com/images/video_m.png", 160, 120],
-               "l": ["http://vk.com/images/video_l.png", 240]
+               "s": ["/images/video_s.png", 130, 98],
+               "m": ["/images/video_m.png", 160, 120],
+               "l": ["/images/video_l.png", 240]
             },
             "duration": 0
          }
