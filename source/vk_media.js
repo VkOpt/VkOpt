@@ -325,7 +325,7 @@ var vk_photos = {
          else oid=oid?oid:vk.id;
          var sys=[{
             aid:"wall",
-            thumb_src:'http://vk.com/images/m_noalbum.png',
+            thumb_src:'/images/m_noalbum.png',
             owner_id:oid,
             title:IDL('photos_on_wall'),
             size:'-',
@@ -334,7 +334,7 @@ var vk_photos = {
          if (oid>0) 
             sys.push({
                aid:"saved",
-               thumb_src:'http://vk.com/images/m_noalbum.png',
+               thumb_src:'/images/m_noalbum.png',
                owner_id:oid,
                title:IDL('Saved_photos'),
                size:'-',
