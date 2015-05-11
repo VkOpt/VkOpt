@@ -740,6 +740,12 @@ vk_settings = {
          line-height: 14px;\
          font-size: 9px;\
          opacity: 0;\
+        -webkit-transition: all 200ms ease-in-out;\
+        -khtml-transition: all 200ms ease-in-out;\
+        -moz-transition: all 200ms ease-in-out;\
+        -ms-transition: all 200ms ease-in-out;\
+        -o-transition: all 200ms ease-in-out;\
+        transition: all 200ms ease-in-out; \
       }\
       .vk_sett_help_link a:hover{\
          text-decoration: none;\
@@ -807,12 +813,11 @@ vk_settings = {
          'Help':1,
          'Hidden':1
       };
-      var lng_rx=/^[a-z0-9_\-]+$/;
       for (var key in vkoptSets){
        var setts=vkoptSets[key];
-       if (excluded[key]) continue; 
+       if (excluded[key]) continue;
        for (var i=0;i<setts.length;i++){
-         var txt = vk_settings.lng(setts[i].text).toUpperCase()+' '+vk_settings.lng(setts[i].header).toUpperCase();
+         var txt = vk_settings.lng(setts[i].text || "").toUpperCase()+' '+vk_settings.lng(setts[i].header || "").toUpperCase();
          s=s.toUpperCase();
          if ( txt.indexOf(s)>-1 || txt.search(s)>-1){// TopSearch.parseLatKeys(s)
             sets.push(setts[i]);
