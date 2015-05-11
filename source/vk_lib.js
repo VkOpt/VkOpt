@@ -886,33 +886,50 @@ var vkMozExtension = {
 		}
 	}
 	var vkAjTransport={};
-	function AjGet(url, callback,unsyn) {
-	var request = (vkAjTransport.readyState == 4 || vkAjTransport.readyState==0)? vkAjTransport:PrepReq();
-	vkAjTransport=request;
-	if(!request) return false;
-	  request.onreadystatechange = function() {
-	  if(request.readyState == 4 && callback) callback(request,request.responseText);
-	};
-	  //unsyn=!unsyn;
-	  request.open('GET', url, !unsyn);
-	  request.send(null);
-	  return true;
-	}
+    var AjCache={};
+    function AjGet(url, callback, unsyn) {
+        var hash;
+        if (!ENABLE_CACHE || !AjCache[hash = vkMD5(url)]) {
+            var request = (vkAjTransport.readyState == 4 || vkAjTransport.readyState == 0) ? vkAjTransport : PrepReq();
+            vkAjTransport = request;
+            if (!request) return false;
+            request.onreadystatechange = function () {
+                if (request.readyState == 4 && callback) {
+                    if (ENABLE_CACHE) AjCache[hash] = request.responseText;
+                    callback(request.responseText);
+                }
+            };
+            //unsyn=!unsyn;
+            request.open('GET', url, !unsyn);
+            request.send(null);
+        } else {
+            callback(AjCache[hash]);
+        }
+        return true;
+    }
 
 
-	function AjPost(url, data, callback) {
-		var request = PrepReq();
-		if(!request) return false;
-		request.onreadystatechange  = function() {
-				if(request.readyState == 4 && callback) callback(request,request.responseText);
-			};
-		request.open('POST', url, true);
-		if (request.setRequestHeader)
-			request.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-			request.setRequestHeader("X-Requested-With", "XMLHttpRequest");//*/
-		request.send(urlEncData(data));
-		return true;
-	}
+    function AjPost(url, data, callback) {
+        var hash;
+        if (!ENABLE_CACHE || !AjCache[hash = vkMD5(url + JSON.stringify(data))]) {
+            var request = PrepReq();
+            if (!request) return false;
+            request.onreadystatechange = function () {
+                if (request.readyState == 4 && callback) {
+                    if (ENABLE_CACHE) AjCache[hash] = request.responseText;
+                    callback(request.responseText);
+                }
+            };
+            request.open('POST', url, true);
+            if (request.setRequestHeader)
+                request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            request.setRequestHeader("X-Requested-With", "XMLHttpRequest");//*/
+            request.send(urlEncData(data));
+        } else {
+            callback(AjCache[hash]);
+        }
+        return true;
+    }
    
    function AjCrossAttachJS(url,id, callback) {
       	if (vk_ext_api.ready && (url || '').replace(/^\s+|\s+$/g, '')){
@@ -1598,7 +1615,7 @@ function vk_oauth_api(app_id,scope){
             }
             params['method'] = method;
             params['oauth'] = 1;            
-            AjPost('/api.php', params, function(r,text){
+            AjPost('/api.php', params, function(text){
                onDoneRequest(text);
             })
          }         
@@ -1696,7 +1713,7 @@ function vkApiCall(method,params,callback){ // Функция позволяет
    params = params || {};
    params['oauth'] = 1;
    params['method'] = method;
-   AjPost('api.php',params,function(r,t){
+   AjPost('api.php',params,function(t){
       var res = eval('('+t+')');
       if (callback) callback(res);
    });
@@ -1824,7 +1841,7 @@ vkApis={
         });
     },
    faves:function(callback){
-      AjGet('/fave?section=users&al=1',function(r,t){
+      AjGet('/fave?section=users&al=1',function(t){
          var r=t.match(/"faveUsers"\s*:\s*(\[[^\]]+\])/);
          if (r){
             r=eval('('+r[1]+')');

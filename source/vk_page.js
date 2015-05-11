@@ -1277,7 +1277,7 @@ function vkFaveProfileBlock(is_list){
    } else {
       ge("vk_fave_all_link").href="javascript:vkFaveProfileBlock(true)";
    }
-   AjGet('/fave?section=users&al=1',function(r,t){
+   AjGet('/fave?section=users&al=1',function(t){
       var r=t.match(/"faveUsers"\s*:\s*(\[[^\]]+\])/);
       if (r){
          r=eval('('+r[1]+')');
@@ -1349,7 +1349,7 @@ function vkProfileGroupBlock(){
       
    }
    ge('vk_group_block_content').innerHTML=vkBigLdrImg;
-   AjPost('al_groups.php',{act: 'get_list', mid: cur.oid,tab:'groups',al:1},function(r,t){
+   AjPost('al_groups.php',{act: 'get_list', mid: cur.oid,tab:'groups',al:1},function(t){
       var data=t.split('<!json>');
       if (!data[1]){
             ge('vk_group_block_content').innerHTML=IDL('NA');
@@ -1616,7 +1616,7 @@ if (!masks[id]) return;
 vk_graff={
    upload_box:function(mid){
       mid = mid || cur.oid;
-      AjPost('/al_wall.php',{act:'canvas_draw_box',al:1,flash:11,to_id:mid},function(r,t){
+      AjPost('/al_wall.php',{act:'canvas_draw_box',al:1,flash:11,to_id:mid},function(t){
          var url=t.match(/action="([^"]+)"/);
          if (!url){
             alert('Parse upload url error');
@@ -3612,7 +3612,7 @@ function vk_tag_api(section,url,app_id){
      
          var ret=0;
          var req=function(){
-            AjPost(location.protocol+'//vk.com/widget_like.php',params,function(r,t){
+            AjPost(location.protocol+'//vk.com/widget_like.php',params,function(t){
                var _pageQuery=(t.match(/_pageQuery\s*=\s*'([a-f0-9]+)'/) || [])[1];
                var likeHash=(t.match(/likeHash\s*=\s*'([a-f0-9]+)'/) || [])[1];
                if (!_pageQuery || !likeHash){
@@ -3816,7 +3816,7 @@ function vk_tag_api(section,url,app_id){
       },
 
       post:function(url,params,callback){
-         AjPost(url,params,function(r,t){
+         AjPost(url,params,function(t){
             if (callback) callback(t);
          });
       },
