@@ -3541,17 +3541,21 @@ function vkScrollPosts(parent_id) {  // Добавление панельки с
         };
         next.onclick = nextPost;
 
-        document.body.onkeydown = function(ev){             // биндим кнопки A и D на функции предыдущего и следующего поста
+        addEvent(document.body, 'keydown', function(ev){    // биндим кнопки A и D на функции предыдущего и следующего поста
             if (document.activeElement == document.body) {  // Срабатывать только если пользователь сейчас не пишет текст
                 if (ev.keyCode == 65) previousPost();       // A
                 if (ev.keyCode == 68) nextPost();           // D
             }
-        };
+        });
         var separator = vkCe('div', {'class': 'separator fl_l'});   // разделительная палочка
-        var parent = vkCe('div', {'id': 'vk_scroll_parent'});       // родительский контейнер для кнопок и разделителя
+        var parent = vkCe('div', {'id': 'vk_scroll_parent', 'class': 'unshown'});       // родительский контейнер для кнопок и разделителя
         parent.appendChild(prev);
         parent.appendChild(separator);
         parent.appendChild(next);
+        addEvent(window, 'scroll', function(event){
+            if (event.pageY > 100) removeClass(parent, 'unshown');
+            else addClass(parent, 'unshown');
+        });
         var css = '.vk_scroll {\
                 border-right:1px solid #73A5C5;\
                 border-bottom:1px solid #73A5C5;\
@@ -3574,7 +3578,7 @@ function vkScrollPosts(parent_id) {  // Добавление панельки с
                 position: fixed;\
                 right: 3%;\
                 top: 0;\
-                z-index: 100;\
+                z-index: 499;\
             }\
             #vk_scroll_parent .separator {\
                 border-right: 1px solid #E4E4E4;\
