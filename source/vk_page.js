@@ -3518,7 +3518,7 @@ function vkScrollPosts(parent_id) {  // Добавление панельки с
         var previousPost = function () {
             var elem = ge(parent_id).firstElementChild;   // первый пост
             if (elem) {
-                while (elem && elem.getBoundingClientRect().top < -1 || elem.tagName != 'DIV')
+                while (elem && elem.getBoundingClientRect().top < -1 || elem.getBoundingClientRect().x==0)
                     elem = elem.nextElementSibling;
                 elem = elem.previousElementSibling;         // в этом месте elem был текущим постом, а стал предыдущим
                 if (elem) scrollToY(getXY(elem)[1], 100);
@@ -3541,6 +3541,7 @@ function vkScrollPosts(parent_id) {  // Добавление панельки с
         };
         next.onclick = nextPost;
 
+        removeEvent(document.body, 'keydown');
         addEvent(document.body, 'keydown', function(ev){    // биндим кнопки A и D на функции предыдущего и следующего поста
             if (document.activeElement == document.body) {  // Срабатывать только если пользователь сейчас не пишет текст
                 if (ev.keyCode == 65) previousPost();       // A
