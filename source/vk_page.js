@@ -160,7 +160,7 @@ vk_profile={
       vk_highlinghts.groups_block();
       vk_highlinghts.profile_groups();
       vk_groups.show_oid();
-      vkScrollPosts('page_wall_posts');
+      vk_feed.scroll_posts('page_wall_posts');
    },
    inj:function(){
       Inj.After('profile.init','});','setTimeout("vkProcessNode();",2);');
@@ -3144,7 +3144,47 @@ vk_feed={
       .vkf_nofriend .vk_feed_friend,\
       .vkf_noad .vk_feed_ad,\
       .vkf_norepost .vk_feed_repost{'+(FEEDFILTER_DEBUG ? 'border:2px solid red' : 'display:none')+' !important}\
-      ';
+      \
+      .vk_scroll {\
+        cursor: pointer;\
+        padding: 5px;\
+      }\
+      .vk_scroll div {\
+          border: 7px solid transparent;\
+          width:0px;\
+          height:0px;\
+          margin: 8px;\
+      }\
+      .vk_scroll:hover {\
+        background: rgba(219, 227, 235, 0.5);\
+      }\
+      .vk_scroll.next{\
+         border-radius: 0 0 6px 0;\
+      }\
+      .vk_scroll.prev{\
+         border-radius: 0 0 0 6px;\
+      }\
+      .vk_scroll.next div{\
+          border-left: 7px solid #7993AD;\
+          border-right: 0px;\
+      }\
+      .vk_scroll.prev div{\
+          border-right: 7px solid #7993AD;\
+          border-left: 0px;\
+      }\
+      #vk_scroll_parent {\
+          background-color: rgba(0, 56, 113, 0.07);\
+          border-radius: 0 0 6px 6px;\
+          position: fixed;\
+          right: 3%;\
+          top: 0;\
+          z-index: 499;\
+      }\
+      #vk_scroll_parent .separator {\
+          border-right: 1px solid rgba(0, 0, 0, 0.13);\
+          height: 20px;\
+          margin: 10px 1px;\
+      }';
    },
    inj:function(){
       Inj.Before('Feed.go','revertLastInlineVideo',"/*console.log('process go',rows);*/ rows=vkModAsNode(rows,vk_feed.process_node);");
@@ -3161,7 +3201,7 @@ vk_feed={
    on_page:function(){
       //vkSortFeedPhotos();
       vk_feed.filter_init();
-      vkScrollPosts('feed_rows');
+      vk_feed.scroll_posts('feed_rows');
    },
    process_node:function(node){
       if (!vk_feed.filter_enabled) return;
@@ -3293,6 +3333,54 @@ vk_feed={
          },2000);
 
       }
+   },
+   scroll_posts: function(parent_id) {  // Добавление панельки с кнопками перемотки на следующий и предыдущий посты. parent_id - id контейнера с постами
+       if (getSet(19)=='y' && !ge('vk_scroll_parent')) {
+           var prev = vkCe('div', {'class': 'vk_scroll prev fl_l'}, '<div></div>');   // Кнопка "предыдущий"
+           var previousPost = function () {
+               var elem = ge(parent_id).firstElementChild;   // первый пост
+               if (elem) {
+                   while (elem && elem.getBoundingClientRect().top < -3 || elem.getBoundingClientRect().x==0)
+                       elem = elem.nextElementSibling;
+                   elem = elem.previousElementSibling;         // в этом месте elem был текущим постом, а стал предыдущим
+                   if (elem) scrollToY(getXY(elem)[1], 100);
+                   window.scrollAnimation = false;
+                   wall.scrollCheck(); // для подгрузки стены
+               }
+           };
+           prev.onclick = previousPost;
+
+           var next = vkCe('div', {'class': 'vk_scroll next fl_r'}, '<div></div>');   // Кнопка "следующий"
+           var nextPost = function () {
+               var elem = ge(parent_id).firstElementChild;   // первый пост
+               if (elem) {
+                   while (elem && elem.getBoundingClientRect().top < 3)
+                       elem = elem.nextElementSibling;
+                   if (elem) scrollToY(getXY(elem)[1], 100);   // здесь elem - следующий пост
+                   window.scrollAnimation = false;
+                   wall.scrollCheck(); // для подгрузки стены
+               }
+           };
+           next.onclick = nextPost;
+
+           removeEvent(document.body, 'keydown');
+           addEvent(document.body, 'keydown', function(ev){    // биндим кнопки A и D на функции предыдущего и следующего поста
+               if (document.activeElement == document.body) {  // Срабатывать только если пользователь сейчас не пишет текст
+                   if (ev.keyCode == 65) previousPost();       // A
+                   if (ev.keyCode == 68) nextPost();           // D
+               }
+           });
+           var separator = vkCe('div', {'class': 'separator fl_l'});   // разделительная палочка
+           var parent = vkCe('div', {'id': 'vk_scroll_parent', 'class': 'unshown'});       // родительский контейнер для кнопок и разделителя
+           parent.appendChild(prev);
+           parent.appendChild(separator);
+           parent.appendChild(next);
+           addEvent(window, 'scroll', function(){
+               if (scrollGetY() > 100) removeClass(parent, 'unshown');
+               else addClass(parent, 'unshown');
+           });
+           ge('wrap3').appendChild(parent);    // вставка идет не в body, чтобы кнопки удалялись при переходе в раздел без постов.
+       }
    },
    filter_enabled:false,
    filter_init:function(){
@@ -3510,85 +3598,6 @@ function vkSortFeedPhotos(node){
 		for(var i=0;i<narr.length;i++) node.appendChild(narr[i][0]);
 	}
 	vklog('Sort feed photos time:' + (unixtime()-tstart) +'ms');
-}
-
-function vkScrollPosts(parent_id) {  // Добавление панельки с кнопками перемотки на следующий и предыдущий посты. parent_id - id контейнера с постами
-    if (getSet(19)=='y' && !ge('vk_scroll_parent')) {
-        var prev = vkCe('div', {'class': 'vk_scroll prev fl_l'});   // Кнопка "предыдущий"
-        var previousPost = function () {
-            var elem = ge(parent_id).firstElementChild;   // первый пост
-            if (elem) {
-                while (elem && elem.getBoundingClientRect().top < -1 || elem.getBoundingClientRect().x==0)
-                    elem = elem.nextElementSibling;
-                elem = elem.previousElementSibling;         // в этом месте elem был текущим постом, а стал предыдущим
-                if (elem) scrollToY(getXY(elem)[1], 100);
-                window.scrollAnimation = false;
-                wall.scrollCheck(); // для подгрузки стены
-            }
-        };
-        prev.onclick = previousPost;
-
-        var next = vkCe('div', {'class': 'vk_scroll next fl_r'});   // Кнопка "следующий"
-        var nextPost = function () {
-            var elem = ge(parent_id).firstElementChild;   // первый пост
-            if (elem) {
-                while (elem && elem.getBoundingClientRect().top < 1)
-                    elem = elem.nextElementSibling;
-                if (elem) scrollToY(getXY(elem)[1], 100);   // здесь elem - следующий пост
-                window.scrollAnimation = false;
-                wall.scrollCheck(); // для подгрузки стены
-            }
-        };
-        next.onclick = nextPost;
-
-        removeEvent(document.body, 'keydown');
-        addEvent(document.body, 'keydown', function(ev){    // биндим кнопки A и D на функции предыдущего и следующего поста
-            if (document.activeElement == document.body) {  // Срабатывать только если пользователь сейчас не пишет текст
-                if (ev.keyCode == 65) previousPost();       // A
-                if (ev.keyCode == 68) nextPost();           // D
-            }
-        });
-        var separator = vkCe('div', {'class': 'separator fl_l'});   // разделительная палочка
-        var parent = vkCe('div', {'id': 'vk_scroll_parent', 'class': 'unshown'});       // родительский контейнер для кнопок и разделителя
-        parent.appendChild(prev);
-        parent.appendChild(separator);
-        parent.appendChild(next);
-        addEvent(window, 'scroll', function(){
-            if (scrollGetY() > 100) removeClass(parent, 'unshown');
-            else addClass(parent, 'unshown');
-        });
-        var css = '.vk_scroll {\
-                border-right:1px solid #73A5C5;\
-                border-bottom:1px solid #73A5C5;\
-                width:10px;\
-                height:10px;\
-                margin: 8px;\
-                cursor: pointer;\
-            }\
-            .vk_scroll.next {\
-                transform: rotate(-45deg);\
-            }\
-            .vk_scroll.prev {\
-                transform: rotate(135deg);\
-            }\
-            #vk_scroll_parent {\
-                background-color: #fafafa;\
-                border-radius: 0 0 6px 6px;\
-                box-shadow: 0 0 2px #a3a3a3;\
-                padding: 5px;\
-                position: fixed;\
-                right: 3%;\
-                top: 0;\
-                z-index: 499;\
-            }\
-            #vk_scroll_parent .separator {\
-                border-right: 1px solid #E4E4E4;\
-                height: 15px;\
-                margin: 5px;\
-            }';
-        vkaddcss(css);
-        ge('wrap3').appendChild(parent);    // вставка идет не в body, чтобы кнопки удалялись при переходе в раздел без постов.
-    }
 }
 
 
