@@ -405,7 +405,7 @@ var ex_loader = {
       //return req.status==200?req.responseText:null;
    },
    get:function(key){
-      if (window.navigator.userAgent.match('Mozilla')  && typeof Components.classes !="undefined"){
+      if (window.navigator.userAgent.match('Mozilla')&& typeof Components !="undefined"  && typeof Components.classes !="undefined"){
          var url = ex_loader.moz_strorage_id;
          var ios = Components.classes["@mozilla.org/network/io-service;1"]
                    .getService(Components.interfaces.nsIIOService);
@@ -422,7 +422,7 @@ var ex_loader = {
       return localStorage[key];
    },
    set:function(key,value){
-      if (window.navigator.userAgent.match('Mozilla')  && typeof Components !="undefined"){
+      if (window.navigator.userAgent.match('Mozilla')  && typeof Components !="undefined" && typeof Components.classes !="undefined"){
          var url = ex_loader.moz_strorage_id;
          var ios = Components.classes["@mozilla.org/network/io-service;1"]
                    .getService(Components.interfaces.nsIIOService);
@@ -439,7 +439,7 @@ var ex_loader = {
          localStorage[key]=value;
    },
    clear:function(){
-      if (window.navigator.userAgent.match('Mozilla')  && typeof Components !="undefined"){
+      if (window.navigator.userAgent.match('Mozilla')  && typeof Components !="undefined" && typeof Components.classes !="undefined"){
          var url = ex_loader.moz_strorage_id;
          var ios = Components.classes["@mozilla.org/network/io-service;1"]
                    .getService(Components.interfaces.nsIIOService);
