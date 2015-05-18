@@ -3553,8 +3553,8 @@ function vkScrollPosts(parent_id) {  // Добавление панельки с
         parent.appendChild(prev);
         parent.appendChild(separator);
         parent.appendChild(next);
-        addEvent(window, 'scroll', function(event){
-            if (event.pageY > 100) removeClass(parent, 'unshown');
+        addEvent(window, 'scroll', function(){
+            if (scrollGetY() > 100) removeClass(parent, 'unshown');
             else addClass(parent, 'unshown');
         });
         var css = '.vk_scroll {\
