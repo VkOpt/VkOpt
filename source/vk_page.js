@@ -3340,7 +3340,7 @@ vk_feed={
            var previousPost = function () {
                var elem = ge(parent_id).firstElementChild;   // первый пост
                if (elem) {
-                   while (elem && elem.getBoundingClientRect().top < -3 || elem.getBoundingClientRect().x==0)
+                   while (elem && elem.getBoundingClientRect().top < -3 || elem.getBoundingClientRect().left==0)
                        elem = elem.nextElementSibling;
                    elem = elem.previousElementSibling;         // в этом месте elem был текущим постом, а стал предыдущим
                    if (elem) scrollToY(getXY(elem)[1], 100);
