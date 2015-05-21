@@ -3184,7 +3184,11 @@ vk_feed={
           border-right: 1px solid rgba(0, 0, 0, 0.13);\
           height: 20px;\
           margin: 10px 1px;\
-      }';
+      }\
+      #vk_scroll_parent, .vk_scroll { opacity: 0.4; transition: all 400ms ease-out; }\
+      #vk_scroll_parent{ opacity:0.7;}\
+      #vk_scroll_parent:hover, .vk_scroll:hover { opacity: 1; }\
+      ';
    },
    inj:function(){
       Inj.Before('Feed.go','revertLastInlineVideo',"/*console.log('process go',rows);*/ rows=vkModAsNode(rows,vk_feed.process_node);");
