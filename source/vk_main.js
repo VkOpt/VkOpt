@@ -786,7 +786,7 @@ function vkPhChooseProcess(answer,q){
       }
      }//*/
      if (ref){
-       var node=vkCe('div',{"class":'ta_r vk_opa2','style':"height: 25px; padding-left:10px; padding-top:4px;"},'\
+       var node=vkCe('div',{"class":'ta_r vk_opa2','style':"padding-left:10px; padding-top:4px;"},'\
        <div class="fl_l">\
            '+IDL('EnterLinkToPhoto')+': \
          <span><input id="vk_link_to_photo" type="text"  style="width:230px" class="s_search text"></span>\
