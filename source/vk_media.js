@@ -2785,6 +2785,7 @@ vk_videos = {
          if (!cur.videoList) return '';
          list = cur.videoList[cur.vSection];
       }
+      if (!list) return '';
       for (var i = 0, len = list.length; i < len; i++) {
          if (list[i][0] + '_' + list[i][1] == video) {
             album_id=list[i][6];

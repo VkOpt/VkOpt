@@ -660,7 +660,6 @@ function vkProcessResponse(answer,url,q){
   if (getSet(21)=='y' && url=='/al_video.php' && q.act=='show'){
      answer[2]=answer[2].replace(/"eid1"\s*:\s*"?\d+"?/i,'"eid1":0');
      answer[2]=answer[2].replace(/"show_ads"\s*:\s*"?\d+"?/i,'"show_ads":0');
-     console.log(answer[2]);
   }
 }
 

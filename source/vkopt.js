@@ -62,7 +62,8 @@ var SHOW_OID_IN_TITLES=false;
 var ENABLE_HOTFIX=true;
 var VKSETTINGS_WITH_WIKI_LINKS=false;
 var ENABLE_CACHE=false;
-var VIDEO_PLAYER_DBG_ON = false;
+var VIDEO_PLAYER_DBG_ON = false; // включить отладочную инфу в видеоплеере
+var LOAD_HEADERS_BY_HEAD_REQ = false; // для получения запросом только хидеров использовать HEAD запрос (иначе GET c хидером запроса Range: bytes=0-1)
 
 var VKOPT_CFG_LIST=[
          'vk_DEBUG',
@@ -92,7 +93,8 @@ var VKOPT_CFG_LIST=[
          'ENABLE_HOTFIX',
          'VKSETTINGS_WITH_WIKI_LINKS',
          'ENABLE_CACHE',
-         'VIDEO_PLAYER_DBG_ON'
+         'VIDEO_PLAYER_DBG_ON',
+         'LOAD_HEADERS_BY_HEAD_REQ'
 ];
 
 var vkNewSettings=[98,99,100,79,101,103,104,19]; //"new" label on settings item

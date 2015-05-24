@@ -1990,6 +1990,18 @@ var vk_ext_api={
       window.postMessage(data,"*");
    },
    ajax:{
+      parse_headers:function(raw_headers){
+         var raw=(raw_headers || '').split(/\r?\n/);
+         var headers={};
+         for (var i=0; i<raw.length; i++){
+            var s=raw[i].split(':');
+            var n=s.shift().replace(/^\s+|\s+$/g, '');
+            var c=s.join(':').replace(/^\s+|\s+$/g, '');
+            if (n && c)
+               headers[n]=c;
+         }
+         return headers;
+      },
       get:function(url,callback){
          vk_ext_api.req({act:'get',url:url},function(r){
             callback(r.response);
@@ -2002,16 +2014,7 @@ var vk_ext_api={
       },      
       head:function(url,callback){
          vk_ext_api.req({act:'head',url:url},function(r){
-            var raw=(r.response || '').split(/\r?\n/);
-            var headers={};
-            for (var i=0; i<raw.length; i++){
-               var s=raw[i].split(':');
-               var n=s.shift().replace(/^\s+|\s+$/g, '');
-               var c=s.join(':').replace(/^\s+|\s+$/g, '');
-               if (n && c)
-                  headers[n]=c;
-            }
-            
+            headers = vk_ext_api.ajax.parse_headers(r.response);            
             callback(headers);
          });        
       },
@@ -2046,15 +2049,33 @@ var XFR={
       
       if (vk_ext_api.ready && url && !XFR.vk_ext_api_exclude.test(url)){
          if (only_head){
-            vk_aj.head(url,function(h){
-               var l=0;
-               for (var key in h){
-                  if (key.toLowerCase()=='content-length'){
-                     l=parseInt(h[key]);
+            if (LOAD_HEADERS_BY_HEAD_REQ){
+               vk_aj.head(url,function(h){
+                  var l=0;
+                  for (var key in h){
+                     if (key.toLowerCase()=='content-length'){
+                        l=parseInt(h[key]);
+                     }
                   }
-               }
-               callback(h,l);
-            });
+                  callback(h,l);
+               });
+            }  else {
+               vk_aj.ajax({url:url, method: 'GET', headers:{'Range':'bytes=0-1'}},function(r){
+                  var l = 0;
+                  var l2 = 0;
+                  var h = vk_ext_api.ajax.parse_headers(r.headers);
+                  for (var key in h){
+                     if (key.toLowerCase()=='content-length'){
+                        l=parseInt(h[key]);
+                     }
+                     if (key.toLowerCase()=='content-range'){
+                        l2=parseInt((h[key].match(/\/(\d+)/)||['',0])[1]);
+                     }
+                  }
+                  l = Math.max(l,l2);
+                  callback(h,l);
+               })
+            }
          } else {
             vk_aj.post(url,data,function(t){
                callback(t);
