@@ -10,8 +10,8 @@
 // (c) All Rights Reserved. VkOpt.
 //
 /* VERSION INFO */
-var vVersion	= 230;
-var vBuild = 150215;
+var vVersion	= 231;
+var vBuild = 150525;
 var vPostfix = ' ';
 if (!window.vk_DEBUG) var vk_DEBUG=false;
 /* EXT CONFIG */
@@ -62,6 +62,7 @@ var SHOW_OID_IN_TITLES=false;
 var ENABLE_HOTFIX=true;
 var VKSETTINGS_WITH_WIKI_LINKS=false;
 var ENABLE_CACHE=false;
+var VIDEO_PLAYER_DBG_ON = false;
 
 var VKOPT_CFG_LIST=[
          'vk_DEBUG',
@@ -90,10 +91,11 @@ var VKOPT_CFG_LIST=[
          'SHOW_OID_IN_TITLES',
          'ENABLE_HOTFIX',
          'VKSETTINGS_WITH_WIKI_LINKS',
-         'ENABLE_CACHE'
+         'ENABLE_CACHE',
+         'VIDEO_PLAYER_DBG_ON'
 ];
 
-var vkNewSettings=[98,99,100,79]; //"new" label on settings item
+var vkNewSettings=[98,99,100,79,101,103,104,19]; //"new" label on settings item
 var SetsOnLocalStore={
   'vkOVer':'c',
   'remixbit':'c',

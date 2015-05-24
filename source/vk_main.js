@@ -655,6 +655,13 @@ function vkProcessResponse(answer,url,q){
       answer[1]=vkModAsNode(answer[1],vk_photos.update_photo_btn,url,q);
   }
   if (getSet(101) == 'y' && url == '/al_video.php' && q.act == 'show')  answer[2] = answer[2].replace(/if\s*\([^b]*browser.flash[^\)]*\)/g,'if (false)'); // al_video.php:111 : if (browser.flash >= 10) { /*flash*/ } else { /*html5*/ }
+  
+  if (VIDEO_PLAYER_DBG_ON && url=='/al_video.php' && q.act=='show') answer[2]=answer[2].replace('"dbg_on":0','"dbg_on":1');
+  if (getSet(21)=='y' && url=='/al_video.php' && q.act=='show'){
+     answer[2]=answer[2].replace(/"eid1"\s*:\s*"?\d+"?/i,'"eid1":0');
+     answer[2]=answer[2].replace(/"show_ads"\s*:\s*"?\d+"?/i,'"show_ads":0');
+     console.log(answer[2]);
+  }
 }
 
 vk_features={
