@@ -564,7 +564,7 @@ function vkPopupAvatar(id,el,in_box){
             //LoadedProfiles[id]=html;
             box.hide();
             box=vkAlertBox('id'+uid,html);
-            box.setOptions({width:"455px",hideButtons:true, bodyStyle:'padding:0px;', onHide:__bq.hideAll});
+            box.setOptions({width:"455px",hideButtons:true, bodyStyle:'padding:0px;', onHide:__bq.hideLast});
          },true);
          
       }else  if (LoadedProfiles[id]){
