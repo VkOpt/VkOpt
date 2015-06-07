@@ -486,13 +486,13 @@ MsgCol_click=function(color){
 
 function getMsgColor(){
   var cl=getSet('-',3);//vkgetCookie('remixbit').split('-')[9];
-  return cl?cl:"#E2E9FF";
+  return cl || "#E2E9FF";
 }
 function setMsgColor(color) {    setSet('-',color,3); }
 
 function getFrColor(){
   var cl=getSet('-',4);//sett.split('-')[10];
-  return cl?cl:"#34A235";
+  return cl || "#34A235";
 }
 function setFrColor(color) {
   setSet('-',color,4);
