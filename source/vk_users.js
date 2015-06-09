@@ -1014,7 +1014,7 @@ function vkFriendsCheck(nid){
   
   if (!window.FrUpdBox || isNewLib()) FrUpdBox = new MessageBox({title: IDL('FriendsListTest'),closeButton:true,width:"350px"});
   var box=FrUpdBox;
-  var addButton=function(_box,label,callback,style){  _box.addButton(!isNewLib()?{onClick: callback, style:'button_'+(style?style:'no'),label:label}:label,callback,style);};		
+  var addButton=function(_box,label,callback,style){  _box.addButton(!isNewLib()?{onClick: callback, style:'button_'+(style || 'no'),label:label}:label,callback,style);};		
   var html='\
     <div class="vkfrupl">\
     <div id="vkfrupdloader" class="box_loader"></div><br>\

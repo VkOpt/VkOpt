@@ -322,7 +322,7 @@ var vk_photos = {
          //console.log(r,albums);
          if (r.error) dApi.show_error(r);
          if (albums[0]) oid=albums[0].owner_id;
-         else oid=oid?oid:vk.id;
+         else oid=oid || vk.id;
          var sys=[{
             aid:"wall",
             thumb_src:'/images/m_noalbum.png',
@@ -1921,10 +1921,10 @@ vkDisableAlbumScroll();
 getGidUid(u,function(userid,groupid){
   userid = userid || groupid;
   show("vkphloader");
-  var ResultElem=(toel)?toel: ge("photos_container");
+  var ResultElem=toel || ge("photos_container");
   var aoid=cur.moreFrom.match(/album(-?\d+)_(\d+)/);//nav.objLoc[0]
-  aid=(aid)?aid:aoid[2];
-  oid=(oid)?oid:aoid[1];
+  aid=aid || aoid[2];
+  oid=oid || aoid[1];
   vkAdmGetPhotosWithUsers(oid,aid,function(r){
     var list=r.response[0];
 	var users_data=r.response[1];
@@ -4800,7 +4800,7 @@ function vkViewAlbumInfo(artist,track){
                                     .replace(/%ARTIST%/g,'<a href="'+data.url+'" target="_blank">'+data.name+'</a>')
                                     .replace(/%IMG%/g,data.image[1]['#text'] || '/images/question_c.gif')
                                     .replace(/%IMG2%/g,data.image[2]['#text'] || '/images/question_c.gif')
-                                    .replace(/%TRACKS%/g,html?html:(data.bio.summary?'<div class="bio">'+data.bio.summary+'</div>':''));      
+                                    .replace(/%TRACKS%/g,html || (data.bio.summary?'<div class="bio">'+data.bio.summary+'</div>':''));      
       }
       ge('vk_album_info').innerHTML=html;
       
@@ -6054,7 +6054,7 @@ vk_vid_down={
             var format=YT_video_itag_formats[map[i].itag];
             var info=(map[i].type+'').split(';')[0]+' '+(obj.fmt_list[i]+'').split('/')[1];
             if (!format) vklog('<b>YT '+map[i].itag+'</b>: \n'+(map[i].stereo3d?'3D/':'')+info,1);
-            format=(map[i].stereo3d?'3D/':'')+(format?format:info);
+            format=(map[i].stereo3d?'3D/':'')+(format || info);
             obj.title = isArray(obj.title) ? obj.title.join('') : obj.title;
             //links.push([map[i].url+'&signature='+sig+'&'+ajx2q(params), format,info]); // sig=Qi(map[i].s)
             links.push([map[i].url+'&signature='+sig+'&quality='+map[i].quality+(obj.title?'&title='+encodeURIComponent(obj.title.replace(/\+/g,' ')):''), format,info]);
