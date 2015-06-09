@@ -793,7 +793,7 @@ function vkGetProfile(uid,callback,no_switch_button){
       */   
 		var common='';
 		//console.log(profile);
-		var username='<a href="/id'+uid+'" onclick="return nav.go(this, event);">'+profile.first_name+' '+profile.nickname+' '+profile.last_name+'</a>';
+		var username='<a href="/id'+uid+'" onclick="return nav.go(this, event);">'+profile.first_name+' '+(profile.nickname || '')+' '+profile.last_name+'</a>';
 		var ava_url=profile.photo_big;
       var last_seen=(profile.last_seen || {}).time;
 		var online=profile.online?vkOnlineInfo(profile):(last_seen?'<div class="vk_last_seen">'+(new Date(last_seen*1000)).format("HH:MM:ss<br>dd.mm.yy")+'</div>':'');//'Offline';
@@ -858,7 +858,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 					  <div class="labeled fl_l">'+info_labels[i][0]+'</div>\n\
 					</div>';
 		
-      var activity = profile.activity;
+      var activity = profile.activity || '';
       if (window.Emoji && Emoji.emojiToHTML && activity)
             activity = Emoji.emojiToHTML(activity,true) || activity;//.replace(/"\/images\//g,'"http://vk.com/images/') || profile.activity;  
             
