@@ -549,7 +549,7 @@ allowShowPhotoTimer=setTimeout(null,null);
 cur_popup_idx=0;
 cur_popup_url=null;
 function vkPopupAvatar(id,el,in_box){
-    if (id==null) return;
+    if (id==null || id=='undefined') return;
     if (!window.LoadedProfiles) LoadedProfiles={};
     allowShowPhoto=true;
     if (cur_popup_url!=id)
