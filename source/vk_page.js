@@ -1775,8 +1775,8 @@ function vkAudioBlock(load_audios){
 function vkWikiPages(){
    var p=(ge('pages_right_link') || {}).parentNode;
    var class_name='fl_r pages_right_link';
-   var gid=Math.abs(cur.gid || cur.oid || nav.objLoc['oid'] || nav.objLoc['gid']);
-   var pid=cur.pid || nav.objLoc['p'];
+   var gid=Math.abs(cur.gid || cur.oid || nav.objLoc['oid'] || nav.objLoc['gid'] || /-\d+/.exec(nav.strLoc)[0]);
+   var pid=cur.pid || nav.objLoc['p'] || /_(\d+)/.exec(nav.strLoc)[1];
    if (p){
       if (p && !ge('vk_add_wiki_page')){
          p.appendChild(
