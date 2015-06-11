@@ -453,6 +453,7 @@ function vkWikiDownload(oid) {
     var anchors;          // переменная для массива ссылок (элементов) на страницы
     var anchors_length;   // длина этого массива. Чтобы каждый раз не дергать .length
     var pages_complete = 0;
+    var CORS_PROXY = 'http://crossorigin.me/';  // константа, содержащая адрес прокси для CORS-запросов
     var canvas = document.createElement('CANVAS'), ctx = canvas.getContext('2d'), dataURL;// для конвертирования изображений в base64
     var flushPage = function (title, pid, html) {   // Добавление готовой страницы (с картинками) в объект JSZip
         if (html!='') zip.file(vkCleanFileName(title) + ' (' + pid + ').html',
@@ -493,10 +494,16 @@ function vkWikiDownload(oid) {
                                 flushPage(response.title, pid, el.innerHTML);
                         };
                         imgs[j].onerror = function () {
-                            imgs_loaded++;
-                            this.removeAttribute('crossOrigin');
-                            if (imgs_loaded == imgs_total)  // не удалось загрузить картинку, однако она последняя; всё равно сохраняем страницу.
-                                flushPage(response.title, pid, el.innerHTML);
+                            if (this.src.indexOf(CORS_PROXY) == -1)   // Сначала пытаемся загрузить картинку через прокси
+                                this.src = CORS_PROXY + this.src;
+                            else {                                  // при повторной ошибке оставляем адрес как есть
+                                imgs_loaded++;
+                                this.removeAttribute('crossOrigin');
+                                this.onload = null;
+                                this.src = this.src.replace(CORS_PROXY, '');
+                                if (imgs_loaded == imgs_total)  // не удалось загрузить картинку, однако она последняя; всё равно сохраняем страницу.
+                                    flushPage(response.title, pid, el.innerHTML);
+                            }
                         }
                     }
                 }
