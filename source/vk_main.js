@@ -488,13 +488,13 @@ function vkWikiDownload(oid) {
                             dataURL = canvas.toDataURL('image/jpeg');
                             this.onload = null;
                             this.src = dataURL;
-                            this.crossOrigin = '';
+                            this.removeAttribute('crossOrigin');
                             if (imgs_loaded == imgs_total)  // если это последняя загруженная картинка на странице, сохраняем страницу.
                                 flushPage(response.title, pid, el.innerHTML);
                         };
                         imgs[j].onerror = function () {
                             imgs_loaded++;
-                            this.crossOrigin = '';
+                            this.removeAttribute('crossOrigin');
                             if (imgs_loaded == imgs_total)  // не удалось загрузить картинку, однако она последняя; всё равно сохраняем страницу.
                                 flushPage(response.title, pid, el.innerHTML);
                         }
