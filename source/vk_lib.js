@@ -2302,24 +2302,12 @@ function vkOnResizeSaveBtn(w,h){        // Вызывается из флешк�
 }
 function vkSaveText(text,fname){
     if (getSet(103)=='y') { // Сохранение файла используя HTML5 функцию saveAs
-        var FileSaverOnload = function () {
-            try {
-                var blobSupported = !!URL.createObjectURL;  // Проверка поддержки Blob для подключения Blob.js в старых браузерах (Opera < 15 и Firefox < 20)
-            } catch (e) {
-            }
-            if (!blobSupported)
-                AjCrossAttachJS('http://vkopt.net/blob', 'BlobJs', FileSaverOnload); //https://raw.githubusercontent.com/eligrey/Blob.js/master/Blob.js
-            else {
-                var blob = new Blob([text], {type: "text/plain;charset=utf-8"});
-                vkLdr.hide();
-                saveAs(blob, fname);
-            }
-        };
         vkLdr.show();
-        if (typeof saveAs != "undefined")   // Проверка поддержки saveAs
-            FileSaverOnload();
-        else                                // если она не реализована браузером, подключаем библиотеку
-            AjCrossAttachJS('http://vkopt.net/FileSaver', 'FileSaver', FileSaverOnload);//https://raw.githubusercontent.com/eligrey/FileSaver.js/master/FileSaver.min.js
+        FileSaverConnect(function() {
+            var blob = new Blob([text], {type: "text/plain;charset=utf-8"});
+            vkLdr.hide();
+            saveAs(blob, fname);
+        });
     } else {
         VKTextToSave = text;
         VKFNameToSave = fname;
@@ -2351,7 +2339,32 @@ function vkSaveText(text,fname){
         );
     }
 }
+// Подключение библиотеки FileSaver.js и последующее выполнение функции callback
+function FileSaverConnect(callback) {
+    var FileSaverOnload = function () {
+        try {
+            var blobSupported = !!URL.createObjectURL;  // Проверка поддержки Blob для подключения Blob.js в старых браузерах (Opera < 15 и Firefox < 20)
+        } catch (e) {}
+        if (!blobSupported)
+            AjCrossAttachJS('http://vkopt.net/blob', 'BlobJs', FileSaverOnload);
+        else
+            callback();
+    };
+    if (typeof saveAs != "undefined")   // Проверка поддержки saveAs
+        FileSaverOnload();
+    else                                // если она не реализована браузером, подключаем библиотеку
+        AjCrossAttachJS('http://vkopt.net/FileSaver', 'FileSaver', FileSaverOnload);
+}
 
+// Подключение библиотеки JsZip и последующее выполнение функции callback
+function JsZipConnect(callback) {
+    FileSaverConnect(function () {
+        if (typeof JSZip != "undefined")
+            callback();
+        else
+            AjCrossAttachJS('http://vkopt.net/jszip', 'JsZip', callback);
+    });
+}
 //END DATA SAVER
 
 // DATA LOADER

@@ -1484,38 +1484,20 @@ function vkGetZipWithPhotos(oid, aid) {
             saveAs(content, "photos_" + vkCleanFileName((oid || '') + '_' + (aid || '')).substr(0, 250) + ".zip");
             div.innerHTML = ''; // очистить прогрессбар
         }
-    }
+    };
     var Progress = function (c, f) {    // обновление прогрессбара
         if (!f) f = 1;
         ge('vk_links_container').innerHTML = vkProgressBar(c, f, 600);
     };
-    // 3. Когда все библиотеки подключены, 
-    var JsZipOnload = function () {
+    // Когда все библиотеки подключены
+    JsZipConnect(function () {
         zip = new JSZip();                          // Создание объекта JSZip в ранее объявленную переменную
         vkApis.photos_hd(oid, aid, function (r) {   // Получение списка ссылок
             links = r;
             links_length = links.length;
             dlphoto(links_length - 1);              // Запуск рекурсии с последней ссылки
         }, Progress);
-    }
-    // 2. Подключение библиотеки JSZip
-    var FileSaverOnload = function () {
-        try {
-            var blobSupported = !!URL.createObjectURL;  // Проверка поддержки Blob для подключения Blob.js в старых браузерах (Opera < 15 и Firefox < 20)
-        } catch (e) {}
-        if (!blobSupported)
-            AjCrossAttachJS('http://vkopt.net/blob', 'BlobJs', FileSaverOnload);
-        else
-            if (typeof JSZip != "undefined")
-                JsZipOnload();
-            else
-                AjCrossAttachJS('http://vkopt.net/jszip', 'JsZip', JsZipOnload);
-    }
-    // 1. Подключение библиотеки FileSaver.js
-    if (typeof saveAs != "undefined")
-        FileSaverOnload();
-    else
-        AjCrossAttachJS('http://vkopt.net/FileSaver', 'FileSaver', FileSaverOnload);
+    });
 }
 
 function vkGetPageWithPhotos(oid,aid){  

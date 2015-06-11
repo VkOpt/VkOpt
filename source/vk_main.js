@@ -430,18 +430,103 @@ function vkWikiPagesList(add_btn){
    //if (gid==1) gid=-1; 
    dApi.call('pages.getTitles',{gid: gid},function(r){
       if (ldr) hide(ldr);
-      var t='';
+      var t='<h3>Owner: '+(cur.oid && cur.oid<0?'club':'id')+Math.abs(cur.oid || vk.id)+
+          '<a class="fl_r" id="vk_add_wiki_page" href="#" onclick="vkWikiNew(); return false;">'+IDL('Add')+'</a>' +
+          '<span class="divider fl_r">|</span>' +
+          '<a class="fl_r" onclick="vkWikiDownload('+cur.oid+')">'+IDL('downloadAll')+'</a></h3><br>';
       (r.response || []).map(function(obj){
-         console.log(obj);
+         //console.log(obj);
          var page='page-'+obj.group_id+'_'+obj.pid;
-         t+='<a href="/'+page+'">'+page+'</a><span class="divider">|</span>'+
+         t+='<a class="vk_wiki_link" pid="'+obj.pid+'" href="/'+page+'">'+page+'</a><span class="divider">|</span>'+
             '<a href="/pages.php?oid=-'+obj.group_id+'&p='+encodeURIComponent(obj.title)+'&act=history" target="_blank">'+IDL('History')+'</a><span class="divider">|</span>'+
             '<a href="#" onclick="return vkGetWikiCode('+obj.pid+','+obj.group_id+');">'+IDL('Code')+'</a><span class="divider">|</span>'+
             '   <b>'+obj.title+'</b>  (creator:'+obj.creator_name+')<br>';
       });
-      var box=vkAlertBox('Wiki Pages','<h3>Owner: '+(cur.oid && cur.oid<0?'club':'id')+Math.abs(cur.oid || vk.id)+'<a class="fl_r" id="vk_add_wiki_page" href="#" onclick="vkWikiNew(); return false;">'+IDL('Add')+'</a>'+'</h3>'+'<br>'+t);
+      var box=vkAlertBox('Wiki Pages',t);
       box.setOptions({width:'680px'});
    });
+}
+
+function vkWikiDownload(oid) {
+    var box;              // окошко с прогресс-баром
+    var zip;              // переменная для объекта JSZip
+    var anchors;          // переменная для массива ссылок (элементов) на страницы
+    var anchors_length;   // длина этого массива. Чтобы каждый раз не дергать .length
+    var pages_complete = 0;
+    var canvas = document.createElement('CANVAS'), ctx = canvas.getContext('2d'), dataURL;// для конвертирования изображений в base64
+    var flushPage = function (title, pid, html) {   // Добавление готовой страницы (с картинками) в объект JSZip
+        if (html!='') zip.file(vkCleanFileName(title) + ' (' + pid + ').html',
+            '<!DOCTYPE HTML><html><head><meta charset="utf-8"><title>' + (title || 'Wiki ' + oid + '_' + pid + ' [VkOpt]') + '</title></head><body>' + html + '</body></html>');
+        pages_complete++;
+    };
+    var dlpages = function (i) {  // рекурсивная функция скачивания страниц. i - номер ссылки в массиве
+        if (i > -1) {      // условие остановки рекурсии
+            var pid = anchors[i].getAttribute('pid');
+            dApi.call('pages.get', {
+                owner_id: oid,
+                page_id: pid,
+                need_html: 1,
+                v: '5.20'
+            }, function (r, response) {
+                var el = vkCe('div', {}, response.html); // Запихиваем html-код в элемент, чтобы картинки начали грузиться
+                // обработка away-ссылок
+                var as = geByTag('a', el);
+                for (var j = 0; j < as.length; j++)
+                    ProcessAwayLink(as[j]);
+                // обработка картинок
+                var imgs = geByTag('img', el);
+                var imgs_total = imgs.length;
+                if (imgs_total) {           // если на странице есть картинки
+                    var imgs_loaded = 0;    // а это - самопальный счетчик готовых картинок, т.к. события "все картинки загружены" нет.
+                    for (var j = 0; j < imgs_total; j++) {
+                        imgs[j].crossOrigin = 'Anonymous';  // stackoverflow фигни не посоветует!
+                        imgs[j].onload = function () {      // конвертируем в base64
+                            imgs_loaded++;             
+                            canvas.height = this.naturalHeight;
+                            canvas.width = this.naturalWidth;
+                            ctx.drawImage(this, 0, 0);
+                            dataURL = canvas.toDataURL('image/jpeg');
+                            this.onload = null;
+                            this.src = dataURL;
+                            this.crossOrigin = '';
+                            if (imgs_loaded == imgs_total)  // если это последняя загруженная картинка на странице, сохраняем страницу.
+                                flushPage(response.title, pid, el.innerHTML);
+                        };
+                        imgs[j].onerror = function () {
+                            imgs_loaded++;
+                            this.crossOrigin = '';
+                            if (imgs_loaded == imgs_total)  // не удалось загрузить картинку, однако она последняя; всё равно сохраняем страницу.
+                                flushPage(response.title, pid, el.innerHTML);
+                        }
+                    }
+                }
+                else
+                    flushPage(response.title, pid, el.innerHTML);
+                Progress(anchors_length - i, anchors_length);   // Потому что скачивание идет задом наперед
+                dlpages(--i);                                   // продолжаем рекурсию
+            });
+        }
+        else {  // скачивание текстов страниц закончено; дожидаемся загрузки всех картинок в страницах
+            var t = setInterval(function () {
+                if (pages_complete == anchors_length) { // все страницы загружены; сохраняем zip
+                    clearInterval(t);
+                    var content = zip.generate({type: "blob"});
+                    saveAs(content, "wiki_" + vkCleanFileName(document.title) + ".zip");
+                    box.hide();
+                }
+            }, 100);
+        }
+    };
+    var Progress = function (c, f) {                // обновление прогрессбара        
+        box.content(vkProgressBar(c, f || 1, 350));
+    };
+    JsZipConnect(function () {
+        zip = new JSZip();                          // Создание объекта JSZip в ранее объявленную переменную
+        anchors = geByClass('vk_wiki_link', ge('box_layer'));
+        anchors_length = anchors.length;
+        box = vkAlertBox(IDL('Loading'));
+        dlpages(anchors_length - 1);                // Запуск рекурсии с последней ссылки
+    });
 }
 
 /* WIKI GET CODE*/ 
