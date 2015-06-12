@@ -1174,7 +1174,7 @@ function vkDelWallPostComments(oid,pid){
 function vkCleanWall(oid){
 	var REQ_CNT=100;
 	var WALL_DEL_REQ_DELAY=400;
-	oid=oid?oid:0;
+	oid=oid || 0;
 	var start_offset=0;
 	var box=null;
 	var mids=[];
@@ -1228,7 +1228,7 @@ function vkCleanWall(oid){
 	};
 	vkRunCleanWall=function(soffset){
 		abox.hide();
-		start_offset=soffset?soffset:0;
+		start_offset=soffset || 0;
 		box=new MessageBox({title: IDL('ClearWall'),closeButton:true,width:"350px"});
 		box.removeButtons();
 		box.addButton(IDL('Cancel'),function(){abort=true; box.hide();},'no');
@@ -1482,7 +1482,7 @@ function vkFriends_get(idx){
   if (getSet(46) == 'n' && idx=='online') {
     clearTimeout(window.IDFrOnlineTO);
 	var tout=getSet('-',5);
-    IDFriendTime=(tout?tout:1)*60000;
+    IDFriendTime=(tout || 1)*60000;
 	if (!IDFriendTime) {
 		topMsg('Please, check <a href="/settings?act=vkopt">VkOpt settings</a>');
 		return;
@@ -1775,8 +1775,8 @@ function vkAudioBlock(load_audios){
 function vkWikiPages(){
    var p=(ge('pages_right_link') || {}).parentNode;
    var class_name='fl_r pages_right_link';
-   var gid=Math.abs(cur.gid || cur.oid || nav.objLoc['oid'] || nav.objLoc['gid']);
-   var pid=cur.pid || nav.objLoc['p'];
+   var gid=Math.abs(cur.gid || cur.oid || nav.objLoc['oid'] || nav.objLoc['gid'] || /-\d+/.exec(nav.strLoc)[0]);
+   var pid=cur.pid || nav.objLoc['p'] || /_(\d+)/.exec(nav.strLoc)[1];
    if (p){
       if (p && !ge('vk_add_wiki_page')){
          p.appendChild(

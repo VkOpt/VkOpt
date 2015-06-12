@@ -369,7 +369,7 @@ var TextPasteSmiles={
 		var node=ge('vkDebugLogW');
 		if (!node) return;
 		var div=document.createElement('div');
-		type=(type)?type:0;
+		type=type || 0;
 		var style="";
 		switch(type){
 		  case 0: style=""; break;

@@ -549,7 +549,7 @@ allowShowPhotoTimer=setTimeout(null,null);
 cur_popup_idx=0;
 cur_popup_url=null;
 function vkPopupAvatar(id,el,in_box){
-    if (id==null) return;
+    if (id==null || id=='undefined') return;
     if (!window.LoadedProfiles) LoadedProfiles={};
     allowShowPhoto=true;
     if (cur_popup_url!=id)
@@ -564,7 +564,7 @@ function vkPopupAvatar(id,el,in_box){
             //LoadedProfiles[id]=html;
             box.hide();
             box=vkAlertBox('id'+uid,html);
-            box.setOptions({width:"455px",hideButtons:true, bodyStyle:'padding:0px;', onHide:__bq.hideAll});
+            box.setOptions({width:"455px",hideButtons:true, bodyStyle:'padding:0px;', onHide:__bq.hideLast});
          },true);
          
       }else  if (LoadedProfiles[id]){
@@ -793,7 +793,7 @@ function vkGetProfile(uid,callback,no_switch_button){
       */   
 		var common='';
 		//console.log(profile);
-		var username='<a href="/id'+uid+'" onclick="return nav.go(this, event);">'+profile.first_name+' '+profile.nickname+' '+profile.last_name+'</a>';
+		var username='<a href="/id'+uid+'" onclick="return nav.go(this, event);">'+profile.first_name+' '+(profile.nickname || '')+' '+profile.last_name+'</a>';
 		var ava_url=profile.photo_big;
       var last_seen=(profile.last_seen || {}).time;
 		var online=profile.online?vkOnlineInfo(profile):(last_seen?'<div class="vk_last_seen">'+(new Date(last_seen*1000)).format("HH:MM:ss<br>dd.mm.yy")+'</div>':'');//'Offline';
@@ -858,7 +858,7 @@ function vkGetProfile(uid,callback,no_switch_button){
 					  <div class="labeled fl_l">'+info_labels[i][0]+'</div>\n\
 					</div>';
 		
-      var activity = profile.activity;
+      var activity = profile.activity || '';
       if (window.Emoji && Emoji.emojiToHTML && activity)
             activity = Emoji.emojiToHTML(activity,true) || activity;//.replace(/"\/images\//g,'"http://vk.com/images/') || profile.activity;  
             
@@ -1014,7 +1014,7 @@ function vkFriendsCheck(nid){
   
   if (!window.FrUpdBox || isNewLib()) FrUpdBox = new MessageBox({title: IDL('FriendsListTest'),closeButton:true,width:"350px"});
   var box=FrUpdBox;
-  var addButton=function(_box,label,callback,style){  _box.addButton(!isNewLib()?{onClick: callback, style:'button_'+(style?style:'no'),label:label}:label,callback,style);};		
+  var addButton=function(_box,label,callback,style){  _box.addButton(!isNewLib()?{onClick: callback, style:'button_'+(style || 'no'),label:label}:label,callback,style);};		
   var html='\
     <div class="vkfrupl">\
     <div id="vkfrupdloader" class="box_loader"></div><br>\

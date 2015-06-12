@@ -1365,7 +1365,7 @@ function UserOnlineStatus(status) {// ADD LAST STATUS
 			  
 			  div.innerHTML=online;
 			  var vk_side_bar=sideBar();
-			  body=(vk_side_bar)?vk_side_bar:body;
+			  body=vk_side_bar || body;
 			  body.appendChild(div);
 			} else {
 			  ge('vk_online_status').innerHTML=online;

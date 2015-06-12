@@ -304,7 +304,7 @@ function vkOnDocumentClick() {
 /* USERS */
 function vkProccessLinks(el){
  var tstart=unixtime();
- el=(el)?el:ge('content');//document
+ el=el || ge('content');//document
     var nodes=el.getElementsByTagName('a'); 
     for (var i=0;i<nodes.length;i++){  
      if (getSet(10)=='y') vkProcessUserLink(nodes[i]);
@@ -654,7 +654,7 @@ function vkProcessResponse(answer,url,q){
   if (url=='/al_photos.php' && q.act=='edit_photo'){
       answer[1]=vkModAsNode(answer[1],vk_photos.update_photo_btn,url,q);
   }
-  if (getSet(101) == 'y' && url == '/al_video.php' && q.act == 'show')  answer[2] = answer[2].replace(/if\s*\([^b]*browser.flash[^\)]*\)/g,'if (false)'); // al_video.php:111 : if (browser.flash >= 10) { /*flash*/ } else { /*html5*/ }
+  if (getSet(101) == 'y' && url == '/al_video.php' && q.act == 'show' && !(answer.indexOf('"no_flv":0')>0)) answer[2] = answer[2].replace(/if\s*\([^b]*browser.flash[^\)]*\)/g,'if (false)'); // al_video.php:111 : if (browser.flash >= 10) { /*flash*/ } else { /*html5*/ }
   
   if (VIDEO_PLAYER_DBG_ON && url=='/al_video.php' && q.act=='show') answer[2]=answer[2].replace('"dbg_on":0','"dbg_on":1');
   if (getSet(21)=='y' && url=='/al_video.php' && q.act=='show'){
@@ -2179,7 +2179,7 @@ function vkCleanNotes(){
 		});
 	};
 	var vkRunClean=function(soffset){
-		start_offset=soffset?soffset:0;
+		start_offset=soffset || 0;
 		box=new MessageBox({title: IDL('ClearNotes'),closeButton:true,width:"350px"});
 		box.removeButtons();
 		box.addButton(IDL('Cancel'),function(){abort=true; box.hide();},'no');
@@ -2302,7 +2302,7 @@ function vkTopicTooltip(el,gid,topic,post,type){
     stManager.add(post?'board.css':'wall.css', function() {
        showTooltip(el, {
          url: url,
-         params: extend({act: 'post_tt', post: bp_post?bp_post:post_id}, params),
+         params: extend({act: 'post_tt', post: bp_post || post_id}, params),
          slide: 15,
          shift: [30, -3, 0],//78
          ajaxdt: 100,
