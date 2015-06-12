@@ -2819,6 +2819,7 @@ vk_videos = {
          if (!cur.searchData || !cur.vOrder) return '';
          var hd = cur.vHD ? cur.vHD : 0;
          var searchData = cur.searchData[cur.vStr + hd.toString() + cur.vOrder.toString()];
+         if (!searchData) return;
          list=searchData.list;
       } else {
          if (!cur.videoList) return '';
@@ -5500,7 +5501,7 @@ vk_vid_down={
       // делаем ссылки на превьюхи
       var generatePreviewLinks=function(){
          var i, s='', arr=(vars.timeline_thumbs_jpg || '').split(',');
-         for (i=0; i<arr.length; i++)
+         for (i=0; i<arr.length && vars.timeline_thumbs_jpg; i++)
             s += '<a href="'+arr[i]+'"> '+IDL("Preview")+' JPG #'+(i+1)+'</a>';  
          return s;
       }
@@ -5525,7 +5526,7 @@ vk_vid_down={
       
       // делаем кнопку на просмотр превьюх
       var thumbs=(vars.timeline_thumbs_jpg || '').split(',');
-      if (thumbs.length) vidurl +='<a href="#" onclick="vk_phviewer.view([\''+thumbs.join("','")+'\']); return false;">'+IDL("Preview")+'</a>';
+      if (vars.timeline_thumbs_jpg && thumbs.length) vidurl +='<a href="#" onclick="vk_phviewer.view([\''+thumbs.join("','")+'\']); return false;">'+IDL("Preview")+'</a>';
       
       vidurl += generatePreviewLinks();
       //vidname
@@ -5900,7 +5901,7 @@ vk_vid_down={
                
                // делаем кнопку на просмотра превьюх
                var arr = (obj.timeline_thumbs_jpg || '').split(',');
-               if (arr.length) 
+               if (obj.timeline_thumbs_jpg && arr.length) 
                   html += '<a class="vk_phv_link" href="#" onclick="vk_phviewer.view([\''+arr.join("','")+'\']); return false;"><span class="vk_photo_icon"></span></a>';/*+IDL("Preview")*/
                 
                var arr=vk_vid_down.vkVidDownloadLinksArray(obj);
