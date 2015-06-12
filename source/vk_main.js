@@ -221,7 +221,7 @@ function vkLocationCheck(){
   if (vkCheckInstallCss()) return true;
   XFR.check();
   if (/\/away/.test(location.href) && getSet(6) == 'y'){
-	location.href=unescape(vkLinksUnescapeCyr(location.href.split('to=')[1].split(/&h=.{18}/)[0]).split('&post=')[0]);
+	location.href=decodeURIComponent(location.href.match(/to=([^&]+)/)[1]);
 	return true;
   }
   return false;
@@ -328,17 +328,9 @@ function vkProccessLinks(el){
 function ProcessAwayLink(node){
   var href=node.getAttribute('href');
   if (href && href.indexOf('away.php?')!=-1){ 
-	var lnk=vkLinksUnescapeCyr(href).split('?to=')[1];
+	var lnk=decodeURIComponent((href.match(/to=([^&]+)/) || [])[1]);
    if (!lnk) return;
-   lnk=lnk.split('&h=')[0].split('&post=')[0];
-	node.setAttribute('href',decodeURIComponent(lnk).replace(/&h=[\da-z]{18}/i,''));
-   //node.href=unescape(lnk).replace(/&h=[\da-z]{18}/i,'');
-   /*
-   lnk.replace(/%26/gi,'&').replace(/%3A/gi,':').
-   replace(/%2F/gi,'/').replace(/%25/gi,'%').
-   replace(/%3F/gi,'?').replace(/%3D/gi,'=').
-   replace(/%26/gi,';').replace(/&h=[\da-z]{18}/i,'');*/
-	//alert(unescape(node.href));
+	node.setAttribute('href',lnk);
   }
 }
 
