@@ -30,24 +30,24 @@ function vkInjCheck(files){
 
 function vkInj(file){
  switch (file){
-   case 'photoview.js':    vkPhotoViewer();	break;
-	case 'videoview.js':	   vk_videos.inj_videoview();	break;
-   case 'html5video.js':	vk_videos.inj_html5();	break;
-   case 'video.js':	      vkVideo();	    break;
-	case 'audio.js':		   vkAudios();		 break;
-   case 'audioplayer.js':	vkAudioPlayer();break;
-	case 'feed.js':			vk_feed.inj();  break;
-	case 'search.js':		   vk_search.inj();break;
-	case 'profile.js':		vk_profile.inj();	 break;
-	case 'wall.js':			vkWall();		 break;		
-	case 'page.js':			vk_pages.inj(); break;
-	case 'friends.js':		vkFriends();	 break;
-	case 'notifier.js': 	   vkNotifier(); 	 break;
-	case 'common.js': 		vkCommon(); 	 break;
-	case 'im.js': 			   vkIM(); 	       break;
-   case 'groups_list.js':  vkGroupsList(); break;
+   case 'photoview.js':    vk_phviewer.inj();         break;
+   case 'videoview.js':    vk_videos.inj_videoview(); break;
+   case 'html5video.js':   vk_videos.inj_html5();     break;
+   case 'video.js':        vkVideo();        break;
+   case 'audio.js':        vkAudios();       break;
+   case 'audioplayer.js':  vkAudioPlayer();  break;
+   case 'feed.js':         vk_feed.inj();    break;
+   case 'search.js':       vk_search.inj();  break;
+   case 'profile.js':      vk_profile.inj(); break;
+   case 'wall.js':         vkWall();         break;
+   case 'page.js':         vk_pages.inj();   break;
+   case 'friends.js':      vkFriends();      break;
+   case 'notifier.js':     vkNotifier();     break;
+   case 'common.js':       vkCommon();       break;
+   case 'im.js':           vkIM();           break;
+   case 'groups_list.js':  vkGroupsList();   break;
    case 'groups_edit.js':  vk_groups.group_edit_inj(); break;
-   case 'fave.js':         vk_fave.inj();  break;
+   case 'fave.js':         vk_fave.inj();           break;
    case 'photos.js':       vk_photos.inj_photos();  break;
    case 'emoji.js':        vk_features.emoji_inj(); break;
   }

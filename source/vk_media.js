@@ -10,37 +10,37 @@ vk_dld={
 };
 
 /* PHOTOS */
-function vkPhotoViewer(){
-  //main inj
-  //Inj.End('photoview.receiveComms','vkProcessNode(comms);');
-  
-  Inj.Before('photoview.doShow','cur.pvNarrow','vk_phviewer.proc1(ph);');
-  Inj.Before('photoview.doShow','var likeop','vkProcessNode(cur.pvNarrow);');
-  Inj.End('photoview.doShow','vkProcessNode(cur.pvWide);');
-  Inj.Before('photoview.doShow','if (ph.actions.spam)','actionsHTML += vkPVLinks(ph) + vk_plugins.photoview_actions(ph);');
-  if (getSet(7)=='y') Inj.Start('photoview.afterShow','vkPVMouseScroll();');
-  
-  vkPVNoCheckHeight=function(){return !window.PVShowFullHeight};
-  
-  Inj.Before('photoview.onResize','cur.pvCurrent.height * c >','vkPVNoCheckHeight() && ');
-  Inj.Before('photoview.doShow','h * c > ','vkPVNoCheckHeight() && ');
-  
-  
-  Inj.End('photoview.afterShow','vkPVAfterShow();');
-  Inj.Start('photoview.canFullscreen','return true;');
-  if (getSet(71)=='y') 
-   Inj.Before('Photoview.commentTo','if (!v', 'vk_phviewer.reply_to(comm, toId, event, rf,v,replyName); if(false)' );
-  
-
-  //*
-  if (/photo-?\d+_\d+/.test(nav.strLoc))  {
-    setTimeout(function(){
-      if (!isVisible(cur.pvAlbumsWrap) && !isVisible(cur.pvAlbumWrap)) photoview.doShow();
-    },70);
-  }//*/
-}
-
 vk_phviewer={
+   inj:function(){
+      //Inj.End('photoview.receiveComms','vkProcessNode(comms);');
+      Inj.Before('photoview.doShow','cur.pvNarrow','vk_phviewer.proc1(ph);');
+      Inj.Before('photoview.doShow','var likeop','vkProcessNode(cur.pvNarrow);');
+      Inj.End('photoview.doShow','vkProcessNode(cur.pvWide);');
+      Inj.Before('photoview.doShow','if (ph.actions.spam)','actionsHTML += vkPVLinks(ph) + vk_plugins.photoview_actions(ph);');
+      if (getSet(7)=='y') Inj.Start('photoview.afterShow','vkPVMouseScroll();');
+
+      vkPVNoCheckHeight=function(){return !window.PVShowFullHeight};
+
+      Inj.Before('photoview.onResize','cur.pvCurrent.height * c >','vkPVNoCheckHeight() && ');
+      Inj.Before('photoview.doShow','h * c > ','vkPVNoCheckHeight() && ');
+
+      // предотвращаем при использовании временного вьювера изменение URL страницы
+      Inj.Start('Photoview.updateLoc',"if (/^vkph_/.test((cur.pvCurPhoto && cur.pvCurPhoto.id) || '')) return;");
+      
+      Inj.End('photoview.afterShow','vkPVAfterShow();');
+      Inj.Start('photoview.canFullscreen','return true;');
+      if (getSet(71)=='y') 
+      Inj.Before('Photoview.commentTo','if (!v', 'vk_phviewer.reply_to(comm, toId, event, rf,v,replyName); if(false)' );
+
+
+      if (/photo-?\d+_\d+/.test(nav.strLoc)) {
+      	setTimeout(function () {
+      		if (!isVisible(cur.pvAlbumsWrap) && !isVisible(cur.pvAlbumWrap))
+      			photoview.doShow();
+      	}, 70);
+      }
+
+   },
    proc1:function(ph){
       if (ph.comments)
          ph.comments=vkModAsNode(ph.comments,vkProcessNode);
@@ -64,6 +64,59 @@ vk_phviewer={
             if (rf.autosize) 
                rf.autosize.update();
          }
+   },
+   view:function(photos_src){
+      var preload_lang=function(callback){
+         ajax.post('al_photos.php', {act: 'show', list: 'album'+vk.id+'_0', offset: 0, direction: 0}, {
+            onDone:function(listId, count, offset, data, opts){
+               if (!opts) callback();
+               
+               //кэшируем себе нужную строку.
+               if (opts.lang && opts.lang.photos_photo_num_of_N) 
+                  vk_lang.photos_photo_num_of_N = opts.lang.photos_photo_num_of_N
+               // просто так добавляем весь присланный ленг в обычное место
+               extend(cur, {
+                 lang: extend(cur.lang || {}, opts.lang)
+               });
+               callback();
+            }
+         });
+      };
+      var view = function(){
+         stManager.add(['photoview.css', 'photoview.js'], function () {
+            var listId = 'vktemp';
+            cur.pvNoHistory = true;
+            cur.pvHistoryLength = 0;
+            cur.pvListId = listId;
+            cur.pvData = cur.pvData || {};
+            cur.pvCommsLikes =  cur.pvCommsLikes || {}
+            var list = [];
+            cur.pvData[listId]=list;      
+            for (var i=0; i<photos_src.length; i++){
+               var pid='vkph_'+i;
+               if  (cur.pvCommsLikes)
+                  cur.pvCommsLikes[pid]=[0,0];
+               list.push({
+                  id:pid,
+                  x_src: photos_src[i],
+                  actions:{}
+               })
+            }
+            Photoview.show(listId, 0, false, false);
+         })
+      }
+      
+      // запихиваем закэшированный ленг в cur, если есть:
+      if (vk_lang.photos_photo_num_of_N) {
+         extend(cur, {
+            lang: extend(cur.lang || {}, {photos_photo_num_of_N:vk_lang.photos_photo_num_of_N })
+         });
+         view();
+      }
+      if (cur.lang && cur.lang.photos_photo_num_of_N)
+         view();
+      else
+         preload_lang(view) 
    }
 };
 function vkPVAfterShow(){
@@ -2311,8 +2364,12 @@ vk_videos = {
       .vk_vide_wide_lnks{width:178px; display:block; font-size:8px}\
       \
       .vk_vid_acts_panel,.vk_vid_acts_panel a{color:#FFF; }\
-      .video_compact_view .vk_vid_acts_panel .vk_down_icon{background-position: 6px 7px; padding: 3px 0px 0px 17px;}\
-      .vk_vid_acts_panel .vk_down_icon{box-shadow:0 0 2px #FFF; background-position:3px 6px; padding: 1px 0px 0px 12px; background-color:rgba(0, 0, 0, 0.5);}\
+      .video_compact_view .vk_vid_acts_panel .vk_down_icon, .video_compact_view .vk_vid_acts_panel .vk_phv_link{background-position: 6px 7px; padding: 3px 0px 0px 17px;}\
+      .vk_vid_acts_panel .vk_down_icon, .vk_vid_acts_panel .vk_phv_link{box-shadow:0 0 2px #FFF; background-position:3px 6px; padding: 1px 0px 0px 12px; background-color:rgba(0, 0, 0, 0.5);}\
+      \
+      .video_compact_view .vk_vid_acts_panel .vk_phv_link, .vk_vid_acts_panel .vk_phv_link{ padding: 2px 5px 4px 7px; }\
+      .vk_vid_acts_panel .vk_photo_icon{ padding-left:12px; background: url(/images/fixedmenu_2x.png) no-repeat 0 -191px;   background-size: 11px 322px; line-height: 11px;  vertical-align: middle; }\
+      \
       .video_raw_info_name .vk_txt_icon{padding-left: 16px; margin-bottom:-2px;}\
       .vk_full_vid_info{width:auto !important; height:auto !important; display:block;}\
       .vk_full_vid_info .video_row_inner_cont{float:left}\
@@ -5458,6 +5515,14 @@ vk_vid_down={
            }
            return s;
       };
+      // делаем ссылки на превьюхи
+      var generatePreviewLinks=function(){
+         var i, s='', arr=(vars.timeline_thumbs_jpg || '').split(',');
+         for (i=0; i<arr.length; i++)
+            s += '<a href="'+arr[i]+'"> '+IDL("Preview")+' JPG #'+(i+1)+'</a>';  
+         return s;
+      }
+      
       var ext='.mp4';
       if (vars.no_flv=='1'){
          var vidurl=pathToHD('240');
@@ -5475,6 +5540,12 @@ vk_vid_down={
                 IDL("download")+
                 '<small class="fl_r divide" url="'+vidurl+'"></small></a>';
       vidurl += generateHDLinks();
+      
+      // делаем кнопку на просмотр превьюх
+      var thumbs=(vars.timeline_thumbs_jpg || '').split(',');
+      if (thumbs.length) vidurl +='<a href="#" onclick="vk_phviewer.view([\''+thumbs.join("','")+'\']); return false;">'+IDL("Preview")+'</a>';
+      
+      vidurl += generatePreviewLinks();
       //vidname
       return vidurl;
    },
@@ -5844,6 +5915,12 @@ vk_vid_down={
                else el.innerHTML='<small class="divide" >'+IDL('NA')+'('+obj.extra+')</small>';
             } else if (!obj.extra){
                var html='';
+               
+               // делаем кнопку на просмотра превьюх
+               var arr = (obj.timeline_thumbs_jpg || '').split(',');
+               if (arr.length) 
+                  html += '<a class="vk_phv_link" href="#" onclick="vk_phviewer.view([\''+arr.join("','")+'\']); return false;"><span class="vk_photo_icon"></span></a>';/*+IDL("Preview")*/
+                
                var arr=vk_vid_down.vkVidDownloadLinksArray(obj);
                for (var i=0; i<arr.length; i++){
                   var vidext=arr[i].substr(arr[i].lastIndexOf('.')).split('?')[0];  
@@ -5854,7 +5931,10 @@ vk_vid_down={
                   var vidurl=arr[i]+(smartlink?vidname+vidext:'');
                   html+='<a class="vk_down_icon" href="'+vidurl+'" download="'+vname+vidext+'"  title="'+vname+' ['+fmt[i]+']'+vidext+'" onclick="return vkDownloadFile(this);" onmouseover="vk_vid_down.vkGetVideoSize(this); vkDragOutFile(this);">'+fmt[i]+'<small class="divide" url="'+vidurl+'"></small></a>'; 
                }
-               el.innerHTML=html;
+               
+               
+
+               el.innerHTML = html;
             } else {
                el.innerHTML='<small class="divide" >'+IDL('NA')+'('+obj.extra+')</small>';
             }
