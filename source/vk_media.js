@@ -2338,7 +2338,9 @@ var _vk_vid_add_box=null;
 vk_videos = {
    css:function(){
       var code='\
-      .vk_vid_acts_panel{  position:absolute; z-index:20; padding:5px;max-width:288px; border-radius:0 0 6px 0; background:rgba(0,0,0,0.5);  }\
+      .vk_vid_acts_panel{  max-width:180px; position:absolute; z-index:20; padding:5px; border-radius:0 0 6px 0; background:rgba(0,0,0,0.5);  }\
+      .video_compact_view .vk_vid_acts_panel{ max-width:280px;}\
+      .videocat_row_item .vk_vid_acts_panel{ max-width:180px;}\
       .video_compact_view .video_can_edit .vk_vid_acts_panel{ max-width:230px;}\
       .video_compact_view .vk_vide_wide_lnks{width:230px; display:block; font-size: 11px;}\
       \
@@ -5829,7 +5831,14 @@ vk_vid_down={
       els=geByClass('video_row_thumb',node);
       for (var i=0; i<els.length; i++) add_link_to_thumb(els[i]); 
       
+      //els=geByClass('videocat_video_inner',node);
+      //for (var i=0; i<els.length; i++) add_link_to_thumb(els[i]); 
       
+      els=geByClass('videocat_row_video',node);
+      for (var i=0; i<els.length; i++) add_link_to_thumb(els[i]); 
+      
+      els=geByClass('videocat_video',node);
+      for (var i=0; i<els.length; i++) add_link_to_thumb(els[i]); 
       
       els=geByClass('page_post_video_play_inline',node);
       for (var i=0; i<els.length; i++) add_link_to_thumb(els[i].parentNode.parentNode,'page_post_video_play_inline');
