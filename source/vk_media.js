@@ -6473,13 +6473,14 @@ if (!window.vkopt_plugins) vkopt_plugins = {};
 
                 var images = winToUtf(arr[arr.length - 2]).match(/{"base":[^}]+}/g); // json-объекты, содержащие общее начало ссылок разных размеров и соответствующие концы.
                 //var names = arr[arr.length - 2].match(/\d+_\d+/g);   // раскомментируйте, чтобы можно было сделать имена для файлов = id фотографий.
-                for (var i = 0; i < images.length; i++) {
-                    var image = JSON.parse(images[i]);
-                    var url = image.base + (image.z_ || image.y_ || image.x_)[0] + '.jpg';                  // возвращается наилучшее качество
-                    var filename = ((100000 + vkopt_plugins[PLUGIN_ID].abs_i++) + '').substr(1) + '.jpg';   // для составления имен с фиксированной длиной. Основание фиксированное, т.к. заранее не знаем макс. номер
-                    vkopt_plugins[PLUGIN_ID].links.push(url + '?/' + filename);
-                    vkopt_plugins[PLUGIN_ID].wget_links.push('wget "' + url + '" -O "' + filename + '"');
-                }
+                if (images)
+                    for (var i = 0; i < images.length; i++) {
+                        var image = JSON.parse(images[i]);
+                        var url = image.base + (image.z_ || image.y_ || image.x_)[0] + '.jpg';                  // возвращается наилучшее качество
+                        var filename = ((100000 + vkopt_plugins[PLUGIN_ID].abs_i++) + '').substr(1) + '.jpg';   // для составления имен с фиксированной длиной. Основание фиксированное, т.к. заранее не знаем макс. номер
+                        vkopt_plugins[PLUGIN_ID].links.push(url + '?/' + filename);
+                        vkopt_plugins[PLUGIN_ID].wget_links.push('wget "' + url + '" -O "' + filename + '"');
+                    }
 
                 if (next_offset != vkopt_plugins[PLUGIN_ID].total - 0) {
                     vkopt_plugins[PLUGIN_ID].run(next_offset);
