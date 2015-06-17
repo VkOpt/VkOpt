@@ -327,8 +327,14 @@ function vkProccessLinks(el){
 
 function ProcessAwayLink(node){
   var href=node.getAttribute('href');
-  if (href && href.indexOf('away.php?')!=-1){ 
-	var lnk=decodeURIComponent((href.match(/to=([^&]+)/) || [])[1]);
+  if (href && href.indexOf('away.php?')!=-1){
+   var to = (href.match(/to=([^&]+)/) || [])[1];
+   try {
+       var lnk = decodeURIComponent(vkLinksUnescapeCyr(to));
+   }
+   catch (e) {
+       var lnk = decodeURIComponent(to);
+   }
    if (!lnk) return;
 	node.setAttribute('href',lnk);
   }
