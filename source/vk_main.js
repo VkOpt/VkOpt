@@ -1492,7 +1492,7 @@ vk_im={
          var editable = IM.getTxt(cur.peer);
          var sel = window.getSelection ? window.getSelection() : false;
          if (sel && sel.rangeCount) {
-           r = sel.getRangeAt(0);
+           var r = sel.getRangeAt(0);
            if (r.commonAncestorContainer) {
              var rCont = r.commonAncestorContainer;
            } else {
@@ -1513,7 +1513,7 @@ vk_im={
            IM.editableFocus(editable, false, true);
          }
          if (browser.msie) {
-           var r = document.selection.createRange();
+           r = document.selection.createRange();
            if (r.pasteHTML) {
              r.pasteHTML(code);
            }

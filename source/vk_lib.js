@@ -345,8 +345,7 @@ var vkMozExtension = {
          return str;
       };
 
-      var output = formatArray(array, 0, pad_val, pad_char);
-         return output;
+      return formatArray(array, 0, pad_val, pad_char);
    }
    function isArray(obj) { return Object.prototype.toString.call(obj) === '[object Array]'; }
    function isFunction(obj) {return Object.prototype.toString.call(obj) === '[object Function]'; }
@@ -1749,7 +1748,7 @@ vkApis={
                 else
                     callback(result);
             });
-        }
+        };
         run(0);
     },
 	photos_hd:function(oid,aid,callback,progress){
