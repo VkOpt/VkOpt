@@ -452,7 +452,7 @@ function vkWikiDownload(oid) {
     var anchors_length;   // длина этого массива. Чтобы каждый раз не дергать .length
     var pages_complete = 0;
     var CORS_PROXY = 'http://crossorigin.me/';  // константа, содержащая адрес прокси для CORS-запросов
-    var canvas = document.createElement('CANVAS'), ctx = canvas.getContext('2d'), dataURL;// для конвертирования изображений в base64
+    var canvas = document.createElement('CANVAS'), ctx = canvas.getContext('2d');// для конвертирования изображений в base64
     var flushPage = function (title, pid, html) {   // Добавление готовой страницы (с картинками) в объект JSZip
         if (html!='') zip.file(vkCleanFileName(title) + ' (' + pid + ').html',
             '<!DOCTYPE HTML><html><head><meta charset="utf-8"><title>' + (title || 'Wiki ' + oid + '_' + pid + ' [VkOpt]') + '</title></head><body>' + html + '</body></html>');
@@ -477,32 +477,40 @@ function vkWikiDownload(oid) {
                 var imgs_total = imgs.length;
                 if (imgs_total) {           // если на странице есть картинки
                     var imgs_loaded = 0;    // а это - самопальный счетчик готовых картинок, т.к. события "все картинки загружены" нет.
+                    var onLoad = function (e) {      // конвертируем в base64
+                        var img = e.target;
+                        canvas.height = img.naturalHeight;
+                        canvas.width = img.naturalWidth;
+                        try {
+                            ctx.drawImage(img, 0, 0);
+                            var dataURL = canvas.toDataURL('image/jpeg');
+                        } catch (err) {
+                            onError(e);
+                            return;
+                        }
+                        img.onload = null;
+                        img.src = dataURL;
+                        img.removeAttribute('crossOrigin');
+                        if (++imgs_loaded == imgs_total)        // если это последняя загруженная картинка на странице, сохраняем страницу.
+                            flushPage(response.title, pid, el.innerHTML);
+                    };
+                    var onError = function (e) {
+                        var img = e.target;
+                        if (img.src.indexOf(CORS_PROXY) == -1 && img.src.indexOf('data') != 0)  // Сначала пытаемся загрузить картинку через прокси
+                            img.src = CORS_PROXY + img.src;
+                        else {                                  // при повторной ошибке оставляем адрес как есть
+                            img.removeAttribute('crossOrigin');
+                            img.onload = null;
+                            img.onerror = null;
+                            img.src = img.src.replace(CORS_PROXY, '');
+                            if (++imgs_loaded == imgs_total)  // не удалось загрузить картинку, однако она последняя; всё равно сохраняем страницу.
+                                flushPage(response.title, pid, el.innerHTML);
+                        }
+                    };
                     for (var j = 0; j < imgs_total; j++) {
                         imgs[j].crossOrigin = 'Anonymous';  // stackoverflow фигни не посоветует!
-                        imgs[j].onload = function () {      // конвертируем в base64
-                            imgs_loaded++;             
-                            canvas.height = this.naturalHeight;
-                            canvas.width = this.naturalWidth;
-                            ctx.drawImage(this, 0, 0);
-                            dataURL = canvas.toDataURL('image/jpeg');
-                            this.onload = null;
-                            this.src = dataURL;
-                            this.removeAttribute('crossOrigin');
-                            if (imgs_loaded == imgs_total)  // если это последняя загруженная картинка на странице, сохраняем страницу.
-                                flushPage(response.title, pid, el.innerHTML);
-                        };
-                        imgs[j].onerror = function () {
-                            if (this.src.indexOf(CORS_PROXY) == -1)   // Сначала пытаемся загрузить картинку через прокси
-                                this.src = CORS_PROXY + this.src;
-                            else {                                  // при повторной ошибке оставляем адрес как есть
-                                imgs_loaded++;
-                                this.removeAttribute('crossOrigin');
-                                this.onload = null;
-                                this.src = this.src.replace(CORS_PROXY, '');
-                                if (imgs_loaded == imgs_total)  // не удалось загрузить картинку, однако она последняя; всё равно сохраняем страницу.
-                                    flushPage(response.title, pid, el.innerHTML);
-                            }
-                        }
+                        imgs[j].onload = onLoad;
+                        imgs[j].onerror = onError;
                     }
                 }
                 else
