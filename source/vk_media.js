@@ -6422,7 +6422,7 @@ vk_au_down={
 /////////////////////////
 
 if (!window.vkopt_plugins) vkopt_plugins = {};
-(function () {  // Плагин для скачивания всех материалов диалога (пока только фотки)
+(function () {  // Плагин для скачивания всех материалов диалога
     var PLUGIN_ID = 'IMattachmentsDL';
 
     vkopt_plugins[PLUGIN_ID] = {
@@ -6435,8 +6435,8 @@ if (!window.vkopt_plugins) vkopt_plugins = {};
         wget_links: [],
         el_id: 'vk_im_download', // id элемента (ссылки), чтобы она 2 раза не вставлялась
         // ФУНКЦИИ
-        onLocation: function (nav_obj, cur_module_name) {   // при открытии окна с материалами беседы на вкладке "фотографии"
-            if (cur_module_name == 'im' && nav_obj.w && nav_obj.w.indexOf('history') == 0 && nav_obj.w.indexOf('photo') > 0 && !ge(this.el_id))
+        onLocation: function (nav_obj, cur_module_name) {   // при открытии окна с материалами беседы
+            if (cur_module_name == 'im' && nav_obj.w && nav_obj.w.indexOf('history') == 0 && !ge(this.el_id))
                 this.UI();
         },
         UI: function () {   // Добавление ссылки на скачивание
@@ -6471,17 +6471,49 @@ if (!window.vkopt_plugins) vkopt_plugins = {};
 
                 vkopt_plugins[PLUGIN_ID].progress_div.innerHTML = vkProgressBar(_offset, vkopt_plugins[PLUGIN_ID].total, 400);  // обновление прогрессбара
 
-                var images = winToUtf(arr[arr.length - 2]).match(/{"base":[^}]+}/g); // json-объекты, содержащие общее начало ссылок разных размеров и соответствующие концы.
-                //var names = arr[arr.length - 2].match(/\d+_\d+/g);   // раскомментируйте, чтобы можно было сделать имена для файлов = id фотографий.
-                if (images)
-                    for (var i = 0; i < images.length; i++) {
-                        var image = JSON.parse(images[i]);
-                        var url = image.base + (image.z_ || image.y_ || image.x_)[0] + '.jpg';                  // возвращается наилучшее качество
-                        var filename = ((100000 + vkopt_plugins[PLUGIN_ID].abs_i++) + '').substr(1) + '.jpg';   // для составления имен с фиксированной длиной. Основание фиксированное, т.к. заранее не знаем макс. номер
-                        vkopt_plugins[PLUGIN_ID].links.push(url + '?/' + filename);
-                        vkopt_plugins[PLUGIN_ID].wget_links.push('wget "' + url + '" -O "' + filename + '"');
-                    }
-
+                if (vkopt_plugins[PLUGIN_ID].cur_w.indexOf('photo') > 0) {
+                    var images = winToUtf(arr[arr.length - 2]).match(/{"base":[^}]+}/g); // json-объекты, содержащие общее начало ссылок разных размеров и соответствующие концы.
+                    //var names = arr[arr.length - 2].match(/\d+_\d+/g);   // раскомментируйте, чтобы можно было сделать имена для файлов = id фотографий.
+                    if (images)
+                        for (var i = 0; i < images.length; i++) {
+                            var image = JSON.parse(images[i]);
+                            var url = image.base + (image.z_ || image.y_ || image.x_)[0] + '.jpg';                  // возвращается наилучшее качество
+                            var filename = ((100000 + vkopt_plugins[PLUGIN_ID].abs_i++) + '').substr(1) + '.jpg';   // для составления имен с фиксированной длиной. Основание фиксированное, т.к. заранее не знаем макс. номер
+                            vkopt_plugins[PLUGIN_ID].links.push(url + '?/' + filename);
+                            vkopt_plugins[PLUGIN_ID].wget_links.push('wget "' + url + '" -O "' + filename + '"');
+                        }
+                } else if (vkopt_plugins[PLUGIN_ID].cur_w.indexOf('audio') > 0) {
+                    var el = vkCe('div', {}, arr[6]);
+                    each(geByClass('audio', el), function (i, row) {
+                        var url = geByTag('input', row)[0].value;
+                        var filename = vkCleanFileName(geByClass('title_wrap', row)[0].innerText) + '.mp3';
+                        vkopt_plugins[PLUGIN_ID].links.push(url + '&/' + vkEncodeFileName(filename));
+                        vkopt_plugins[PLUGIN_ID].wget_links.push('wget "' + url + '" -O "' + winToUtf(filename) + '"');
+                    });
+                } else if (vkopt_plugins[PLUGIN_ID].cur_w.indexOf('video') > 0) { // Видео не поддерживается. Слишком геморно.
+                    alert('Not supported');
+                    next_offset = vkopt_plugins[PLUGIN_ID].total - 0;
+                //    var el = vkCe('div', {}, arr[6]);
+                //    each(geByTag('a', el), function (i, row) {
+                //        var oid = row.href.match(/video([-\d]+)/)[1];
+                //        var vid = row.href.match(/_(\d+)/)[1];
+                //        var temp_el = vkCe('div');
+                //        vk_vid_down.vkVidLoadLinks(oid,vid,temp_el); // TODO: отследить появление ссылок в temp_el и только тогда класть их в links
+                //        vkopt_plugins[PLUGIN_ID].links.push(url + '&/' + vkEncodeFileName(filename));
+                //        vkopt_plugins[PLUGIN_ID].wget_links.push('wget "' + url + '" -O "' + winToUtf(filename) + '"');
+                //    });
+                } else if (vkopt_plugins[PLUGIN_ID].cur_w.indexOf('doc') > 0) {
+                    var el = vkCe('div', {}, arr[6]);
+                    each(geByClass('media_desc', el), function (i, row) {
+                        var url = geByTag('a', row)[0].href + '&api=1';
+                        var filename = vkCleanFileName(
+                            (geByClass('fl_l', row, 'span')[0] ||       // gifки
+                            geByClass('page_doc_photo_hint', row)[0] || // картинки
+                            geByClass('a', row, 'span')[0]).innerText); // файлы
+                        vkopt_plugins[PLUGIN_ID].links.push(url + '&/' + vkEncodeFileName(filename));
+                        vkopt_plugins[PLUGIN_ID].wget_links.push('wget "' + url + '" -O "' + winToUtf(filename) + '"');
+                    });
+                }
                 if (next_offset != vkopt_plugins[PLUGIN_ID].total - 0) {
                     vkopt_plugins[PLUGIN_ID].run(next_offset);
                 } else {
@@ -6502,7 +6534,7 @@ if (!window.vkopt_plugins) vkopt_plugins = {};
                     var tabs = [];
                     tabs.push({name: IDL('links'), active: true, content: links_html});
                     tabs.push({name: IDL('wget_links'), content: wget_links_html});
-                    var box = vkAlertBox('JPG', vkMakeContTabs(tabs));
+                    var box = vkAlertBox(IDL('links'), vkMakeContTabs(tabs));
                     box.setOptions({width: "560px"});
                 }
             });
