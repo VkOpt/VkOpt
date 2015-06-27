@@ -1521,17 +1521,42 @@ function vkGetZipWithPhotos(oid, aid) {
     }
     /* </ Создание прогресс-бара > */
 
+    var CORS_PROXY = 'http://crossorigin.me/';  // константа, содержащая адрес прокси для CORS-запросов
     var zip;            // переменная для объекта JSZip
     var links;          // переменная для массива ссылок на фотки
     var links_length;   // длина этого массива. Чтобы каждый раз не дергать .length
     var dlphoto = function (i) {  // рекурсивная функция скачивания фоток. i - номер ссылки в массиве
-        if (i > -1) // условие остановки рекурсии
-            vk_aj.ajax({url: links[i], method: 'GET', responseType: 'arraybuffer'}, function (response) { // Скачивание файла через background
-                if (response.status == 200)
-                    zip.file(i + ".jpg", response.raw);     // Добавление скачанного файла в объект JSZip
-                Progress(links_length - i, links_length);   // Потому что скачивание идет задом наперед
-                dlphoto(--i);                // продолжаем рекурсию 
-            });
+        if (i > -1) {   // условие продолжения рекурсии
+            var next = function() {
+                Progress(links_length - i, links_length); // Потому что скачивание идет задом наперед  
+                dlphoto(--i);                             // продолжаем рекурсию                       
+            }
+            var request = (vkAjTransport.readyState == 4 || vkAjTransport.readyState == 0) ? vkAjTransport : PrepReq();
+            if (request) {
+                var cors_proxy_used = false;    // использовался ли уже CORS-прокси
+                request.responseType = 'arraybuffer';
+                request.onreadystatechange = function () {
+                    if (request.readyState == 4) {
+                        if (request.status == 200) {
+                            zip.file(i + ".jpg", request.response);     // Добавление скачанного файла в объект JSZip
+                            next();
+                        } else if (!cors_proxy_used) {                  // Если еще не использовали прокси, используем
+                            cors_proxy_used = true;
+                            request.open('GET', CORS_PROXY + links[i], true);
+                            request.send();
+                        } else {    // Не скачалось даже через прокси. Наверное, прокси лежит. Скачиваем файл через background.
+                            vk_aj.ajax({url: links[i], method: 'GET', responseType: 'arraybuffer'}, function (response) {
+                                if (response.status == 200)
+                                    zip.file(i + ".jpg", response.raw);
+                                next();
+                            });
+                        }
+                    }
+                };
+                request.open('GET', links[i], true);
+                request.send();
+            } else next();
+        }
         else {      // При завершении скачивания сохраняем сгенерированный архивчик
             var content = zip.generate({type: "blob"});
             saveAs(content, "photos_" + vkCleanFileName((oid || '') + '_' + (aid || '')).substr(0, 250) + ".zip");
