@@ -49,6 +49,7 @@ function downloadFile(url, name) {
 
 function Ajax(options, worker) {
     function callback(obj) {
+        obj.mozTime=options.mozTime;
         worker.port.emit("ajax_response", obj);
     }
 

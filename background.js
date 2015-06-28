@@ -597,8 +597,16 @@ ext_api={
          }
       */
       if (browser.mozilla && !Components.classes) {    // Firefox Jetpack
+          options.mozTime=Date.now();
           self.port.emit("ajax", options);
-          self.port.on("ajax_response", callback);
+          function ajaxResponse(obj) {
+              if (options.mozTime == obj.mozTime) {
+                  delete obj.mozTime;
+                  callback(obj);
+                  self.port.removeListener("ajax_response", ajaxResponse);
+              }
+          }
+          self.port.on("ajax_response", ajaxResponse);
       }
       else {
           if (!options.url || (options.url || '').replace(/^\s+|\s+$/g, '') == '') {
