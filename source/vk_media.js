@@ -231,7 +231,7 @@ var vk_photos = {
                
                var li=vkCe('li',{id:'vk_album_actions',"class":'t_r'},'\
                   <a href="#" onclick="return false;"  id="vk_album_act_menu" class_="fl_r summary_right">'+IDL('Actions')+'</a>\
-                  '+(geByClass('summary_right')[0]?'<span class="divide">|</span>':'')+'\
+                  '+(geByClass('t_r')[0]?'<span class="divide">|</span>':'')+'\
                ');
                geByClass('t0')[0].appendChild(li);
                
