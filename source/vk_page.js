@@ -438,6 +438,7 @@ function vkWallPage(){
 	vkAddCleanWallLink();
 	vkAddDelWallCommentsLink();
    vkWallPhotosLinks();
+    vk_feed.scroll_posts('page_wall_posts');
 }
 function vkWallPhotosLinks(){
    var el=geByClass('fw_post_info')[1];
