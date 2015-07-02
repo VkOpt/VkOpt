@@ -636,7 +636,8 @@ function vkInitSettings(){
      {id:62,  text: "seWriteBoxWithoutFastChat"},
      {id:68,  text: "seTypingNotify"},
      {id:81,  text: "seDialogsReplyBtn"},
-     {id:89,  text: "seDisableIMFavicon"}
+     {id:89,  text: "seDisableIMFavicon"},
+     {id:76,  text: "seDisableLinkConvert"}
     ],
     vkInterface:[
       {id:21,  wiki:"seADRem", text:IDL("seADRem")+vkCheckboxSetting(44,IDL("seAdNotHideSugFr"),true)},
@@ -704,7 +705,7 @@ function vkInitSettings(){
   };
 
    //LAST 104
-   //FREE 20,76,102
+   //FREE 20,102
 
    vkSetsType={
       "on"  :[IDL('on'),'y'],

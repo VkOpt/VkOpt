@@ -727,6 +727,7 @@ vk_lang_ru={
    ,"seUseHtml5ForAudio":"\u0418\u0441\u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u044c HTML5 \u0430\u0443\u0434\u0438\u043e \u043f\u043b\u0435\u0435\u0440"
    ,"seUseHTML5ForSave":"\u0418\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C HTML5 \u0434\u043B\u044F \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u044F \u0444\u0430\u0439\u043B\u043E\u0432"
    ,"seTurningPosts":"\u041a\u043d\u043e\u043f\u043a\u0438 \u043b\u0438\u0441\u0442\u0430\u043d\u0438\u044f \u043f\u043e\u0441\u0442\u043e\u0432"
+   ,"seDisableLinkConvert":"\u041d\u0435 \u043f\u0440\u0435\u043e\u0431\u0440\u0430\u0437\u043e\u0432\u044b\u0432\u0430\u0442\u044c \u0441\u0441\u044b\u043b\u043a\u0438 \u0432 \u0434\u0438\u0430\u043b\u043e\u0433\u0430\u0445"
 };
 
 vk_lang_en={//by Hzy
@@ -1610,6 +1611,7 @@ vk_lang_en={//by Hzy
   ,"seUseHtml5ForAudio":"Use HTML5 as audio player"
   ,"seUseHTML5ForSave":"Use HTML5 for file saving"
   ,"seTurningPosts":"Turning posts buttons"
+  ,"seDisableLinkConvert":"Don't convert links in dialogs"
 };
  
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
