@@ -184,6 +184,7 @@ function vkGetVkoptFullConfig(){
       FavList:vkGetVal('FavList'),
       menu_custom_links:vkGetVal('menu_custom_links'),
       vk_sounds_vol:vkGetVal("vk_sounds_vol") || "",
+      WallsID:vkGetVal("WallsID") || "",
       VK_CURRENT_CSS_URL:vkGetVal('VK_CURRENT_CSS_URL'),
       VK_CURRENT_CSSJS_URL:vkGetVal('VK_CURRENT_CSSJS_URL'),
       VK_CURRENT_CSS_CODE:vkGetVal('VK_CURRENT_CSS_CODE'),
@@ -504,56 +505,61 @@ function setFrColor(color) {
 
 ////Walls
 function ReadWallsCfg(){
-  //alert(vkGetVal('WallsID').split(",")[0]);
   if (window.WallIDs && WallIDs.length>0 && WallIDs[0]!="") return WallIDs;
-  return (vkGetVal('WallsID'))?String(vkGetVal('WallsID')).split(","):[""];//["1244","g1","g12345","1"];
+  try {
+      return JSON.parse(vkGetVal('WallsID')) || {}; //{"1244":"Name", ... }
+  } catch (e) {
+      try {
+          return eval(vkGetVal('WallsID')) || {};
+      } catch (e) {
+          return {};
+      }
+  }
 }
 function SetWallsCfg(cfg){
-  vkSetVal('WallsID',cfg.join(","));
+  vkSetVal('WallsID',JSON.stringify(cfg));
 }
-function vkAddWall(wid) {
+function vkAddWall(el) {    // Добавление новой записи. el - текстовое поле со ссылкой/id владельца
     var wall_list=ReadWallsCfg();
-    var wid = (!wid) ? ge('vkaddwallid').value: wid;
-    wid = String(wid);
-
-    if (wid.length > 0 && (/^g?\d+$/i.test(wid))) {
-        var dub = false;
-        for (var i = 0; i < wall_list.length; i++) if (String(wall_list[i]) == wid) {
-            dub = true;
-            break;
-        }
-        if (!dub) {
-            wall_list[wall_list.length] = wid;
-            SetWallsCfg(wall_list);
-        } else {
-            alert("Item Existing");
-        }
-        GenWallList("vkwalllist");//WallManForm();
-    } else { alert('Not valid wall id'); }
+    getGidUid(val(el), function(uid,gid) { // поиск владельца по url
+        var wid = uid || -gid;
+        if (wid) {
+            if (!(wid in wall_list)) {
+                dApi.call((uid ? 'users.get' : 'groups.getById'), { // Получения имени или названия владельца
+                    user_ids: uid,
+                    group_id: gid
+                }, function (r, response) {
+                    if (uid)
+                        wall_list[wid] = response[0].first_name + ' ' + response[0].last_name;
+                    else
+                        wall_list[wid] = response[0].name;
+                    SetWallsCfg(wall_list);
+                    GenWallList(geByClass('vkwalllist', el.parentNode)[0]);
+                });
+            } else {
+                alert("Item Existing");
+            }
+            val(el,'');
+        } else { alert('Not valid wall id'); }
+    });
 }
-function vkRemWall(idx){
-  var res=[];
+function vkRemWall(x_el){   // Удаление записи, которой соответствует элемент с крестиком x_el
   var wall_list=ReadWallsCfg();
-  for (var i=0;i<wall_list.length;i++)
-    if (idx!=i){  
-      res[res.length]=wall_list[i];
-    }
-  wall_list=res;
-  SetWallsCfg(wall_list);  
-  GenWallList("vkwalllist");
-  //WallManForm();
+  delete wall_list[x_el.getAttribute('i')];
+  SetWallsCfg(wall_list);
+  GenWallList(x_el.parentNode.parentNode);
 }
 
-function GenWallList(el){
+function GenWallList(el){   // Генерация списка записей в элемент el
   var wall_list=ReadWallsCfg();
   var whtml="";
   var lnk;
-  for (var i=0; i<wall_list.length;i++){
-      lnk=(wall_list[i][0] == 'g')?"wall.php?gid="+wall_list[i].split('g')[1]:"wall.php?id="+wall_list[i];
-      if (wall_list[i]=="") {lnk="wall.php?id="+remixmid(); wall_list[i]=String(remixmid());}
-      whtml+='<div id="wit'+wall_list[i]+'" style="width:130px"><a style="position:relative; left:120px" onclick="vkRemWall('+i+')">x</a>'+i+') <a style="width:110px;" href="'+lnk+'">'+wall_list[i]+'</a></div>';
+  var i = 0;
+  for (var id in wall_list) {
+      lnk = "wall" + id;
+      whtml += '<div id="wit' + id + '" style="width:170px"><a style="position:relative; left:100%" onclick="vkRemWall(this)" title="'+IDL('phDel')+'" i="' + id + '">x</a>' + (++i) + ') <a href="' + lnk + '">' + wall_list[id] + '</a></div>';
   }
-  if (!el) {return whtml;} else {ge(el).innerHTML=whtml;}
+  if (!el) {return whtml;} else {el.innerHTML=whtml;}
 }
 //end wallmgr
 
@@ -695,6 +701,13 @@ function vkInitSettings(){
       {id:77,  text: "seBatchCleaners"},
       {id:78,  text: "seCutBracket"}
     , {id:103,  text: "seUseHTML5ForSave"}
+    , {id:20, wiki: "seSubscribeToWall", text: IDL("seSubscribeToWall") +
+           '<br><a onclick="toggle(\'vkExWallMgr\'); GenWallList(this.nextElementSibling.lastChild); return false;"><b>' + IDL("Settings") + '</b></a>' +
+           '<div id="vkExWallMgr" style="display:none;">' +
+           '<input type="text" onkeydown="if(13==event.keyCode || 10==event.keyCode) return vkAddWall(this)" size="20">' +
+           ' <a onclick="return vkAddWall(this.previousElementSibling)">' + IDL('add') + '</a><br>' +
+           '<div class="vkwalllist"></div></div>'
+      }
    ],
    Hidden:[
       {id:82,  text: "FullThumb"},
@@ -704,7 +717,7 @@ function vkInitSettings(){
   };
 
    //LAST 104
-   //FREE 20,76,102
+   //FREE 76,102
 
    vkSetsType={
       "on"  :[IDL('on'),'y'],
@@ -1198,6 +1211,7 @@ function vkSaveSettingsOnServer(){
       'vklang':vkgetCookie('vklang'),
       'menu_custom_links':vkGetVal('menu_custom_links') || "",
       'vk_sounds_vol':vkGetVal("vk_sounds_vol") || "",
+      'WallsID':vkGetVal("WallsID") || "",
       //'FavList':vkGetVal('FavList'),
       'VK_CURRENT_CSS_URL':vkGetVal("VK_CURRENT_CSS_URL") || "",
       'VK_CURRENT_CSSJS_URL':vkGetVal('VK_CURRENT_CSSJS_URL') || "",
@@ -1226,7 +1240,7 @@ function vkSaveSettingsOnServer(){
    */
 }
 function vkLoadSettingsFromServer(check,callback){
-	var params={keys:'remixbits,vklang,FavList,menu_custom_links,vk_sounds_vol,VK_CURRENT_CSS_URL,VK_CURRENT_CSSJS_URL,VK_CURRENT_CSS_CODE'};
+	var params={keys:'remixbits,vklang,FavList,menu_custom_links,vk_sounds_vol,WallsID,VK_CURRENT_CSS_URL,VK_CURRENT_CSSJS_URL,VK_CURRENT_CSS_CODE'};
    if (check) params={key:'remixbits'};
    dApi.call('storage.get',params,function(r){
 		if (check){
@@ -1271,7 +1285,8 @@ function vkLoadSettingsFromServer(check,callback){
             if (scfg['VK_CURRENT_CSSJS_URL']) vkSetVal('VK_CURRENT_CSSJS_URL',scfg['VK_CURRENT_CSSJS_URL']);
             if (scfg['VK_CURRENT_CSS_CODE']) vk_LSSetVal('VK_CURRENT_CSS_CODE',decodeURIComponent(scfg['VK_CURRENT_CSS_CODE']));      
             if (scfg['vk_sounds_vol']) vkSetVal("vk_sounds_vol",scfg['vk_sounds_vol']);
-   
+            if (scfg['WallsID']) vkSetVal("WallsID",scfg['WallsID']);
+
 				ge('cfg_on_serv_info').innerHTML='<div class="vk_cfg_info">'+IDL('seCfgRestored')+'</div>';
 			} else {
 				ge('cfg_on_serv_info').innerHTML='<div class="vk_cfg_error">'+IDL('seCfgLoadError')+' #0</div>';

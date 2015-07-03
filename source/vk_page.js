@@ -4570,4 +4570,112 @@ if (!window.vkopt_plugins) vkopt_plugins = {};
     if (window.vkopt_ready) vkopt_plugin_run(PLUGIN_ID);
 })();
 
+(function(){
+    var PLUGIN_ID = 'WallFeed';
+
+    vkopt_plugins[PLUGIN_ID]={
+        Name: 'Subscriptions to wall',
+        later: [],          // посты со стен, которые не вошли в текущую порцию новостей, но которые надо будет включить в одну из следующих
+        wall_list: {},      // список стен для загрузки. нужен здесь только для отображения названия стены, с которой запись
+        // СОБЫТИЯ
+        onLocation: function(nav_obj,cur_module_name){  // При переходе в новости добавить посты со стен
+            if (getSet(20)=='y' && nav_obj[0]=="feed" && cur_module_name=="feed" && (!nav_obj.section || nav_obj.section=='news') && !nav_obj.w) {
+                this.wall_list=ReadWallsCfg();
+                this.later=[];
+                for (var i in this.wall_list)
+                    if (i != 'length')
+                        this.loadWall(i);
+            }
+        },
+        onResponseAnswer: function (answer, url, params) {  // При получении какого-то ответа по сети, проверяем, а не новости ли это подгрузились?
+            if (getSet(20)=='y' && params.more == 1 && url == "/al_feed.php?sm_news" && params.al == 1 && params.part == 1 && params.section == "news" && params.subsection == "recent")
+                setTimeout(function(){vkopt_plugins[PLUGIN_ID].unionPosts(vkopt_plugins[PLUGIN_ID].later);},200);   // вставка отложенных постов в обновленные новости
+        },
+        // ФУНКЦИИ
+        getPostTime: function (post) {  // Получение времени публикации сообщения по элементу post. Возвращается unixtime в GMT
+            var time_element = geByClass('rel_date', post, 'span')[0];
+            if (!time_element || post.firstElementChild.getAttribute('data-ad'))   // не пост или рекламный пост; возвращаем 1 января 3000 года (фактически значит "пропустить этот пост").
+                return 32503680000000;
+            else if (time_element.getAttribute('time')) // аттрибут time будет для постов, отправленных не позже 5 часов назад
+                return parseInt(time_element.getAttribute('time'));
+            else {                                      // для всех остальных парсим из текста подписи с датой
+                var text = time_element.textContent;
+                var datetime = text.split(' ');
+                var d, m, y, H, M;
+
+                var HM = datetime[datetime.length - (datetime[datetime.length - 1] == 'pm' || datetime[datetime.length - 1] == 'am' ? 2 : 1)].split(':');
+                H = parseInt(HM[0]);
+                M = parseInt(HM[1]);
+                if (datetime[datetime.length - 1] == 'pm') H += 12;
+
+                if (datetime[0] == getLang('today')) {
+                    var now = new Date();
+                    d = now.getDate();
+                    m = now.getMonth();
+                    y = now.getFullYear();
+                } else if (datetime[0] == getLang('yesterday')) {
+                    var yesterday = new Date(new Date() - 3600 * 24 * 1000);
+                    d = yesterday.getDate();
+                    m = yesterday.getMonth();
+                    y = yesterday.getFullYear();
+                } else {    // 26 Jun 2015 at 1:23 pm
+                    d = parseInt(datetime[0]);
+                    for (var i = 0; i < 12 && m == undefined; i++)
+                        if (getLang('month' + (i + 1) + 'sm_of') == datetime[1])
+                            m = i;
+                    y = parseInt(datetime[2]) || new Date().getFullYear();
+                    if (datetime.length < 4) H = M = 0; // если нет времени
+                }
+
+                var time = Math.round(new Date(y, m, d, H, M).getTime() / 1000);
+                time_element.setAttribute('time', time);    // чтобы в следующий раз не парсить заново из текста, а брать из атрибута
+                return time;
+            }
+        },
+        unionPosts: function (posts) {  // объединение массива элементов posts c элементами-новостями
+            var len = posts.length;
+            for (var i = 0; i < len; i++) {
+                var post = posts.shift();
+                if (!hasClass(post, 'post_fixed') && !ge(post.id)) {    // закрепленные посты и уже существующие не обрабатываем
+                    var feed_container =  cur.rowsCont || ge('feed_rows');  // контейнер с новостями
+                    var feed_rows = geByClass('feed_row', feed_container);
+                    for (var j = 0; j < feed_rows.length && this.getPostTime(post) < this.getPostTime(feed_rows[j]); j++) {}    // нахождение первой новости, которая была раньше вставляемого поста
+                    if (j != feed_rows.length) {    // Если посту есть место в загруженной порции новостей
+                        var reply_link = geByClass('reply_link',post,'a');  // удаляем ссылку "комментировать", потому что комментировать не получится - хеша нет
+                        if (reply_link.length)
+                            reply_link[0].parentNode.removeChild(reply_link[0]);
+                        var reply_fakebox_wrap = geByClass('reply_fakebox_wrap',post);  // удаляем текстовое поле "комментировать" по той же причине
+                        if (reply_fakebox_wrap.length)
+                            reply_fakebox_wrap[0].parentNode.removeChild(reply_fakebox_wrap[0]);
+                        var owner_id = post.id.match(/(-?\d+)_/)[1];
+                        geByClass('wall_text_name',post)[0].appendChild(vkCe('span',{class:'explain'},' ↪ '+IDL('atWall')+' <a href="/wall'+owner_id+'">'+this.wall_list[owner_id]+'</a>'));    // добавить справа от имени автора "на стене такой-то"
+                        var feed_row = vkCe('div', {'class': 'feed_row'});  // вставляем пост новой строкой
+                        feed_row.appendChild(post);
+                        feed_container.insertBefore(feed_row, feed_rows[j]);
+                    } else                          // Если пост опубликован раньше всех имеющихся новостей, оставляем его на потом, когда еще подгрузятся
+                        this.later.push(post);
+                }
+            }
+        },
+        loadWall: function (owner_id, own) {    // загрузка стены владельца owner_id. Если own==1, загружать только записи владельца.
+            show('feed_progress');
+            AjPost('/wall' + owner_id, // ajax.post нельзя, потому что он может перенаправлять.
+                {al: 1, offset: 0, part: 1, own: own || 0}, function (text) {
+                    var arr = text.split('<!>');
+                    if (arr[5].indexOf('<!int>') == 0) {    // Если нет ошибок
+                        vkopt_plugins[PLUGIN_ID].unionPosts(geByClass('post', vkCe('div', {}, arr[7])));
+                        extend(cur.options.reply_names, JSON.parse(arr[8].replace('<!json>', '')));
+                    } else {
+                        if (!own)   // в случае ошибки сначала пробуем загрузить только записи владельца
+                            vkopt_plugins[PLUGIN_ID].loadWall(owner_id, 1);
+                        else        // если это не помогло, значит стена закрыта. Ничего никуда не вставляем.
+                            vklog('Wall closed! id: ' + owner_id, 1);
+                    }
+                    hide('feed_progress');
+                });
+        }
+    };
+    if (window.vkopt_ready) vkopt_plugin_run(PLUGIN_ID);
+})();
+
 if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
