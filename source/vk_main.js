@@ -1291,6 +1291,10 @@ vk_im={
       vk_im.add_prevent_hide_cbox();
       //vkMsgStatsBtn();
       vk_im.add_menus();
+      if (getSet(76) == 'y')    // Отключение функции преобразования ссылок в ЛС в миниатюры с текстом
+          Inj.Wait('cur.imMedia', function () {
+              Inj.Start('cur.imMedia.checkURL', 'return;');
+          });
    },
    add_menus:function(){
       if (!ge('vk_im_menu')){
