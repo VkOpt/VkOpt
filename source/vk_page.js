@@ -3341,13 +3341,14 @@ vk_feed={
    scroll_posts: function(parent_id) {  // Добавление панельки с кнопками перемотки на следующий и предыдущий посты. parent_id - id контейнера с постами
        if (getSet(19)=='y' && !ge('vk_scroll_parent')) {
            var prev = vkCe('div', {'class': 'vk_scroll prev fl_l'}, '<div></div>');   // Кнопка "предыдущий"
+           var topShift = (getComputedStyle(ge('page_header')).position=='fixed' ? parseInt(getComputedStyle(ge('page_header')).height) : 0);
            var previousPost = function () {
                var elem = ge(parent_id).firstElementChild;   // первый пост
                if (elem) {
-                   while (elem && elem.getBoundingClientRect().top < -3 || elem.getBoundingClientRect().left==0)
+                   while (elem && elem.getBoundingClientRect().top-topShift < -3 || elem.getBoundingClientRect().left==0)
                        elem = elem.nextElementSibling;
                    elem = elem.previousElementSibling;         // в этом месте elem был текущим постом, а стал предыдущим
-                   if (elem) scrollToY(getXY(elem)[1], 100);
+                   if (elem) scrollToY(getXY(elem)[1]-topShift, 100);
                    window.scrollAnimation = false;
                    wall.scrollCheck(); // для подгрузки стены
                }
@@ -3358,9 +3359,9 @@ vk_feed={
            var nextPost = function () {
                var elem = ge(parent_id).firstElementChild;   // первый пост
                if (elem) {
-                   while (elem && elem.getBoundingClientRect().top < 3)
+                   while (elem && elem.getBoundingClientRect().top-topShift < 3)
                        elem = elem.nextElementSibling;
-                   if (elem) scrollToY(getXY(elem)[1], 100);   // здесь elem - следующий пост
+                   if (elem) scrollToY(getXY(elem)[1]-topShift, 100);   // здесь elem - следующий пост
                    window.scrollAnimation = false;
                    wall.scrollCheck(); // для подгрузки стены
                }
