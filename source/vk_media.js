@@ -5387,7 +5387,7 @@ vk_vid_down={
       */
    },
    vkVideoGetLinks: function(oid,aid){
-   //vkApis.videos: function(oid,aid,quality,callback,progress){// quality: 0 - 240p; 1 - 360p;  2 - 480p;  3 - 720p;
+   //vkApis.videos: function(oid,aid,quality,callback,progress){// quality: 0 - 240p; 1 - 360p;  2 - 480p;  3 - 720p; 4 - 1080p
 
       var box=vkAlertBox(IDL('Links'),'<div id="vk_links_container">'+vkBigLdrImg+'</div>');
       box.setOptions({width:"325px"});
@@ -5414,11 +5414,13 @@ vk_vid_down={
       <a class="vk_down_icon" href="#"  id="vk_glinks_max360p">360p<small class="divide">max</small></a>\
       <a class="vk_down_icon" href="#"  id="vk_glinks_max480p">480p<small class="divide">max</small></a>\
       <a class="vk_down_icon" href="#"  id="vk_glinks_max720p">720p<small class="divide">max</small></a>\
+      <a class="vk_down_icon" href="#"  id="vk_glinks_max1080p">1080p<small class="divide">max</small></a>\
       ';
       ge('vk_glinks_max240p').onclick=run.pbind(0);
       ge('vk_glinks_max360p').onclick=run.pbind(1);
       ge('vk_glinks_max480p').onclick=run.pbind(2);
       ge('vk_glinks_max720p').onclick=run.pbind(3);
+      ge('vk_glinks_max1080p').onclick=run.pbind(4);
       
       var show_links=function(list){
 			
@@ -5506,24 +5508,20 @@ vk_vid_down={
       var generateHDLinks=function(){
          var s="";
          var vidHDurl="";
+         var res_list='360,360,480,720,1080'.split(',');
          if ( parseInt(vars.hd)>0)
-           for (var i=1;i<=parseInt(vars.hd);i++){
-            //vidHDurl=vkpathToHD(flash_vars,i);
-            var res = "360";
-            switch(i){
-               case 2: res = "480"; break;
-               case 3: res = "720"; break;
+            for (var i = 1; i <= parseInt(vars.hd); i++) {
+            	var res = res_list[i] || res_list[0];
+            	vidHDurl = pathToHD(res);
+            	s += (vidHDurl) ? '<a href="' +
+                  vidHDurl + (smartlink ? (vidHDurl.indexOf('?') == -1 ? '?' : '') + vidname + vkEncodeFileName(' [' + res + 'p]') + '.mp4' : '') + '" ' +
+                  'download="' + vname + ' [' + res + 'p].mp4"  ' +
+                  'title="' + vname + ' [' + res + 'p].mp4" ' +
+                  'onclick="return vkDownloadFile(this);" ' +
+                  'onmouseover="vk_vid_down.vkGetVideoSize(this); vkDragOutFile(this);">' +
+                  IDL("downloadHD") + ' ' + res + 'p<small class="fl_r divide" url="' + vidHDurl + '"></small></a>' : "";
             }
-            vidHDurl=pathToHD(res);
-            s += (vidHDurl)?'<a href="'+
-               vidHDurl+(smartlink?(vidHDurl.indexOf('?')==-1?'?':'')+vidname+vkEncodeFileName(' ['+res+'p]')+'.mp4':'')+'" '+
-               'download="'+vname+' ['+res+'p].mp4"  '+
-               'title="'+vname+' ['+res+'p].mp4" '+
-               'onclick="return vkDownloadFile(this);" '+
-               'onmouseover="vk_vid_down.vkGetVideoSize(this); vkDragOutFile(this);">'+
-               IDL("downloadHD")+' '+res+'p<small class="fl_r divide" url="'+vidHDurl+'"></small></a>':"";  
-           }
-           return s;
+            return s;
       };
       // делаем ссылки на превьюхи
       var generatePreviewLinks=function(){
@@ -5586,13 +5584,10 @@ vk_vid_down={
       var generateHDLinks=function(){
          var s="";
          var vidHDurl="";
+         var res_list='360,360,480,720,1080'.split(',');
          if ( parseInt(vars.hd)>0)
            for (var i=1;i<=parseInt(vars.hd);i++){
-            var res = "360";
-            switch(i){
-               case 2: res = "480"; break;
-               case 3: res = "720"; break;
-            }
+            var res = res_list[i] || res_list[0];
             vidHDurl = pathToHD(res);
             if (vidHDurl) result.push(vidHDurl);
             //if (vars["cache"+res]) result.push(vars["cache"+res]); 
@@ -5603,7 +5598,7 @@ vk_vid_down={
       generateHDLinks();
       return result;
    },
-   videos: function(oid,aid,quality,callback,progress){// quality: 0 - 240p; 1 - 360p;  2 - 480p;  3 - 720p;
+   videos: function(oid,aid,quality,callback,progress){// quality: 0 - 240p; 1 - 360p;  2 - 480p;  3 - 720p; 4 - 1080p
       aid = parseInt(aid) || 0;
       quality = quality!=null ? quality : 3;
       var load=function(cback){
@@ -5643,7 +5638,7 @@ vk_vid_down={
          scan();
       };
       
-      var fmt=['240p','360p','480p','720p'];
+      var fmt=['240p','360p','480p','720p','1080p'];
       var videos=[];
       var get_links = function(vids_info,idx){
             idx = idx || 0;
@@ -5871,7 +5866,7 @@ vk_vid_down={
    },
    vkVidLoadLinks: function(oid,vid,el,yid,type){
        var smartlink=true;//(getSet(1) == 'y')?true:false;
-       var fmt=['240p','360p','480p','720p'];
+       var fmt=['240p','360p','480p','720p','1080p'];
        el=ge(el);
        el.innerHTML=vkLdrImg;
        AjGet('/video.php?act=a_flash_vars&vid='+oid+'_'+vid,function(t){
