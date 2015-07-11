@@ -1612,6 +1612,7 @@ vk_lang_en={//by Hzy
   ,"seUseHTML5ForSave":"Use HTML5 for file saving"
   ,"seTurningPosts":"Turning posts buttons"
   ,"seDisableLinkConvert":"Don't convert links in dialogs"
+  ,"sortByDate":"Sort by date"
   ,"seSubscribeToWall":"Subscribe to walls"
   ,"atWall":"at wall"
 };

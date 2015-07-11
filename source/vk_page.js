@@ -4552,7 +4552,7 @@ if (!window.vkopt_plugins) vkopt_plugins = {};
                 parent.appendChild(a);
             }
         },
-        onclick: function () {  // Нажатие на ссылку для сортировки
+        onclick: function (event) {  // Нажатие на ссылку для сортировки
             var likeCountClass = 'post_like_count';
             var postsContainer = ge('page_wall_posts');
             var posts = geByClass('post', postsContainer); // массив элементов, содержащих посты. его и будем сортировать.
@@ -4564,7 +4564,11 @@ if (!window.vkopt_plugins) vkopt_plugins = {};
                 var SortFunc = function (a, b) {
                     return geByClass(likeCountClass, b)[0].innerText - geByClass(likeCountClass, a)[0].innerText;
                 };
-            posts = posts.sort(SortFunc);
+            var DefaultFunc = function (a, b) { // обычная сортировка - по дате
+                return b.id.split('_')[1] - a.id.split('_')[1];
+            };
+            posts = posts.sort(event.target.innerText == IDL("sortByLikes", 1) ? SortFunc : DefaultFunc);
+            event.target.textContent = (event.target.innerText == IDL("sortByLikes", 1) ? IDL("sortByDate", 1) : IDL("sortByLikes", 1));  // переключаем надпись кнопки между "по лайкам" и "по дате"
             for (var i = 0; i < posts.length; i++)    // перевставляем посты в контейнер уже в правильном порядке
                 postsContainer.appendChild(posts[i]);
         }
