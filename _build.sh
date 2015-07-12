@@ -4,16 +4,9 @@ cp source/* builds/vkopt.safariextension/scripts
 cp source/* builds/opera.extension/scripts
 cp source/* builds/firefoxJetpack/resources/vkopt/data/scripts
 
-cp background.js builds/chrome/background.js
-cp background.js builds/firefox/chrome/content/background.js
-cp background.js builds/maxthon/background.js
-cp background.js builds/opera.extension/background.js
-cp background.js builds/vkopt.safariextension/background.js
-cp background.js builds/firefoxJetpack/resources/vkopt/data/background.js
-
-cp content_script.js builds/chrome/content_script.js
-cp content_script.js builds/firefox/chrome/content/content_script.js
-cp content_script.js builds/maxthon/content_script.js
-cp content_script.js builds/opera.extension/includes/content_script.js
-cp content_script.js builds/vkopt.safariextension/content_script.js
-cp content_script.js builds/firefoxJetpack/resources/vkopt/data/content_script.js
+cp {background.js,content_script.js,LICENSE} builds/chrome/
+cp {background.js,content_script.js,LICENSE} builds/firefox/chrome/content/
+cp {background.js,content_script.js,LICENSE} builds/maxthon/
+cp {background.js,content_script.js,LICENSE} builds/opera.extension/includes/
+cp {background.js,content_script.js,LICENSE} builds/vkopt.safariextension/
+cp {background.js,content_script.js,LICENSE} builds/firefoxJetpack/resources/vkopt/data/
