@@ -65,6 +65,7 @@ var ENABLE_CACHE=false;
 var VIDEO_PLAYER_DBG_ON = false; // включить отладочную инфу в видеоплеере
 var LOAD_HEADERS_BY_HEAD_REQ = false; // для получения запросом только хидеров использовать HEAD запрос (иначе GET c хидером запроса Range: bytes=0-1)
 var DISABLE_CHATS_TYPING_NOTIFY = false; // при включенной опции уведомления о набирающих сообщение, отключает уведомления от печатающих в чатах
+var BLOCK_LOCALSTORAGE_CLEAR = true; // пытаемся перезаписать родную функцию очистки хранилища
 
 var VKOPT_CFG_LIST=[
          'vk_DEBUG',
@@ -576,6 +577,22 @@ function VkOptInit(ignore_login){
 var dloc=document.location.href;
 var vk_domain=document.location.host;
 if (/vk\.com/.test(vk_domain) || /vkontakte\.ru/.test(vk_domain)){
+   if (BLOCK_LOCALSTORAGE_CLEAR){ // Блокируем вызов метода очистки локального хранилища, чтоб вк при разлогине не грохал настройки вкопта
+      var ls_clear_orig = window.localStorage.clear;
+      var ls_new_clear_func = function(confirm){ 
+         if(confirm)
+            ls_clear_orig();
+      } 
+      console.log('Try override localStorage.clear');
+      window.localStorage.clear = ls_new_clear_func;
+      if (window.localStorage.clear != ls_new_clear_func && window.localStorage.__proto__){
+         console.log('Fail. Try override localStorage.__proto__.clear');
+         localStorage.__proto__.clear = ls_new_clear_func;
+      }
+      if (window.localStorage.clear == ls_new_clear_func){
+         console.log('overrided ok..');         
+      }
+   }
    if (!/\/m\.vk\.com|login\.vk\.com|oauth\.vk\.com|al_index\.php|frame\.php|widget_.+php|notifier\.php|audio\?act=done_add/i.test(dloc)){
        vkonDOMReady(VkOptInit); 
    }
