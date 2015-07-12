@@ -1616,6 +1616,7 @@ function vkImTypingEvent(uid,need_close){
    if (uid.uid)
       uid=uid.uid;
    
+   if (chat && DISABLE_CHATS_TYPING_NOTIFY) return;
    
    if (getSet(68)=='n') return;
    
@@ -1642,7 +1643,7 @@ function vkImTypingEvent(uid,need_close){
    localStorage['vk_typing_notify']=JSON.stringify(new_to_store);
    
    //if (cur.peer!=uid)
-   setTimeout(function(){
+   setTimeout(function(){      
       vkGetUserInfo(uid,function(info){
          var show=function(chat_name){
             var tm=(new Date).format('isoTime');
@@ -1668,6 +1669,8 @@ function vkImTypingEvent(uid,need_close){
             show();
          } else {
             dApi.call('messages.getChat',{chat_id:chat},function(r){
+               var sound = (r.response.push_settings || {}).sound; // проверка отключены ли оповещения для чата
+               if (sound !== 0)
                show(r.response.title);
             });
          }

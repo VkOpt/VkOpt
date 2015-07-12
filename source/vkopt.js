@@ -64,6 +64,7 @@ var VKSETTINGS_WITH_WIKI_LINKS=false;
 var ENABLE_CACHE=false;
 var VIDEO_PLAYER_DBG_ON = false; // включить отладочную инфу в видеоплеере
 var LOAD_HEADERS_BY_HEAD_REQ = false; // для получения запросом только хидеров использовать HEAD запрос (иначе GET c хидером запроса Range: bytes=0-1)
+var DISABLE_CHATS_TYPING_NOTIFY = false; // при включенной опции уведомления о набирающих сообщение, отключает уведомления от печатающих в чатах
 
 var VKOPT_CFG_LIST=[
          'vk_DEBUG',
@@ -94,7 +95,8 @@ var VKOPT_CFG_LIST=[
          'VKSETTINGS_WITH_WIKI_LINKS',
          'ENABLE_CACHE',
          'VIDEO_PLAYER_DBG_ON',
-         'LOAD_HEADERS_BY_HEAD_REQ'
+         'LOAD_HEADERS_BY_HEAD_REQ',
+         'DISABLE_CHATS_TYPING_NOTIFY'
 ];
 
 var vkNewSettings=[98,99,100,79,101,103,104,19]; //"new" label on settings item
