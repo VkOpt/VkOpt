@@ -883,7 +883,7 @@ function vkPhChooseProcess(answer,q){
      if (p && !/choose_album/.test(p.innerHTML)){
       p.innerHTML='';
       p.appendChild(vkCe('a',{"class":'fl_l_',href:'#',onclick:'return vk_photos.choose_album();'},IDL('mPhM',1)));
-      console.log(q);
+      if (vk_DEBUG) console.log(q);
       if (q.to_id && q.to_id<0){
          p.appendChild(vkCe('span',{"class":'fl_l_ divider'},'|'));
          p.appendChild(vkCe('a',{"class":'fl_l_',href:'#',onclick:'return vk_photos.choose_album('+q.to_id+');'},IDL('GroupAlbums',1)))
@@ -922,7 +922,7 @@ function vkVidChooseProcess(answer,q){
   };
   if (answer[1].indexOf('vk_link_to_video')==-1){
   var div=vkCe('div',{},answer[1]);
-  console.log(answer);
+  if (vk_DEBUG) console.log(answer);
   var ref=geByClass('summary',div)[0] || geByClass('search_bar',div)[0] || geByClass('choose_search_cont',div)[0];
    
    var p=geByClass('choose_close',div)[0];
@@ -1587,7 +1587,7 @@ function vkImEvents(response){
             flags = intval(update[2]), // chat id
             peer = intval(update[3]);
             // [62, 39226536, 15] - 62 chat
-        console.log('IM events', code,msg_id,peer,flags,update);
+        if (vk_DEBUG) console.log('IM events', code,msg_id,peer,flags,update);
         if (code == 61 || code == 62) { // peer or chat peer is typing
           if (code == 61)
             vkImTypingEvent({uid:msg_id});
@@ -1661,7 +1661,7 @@ function vkImTypingEvent(uid,need_close){
             '</b>';
             text=text.replace(/%uid/g,info.uid);
             text+=time;
-            //if (vk_DEBUG) text+='<br>'+document.title;            
+            //if (vk_DEBUG) text+='<br>'+document.title;
             vkShowEvent({sound:'none', hide_in_current_tab:cur.peer==uid ,id:'vk_typing_'+uid,title:info.name, text:text,author_photo:info.photo_rec});
          };
          
@@ -1786,7 +1786,7 @@ function vkFcEvents(response){
             vkImTypingEvent({uid:uid,chat:chat});
          else 
             vkImTypingEvent(uid);
-         console.log('fc events',ev);
+         if (vk_DEBUG) console.log('fc events',ev);
          /* console.log(ev);
             Array ["23", "typing", "13391307", "1", "10116"] // dialog
             Array ["23", "typing", "2000000003", "13391307", "1", "10116"] // Chat!

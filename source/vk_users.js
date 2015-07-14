@@ -181,7 +181,7 @@ vk_users = {
             if (!ops.el) box.hide();
             return;
          }
-         console.log('fid',r.response[0]);
+         if (vk_DEBUG) console.log('fid',r.response[0]);
          fid=r.response[0];
          scan();
       })
@@ -1476,7 +1476,7 @@ function vkFavUsersList(add_button){
    if (add_button){
       var e=ge('fave_likes_tabs');
       var x=ge('vk_fav_users_btn');
-      console.log(nav.objLoc['section'],cur.section);
+      if (vk_DEBUG) console.log(nav.objLoc['section'],cur.section);
       var users_section=(nav.objLoc['section']=='users' || cur.section=='users');
       if (x) (users_section?show:hide)(x);
       if (!e || x) return;

@@ -57,7 +57,7 @@ if (!window.Sound2){
 	if (!snd || snd=='') snd=vkSoundsRes[sound];
 	//var notification = new Audio(snd);
 	if (!audioObj.canPlayType){
-		console.log('vkopt sounds problems. check codecs.');
+		if (vk_DEBUG) console.log('vkopt sounds problems. check codecs.');
 		audioObj.load=function(){};
 		audioObj.play=function(){};
 		audioObj.pause=function(){};

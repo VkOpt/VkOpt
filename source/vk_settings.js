@@ -38,7 +38,7 @@ function InstallRelease(){
   if (!vbuild || vbuild<vBuild){
       dApi.call('account.getAppPermissions',{},function(r){
          if (r.response != vk_api_permissions.to_int(DAPI_APP_SCOPE)){
-            console.log('API auth reason: different scopes');
+            if (vk_DEBUG) console.log('API auth reason: different scopes');
             dApi.auth();
          }
       });  
@@ -1221,7 +1221,7 @@ function vkSaveSettingsOnServer(){
    var FavList=vkGetVal('FavList');
    if(FavList && FavList!='') cfg['FavList']=FavList;
    
-   console.log('vkopt config to server:',cfg);
+   if (vk_DEBUG) console.log('vkopt config to server:',cfg);
    
    var code=[];
    for (var key in cfg)
@@ -1230,7 +1230,7 @@ function vkSaveSettingsOnServer(){
    //alert(code);
    dApi.call('execute',{code:code},function(r){
       ge('cfg_on_serv_info').innerHTML='<div class="vk_cfg_info">'+IDL('seCfgBackupSaved')+'</div>';
-      console.log('Store vkopt settings result:',r);
+      if (vk_DEBUG) console.log('Store vkopt settings result:',r);
    });
    /*
 	dApi.call('storage.set',{key:'remixbits',value:sett},function(r){
@@ -1265,7 +1265,7 @@ function vkLoadSettingsFromServer(check,callback){
             for (var i=0; i<r.response.length; i++)
                if (r.response[i].value != "null")
                   scfg[r.response[i].key]=r.response[i].value;
-            console.log('vkopt config from API server',scfg);
+            if (vk_DEBUG) console.log('vkopt config from API server',scfg);
             // vkopt settings
             var cfg=scfg['remixbits'].split('|');
 				vksetCookie('remixbit', cfg[0]);

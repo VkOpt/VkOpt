@@ -144,7 +144,7 @@ function vkStyle(url){
             //console.log(p1,p2);
          });
          if (replaced){
-            console.log('Process css: '+url+'\nbase_url: '+base_url+'\nbase_domain: '+base_domain+'\nreplaced: '+replaced);
+            if (vk_DEBUG) console.log('Process css: '+url+'\nbase_url: '+base_url+'\nbase_domain: '+base_domain+'\nreplaced: '+replaced);
          }
          //*/
          

@@ -1432,7 +1432,7 @@ function vkGetCalendarInfo(callback,cnt){ //callback(month, year, events, holida
          if (cnt<5)
             setTimeout(function(){vkGetCalendarInfo(callback,cnt+1)},5000);
          else 
-            console.log('calendar loading failed');
+            if (vk_DEBUG) console.log('calendar loading failed');
          return;
       }
       res=res.split(');')[0];
