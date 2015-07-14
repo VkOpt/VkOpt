@@ -752,7 +752,7 @@ function vkProcessResponse(answer,url,q){
   if (url=='/al_photos.php' && q.act=='edit_photo'){
       answer[1]=vkModAsNode(answer[1],vk_photos.update_photo_btn,url,q);
   }
-  if (getSet(101) == 'y' && url == '/al_video.php' && q.act == 'show' && !(answer.indexOf('"no_flv":0')>0)) answer[2] = answer[2].replace(/if\s*\([^b]*browser.flash[^\)]*\)/g,'if (false)'); // al_video.php:111 : if (browser.flash >= 10) { /*flash*/ } else { /*html5*/ }
+  if (getSet(101) == 'y' && url == '/al_video.php' && (q.act == 'show' || q.act == 'show_inline') && !(answer.indexOf('"no_flv":0')>0)) answer[2] = answer[2].replace(/if\s*\([^b]*browser.flash[^\)]*\)/g,'if (false)'); // al_video.php:111 : if (browser.flash >= 10) { /*flash*/ } else { /*html5*/ }
   
   if (VIDEO_PLAYER_DBG_ON && url=='/al_video.php' && q.act=='show') answer[2]=answer[2].replace('"dbg_on":0','"dbg_on":1');
   if (getSet(21)=='y' && url=='/al_video.php' && q.act=='show'){
