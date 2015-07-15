@@ -343,7 +343,7 @@ function pupShow(event,pid,id,el) {
 	  }
 	  if (gid){
 		 var str2 = '<div class="vk_popupmenu" onmouseover="clearTimeout(pup_tout);" onmouseout="pup_tout=setTimeout(pupHide, 50);"><ul>';
-		 str2 += ExGroupItems(gid,el)+vk_plugins.user_menu_items(null,gid); ;
+		 str2 += ExGroupItems(gid,el)+vk_plugins.user_menu_items(null,gid);
 		 str2 += '</ul></div>';	
 		 str2=str2.replace(/%GID/g,gid); 
 		 pup_menu.innerHTML = str2;
@@ -366,7 +366,7 @@ function mkExItem(id,text){
 function ExGroupItems(gid,el){
 	var i=0;
 	var uitems='';
-	uitems+=mkExItem(i++,'<a href="/wall-%GID">'+IDL('wall')+'</a>');
+	uitems+=mkExItem(i++,'<a href="#" onclick="vkPopupAvatar(\'g%GID\',this,true); return false;" class="fl_r">&gt;</a><a href="/wall-%GID">'+IDL('wall')+'</a>');
 	uitems+=mkExItem(i++,'<a href="/board%GID">'+IDL('board')+'</a>');
 	uitems+=mkExItem(i++,'<a href="/albums-%GID">'+IDL('clPh')+'</a>');
 	uitems+=mkExItem(i++,'<a href="/video?gid=%GID">'+IDL('clVi')+'</a>');
@@ -560,6 +560,13 @@ function vkPopupAvatar(id,el,in_box){
       if (z!=cur_popup_idx) return;
       if (in_box){
          var box=vkAlertBox('',vkBigLdrImg);
+         if (gid)
+             vkGetGroup(gid, function (html) {
+                 box.hide();
+                 box = vkAlertBox('club' + gid, html);
+                 box.setOptions({width: "455px", hideButtons: true, bodyStyle: 'padding:0px;', onHide: __bq.hideLast});
+             }, true);
+         else
          vkGetProfile(id,function(html,uid){
             //LoadedProfiles[id]=html;
             box.hide();
@@ -567,13 +574,23 @@ function vkPopupAvatar(id,el,in_box){
             box.setOptions({width:"455px",hideButtons:true, bodyStyle:'padding:0px;', onHide:__bq.hideLast});
          },true);
          
-      }else  if (LoadedProfiles[id]){
+      }else  if (LoadedProfiles[id || gid]){
          allowShowPhotoTimer=setTimeout(function(){
             if (z!=cur_popup_idx) return;
-            vkShowProfile(el,LoadedProfiles[id],id);
+            vkShowProfile(el,LoadedProfiles[id || gid],id);
          },SHOW_POPUP_PROFILE_DELAY);
        } else {
          var tstart=unixtime();
+         if (gid)
+             vkGetGroup(gid,function(html){
+                 if (z!=cur_popup_idx) return;
+                 var t=unixtime()-tstart;
+                 LoadedProfiles[id]=html;
+                 allowShowPhotoTimer=setTimeout(function(){
+                     vkShowProfile(el,html);
+                 },Math.max(0,SHOW_POPUP_PROFILE_DELAY-t));
+             });
+         else
          vkGetProfile(id,function(html,uid){
             if (z!=cur_popup_idx) return;
             var t=unixtime()-tstart;
@@ -600,16 +617,16 @@ function vkShowProfile(el,html,uid,right){
 	p.innerHTML=html;
 	var pb=ge('vk_profile_block');
 	vkProfileToggle(true);//check expland
-	
-   vkFriendUserInLists(uid,function(html,status){
-      if (!ge('vkfrinfo'+uid)) return;
-      ge('vkfrinfo'+uid).innerHTML=html;
-   });
-   vkProfileUpdOnline(uid,function(html){
-      if (!ge('vkprofonlineinfo'+uid)) return;
-      ge('vkprofonlineinfo'+uid).innerHTML=html;
-   });   
-   
+    if (uid) {
+        vkFriendUserInLists(uid, function (html, status) {
+            if (!ge('vkfrinfo' + uid)) return;
+            ge('vkfrinfo' + uid).innerHTML = html;
+        });
+        vkProfileUpdOnline(uid, function (html) {
+            if (!ge('vkprofonlineinfo' + uid)) return;
+            ge('vkprofonlineinfo' + uid).innerHTML = html;
+        });
+    }
    
 	if (allowShowPhoto) fadeIn('vkbigPhoto');//show('vkbigPhoto');
       var xy=getXY(el); 
@@ -902,6 +919,122 @@ function vkGetProfile(uid,callback,no_switch_button){
 	  }
 }
 
+function vkGetGroup(gid, callback, no_switch_button) {
+    var VK_GROUP_TPL = '\
+    <div class="vk_profile_info">\
+        <div id="vk_profile_block" class="vk_profile_block clear_fix">\
+            <div class="vk_profile_left fl_l" onmouseover%nb%="fadeIn(\'vk_profile_toogle\')" onmouseout%nb%="fadeOut(\'vk_profile_toogle\')">\
+                <div class="vk_profile_ava"><a href="/club%UID%" onclick="return nav.go(this, event);"><img src="%AVA_SRC%"/></a></div>\
+                <div style="margin-top:-2px;"><a id="vk_profile_toogle" onclick="return vkProfileToggle();" style="display:none;">&#9668;</a></div>\
+            </div>\
+            <div id="vk_profile_right_block" class="vk_profile_right fl_r">\
+              <div class="vk_profile_header">\
+                <div class="vk_username">%USERNAME%</div>\
+                <div class="vk_profile_header_divider"></div>\
+                <div><small>%ACTIVITY%</small></div>\
+              </div>\
+              <div class="vk_profile_info_block">\
+                %PROFILE_INFO%\
+             <div class="vk_profile_links">\
+                <a href="/albums-%UID%" onclick="return nav.change({z: \'albums-%UID%\'}, event);"><span class="vk_photo_icon"><small class="divide">%PHOTO_COUNT%</small></span></a>\
+                <a href="/audios-%UID%" onclick="return nav.go(\'audios-%UID%\')"><span class="vk_audio_icon"><small class="divide">%AUDIO_COUNT%</small></span></a>\
+                <a href="/videos-%UID%" onclick="return nav.go(\'videos-%UID%\')"><span class="vk_video_icon"><small class="divide">%VIDEO_COUNT%</small></span></a>\
+                <a href="/board%UID%" onclick="return nav.go(\'board%UID%\')"><span class="vk_msg_icon"><small class="divide">%TOPIC_COUNT%</small></span></a>\
+                <a href="/docs?oid=-%UID%" onclick="return nav.go(\'docs?oid=-%UID%\')"><span class="vkico_docs"><small class="divide">&nbsp;&nbsp;&nbsp;%DOC_COUNT%</small></span></a>\
+             </div>\
+            </div>\
+        </div>\
+    </div>';
+    var MakeContacts = function (contacts) {    // список ссылок (столбиком) на людей из блока "контакты"
+        var html = '';
+        if (contacts && contacts.length) {
+            for (var i = 0; i < contacts.length; i++)
+                if (contacts[i].user_id)
+                    html += '<a href="/id' + contacts[i].user_id + '">' + (contacts[i].desc || 'id'+contacts[i].user_id) + '</a><br/>';
+        }
+        return html;
+    };
+    var MakeDate = function (date) {    // Форматирование даты (то, что вщзвращается от API в поле start_date)
+        if (date && date > 0)
+            if (date > 30000000)    // для встреч содержит время начала и окончания встречи в формате unixtime
+                return dateFormat(date * 1000, "dd.mm.yyyy");
+            else                    // для групп что-то типа 20110308
+                return date[6] + date[7] + '.' + date[4] + date[5] + '.' + date[0] + date[1] + date[2] + date[3];
+        else
+            return '';
+    };
+    var MakeProfile = function (r) {
+        if (r.response && r.response.profile) {
+            var profile = r.response.profile;
+            var country = r.response.country;
+            var city = r.response.city;
+            var username = '<a href="/' + profile.screen_name + '" onclick="return nav.go(this, event);">' + profile.name + '</a>';
+            var ava_url = profile.photo_big;
+            var verified = profile.verified;
+            var types = {
+                'group': IDL('group'),
+                'page':  IDL('public'),
+                'event': IDL('event')
+            };
+            var type = types[profile.type];
+            var info_labels = [
+                [MakeDate(profile.start_date), IDL('StartDate')],
+                [country, IDL('Country')],
+                [city, IDL('City')],
+                [type, IDL('Type')],
+                [profile.members_count, IDL('clGu')],
+                [MakeContacts(profile.contacts), IDL('Contacts')],
+                [profile.site ? '<a href="http://'+profile.site+'" target="_blank">'+profile.site+'</a>' : '', IDL('Site')]
+            ];
+            if (profile.deactivated) {
+                info_labels.push([(profile.deactivated || '').toUpperCase(), '&times;']);
+            }
+
+            var info_html = '';
+            for (var i = 0; i < info_labels.length; i++)
+                if (info_labels[i][0] && info_labels[i][0] != '0')
+                    info_html += '<div class="clear_fix miniblock">\n\
+					  <div class="label fl_l">' + info_labels[i][1] + '</div>\n\
+					  <div class="labeled fl_l">' + info_labels[i][0] + '</div>\n\
+					</div>';
+
+            var activity = profile.status || profile.activity || '';
+            if (window.Emoji && Emoji.emojiToHTML && activity)
+                activity = Emoji.emojiToHTML(activity, true) || activity;
+
+            var html = VK_GROUP_TPL.replace("%AVA_SRC%", ava_url)
+                .replace(/%UID%/g, gid)
+                .replace(/%USERNAME%/g, (verified == 1 ? '<span class="vk_profile_verified"></span>' : '') + username)
+                .replace("%ACTIVITY%", activity)
+                .replace("%PHOTO_COUNT%", profile.counters.photos || '')
+                .replace("%AUDIO_COUNT%", profile.counters.audios || '')
+                .replace("%VIDEO_COUNT%", profile.counters.videos || '')
+                .replace("%TOPIC_COUNT%", profile.counters.topics || '')
+                .replace("%DOC_COUNT%", profile.counters.docs || '')
+                .replace("%PROFILE_INFO%", info_html);
+            if (no_switch_button) html = html.replace(/%nb%/g, '_'); else html = html.replace(/%nb%/g, '');
+            html = vkModAsNode(html, vkAddUserMenu);
+            callback(html);
+        }
+    };
+    if (!window.VK_CURRENT_PROFILES_DATA) VK_CURRENT_PROFILES_DATA = {};
+    if (VK_CURRENT_PROFILES_DATA['gid' + gid])
+        MakeProfile(VK_CURRENT_PROFILES_DATA['gid' + gid]);
+    else {
+        var code = 'var profile=API.groups.getById({group_id:"' + gid + '",fields:"city,country,members_count,counters,start_date,activity,status,contacts,verified,site"})[0];'
+            + 'return {'
+            + 'profile:profile'
+            + ',country: API.database.getCountriesById({country_ids: profile.country})[0].name'
+            + ',city: API.database.getCitiesById({city_ids: profile.city})[0].name'
+            + '};';
+        dApi.call("execute", {'code': code}, function (r) {
+            if (r.response && r.response.profile) {
+                VK_CURRENT_PROFILES_DATA['gid' + gid] = r;
+                MakeProfile(r);
+            }
+        });
+    }
+}
 function vkProfileUpdOnline(uid,callback){
    dApi.call('users.get',{uids:uid,fields:'online,last_seen'},function(r){
       if (r.response && r.response[0]){
