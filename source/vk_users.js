@@ -25,27 +25,28 @@ function isUserLink(url){
 var vkUsersGroupsDomain={};
 function getGidUid(url,callback){ //callback(uid,gid)
 	url=String(url);
-	if (/^\d+$/.test(url)){callback(url);  return;}
-	if (/^u\d+$/.test(url)){callback(url.match(/^u(\d+)$/)[1],null);  return;}
-	if (/(^|\/)id\d+$/.test(url)){callback(url.match(/(^|\/)id(\d+)$/)[2],null);  return;}
-	
-	if (/^g\d+$/.test(url)){callback(null,url.match(/^g(\d+)$/)[1]);  return;}
-	if (/(^|\/)(club|event)\d+$/.test(url)){callback(null,url.match(/(^|\/)(club|event)(\d+)$/)[3]);  return;}
-	
-	if (vkUsersGroupsDomain[url]){callback(vkUsersGroupsDomain[url][0],vkUsersGroupsDomain[url][1]);  return; }
-   
-   var obj_id=url.split('/').pop();
-   dApi.call('resolveScreenName',{screen_name:obj_id},function(r){
-     var res=r.response;
-     switch(res.type){
-      case 'user': callback(res.object_id);                  break;
-      case 'event':
-      case 'group': callback(null,res.object_id);            break;
-      case 'application': callback(null,null,res.object_id); break;
-      default: callback(null,null); break;
-     }
-   });
+    if (url) {
+        if (/^\d+$/.test(url)){callback(url);  return;}
+        if (/^u\d+$/.test(url)){callback(url.match(/^u(\d+)$/)[1],null);  return;}
+        if (/(^|\/)id\d+$/.test(url)){callback(url.match(/(^|\/)id(\d+)$/)[2],null);  return;}
 
+        if (/^g\d+$/.test(url)){callback(null,url.match(/^g(\d+)$/)[1]);  return;}
+        if (/(^|\/)(club|event)\d+$/.test(url)){callback(null,url.match(/(^|\/)(club|event)(\d+)$/)[3]);  return;}
+
+        if (vkUsersGroupsDomain[url]){callback(vkUsersGroupsDomain[url][0],vkUsersGroupsDomain[url][1]);  return; }
+
+        var obj_id=url.split('/').pop().split('?').shift();
+        dApi.call('resolveScreenName',{screen_name:obj_id},function(r){
+         var res=r.response;
+         switch(res.type){
+          case 'user': callback(res.object_id);                  break;
+          case 'event':
+          case 'group': callback(null,res.object_id);            break;
+          case 'application': callback(null,null,res.object_id); break;
+          default: callback(null,null); break;
+         }
+        });
+    }
 }
 /*
 function getGidUid(url,callback){ //callback(uid,gid)
