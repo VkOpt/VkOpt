@@ -736,6 +736,7 @@ vk_lang_ru={
    ,"Contacts":"\u041a\u043e\u043d\u0442\u0430\u043a\u0442\u044b"
    ,"Site":"\u0421\u0430\u0439\u0442"
    ,"StartDate":"\u0414\u0430\u0442\u0430 \u043d\u0430\u0447\u0430\u043b\u0430"
+   ,"AbilityToPost":"\u0412\u043e\u0437\u043c\u043e\u0436\u043d\u043e\u0441\u0442\u044c \u043f\u0438\u0441\u0430\u0442\u044c"
 };
 
 vk_lang_en={//by Hzy
@@ -1629,6 +1630,7 @@ vk_lang_en={//by Hzy
   ,"Contacts":"Contacts"
   ,"Site":"Site"
   ,"StartDate":"Start date"
+  ,"AbilityToPost":"Ability to post"
 };
  
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)

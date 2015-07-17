@@ -984,7 +984,8 @@ function vkGetGroup(gid, callback, no_switch_button) {
                 [type, IDL('Type')],
                 [profile.members_count, IDL('clGu')],
                 [MakeContacts(profile.contacts), IDL('Contacts')],
-                [profile.site ? '<a href="http://'+profile.site+'" target="_blank">'+profile.site+'</a>' : '', IDL('Site')]
+                [profile.site ? '<a href="http://'+profile.site+'" target="_blank">'+profile.site+'</a>' : '', IDL('Site')],
+                [profile.can_post ? IDL('Yes') : IDL('No'), IDL('AbilityToPost')]
             ];
             if (profile.deactivated) {
                 info_labels.push([(profile.deactivated || '').toUpperCase(), '&times;']);
@@ -1021,7 +1022,7 @@ function vkGetGroup(gid, callback, no_switch_button) {
     if (VK_CURRENT_PROFILES_DATA['gid' + gid])
         MakeProfile(VK_CURRENT_PROFILES_DATA['gid' + gid]);
     else {
-        var code = 'var profile=API.groups.getById({group_id:"' + gid + '",fields:"city,country,members_count,counters,start_date,activity,status,contacts,verified,site"})[0];'
+        var code = 'var profile=API.groups.getById({group_id:"' + gid + '",fields:"city,country,members_count,counters,start_date,activity,status,contacts,verified,site,can_post"})[0];'
             + 'return {'
             + 'profile:profile'
             + ',country: API.database.getCountriesById({country_ids: profile.country})[0].name'
