@@ -1962,16 +1962,15 @@ vk_pages={
       Inj.Before('Wall.replyTo','toggleClass','vk_wall.cancel_reply_btn(post);');
    },
    inj_common:function(){
-      Inj.Start('showWiki','if (vk_pages.is_wiki_box_disabled(arguments)) return;');
+      if (getSet(86)=='y') Inj.Start('showWiki','if (vk_pages.is_wiki_box_disabled(arguments)) return;');
    },
    is_wiki_box_disabled:function(args){
-      var box_disable=(getSet(86)=='y');
       var page=args[0], 
           ev = args[2];
       //console.log(ev);
       if (!ev) return false;
       var el= ev.target || ev.srcElement || {};
-      return box_disable && page && page.w && /^wall-?\d+_\d+$/.test(page.w+"") && (el.tagName=='SPAN' || el.tagName=='A');
+      return page && page.w && /^wall-?\d+_\d+$/.test(page.w+"") && (el.tagName=='SPAN' || el.tagName=='A');
    }
    
 
