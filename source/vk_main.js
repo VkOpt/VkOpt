@@ -286,7 +286,6 @@ function VkOptMainInit(){
   if (getSet(16) == 'y') UserOnlineStatus();
   vkFavOnlineChecker();
   vkFaveOnlineChecker();
-  vk_audio_player.init();
   vkMoneyBoxAddHide();
   if (ENABLE_HOTFIX) vkCheckUpdates();
   setTimeout(vkFriendsCheckRun,2000);
@@ -1560,8 +1559,8 @@ function vkIM(){
       Inj.Replace('IM.wrapFriends',/text\.push\(/g,'vkIMwrapFrMod(text,');
       Inj.Replace('IM.wrapFriends','text.join(','vkIMwrapFrModSort(text,');   
    }
-   
-   Inj.Start('IM.checked','vkImEvents(response);');
+
+   if (getSet(68)=='y') Inj.Start('IM.checked','vkImEvents(response);');
    
    Inj.Before('IM.applyPeer','cur.actionsMenu.setItems','vkIMModActMenu(types,peer,user);');
    if (window.cur && cur.tabs) IM.applyPeer();
@@ -1617,9 +1616,7 @@ function vkImTypingEvent(uid,need_close){
       uid=uid.uid;
    
    if (chat && DISABLE_CHATS_TYPING_NOTIFY) return;
-   
-   if (getSet(68)=='n') return;
-   
+
    var NOTIFY_TIMEOUT= 15000; // 15sec
    
    if (need_close){
@@ -1767,7 +1764,7 @@ function vkNotifier(){
 	  */
      
     if (getSet(62)=='y')  FastChat.selectPeer=function(mid,e){return showWriteMessageBox(e, mid)};
-    Inj.Start('FastChat.imChecked','vkFcEvents(response);');    
+    if (getSet(68)=='y') Inj.Start('FastChat.imChecked','vkFcEvents(response);');
 }
 
 function vkFcEvents(response){

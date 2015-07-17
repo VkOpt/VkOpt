@@ -176,7 +176,7 @@ var vk_photos = {
 	  .vkPVPhotoMoverOpen #pv_author_img{display:none;}\
    ',
    inj_photos:function(){
-      Inj.Before('photos.loaded','while','vk_photos.album_process_node(d);');
+      if (getSet(93)=='y') Inj.Before('photos.loaded','while','vk_photos.album_process_node(d);');
    },
    page:function(){
       vk_photos.album_process_node();
@@ -2395,10 +2395,10 @@ vk_videos = {
       return code;
    },
    inj_common:function(){
-      Inj.Before('showVideo','ajax.post','vk_videos.change_show_video_params(options);');
+      if (VIDEO_AUTOPLAY_DISABLE) Inj.Before('showVideo','ajax.post','vk_videos.change_show_video_params(options);');
    },
    inj_html5:function(){
-      Inj.End('html5video.initHTML5Video','vkOnRenderFlashVars(vars);');
+      if (getSet(2)=='y') Inj.End('html5video.initHTML5Video','vkOnRenderFlashVars(vars);'); // перехват flash-переменных для скачивания видео
    },
    inj_videoview:function(){
       window.vk_vid_down && vk_vid_down.inj_vidview();
@@ -3135,14 +3135,10 @@ vk_audio_player={
    #gp.reverse .vka_ctrl.vol .vol_panel{margin-top: -54px;}\
    .gp_vka_ctrls{position:absolute; width:137px; margin-top:34px; margin-left: 5px; padding:3px; border-radius:0 0 4px 4px; background:rgba(218, 225, 232, 0.702); }\
    ',
-   scroll_to_track_enabled:true,
    inj:function(){
       if (getSet(75)=='y') vk_audio_player.gpCtrlsInit();
-      Inj.Start('audioPlayer.scrollToTrack','if (!vk_audio_player.scroll_to_track_enabled) return;');
+      if (getSet(85)=='y') Inj.Start('audioPlayer.scrollToTrack','return;');
       if (getSet(104)=='y') Inj.Before('audioPlayer.initPlayer','browser.flash','false && ');
-   },  
-   init:function(){
-      if (getSet(85)=='y') vk_audio_player.scroll_to_track_enabled=false;
    },
    gpCtrlsInit:function(){
       Inj.End('audioPlayer.setGraphics','vk_audio_player.gpCtrls();');
@@ -3224,7 +3220,7 @@ vk_audio={
    ',
    album_cache:{},
    inj_common:function(){
-      Inj.Start('playAudioNew','if (vk_audio.prevent_play_check()) return;');
+      if (getSet(0)=='y') Inj.Start('playAudioNew','if (vk_audio.prevent_play_check()) return;'); // для предотвращения воспроизведения при нажатии на "скачать"
    },
    remove_trash:function(s){
       s=vkRemoveTrash(s);
