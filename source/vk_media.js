@@ -28,7 +28,7 @@ vk_phviewer={
       Inj.Start('Photoview.updateLoc',"if (/^vkph_/.test((cur.pvCurPhoto && cur.pvCurPhoto.id) || '')) return;");
       
       Inj.End('photoview.afterShow','vkPVAfterShow();');
-      Inj.Start('photoview.canFullscreen','return true;');
+      if (browser.opera && intval(browser.version)==12) Inj.Start('photoview.canFullscreen','return true;');
       if (getSet(71)=='y') 
       Inj.Before('Photoview.commentTo','if (!v', 'vk_phviewer.reply_to(comm, toId, event, rf,v,replyName); if(false)' );
 
