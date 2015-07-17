@@ -739,6 +739,7 @@ vk_lang_ru={
    ,"StartDate":"\u0414\u0430\u0442\u0430 \u043d\u0430\u0447\u0430\u043b\u0430"
    ,"AbilityToPost":"\u0412\u043e\u0437\u043c\u043e\u0436\u043d\u043e\u0441\u0442\u044c \u043f\u0438\u0441\u0430\u0442\u044c"
    ,"seGroupsFilter":"\u0424\u0438\u043b\u044c\u0442\u0440 \u043d\u0430 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0435 \"\u0413\u0440\u0443\u043f\u043f\u044b\""
+   ,"LinkOrId":"\u0421\u0441\u044b\u043b\u043a\u0430 \u0438\u043b\u0438 id \u0432\u043b\u0430\u0434\u0435\u043b\u044c\u0446\u0430"
 };
 
 vk_lang_en={//by Hzy
@@ -1635,6 +1636,7 @@ vk_lang_en={//by Hzy
   ,"StartDate":"Start date"
   ,"AbilityToPost":"Ability to post"
   ,"seGroupsFilter":"Filter at \"Communities\" page"
+  ,"LinkOrId":"Link or owner id"
 };
  
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
