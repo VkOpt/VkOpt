@@ -66,6 +66,7 @@ var VIDEO_PLAYER_DBG_ON = false; // включить отладочную инф
 var LOAD_HEADERS_BY_HEAD_REQ = false; // для получения запросом только хидеров использовать HEAD запрос (иначе GET c хидером запроса Range: bytes=0-1)
 var DISABLE_CHATS_TYPING_NOTIFY = false; // при включенной опции уведомления о набирающих сообщение, отключает уведомления от печатающих в чатах
 var BLOCK_LOCALSTORAGE_CLEAR = true; // пытаемся перезаписать родную функцию очистки хранилища
+var PHOTO_FEATURE = true; // фича, при которой по щелчку на "Фотография 1 из 40" переключается режим "подгонять/не подгонять фото в просмотрщике по высоте под высоту видимой области".
 
 var VKOPT_CFG_LIST=[
          'vk_DEBUG',
@@ -97,7 +98,8 @@ var VKOPT_CFG_LIST=[
          'ENABLE_CACHE',
          'VIDEO_PLAYER_DBG_ON',
          'LOAD_HEADERS_BY_HEAD_REQ',
-         'DISABLE_CHATS_TYPING_NOTIFY'
+         'DISABLE_CHATS_TYPING_NOTIFY',
+         'PHOTO_FEATURE'
 ];
 
 var vkNewSettings=[98,99,100,79,101,103,104,19]; //"new" label on settings item
