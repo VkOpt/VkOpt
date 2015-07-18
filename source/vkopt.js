@@ -413,7 +413,7 @@ function vkCheckLoadedScripts(){    // Функция для ручного вы
       "vklang"       :!!window.vk_lang_en,
       "vkopt"        :!!window.vkonDOMReady
    };
-   console.log('result:',obj);
+   if (vk_DEBUG) console.log('result:',obj);
   //vkLastFM.get_loved
 }
 
@@ -583,14 +583,14 @@ if (/vk\.com/.test(vk_domain) || /vkontakte\.ru/.test(vk_domain)){
          if(confirm)
             ls_clear_orig();
       } 
-      console.log('Try override localStorage.clear');
+      if (vk_DEBUG) console.log('Try override localStorage.clear');
       window.localStorage.clear = ls_new_clear_func;
       if (window.localStorage.clear != ls_new_clear_func && window.localStorage.__proto__){
-         console.log('Fail. Try override localStorage.__proto__.clear');
+         if (vk_DEBUG) console.log('Fail. Try override localStorage.__proto__.clear');
          localStorage.__proto__.clear = ls_new_clear_func;
       }
       if (window.localStorage.clear == ls_new_clear_func){
-         console.log('overrided ok..');         
+         if (vk_DEBUG) console.log('overrided ok..');
       }
    }
    if (!/\/m\.vk\.com|login\.vk\.com|oauth\.vk\.com|al_index\.php|frame\.php|widget_.+php|notifier\.php|audio\?act=done_add/i.test(dloc)){
