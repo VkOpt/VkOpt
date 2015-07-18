@@ -686,6 +686,7 @@ function vkInitSettings(){
       {id:100,  text: "seTopicSearch"}
       //{id:64,  text: "seToTopOld"}
      ,{id:19,  text: "seTurningPosts"}
+     ,{id:102, text: "seGroupsFilter"}
     ],
 	Sounds:[
 	  {id:48,   text: "ReplaceVkSounds"}	
@@ -718,7 +719,6 @@ function vkInitSettings(){
   };
 
    //LAST 104
-   //FREE 76,102
 
    vkSetsType={
       "on"  :[IDL('on'),'y'],
