@@ -46,7 +46,7 @@ function getGidUid(url,callback){ //callback(uid,gid)
           default: callback(null,null); break;
          }
         });
-    }
+    } else callback(null,null);
 }
 /*
 function getGidUid(url,callback){ //callback(uid,gid)
