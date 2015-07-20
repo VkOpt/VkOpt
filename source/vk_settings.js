@@ -706,7 +706,7 @@ function vkInitSettings(){
     , {id:20, wiki: "seSubscribeToWall", text: IDL("seSubscribeToWall") +
            '<br><a onclick="toggle(\'vkExWallMgr\'); GenWallList(this.nextElementSibling.lastChild); return false;"><b>' + IDL("Settings") + '</b></a>' +
            '<div id="vkExWallMgr" style="display:none;">' +
-           '<input type="text" onkeydown="if(13==event.keyCode || 10==event.keyCode) return vkAddWall(this)" size="20">' +
+           '<input type="text" onkeydown="if(13==event.keyCode || 10==event.keyCode) return vkAddWall(this)" size="20" placeholder="'+IDL('LinkOrId')+'">' +
            ' <a onclick="return vkAddWall(this.previousElementSibling)">' + IDL('add') + '</a><br>' +
            '<div class="vkwalllist"></div></div>'
       }
