@@ -21,14 +21,15 @@ vk_phviewer={
 
       vkPVNoCheckHeight=function(){return !window.PVShowFullHeight};
 
-      Inj.Before('photoview.onResize','cur.pvCurrent.height * c >','vkPVNoCheckHeight() && ');
-      Inj.Before('photoview.doShow','h * c > ','vkPVNoCheckHeight() && ');
-
+      if (PHOTO_FEATURE) {
+         Inj.Before('photoview.onResize', 'cur.pvCurrent.height * c >', 'vkPVNoCheckHeight() && ');
+         Inj.Before('photoview.doShow', 'h * c > ', 'vkPVNoCheckHeight() && ');
+         Inj.End('photoview.afterShow', 'vkPVAfterShow();');
+      }
       // предотвращаем при использовании временного вьювера изменение URL страницы
-      Inj.Start('Photoview.updateLoc',"if (/^vkph_/.test((cur.pvCurPhoto && cur.pvCurPhoto.id) || '')) return;");
+      Inj.Start('Photoview.updateLoc',"if (/^vkph_/.test((cur.pvCurPhoto && cur.pvCurPhoto.id) || '')) return; if (ge('pv_album_name')) vkPVPhotoMover();");
       
-      Inj.End('photoview.afterShow','vkPVAfterShow();');
-      Inj.Start('photoview.canFullscreen','return true;');
+      if (browser.opera && intval(browser.version)==12) Inj.Start('photoview.canFullscreen','return true;');
       if (getSet(71)=='y') 
       Inj.Before('Photoview.commentTo','if (!v', 'vk_phviewer.reply_to(comm, toId, event, rf,v,replyName); if(false)' );
 
@@ -50,9 +51,9 @@ vk_phviewer={
          ph.tagshtml=vkModAsNode(ph.tagshtml,vkProcessNode);
    },
    reply_to:function(post, toId, event, rf,v,replyName){
-         console.log(post);
+         if (vk_DEBUG) console.log(post);
          if (!toId){
-            console.log(post, 'VkOpt: Reply canceled. toId=null!');
+            if (vk_DEBUG) console.log(post, 'VkOpt: Reply canceled. toId=null!');
             return;
          }
          var name=(replyName[1] || '').split(',')[0];
@@ -125,9 +126,6 @@ function vkPVAfterShow(){
       Photoview.doShow();
 	};
 	if (ge('pv_summary')) ge('pv_summary').setAttribute('onclick','vkPVChangeView()');
-   if (ge('pv_album_name')){
-      vkPVPhotoMover();
-   }
 }
 /*
 var orig_cur_chooseMedia=cur.chooseMedia;
@@ -176,7 +174,7 @@ var vk_photos = {
 	  .vkPVPhotoMoverOpen #pv_author_img{display:none;}\
    ',
    inj_photos:function(){
-      Inj.Before('photos.loaded','while','vk_photos.album_process_node(d);');
+      if (getSet(93)=='y') Inj.Before('photos.loaded','while','vk_photos.album_process_node(d);');
    },
    page:function(){
       vk_photos.album_process_node();
@@ -582,7 +580,7 @@ var vk_photos = {
             } else {
                alert(JSON.stringify(data));
             }
-            console.log(data);
+            if (vk_DEBUG) console.log(data);
          };
          window.onUploadFail = function(){alert('Upload Fail')};
 
@@ -619,7 +617,7 @@ var vk_photos = {
                var hash=t.match(/', '([a-f0-9]{18})'\)/);
                var aid=t.match(/selectedItems:\s*\[(-?\d+)\]/)[1];
                upload_url = upload_url[1].replace(/\\\//g, '/').split('"')[0];
-               console.log('url',upload_url);
+               if (vk_DEBUG) console.log('url',upload_url);
                Upload.init('vk_upd_photo', upload_url, {}, {
                   file_name: 'photo',
                   file_size_limit: 1024 * 1024 * 5,
@@ -938,7 +936,7 @@ var vk_photos = {
    pz_ondone:function(s){
       var data=JSON.parse(s);
       dApi.call('photos.saveWallPhoto',{photo:data.photo, server: data.server, hash:data.hash},function(r){
-         console.log('Save photo: ',r);
+         if (vk_DEBUG) console.log('Save photo: ',r);
          var photos=r.response;
          for (var i=0; i<photos.length; i++){
             vk_ch_media.photo(photos[i].owner_id+'_'+photos[i].pid,photos[i].src_big,photos[i].width,photos[i].height);
@@ -2189,7 +2187,7 @@ function vkAdmGetPhotosWithUsers(oid,aid,callback){
          var code='var a=API.photos.get({'+(oid<0?'gid':'uid')+':'+Math.abs(oid)+',aid:"'+aid+'",limit:'+limit+',offset:'+cur_offset+'});'+
          'var p=API.getProfiles({"uids":a@.user_id,fields:"uid,first_name,last_name"});'+
          'return [a,p];';
-         console.log(code);
+         if (vk_DEBUG) console.log(code);
          dApi.call('execute',{code:code},function(r){
             var res=r.response; //[0] photos    [1] users
 
@@ -2211,7 +2209,7 @@ function vkAdmGetPhotosWithUsers(oid,aid,callback){
            
             if (res[0].length>=limit){
                cur_offset+=limit;
-               console.log('Current scan offset: '+cur_offset);
+               if (vk_DEBUG) console.log('Current scan offset: '+cur_offset);
                scan();
             } else {
                //console.log(result,result[0].length);
@@ -2395,10 +2393,10 @@ vk_videos = {
       return code;
    },
    inj_common:function(){
-      Inj.Before('showVideo','ajax.post','vk_videos.change_show_video_params(options);');
+      if (VIDEO_AUTOPLAY_DISABLE) Inj.Before('showVideo','ajax.post','vk_videos.change_show_video_params(options);');
    },
    inj_html5:function(){
-      Inj.End('html5video.initHTML5Video','vkOnRenderFlashVars(vars);');
+      if (getSet(2)=='y') Inj.End('html5video.initHTML5Video','vkOnRenderFlashVars(vars);'); // перехват flash-переменных для скачивания видео
    },
    inj_videoview:function(){
       window.vk_vid_down && vk_vid_down.inj_vidview();
@@ -2717,7 +2715,7 @@ vk_videos = {
       
       function move(callback){
          if (filtred_vids.length>0){
-            console.log(filtred_vids.length);
+            if (vk_DEBUG) console.log(filtred_vids.length);
             //
             ge('vid_move_progress').innerHTML=vkProgressBar(filtred_vids_count-filtred_vids.length,filtred_vids_count,310,(filtred_vids_count-filtred_vids.length)+'/'+filtred_vids_count);
             var vid = filtred_vids.shift();
@@ -2734,7 +2732,7 @@ vk_videos = {
             */
             // 
             dApi.call('video.addToAlbum', {target_id: cur.oid, album_id:to_album, owner_id: vid[0], video_id: vid[1]},function(r){
-               console.log(r);
+               if (vk_DEBUG) console.log(r);
                /* тут должно быть обновление инфы об альбомах, где это видео располагается.
                var arr=cur.videoList['all']['list'];
                for (var j=0;j<arr.length; j++){
@@ -2745,7 +2743,7 @@ vk_videos = {
                move(callback);
             });
          } else {
-            console.log('done move to :'+to_album);
+            if (vk_DEBUG) console.log('done move to :'+to_album);
             callback();
          }
       }
@@ -2799,7 +2797,7 @@ vk_videos = {
          filtred_vids_count=filtred_vids.length;
          (filtred_vids.length>0?show:hide)('vk_move_ctrls');
          
-         console.log(filtred_vids);
+         if (vk_DEBUG) console.log(filtred_vids);
          var lst='<h4>'+IDL('Found')+': '+filtred_vids.length+'</h4>';
          for (var i=0; i<filtred_vids.length; i++){
             lst+='<div class="vid_filt_row"><a class="vid_filt_link" href="/video'+filtred_vids[i][0]+'_'+filtred_vids[i][1]+'">'+filtred_vids[i][3]+'</a>'+(filtred_vids[i][6]>0?'<span class="vid_alb_info">[album<b>'+filtred_vids[i][6]+'</b>]</span>':'')+'</div>';//title
@@ -3135,14 +3133,10 @@ vk_audio_player={
    #gp.reverse .vka_ctrl.vol .vol_panel{margin-top: -54px;}\
    .gp_vka_ctrls{position:absolute; width:137px; margin-top:34px; margin-left: 5px; padding:3px; border-radius:0 0 4px 4px; background:rgba(218, 225, 232, 0.702); }\
    ',
-   scroll_to_track_enabled:true,
    inj:function(){
       if (getSet(75)=='y') vk_audio_player.gpCtrlsInit();
-      Inj.Start('audioPlayer.scrollToTrack','if (!vk_audio_player.scroll_to_track_enabled) return;');
+      if (getSet(85)=='y') Inj.Start('audioPlayer.scrollToTrack','return;');
       if (getSet(104)=='y') Inj.Before('audioPlayer.initPlayer','browser.flash','false && ');
-   },  
-   init:function(){
-      if (getSet(85)=='y') vk_audio_player.scroll_to_track_enabled=false;
    },
    gpCtrlsInit:function(){
       Inj.End('audioPlayer.setGraphics','vk_audio_player.gpCtrls();');
@@ -3224,7 +3218,7 @@ vk_audio={
    ',
    album_cache:{},
    inj_common:function(){
-      Inj.Start('playAudioNew','if (vk_audio.prevent_play_check()) return;');
+      if (getSet(0)=='y') Inj.Start('playAudioNew','if (vk_audio.prevent_play_check()) return;'); // для предотвращения воспроизведения при нажатии на "скачать"
    },
    remove_trash:function(s){
       s=vkRemoveTrash(s);
@@ -3975,7 +3969,7 @@ vk_pads={
                padPlist[cur_info._next]._prev=aid;
             cur_info._next=aid;
             padPlist[aid]=info;
-            console.log(padPlist[cur_id],padPlist[aid],padPlist[cur_info._next]);
+            if (vk_DEBUG) console.log(padPlist[cur_id],padPlist[aid],padPlist[cur_info._next]);
             break;
       }
       if (aid && padPlist && padPlist[aid]) {         
@@ -4332,7 +4326,7 @@ vkLastFM={
       });
 	},
    love:function(){
-      console.log('last.fm love track');
+      if (vk_DEBUG) console.log('last.fm love track');
       var fm=vkLastFM;
       var audio_info=fm.audio_info();
       fm.lastfm.track.love({ 
@@ -4352,7 +4346,7 @@ vkLastFM={
       
    },
    unlove:function(){
-      console.log('last.fm unlove track');
+      if (vk_DEBUG) console.log('last.fm unlove track');
       var fm=vkLastFM;
       var audio_info=fm.audio_info();
       fm.lastfm.track.unlove({ 
@@ -4415,12 +4409,12 @@ vkLastFM={
       if (!fm.loved_tracks){
          fm.lastfm.user.getLovedTracks({user:fm.username,limit:1000},{
                success: function(data) {
-                  console.log(data);
+                  if (vk_DEBUG) console.log(data);
                   fm.loved_tracks=data.lovedtracks;
                   done();
                },
                error: function(code, message) {
-                  console.log(code, message)
+                  if (vk_DEBUG) console.log(code, message)
                }
             });
       } else {
@@ -4831,7 +4825,7 @@ function vkViewAlbumInfo(artist,track){
       if (!ge('vk_album_info')) return;
       if (vk_current_album_full_thumb) 
          addClass('vk_album_info','view_big');
-      console.log(data);
+      if (vk_DEBUG) console.log(data);
       var html='';
       /*
       console.log(
@@ -5113,7 +5107,7 @@ function vkGetAlbumInfo(artist,track,callback){
    };
    var x=in_cache(artist,track);
    if (x){ 
-      console.log('in cache',x);
+      if (vk_DEBUG) console.log('in cache',x);
       setTimeout(function(){callback(x,x.tracks)},2);
    }else
       vkLastFM.lastfm.track.getInfo({
@@ -5123,7 +5117,7 @@ function vkGetAlbumInfo(artist,track,callback){
             autocorrect: 1
          }, {
             success: function(data) {
-                  console.log(data);
+                  if (vk_DEBUG) console.log(data);
                   if (data.track.album) {
                      var params={
                         mbid: data.track.album.mbid
@@ -5163,7 +5157,7 @@ function vkGetAlbumInfo(artist,track,callback){
                         }
                      });
                   } else if (data.track.artist && (data.track.artist.mbid || data.track.artist.name)){//data.track.artist.name
-                     console.log('no album info... load artist info');
+                     if (vk_DEBUG) console.log('no album info... load artist info');
                      var params={lang:'ru'};
                      if (data.track.artist.mbid)
                         params['mbid']=data.track.artist.mbid;
@@ -5175,7 +5169,7 @@ function vkGetAlbumInfo(artist,track,callback){
                         success: function(a_data) {
                           a_data=a_data.artist;
                           a_data.act='artist_info';
-                          console.log(a_data);
+                          if (vk_DEBUG) console.log(a_data);
                           //callback(data,null);
                           
                           // GET TOP TRACKS INFO
@@ -5213,7 +5207,7 @@ function vkGetAlbumInfo(artist,track,callback){
                                  /*console.log(data)*/
                               },
                               error: function(code, message) {
-                                 console.log(code, message);
+                                 if (vk_DEBUG) console.log(code, message);
                                  callback(a_data,null);
                               }
                            });                          
@@ -5223,10 +5217,10 @@ function vkGetAlbumInfo(artist,track,callback){
                      
                      
                   }
-                  else console.log('no info')
+                  else if (vk_DEBUG) console.log('no info')
                }, 
             error: function(code, message) {
-                  console.log(code, message)
+                  if (vk_DEBUG) console.log(code, message)
                }
          }
       );

@@ -1418,7 +1418,7 @@ function vk_oauth_api(app_id,scope){
          // Для http://vk.com при наличии соединения с background.js используем запросы к https через background
          if (vk_ext_api.ready || (location.protocol == 'https:')) 
             api.protocol = 'https:';
-         console.log('Auth for protocol: ', api.protocol, vk_ext_api.ready);
+         if (vk_DEBUG) console.log('Auth for protocol: ', api.protocol, vk_ext_api.ready);
          vksetCookie('api'+api.API_ID+'_prot', api.protocol);
         
          var appId=api.API_ID;
@@ -1435,7 +1435,7 @@ function vk_oauth_api(app_id,scope){
             
             var frame_url=auth_url;
             if (g){
-               console.log('VkOpt API Auth :',g);
+               if (vk_DEBUG) console.log('VkOpt API Auth :',g);
                frame_url=g;
             }
             api.auth_frame = ce("iframe", { src:frame_url }, {
@@ -1448,7 +1448,7 @@ function vk_oauth_api(app_id,scope){
                   // Получили сообщение от нашего фрейма, а не от другой копии этого класса
                   if (data.act=='oapi_login_success' && event.source==api.auth_frame.contentWindow){
                      var auth_info=q2ajx((data.href || "").split('#')[1]);
-                     console.log('auth_info:',auth_info);
+                     if (vk_DEBUG) console.log('auth_info:',auth_info);
                      if (!auth_info['access_token']){
                         topMsg('<b>VkOpt:</b> API auth error',2,'#FFB4A3');
                         return;
@@ -1483,7 +1483,7 @@ function vk_oauth_api(app_id,scope){
       },
       show_error:function(r){
          topMsg('<b>VkOpt:</b> [code:'+r.error.error_code+']<br>'+r.error.error_msg,2,'#FFB4A3');
-         console.log(r);
+         if (vk_DEBUG) console.log(r);
       },
       call:function(method, inputParams, callback, captcha){
          if (api.allow_call){
@@ -1514,7 +1514,7 @@ function vk_oauth_api(app_id,scope){
             }
             if (!remixmid()) {
                vklog('API '+api.API_ID+' Error. user id not found');
-               console.log('API '+api.API_ID+' Error. user id not found');
+               if (vk_DEBUG) console.log('API '+api.API_ID+' Error. user id not found');
                return;
             }
             api.auth(function(){
@@ -1526,7 +1526,7 @@ function vk_oauth_api(app_id,scope){
          api.secret=vkgetCookie('api'+api.API_ID+'_secret');
          api.protocol=vkgetCookie('api'+api.API_ID+'_prot') || location.protocol;
          if (!api.access_token || !api.mid || (rmid && api.mid!=rmid)){
-            console.log('Wait auth data');
+            if (vk_DEBUG) console.log('Wait auth data');
             apiReAuth();
             return;
          }
@@ -1554,7 +1554,7 @@ function vk_oauth_api(app_id,scope){
                      api.call(method, inputParams, callback);
                   },500);
                } else if ( response.error.error_code == 4 || (response.error.error_code == 3 || response.error.error_code == 7 || response.error.error_code == 5) ){
-                  console.log('reauth reason: error_code', response.error.error_code, response);
+                  if (vk_DEBUG) console.log('reauth reason: error_code', response.error.error_code, response);
                   apiReAuth();				
                } else if(response.error.error_code == 14) { // Captcha needed
                   api.captcha_visible=true;
@@ -1794,7 +1794,7 @@ vkApis={
             },
             onFail: function(){
                //alert('Request failed..\n'+arguments);
-               console.log(arguments);
+               if (vk_DEBUG) console.log(arguments);
                setTimeout(function(){next=true;},5000); // активируем костыль
             }
          });
@@ -2257,7 +2257,7 @@ var XFR2 = {
                      xhr.send(data);
                      
                   } catch (e) {
-                     console.log('XHR ERROR', e);
+                     if (vk_DEBUG) console.log('XHR ERROR', e);
                      callback({
                         error: e
                      });

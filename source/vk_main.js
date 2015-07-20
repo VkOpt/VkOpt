@@ -286,7 +286,6 @@ function VkOptMainInit(){
   if (getSet(16) == 'y') UserOnlineStatus();
   vkFavOnlineChecker();
   vkFaveOnlineChecker();
-  vk_audio_player.init();
   vkMoneyBoxAddHide();
   if (ENABLE_HOTFIX) vkCheckUpdates();
   setTimeout(vkFriendsCheckRun,2000);
@@ -752,7 +751,7 @@ function vkProcessResponse(answer,url,q){
   if (url=='/al_photos.php' && q.act=='edit_photo'){
       answer[1]=vkModAsNode(answer[1],vk_photos.update_photo_btn,url,q);
   }
-  if (getSet(101) == 'y' && url == '/al_video.php' && q.act == 'show' && !(answer.indexOf('"no_flv":0')>0)) answer[2] = answer[2].replace(/if\s*\([^b]*browser.flash[^\)]*\)/g,'if (false)'); // al_video.php:111 : if (browser.flash >= 10) { /*flash*/ } else { /*html5*/ }
+  if (getSet(101) == 'y' && url == '/al_video.php' && (q.act == 'show' || q.act == 'show_inline') && !(answer.indexOf('"no_flv":0')>0)) answer[2] = answer[2].replace(/if\s*\([^b]*browser.flash[^\)]*\)/g,'if (false)'); // al_video.php:111 : if (browser.flash >= 10) { /*flash*/ } else { /*html5*/ }
   
   if (VIDEO_PLAYER_DBG_ON && url=='/al_video.php' && q.act=='show') answer[2]=answer[2].replace('"dbg_on":0','"dbg_on":1');
   if (getSet(21)=='y' && url=='/al_video.php' && q.act=='show'){
@@ -883,7 +882,7 @@ function vkPhChooseProcess(answer,q){
      if (p && !/choose_album/.test(p.innerHTML)){
       p.innerHTML='';
       p.appendChild(vkCe('a',{"class":'fl_l_',href:'#',onclick:'return vk_photos.choose_album();'},IDL('mPhM',1)));
-      console.log(q);
+      if (vk_DEBUG) console.log(q);
       if (q.to_id && q.to_id<0){
          p.appendChild(vkCe('span',{"class":'fl_l_ divider'},'|'));
          p.appendChild(vkCe('a',{"class":'fl_l_',href:'#',onclick:'return vk_photos.choose_album('+q.to_id+');'},IDL('GroupAlbums',1)))
@@ -922,7 +921,7 @@ function vkVidChooseProcess(answer,q){
   };
   if (answer[1].indexOf('vk_link_to_video')==-1){
   var div=vkCe('div',{},answer[1]);
-  console.log(answer);
+  if (vk_DEBUG) console.log(answer);
   var ref=geByClass('summary',div)[0] || geByClass('search_bar',div)[0] || geByClass('choose_search_cont',div)[0];
    
    var p=geByClass('choose_close',div)[0];
@@ -1560,8 +1559,8 @@ function vkIM(){
       Inj.Replace('IM.wrapFriends',/text\.push\(/g,'vkIMwrapFrMod(text,');
       Inj.Replace('IM.wrapFriends','text.join(','vkIMwrapFrModSort(text,');   
    }
-   
-   Inj.Start('IM.checked','vkImEvents(response);');
+
+   if (getSet(68)=='y') Inj.Start('IM.checked','vkImEvents(response);');
    
    Inj.Before('IM.applyPeer','cur.actionsMenu.setItems','vkIMModActMenu(types,peer,user);');
    if (window.cur && cur.tabs) IM.applyPeer();
@@ -1587,7 +1586,7 @@ function vkImEvents(response){
             flags = intval(update[2]), // chat id
             peer = intval(update[3]);
             // [62, 39226536, 15] - 62 chat
-        console.log('IM events', code,msg_id,peer,flags,update);
+        if (vk_DEBUG) console.log('IM events', code,msg_id,peer,flags,update);
         if (code == 61 || code == 62) { // peer or chat peer is typing
           if (code == 61)
             vkImTypingEvent({uid:msg_id});
@@ -1617,9 +1616,7 @@ function vkImTypingEvent(uid,need_close){
       uid=uid.uid;
    
    if (chat && DISABLE_CHATS_TYPING_NOTIFY) return;
-   
-   if (getSet(68)=='n') return;
-   
+
    var NOTIFY_TIMEOUT= 15000; // 15sec
    
    if (need_close){
@@ -1661,7 +1658,7 @@ function vkImTypingEvent(uid,need_close){
             '</b>';
             text=text.replace(/%uid/g,info.uid);
             text+=time;
-            //if (vk_DEBUG) text+='<br>'+document.title;            
+            //if (vk_DEBUG) text+='<br>'+document.title;
             vkShowEvent({sound:'none', hide_in_current_tab:cur.peer==uid ,id:'vk_typing_'+uid,title:info.name, text:text,author_photo:info.photo_rec});
          };
          
@@ -1767,7 +1764,7 @@ function vkNotifier(){
 	  */
      
     if (getSet(62)=='y')  FastChat.selectPeer=function(mid,e){return showWriteMessageBox(e, mid)};
-    Inj.Start('FastChat.imChecked','vkFcEvents(response);');    
+    if (getSet(68)=='y') Inj.Start('FastChat.imChecked','vkFcEvents(response);');
 }
 
 function vkFcEvents(response){
@@ -1786,7 +1783,7 @@ function vkFcEvents(response){
             vkImTypingEvent({uid:uid,chat:chat});
          else 
             vkImTypingEvent(uid);
-         console.log('fc events',ev);
+         if (vk_DEBUG) console.log('fc events',ev);
          /* console.log(ev);
             Array ["23", "typing", "13391307", "1", "10116"] // dialog
             Array ["23", "typing", "2000000003", "13391307", "1", "10116"] // Chat!

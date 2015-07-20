@@ -43,11 +43,11 @@ vk_search={
       vk_search.load_ex_info(uids);
    },
    process_node_gr_req:function(node){
-      console.log('process_node_gr_req');
+      if (vk_DEBUG) console.log('process_node_gr_req');
       if (!window.cur || cur.tab != "requests" || getSet(96)!='y') return;
       var nodes=geByClass('gedit_user',node);
       var uids=[];
-      console.log('gedit_user',nodes);
+      if (vk_DEBUG) console.log('gedit_user',nodes);
       for (var i=0; i<nodes.length; i++){
          var el=nodes[i];
          var uid=(el.id.match(/gedit_user_requests(\d+)/) || [])[1];
@@ -526,7 +526,7 @@ vk_notes={  // <a onclick="showBox('wkview.php', {act: 'notes_old_privacy', nid:
          //box.addButton(getLang('box_cancel'),box.hide, 'gray')
          var save_btn=box.addButton(getLang('box_save'),function(){  
             lockButton(save_btn);
-            console.log(save_btn);
+            if (vk_DEBUG) console.log(save_btn);
             dApi.call('notes.add',{title:ge('wk_page_title').value,text:ge('wke_textarea').value,privacy:ge('vk_note_privacy_val').value},function(r){ //privacy: 0 — all, 1 — only friends , 2 — friends and friends , 3 — only owner
                unlockButton(save_btn);
                var nid=(r.response || {}).nid;
@@ -573,7 +573,7 @@ vk_notes={  // <a onclick="showBox('wkview.php', {act: 'notes_old_privacy', nid:
 
 
 function vkWallReply(post,toMsgId, toId, event, rf,v,replyName){
-      console.log(post, toMsgId);
+      if (vk_DEBUG) console.log(post, toMsgId);
       var name=(replyName[1] || '').split(',')[0];
       if ((v||'').indexOf('id'+toId)==-1 && !checkEvent(event)){
          var new_val=(v?v+'\r\n':'');
@@ -720,7 +720,7 @@ function vkPollResults(post_id,pid){
    } else {
       dApi.call('execute',{code:code},function(r){
          var data=r.response;
-         console.log(data);
+         if (vk_DEBUG) console.log(data);
          view(data.poll1 || data.poll2);
       });   
    }
@@ -768,7 +768,7 @@ function vkPollCancelAnswer(post_id,pid){
    } else {
       dApi.call('execute',{code:code},function(r){
          var data=r.response;
-         console.log(data);
+         if (vk_DEBUG) console.log(data);
          cancel(data.poll1 || data.poll2);
       });   
    }
@@ -786,7 +786,7 @@ function vkPollVoters(oid,poll_id){
    ';
    dApi.call('execute',{code:code},function(r){
          var data=r.response;
-         console.log(data);
+         if (vk_DEBUG) console.log(data);
          if (data.voters){
             stManager.add('wk.css');
             var voters=data.voters;
@@ -1962,30 +1962,29 @@ vk_pages={
       Inj.Before('Wall.replyTo','toggleClass','vk_wall.cancel_reply_btn(post);');
    },
    inj_common:function(){
-      Inj.Start('showWiki','if (vk_pages.is_wiki_box_disabled(arguments)) return;');
+      if (getSet(86)=='y') Inj.Start('showWiki','if (vk_pages.is_wiki_box_disabled(arguments)) return;');
    },
    is_wiki_box_disabled:function(args){
-      var box_disable=(getSet(86)=='y');
       var page=args[0], 
           ev = args[2];
       //console.log(ev);
       if (!ev) return false;
       var el= ev.target || ev.srcElement || {};
-      return box_disable && page && page.w && /^wall-?\d+_\d+$/.test(page.w+"") && (el.tagName=='SPAN' || el.tagName=='A');
+      return page && page.w && /^wall-?\d+_\d+$/.test(page.w+"") && (el.tagName=='SPAN' || el.tagName=='A');
    }
    
 
 };
 
 function vkGroupsList(){
-   Inj.Before('GroupsList.showMore','var name','if (vkGroupsListCheckRow(row)) continue;');
+   if (getSet(102)=='y') Inj.Before('GroupsList.showMore','var name','if (vkGroupsListCheckRow(row)) continue;');
    
    if (getSet(74)=='y')  
       Inj.Replace('GroupsList.showMore',/html\.join\(['"]+\)/g, "vkModAsNode(html.join(''),vkGroupDecliner)"); 
 }
 
 function vkGroupsListPage(){
-	vkGrLstFilter();
+   if (getSet(102)=='y') vkGrLstFilter();
    if (getSet(74)=='y')
       vkGroupDecliner();
     vk_groups.leave_all_btn();
@@ -2194,7 +2193,7 @@ vk_groups = {
             }   
          
          },
-         onFail:function(text){console.log('VkOpt: get "requests" list fail! ['+text+']');return true;}
+         onFail:function(text){if (vk_DEBUG) console.log('VkOpt: get "requests" list fail! ['+text+']');return true;}
       });
    },
    request_accept:function(gid,mid,hash){
@@ -2352,7 +2351,7 @@ vk_groups = {
          //console.log(ids)
          if (abort) return;
          var del_count=ids.length;
-         console.log(del_count,del_offset);
+         if (vk_DEBUG) console.log(del_count,del_offset);
          ge('vk_scan').innerHTML=vkProgressBar(del_offset,del_count,310,IDL('killing... ')+' %');
          var ids_part=ids[del_offset];//.slice(del_offset,del_offset+1);
          if (!ids_part){ 
@@ -2422,7 +2421,7 @@ vk_groups = {
          //console.log(ids)
          if (abort) return;
          var del_count=ids.length;
-         console.log(del_count,del_offset);
+         if (vk_DEBUG) console.log(del_count,del_offset);
          ge('vk_scan').innerHTML=vkProgressBar(del_offset,del_count,310,IDL('unban users... ')+' %');
          var ids_part=ids[del_offset];//.slice(del_offset,del_offset+1);
          if (!ids_part){ 
@@ -3638,7 +3637,7 @@ function vk_tag_api(section,url,app_id){
                if (!_pageQuery || !likeHash){
                   if (ret<5 && /db_err/.test(t)){
                      ret++;
-                     console.log('widget_req error... retry '+ret+'... ');
+                     if (vk_DEBUG) console.log('widget_req error... retry '+ret+'... ');
                      setTimeout(req,3000);
                   } else 
                      alert('Parse hash error');
@@ -3733,13 +3732,13 @@ function vk_tag_api(section,url,app_id){
                      if (callback) callback(data);
                   },
                   error:function(r,err){
-                     console.log('api marks error',obj_ids,err);
+                     if (vk_DEBUG) console.log('api marks error',obj_ids,err);
                      retry_count++;
                      if (retry_count<5){
                         setTimeout(get,2000);
-                        console.log('api marks error.. wait 2sec and retry.. code:'+err.error_code);
+                        if (vk_DEBUG) console.log('api marks error.. wait 2sec and retry.. code:'+err.error_code);
                      } else { 
-                        console.log('api marks error',obj_ids,err)
+                        if (vk_DEBUG) console.log('api marks error',obj_ids,err)
                      }
                   }
             });
