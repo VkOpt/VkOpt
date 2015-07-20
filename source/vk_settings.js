@@ -640,7 +640,7 @@ function vkInitSettings(){
      {id:55,  text: "seIMFullTime"},
      {id:56,  text: "seIMAlwaysShowTime"},
      {id:62,  text: "seWriteBoxWithoutFastChat"},
-     {id:68,  text: "seTypingNotify"},
+     {id:68,  wiki: "seTypingNotify", text: IDL("seTypingNotify")+vkCheckboxSetting(105,IDL("seExceptConferences"),true)},
      {id:81,  text: "seDialogsReplyBtn"},
      {id:89,  text: "seDisableIMFavicon"},
      {id:76,  text: "seDisableLinkConvert"}
@@ -718,7 +718,7 @@ function vkInitSettings(){
    ]
   };
 
-   //LAST 104
+   //LAST 105
 
    vkSetsType={
       "on"  :[IDL('on'),'y'],
