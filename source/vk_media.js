@@ -5843,7 +5843,10 @@ vk_vid_down={
       for (var i=0; i<els.length; i++) add_link_to_thumb(els[i]);       
       
       els=geByClass('video_row_thumb',node);
-      for (var i=0; i<els.length; i++) add_link_to_thumb(els[i]); 
+      for (var i=0; i<els.length; i++) add_link_to_thumb(els[i]);
+      
+      els=geByClass('feed_video_thumb',node);
+      for (var i=0; i<els.length; i++) add_link_to_thumb(els[i].parentNode); 
       
       //els=geByClass('videocat_video_inner',node);
       //for (var i=0; i<els.length; i++) add_link_to_thumb(els[i]); 
