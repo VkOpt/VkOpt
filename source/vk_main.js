@@ -1292,7 +1292,7 @@ vk_im={
       vk_im.add_menus();
       if (getSet(76) == 'y')    // Отключение функции преобразования ссылок в ЛС в миниатюры с текстом
           Inj.Wait('cur.imMedia', function () {
-              Inj.Start('cur.imMedia.checkURL', 'return;');
+              Inj.Start('cur.imMedia.onCheckURLDone', 'if (data[0]=="share") return;');
           });
    },
    add_menus:function(){
