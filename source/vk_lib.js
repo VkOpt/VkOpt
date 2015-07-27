@@ -1566,7 +1566,6 @@ function vk_oauth_api(app_id,scope){
                               callback.ok(response,response.response,response.error);  
                         } else
                            callback(response,response.response,response.error);  
-                  
                   });
                }else {
                   if (!callback || !callback.error) api.show_error(response); 
@@ -1575,11 +1574,8 @@ function vk_oauth_api(app_id,scope){
                      //api._captchaBox.hide();  
                   }
                   
-                  if (callback.error && callback.ok){
-                     if (response.error)
-                        callback.error(response,response.error);
-                     else
-                        callback.ok(response,response.response,response.error);  
+                  if (callback.error){
+                     callback.error(response,response.error);
                   } else
                      callback(response,response.response,response.error);  
                } 
