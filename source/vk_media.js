@@ -6560,3 +6560,42 @@ if (!window.vkopt_plugins) vkopt_plugins = {};
     if (window.vkopt_ready) vkopt_plugin_run(PLUGIN_ID);
 })();
 if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
+
+(function(){
+   var PLUGIN_ID = 'vkMozImgPaste';
+
+   vkopt_plugins[PLUGIN_ID] = {
+      Name: 'Paste images in messages',
+      onLocation: function (nav_obj, cur_module_name) {
+         if (cur_module_name == 'im' && nav_obj.sel)
+            each(geByClass('im_editable'), function () {
+               var events = data(this, 'events');
+               if (events) {
+                  if (!events.paste)
+                     events.paste = [];
+                  if (events.paste[0] != vkopt_plugins[PLUGIN_ID].onPaste)
+                     events.paste.unshift(vkopt_plugins[PLUGIN_ID].onPaste);
+               }
+            });
+      },
+      onPaste: function (e) {
+         setTimeout(function () {
+            var img = geByTag('img', e.target)[0];
+            if (img) {
+               var binary = atob(img.src.split('base64,')[1]);
+               re(img);
+               var array = new Uint8Array(binary.length);
+               for (var i = 0; i < binary.length; i++)
+                  array[i] = binary.charCodeAt(i);
+               var blob = new Blob([array], {type: 'image/png'});
+
+               if (blob) {
+                  blob.name = blob.filename = 'upload_' + new Date().toISOString() + '.png';
+                  Upload.onFileApiSend(cur.imUploadInd, [blob]);
+               }
+            }
+         }, 0);
+      }
+   };
+   if (window.vkopt_ready && browser.mozilla) vkopt_plugin_run(PLUGIN_ID);
+})();
