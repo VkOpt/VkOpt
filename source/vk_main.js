@@ -1591,7 +1591,8 @@ function vkImEvents(response){
           if (code == 61)
             vkImTypingEvent({uid:msg_id});
           if (code == 62)
-            vkImTypingEvent({uid:msg_id,chat:flags});
+       //   if (some_bool_in_settings) // проверяем стоит ли параметр в настройках
+            vkImTypingEvent({uid:msg_id,chat:flags});  
           /*
           if (code == 62) { // 62 chat     cur.peer == 2e9 + flags
               IM.onTyping(2e9 + flags, msg_id); //cur.tabs[cur.peer].data.members[msg_id]);
