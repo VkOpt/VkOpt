@@ -629,24 +629,25 @@ function vkShowProfile(el,html,uid,right){
             ge('vkprofonlineinfo' + uid).innerHTML = html;
         });
     }
-   
-	if (allowShowPhoto) fadeIn('vkbigPhoto');//show('vkbigPhoto');
-      var xy=getXY(el); 
-      var height=getScrollTop()+getScrH();    
-      var top= (xy[1]+pb.offsetHeight>height)?height-pb.offsetHeight-10:xy[1];
-      top=(top<getScrollTop())?getScrollTop():top;
-      
-      var left=xy[0] - pb.offsetWidth + 5;
-      if (left < 0) right = true;
-      //alert(getScrollTop()+"\n"+getScrH()+"\n"+height+"\n"+(xy[1]+el.offsetHeight)+"\n"+el.offsetHeight);
-      if (right) {
-        p.style.left = (xy[0] + el.offsetWidth + 10) + "px";
-        p.style.top = top+"px";
-        
-      }else {
-        p.style.left = left+"px";//(xy[0] - p.offsetWidth - 10)+"px";
-        p.style.top = top+"px";
-      }
+
+    var xy = getXY(el);
+    if (allowShowPhoto && xy[0] != 0 && xy[1] != 0) {
+        fadeIn('vkbigPhoto');//show('vkbigPhoto');
+        var height = getScrollTop() + getScrH();
+        var top = (xy[1] + pb.offsetHeight > height) ? height - pb.offsetHeight - 10 : xy[1];
+        top = (top < getScrollTop()) ? getScrollTop() : top;
+
+        var left = xy[0] - pb.offsetWidth + 5;
+        if (left < 0) right = true;
+        //alert(getScrollTop()+"\n"+getScrH()+"\n"+height+"\n"+(xy[1]+el.offsetHeight)+"\n"+el.offsetHeight);
+        if (right) {
+            p.style.left = (xy[0] + el.offsetWidth + 10) + "px";
+            p.style.top = top + "px";
+        } else {
+            p.style.left = left + "px";//(xy[0] - p.offsetWidth - 10)+"px";
+            p.style.top = top + "px";
+        }
+    }
 }
 
 function vkHidePhoto() {
