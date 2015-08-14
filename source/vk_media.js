@@ -3255,14 +3255,14 @@ vk_audio={
    },
    audio_node:function(node){
      // get mp3 url maybe from /audio?act=reload_audio&al=1&audio_id=132434853&owner_id=10723321
-     
-     if ((node || ge('content')).innerHTML.indexOf('play_new')==-1) return;
+
+     if ((node || ge('content')).innerHTML.indexOf('play_new')==-1 && (!_pads.cur || _pads.shown!="mus" || setTimeout(function(){vk_audio.audio_node(_pads.cur.aContent)},0))) return;
      var smartlink=(getSet(1) == 'y');
      var download=(getSet(0) == 'y');
      //var clean_trash=getSet(94) == 'y';
      if (!download && getSet(43) != 'y') return;
      //InitAudiosMenu();
-     
+
      var divs = geByClass('play_new',node);
      for (var i=0; i<divs.length; i++){
         //var onclk=divs[i].getAttribute('onclick');
@@ -3281,7 +3281,7 @@ vk_audio={
              var span_title=geByClass('title',anode )[0];
              if (window.nav && nav.objLoc[0]=='search' && !span_title){
                 for (var x=0; x<spans.length;x++)
-                  if (spans[x].id && spans[x].id.indexOf('title')!=-1) {span_title=spans[x]; break;}	 
+                  if (spans[x].id && spans[x].id.indexOf('title')!=-1) {span_title=spans[x]; break;}
                   //searcher.showMore
              }
              //vklog('Audio: id'+id+' '+ge('title'+id));
@@ -3291,16 +3291,16 @@ vk_audio={
               name=vkCleanFileName(name);
               if (smartlink) {url+=(url.indexOf('?')>0?'':'?')+vkDownloadPostfix()+'&/'+vkEncodeFileName(name)+'.mp3';}//normal name
               //if (SearchLink && el){el.innerHTML=vkAudioDurSearchBtn(el.innerText,name,id);/* "<a href='/search?c[section]=audio&c[q]="+name+"'>"+el.innerText+"</a>";*/}
-            if (download){ 
-               divs[i].setAttribute('style','width:17px;'); 
+            if (download){
+               divs[i].setAttribute('style','width:17px;');
                divs[i].setAttribute('vk_ok','1');
                window.vk_au_down && vk_au_down.make_d_btn(url,divs[i],id,name+'.mp3');
             }
             var btn=geByClass('down_btn',anode)[0] || geByClass('play_new',anode)[0];
             if (!btn) continue;
-            btn.setAttribute('onmouseover',"vk_audio.get_size('"+id+"',this);");           
-         }  
-     }   
+            btn.setAttribute('onmouseover',"vk_audio.get_size('"+id+"',this);");
+         }
+     }
    },
    thread_count:0,
    get_size:function(id,_el,without_tip){
