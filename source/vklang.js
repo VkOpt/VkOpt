@@ -1388,7 +1388,7 @@ vk_lang_en={//by Hzy
     'IncorrectVideoLink':'Incorrect video link',
     'EnterLinkToVideo':'[Link to video as `videoXXXX_YYYY`]',
     'IncorrectAudioLink':'Incorrect audio link',
-    'EnterLinkToAudio':'[Link to video as `audioXXXX_YYYY` or wiki-code]',
+    'EnterLinkToAudio':'[Link to audio as `audioXXXX_YYYY` or wiki-code]',
     'AddToSubscribtions':'Follow',
    'profile_relation_m_0':'N/a',
    'profile_relation_m_1':'Single',
