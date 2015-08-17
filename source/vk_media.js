@@ -3951,37 +3951,44 @@ function vkAudioDelDup(add_button,btn){
 }
 
 vk_pads={
-   pl_add:function(aid,to){
-      to = to || 0;
-      var padPlist = padAudioPlaylist();
-      var info={};
-      switch (to){
-         case 0:
-            var cur_id = currentAudioId();
-            info=audioPlayer.getSongInfoFromDOM(aid);
-            var cur_info=padPlist[cur_id];
-            info._next= cur_info._next;
-            info._prev= cur_info.full_id || cur_info.aid ;
-            info.full_id=aid;
-            info.aid=aid;
-            
-            if (padPlist[cur_info._next])
-               padPlist[cur_info._next]._prev=aid;
-            cur_info._next=aid;
-            padPlist[aid]=info;
-            if (vk_DEBUG) console.log(padPlist[cur_id],padPlist[aid],padPlist[cur_info._next]);
-            break;
-      }
-      if (aid && padPlist && padPlist[aid]) {         
-         if (window.audioPlaylist && audioPlaylist[aid]) {
-            window.audioPlaylist = padPlist;
-         }
-         ls.set('pad_playlist', padPlist);
-         ls.set('pad_pltime', vkNow());
-         if (window.Pads && Pads.updateAudioPlaylist)
-            Pads.updateAudioPlaylist();
-         vkMsg('<b>'+info[5]+' - '+info[6]+'</b><br>'+IDL('AddedToPls'),1000);
-      }
+   pl_add:function(aid){
+       if (window.audioPlayer) {
+           var fromPad = window.audioPlayer.isPlaylistGlobal();
+           var padPlist = fromPad ? ls.get('pad_playlist') || window.audioPlaylist : padAudioPlaylist();
+           var cur_id = fromPad ? ls.get('audio_id') || currentAudioId() : currentAudioId();
+           if (cur_id && padPlist) {
+               var info;  // Новый элемент плейлиста
+               if (padPlist[aid]) { // Если информация о добавляемой аудиозаписи уже имеется в плейлисте, извлекаем её оттуда
+                   info = padPlist[aid];
+                   padPlist[info._prev]._next = info._next;
+                   padPlist[info._next]._prev = info._prev;
+               } else            // Иначе получаем её из DOM
+                   info = window.audioPlayer.getSongInfoFromDOM(aid);
+               if (aid.substr(-4) == '_pad') {    // фикс для случая "добавление песни из pad в плейлист не из pad"
+                   aid = aid.substr(0, aid.length - 4);
+               }
+               // вставка в двунаправленный список
+               var cur_info = padPlist[cur_id];
+               info._next = cur_info._next;
+               info._prev = cur_info.full_id || cur_info.aid || cur_id;
+               info.full_id = aid;
+               info.aid = aid;
+
+               if (padPlist[cur_info._next])
+                   padPlist[cur_info._next]._prev = aid;
+               cur_info._next = aid;
+               padPlist[aid] = info;
+               if (vk_DEBUG) console.log(padPlist[cur_id], padPlist[aid], padPlist[cur_info._next]);
+               // Обновление плейлиста
+               window.audioPlayer.setPadPlaylist(padPlist);
+               window.audioPlaylist = padPlist;
+               vkMsg('<b>' + info[5] + ' - ' + info[6] + '</b><br>' + IDL('AddedToPls'), 1000);
+           }
+           else
+               playAudioNew(aid);
+       }
+       else
+           playAudioNew(aid);
    }
 };
 
@@ -4006,7 +4013,6 @@ function vkShowAddAudioTip(el,id){
    var show_add=(!ge('audio_add'+id)) && (a[1]!=remixmid());
    //alert(ge('audio_add'+id)+'\n'+(a[1]!=remixmid())+'\n'+show_add);
 	if (a){
-		var pls=padAudioPlaylist();
       var name=vkParseAudioInfo(id);
       
       name=(name[5]+' '+name[6]).replace(/[\?\&\s]/g,'+');
@@ -4015,8 +4021,7 @@ function vkShowAddAudioTip(el,id){
       html += show_add ?'<a href="#" onclick="vkAddAudioT(\''+a[1]+'\',\''+a[2]+'\',this); return false;">'+IDL('AddMyAudio')+'</a>':'';
       html += '<a href="#" onclick="vk_audio.add_to_group('+a[1]+','+a[2]+'); return false;">'+IDL('AddToGroup')+'</a>';
       html += '<a href="#" onclick="'+"showBox('like.php', {act: 'publish_box', object: 'audio"+a[1]+'_'+a[2]+"', to: 'mail'}, {stat: ['page.js', 'page.css', 'wide_dd.js', 'wide_dd.css', 'sharebox.js']});"+'return false;">'+IDL('Share')+'</a>';
-      if (pls && !pls[id] && currentAudioId())
-         html +='<a href="#" onclick="vk_pads.pl_add(\''+id+'\'); return false;">'+IDL('AddToPls')+'</a>';
+      html +='<a href="#" onclick="vk_pads.pl_add(\''+id+'\'); return false;">'+IDL('AddToPls')+'</a>';
 
       html +='<a href="#" onclick="vkAudioWikiCode(\''+a[1]+'_'+a[2]+'\',\''+a[1]+'\',\''+a[2]+'\'); return false;">'+IDL('Wiki')+'</a>';
       html +='<a href="'+SEARCH_AUDIO_LYRIC_LINK.replace('%AUDIO_NAME%',name)+'" target="_blank">'+IDL('SearchAudioLyr')+'</a>';
