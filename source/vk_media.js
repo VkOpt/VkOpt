@@ -1519,7 +1519,7 @@ function vkGetZipWithPhotos(oid, aid) {
     }
     /* </ Создание прогресс-бара > */
 
-    var CORS_PROXY = 'http://crossorigin.me/';  // константа, содержащая адрес прокси для CORS-запросов
+    var CORS_PROXY = location.protocol+'//crossorigin.me/';  // константа, содержащая адрес прокси для CORS-запросов
     var zip;            // переменная для объекта JSZip
     var links;          // переменная для массива ссылок на фотки
     var links_length;   // длина этого массива. Чтобы каждый раз не дергать .length
@@ -1532,25 +1532,30 @@ function vkGetZipWithPhotos(oid, aid) {
             var request = (vkAjTransport.readyState == 4 || vkAjTransport.readyState == 0) ? vkAjTransport : PrepReq();
             if (request) {
                 var cors_proxy_used = false;    // использовался ли уже CORS-прокси
+                var onerror = function() {
+                    if (!cors_proxy_used) {                  // Если еще не использовали прокси, используем
+                        cors_proxy_used = true;
+                        request.open('GET', CORS_PROXY + links[i], true);
+                        request.send();
+                    } else {    // Не скачалось даже через прокси. Наверное, прокси лежит. Скачиваем файл через background.
+                        vk_aj.ajax({url: links[i], method: 'GET', responseType: 'arraybuffer'}, function (response) {
+                            if (response.status == 200)
+                                zip.file(i + ".jpg", response.raw);
+                            next();
+                        });
+                    }
+                };
                 request.responseType = 'arraybuffer';
                 request.onreadystatechange = function () {
                     if (request.readyState == 4) {
                         if (request.status == 200) {
                             zip.file(i + ".jpg", request.response);     // Добавление скачанного файла в объект JSZip
                             next();
-                        } else if (!cors_proxy_used) {                  // Если еще не использовали прокси, используем
-                            cors_proxy_used = true;
-                            request.open('GET', CORS_PROXY + links[i], true);
-                            request.send();
-                        } else {    // Не скачалось даже через прокси. Наверное, прокси лежит. Скачиваем файл через background.
-                            vk_aj.ajax({url: links[i], method: 'GET', responseType: 'arraybuffer'}, function (response) {
-                                if (response.status == 200)
-                                    zip.file(i + ".jpg", response.raw);
-                                next();
-                            });
-                        }
+                        } else
+                            onerror();
                     }
                 };
+                request.onerror=onerror;
                 request.open('GET', links[i], true);
                 request.send();
             } else next();
@@ -3255,14 +3260,14 @@ vk_audio={
    },
    audio_node:function(node){
      // get mp3 url maybe from /audio?act=reload_audio&al=1&audio_id=132434853&owner_id=10723321
-     
-     if ((node || ge('content')).innerHTML.indexOf('play_new')==-1) return;
+
+     if ((node || ge('content')).innerHTML.indexOf('play_new')==-1 && (!_pads.cur || _pads.shown!="mus" || setTimeout(function(){vk_audio.audio_node(_pads.cur.aContent)},0))) return;
      var smartlink=(getSet(1) == 'y');
      var download=(getSet(0) == 'y');
      //var clean_trash=getSet(94) == 'y';
      if (!download && getSet(43) != 'y') return;
      //InitAudiosMenu();
-     
+
      var divs = geByClass('play_new',node);
      for (var i=0; i<divs.length; i++){
         //var onclk=divs[i].getAttribute('onclick');
@@ -3281,7 +3286,7 @@ vk_audio={
              var span_title=geByClass('title',anode )[0];
              if (window.nav && nav.objLoc[0]=='search' && !span_title){
                 for (var x=0; x<spans.length;x++)
-                  if (spans[x].id && spans[x].id.indexOf('title')!=-1) {span_title=spans[x]; break;}	 
+                  if (spans[x].id && spans[x].id.indexOf('title')!=-1) {span_title=spans[x]; break;}
                   //searcher.showMore
              }
              //vklog('Audio: id'+id+' '+ge('title'+id));
@@ -3291,16 +3296,16 @@ vk_audio={
               name=vkCleanFileName(name);
               if (smartlink) {url+=(url.indexOf('?')>0?'':'?')+vkDownloadPostfix()+'&/'+vkEncodeFileName(name)+'.mp3';}//normal name
               //if (SearchLink && el){el.innerHTML=vkAudioDurSearchBtn(el.innerText,name,id);/* "<a href='/search?c[section]=audio&c[q]="+name+"'>"+el.innerText+"</a>";*/}
-            if (download){ 
-               divs[i].setAttribute('style','width:17px;'); 
+            if (download){
+               divs[i].setAttribute('style','width:17px;');
                divs[i].setAttribute('vk_ok','1');
                window.vk_au_down && vk_au_down.make_d_btn(url,divs[i],id,name+'.mp3');
             }
             var btn=geByClass('down_btn',anode)[0] || geByClass('play_new',anode)[0];
             if (!btn) continue;
-            btn.setAttribute('onmouseover',"vk_audio.get_size('"+id+"',this);");           
-         }  
-     }   
+            btn.setAttribute('onmouseover',"vk_audio.get_size('"+id+"',this);");
+         }
+     }
    },
    thread_count:0,
    get_size:function(id,_el,without_tip){
@@ -3951,37 +3956,44 @@ function vkAudioDelDup(add_button,btn){
 }
 
 vk_pads={
-   pl_add:function(aid,to){
-      to = to || 0;
-      var padPlist = padAudioPlaylist();
-      var info={};
-      switch (to){
-         case 0:
-            var cur_id = currentAudioId();
-            info=audioPlayer.getSongInfoFromDOM(aid);
-            var cur_info=padPlist[cur_id];
-            info._next= cur_info._next;
-            info._prev= cur_info.full_id || cur_info.aid ;
-            info.full_id=aid;
-            info.aid=aid;
-            
-            if (padPlist[cur_info._next])
-               padPlist[cur_info._next]._prev=aid;
-            cur_info._next=aid;
-            padPlist[aid]=info;
-            if (vk_DEBUG) console.log(padPlist[cur_id],padPlist[aid],padPlist[cur_info._next]);
-            break;
-      }
-      if (aid && padPlist && padPlist[aid]) {         
-         if (window.audioPlaylist && audioPlaylist[aid]) {
-            window.audioPlaylist = padPlist;
-         }
-         ls.set('pad_playlist', padPlist);
-         ls.set('pad_pltime', vkNow());
-         if (window.Pads && Pads.updateAudioPlaylist)
-            Pads.updateAudioPlaylist();
-         vkMsg('<b>'+info[5]+' - '+info[6]+'</b><br>'+IDL('AddedToPls'),1000);
-      }
+   pl_add:function(aid){
+       if (window.audioPlayer) {
+           var fromPad = window.audioPlayer.isPlaylistGlobal();
+           var padPlist = fromPad ? ls.get('pad_playlist') || window.audioPlaylist : padAudioPlaylist();
+           var cur_id = fromPad ? ls.get('audio_id') || currentAudioId() : currentAudioId();
+           if (cur_id && padPlist) {
+               var info;  // Новый элемент плейлиста
+               if (padPlist[aid]) { // Если информация о добавляемой аудиозаписи уже имеется в плейлисте, извлекаем её оттуда
+                   info = padPlist[aid];
+                   padPlist[info._prev]._next = info._next;
+                   padPlist[info._next]._prev = info._prev;
+               } else            // Иначе получаем её из DOM
+                   info = window.audioPlayer.getSongInfoFromDOM(aid);
+               if (aid.substr(-4) == '_pad') {    // фикс для случая "добавление песни из pad в плейлист не из pad"
+                   aid = aid.substr(0, aid.length - 4);
+               }
+               // вставка в двунаправленный список
+               var cur_info = padPlist[cur_id];
+               info._next = cur_info._next;
+               info._prev = cur_info.full_id || cur_info.aid || cur_id;
+               info.full_id = aid;
+               info.aid = aid;
+
+               if (padPlist[cur_info._next])
+                   padPlist[cur_info._next]._prev = aid;
+               cur_info._next = aid;
+               padPlist[aid] = info;
+               if (vk_DEBUG) console.log(padPlist[cur_id], padPlist[aid], padPlist[cur_info._next]);
+               // Обновление плейлиста
+               window.audioPlayer.setPadPlaylist(padPlist);
+               window.audioPlaylist = padPlist;
+               vkMsg('<b>' + info[5] + ' - ' + info[6] + '</b><br>' + IDL('AddedToPls'), 1000);
+           }
+           else
+               playAudioNew(aid);
+       }
+       else
+           playAudioNew(aid);
    }
 };
 
@@ -4006,7 +4018,6 @@ function vkShowAddAudioTip(el,id){
    var show_add=(!ge('audio_add'+id)) && (a[1]!=remixmid());
    //alert(ge('audio_add'+id)+'\n'+(a[1]!=remixmid())+'\n'+show_add);
 	if (a){
-		var pls=padAudioPlaylist();
       var name=vkParseAudioInfo(id);
       
       name=(name[5]+' '+name[6]).replace(/[\?\&\s]/g,'+');
@@ -4015,8 +4026,7 @@ function vkShowAddAudioTip(el,id){
       html += show_add ?'<a href="#" onclick="vkAddAudioT(\''+a[1]+'\',\''+a[2]+'\',this); return false;">'+IDL('AddMyAudio')+'</a>':'';
       html += '<a href="#" onclick="vk_audio.add_to_group('+a[1]+','+a[2]+'); return false;">'+IDL('AddToGroup')+'</a>';
       html += '<a href="#" onclick="'+"showBox('like.php', {act: 'publish_box', object: 'audio"+a[1]+'_'+a[2]+"', to: 'mail'}, {stat: ['page.js', 'page.css', 'wide_dd.js', 'wide_dd.css', 'sharebox.js']});"+'return false;">'+IDL('Share')+'</a>';
-      if (pls && !pls[id] && currentAudioId())
-         html +='<a href="#" onclick="vk_pads.pl_add(\''+id+'\'); return false;">'+IDL('AddToPls')+'</a>';
+      html +='<a href="#" onclick="vk_pads.pl_add(\''+id+'\'); return false;">'+IDL('AddToPls')+'</a>';
 
       html +='<a href="#" onclick="vkAudioWikiCode(\''+a[1]+'_'+a[2]+'\',\''+a[1]+'\',\''+a[2]+'\'); return false;">'+IDL('Wiki')+'</a>';
       html +='<a href="'+SEARCH_AUDIO_LYRIC_LINK.replace('%AUDIO_NAME%',name)+'" target="_blank">'+IDL('SearchAudioLyr')+'</a>';
@@ -6609,3 +6619,42 @@ if (!window.vkopt_plugins) vkopt_plugins = {};
     if (window.vkopt_ready) vkopt_plugin_run(PLUGIN_ID);
 })();
 if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
+
+(function(){
+   var PLUGIN_ID = 'vkMozImgPaste';
+
+   vkopt_plugins[PLUGIN_ID] = {
+      Name: 'Paste images in messages',
+      onLocation: function (nav_obj, cur_module_name) {
+         if (cur_module_name == 'im' && nav_obj.sel)
+            each(geByClass('im_editable'), function () {
+               var events = data(this, 'events');
+               if (events) {
+                  if (!events.paste)
+                     events.paste = [];
+                  if (events.paste[0] != vkopt_plugins[PLUGIN_ID].onPaste)
+                     events.paste.unshift(vkopt_plugins[PLUGIN_ID].onPaste);
+               }
+            });
+      },
+      onPaste: function (e) {
+         setTimeout(function () {
+            var img = geByTag('img', e.target)[0];
+            if (img) {
+               var binary = atob(img.src.split('base64,')[1]);
+               re(img);
+               var array = new Uint8Array(binary.length);
+               for (var i = 0; i < binary.length; i++)
+                  array[i] = binary.charCodeAt(i);
+               var blob = new Blob([array], {type: 'image/png'});
+
+               if (blob) {
+                  blob.name = blob.filename = 'upload_' + new Date().toISOString() + '.png';
+                  Upload.onFileApiSend(cur.imUploadInd, [blob]);
+               }
+            }
+         }, 0);
+      }
+   };
+   if (window.vkopt_ready && browser.mozilla) vkopt_plugin_run(PLUGIN_ID);
+})();
