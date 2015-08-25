@@ -1174,7 +1174,7 @@ function vkPVMouseScroll(){
 		vk_ev=ev;*/
 
         vkPVAllowMouseScroll=false;
-        setTimeout("vkPVAllowMouseScroll=true",200);
+        setTimeout(function(){vkPVAllowMouseScroll=true},200);
       }
     };
     var _next=function(e){on_scroll(1,e)};

@@ -424,7 +424,7 @@ if(vk_EnableSwichText){
       case 81: // ctrl+Q
       case 221: case 1066: // Ctrl+]
 		    vk_EnableSwichText=false;
-		    setTimeout("vk_EnableSwichText=true;",200);
+		    setTimeout(function(){vk_EnableSwichText=true;},200);
 		    var acelem=document.activeElement;
 		    if (GetSelectedLength(acelem)>0){replaceSelectedText(acelem,SwichKeybText)}
 		    else if (document.activeElement.value){

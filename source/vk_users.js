@@ -1556,7 +1556,7 @@ function vkFavOnlineChecker(on_storage){
    //case 'fav_users_statuses':vkFavOnlineChecker(true); break;
    if (getSet(49)!='y')return;
    clearTimeout(window.vk_upd_favonl_timeout);
-   var timeout=function(){vk_upd_favonl_timeout=setTimeout("vkFavOnlineChecker();",vkGenDelay(CHECK_FAV_ONLINE_DELAY,on_storage || !window.curNotifier));};
+   var timeout=function(){vk_upd_favonl_timeout=setTimeout(vkFavOnlineChecker,vkGenDelay(CHECK_FAV_ONLINE_DELAY,on_storage || !window.curNotifier));};
 
    var ignore=false;
    var list= vkGetVal('FavList') || '';
@@ -1675,7 +1675,7 @@ function vkFaveOnlineChecker(on_storage){
    //case 'fave_users_statuses':vkFaveOnlineChecker(true); break;
    if (getSet(52)!='y') return;
    clearTimeout(window.vk_upd_faveonl_timeout);
-   var timeout=function(){vk_upd_faveonl_timeout=setTimeout("vkFaveOnlineChecker();",vkGenDelay(CHECK_FAV_ONLINE_DELAY,on_storage || !window.curNotifier));};
+   var timeout=function(){vk_upd_faveonl_timeout=setTimeout(vkFaveOnlineChecker,vkGenDelay(CHECK_FAV_ONLINE_DELAY,on_storage || !window.curNotifier));};
 
    var ignore=false;
    var list= vkGetVal('FavList') || '';

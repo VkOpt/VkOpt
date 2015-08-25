@@ -692,7 +692,7 @@ function vkCommon(){
 	Inj.Before('nav.go',"var _a = window.audioPlayer","if (strLoc && vkAjaxNavDisabler(strLoc)){return true;}");
 	
 	Inj.Start('renderFlash','vkOnRenderFlashVars(vars);');
-	Inj.End('nav.setLoc','setTimeout("vkOnNewLocation();",2);');
+	Inj.End('nav.setLoc','setTimeout(vkOnNewLocation,2);');
 	
     if (getSet(10)=='y') Inj.After('TopSearch.row','name +','vkTsUserMenuLink(mid)+');
    
@@ -1840,7 +1840,7 @@ function vkModAsNode(text,func,url,q){ //url,q - for processing response
 
 /* MAIL */
 function vkMailSendFix(){
-   if (nav.objLoc['act']=='show' && !cur.addMailMedia) setTimeout("mail.showMessage(nav.objLoc['id']);",100);
+   if (nav.objLoc['act']=='show' && !cur.addMailMedia) setTimeout(function(){mail.showMessage(nav.objLoc['id']);},100);
 }
 function vkMailPage(){
 	if(nav.objLoc['act']=='show' || /write\d+/.test(nav.objLoc[0])) {

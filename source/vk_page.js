@@ -163,8 +163,8 @@ vk_profile={
       vk_feed.scroll_posts('page_wall_posts');
    },
    inj:function(){
-      Inj.After('profile.init','});','setTimeout("vkProcessNode();",2);');
-      Inj.End('profile.init','setTimeout("vkOnNewLocation();",2);');   
+      Inj.After('profile.init','});','setTimeout(vkProcessNode,2);');
+      Inj.End('profile.init','setTimeout(vkOnNewLocation,2);');
    },
    wall_notes_link:function(get_count){
       if (get_count){
@@ -454,7 +454,7 @@ function vkWallPhotosLinks(){
 
 
 function vkWall(){
-	Inj.End('FullWall.init','setTimeout("vkOnNewLocation();",2);');
+	Inj.End('FullWall.init','setTimeout(vkOnNewLocation,2);');
    if (getSet(71)=='y') 
       Inj.Before('FullWall.replyTo','if (!v','vkWallReply(post,toMsgId, toId, event, rf,v,replyName); if(false) ');
    //Inj.Before('Wall.replyTo','toggleClass','vk_wall.cancel_reply_btn(post);');  
@@ -1488,7 +1488,7 @@ function vkFriends_get(idx){
 		topMsg('Please, check <a href="/settings?act=vkopt">VkOpt settings</a>');
 		return;
 	}
-    IDFrOnlineTO = setTimeout("vkFriends_get('"+idx+"');", IDFriendTime);
+    IDFrOnlineTO = setTimeout(function(){vkFriends_get(idx);}, IDFriendTime);
   }
   //vkStatus('[Friends '+idx+' Loading]');
   //alert(idx);

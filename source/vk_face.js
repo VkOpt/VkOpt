@@ -705,7 +705,7 @@ function vkMakeRightBar(){
 		if (b) bar.appendChild(b);
 	}
    updSideTopLink(true);
-   setTimeout("updSideTopLink(true);",500);
+   setTimeout(function(){updSideTopLink(true);},500);
 }
 //if (getSet(44)=='y') vkMoveSuggFrBox();
 
