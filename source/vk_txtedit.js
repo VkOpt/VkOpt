@@ -225,7 +225,7 @@ function vkTxtPanelButtons(eid,emoji){
    } else {
       vk_gen_smiles_funcs.push(function(el){
          if (need_gen){
-            el.getElementsByTagName('div')[0].innerHTML=AddSmileBtn(eid);
+            val(el.getElementsByTagName('div')[0], AddSmileBtn(eid));
             need_gen=false;
          }
       });

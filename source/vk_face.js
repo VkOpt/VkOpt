@@ -851,15 +851,15 @@ vk_menu={
       var edt=cfg[idx];
       if (sub_idx!=null) edt=edt[2][sub_idx];
       var p=ge('vk_m_item'+id);
-      p.innerHTML='<div class="button_gray fl_r" onclick="vk_menu.save(1,'+params+')"><button>OK</button></div>\
+      val(p,'<div class="button_gray fl_r" onclick="vk_menu.save(1,'+params+')"><button>OK</button></div>\
       <input type="text" placeholder="http://" id="vk_menu_edt_link'+id+'" onkeyup="vk_menu.save(event,'+params+')" value="'+edt[0]+'">\
-      <input type="text" placeholder="Title" id="vk_menu_edt_title'+id+'"  onkeyup="vk_menu.save(event,'+params+')" value="'+edt[1]+'">';
+      <input type="text" placeholder="Title" id="vk_menu_edt_title'+id+'"  onkeyup="vk_menu.save(event,'+params+')" value="'+edt[1]+'">');
       return false;
    },
    add:function(to_idx){
       var id=(to_idx!=null?to_idx:'');
       var p=ge('vkm_add_frm'+id);
-      p.innerHTML='<div class="button_gray fl_r" onclick="vk_menu.add_checkkey(1,'+to_idx+')"><button>OK</button></div><input type="text" placeholder="http://" id="vk_menu_add_link'+id+'" onkeyup="vk_menu.add_checkkey(event,'+to_idx+')" value=""><input type="text" placeholder="Title" id="vk_menu_add_title'+id+'"  onkeyup="vk_menu.add_checkkey(event,'+to_idx+')" value="">';
+      val(p,'<div class="button_gray fl_r" onclick="vk_menu.add_checkkey(1,'+to_idx+')"><button>OK</button></div><input type="text" placeholder="http://" id="vk_menu_add_link'+id+'" onkeyup="vk_menu.add_checkkey(event,'+to_idx+')" value=""><input type="text" placeholder="Title" id="vk_menu_add_title'+id+'"  onkeyup="vk_menu.add_checkkey(event,'+to_idx+')" value="">');
       return false;
    },
    check_link:function(link){
@@ -877,7 +877,7 @@ vk_menu={
          var title=trim(ge('vk_menu_add_title'+id).value);
          if (link=='' || title=='' || link===false) return;
          var p=ge('vkm_add_frm'+id);
-         p.innerHTML='';
+         val(p, '');
          var cfg = vk_menu.get_custom_links();
          if (to_id!=null){
             if (!cfg[to_id][2]) cfg[to_id][2]=[];
@@ -890,7 +890,7 @@ vk_menu={
       }
    },
    update_cfg:function(){
-      ge('vkMenuCustom').innerHTML=vk_menu.custom_settings();
+      val(ge('vkMenuCustom'), vk_menu.custom_settings());
    }
 
 };
@@ -903,7 +903,7 @@ function vkMenu(){//vkExLeftMenu
   var WALL_LINK = (getSet(29)=='y');
   var exm=(getSet(12) == 'y'); //extended menu
   var nav=(ge('sideBar') || ge('side_bar')).getElementsByTagName('ol')[0];
-  if (cfg > 0) nav.innerHTML=nav.innerHTML.replace(RegExp('(">)(\u041c\u043e\u0439|\u041c\u043e\u044f|\u041c\u043e\u0438|\u041c\u043e\u0457|\u041c\u0430\u044f|\u041c\u0430\u0435|\u041c\u043e\u0435|My|Mein|Meine) ','g'),"$1");
+  if (cfg > 0) val(nav, nav.innerHTML.replace(RegExp('(">)(\u041c\u043e\u0439|\u041c\u043e\u044f|\u041c\u043e\u0438|\u041c\u043e\u0457|\u041c\u0430\u044f|\u041c\u0430\u0435|\u041c\u043e\u0435|My|Mein|Meine) ','g'),"$1"));
 
   var vkmenu_css1='\
          #nav a .vkicon, #side_bar ol a .vkicon{float:left; width:13px; height:13px; margin-right:1px; /*background:#DDD;*/}\
@@ -1191,7 +1191,7 @@ function vkMenu(){//vkExLeftMenu
              html+=(!submenu[k][2])?'<li><a class="left_row vk_custom_sublink" '+href+onclick+'><span class="left_label inl_bl">- '+submenu[k][1]+'</span></a></li>':'';
 
          }
-         ul.innerHTML=html;
+         val(ul, html);
          item.parentNode.appendChild(ul);
       }
       
@@ -1282,7 +1282,7 @@ function vkMenu(){//vkExLeftMenu
           html+=(!submenu[k][2])?'<li><a class="left_row" '+href+onclick+'><span class="left_label inl_bl">- '+submenu[k][1]+'</span></a></li>':'';
 
       }
-      ul.innerHTML=html;
+      val(ul, html);
       if (page=='profile') item.parentNode.appendChild(vkCe('div',{"class":"clear"}));
       item.parentNode.appendChild(ul);
     }
@@ -1297,7 +1297,7 @@ function vkMenu(){//vkExLeftMenu
         var html='';
         for (var i=0;i<vkNavLinks.length; i++)  html+='<a href="'+vkNavLinks[i][1]+'" '+(vkNavLinks[i][2]?vkNavLinks[i][2]:'')+'>'+vkNavLinks[i][0]+'</a>';
         li.id='frNavLinks';
-        li.innerHTML=html;
+        val(li, html);
         nav.appendChild(li);  
   }*/
   /*var li=document.createElement('li');
@@ -1305,14 +1305,14 @@ function vkMenu(){//vkExLeftMenu
   for (var i=0;window.vkNavLinks && i<vkNavLinks.length; i++)  html+='<a href="'+vkNavLinks[i][1]+'" '+(vkNavLinks[i][2]?vkNavLinks[i][2]:'')+'>'+vkNavLinks[i][0]+'</a>';
   html+='<a href="settings?act=vkopt" '+setActions()+' onclick="vkShowSettings(true); return false;">'+ExMenu.vkopt[0]+'</a><ul '+setActions()+'>'+ExMenu.vkopt[1]+'</ul>';
   li.id='frOpt';
-  li.innerHTML=html;
+  val(li, html);
   nav.appendChild(li);*/
   if (window.vkLinks && vkLinks.length>1){
         var li=document.createElement('li');
         var html='<a class="left_row" href="#" '+setActions()+' onclick="return false;"><span class="left_label inl_bl">'+vkLinks[0]+'</span></a><ul '+setActions()+'>';
         for (var i=1; i<vkLinks.length; i++)  html+='<a  class="left_row" href="'+vkLinks[i][1]+'"><span class="left_label inl_bl">'+vkLinks[i][0]+'</span></a>';
         li.id='frLinks';
-        li.innerHTML=html+'</ul>';
+        val(li, html+'</ul>');
         nav.appendChild(li);  
   }
   var div=document.createElement('div');
@@ -1348,7 +1348,7 @@ function vkWallAddBtnOnError(){
 function UserOnlineStatus(status) {// ADD LAST STATUS
 	if (window.vk_check_online_timeout) clearTimeout(vk_check_online_timeout);
 	if (ge('vk_online_status')){
-		ge('vk_online_status').innerHTML='<div class="vkUUndef">...</div>';
+		val(ge('vk_online_status'), '<div class="vkUUndef">...</div>');
 	}
 	
 	var show_status=function(stat){
@@ -1365,12 +1365,12 @@ function UserOnlineStatus(status) {// ADD LAST STATUS
 			  div.style.left = "0px";
 			  div.setAttribute('onclick','UserOnlineStatus();');
 			  
-			  div.innerHTML=online;
+			  val(div, online);
 			  var vk_side_bar=sideBar();
 			  body=vk_side_bar || body;
 			  body.appendChild(div);
 			} else {
-			  ge('vk_online_status').innerHTML=online;
+			  val(ge('vk_online_status'), online);
 			}
 		//}
 		/* vkGenDelay() -random для рассинхронизации запросов разных вкладок, иначе запросы со всех вкладок будут одновременно слаться. */
@@ -1466,7 +1466,7 @@ extend(vk_cur, {
   },
   vk_calShowMore: function(el) {
     var e = geByClass('day_text', el.parentNode)[0];
-	ge('vk_calendar_events_cont').innerHTML=vkModAsNode(e.innerHTML,vkProcessNode);
+	val(ge('vk_calendar_events_cont'), vkModAsNode(e.innerHTML,vkProcessNode));
 	show('vk_calendar_events');
   },
   vk_calGetMonth: function(shift) {
@@ -1479,7 +1479,7 @@ extend(vk_cur, {
       vk_cur.vk_calMon = 12;
       vk_cur.vk_calYear--;
     }
-    ge('vk_calendar_header').innerHTML = getLang('Month'+vk_cur.vk_calMon)+' '+vk_cur.vk_calYear;
+    val(ge('vk_calendar_header'), getLang('Month'+vk_cur.vk_calMon)+' '+vk_cur.vk_calYear);
 
 
     var days = (new Date(vk_cur.vk_calYear, vk_cur.vk_calMon, 0)).getDate();
@@ -1550,7 +1550,7 @@ extend(vk_cur, {
 	  if (!blank) rows += '<tr class="day_row">' + rowHTML + '</tr>';
     }
     
-    ge('vk_calendar_table_wrap').innerHTML = '<table class="day_table" cellpadding="0" cellspacing="0" align="center">\
+    val(ge('vk_calendar_table_wrap'), '<table class="day_table" cellpadding="0" cellspacing="0" align="center">\
       <tr>\
        <td class="day_head day1">' + getLang('events_mon') + '</td>\
        <td class="day_head day2">' + getLang('events_tue') + '</td>\
@@ -1559,7 +1559,7 @@ extend(vk_cur, {
        <td class="day_head day5">' + getLang('events_fri') + '</td>\
        <td class="day_head day6">' + getLang('events_sat') + '</td>\
        <td class="day_head day7">' + getLang('events_sun') + '</td>\
-      </tr>' + rows + '</table>';
+      </tr>' + rows + '</table>');
 
     return false;
   }
@@ -1584,8 +1584,8 @@ function vkClock() {
 			sidebar.appendChild(div);
 		}
       if (ge('vkCl')){
-         if (getSet(30) ==1) setInterval(function(){var c=ge('vkCl'); if (c) c.innerHTML=new Date().toString().match(/\d+:\d+:\d+/i);},1000);
-         if (getSet(30) ==2) setInterval(function(){var c=ge('vkCl'); if (c) c.innerHTML=wr_date();},1000);
+         if (getSet(30) ==1) setInterval(function(){var c=ge('vkCl'); if (c) val(c, new Date().toString().match(/\d+:\d+:\d+/i));},1000);
+         if (getSet(30) ==2) setInterval(function(){var c=ge('vkCl'); if (c) val(c, wr_date());},1000);
       }
 		if (getSet(30) ==3) makeClock();
 	}

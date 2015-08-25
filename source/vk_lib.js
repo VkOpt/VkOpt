@@ -521,7 +521,7 @@ var vkMozExtension = {
 	function vkCe(tagName, attr,inner){
 	  var el = document.createElement(tagName);
 	  for (var key in attr)  el.setAttribute(key,attr[key]);
-	  if (inner) el.innerHTML=inner;
+	  if (inner) val(el, inner);
 	  return el;
 	}
 
@@ -565,7 +565,7 @@ var vkMozExtension = {
 				node.appendChild(document.createTextNode(params[i]));
 				break;
 				case "html":
-				node.innerHTML = params[i];
+				val(node, params[i]);
 				break;
 				default:
 				node.setAttribute(i, params[i]);
@@ -1005,7 +1005,7 @@ String.prototype.leftPad = function (l, c) {
 /* FUNCTIONS. LEVEL 2*/
 
 /* VK GUI */
-	//javascript:   var x=0;  setInterval("ge('content').innerHTML=vkProgressBar(x++,100,600,'Выполнено %');",100);  void(0);  
+	//javascript:   var x=0;  setInterval("ge('content').innerHTML=vkProgressBar(x++,100,600,'Выполнено %');",100);  void(0);
 	
 	function vkProgressBar(val,max,width,text){
 			if (val>max) val=max;
@@ -1080,7 +1080,7 @@ String.prototype.leftPad = function (l, c) {
 	  } else {
 		var ul=document.createElement("ul");
 		ul.className="vk_tab_nav";
-		ul.innerHTML=html;
+		val(ul, html);
 		return ul;
 	  }
 	}
@@ -1115,7 +1115,7 @@ String.prototype.leftPad = function (l, c) {
 	  }
 	  return '<div class="clearFix vk_tBar">'+vkMakeTabs(menu)+'<div style="clear:both"></div></div><div id="tabcontainer'+j+'" style="padding:1px;">'+tabs+'</div>';
 	}
-	// javascript: ge('content').innerHTML=vkMakeContTabs([{name:'Tab',content:'Tab1 text',active:true},{name:'Qaz(Tab2)',content:'<font size="24px">Tab2 text:qwere qwere qwee</font>'}]); void(0);
+	// javascript: val(ge('content'), vkMakeContTabs([{name:'Tab',content:'Tab1 text',active:true},{name:'Qaz(Tab2)',content:'<font size="24px">Tab2 text:qwere qwere qwee</font>'}])); void(0);
 
 vk_hor_slider={
  default_percent:50,

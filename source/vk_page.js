@@ -81,12 +81,12 @@ vk_search={
                if (!el) continue;
                u[''+p.uid]=0;
                u[''+p.screen_name]=0;
-               el.innerHTML=vk_search.parse_info(p);//JSON.stringify(p);
+               val(el, vk_search.parse_info(p));//JSON.stringify(p);
                vkProccessLinks(el);
             }
             for (var key in u)
                if (u[key] && ge('vk_exinfo_'+key)) 
-                  ge('vk_exinfo_'+key).innerHTML='';
+                  val(ge('vk_exinfo_'+key), '');
             
          },
          error:function(){}
@@ -169,7 +169,7 @@ vk_profile={
    wall_notes_link:function(get_count){
       if (get_count){
             dApi.call('execute',{code:'return API.notes.get({uid:'+cur.oid+', count:1})[0];'},function(r){ 
-               ge('pr_notes_count').innerHTML=(r.response || '0');
+               val(ge('pr_notes_count'), (r.response || '0'));
             });
       }
       var html='<a class="notes" onclick="return nav.go(this, event);" href="/notes'+cur.oid+'" onmouseover="vk_profile.wall_notes_link(true);">\
@@ -234,11 +234,11 @@ vk_profile={
            <div class="module_body clear_fix" id="vk_favefr_users_content"></div>\
          ';
          var div=vkCe('div',{"class":"module clear people_module",id:"profile_favefr"});
-         div.innerHTML=html;
+         val(div, html);
          var p=ge(is_right_block?'profile_wall':'profile_friends');
          p.parentNode.insertBefore(div,p);  
       }
-      ge('vk_favefr_users_content').innerHTML=vkBigLdrImg;
+      val(ge('vk_favefr_users_content'), vkBigLdrImg);
       if (is_list){
          ge("vk_favefr_all_link").href="javascript:vk_profile.fav_fr_block()";
       } else {
@@ -293,8 +293,8 @@ vk_profile={
             }
          }
          if (ge('vk_favefr_users_content')){
-            ge("vk_favefr_all_link").innerHTML=vkopt_brackets(IDL('FaveFr') +' ('+list.length+')');
-            ge('vk_favefr_users_content').innerHTML=users;
+            val(ge("vk_favefr_all_link"), vkopt_brackets(IDL('FaveFr') +' ('+list.length+')'));
+            val(ge('vk_favefr_users_content'), users);
             vkProcessNodeLite(ge('vk_favefr_users_content'));
          }
          
@@ -310,9 +310,9 @@ function vkLastActivity(uid,callback){
 function vkShowLastActivity(){
    if (!ge('vk_profile_online_la')) 
       ge('title').appendChild(vkCe('b',{id:"vk_profile_online_la", "class":"fl_r", "onclick":"vkShowLastActivity();"}));
-   ge('vk_profile_online_la').innerHTML = "";   
+   val(ge('vk_profile_online_la'), "");
    vkLastActivity(cur.oid,function(info){
-      if (info) ge('vk_profile_online_la').innerHTML = info;
+      if (info) val(ge('vk_profile_online_la'), info);
    });
 }
 */
@@ -481,7 +481,7 @@ vk_wall = {
             for (var i = 0; i < anchors.length; i++)  // Меняем обработчики: второй аргумент - оч. большое число
                 if (!hasClass(anchors[i], 'feed_reposts_more_link') && !hasClass(anchors[i], 'wrh_all')) {  // Исключаем ссылки "показать похожие записи" и "Скрыть комментарии"
                     anchors[i].setAttribute('onclick', anchors[i].getAttribute('onclick').replace("', false", "', 99999"))
-                    anchors[i].firstElementChild.innerHTML = IDL('showAllComments')+' ('+anchors[i].getAttribute('offs').split('/')[1]+')';
+                    val(anchors[i].firstElementChild, IDL('showAllComments')+' ('+anchors[i].getAttribute('offs').split('/')[1]+')');
                 }
         }
         if (getSet(99) == 'y') {    // Функция сортировки комментариев по количеству лайков
@@ -798,7 +798,7 @@ function vkPollVoters(oid,poll_id){
                   if (!users[i].uid) continue;
                   html+='<a class="wk_poll_usr inl_bl" title="'+users[i].first_name+' '+users[i].last_name+'" href="/id'+users[i].uid+'"><img class="wk_poll_usr_photo" src="'+users[i].photo_rec+'" width="30" height="30"></a>'; 
                }
-               el.innerHTML=html;
+               val(el, html);
             }
          }
    }); 
@@ -891,7 +891,7 @@ function vkBDYear(uid,el){
    vk_users.find_age(uid,function(age){
       var txt=age?langNumeric(age, vk_lang["vk_year"]):'N/A';
       removeClass(_el,'fl_r');
-      _el.innerHTML=txt;
+      val(_el, txt);
    },{el:el,width:50});
    return false;
 }
@@ -963,12 +963,12 @@ function vkAvkoNav(){
   var div=document.createElement('div');
   div.setAttribute('style',"width:200px;height:0px;");
   ref.parentNode.insertBefore(div,ref);
-  div.innerHTML='\
+  val(div, '\
           <table width="200px" height="32px" class="NextButtAva ui-corner-bottom" style= "opacity: 0;" id="NextButtAva"><tr>\
                 <td id="avko_prev" class="ui-corner-bl" onclick="avko_list(false);">&#9668;</td>\
                 <td id="avko_zoom" class="zoom_ava" onclick="zoom_profile_photo(cur.options.photos,event); return false;">+</td>\
                 <td id="avko_next" class="ui-corner-br" onclick="avko_list(true);">&#9658;</td>\
-          </tr></table>';
+          </tr></table>');
  zoom_profile_photo=function(ops,event){
 	if (ops && ops!=''){
 		var p=ops[avko_num][1];
@@ -1003,7 +1003,7 @@ function vkUpdWallBtn(){
 	var el=ge('page_wall_posts_count');
 	if (!el || ge('wall_upd_btn')) return;
 	var span=document.createElement('span');
-	span.innerHTML='<a href="#" id="wall_upd_btn" onclick="cancelEvent(event); wall.showMore(0); return false;"> &#8635;</a>';/*&uarr;&darr;*/
+	val(span, '<a href="#" id="wall_upd_btn" onclick="cancelEvent(event); wall.showMore(0); return false;"> &#8635;</a>');/*&uarr;&darr;*/
 	insertAfter(span,el);
 }
 
@@ -1124,10 +1124,10 @@ function vkDelWallPostComments(oid,pid){
 	var del=function(callback){	
 		if (abort) return;
 		var del_count=mids.length;
-		ge('vk_del_msg').innerHTML=vkProgressBar(del_offset,del_count,310,IDL('msgdel')+' %');
+		val(ge('vk_del_msg'), vkProgressBar(del_offset,del_count,310,IDL('msgdel')+' %'));
 		var pid=mids[del_offset];
 		if (!pid){
-			ge('vk_del_msg').innerHTML=vkProgressBar(1,1,310,' ');
+			val(ge('vk_del_msg'), vkProgressBar(1,1,310,' '));
 			del_offset=0;
 			callback();
 		} else
@@ -1140,8 +1140,8 @@ function vkDelWallPostComments(oid,pid){
 	var scan=function(){
 		mids=[];
 		if (cur_offset==0){
-			ge('vk_del_msg').innerHTML=vkProgressBar(1,1,310,' ');
-			ge('vk_scan_msg').innerHTML=vkProgressBar(cur_offset,2,310,IDL('msgreq')+' %');
+			val(ge('vk_del_msg'), vkProgressBar(1,1,310,' '));
+			val(ge('vk_scan_msg'), vkProgressBar(cur_offset,2,310,IDL('msgreq')+' %'));
 		}
 		dApi.call('wall.getComments',{owner_id:oid, post_id:pid, count:100, offset:cur_offset},function(r){
 			if (abort) return;
@@ -1152,7 +1152,7 @@ function vkDelWallPostComments(oid,pid){
 			}
 			if (msg_count==0) msg_count=ms.shift();
 			else ms.shift();
-			ge('vk_scan_msg').innerHTML=vkProgressBar(cur_offset+REQ_CNT,msg_count,310,IDL('msgreq')+' %');
+			val(ge('vk_scan_msg'), vkProgressBar(cur_offset+REQ_CNT,msg_count,310,IDL('msgreq')+' %'));
 			for (var i=0;i<ms.length;i++) mids.push(ms[i].cid);
 			cur_offset+=REQ_CNT;
 			vklog(mids);
@@ -1190,10 +1190,10 @@ function vkCleanWall(oid){
 	var del=function(callback){	
 		if (abort) return;
 		var del_count=mids.length;
-		ge('vk_del_msg').innerHTML=vkProgressBar(del_offset,del_count,310,IDL('msgdel')+' %');
+		val(ge('vk_del_msg'), vkProgressBar(del_offset,del_count,310,IDL('msgdel')+' %'));
 		var pid=mids[del_offset];
 		if (!pid){
-			ge('vk_del_msg').innerHTML=vkProgressBar(1,1,310,' ');
+			val(ge('vk_del_msg'), vkProgressBar(1,1,310,' '));
 			del_offset=0;
 			callback();
 		} else
@@ -1206,8 +1206,8 @@ function vkCleanWall(oid){
 	var scan=function(){
 		mids=[];
 		if (cur_offset==0){
-			ge('vk_del_msg').innerHTML=vkProgressBar(1,1,310,' ');
-			ge('vk_scan_msg').innerHTML=vkProgressBar(cur_offset,2,310,IDL('msgreq')+' %');
+			val(ge('vk_del_msg'), vkProgressBar(1,1,310,' '));
+			val(ge('vk_scan_msg'), vkProgressBar(cur_offset,2,310,IDL('msgreq')+' %'));
 		}
 		dApi.call('wall.get',{owner_id:oid,filter:filter[2],count:REQ_CNT,offset:0+start_offset},function(r){
 			if (abort) return;
@@ -1218,7 +1218,7 @@ function vkCleanWall(oid){
 			}
 			if (msg_count==0) msg_count=ms.shift();
 			else ms.shift();
-			ge('vk_scan_msg').innerHTML=vkProgressBar(cur_offset+REQ_CNT,msg_count,310,IDL('msgreq')+' %');
+			val(ge('vk_scan_msg'), vkProgressBar(cur_offset+REQ_CNT,msg_count,310,IDL('msgreq')+' %'));
 			for (var i=0;i<ms.length;i++) mids.push(ms[i].id);
 			cur_offset+=REQ_CNT;
 			vklog(mids);
@@ -1268,11 +1268,11 @@ function vkFaveProfileBlock(is_list){
       ';
       //html=html.replace('%USERS%',users);
       var div=vkCe('div',{"class":"module clear people_module",id:"profile_fave"});
-      div.innerHTML=html;
+      val(div, html);
       var p=ge(is_right_block?'profile_wall':'profile_friends');
       p.parentNode.insertBefore(div,p);  
    }
-   ge('vk_fave_users_content').innerHTML=vkBigLdrImg;
+   val(ge('vk_fave_users_content'), vkBigLdrImg);
    if (is_list){
       ge("vk_fave_all_link").href="javascript:vkFaveProfileBlock()";
    } else {
@@ -1311,8 +1311,8 @@ function vkFaveProfileBlock(is_list){
             }
          }
          if (ge('vk_fave_users_content')){
-            ge("vk_fave_all_link").innerHTML=vkopt_brackets(IDL('FaveOnline') +' ('+onlines.length+')');
-            ge('vk_fave_users_content').innerHTML=users;
+            val(ge("vk_fave_all_link"), vkopt_brackets(IDL('FaveOnline') +' ('+onlines.length+')'));
+            val(ge('vk_fave_users_content'), users);
             vkProcessNodeLite(ge('vk_fave_users_content'));
          }
       }
@@ -1341,7 +1341,7 @@ function vkProfileGroupBlock(){
       ';
       //html=html.replace('%USERS%',users);
       var div=vkCe('div',{"class":"module clear groups_list_module",id:"profile_groups"});
-      div.innerHTML=html;
+      val(div, html);
       var p=ge(is_right_block?'profile_wall':'profile_friends');
       if (is_right_block)
          p.parentNode.insertBefore(div,ge('profile_wall'));  
@@ -1349,22 +1349,22 @@ function vkProfileGroupBlock(){
          ge('profile_narrow').appendChild(div);
       
    }
-   ge('vk_group_block_content').innerHTML=vkBigLdrImg;
+   val(ge('vk_group_block_content'), vkBigLdrImg);
    AjPost('al_groups.php',{act: 'get_list', mid: cur.oid,tab:'groups',al:1},function(t){
       var data=t.split('<!json>');
       if (!data[1]){
-            ge('vk_group_block_content').innerHTML=IDL('NA');
+            val(ge('vk_group_block_content'), IDL('NA'));
             hide('profile_groups');
             return;      
       }
       data=eval(data[1]);
       var count=data.length;
-      ge('vk_group_block_count').innerHTML=' ('+count+')';
+      val(ge('vk_group_block_count'), ' ('+count+')');
       var html='';
       for (var i=0; i<data.length;i++)
          if (data[i][0]) html+='<a onclick="return nav.go(this, event)" href="'+data[i][3]+'">'+data[i][0]+' </a>';
       
-      ge('vk_group_block_content').innerHTML=html;
+      val(ge('vk_group_block_content'), html);
       vk_highlinghts.groups_block();
       vkProcessNode(ge('vk_group_block_content'));     
    });
@@ -1391,9 +1391,9 @@ function vkFrProfile(){
 	var rlink=geByClass('right_link',el)[0];
 	if (rlink) rlink.setAttribute('onclick',"return nav.go(this.parentNode.parentNode, event)");
     var all=hdr.getElementsByTagName('span')[0];
-    hdr.innerHTML='<a href="javascript:vkFriends_get(\''+postfix+'\')" id="Fr'+postfix+'Lnk">'+vkopt_brackets(hdr.innerHTML)+'</a>';
+    val(hdr, '<a href="javascript:vkFriends_get(\''+postfix+'\')" id="Fr'+postfix+'Lnk">'+vkopt_brackets(hdr.innerHTML)+'</a>');
     if (all) {
-       all.innerHTML='<a href="'+el.href+'" onclick="'+el.getAttribute('onclick')+'">'+all.innerHTML+'</a>';//return nav.go(this, event)
+       val(all, '<a href="'+el.href+'" onclick="'+el.getAttribute('onclick')+'">'+all.innerHTML+'</a>');//return nav.go(this, event)
        var div=document.createElement('div');
        div.className='module_header';
        div.appendChild(all);
@@ -1412,13 +1412,13 @@ function vkFrProfile(){
 	if (rlink) rlink.setAttribute('onclick',"return nav.go(this.parentNode.parentNode, event)");
     var all=hdr.getElementsByTagName('span')[0];
     if (all) {
-       all.innerHTML='<a href="'+el.href+'"  onclick="'+el.getAttribute('onclick')+'">'+all.innerHTML+'</a>';
+       val(all, '<a href="'+el.href+'"  onclick="'+el.getAttribute('onclick')+'">'+all.innerHTML+'</a>');
        var div=document.createElement('div');
        div.className='module_header';
        div.appendChild(all);
        hdr.appendChild(all);
     }
-    //hdr.innerHTML='<a href="javascript:vkFriends_get(\''+postfix+'\')" id="Fr'+postfix+'Lnk">[ '+hdr.innerHTML+' ]</a>';
+    //val(hdr, '<a href="javascript:vkFriends_get(\''+postfix+'\')" id="Fr'+postfix+'Lnk">[ '+hdr.innerHTML+' ]</a>');
     div.appendChild(hdr);
     insertAfter(div,el);
   };
@@ -1430,10 +1430,10 @@ function vkFrProfile(){
   var mod_el={
     'profile_albums':function(el){
         var _el=geByClass('module_body',el)[0];
-        _el.innerHTML='<div align="center"><a href="/photos'+cur.oid+'" onclick="return nav.go(this, event);">'+vkopt_brackets(IDL("obzor"))+'</a> <a href="/photos'+cur.oid+'?act=comments"  onclick="return nav.go(this, event);">'+vkopt_brackets(IDL("komm"))+'</a></div>'+_el.innerHTML;
+        val(_el, '<div align="center"><a href="/photos'+cur.oid+'" onclick="return nav.go(this, event);">'+vkopt_brackets(IDL("obzor"))+'</a> <a href="/photos'+cur.oid+'?act=comments"  onclick="return nav.go(this, event);">'+vkopt_brackets(IDL("komm"))+'</a></div>'+_el.innerHTML);
         var hdr=geByClass('p_header_bottom',el)[0];
         if (!hdr) return;
-        hdr.innerHTML='<a href="javascript:vk_photos.profile_albums_list()">'+vkopt_brackets(hdr.innerHTML)+'</a>';
+        val(hdr, '<a href="javascript:vk_photos.profile_albums_list()">'+vkopt_brackets(hdr.innerHTML)+'</a>');
       }
   };
   for (var i=0; i<els.length;i++)
@@ -1505,7 +1505,7 @@ function vkFriends_get(idx){
   //AjPost('friends.php',{id:cur.oid,filter:idx,qty:'60'},function(r,t){
     //var res=eval('('+t+')');
     var fr=r.response;
-    count_el.innerHTML=count_el.innerHTML.replace(/\d+/,fr.length);
+    val(count_el, count_el.innerHTML.replace(/\d+/,fr.length));
     
     var html='';
     fr=vkSortFrList(fr);
@@ -1515,7 +1515,7 @@ function vkFriends_get(idx){
 			<a href="id'+fr[i].uid+'" '+(vkIsFavUser(fr[i].uid)?'class="vk_faved_user"':'')+'>'+fr[i].full_name+'</a>\
 		   </div>';
     if (fr.length==0) html+='<div align="left" style="margin-left: 10px; width:180px;"><strike>&#x25AA;&nbsp;Nobody&nbsp;OnLine</strike></div>';
-    ge('friends_profile_'+idx).innerHTML=html;
+    val(ge('friends_profile_'+idx), html);
 	vkProcessNodeLite(ge('friends_profile_'+idx));
     //vkStatus('');
     //if (getSet(17) == 'y' || getSet(17) > 0) best(idx);
@@ -1656,7 +1656,7 @@ vk_graff={
             a.setAttribute("style","background-image: url(/images/icons/attach_icons.gif); background-position: 3px -151px");
             a.setAttribute("href","#");
             a.setAttribute("onclick","vk_graff.upload_box("+mid+");return false;");
-            a.innerHTML=IDL('LoadGraffiti');
+            val(a, IDL('LoadGraffiti'));
             bef.parentNode.insertBefore(a,bef.nextSibling);
          }
       };
@@ -1734,10 +1734,10 @@ function vkAudioBlock(load_audios){
    }
    
    if (!load_audios) return;
-   ge('vk_group_audios').innerHTML=block_tpl;
+   val(ge('vk_group_audios'), block_tpl);
    var div=ge('vk_group_audios');
    addClass(div,'empty');
-   ge('vk_audio_content').innerHTML=vkBigLdrImg;   
+   val(ge('vk_audio_content'), vkBigLdrImg);
 	var params={}; 
 	params[cur.oid>0?"uid":"gid"]=Math.abs(cur.oid);
    var is_vkcom=(document.location.href.indexOf('vk.com')!=-1);
@@ -1757,8 +1757,8 @@ function vkAudioBlock(load_audios){
 		}
       
       removeClass(div,'empty');
-      ge('vk_audio_count').innerHTML=list.length;
-      ge('vk_audio_content').innerHTML=html;
+      val(ge('vk_audio_count'), list.length);
+      val(ge('vk_audio_content'), html);
       vk_audio.process_node(div);
 	});
    /*
@@ -2105,7 +2105,7 @@ vk_groups = {
          html=cont_tpl.replace(/%PAGE_LIST%/g,pg)
                       .replace(/%TITLE%/g,info.count)
                       .replace(/%USERS%/g,html);
-         ge('vk_member_list'+gid).innerHTML=html;
+         val(ge('vk_member_list'+gid), html);
          vkProcessNode(ge('vk_member_list'+gid));
       };
       load_info();         
@@ -2129,13 +2129,13 @@ vk_groups = {
          ';
          //html=html.replace('%USERS%',users);
          var div=vkCe('div',{"class":"module clear people_module",id:"vk_group_requests"});
-         div.innerHTML=html;
+         val(div, html);
          var p=ge('group_followers');
          if (!p) return;
          p.parentNode.insertBefore(div,p);
          hide('vk_group_requests');
       }
-      ge('vk_gr_req_users_content').innerHTML=vkBigLdrImg;
+      val(ge('vk_gr_req_users_content'), vkBigLdrImg);
       if (is_list){
          ge("vk_gr_req_all_link").href="javascript:vk_groups.requests_block()";
          addClass('vk_gr_req_all_link','as_list')
@@ -2187,8 +2187,8 @@ vk_groups = {
                }
             }
             if (ge('vk_gr_req_users_content')){
-               ge("vk_gr_req_all_link").innerHTML=vkopt_brackets(getLang('global_X_people',cnt));
-               ge('vk_gr_req_users_content').innerHTML=users;
+               val(ge("vk_gr_req_all_link"), vkopt_brackets(getLang('global_X_people',cnt)));
+               val(ge('vk_gr_req_users_content'), users);
                vkProcessNodeLite(ge('vk_gr_req_users_content'));
             }   
          
@@ -2199,12 +2199,12 @@ vk_groups = {
    request_accept:function(gid,mid,hash){
       var el=ge('vk_gru_act'+mid);
       if (el)
-         el.innerHTML=vkLdrMiniImg;
+         val(el, vkLdrMiniImg);
       ajax.post('groupsedit.php', {act: 'user_action', id: gid, addr: mid, hash: hash, action: 1}, {
          onDone: function() {
             //alert(row);
             if (el){ 
-               el.innerHTML='OK';
+               val(el, 'OK');
                fadeOut(el, 200);
                //hide(el);
                setTimeout(function(){
@@ -2220,12 +2220,12 @@ vk_groups = {
    request_cancel:function(gid,mid,hash){
       var el=ge('vk_gru_act'+mid);
       if (el)
-         el.innerHTML=vkLdrMiniImg;
+         val(el, vkLdrMiniImg);
       ajax.post('groupsedit.php', {act: 'user_action', id: gid, addr: mid, hash: hash, action: -1}, {
          onDone: function() {
             //alert(row);
             if (el){ 
-               el.innerHTML='OK';
+               val(el, 'OK');
                fadeOut(el, 200);
                //hide(el);
                setTimeout(function(){
@@ -2254,7 +2254,7 @@ vk_groups = {
       p.insertBefore(el, p.firstChild); 
    },
    deactivated_edit:function(gid){
-      ge('gedit_users_rows_members').innerHTML='<div id="vk_gre_scan">'+vkBigLdrImg+'</div><div id="vk_gre_scan_queue"></div>';
+      val(ge('gedit_users_rows_members'), '<div id="vk_gre_scan">'+vkBigLdrImg+'</div><div id="vk_gre_scan_queue"></div>');
       hide('gedit_users_more_members');
       var tab=geByClass('summary_tab_sel')[0];
       if (tab){
@@ -2273,12 +2273,12 @@ vk_groups = {
       var deactiv_count=0;
       function queue_process(){
             if (queue.length==0){ 
-               ge('vk_gre_scan_queue').innerHTML='';
+               val(ge('vk_gre_scan_queue'), '');
                return;
             }
             var uid=queue.shift();
             var need_run=(queue.length!=0);
-            ge('vk_gre_scan_queue').innerHTML=vkProgressBar(deactiv_count-queue.length,deactiv_count,590,IDL('Loading')+' %');
+            val(ge('vk_gre_scan_queue'), vkProgressBar(deactiv_count-queue.length,deactiv_count,590,IDL('Loading')+' %'));
             var tab='members';
             ajax.post('groupsedit.php', {
                act: 'get_page',
@@ -2293,10 +2293,10 @@ vk_groups = {
                      val('gedit_users_summary_' + tab, getLang('groups_found_n_users', founded, true));
                   }
                   ge('gedit_users_rows_members').appendChild(se(found?html:'<span>Error. id'+uid+'</span>'));
-                  if (need_run) setTimeout(queue_process,100); else ge('vk_gre_scan_queue').innerHTML='';
+                  if (need_run) setTimeout(queue_process,100); else val(ge('vk_gre_scan_queue'), '');
                },
                onFail:function(){
-                  if (need_run) setTimeout(queue_process,5000); else ge('vk_gre_scan_queue').innerHTML='';
+                  if (need_run) setTimeout(queue_process,5000); else val(ge('vk_gre_scan_queue'), '');
                }
             });
       }
@@ -2319,12 +2319,12 @@ vk_groups = {
             users=null;
             if (need_run) queue_process();
             
-            ge('vk_gre_scan').innerHTML=vkProgressBar(offset,count,590,IDL('Search')+' %');
+            val(ge('vk_gre_scan'), vkProgressBar(offset,count,590,IDL('Search')+' %'));
             if (offset<count){
                offset+=PER_REQ;
                setTimeout(scan,350);
             } else {
-               ge('vk_gre_scan').innerHTML='';
+               val(ge('vk_gre_scan'), '');
             }
             
          });
@@ -2352,7 +2352,7 @@ vk_groups = {
          if (abort) return;
          var del_count=ids.length;
          if (vk_DEBUG) console.log(del_count,del_offset);
-         ge('vk_scan').innerHTML=vkProgressBar(del_offset,del_count,310,IDL('killing... ')+' %');
+         val(ge('vk_scan'), vkProgressBar(del_offset,del_count,310,IDL('killing... ')+' %'));
          var ids_part=ids[del_offset];//.slice(del_offset,del_offset+1);
          if (!ids_part){ 
             box.hide();		
@@ -2422,7 +2422,7 @@ vk_groups = {
          if (abort) return;
          var del_count=ids.length;
          if (vk_DEBUG) console.log(del_count,del_offset);
-         ge('vk_scan').innerHTML=vkProgressBar(del_offset,del_count,310,IDL('unban users... ')+' %');
+         val(ge('vk_scan'), vkProgressBar(del_offset,del_count,310,IDL('unban users... ')+' %'));
          var ids_part=ids[del_offset];//.slice(del_offset,del_offset+1);
          if (!ids_part){ 
             box.hide();		
@@ -2439,7 +2439,7 @@ vk_groups = {
       };
 
       var scan=function(){
-         if (cur_offset==0) ge('vk_scan').innerHTML=vkProgressBar(2,2,310,' scaning... ');
+         if (cur_offset==0) val(ge('vk_scan'), vkProgressBar(2,2,310,' scaning... '));
          //dApi.call('messages.get',{out:is_out?1:0,count:100,offset:cur_offset,preview_length:1},function(r){
          ajax.post(nav.objLoc[0], {act:'blacklist',offset: cur_offset, part: 1}, {
             onDone: function(off,html) {
@@ -2454,7 +2454,7 @@ vk_groups = {
                });
                
                
-               //ge('vk_scan').innerHTML=vkProgressBar(1,1,310,' ');
+               //val(ge('vk_scan'), vkProgressBar(1,1,310,' '));
                ids=ms.slice();
                if (!ms[0] /*|| ids.length>=500*/){ 
                   process();	
@@ -2500,10 +2500,10 @@ vk_groups = {
       var del=function(callback){	
          if (abort) return;
          var del_count=mids.length;
-         ge('vk_del_msg').innerHTML=vkProgressBar(del_offset,del_count,310,IDL('deleting')+' %');
+         val(ge('vk_del_msg'), vkProgressBar(del_offset,del_count,310,IDL('deleting')+' %'));
          var item_id=mids[del_offset];
          if (!item_id){
-            ge('vk_del_msg').innerHTML=vkProgressBar(1,1,310,' ');
+            val(ge('vk_del_msg'), vkProgressBar(1,1,310,' '));
             del_offset=0;
             callback();
          } else
@@ -2515,7 +2515,7 @@ vk_groups = {
       
       var cur_offset=0;
       var scan=function(){
-         if (cur_offset==0) ge('vk_scan_msg').innerHTML=vkProgressBar(cur_offset,2,310,IDL('listreq')+' %');
+         if (cur_offset==0) val(ge('vk_scan_msg'), vkProgressBar(cur_offset,2,310,IDL('listreq')+' %'));
          
          var params={extended:1};
          params['count']=REQ_CNT;
@@ -2525,7 +2525,7 @@ vk_groups = {
             var ms=r.response;
             if (!ms[0]){ del(deldone);	return;	}
             var _count=ms.shift();
-            ge('vk_scan_msg').innerHTML=vkProgressBar(cur_offset,_count,310,IDL('listreq')+' %');
+            val(ge('vk_scan_msg'), vkProgressBar(cur_offset,_count,310,IDL('listreq')+' %'));
             for (var i=0;i<ms.length;i++) if (!ms[i].is_admin) mids.push(ms[i].gid);
             if (cur_offset<_count){	cur_offset+=REQ_CNT; setTimeout(scan,SCAN_REQ_DELAY);} else del(deldone);
          });
@@ -2582,12 +2582,12 @@ function vkGroupDecliner(node){// [name, gid, href, thumb, count, type, hash, fr
 
 function vkGroupLeave(gid,node){
    var p = (node || {}).parentNode;
-   if (p) p.innerHTML=vkLdrImg;
+   if (p) val(p, vkLdrImg);
    dApi.call('groups.leave',{gid:gid},function(r){
       if (r.response==1){
-         if (p) p.innerHTML=IDL('GroupLeft');
+         if (p) val(p, IDL('GroupLeft'));
       } else
-         if (p) p.innerHTML='WTF? O_o';
+         if (p) val(p, 'WTF? O_o');
    });
    return false;
 }
@@ -2645,7 +2645,7 @@ function vkGrLstFilter(){
             //alert(val);
             cur.scrollList.offset=0;
             var cont = ge(cur.scrollList.prefix + cur.scrollList.tab);
-            cont.innerHTML='';
+            val(cont, '');
             GroupsList.showMore();
         }
       });
@@ -2809,10 +2809,10 @@ vk_fave = {
       var del=function(callback){	
          if (abort) return;
          var del_count=ids.length;
-         ge('vk_del_info').innerHTML=vkProgressBar(del_offset,del_count,310,IDL('deleting')+' %');
+         val(ge('vk_del_info'), vkProgressBar(del_offset,del_count,310,IDL('deleting')+' %'));
          var obj=ids[del_offset];
          if (!obj){
-            ge('vk_del_info').innerHTML=vkProgressBar(1,1,310,' ');
+            val(ge('vk_del_info'), vkProgressBar(1,1,310,' '));
             del_offset=0;
             callback();
          } else
@@ -2825,8 +2825,8 @@ vk_fave = {
       var scan=function(){
          ids=[];
          if (cur_offset==0){
-            ge('vk_del_info').innerHTML=vkProgressBar(1,1,310,' ');
-            ge('vk_scan_info').innerHTML=vkProgressBar(cur_offset,2,310,IDL('listreq')+' %');
+            val(ge('vk_del_info'), vkProgressBar(1,1,310,' '));
+            val(ge('vk_scan_info'), vkProgressBar(cur_offset,2,310,IDL('listreq')+' %'));
          }
          dApi.call('fave.getPhotos',{offset:0/*cur_offset*/,count:REQ_CNT},function(r){
             //var data=r.response;
@@ -2839,7 +2839,7 @@ vk_fave = {
             }
             if (info_count==0) info_count=data.shift();
             else data.shift();
-            ge('vk_scan_info').innerHTML=vkProgressBar(cur_offset+REQ_CNT,info_count,310,IDL('listreq')+' %');
+            val(ge('vk_scan_info'), vkProgressBar(cur_offset+REQ_CNT,info_count,310,IDL('listreq')+' %'));
             for (var i=0;i<data.length;i++) ids.push([data[i].owner_id,data[i].pid]);
             cur_offset+=REQ_CNT;
             //vklog(ids);
@@ -2872,10 +2872,10 @@ vk_fave = {
       var del=function(callback){	
          if (abort) return;
          var del_count=ids.length;
-         ge('vk_del_info').innerHTML=vkProgressBar(del_offset,del_count,310,IDL('deleting')+' %');
+         val(ge('vk_del_info'), vkProgressBar(del_offset,del_count,310,IDL('deleting')+' %'));
          var obj=ids[del_offset];
          if (!obj){
-            ge('vk_del_info').innerHTML=vkProgressBar(1,1,310,' ');
+            val(ge('vk_del_info'), vkProgressBar(1,1,310,' '));
             del_offset=0;
             callback();
          } else
@@ -2888,8 +2888,8 @@ vk_fave = {
       var scan=function(){
          ids=[];
          if (cur_offset==0){
-            ge('vk_del_info').innerHTML=vkProgressBar(1,1,310,' ');
-            ge('vk_scan_info').innerHTML=vkProgressBar(cur_offset,2,310,IDL('listreq')+' %');
+            val(ge('vk_del_info'), vkProgressBar(1,1,310,' '));
+            val(ge('vk_scan_info'), vkProgressBar(cur_offset,2,310,IDL('listreq')+' %'));
          }
          dApi.call('fave.getVideos',{offset:0/*cur_offset*/,count:REQ_CNT},function(r){
             //var data=r.response;
@@ -2902,7 +2902,7 @@ vk_fave = {
             }
             if (info_count==0) info_count=data.shift();
             else data.shift();
-            ge('vk_scan_info').innerHTML=vkProgressBar(cur_offset+REQ_CNT,info_count,310,IDL('listreq')+' %');
+            val(ge('vk_scan_info'), vkProgressBar(cur_offset+REQ_CNT,info_count,310,IDL('listreq')+' %'));
             for (var i=0;i<data.length;i++) ids.push([data[i].owner_id,data[i].vid]);
             cur_offset+=REQ_CNT;
             //vklog(ids);
@@ -2935,10 +2935,10 @@ vk_fave = {
       var del=function(callback){	
          if (abort) return;
          var del_count=ids.length;
-         ge('vk_del_info').innerHTML=vkProgressBar(del_offset,del_count,310,IDL('deleting')+' %');
+         val(ge('vk_del_info'), vkProgressBar(del_offset,del_count,310,IDL('deleting')+' %'));
          var obj=ids[del_offset];
          if (!obj){
-            ge('vk_del_info').innerHTML=vkProgressBar(1,1,310,' ');
+            val(ge('vk_del_info'), vkProgressBar(1,1,310,' '));
             del_offset=0;
             callback();
          } else
@@ -2951,8 +2951,8 @@ vk_fave = {
       var scan=function(){
          ids=[];
          if (cur_offset==0){
-            ge('vk_del_info').innerHTML=vkProgressBar(1,1,310,' ');
-            ge('vk_scan_info').innerHTML=vkProgressBar(cur_offset,2,310,IDL('listreq')+' %');
+            val(ge('vk_del_info'), vkProgressBar(1,1,310,' '));
+            val(ge('vk_scan_info'), vkProgressBar(cur_offset,2,310,IDL('listreq')+' %'));
          }
          dApi.call('fave.getPosts',{offset:0/*cur_offset*/,count:REQ_CNT},function(r){
             //var data=r.response;
@@ -2965,7 +2965,7 @@ vk_fave = {
             }
             if (info_count==0) info_count=data.shift();
             else data.shift();
-            ge('vk_scan_info').innerHTML=vkProgressBar(cur_offset+REQ_CNT,info_count,310,IDL('listreq')+' %');
+            val(ge('vk_scan_info'), vkProgressBar(cur_offset+REQ_CNT,info_count,310,IDL('listreq')+' %'));
             for (var i=0;i<data.length;i++) ids.push([data[i].to_id,data[i].id]);
             cur_offset+=REQ_CNT;
             //vklog(ids);
@@ -3019,7 +3019,7 @@ vk_board={
       p.insertBefore(panel,p.firstChild);
       var btn=geByTag1('button');
       var status=function(){
-         ge(idprogr).innerHTML=vkProgressBar(start_offset-cur_offset,start_offset,310, 'Scaning... %'); 
+         val(ge(idprogr), vkProgressBar(start_offset-cur_offset,start_offset,310, 'Scaning... %'));
       };
       var done=function(){
          hide(idctrls);
@@ -3543,10 +3543,10 @@ vk_feed={
                 if (r.response && r.response[0]) {
                     var u = r.response[0];
                     // вместо надписи о том, что ничего не найдено, вставить строчку с владельцем странички
-                    geByClass('olist')[0].innerHTML = tpl.replace(/%UID/g, u.uid || '-' + u.gid)
+                    val(geByClass('olist')[0], tpl.replace(/%UID/g, u.uid || '-' + u.gid)
                         .replace(/%LINK/g, u.screen_name)
                         .replace(/%PHOTO/g, u.photo_50 || u.photo)
-                        .replace(/%NAME/g, u.name || u.first_name + ' ' + u.last_name);
+                        .replace(/%NAME/g, u.name || u.first_name + ' ' + u.last_name));
                     val(input, ''); // очистить поле ввода (а надо ли?)
                 }
             });
@@ -4006,7 +4006,7 @@ function vk_tag_api(section,url,app_id){
          var my=val<0;
          val=Math.abs(val);
          if (val>0)
-            ge('dislike_count'+obj_id).innerHTML=val;
+            val(ge('dislike_count'+obj_id), val);
          (my?addClass:removeClass)(ge('dislike_icon' + obj_id),'my_dislike');
          (val>0?removeClass:addClass)(ge('dislike_icon' + obj_id),'no_dislikes'); 
          return true;
@@ -4226,8 +4226,8 @@ function vk_tag_api(section,url,app_id){
                              .replace(/%AVA%/g,users[i].photo_rec);
             }
             html='<tr>'+html+'</tr>';
-            ge('dislike_table_'+post).innerHTML=html;
-            ge('dislike_title_'+post).innerHTML=langNumeric(info.count,IDL('users_dislike'));
+            val(ge('dislike_table_'+post), html);
+            val(ge('dislike_title_'+post), langNumeric(info.count,IDL('users_dislike')));
             vkProcessNode(ge('dislike_table_'+post));
          };
          if (cnt>0 || act){
@@ -4377,7 +4377,7 @@ function vk_tag_api(section,url,app_id){
             html=cont_tpl.replace(/%PAGE_LIST%/g,pg)
                          .replace(/%TITLE%/g,langNumeric(info.count,IDL('users_dislike')))
                          .replace(/%USERS%/g,html);
-            ge('dislike_list'+post).innerHTML=html;
+            val(ge('dislike_list'+post), html);
             vkProcessNode(ge('dislike_list'+post));
          };
          load_info();         

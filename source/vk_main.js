@@ -880,7 +880,7 @@ function vkPhChooseProcess(answer,q){
      //*
      var p=geByClass('photos_choose_header_title',div)[0];
      if (p && !/choose_album/.test(p.innerHTML)){
-      p.innerHTML='';
+      val(p, '');
       p.appendChild(vkCe('a',{"class":'fl_l_',href:'#',onclick:'return vk_photos.choose_album();'},IDL('mPhM',1)));
       if (vk_DEBUG) console.log(q);
       if (q.to_id && q.to_id<0){
@@ -1221,7 +1221,7 @@ vk_messages={
          show('saveldr');
          //document.title='offset:'+offset;
          var w=getSize(ge('saveldr'),true)[0];
-         if (offset==0) ge('saveldr').innerHTML=vkProgressBar(offset,10,w);	
+         if (offset==0) val(ge('saveldr'), vkProgressBar(offset,10,w));
          
          var code=[];
          for (var i=0; i<10; i++){
@@ -1231,16 +1231,16 @@ vk_messages={
          dApi.call('execute',{code:'return {count:API.messages.getHistory({user_id:'+uid+', count:0, offset:0}).count, items:'+code.join('+')+'};',v:'5.5'},function(r){
             var msgs = r.response.items;
             var count = r.response.count;
-            ge('saveldr').innerHTML=vkProgressBar(offset,count,w);
+            val(ge('saveldr'), vkProgressBar(offset,count,w));
             
             messages = messages.concat(msgs);
             if (msgs.length>0){
                setTimeout(scan,350);
             } else {
                collect_users(messages);
-               ge('saveldr').innerHTML=vkProgressBar(0,100,w,'Users data... %');
+               val(ge('saveldr'), vkProgressBar(0,100,w,'Users data... %'));
                dApi.call('users.get',{user_ids:users_ids.join(','),fields:'photo_100',v:'5.5'},function(r){
-                  ge('saveldr').innerHTML=vkProgressBar(90,100,w,'Users data... %');
+                  val(ge('saveldr'), vkProgressBar(90,100,w,'Users data... %'));
                   var usrs=r.response;
                   var users={};
                   for (var i=0; i<usrs.length; i++)
@@ -1256,7 +1256,7 @@ vk_messages={
                   
                   var html=vk_messages.make_html(messages, users);
                   html=vk_messages.html_tpl.replace(/%messages_body/g,html);
-                  ge('saveldr').innerHTML=vkProgressBar(100,100,w,'Users data... %');
+                  val(ge('saveldr'), vkProgressBar(100,100,w,'Users data... %'));
                   show('save_btn_text');
                   hide('saveldr');
                   
@@ -1345,7 +1345,7 @@ vk_im={
          var inp=vkNextEl(node); 
          var ts;
          var fmt=(node.parentNode && node.parentNode.parentNode && hasClass(node.parentNode.parentNode,'im_add_row'))?'HH:MM:ss':'d.mm.yy HH:MM:ss';
-         if (inp && (ts=parseInt(inp.value)))  node.innerHTML=(new Date((ts-vk.dt)*1000)).format(fmt); 
+         if (inp && (ts=parseInt(inp.value)))  val(node, (new Date((ts-vk.dt)*1000)).format(fmt));
       }
    },
    add_prevent_hide_cbox: function (){
@@ -1829,7 +1829,7 @@ function vkModAsNode(text,func,url,q){ //url,q - for processing response
    }
    var is_table=text.substr(0,3)=='<tr';
 	var div=vkCe(is_table?'table':'div');
-	div.innerHTML=text;
+	val(div, text);
 	func(div);
    vkProcessResponseNode(div,url,q);
 	var txt=div.innerHTML;
@@ -1923,10 +1923,10 @@ function vkDeleteMessages(is_out){
 	var del=function(callback){	
 		if (abort) return;
 		var del_count=mids.length;
-		ge('vk_del_msg').innerHTML=vkProgressBar(del_offset,del_count,310,IDL('msgdel')+' %');
+		val(ge('vk_del_msg'), vkProgressBar(del_offset,del_count,310,IDL('msgdel')+' %'));
 		var ids_part=mids.slice(del_offset,del_offset+MSG_IDS_PER_DEL_REQUEST);
 		if (ids_part.length==0){
-			ge('vk_del_msg').innerHTML=vkProgressBar(1,1,310,' ');
+			val(ge('vk_del_msg'), vkProgressBar(1,1,310,' '));
 			del_offset=0;
 			callback();
 		} else
@@ -1939,8 +1939,8 @@ function vkDeleteMessages(is_out){
 	var scan=function(){
 		mids=[];
 		if (cur_offset==0){
-			ge('vk_del_msg').innerHTML=vkProgressBar(1,1,310,' ');
-			ge('vk_scan_msg').innerHTML=vkProgressBar(cur_offset,2,310,IDL('msgreq')+' %');
+			val(ge('vk_del_msg'), vkProgressBar(1,1,310,' '));
+			val(ge('vk_scan_msg'), vkProgressBar(cur_offset,2,310,IDL('msgreq')+' %'));
 		}
 		dApi.call('messages.get',{out:is_out?1:0,count:REQ_CNT,offset:0,preview_length:1},function(r){
 			if (abort) return;
@@ -1951,7 +1951,7 @@ function vkDeleteMessages(is_out){
 			}
 			if (msg_count==0) msg_count=ms.shift();
 			else ms.shift();
-			ge('vk_scan_msg').innerHTML=vkProgressBar(cur_offset+REQ_CNT,msg_count,310,IDL('msgreq')+' %');
+			val(ge('vk_scan_msg'), vkProgressBar(cur_offset+REQ_CNT,msg_count,310,IDL('msgreq')+' %'));
 			for (var i=0;i<ms.length;i++) mids.push(ms[i].mid);
 			cur_offset+=REQ_CNT;
 			vklog(mids);
@@ -1994,10 +1994,10 @@ function vkDeleteMessagesHistory(uid){
 	var del=function(callback){	
 		if (abort) return;
 		var del_count=mids.length;
-		ge('vk_del_msg').innerHTML=vkProgressBar(del_offset,del_count,310,IDL('msgdel')+' %');
+		val(ge('vk_del_msg'), vkProgressBar(del_offset,del_count,310,IDL('msgdel')+' %'));
 		var ids_part=mids.slice(del_offset,del_offset+MSG_IDS_PER_DEL_REQUEST);
 		if (ids_part.length==0){
-			ge('vk_del_msg').innerHTML=vkProgressBar(1,1,310,' ');
+			val(ge('vk_del_msg'), vkProgressBar(1,1,310,' '));
 			del_offset=0;
 			callback();
 		} else
@@ -2014,8 +2014,8 @@ function vkDeleteMessagesHistory(uid){
 		}
 		mids=[];
 		if (cur_offset==0){
-			ge('vk_del_msg').innerHTML=vkProgressBar(1,1,310,' ');
-			ge('vk_scan_msg').innerHTML=vkProgressBar(cur_offset,2,310,IDL('msgreq')+' %');
+			val(ge('vk_del_msg'), vkProgressBar(1,1,310,' '));
+			val(ge('vk_scan_msg'), vkProgressBar(cur_offset,2,310,IDL('msgreq')+' %'));
 		}
 		dApi.call('messages.getHistory',{uid:uid,count:REQ_CNT,offset:0},function(r){
 			if (abort) return;
@@ -2026,7 +2026,7 @@ function vkDeleteMessagesHistory(uid){
 			}
 			if (msg_count==0) msg_count=ms.shift();
 			else ms.shift();
-			ge('vk_scan_msg').innerHTML=vkProgressBar(cur_offset+REQ_CNT,msg_count,310,IDL('msgreq')+' %');
+			val(ge('vk_scan_msg'), vkProgressBar(cur_offset+REQ_CNT,msg_count,310,IDL('msgreq')+' %'));
 			for (var i=0;i<ms.length;i++) mids.push(ms[i].mid);
 			cur_offset+=REQ_CNT;
 			vklog(mids);
@@ -2076,11 +2076,11 @@ function vkMakeMsgHistory(uid,show_format){
 		show('saveldr');
 		//document.title='offset:'+offset;
       var w=getSize(ge('saveldr'),true)[0];
-		if (offset==0) ge('saveldr').innerHTML=vkProgressBar(offset,10,w);		
+		if (offset==0) val(ge('saveldr'), vkProgressBar(offset,10,w));
 		dApi.call('messages.getHistory',{uid:uid,offset:offset,count:100},function(r){
 			//console.log(r);
          //return;
-         ge('saveldr').innerHTML=vkProgressBar(offset,r.response[0],w);
+         val(ge('saveldr'), vkProgressBar(offset,r.response[0],w));
 			var msgs=r.response;
 			var count=msgs.shift();
 			msgs.reverse();
@@ -2240,10 +2240,10 @@ function vkCleanNotes(){
 	var del=function(callback){	
 		if (abort) return;
 		var del_count=mids.length;
-		ge('vk_del_msg').innerHTML=vkProgressBar(del_offset,del_count,310,IDL('nodesdel')+' %');
+		val(ge('vk_del_msg'), vkProgressBar(del_offset,del_count,310,IDL('nodesdel')+' %'));
 		var nid=mids[del_offset];
 		if (!nid){
-			ge('vk_del_msg').innerHTML=vkProgressBar(1,1,310,' ');
+			val(ge('vk_del_msg'), vkProgressBar(1,1,310,' '));
 			del_offset=0;
 			callback();
 		} else
@@ -2256,8 +2256,8 @@ function vkCleanNotes(){
 	var scan=function(){
 		mids=[];
 		if (cur_offset==0){
-			ge('vk_del_msg').innerHTML=vkProgressBar(1,1,310,' ');
-			ge('vk_scan_msg').innerHTML=vkProgressBar(cur_offset,2,310,IDL('notesreq')+' %');
+			val(ge('vk_del_msg'), vkProgressBar(1,1,310,' '));
+			val(ge('vk_scan_msg'), vkProgressBar(cur_offset,2,310,IDL('notesreq')+' %'));
 		}
 		dApi.call('notes.get',{count:REQ_CNT,offset:0+start_offset},function(r){
 			if (abort) return;
@@ -2268,7 +2268,7 @@ function vkCleanNotes(){
 			}
 			if (msg_count==0) msg_count=ms.shift();
 			else ms.shift();
-			ge('vk_scan_msg').innerHTML=vkProgressBar(cur_offset+REQ_CNT,msg_count,310,IDL('notesreq')+' %');
+			val(ge('vk_scan_msg'), vkProgressBar(cur_offset+REQ_CNT,msg_count,310,IDL('notesreq')+' %'));
 			for (var i=0;i<ms.length;i++){ 
 				if ((ms[i].date>del_time && by_time) || !by_time) mids.push(ms[i].nid);
 			}
@@ -2343,7 +2343,7 @@ function vkCleanNotes(){
     ajax.post('al_board.php', {act: act, post: post, hash: cur.hash}, {onDone: function(text, deleted) {
       var info = ge('post' + post).firstChild.nextSibling;
       if (info) {
-        info.firstChild.rows[0].cells[0].innerHTML = text;
+        val(info.firstChild.rows[0].cells[0], text);
       } else {
         info = ge('post' + post).appendChild(ce('div', {className: 'bp_deleted', innerHTML: '\
 <table cellspacing="0" cellpadding="0" style="width: 100%"><tr><td class="bp_deleted_td">\
@@ -2486,8 +2486,8 @@ var vkTopicSearch = {
             cancelEvent(ev);
             vkTopicSearch.topic_id = (cur.pgUrl || nav.objLoc[0]).split('_')[1]; // два источника id темы на всякий случай
             vkTopicSearch.query = val(ev.target).toLowerCase(); // для регистронезависимого поиска
-            cur.pgCont.innerHTML = '';  // удалить все комменты со страницы
-            ge('bt_summary').innerHTML = IDL('SearchResults');
+            val(cur.pgCont, '');  // удалить все комменты со страницы
+            val(ge('bt_summary'), IDL('SearchResults'));
             cur.pgNodesCount = 0;       // нужно, чтобы в консоль не сыпались ошибки от pagination.js
             if (vkTopicSearch.cache[vkTopicSearch.topic_id]) {   // если есть кэш для текущей темы - ищем в нём, иначе грузим из API
                 vkTopicSearch.check(vkTopicSearch.cache[vkTopicSearch.topic_id]);
@@ -2519,7 +2519,7 @@ var vkTopicSearch = {
                 vkTopicSearch.run(_offset + vkTopicSearch.step);
             }
             else {   // поиск окончен
-                ge('vkTopicSearchProgress').innerHTML = '';
+                val(ge('vkTopicSearchProgress'), '');
                 vkTopicSearch.end();
             }
         });
@@ -2545,7 +2545,7 @@ var vkTopicSearch = {
     },
     progress: function (current, total) {   // обновление прогрессбара
         if (!total) total = 1;
-        ge('vkTopicSearchProgress').innerHTML = vkProgressBar(current, total, 200);
+        val(ge('vkTopicSearchProgress'), vkProgressBar(current, total, 200));
     }
 };
 

@@ -340,7 +340,7 @@ var TextPasteSmiles={
 	  btn.className='mbtn';
 	  wlog.className='log';
 	  wlog.id='vkDebugLogW';
-	  //wlog.innerHTML='<div>log started</div>';
+	  //val(wlog, '<div>log started</div>');
 	  
 	  var tomax=function(){
 		  var callback=function(){
@@ -384,11 +384,11 @@ var TextPasteSmiles={
 		div.setAttribute('style',style);
 		div.appendChild($c("#", s));
 		//div.appendChild($c("span",{"class":"time", "#text": (new Date().getTime()) - vkstarted}));
-		div.innerHTML=s+'<span class="time">'+(new Date((new Date().getTime()) - vkstarted)).format("MM:ss:L",true)+'</span>';
+		val(div, s+'<span class="time">'+(new Date((new Date().getTime()) - vkstarted)).format("MM:ss:L",true)+'</span>');
 
 		if (LAST_LOG_MSG==s){
 			LAST_EQ_LOG_MSG_COUNT++;
-			node.lastChild.innerHTML='<span class="count">'+LAST_EQ_LOG_MSG_COUNT+'</span>'+div.innerHTML;
+			val(node.lastChild, '<span class="count">'+LAST_EQ_LOG_MSG_COUNT+'</span>'+div.innerHTML);
 		} else {
 			LAST_EQ_LOG_MSG_COUNT=0;
 			node.appendChild(div);
@@ -482,9 +482,9 @@ function vkOpt_toogle(){
   //var style="";  div.setAttribute("style",style);
   div.id='vk_onoff';
   div.className='vkSettList';
-  div.innerHTML='<a href="#" onclick="return vkOnOffButton();">VkOpt <div  class="'+(off?"vk_off":"vk_on")+'" id="vktoogler"><div class="btn"></div></div></a>'+
+  val(div, '<a href="#" onclick="return vkOnOffButton();">VkOpt <div  class="'+(off?"vk_off":"vk_on")+'" id="vktoogler"><div class="btn"></div></div></a>'+
                 '<a href="#" onclick="return vkResetVkOptSetting();">Reset Settings</a>'+
-                (vkLocalStoreReady()?'<a href="#" onclick="vkLocalStorageMan(); return false;">View LocalStorage</a>':'');
+                (vkLocalStoreReady()?'<a href="#" onclick="vkLocalStorageMan(); return false;">View LocalStorage</a>':''));
 
   var cb=vkCe('div',{"class":"fl_r"});
   var btn=vkCe('a',{id:"vkMoreSett",href:"#"},'<img src="'+img+'" height="14px" style="position:absolute; margin-left: -14px;  margin-top: 4px;">');

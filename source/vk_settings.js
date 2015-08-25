@@ -105,35 +105,35 @@ function vkLocalStorageMan(ret){
   };
   vkLsDelVal=function(key_){
     localStorage.removeItem(key_);
-    ge('LsList').innerHTML=vkGetLsList();
-    ge("LsEditNode").innerHTML='';
+    val(ge('LsList'), vkGetLsList());
+    val(ge("LsEditNode"), '');
   };
   vkLsSaveVal=function(key_){
     localStorage[key_]=ge('LsValEdit').value;
-    ge('LsList').innerHTML=vkGetLsList();
-    //ge("LsEditNode").innerHTML='';
+    val(ge('LsList'), vkGetLsList());
+    //val(ge("LsEditNode"), '');
   };  
   vkLsNewKey=function(key_){
     localStorage.removeItem(key_);
-    ge('LsList').innerHTML=vkGetLsList();
+    val(ge('LsList'), vkGetLsList());
     var el=ge("LsEditNode");
-    el.innerHTML='<u>Key:</u> <input type="text" id="LsValNameEdit"/><br>'+
+    val(el, '<u>Key:</u> <input type="text" id="LsValNameEdit"/><br>'+
                  '<u>Value:</u><br><textarea id="LsValEdit" rows=5 cols=86  style_="height:100px; width:100%;"></textarea><br>'+
-                 '<div style="padding-top:5px;">'+vkRoundButton(['Save key',"javascript:vkLsSaveNewVal()"])+'</div>';
+                 '<div style="padding-top:5px;">'+vkRoundButton(['Save key',"javascript:vkLsSaveNewVal()"])+'</div>');
 
   };
   vkLsSaveNewVal=function(){
     var key_=ge('LsValNameEdit').value;
     localStorage[key_]=ge('LsValEdit').value;
-    ge('LsList').innerHTML=vkGetLsList();
+    val(ge('LsList'), vkGetLsList());
     vkLsEdit(key_);
-    //ge("LsEditNode").innerHTML='';
+    //val(ge("LsEditNode"), '');
   };
   vkLsEdit=function(_key){
     var el=ge("LsEditNode");
-    el.innerHTML='<u>Key:</u> <b>'+_key+'</b><br>'+
+    val(el, '<u>Key:</u> <b>'+_key+'</b><br>'+
                  '<u>Value:</u><br><textarea id="LsValEdit" rows=5 cols=86  style_="height:100px; width:100%;">'+localStorage[_key]+'</textarea><br>'+
-                 '<div style="padding-top:5px;">'+vkRoundButton(['Save key',"javascript:vkLsSaveVal('"+_key+"')"],['Delete key',"javascript:vkLsDelVal('"+_key+"')"])+'</div>';
+                 '<div style="padding-top:5px;">'+vkRoundButton(['Save key',"javascript:vkLsSaveVal('"+_key+"')"],['Delete key',"javascript:vkLsDelVal('"+_key+"')"])+'</div>');
     el=geByClass('lsrow_sel')[0];
     if (el) el.className='lsrow';
     ge('lsrow_'+_key).className='lsrow_sel';
@@ -154,11 +154,11 @@ function vkSettingsPage(){
 	vkOpt_toogle();
 	if (!ge('vkopt_settings_tab') && ge('settings_filters')){
 		var li=vkCe('li',{id:'vkopt_settings_tab'});
-		li.innerHTML='\
+		val(li, '\
 			<a href="/settings?act=vkopt" onclick="return checkEvent(event)" onmousedown="return vkShowSettings();" title="VkOpt">\
 			<b class="tl1"><b></b></b><b class="tl2"></b>\
 			<b class="tab_word">&nbsp;</b>\
-			</a>'; 
+			</a>');
 		ge('settings_filters').appendChild(li);
 	}
 }
@@ -559,7 +559,7 @@ function GenWallList(el){   // Генерация списка записей в
       lnk = "wall" + id;
       whtml += '<div id="wit' + id + '" style="width:170px"><a style="position:relative; left:100%" onclick="vkRemWall(this)" title="'+IDL('phDel')+'" i="' + id + '">x</a>' + (++i) + ') <a href="' + lnk + '">' + wall_list[id] + '</a></div>';
   }
-  if (!el) {return whtml;} else {el.innerHTML=whtml;}
+  if (!el) {return whtml;} else {val(el, whtml);}
 }
 //end wallmgr
 
@@ -800,7 +800,7 @@ vk_settings = {
    },
    filter:function(s){
       if (!s || trim(s)==''){
-         ge('vksets_search_result').innerHTML='';
+         val(ge('vksets_search_result'), '');
          hide('vksets_clear_inp');
          show('vksets_stoggle_btn');
          vkMakeSettings('vksetts_tabs');
@@ -839,9 +839,9 @@ vk_settings = {
        }   
      }
      //console.log(sets);
-     ge('vksetts_tabs').innerHTML='';
-     ge('vksets_search_result').innerHTML='<div class="sett_cat_header">'+cat+' ('+sets.length+')</div>'+vkGetSettings(sets,allsett)+
-                              (s=='EXTRA'?'<div class="sett_cat_header">Advanced/unstable settings. WARNING! DANGER!</div>'+vk_settings.cfg_override_edit():'');
+     val(ge('vksetts_tabs'), '');
+     val(ge('vksets_search_result'), '<div class="sett_cat_header">'+cat+' ('+sets.length+')</div>'+vkGetSettings(sets,allsett)+
+                              (s=='EXTRA'?'<div class="sett_cat_header">Advanced/unstable settings. WARNING! DANGER!</div>'+vk_settings.cfg_override_edit():''));
 
    },
    cfg_override: function(){
@@ -927,7 +927,7 @@ vk_settings = {
             window[VKOPT_CFG_LIST[i]] = window.VKOPT_CFG_LIST_ORIG[VKOPT_CFG_LIST[i]];
          } 
          vkSetVal('vk_cfg_override','{}');
-         ge('vk_adv_settings_content').parentNode.innerHTML=vk_settings.cfg_override_edit();
+         val(ge('vk_adv_settings_content').parentNode, vk_settings.cfg_override_edit());
       }
    }
 };
@@ -964,9 +964,9 @@ function vkSwitchSet(id,set,ex){
             //(type=='on' && sett[id]=='y') || (type=='off' && sett[id]=='n')
           }
         } 
-    el.innerHTML=html;
+    val(el, html);
   } else {
-    ge('vkcurset'+id).innerHTML=set;
+    val(ge('vkcurset'+id), set);
   }
   allsett[0]=sett.join('');
   vksetCookie('remixbit',allsett.join('-'));
@@ -1093,7 +1093,7 @@ function vkMakeSettings(el){
             setTimeout(f,100);
             return;
          }
-         ge('vk_sound_vol_label').innerHTML=IDL('Volume')+": "+p+"%";
+         val(ge('vk_sound_vol_label'), IDL('Volume')+": "+p+"%");
       };
       f(); 
       if (!u){
@@ -1145,7 +1145,7 @@ function vkMakeSettings(el){
   vkRemixBitS=function(){return "DefSetBits='"+vkgetCookie('remixbit')+"';";};
   tabs[0].active=true;
   var html=vkMakeContTabs(tabs);
-  if (el) ge(el).innerHTML=html;//'<div id="vksetts_search"></div><div id="vksetts_tabs">'+html+'</div>';//vkGetSettings(vkoptSets['Media'],allsett);
+  if (el) val(ge(el), html);//'<div id="vksetts_search"></div><div id="vksetts_tabs">'+html+'</div>';//vkGetSettings(vkoptSets['Media'],allsett);
   else return html;
 }
 
@@ -1171,8 +1171,8 @@ function vkShowSettings(box){
   if (!box){
     show('header');
 	document.title='[ VkOpt ['+String(vVersion).split('').join('.')+'] settings ]';
-    ge('header').innerHTML='<h1>'+header+'</h1>';
-    ge('content').innerHTML=tpl.replace(/%html/g,'');
+    val(ge('header'), '<h1>'+header+'</h1>');
+    val(ge('content'), tpl.replace(/%html/g,''));
     vkMakeSettings('vksetts_tabs');
   } else {
     var html=tpl.replace(/%html/g,vkMakeSettings());
@@ -1229,12 +1229,12 @@ function vkSaveSettingsOnServer(){
    code="return {"+code.join(',')+"};";
    //alert(code);
    dApi.call('execute',{code:code},function(r){
-      ge('cfg_on_serv_info').innerHTML='<div class="vk_cfg_info">'+IDL('seCfgBackupSaved')+'</div>';
+      val(ge('cfg_on_serv_info'), '<div class="vk_cfg_info">'+IDL('seCfgBackupSaved')+'</div>');
       if (vk_DEBUG) console.log('Store vkopt settings result:',r);
    });
    /*
 	dApi.call('storage.set',{key:'remixbits',value:sett},function(r){
-		ge('cfg_on_serv_info').innerHTML='<div class="vk_cfg_info">'+IDL('seCfgBackupSaved')+'</div>';
+		val(ge('cfg_on_serv_info'), '<div class="vk_cfg_info">'+IDL('seCfgBackupSaved')+'</div>');
 	});
  	var FavList=vkGetVal('FavList');
    if(FavList && FavList!='')  dApi.call('storage.set',{key:'FavList',value:FavList},function(){});  
@@ -1249,14 +1249,14 @@ function vkLoadSettingsFromServer(check,callback){
 				var cfg=r.response.split('|');
 				if (cfg[1] && parseInt(cfg[1])){
 					var date=(new Date(parseInt(cfg[1])*1000)).format("dd.mm.yyyy (HH:MM:ss)");
-					ge('cfg_on_serv_info').innerHTML='<div class="vk_cfg_info">'+IDL('seCfgBackupDate')+' <b>'+date+'</b> </div>';
+					val(ge('cfg_on_serv_info'), '<div class="vk_cfg_info">'+IDL('seCfgBackupDate')+' <b>'+date+'</b> </div>');
                if (callback) callback(true);
 				} else {
-					ge('cfg_on_serv_info').innerHTML='<div class="vk_cfg_warn">'+IDL('seCfgNoBackup')+' #1</div>';
+					val(ge('cfg_on_serv_info'), '<div class="vk_cfg_warn">'+IDL('seCfgNoBackup')+' #1</div>');
                if (callback) callback(false);
 				}
 			} else {
-				ge('cfg_on_serv_info').innerHTML='<div class="vk_cfg_warn">'+IDL('seCfgNoBackup')+' #2</div>';
+				val(ge('cfg_on_serv_info'), '<div class="vk_cfg_warn">'+IDL('seCfgNoBackup')+' #2</div>');
             if (callback) callback(false);
 			}		
       } else {
@@ -1274,11 +1274,11 @@ function vkLoadSettingsFromServer(check,callback){
                vksetCookie('vklang',scfg['vklang']);
             
             // FavList
-            var val=scfg['FavList'];
+            var _val=scfg['FavList'];
             var FavList=vkGetVal('FavList');
-            if (val && val!='' && FavList!=val){
-               if(!FavList || FavList=='') vkSetVal('FavList',val);
-               else if(confirm(IDL('FavListRelace'))) vkSetVal('FavList',val);
+            if (_val && _val!='' && FavList!=_val){
+               if(!FavList || FavList=='') vkSetVal('FavList',_val);
+               else if(confirm(IDL('FavListRelace'))) vkSetVal('FavList',_val);
             }   
             if (scfg['menu_custom_links']) vkSetVal('menu_custom_links',scfg['menu_custom_links']);
             // SkinManager settings
@@ -1288,9 +1288,9 @@ function vkLoadSettingsFromServer(check,callback){
             if (scfg['vk_sounds_vol']) vkSetVal("vk_sounds_vol",scfg['vk_sounds_vol']);
             if (scfg['WallsID']) vkSetVal("WallsID",scfg['WallsID']);
 
-				ge('cfg_on_serv_info').innerHTML='<div class="vk_cfg_info">'+IDL('seCfgRestored')+'</div>';
+				val(ge('cfg_on_serv_info'), '<div class="vk_cfg_info">'+IDL('seCfgRestored')+'</div>');
 			} else {
-				ge('cfg_on_serv_info').innerHTML='<div class="vk_cfg_error">'+IDL('seCfgLoadError')+' #0</div>';
+				val(ge('cfg_on_serv_info'), '<div class="vk_cfg_error">'+IDL('seCfgLoadError')+' #0</div>');
 			}
          /*
          dApi.call('storage.get',{key:'FavList'},function(r){
@@ -1320,7 +1320,7 @@ function vkUpdateSounds(on_command){
 function vkResetSounds(){
   for (var key in vkSoundsRes) vkSetVal('sound_'+key,'');
   vkSetVal('sounds_name','');
-  if(ge('vkSndThemeName')) ge('vkSndThemeName').innerHTML=IDL('Default');
+  if(ge('vkSndThemeName')) val(ge('vkSndThemeName'), IDL('Default'));
   vkUpdateSounds();
 }
 
@@ -1335,7 +1335,7 @@ function vkLoadSoundsFromFile(){
       var tname=cfg['Name']?cfg['Name']:'N/A';
       tname=replaceChars(tname);
       vkSetVal('sounds_name',tname);
-      if(ge('vkSndThemeName')) ge('vkSndThemeName').innerHTML=tname;
+      if(ge('vkSndThemeName')) val(ge('vkSndThemeName'), tname);
       
       alert(IDL('SoundsThemeLoaded'));
 	  vkUpdateSounds();

@@ -146,11 +146,11 @@ vk_users = {
       }
       var html='<div id="vk_scan_bar" style="padding-bottom:10px;">'+vkBigLdrImg+'</div>';
       if (!ops.el) box.content(html).show();
-      else ge(ops.el).innerHTML=vkLdrImg;
+      else val(ge(ops.el), vkLdrImg);
       
       var fid=0; 
       var scan=function(){
-         ge(ops.el || 'vk_scan_bar').innerHTML=vkProgressBar(++step,8,(ops.width || 310),' %');
+         val(ge(ops.el || 'vk_scan_bar'), vkProgressBar(++step,8,(ops.width || 310),' %'));
          mid = first + Math.floor( (last - first) / 2 );
          //callback(first + ';' + last + '-' + mid);
          ajax.post('/friends',{act:'filter_friends',al:1,city:0,sex:0,age_from:first,age_to:mid,uid:fid},{
@@ -269,7 +269,7 @@ function vkProcessUserLink(link){
 	inel.setAttribute('class','vk_usermenu_btn'+cl_name);
 	inel.setAttribute(mev,'pupShow(event,\''+adid+'\',\''+uid+'\',this); return false;');
 	inel.setAttribute("onmousedown","event.cancelBubble = true;");
-	inel.innerHTML=USERMENU_SYMBOL;
+	val(inel, USERMENU_SYMBOL);
 	link.setAttribute('exuser',true);
 	if (getSet(22)=='y' && link.parentNode.parentNode && link.parentNode.parentNode.id=='profile_groups'){
 		inel.setAttribute('class','vk_usermenu_btn fl_r');
@@ -313,7 +313,7 @@ function pupShow(event,pid,id,el) {
  var str = '<div class="vk_popupmenu" onmouseover="clearTimeout(pup_tout);" onmouseout="pup_tout=setTimeout(pupHide, 50);"><ul>';//"<table cellpadding=0 cellspacing=0><tr><td class='pupSide'></td><td><div class='pupBody'>";
  str += ExUserItems(id,el)+'%plugins';//pupItems(pid);
  str += '</ul></div>';//"</div><div class='pupBottom'></div><div class='pupBottom2'></div></td><td class='pupSide'></td></tr>";
- pup_menu.innerHTML = str;
+ val(pup_menu, str);
  var ready=false;
  /*
  getUserID(id,function(uid){  
@@ -321,25 +321,25 @@ function pupShow(event,pid,id,el) {
         ge("pupUidLoader").innerHTML='<span style="font-weight:bold; color:#F00;">'+IDL('NotUser')+'</span>'
         setStyle("pupMenuBlock", {opacity: 0.8});
       };
-      pup_menu.innerHTML=pup_menu.innerHTML.replace(/%uid/g,uid); 
+      val(pup_menu, pup_menu.innerHTML.replace(/%uid/g,uid));
       if (ge('pupMenuBlock') && uid!=null) hide('pupMenuBlock');
       //if (uid==null) hide();
       ready=true; 
  });*/
    var addldr=function(inner){
       var sz=getSize(pup_menu); 
-      pup_menu.innerHTML = '<div id="pupMenuBlock" style="position:absolute; opacity: 0.5;  background: #FFFFFF; height:'+sz[1]+'px; line-height:'+sz[1]+'px; width:'+sz[0]+'px;"'+
+      val(pup_menu, '<div id="pupMenuBlock" style="position:absolute; opacity: 0.5;  background: #FFFFFF; height:'+sz[1]+'px; line-height:'+sz[1]+'px; width:'+sz[0]+'px;"'+
                              'onmouseover="clearTimeout(pup_tout);" onmouseout="pup_tout=setTimeout(pupHide, 50);">'+
-                             '<center id="pupUidLoader">'+(inner || '<img  src="/images/progress7.gif">')+'</center></div>'+str;
+                             '<center id="pupUidLoader">'+(inner || '<img  src="/images/progress7.gif">')+'</center></div>'+str);
    };
   getGidUid(id,function(uid,gid){// getUserID 
       if (!uid && !gid) {
         if (!ge("pupUidLoader")) addldr('<span style="font-weight:bold; color:#F00;">'+IDL('NotUser')+'</span>');
-        else ge("pupUidLoader").innerHTML='<span style="font-weight:bold; color:#F00;">'+IDL('NotUser')+'</span>';
+        else val(ge("pupUidLoader"), '<span style="font-weight:bold; color:#F00;">'+IDL('NotUser')+'</span>');
         setStyle("pupMenuBlock", {opacity: 0.8});
       };
 	  if (uid){
-		  pup_menu.innerHTML=pup_menu.innerHTML.replace(/%uid/g,uid).replace(/%plugins/g,vk_plugins.user_menu_items(uid));     
+		  val(pup_menu, pup_menu.innerHTML.replace(/%uid/g,uid).replace(/%plugins/g,vk_plugins.user_menu_items(uid)));
 		  if (ge('pupMenuBlock')) hide('pupMenuBlock');
 		  ready=true; 
 	  }
@@ -348,7 +348,7 @@ function pupShow(event,pid,id,el) {
 		 str2 += ExGroupItems(gid,el)+vk_plugins.user_menu_items(null,gid);
 		 str2 += '</ul></div>';	
 		 str2=str2.replace(/%GID/g,gid); 
-		 pup_menu.innerHTML = str2;
+		 val(pup_menu, str2);
 		 if (ge('pupMenuBlock')) hide('pupMenuBlock');
 		 ready=true; 
 	  }
@@ -612,21 +612,21 @@ function vkShowProfile(el,html,uid,right){
             var ht = '<div id="vkbigPhoto" onmousemove="clearTimeout(allowHidePhoto);" onmouseout="vkHidePhoto()" style="z-index:1000;display:none;position:absolute;background:transparent;"></div>';
             div = document.createElement('div');
             var body = document.getElementsByTagName('body')[0];
-            div.innerHTML = ht;
+            val(div, ht);
             body.appendChild(div);
    }
 	var p = ge('vkbigPhoto');
-	p.innerHTML=html;
+	val(p, html);
 	var pb=ge('vk_profile_block');
 	vkProfileToggle(true);//check expland
     if (uid) {
         vkFriendUserInLists(uid, function (html, status) {
             if (!ge('vkfrinfo' + uid)) return;
-            ge('vkfrinfo' + uid).innerHTML = html;
+            val(ge('vkfrinfo' + uid), html);
         });
         vkProfileUpdOnline(uid, function (html) {
             if (!ge('vkprofonlineinfo' + uid)) return;
-            ge('vkprofonlineinfo' + uid).innerHTML = html;
+            val(ge('vkprofonlineinfo' + uid), html);
         });
     }
 
@@ -692,7 +692,7 @@ function vkProfileToggle(init){
 		if (getSet(CFG)=='n'){
 			hide('vk_profile_right_block');
 			ge('vk_profile_block').style.width='200px'; 
-			ge('vk_profile_toogle').innerHTML='&#9658;';
+			val(ge('vk_profile_toogle'), '&#9658;');
 		}
 		hide('vk_profile_toogle');
 		return false;
@@ -701,12 +701,12 @@ function vkProfileToggle(init){
 	toggle('vk_profile_right_block'); 
 	if (isVisible('vk_profile_right_block')){
 		ge('vk_profile_block').style.width='450px'; 
-		ge('vk_profile_toogle').innerHTML='&#9668;';
+		val(ge('vk_profile_toogle'), '&#9668;');
 		setCfg(CFG,'y');
 	} else {
 		setCfg(CFG,'n');
 		ge('vk_profile_block').style.width='200px'; 
-		ge('vk_profile_toogle').innerHTML='&#9658;';
+		val(ge('vk_profile_toogle'), '&#9658;');
 	}
 	return false;
 }
@@ -1252,9 +1252,9 @@ function vkFriendsCheck(nid){
 					ge('vkfrupdck3').className='vkcheckbox_on';
 					hide('vkfrupdloader');
 					var remadd=vkShowFriendsUpd(true);
-					  if (!remadd) ge('vkfrupdresult').innerHTML='<b>'+IDL('WithoutChanges')+'</b>';
+					  if (!remadd) val(ge('vkfrupdresult'), '<b>'+IDL('WithoutChanges')+'</b>');
 					  else {
-						  ge('vkfrupdresult').innerHTML='<table width="100%"><tr valign="top"><td>'+remadd.rem+'</td><td valign="top">'+remadd.add+'</td></tr></table>';
+						  val(ge('vkfrupdresult'), '<table width="100%"><tr valign="top"><td>'+remadd.rem+'</td><td valign="top">'+remadd.add+'</td></tr></table>');
 						  vkProccessLinks(ge('vkfrupdresult'));
 						  var fids_x=fids.concat(nfids);
 						  dApi.call('getProfiles',{uids:fids_x.join(',')},function(r){//fids.join(',')+','+nfids.join(',')
@@ -1262,7 +1262,7 @@ function vkFriendsCheck(nid){
 							for (var i=0;r.response && i<r.response.length;i++){
 							  var user=r.response[i];
 							  var elem=ge('vkfr'+user.uid);
-							  if (elem) elem.innerHTML=user.first_name+' '+user.last_name;
+							  if (elem) val(elem, user.first_name+' '+user.last_name);
 							  
 							}
 							vkProccessLinks(ge('vkfrupdresult'));
@@ -1309,16 +1309,16 @@ function vkShowFriendsUpd(ret,names){
 			el.id="remadd";
 			sideBar().appendChild(el);
   }
-  el.innerHTML='<div id="left_block_remadd" onmouseover="leftBlockOver(\'_remadd\')" onmouseout="leftBlockOut(\'_remadd\')">\
+  val(el, '<div id="left_block_remadd" onmouseover="leftBlockOver(\'_remadd\')" onmouseout="leftBlockOut(\'_remadd\')">\
          <div id="left_hide_remadd" class="left_hide" onmouseover="leftBlockOver(this)" onmouseout="leftBlockOut(this)" onclick="vkHideRemAddFrBlock();" style="opacity: 0"></div>'+
             html.rem+html.add+
-         '</div>';
+         '</div>');
   vkProccessLinks(el);
    if (names) dApi.call('getProfiles',{uids:names.join(',')},function(r){
       for (var i=0;r.response && i<r.response.length;i++){
          var user=r.response[i];
          var elem=ge('vkfrsb'+user.uid);
-         if (elem) elem.innerHTML=user.first_name+' '+user.last_name;
+         if (elem) val(elem, user.first_name+' '+user.last_name);
       }
       vkProccessLinks(el);
    });
@@ -1362,7 +1362,7 @@ function vkFriendsBySex(add_link){
 		box.removeButtons();
 		box.addButton(IDL('Cancel'),box.hide,'no');
 		var elem=ge('frcatp'+idx);
-		elem.innerHTML=vkLdrImg;
+		val(elem, vkLdrImg);
 		dApi.call('friends.getLists',{},function(r){
 			var listId=0;
 			var cats=r.response;
@@ -1371,7 +1371,7 @@ function vkFriendsBySex(add_link){
 			AjPost('al_friends.php',{act:'edit_list_title_box', cat_id: listId,al:1},function(t){		// also hash in /al_friends.php?act=edit_list_hash&cat_id=0&al=1
 				var hash=t.split('cur.saveList(')[1].split("'")[1];
 				AjPost('al_friends.php', {act: 'save_list', title: title, cat_id: listId, friends: friendsList.join(','), hash: hash},function(t) {
-					elem.innerHTML="<b>OK</b>";	
+					val(elem, "<b>OK</b>");
 					box.removeButtons();
 					box.addButton(IDL('OK'),box.hide,'yes');
 				});
@@ -1628,9 +1628,9 @@ function vkFavUsersList(add_button){
       return;
    }
    var p=ge('content');
-   p.innerHTML='<div style="padding:10px;">'+vkBigLdrImg+'</div>';
+   val(p, '<div style="padding:10px;">'+vkBigLdrImg+'</div>');
    var list= vkGetVal('FavList') || '';
-   var val=list.split('-');  
+   var _val=list.split('-');
    var tpl='\
    <div class="fave_user_div" id="fave_user_div%uid">\
      <div>\
@@ -1646,7 +1646,7 @@ function vkFavUsersList(add_button){
        </div>\
      </div>\
    </div>';
-   dApi.call('getProfiles',{uids:val.join(','), fields:'online,photo_medium_rec'},function(r){
+   dApi.call('getProfiles',{uids:_val.join(','), fields:'online,photo_medium_rec'},function(r){
       var html='';
       if (r.response){
          var res=r.response;
@@ -1663,8 +1663,8 @@ function vkFavUsersList(add_button){
          html="Fav Error";
       }
       show('header');
-      ge('title').innerHTML=IDL('FavUsers');
-      p.innerHTML='<div id="vk_fav_users_cont" style="padding:10px;">'+html+'</div>';
+      val(ge('title'), IDL('FavUsers'));
+      val(p, '<div id="vk_fav_users_cont" style="padding:10px;">'+html+'</div>');
       vkProcessNode(p);
    });
 }
