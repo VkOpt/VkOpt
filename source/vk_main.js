@@ -139,7 +139,7 @@ function vkOnNewLocation(startup){
          switch(nav.objLoc[0]){
             case 'settings':  cur.module='settings';          break;
             case 'pages':      cur.module='pages';         break;
-            default:          setTimeout(vkOnNewLocation,10); return;               
+            default:          setTimeout(function(){vkOnNewLocation();},10); return;
          }
       }
 
@@ -149,7 +149,7 @@ function vkOnNewLocation(startup){
       } else if (nav.objLoc[0]=='page'){
          cur.module='wiki_page';
       } else {
-         setTimeout(vkOnNewLocation,10);
+         setTimeout(function(){vkOnNewLocation();},10);
          return;
       }*/
 
@@ -234,7 +234,7 @@ function VkOptMainInit(){
   
   
   if (isNewLib() && !window.lastWindowWidth){
-      setTimeout(VkOptMainInit,50);
+      setTimeout(function(){VkOptMainInit();},50);
       return;
   }
   /* Get lang data:
@@ -266,7 +266,7 @@ function VkOptMainInit(){
   vkProccessLinks();
   if (ge('left_blocks')) vkProccessLinks(ge('left_blocks'));
   vk_user_init();
-  setTimeout(vkFixedMenu,200);
+  setTimeout(function(){vkFixedMenu();},200);
   vkMenu();
   vkOnNewLocation(true);//Inj.Wait('window.nav', vkOnNewLocation,50);  
   vkSmiles();
@@ -288,7 +288,7 @@ function VkOptMainInit(){
   vkFaveOnlineChecker();
   vkMoneyBoxAddHide();
   if (ENABLE_HOTFIX) vkCheckUpdates();
-  setTimeout(vkFriendsCheckRun,2000);
+  setTimeout(function(){vkFriendsCheckRun();},2000);
   window.vk_vid_down &&  setTimeout(vk_vid_down.vkVidLinks,0);
   if (vkgetCookie('IDFriendsUpd') && (vkgetCookie('IDFriendsUpd') != '_')) {	vkShowFriendsUpd();  }
   
@@ -1235,7 +1235,7 @@ vk_messages={
             
             messages = messages.concat(msgs);
             if (msgs.length>0){
-               setTimeout(scan,350);
+               setTimeout(function(){scan();},350);
             } else {
                collect_users(messages);
                val(ge('saveldr'), vkProgressBar(0,100,w,'Users data... %'));
@@ -1956,7 +1956,7 @@ function vkDeleteMessages(is_out){
 			cur_offset+=REQ_CNT;
 			vklog(mids);
 			del(scan);
-			//setTimeout(scan,MSG_SCAN_REQ_DELAY);
+			//setTimeout(function(){scan();},MSG_SCAN_REQ_DELAY);
 			
 		});
 	};
@@ -2031,7 +2031,7 @@ function vkDeleteMessagesHistory(uid){
 			cur_offset+=REQ_CNT;
 			vklog(mids);
 			del(scan);
-			//setTimeout(scan,MSG_SCAN_REQ_DELAY);
+			//setTimeout(function(){scan();},MSG_SCAN_REQ_DELAY);
 			
 		});
 	};

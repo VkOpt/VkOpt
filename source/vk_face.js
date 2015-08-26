@@ -1131,7 +1131,7 @@ function vkMenu(){//vkExLeftMenu
     if (vkMenuCurrentSub!=cur) {  vkMenuHide();  show(cur);   vkMenuCurrentSub=cur; }
     clearTimeout(vkMenuHider);
   };
-  vkMenuItemOut=function(){ clearTimeout(vkMenuHider);  vkMenuHider=setTimeout(vkMenuHide,vkMenuHideTimeout); };
+  vkMenuItemOut=function(){ clearTimeout(vkMenuHider);  vkMenuHider=setTimeout(function(){vkMenuHide();},vkMenuHideTimeout); };
   vkMenuHide=function(){if (vkMenuCurrentSub){ hide(vkMenuCurrentSub); vkMenuCurrentSub=null; }};
   var setActions=function(elem){
       if (elem){
@@ -1374,7 +1374,7 @@ function UserOnlineStatus(status) {// ADD LAST STATUS
 			}
 		//}
 		/* vkGenDelay() -random для рассинхронизации запросов разных вкладок, иначе запросы со всех вкладок будут одновременно слаться. */
-		vk_check_online_timeout=setTimeout(UserOnlineStatus,vkGenDelay(vk_upd_menu_timeout,status!=null));
+		vk_check_online_timeout=setTimeout(function(){UserOnlineStatus();},vkGenDelay(vk_upd_menu_timeout,status!=null));
 	};
 	if (status!=null){
 		show_status(status);
@@ -1396,7 +1396,7 @@ function UserOnlineStatus(status) {// ADD LAST STATUS
 				vkCmd('user_online_status',st);// /*res.response[0].online*/ шлём полученный статус в остальные вкладки
 				//vklog('Online status >> [onStorage] ');
 			} else {
-				vk_check_online_timeout=setTimeout(UserOnlineStatus,vkGenDelay(vk_upd_menu_timeout));
+				vk_check_online_timeout=setTimeout(function(){UserOnlineStatus();},vkGenDelay(vk_upd_menu_timeout));
 			}
 		});  
 	}

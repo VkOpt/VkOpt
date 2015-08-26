@@ -98,7 +98,7 @@ function vkSetBodyScrResolution(){
            vbody.setAttribute('scrheight',window.screen.height);
            vbody.setAttribute('need_background',bg_info);
          } else {
-            setTimeout(add_scr_info,2);
+            setTimeout(function(){add_scr_info();},2);
          }
       };
       add_scr_info();
@@ -190,7 +190,7 @@ function vkStyleJS(url){
 function vkSkinnerInit(){
   //var lsready=vkLocalStoreReady();
   if (!window.AjCrossAttachJS){
-      setTimeout(vkSkinnerInit,2);
+      setTimeout(function(){vkSkinnerInit();},2);
       return;
   }
   if (EnableSetStyle && !ge('vkStyleCSS')) {                                                           

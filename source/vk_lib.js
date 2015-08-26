@@ -1784,8 +1784,8 @@ vkApis={
                if (!to) to=count;
                if (cur<Math.min(to,count)){
                   cur+=PER_REQ;
-                  setTimeout(nxt,50); // активируем костыль
-                  //setTimeout(get,50);
+                  setTimeout(function(){nxt();},50); // активируем костыль
+                  //setTimeout(function(){get();},50);
                } else callback(photos);
             },
             onFail: function(){
@@ -2783,7 +2783,7 @@ vk_plugins={
             if (isArray(i)){
                r+='<li><div class="vk_user_menu_divider"></div></li>';
                for (var j=0; j<i.length;j++)
-                  r+='<li onmousemove="clearTimeout(pup_tout);" onmouseout="pup_tout=setTimeout(pupHide, 400);">'+i[j]+'</li>';              
+                  r+='<li onmousemove="clearTimeout(pup_tout);" onmouseout="pup_tout=setTimeout(pupHide, 400);">'+i[j]+'</li>';
             } else {
                if (i) r+='<li><div class="vk_user_menu_divider"></div></li>';
                r+='<li onmousemove="clearTimeout(pup_tout);" onmouseout="pup_tout=setTimeout(pupHide, 400);">'+i+'</li>';

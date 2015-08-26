@@ -171,7 +171,7 @@ vk_users = {
                 if (first>last || first==80){
                 	callback(null);
                 } else {
-                	setTimeout(scan,300);
+                	setTimeout(function(){scan();},300);
                 }
 
             }
@@ -310,7 +310,7 @@ function pupShow(event,pid,id,el) {
  pup_menu.style.left=event.pageX+"px";//pageX
  pup_menu.style.top=event.pageY+"px";//pageY
  cancelEvent(event);
- var str = '<div class="vk_popupmenu" onmouseover="clearTimeout(pup_tout);" onmouseout="pup_tout=setTimeout(pupHide, 50);"><ul>';//"<table cellpadding=0 cellspacing=0><tr><td class='pupSide'></td><td><div class='pupBody'>";
+ var str = '<div class="vk_popupmenu" onmouseover="clearTimeout(pup_tout);" onmouseout="pup_tout=setTimeout(function(){pupHide();}, 50);"><ul>';//"<table cellpadding=0 cellspacing=0><tr><td class='pupSide'></td><td><div class='pupBody'>";
  str += ExUserItems(id,el)+'%plugins';//pupItems(pid);
  str += '</ul></div>';//"</div><div class='pupBottom'></div><div class='pupBottom2'></div></td><td class='pupSide'></td></tr>";
  val(pup_menu, str);
@@ -329,7 +329,7 @@ function pupShow(event,pid,id,el) {
    var addldr=function(inner){
       var sz=getSize(pup_menu); 
       val(pup_menu, '<div id="pupMenuBlock" style="position:absolute; opacity: 0.5;  background: #FFFFFF; height:'+sz[1]+'px; line-height:'+sz[1]+'px; width:'+sz[0]+'px;"'+
-                             'onmouseover="clearTimeout(pup_tout);" onmouseout="pup_tout=setTimeout(pupHide, 50);">'+
+                             'onmouseover="clearTimeout(pup_tout);" onmouseout="pup_tout=setTimeout(function(){pupHide();}, 50);">'+
                              '<center id="pupUidLoader">'+(inner || '<img  src="/images/progress7.gif">')+'</center></div>'+str);
    };
   getGidUid(id,function(uid,gid){// getUserID 
@@ -344,7 +344,7 @@ function pupShow(event,pid,id,el) {
 		  ready=true; 
 	  }
 	  if (gid){
-		 var str2 = '<div class="vk_popupmenu" onmouseover="clearTimeout(pup_tout);" onmouseout="pup_tout=setTimeout(pupHide, 50);"><ul>';
+		 var str2 = '<div class="vk_popupmenu" onmouseover="clearTimeout(pup_tout);" onmouseout="pup_tout=setTimeout(function(){pupHide();}, 50);"><ul>';
 		 str2 += ExGroupItems(gid,el)+vk_plugins.user_menu_items(null,gid);
 		 str2 += '</ul></div>';	
 		 str2=str2.replace(/%GID/g,gid); 
@@ -358,7 +358,7 @@ function pupShow(event,pid,id,el) {
  if (!ready && !ge("pupUidLoader")) addldr();
  pup_menu.style.visible='visible';
  clearTimeout(pup_tout);
- pup_tout=setTimeout(pupHide, pup_show_delay);
+ pup_tout=setTimeout(function(){pupHide();}, pup_show_delay);
 }
 
 function mkExItem(id,text){
@@ -1198,7 +1198,7 @@ function vkFriendsCheck(nid){
   var searchNote=function(){
 	dApi.call('notes.get',{count:100},function(r){
 		if (r.error && r.error.error_code==180){
-			setTimeout(newNote,300);
+			setTimeout(function(){newNote();},300);
 			return;
 		}
 		var notes=r.response;
@@ -1213,7 +1213,7 @@ function vkFriendsCheck(nid){
 		  addButton(box,IDL('No'),newNote,'no');
 		  addButton(box,IDL('Yes'),UseOldNote,'yes');
 		  box.content(IDL('FrNoteFound').replace('{note}','<a href="note'+note.uid+'_'+note.nid+'" target="blank">'+note.title+'</a>'));//.show();
-		} else setTimeout(newNote,300);
+		} else setTimeout(function(){newNote();},300);
 		
 	});
   };
@@ -1556,7 +1556,7 @@ function vkFavOnlineChecker(on_storage){
    //case 'fav_users_statuses':vkFavOnlineChecker(true); break;
    if (getSet(49)!='y')return;
    clearTimeout(window.vk_upd_favonl_timeout);
-   var timeout=function(){vk_upd_favonl_timeout=setTimeout(vkFavOnlineChecker,vkGenDelay(CHECK_FAV_ONLINE_DELAY,on_storage || !window.curNotifier));};
+   var timeout=function(){vk_upd_favonl_timeout=setTimeout(function(){vkFavOnlineChecker();},vkGenDelay(CHECK_FAV_ONLINE_DELAY,on_storage || !window.curNotifier));};
 
    var ignore=false;
    var list= vkGetVal('FavList') || '';
@@ -1675,7 +1675,7 @@ function vkFaveOnlineChecker(on_storage){
    //case 'fave_users_statuses':vkFaveOnlineChecker(true); break;
    if (getSet(52)!='y') return;
    clearTimeout(window.vk_upd_faveonl_timeout);
-   var timeout=function(){vk_upd_faveonl_timeout=setTimeout(vkFaveOnlineChecker,vkGenDelay(CHECK_FAV_ONLINE_DELAY,on_storage || !window.curNotifier));};
+   var timeout=function(){vk_upd_faveonl_timeout=setTimeout(function(){vkFaveOnlineChecker();},vkGenDelay(CHECK_FAV_ONLINE_DELAY,on_storage || !window.curNotifier));};
 
    var ignore=false;
    var list= vkGetVal('FavList') || '';

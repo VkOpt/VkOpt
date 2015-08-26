@@ -1157,7 +1157,7 @@ function vkDelWallPostComments(oid,pid){
 			cur_offset+=REQ_CNT;
 			vklog(mids);
 			del(scan);
-			//setTimeout(scan,MSG_SCAN_REQ_DELAY);
+			//setTimeout(function(){scan();},MSG_SCAN_REQ_DELAY);
 			
 		});
 	};
@@ -1223,7 +1223,7 @@ function vkCleanWall(oid){
 			cur_offset+=REQ_CNT;
 			vklog(mids);
 			del(scan);
-			//setTimeout(scan,MSG_SCAN_REQ_DELAY);
+			//setTimeout(function(){scan();},MSG_SCAN_REQ_DELAY);
 			
 		});
 	};
@@ -2293,10 +2293,10 @@ vk_groups = {
                      val('gedit_users_summary_' + tab, getLang('groups_found_n_users', founded, true));
                   }
                   ge('gedit_users_rows_members').appendChild(se(found?html:'<span>Error. id'+uid+'</span>'));
-                  if (need_run) setTimeout(queue_process,100); else val(ge('vk_gre_scan_queue'), '');
+                  if (need_run) setTimeout(function(){queue_process();},100); else val(ge('vk_gre_scan_queue'), '');
                },
                onFail:function(){
-                  if (need_run) setTimeout(queue_process,5000); else val(ge('vk_gre_scan_queue'), '');
+                  if (need_run) setTimeout(function(){queue_process();},5000); else val(ge('vk_gre_scan_queue'), '');
                }
             });
       }
@@ -2322,7 +2322,7 @@ vk_groups = {
             val(ge('vk_gre_scan'), vkProgressBar(offset,count,590,IDL('Search')+' %'));
             if (offset<count){
                offset+=PER_REQ;
-               setTimeout(scan,350);
+               setTimeout(function(){scan();},350);
             } else {
                val(ge('vk_gre_scan'), '');
             }
@@ -2368,11 +2368,11 @@ vk_groups = {
             }, {
                onDone: function() {
                   del_offset++;
-                  setTimeout(process,10);         
+                  setTimeout(function(){process();},10);
                },
                onFail:function() {
                   del_offset++;
-                  setTimeout(process,5000);         
+                  setTimeout(function(){process();},5000);
                }
             });
          }
@@ -2432,7 +2432,7 @@ vk_groups = {
             ajax.post('al_groups.php', {act: 'bl_user', mid: ids[del_offset][0], gid: cur.gid, hash: cur.hash}, {
                onDone: function() {
                   del_offset++;
-                  setTimeout(process,10);         
+                  setTimeout(function(){process();},10);
                }
             });  
 
@@ -2460,7 +2460,7 @@ vk_groups = {
                   process();	
                } else {
                   cur_offset+=25; 
-                  setTimeout(scan,10);
+                  setTimeout(function(){scan();},10);
                } 
             }, 
             onFail: function() {}
@@ -2527,7 +2527,7 @@ vk_groups = {
             var _count=ms.shift();
             val(ge('vk_scan_msg'), vkProgressBar(cur_offset,_count,310,IDL('listreq')+' %'));
             for (var i=0;i<ms.length;i++) if (!ms[i].is_admin) mids.push(ms[i].gid);
-            if (cur_offset<_count){	cur_offset+=REQ_CNT; setTimeout(scan,SCAN_REQ_DELAY);} else del(deldone);
+            if (cur_offset<_count){	cur_offset+=REQ_CNT; setTimeout(function(){scan();},SCAN_REQ_DELAY);} else del(deldone);
          });
       };
       
@@ -3057,7 +3057,7 @@ vk_board={
                      }
                      //alert(result.innerHTML);
                   }
-                  setTimeout(scan,300);
+                  setTimeout(function(){scan();},300);
                }
             }); 
          }
@@ -3638,7 +3638,7 @@ function vk_tag_api(section,url,app_id){
                   if (ret<5 && /db_err/.test(t)){
                      ret++;
                      if (vk_DEBUG) console.log('widget_req error... retry '+ret+'... ');
-                     setTimeout(req,3000);
+                     setTimeout(function(){req();},3000);
                   } else 
                      alert('Parse hash error');
                   return;
@@ -3735,7 +3735,7 @@ function vk_tag_api(section,url,app_id){
                      if (vk_DEBUG) console.log('api marks error',obj_ids,err);
                      retry_count++;
                      if (retry_count<5){
-                        setTimeout(get,2000);
+                        setTimeout(function(){get();},2000);
                         if (vk_DEBUG) console.log('api marks error.. wait 2sec and retry.. code:'+err.error_code);
                      } else { 
                         if (vk_DEBUG) console.log('api marks error',obj_ids,err)
@@ -3854,7 +3854,7 @@ function vk_tag_api(section,url,app_id){
                   var r=JSON.parse(t);
                   res=res.concat(r.response);
                   if (uids.length>0) 
-                     setTimeout(scan,340);
+                     setTimeout(function(){scan();},340);
                   else
                      callback(res);
                });
@@ -3988,7 +3988,7 @@ function vk_tag_api(section,url,app_id){
                }
                if (need_continue){
                   //console.log('continue load info',ids,dk.queue);
-                  setTimeout(load,dk.delay);
+                  setTimeout(function(){load();},dk.delay);
                }
             });
          };

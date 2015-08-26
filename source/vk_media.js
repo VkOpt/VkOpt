@@ -693,7 +693,7 @@ var vk_photos = {
             posts=null;
             if (len>0){
                offset+=PER_REQ;
-               setTimeout(scan, 350);
+               setTimeout(function(){scan();}, 350);
             } else {
                var to_file=isChecked('links_to_file');
                vkSetVal('vk_collect_links_to_file',to_file?'1':'0');
@@ -2588,7 +2588,7 @@ vk_videos = {
             var _count=ms.shift();
             val(ge('vk_scan_msg'), vkProgressBar(cur_offset,_count,310,IDL('listreq')+' %'));
             for (var i=0;i<ms.length;i++) mids.push([ms[i].owner_id, ms[i].vid]);
-            if (cur_offset<_count){	cur_offset+=REQ_CNT; setTimeout(scan,SCAN_REQ_DELAY);} else del(deldone);
+            if (cur_offset<_count){	cur_offset+=REQ_CNT; setTimeout(function(){scan();},SCAN_REQ_DELAY);} else del(deldone);
          });
       };
       
@@ -4172,7 +4172,7 @@ vkLastFM={
         if (!paused) return;
         start = new Date();
         if (timerId) window.clearTimeout(timerId);
-        timerId = window.setTimeout(callback, remaining);
+        timerId = window.setTimeout(function(){callback();}, remaining);
         paused=false;
       };
       this.reset = function(){
@@ -5049,7 +5049,7 @@ vk_aalbum={
                else
                   ge('vk_scan_info').innerHTML+='<b>Search failed:</b> '+name+'<br>'; 
                idx++;
-               setTimeout(get_track,(idx%10==0 || !au)?2000:100);
+               setTimeout(function(){get_track();},(idx%10==0 || !au)?2000:100);
                //get_track();
             }
          });
@@ -5137,7 +5137,7 @@ function vkAlbumCollectPlaylist(){
             else
                ge('vk_scan_info').innerHTML+='<b>Search failed:</b> '+name+'<br>'; 
             idx++;
-            setTimeout(get_track,(idx%10==0 || !au)?2000:100);
+            setTimeout(function(){get_track();},(idx%10==0 || !au)?2000:100);
             //get_track();
          }
       });

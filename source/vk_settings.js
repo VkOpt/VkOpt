@@ -19,7 +19,7 @@ function InstallRelease(){
   
   if (!window.vk || !vk.id) return;
   if (isNewLib() && !window.lastWindowWidth){
-      setTimeout(InstallRelease,50);
+      setTimeout(function(){InstallRelease();},50);
       return;
   }  
   var err=[];
@@ -1090,7 +1090,7 @@ function vkMakeSettings(el){
    var changevolume=function(v,p,u){
       var f=function(){
          if (!ge('vk_sound_vol_label')){
-            setTimeout(f,100);
+            setTimeout(function(){f();},100);
             return;
          }
          val(ge('vk_sound_vol_label'), IDL('Volume')+": "+p+"%");
