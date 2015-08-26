@@ -721,7 +721,7 @@ function vkInitSettings(){
    //LAST 105
 
    vkSetsType={
-      "on"  :[IDL('on'),'y'],
+      "on"  :[IDL('On'),'y'],
       "off" :[IDL('of'),'n'],
       "ru"  :[IDL('ru'),'y'],
       "au"  :[IDL('au'),'n'],

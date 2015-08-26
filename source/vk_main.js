@@ -289,7 +289,7 @@ function VkOptMainInit(){
   vkMoneyBoxAddHide();
   if (ENABLE_HOTFIX) vkCheckUpdates();
   setTimeout(function(){vkFriendsCheckRun();},2000);
-  window.vk_vid_down &&  setTimeout(vk_vid_down.vkVidLinks,0);
+  window.vk_vid_down &&  setTimeout(function(){vk_vid_down.vkVidLinks();},0);
   if (vkgetCookie('IDFriendsUpd') && (vkgetCookie('IDFriendsUpd') != '_')) {	vkShowFriendsUpd();  }
   
 }

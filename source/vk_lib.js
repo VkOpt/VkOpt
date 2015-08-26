@@ -1068,7 +1068,7 @@ String.prototype.leftPad = function (l, c) {
 		//*/ 
 		//*
 		html+='<li '+(menu[i].active?"class='activeLink'":"")+' onclick="vkTabsSwitch(this);">'+
-			  '<a href="'+menu[i].href+'" '+(menu[i].onclick?'onclick="'+menu[i].onclick+'"':"")+(menu[i].id?'id="'+menu[i].id+'"':"")+'>'+
+			  '<a href="'+menu[i].href+'" '+(menu[i].Onclick?'onclick="'+menu[i].Onclick+'"':"")+(menu[i].id?'id="'+menu[i].id+'"':"")+'>'+
 			  '<b class="tab_word">'+menu[i].name+'</b></a></li>';
 		//*/
 	  }
@@ -1110,7 +1110,7 @@ String.prototype.leftPad = function (l, c) {
 	  var menu=[];
 	  var tabs="";
 	  for (var i=0;i<trash.length;i++){
-		  menu.push({name:trash[i].name,href:'#',id:'ctab'+j+'_'+i, onclick:"this.blur(); vkContTabsSwitch('"+j+'_'+i+"'"+(trash[i].content=='all'?',true':'')+"); return false;",active:trash[i].active});
+		  menu.push({name:trash[i].name,href:'#',id:'ctab'+j+'_'+i, Onclick:"this.blur(); vkContTabsSwitch('"+j+'_'+i+"'"+(trash[i].content=='all'?',true':'')+"); return false;",active:trash[i].active});
 		  tabs+='<div id="tabcontent'+j+'_'+i+'" class="'+(!trash[i].active?'noactivetab':'activetab')+'">'+trash[i].content+'</div>';
 	  }
 	  return '<div class="clearFix vk_tBar">'+vkMakeTabs(menu)+'<div style="clear:both"></div></div><div id="tabcontainer'+j+'" style="padding:1px;">'+tabs+'</div>';
@@ -2911,8 +2911,8 @@ DISLIKEAPI_APP_ID = 2347646;
 
 api4dislike=vk_oauth_api(DISLIKEAPI_APP_ID,'photos,audio,video,wall,groups,messages,offline'); 
 dApi=vk_oauth_api(DAPI_APP_ID, DAPI_APP_SCOPE);
-setTimeout(api4dislike.check,10);
-setTimeout(dApi.check,10);
+setTimeout(function(){api4dislike.check();},10);
+setTimeout(function(){dApi.check();},10);
 
 //if(!(dloc.indexOf('vk.com')!=-1 || dloc.indexOf('vkontakte.ru')!=-1)) {
 (function(){

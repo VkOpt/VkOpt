@@ -153,7 +153,7 @@ vk_profile={
       if (getSet(61) == 'y') vkProfileGroupBlock();   
       if (MOD_PROFILE_BLOCKS) vkFrProfile();
       //if (getSet(65)=='y') vkShowLastActivity()
-      if (getSet(46) == 'n') vkFriends_get('online');
+      if (getSet(46) == 'n') vkFriends_get('Online');
       if (getSet(47) == 'n') vkFriends_get('common');
       if (getSet(72) == 'y') vk_profile.fr_in_cats();
       vk_profile.only4friends_checkbox();
@@ -1493,7 +1493,7 @@ function vkFriends_get(idx){
   //vkStatus('[Friends '+idx+' Loading]');
   //alert(idx);
   var methods={
-	'online':'friends.getOnline',
+	'Online':'friends.getOnline',
 	'all':'friends.get',
 	'common':'friends.getMutual'
   };
@@ -3950,7 +3950,7 @@ function vk_tag_api(section,url,app_id){
          dk.queue=uncached.concat(dk.queue); //новые в начало очереди
          if (need_run) {
             clearTimeout(dk.timeout);
-            dk.timeout=setTimeout(dk.load_dislikes_info,300);
+            dk.timeout=setTimeout(function(){dk.load_dislikes_info();},300);
          }
       },
       in_cache:function(obj_id){

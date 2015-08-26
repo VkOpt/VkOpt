@@ -923,8 +923,8 @@ var vk_photos = {
             'idl_browse': IDL('Browse'),
             'idl_upload': IDL('Upload'),
             'upload_url': info.upload_url,
-            'onResize'  :'vk_photos.pz_onresize',
-            'onDone'    :'vk_photos.pz_ondone'
+            'onResize'  : (function(){return 'vk_photos.pz_onresize';})(),
+            'onDone'    : (function(){return 'vk_photos.pz_ondone';})()
          };
          renderFlash('pz_container',
             {url:swf,id:"vkpzl_pl"},
@@ -1698,9 +1698,9 @@ function vkPhotoUrlUpload(url){
          api_url:'https://api.'+domain+'/method/',
          image_url: url,
          album_id:vkGetVal('vk_pru_album') || 0,
-         onFlashReady:"vk_vkpru_on_init", 
-         onUploadComplete:"vk_vkpru_on_done", 
-         onDebug:"vk_vkpru_on_debug",
+         onFlashReady:(function(){return "vk_vkpru_on_init";})(),
+         onUploadComplete:(function(){return "vk_vkpru_on_done";})(),
+         onDebug:(function(){return "vk_vkpru_on_debug";})(),
          "lang.button_upload":IDL('puUploadImageBtn'),
          "lang.choice_album":IDL('puChoiceAlbum'),
          "lang.loading_info":IDL('puLoadingInfoWait')
@@ -2819,7 +2819,7 @@ vk_videos = {
                dApi.call('video.restore',{oid:first_video[0],vid:first_video[1]},function(){});
                vkMsg('Done');
                
-               if (isChecked('vk_vid_need_reload')) setTimeout(nav.reload,1200);
+               if (isChecked('vk_vid_need_reload')) setTimeout(function(){nav.reload();},1200);
             });
          }
       };

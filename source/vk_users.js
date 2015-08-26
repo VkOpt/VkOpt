@@ -546,8 +546,8 @@ function ProcessUserPhotoLink(node){
 }
 
 
-allowHidePhoto=setTimeout(null,null);
-allowShowPhotoTimer=setTimeout(null,null);
+allowHidePhoto=setTimeout(function(){},null);
+allowShowPhotoTimer=setTimeout(function(){},null);
 cur_popup_idx=0;
 cur_popup_url=null;
 function vkPopupAvatar(id,el,in_box){
