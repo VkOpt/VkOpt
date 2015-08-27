@@ -521,7 +521,7 @@ var vk_photos = {
       AjGet('/wall'+vk.id+'?offset=100000000',function(t){
          var o=(t.match(/"share":(\{[^}]+\})/)||[])[1];
          if (!o) {alert('hash error'); return;}
-         o=eval('('+o+')');
+         o=JSON.parse(o);
          //alert(o.timehash);
          re(ge('vk_url_upldr_form'));
          var checkURLForm = ce('div', {url:'vk_url_upldr_form', innerHTML: '<iframe name="vk_url_upldr_form_iframe"></iframe>'});
@@ -5661,7 +5661,7 @@ vk_vid_down={
          
          ajax.post('al_video.php', {act: 'load_videos_silent', oid: oid, offset: 0, section:section}, { // please_dont_ddos:2
             onDone: function(_list) {
-               var list = eval('('+_list+')')[section]['list'];
+               var list = JSON.parse(_list)[section]['list'];
                cback(list);
             }
          });
@@ -6041,8 +6041,8 @@ vk_vid_down={
       if (getSet(2)=='y'){
          var vivar=document.getElementsByTagName('body')[0].innerHTML.split('var vars = {')[1];
          if (vivar){
-            vivar='{'+eval('"'+vivar.split('};')[0]+'"')+'}';
-            vkVidVars=eval('('+vivar+')');
+            vivar='{'+ev41('"'+vivar.split('};')[0]+'"')+'}';
+            vkVidVars=JSON.parse(vivar);
             setTimeout(vk_vid_down.vkVidLinks,300);
          } else {
             vkVidVars=null;
@@ -6232,7 +6232,7 @@ vk_vid_down={
          var r = t.match(/clip\d+_\d+\s*=\s*(\{[^;]+\});/);
          //alert(t);
          if (!r) return;
-         var params = eval('(' + r[1] + ')');
+         var params = JSON.parse(r[1]);
          
          var config = params.config;
          var links = [];

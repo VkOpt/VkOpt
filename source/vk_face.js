@@ -789,12 +789,8 @@ vk_menu={
    get_custom_links:function(){
       try {
          return (JSON.parse(vkGetVal('menu_custom_links') || '[]') || []);
-      } catch(e) { 
-         try {
-            return (eval(vkGetVal('menu_custom_links') || '[]') || []);
-         } catch(e) { 
+      } catch(e) {
             return [];
-         }
       }
    },
    custom_settings:function(){
@@ -1439,7 +1435,7 @@ function vkGetCalendarInfo(callback,cnt){ //callback(month, year, events, holida
       }
       res=res.split(');')[0];
 		//eval(callback+'('+res+')');
-      var args=eval('['+res+']');
+      var args=JSON.parse('['+res+']');
       callback.apply(this,args);
 	});
 }

@@ -114,7 +114,7 @@ function replaceSelectedText(obj,cbFunc){
  if (document.selection){
    var s = document.selection.createRange();
    if (s.text){
-	eval("s.text="+cbFunc+"(s.text);");
+	s.text=cbFunc(s.text);
 	s.select();
 	return true;
    }
@@ -123,7 +123,7 @@ function replaceSelectedText(obj,cbFunc){
    if (obj.selectionStart!=obj.selectionEnd){
      var start = obj.selectionStart;
      var end = obj.selectionEnd;
-     eval("var rs = "+cbFunc+"(obj.value.substr(start,end-start));");
+     var rs = cbFunc(obj.value.substr(start,end-start));
      obj.value = obj.value.substr(0,start)+rs+obj.value.substr(end);
      obj.setSelectionRange(end,end);
    }
@@ -137,7 +137,7 @@ function replaceSelectedText(obj,cbFunc){
    }   
    if (el && el.contentEditable=="true"){
      var text = document.getSelection()+'';
-     eval("var rs = "+cbFunc+"(text);");
+     var rs = cbFunc(text);
      document.execCommand('insertHTML', false, rs);
      //return text.length;
    }

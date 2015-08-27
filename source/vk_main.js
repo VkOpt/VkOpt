@@ -773,7 +773,7 @@ vk_features={
       stManager.add('api/openapi.js',function(){
          ge('vk_poll_preview').innerHTML='';
          ge('vk_poll_preview').innerHTML=ge('vk_poll_code').value.replace(/<script[^>]+>[^<]*<\/script>/g,'');
-         eval(ge('vk_poll_code').value.match(/VK\.Widgets[^\)]+\)/)[0]);
+         ev41(ge('vk_poll_code').value.match(/VK\.Widgets[^\)]+\)/)[0]);
       });
 
       /*

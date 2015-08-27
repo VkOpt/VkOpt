@@ -165,7 +165,7 @@ function vkSettingsPage(){
 function vkLoadVkoptConfigFromFile(){
   vkLoadTxt(function(txt){
 	try {
-     var cfg=eval('('+txt+')');
+     var cfg=JSON.parse(txt);
 	  /*alert(print_r(cfg));*/
 	  for (var key in cfg) if (cfg[key]) 
 		vksetCookie(key,cfg[key]);
@@ -509,11 +509,7 @@ function ReadWallsCfg(){
   try {
       return JSON.parse(vkGetVal('WallsID')) || {}; //{"1244":"Name", ... }
   } catch (e) {
-      try {
-          return eval(vkGetVal('WallsID')) || {};
-      } catch (e) {
           return {};
-      }
   }
 }
 function SetWallsCfg(cfg){
@@ -1327,7 +1323,7 @@ function vkResetSounds(){
 function vkLoadSoundsFromFile(){
     vkLoadTxt(function(txt){
     try {
-      var cfg=eval('('+txt+')');
+      var cfg=JSON.parse(txt);
 	  //alert('qwe');
       for (var key in cfg) if (cfg[key] && vkSoundsRes[key] && key!='Name') 
         vkSetVal('sound_'+key,cfg[key]);

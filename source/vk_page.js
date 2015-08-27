@@ -1281,7 +1281,7 @@ function vkFaveProfileBlock(is_list){
    AjGet('/fave?section=users&al=1',function(t){
       var r=t.match(/"faveUsers"\s*:\s*(\[[^\]]+\])/);
       if (r){
-         r=eval('('+r[1]+')');
+         r=JSON.parse(r[1]);
          var onlines=[];
          for(var i=0;i<r.length;i++) if(r[i].online) onlines.push(r[i]);
          var to=3;
@@ -1357,7 +1357,7 @@ function vkProfileGroupBlock(){
             hide('profile_groups');
             return;      
       }
-      data=eval(data[1]);
+      data=JSON.parse(data[1]);
       var count=data.length;
       val(ge('vk_group_block_count'), ' ('+count+')');
       var html='';

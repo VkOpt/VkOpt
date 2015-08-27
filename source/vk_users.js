@@ -1173,7 +1173,7 @@ function vkFriendsCheck(nid){
   var frList=function(callback){ //callback(friendsData,PostData,FriendsCount);
     AjGet('/friends_ajax.php',function(t){
 		if (!t || !t.length) {alert(IDL('FrListError')); box.hide(200); return;}
-		var res=eval('('+t+')');
+		var res=JSON.parse(t);
 		var fr=res.friends;
 		var fids=[];
 		for (var i=0;i<fr.length;i++)  fids.push(fr[i][0]);
