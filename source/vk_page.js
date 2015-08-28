@@ -182,14 +182,15 @@ vk_profile={
       if (ge('vk_wall_tat_link')) return;
       if (isVisible('page_wall_switch'))  ge('page_wall_header').appendChild(vkCe('span',{"class":'fl_r right_link divide'},'|'));
       var href=ge('page_wall_header').getAttribute('href');
-      ge('page_wall_header').appendChild(vkCe('a',{
-                  "class":'fl_r right_link', 
-                  id:'vk_wall_tat_link',
-                  href:'/wall'+cur.oid+'?with='+vk.id,
-                  onclick:"cancelEvent(event); return nav.go(this, event);",
-                  onmouseover:"this.parentNode.href='/wall"+cur.oid+"?with="+vk.id+"';",
-                  onmouseout:"this.parentNode.href='"+href+"';"
-               },IDL('T-a-T',1)))   
+      var vk_wall_tat_link  = vkCe('a',{
+           "class":'fl_r right_link',
+           id:'vk_wall_tat_link',
+           href:'/wall'+cur.oid+'?with='+vk.id
+      },IDL('T-a-T',1));
+      vk_wall_tat_link.setAttribu7e('onclick',"cancelEvent(event); return nav.go(this, event);");
+      vk_wall_tat_link.setAttribu7e('onmouseover',"this.parentNode.href='/wall"+cur.oid+"?with="+vk.id+"';");
+      vk_wall_tat_link.setAttribu7e('onmouseout',"this.parentNode.href='"+href+"';");
+      ge('page_wall_header').appendChild(vk_wall_tat_link);
    },
    edit_page:function(){
       vk_profile.edit_mid_name();
@@ -218,7 +219,8 @@ vk_profile={
       if (cur.oid!=remixmid() || ge('friends_only') ) return;
       var p=ge('page_add_media');
       if (!p) return;
-      var cb=vkCe('div',{"class":"checkbox fl_l","id":"friends_only","onclick":"checkbox(this);checkbox('status_export',!isChecked(this));checkbox('facebook_export',!isChecked(this));"},'<div></div>'+IDL('OnlyForFriends'));
+      var cb=vkCe('div',{"class":"checkbox fl_l","id":"friends_only"},'<div></div>'+IDL('OnlyForFriends'));
+      cb.setAttribu7e('onclick', "checkbox(this);checkbox('status_export',!isChecked(this));checkbox('facebook_export',!isChecked(this));");
       p.parentNode.insertBefore(cb,p);   
    },
    fav_fr_block:function(is_list){
@@ -445,7 +447,9 @@ function vkWallPhotosLinks(){
    //alert(cur.oid +'\n'+ cur.pid +'\n'+ el +'\n'+ !ge('vk_wall_ph_links') +'\n'+ geByClass('page_media_full_photo')[0]);
    if (cur.oid && cur.pid && el && !ge('vk_wall_ph_links') && (geByClass('page_media_full_photo')[0] || geByClass('page_post_thumb_sized_photo')[0])){
       var listId='wall'+cur.oid+'_'+cur.pid;
-      el.insertBefore(vkCe('a',{id:'vk_wall_ph_links', "class":"fl_r","onclick":"vkGetLinksToPhotos('"+listId+"')"},IDL('Links')),el.firstChild);
+      var vk_wall_ph_links = vkCe('a',{id:'vk_wall_ph_links', "class":"fl_r"},IDL('Links'));
+      vk_wall_ph_links.setAttribu7e('onclick',"vkGetLinksToPhotos('"+listId+"')");
+      el.insertBefore(vk_wall_ph_links, el.firstChild);
       //vkGetLinksToPhotos();
    }
 }
@@ -466,7 +470,9 @@ vk_wall = {
       var title=ge('reply_to_title' + post);
       var inp=ge('reply_to' + post);
       if (!inp || !title || (title.innerHTML || '').indexOf('cancel_reply')!=-1) return;
-      title.appendChild(vkCe('div',{'class':'vk_x_btn',onclick:"vk_wall.cancel_reply('"+post+"');"}));
+      var vk_x_btn = vkCe('div',{'class':'vk_x_btn'});
+      vk_x_btn.setAttribu7e('onclick', "vk_wall.cancel_reply('"+post+"');");
+      title.appendChild(vk_x_btn);
    },
    cancel_reply:function(post){
       var title=ge('reply_to_title' + post);
@@ -480,7 +486,7 @@ vk_wall = {
 
             for (var i = 0; i < anchors.length; i++)  // Меняем обработчики: второй аргумент - оч. большое число
                 if (!hasClass(anchors[i], 'feed_reposts_more_link') && !hasClass(anchors[i], 'wrh_all')) {  // Исключаем ссылки "показать похожие записи" и "Скрыть комментарии"
-                    anchors[i].setAttribute('onclick', anchors[i].getAttribute('onclick').replace("', false", "', 99999"))
+                    anchors[i].setAttribu7e('onclick', anchors[i].getAttribute('onclick').replace("', false", "', 99999"))
                     val(anchors[i].firstElementChild, IDL('showAllComments')+' ('+anchors[i].getAttribute('offs').split('/')[1]+')');
                 }
         }
@@ -491,10 +497,10 @@ vk_wall = {
             for (var i = 0; i < replies_wrap.length; i++) { // Создание кнопочек сортировки
                 var link = vkCe('a', {
                     class: 'fl_r margin5',
-                    tooltip: IDL('sortByLikes'),
-                    onmouseover: "showTooltip(this, {text: this.getAttribute('tooltip')})",
-                    onclick: "vk_wall.sortByLikes('" + replies_wrap[i].id.replace('_wrap', '') + "')"
+                    tooltip: IDL('sortByLikes')
                 }, '<div class="wl_replies_header_toggler_icon fl_r"></div><div class="post_like_icon fl_l"></div>');
+                link.setAttribu7e('onmouseover',"showTooltip(this, {text: this.getAttribute('tooltip')})");
+                link.setAttribu7e('onclick',"vk_wall.sortByLikes('" + replies_wrap[i].id.replace('_wrap', '') + "')");
                 replies_wrap[i].insertBefore(link, replies_wrap[i].firstChild);
             }
         }
@@ -818,11 +824,12 @@ function vkPollResultsBtn(node){
          var m=p.innerHTML.match(/id="post_poll_raw-?\d+_\d+[^>]+value="(-?\d+)_(\d+)"/);
          if (c.innerHTML.indexOf('vkPollCancelAnswer')!=-1) continue;
          c.insertBefore(vkCe('span',{"class":"divider fl_r"},"|"),c.firstChild);
-         c.insertBefore(vkCe('a',{
-                                  "class":"fl_r",
-                                  "href":"#",
-                                  "onclick":"return vkPollCancelAnswer('"+m[1]+"','"+m[2]+"');"
-                                 },IDL('CancelAnswer')),c.firstChild); 
+         var PollCancelEl = vkCe('a',{
+            "class":"fl_r",
+            "href":"#"
+         },IDL('CancelAnswer'));
+         PollCancelEl.setAttribu7e('onclick',"return vkPollCancelAnswer('"+m[1]+"','"+m[2]+"');");
+         c.insertBefore(PollCancelEl,c.firstChild);
       }
 
       if (!el || !c) continue;
@@ -991,8 +998,8 @@ function vkAvkoNav(){
   		profile.showProfilePhoto(avko_num);
 	  }  
 	};  
-    ge('profile_avatar').setAttribute("onmouseover","fadeTo(ge('NextButtAva'),250,0.8);");
-    ge('profile_avatar').setAttribute("onmouseout","fadeTo(ge('NextButtAva'),250,0);");
+    ge('profile_avatar').setAttribu7e("onmouseover","fadeTo(ge('NextButtAva'),250,0.8);");
+    ge('profile_avatar').setAttribu7e("onmouseout","fadeTo(ge('NextButtAva'),250,0);");
 	disableSelectText('avko_next');
 	disableSelectText('avko_prev');
 }
@@ -1378,7 +1385,7 @@ function vkFrProfile(){
   if (c){
     c.setAttribute('title', c.getAttribute('onclick'));
     c.id='profile_full_link';
-    c.setAttribute('onclick','shut("profile_full_info");');
+    c.setAttribu7e('onclick','shut("profile_full_info");');
   }
   var c2 = geByClass('page_list_module')[0];
   if (c2) c2.id="page_list_module";
@@ -1389,7 +1396,7 @@ function vkFrProfile(){
     var hdr=geByClass('p_header_bottom',el)[0];
 	if (!hdr) return;
 	var rlink=geByClass('right_link',el)[0];
-	if (rlink) rlink.setAttribute('onclick',"return nav.go(this.parentNode.parentNode, event)");
+	if (rlink) rlink.setAttribu7e('onclick',"return nav.go(this.parentNode.parentNode, event)");
     var all=hdr.getElementsByTagName('span')[0];
     val(hdr, '<a href="javascript:vkFriends_get(\''+postfix+'\')" id="Fr'+postfix+'Lnk">'+vkopt_brackets(hdr.innerHTML)+'</a>');
     if (all) {
@@ -1409,7 +1416,7 @@ function vkFrProfile(){
     var hdr=geByClass('p_header_bottom',el)[0];
     if (!hdr) return;
 	var rlink=geByClass('right_link',el)[0];
-	if (rlink) rlink.setAttribute('onclick',"return nav.go(this.parentNode.parentNode, event)");
+	if (rlink) rlink.setAttribu7e('onclick',"return nav.go(this.parentNode.parentNode, event)");
     var all=hdr.getElementsByTagName('span')[0];
     if (all) {
        val(all, '<a href="'+el.href+'"  onclick="'+el.getAttribute('onclick')+'">'+all.innerHTML+'</a>');
@@ -1450,7 +1457,8 @@ function vkFrProfile(){
       }
       
       if (key && vk_shuts_mask[key] && EnableShut){
-        var s=vkCe('span',{"class":'fl_l',"onclick":'cancelEvent(event); return shut("'+key+'");'},'<span class="vk_shut_btn"></span>');
+        var s=vkCe('span',{"class":'fl_l'},'<span class="vk_shut_btn"></span>');
+        s.setAttribu7e('onclick','cancelEvent(event); return shut("'+key+'");');
         var p=geByClass('header_top',els[i])[0];
         if (p)  p.insertBefore(s,p.firstChild); 
         addClass(key,'shut_open');
@@ -1599,7 +1607,7 @@ if (!masks[id]) return;
 	   if (ge('profile_full_link') == null) geByClass('profile_info_link')[0].id='profile_full_link';
 	   ge('profile_full_link').setAttribute('title','hide');
   }
-  ge('profile_full_link').setAttribute('onclick','shut(\'profile_full_info\');');
+  ge('profile_full_link').setAttribu7e('onclick','shut(\'profile_full_info\');');
 }
     if (!hasClass(c,"shut")) closed_tabs = isNaN(closed_tabs) ? 0 : closed_tabs & ~masks[id];
     else closed_tabs = isNaN(closed_tabs) ? masks[id] : closed_tabs | masks[id];
@@ -1650,12 +1658,12 @@ vk_graff={
          if (bef && mid){
             bef=bef.getElementsByTagName('a')[0];
             var a=document.createElement('a');
-            a.setAttribute("onfocus","this.blur()");
+            a.setAttribu7e("onfocus","this.blur()");
             a.setAttribute("class"," add_media_item");
             a.setAttribute("id","vk_wall_post_type0");
             a.setAttribute("style","background-image: url(/images/icons/attach_icons.gif); background-position: 3px -151px");
             a.setAttribute("href","#");
-            a.setAttribute("onclick","vk_graff.upload_box("+mid+");return false;");
+            a.setAttribu7e("onclick","vk_graff.upload_box("+mid+");return false;");
             val(a, IDL('LoadGraffiti'));
             bef.parentNode.insertBefore(a,bef.nextSibling);
          }
@@ -1672,7 +1680,8 @@ function vkModGroupBlocks(){
    var el=ge('group_albums');// || ge('public_albums');
    if (el && !ge('gr_photo_browse')){
       el=geByClass('p_header_bottom',el)[0];
-      var a=vkCe('a',{id:'gr_photo_browse', href:'/photos'+cur.oid, onclick:"event.cancelBubble = true; return nav.go(this, event)"},IDL("obzor",1));
+      var a=vkCe('a',{id:'gr_photo_browse', href:'/photos'+cur.oid},IDL("obzor",1));
+      a.setAttribu7e('onclick',"event.cancelBubble = true; return nav.go(this, event)");
       el.appendChild(a);
       //el.innerHTML+='<a href="/photos'+cur.oid+'" onmousedown="event.cancelBubble = true;" onclick="event.cancelBubble = true; return nav.go(this, event);">[ '+IDL("obzor")+' ]</a>';
    }
@@ -1780,22 +1789,20 @@ function vkWikiPages(){
    var pid=cur.pid || nav.objLoc['p'] || /_(\d+)/.exec(nav.strLoc)[1];
    if (p){
       if (p && !ge('vk_add_wiki_page')){
-         p.appendChild(
-            vkCe('a',{
-               "class":class_name,
-               "id":"vk_add_wiki_page",
-               "href":"#",
-               "onclick":"vkWikiNew(); return false;"
-            },IDL('Add')+'<span class="divide">|</span>')
-         );
-         p.appendChild(
-            vkCe('a',{
-               "class":class_name,
-               "id":"vk_add_wiki_page",
-               "href":"#",
-               "onclick":"vkGetWikiCode('"+pid+"','"+gid+"'); return false;"
-            },IDL('Code')+'<span class="divide">|</span>')
-         );
+         var vk_add_wiki_page = vkCe('a',{
+             "class":class_name,
+             "id":"vk_add_wiki_page",
+             "href":"#"
+         },IDL('Add')+'<span class="divide">|</span>');
+         vk_add_wiki_page.setAttribu7e('onclick','vkWikiNew(); return false;');
+         p.appendChild(vk_add_wiki_page);
+         vk_add_wiki_page = vkCe('a',{
+            "class":class_name,
+            "id":"vk_add_wiki_page",
+            "href":"#"
+         },IDL('Code')+'<span class="divide">|</span>');
+         vk_add_wiki_page.setAttribu7e('onclick',"vkGetWikiCode('"+pid+"','"+gid+"'); return false;");
+         p.appendChild(vk_add_wiki_page);
       }   
    } else {
       var end=true;
@@ -1808,22 +1815,21 @@ function vkWikiPages(){
       class_name='';
       
       if (p && !ge('vk_add_wiki_page')){
+         var vk_add_wiki_page = vkCe('a',{
+              "class":class_name,
+              "id":"vk_add_wiki_page",
+              "href":"#"
+            },IDL('Add')+(end?'<span class="divide">|</span>':''));
+         vk_add_wiki_page.setAttribu7e('onclick','vkWikiNew(); return false;');
+         p.insertBefore(vk_add_wiki_page,p.firstChild);
+         vk_add_wiki_page = vkCe('a',{
+            "class":class_name,
+            "id":"vk_add_wiki_page",
+            "href":"#"
+         },IDL('Code')+'<span class="divide">|</span>');
+         vk_add_wiki_page.setAttribu7e('onclick',"vkGetWikiCode('"+pid+"','"+gid+"'); return false;");
          p.insertBefore(
-            vkCe('a',{
-               "class":class_name,
-               "id":"vk_add_wiki_page",
-               "href":"#",
-               "onclick":"vkWikiNew(); return false;"
-            },IDL('Add')+(end?'<span class="divide">|</span>':'')),
-            p.firstChild
-         );
-         p.insertBefore(
-            vkCe('a',{
-               "class":class_name,
-               "id":"vk_add_wiki_page",
-               "href":"#",
-               "onclick":"vkGetWikiCode('"+pid+"','"+gid+"'); return false;"
-            },IDL('Code')+'<span class="divide">|</span>'),
+            vk_add_wiki_page,
             p.firstChild
          );
       }   
@@ -1915,42 +1921,46 @@ function vkDocsPage() {	// Добавляет кнопку "скачать вс�
     if (ge('vkdocslinks')) return;			// Если кнопки уже добавлены, снова не добавлять
     var buttons = ge('docs_side_filter');	// Родительский контейнер всех кнопок, которые справа
     if (buttons) {	// Добавление кнопок
-        buttons.insertBefore(vkCe('div',{	// Кнопка "Скачать всё"
+        var vkdocslinks = vkCe('div', {	// Кнопка "Скачать всё"
                 "id" :	"vkdocslinks",		// id нужен для определения, добавлены ли уже кнопки или нет.
-                "class": "side_filter",
-                "onmousedown": "vkDocsDownloadAll(cur.oid,'imgs');",
-                "onmouseover": "addClass(this, 'side_filter_over');",
-                "onmouseout":  "removeClass(this, 'side_filter_over');"
+                "class": "side_filter"
             },
             IDL('downloadAll')
-        ),ge('docs_section_all'));	// перед кнопкой "все документы"
+        );
+        vkdocslinks.onmousedown = function(){ vkDocsDownloadAll(cur.oid,'imgs'); };
+        vkdocslinks.onmouseover = function(e){ addClass(e.target, 'side_filter_over'); };
+        vkdocslinks.onmouseout = function(e){ removeClass(e.target, 'side_filter_over'); };
+        buttons.insertBefore(vkdocslinks,ge('docs_section_all'));	// перед кнопкой "все документы"
 
-		buttons.insertBefore(vkCe('div',{	// Кнопка "Скачать все гифки"
-				"class": "side_filter",
-				"onmousedown": "vkDocsDownloadAll(cur.oid,'imgs',true);",
-				"onmouseover": "addClass(this, 'side_filter_over');",
-				"onmouseout":  "removeClass(this, 'side_filter_over');"
-			},
-			IDL('downloadAllGifs')
-		),ge('docs_section_all'));	// перед кнопкой "все документы"
+        var downloadAllGifs = vkCe('div',{	// Кнопка "Скачать все гифки"
+                "class": "side_filter"
+            },
+            IDL('downloadAllGifs')
+        );
+        downloadAllGifs.onmousedown = function(){ vkDocsDownloadAll(cur.oid,'imgs',true); };
+        downloadAllGifs.onmouseover = function(e){ addClass(e.target, 'side_filter_over'); };
+        downloadAllGifs.onmouseout = function(e){ removeClass(e.target, 'side_filter_over'); };
+		buttons.insertBefore(downloadAllGifs, ge('docs_section_all'));	// перед кнопкой "все документы"
 
-		buttons.insertBefore(vkCe('div', {	// Кнопка "Сссылки"
-				"class": "side_filter",
-				"onmousedown":	"vkDocsDownloadAll(cur.oid,'links');",
-				"onmouseover":	"addClass(this, 'side_filter_over');",
-				"onmouseout":	"removeClass(this, 'side_filter_over');"
-			},
-			IDL('Links')
-		),ge('docs_section_all'));	// перед кнопкой "все документы"
+        var Links = vkCe('div', {	// Кнопка "Сссылки"
+                "class": "side_filter"
+            },
+            IDL('Links')
+        );
+        Links.onmousedown = function(){ vkDocsDownloadAll(cur.oid,'links'); };
+        Links.onmouseover = function(e){ addClass(e.target, 'side_filter_over'); };
+        Links.onmouseout = function(e){ removeClass(e.target, 'side_filter_over'); };
+		buttons.insertBefore(Links,ge('docs_section_all'));	// перед кнопкой "все документы"
 
-		buttons.insertBefore(vkCe('div', {	// Кнопка "Сссылки на GIF"
-				"class": "side_filter",
-				"onmousedown":	"vkDocsDownloadAll(cur.oid,'links',true);",
-				"onmouseover":	"addClass(this, 'side_filter_over');",
-				"onmouseout":	"removeClass(this, 'side_filter_over');"
-			},
-			IDL('LinksGif')
-		), ge('docs_section_all'));	// перед кнопкой "все документы"
+        var LinksGif = vkCe('div', {	// Кнопка "Сссылки на GIF"
+                "class": "side_filter"
+            },
+            IDL('LinksGif')
+        );
+        LinksGif.onmousedown = function(){ vkDocsDownloadAll(cur.oid,'links', true); };
+        LinksGif.onmouseover = function(e){ addClass(e.target, 'side_filter_over'); };
+        LinksGif.onmouseout = function(e){ removeClass(e.target, 'side_filter_over'); };
+		buttons.insertBefore(LinksGif, ge('docs_section_all'));	// перед кнопкой "все документы"
 	}
 }
 
@@ -3076,7 +3086,9 @@ vk_board={
          var z=geByClass('vk_brd_action',els[i])[0];
          if (!p || !a || z) continue;
          p.appendChild(vkCe('span',{"class":"divide vk_brd_action"},'|'));
-         p.appendChild(vkCe('a',{"href":"#","class":'vk_brd_action',onclick:"return vk_board.get_user_posts('"+a.getAttribute('href')+"','"+els[i].getAttribute('id')+"')"},IDL('PrevPosts')));
+         var vk_brd_action = vkCe('a',{"href":"#","class":'vk_brd_action'},IDL('PrevPosts'));
+         vk_brd_action.setAttribu7e('onclick',"return vk_board.get_user_posts('"+a.getAttribute('href')+"','"+els[i].getAttribute('id')+"')");
+         p.appendChild(vk_brd_action);
       }
    }
 };

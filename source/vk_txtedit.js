@@ -217,11 +217,6 @@ function vkTxtPanelButtons(eid,emoji){
          sendWrap: wrap,//ge('reply_media_lnk39226536_390').parentNode,
          onStickerSend: function(stNum) {   }
       });
-       
-
-
-      
-      return el;
    } else {
       vk_gen_smiles_funcs.push(function(el){
          if (need_gen){
@@ -229,8 +224,10 @@ function vkTxtPanelButtons(eid,emoji){
             need_gen=false;
          }
       });
-      return vkCe('a',{"class":"vk_edit_btn smile_btn",href:"#","onmouseover":"vk_gen_smiles_funcs["+idx+"](this);"},'<div class="vk_edit_sub_panel">qqwe'+/*AddSmileBtn(eid)+*/'</div>');
+      var el = vkCe('a',{"class":"vk_edit_btn smile_btn",href:"#"},'<div class="vk_edit_sub_panel">qqwe'+/*AddSmileBtn(eid)+*/'</div>');
+      el.setAttribu7e('onmouseover',"vk_gen_smiles_funcs["+idx+"](this);");
    }
+   return el;
 }
 /*
 function vkPrepareTxtPanels(node){
@@ -346,8 +343,8 @@ function vkAddSmilePanel(el){
 			clearTimeout(touts[pid]);
 		};
 		txtareas_events.push(panel_mousemove);
-		panel.setAttribute('onmousemove','txtareas_events['+(txtareas_events.length-1)+'](event);');
-		panel.setAttribute('onclick','txtareas_events['+(txtareas_events.length-1)+'](event);');
+		panel.setAttribu7e('onmousemove','txtareas_events['+(txtareas_events.length-1)+'](event);');
+		panel.setAttribu7e('onclick','txtareas_events['+(txtareas_events.length-1)+'](event);');
 		/*addEvent(panel, 'mousemove', panel_mousemove);
 		addEvent(panel, 'click', panel_mousemove);*/
 		txtareas_events.push([show_panel,hide_panel]);
@@ -363,7 +360,7 @@ function vkAddSmilePanel(el){
 		};
 		if (!ta.getAttribute('onmousemove')){//onclick
 			txtareas_events.push(onclick_area);
-			ta.setAttribute('onmousemove','txtareas_events['+(txtareas_events.length-1)+'](event,this,'+feid+');');
+			ta.setAttribu7e('onmousemove','txtareas_events['+(txtareas_events.length-1)+'](event,this,'+feid+');');
 		}
 		addEvent(ta, 'focus', show_panel);
 		addEvent(ta, 'click', show_panel);

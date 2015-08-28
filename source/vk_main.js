@@ -391,7 +391,9 @@ function vkGroupStatsBtn(){
       var p=ge('page_actions') || ge('unsubscribe');
       if (p && !ge('vk_stats_list') && !(ge('page_actions') && /stats\?gid=/.test(ge('page_actions').innerHTML))){
          var wklink=function(id){
-            return vkCe('a',{id:id, onclick:"return nav.go(this, event)", href:"/stats?gid="+Math.abs(cur.oid)},IDL('Stats',1))
+            var el = vkCe('a',{id:id, href:"/stats?gid="+Math.abs(cur.oid)},IDL('Stats',1));
+            el.onclick = function(e){ return nav.go(e.target, e); };
+            return el;
          };
          var a=wklink('vk_stats_list');
          if (p==ge('unsubscribe')) p.appendChild(vkCe('br'));
@@ -408,7 +410,9 @@ function vkWikiPagesList(add_btn){
       var p=ge('page_actions') || ge('unsubscribe');
       if (p && !ge('vk_wiki_pages_list')){
          var wklink=function(id){
-            return vkCe('a',{id:id, onclick:"vkWikiPagesList(); return false;"},IDL('WikiPagesList')+'<span class="fl_r" id="vk_wiki_pages_list_loader" style="display:none;">'+vkLdrImg+'</span>')
+            var el = vkCe('a',{id:id},IDL('WikiPagesList')+'<span class="fl_r" id="vk_wiki_pages_list_loader" style="display:none;">'+vkLdrImg+'</span>');
+            el.onclick = function(){ vkWikiPagesList(); return false; };
+            return el;
          };
          var a=wklink('vk_wiki_pages_list');
          if (p==ge('unsubscribe')) p.appendChild(vkCe('br'));
@@ -881,11 +885,15 @@ function vkPhChooseProcess(answer,q){
      var p=geByClass('photos_choose_header_title',div)[0];
      if (p && !/choose_album/.test(p.innerHTML)){
       val(p, '');
-      p.appendChild(vkCe('a',{"class":'fl_l_',href:'#',onclick:'return vk_photos.choose_album();'},IDL('mPhM',1)));
+      var mPhM = vkCe('a',{"class":'fl_l_',href:'#'},IDL('mPhM',1));
+      mPhM.setAttribu7e('onclick','return vk_photos.choose_album();');
+      p.appendChild(mPhM);
       if (vk_DEBUG) console.log(q);
       if (q.to_id && q.to_id<0){
          p.appendChild(vkCe('span',{"class":'fl_l_ divider'},'|'));
-         p.appendChild(vkCe('a',{"class":'fl_l_',href:'#',onclick:'return vk_photos.choose_album('+q.to_id+');'},IDL('GroupAlbums',1)))
+         var ca = vkCe('a',{"class":'fl_l_',href:'#'},IDL('GroupAlbums',1));
+         ca.setAttribu7e('onclick', 'return vk_photos.choose_album('+q.to_id+');');
+         p.appendChild(ca);
       }
      }//*/
      if (ref){
@@ -927,11 +935,15 @@ function vkVidChooseProcess(answer,q){
    var p=geByClass('choose_close',div)[0];
    if (p && !/choose_album/.test(p.innerHTML)){
          p.insertBefore(vkCe('span',{"class":'divide'},'|'),p.firstChild);
-         p.insertBefore(vkCe('a',{"class":'',href:'#',onclick:'return vk_videos.choose_album();'},IDL('mPhM',1)),p.firstChild);
+         var mPhM = vkCe('a',{"class":'',href:'#'},IDL('mPhM',1));
+         mPhM.setAttribu7e('onclick','return vk_videos.choose_album();');
+         p.insertBefore(mPhM, p.firstChild);
          //console.log(q);
       if (q.to_id && q.to_id<0){
          p.insertBefore(vkCe('span',{"class":'divide'},'|'),p.firstChild);
-         p.insertBefore(vkCe('a',{"class":'',href:'#',onclick:'return vk_videos.choose_album('+q.to_id+');'},IDL('GroupAlbums',1)),p.firstChild)
+         var GroupAlbums = vkCe('a',{"class":'',href:'#'},IDL('GroupAlbums',1));
+         GroupAlbums.setAttribu7e('onclick', 'return vk_videos.choose_album('+q.to_id+');');
+         p.insertBefore(GroupAlbums,p.firstChild)
       }
    } 
   
@@ -971,11 +983,15 @@ function vkAudioChooseProcess(answer,q){
    var p=geByClass('choose_close',div)[0];
    if (p && !/choose_album/.test(p.innerHTML)){
          p.insertBefore(vkCe('span',{"class":'divide'},'|'),p.firstChild);
-         p.insertBefore(vkCe('a',{"class":'',href:'#',onclick:'return vk_audio.choose_album();'},IDL('mPhM',1)),p.firstChild);
+         var mPhM = vkCe('a',{"class":'',href:'#'},IDL('mPhM',1));
+         mPhM.setAttribu7e('onclick','return vk_audio.choose_album();');
+         p.insertBefore(mPhM, p.firstChild);
          //console.log(q);
       if (q.to_id && q.to_id<0){
          p.insertBefore(vkCe('span',{"class":'divide'},'|'),p.firstChild);
-         p.insertBefore(vkCe('a',{"class":'',href:'#',onclick:'return vk_audio.choose_album('+q.to_id+');'},IDL('GroupAlbums',1)),p.firstChild)
+         var GroupAlbums = vkCe('a',{"class":'',href:'#'},IDL('GroupAlbums',1));
+         GroupAlbums.setAttribu7e('onclick', 'return vk_audio.choose_album('+q.to_id+');');
+         p.insertBefore(GroupAlbums,p.firstChild)
       }
    }
   
@@ -1357,7 +1373,8 @@ vk_im={
          var id='add_media_type_' +  cur.imMedia.menu.id + '_nohide';
          if (!ge(id)){
             // ADD WALL POST
-            var a=vkCe('a',{'onclick':'vk_im.attach_wall();','class':'add_media_item','style':"background-image: url('/images/icons/attach_icons.png'); background-position: 3px -130px;"},'<nobr>'+IDL('WallPost')+'</nobr>');
+            var a=vkCe('a',{'class':'add_media_item','style':"background-image: url('/images/icons/attach_icons.png'); background-position: 3px -130px;"},'<nobr>'+IDL('WallPost')+'</nobr>');
+            a.onclick = vk_im.attach_wall;
             p.appendChild(a);
             
             a=vkCe('a',{id:id,'style':'border-top:1px solid #DDD;'},html);
@@ -2371,14 +2388,14 @@ function vkProcessTopicLink(link){ // Wall and Topics links
    if (!href) return;
    var ment=link.getAttribute('mention') || "";
    if (ment && ment!=''){
-      link.setAttribute('onmouseover', "vkTopicTooltip(this);");
+      link.setAttribu7e('onmouseover', "vkTopicTooltip(this);");
       return;
    }
    //*
    var rp=onclick.match(/wall.showReply\('(-?\d+)_(\d+)'\s*,\s*'-?\d+_(\d+)'\)/);
    if (!rp) rp=href.match(/\/wall(-?\d+)_(\d+)\?reply=(\d+)/) || href.match(/\/wall(-?\d+)_(\d+)$/);
    if (rp && !link.hasAttribute('onmouseover') && !hasClass(link,'wd_lnk') && link.innerHTML.indexOf("rel_date")==-1){
-      link.setAttribute('onmouseover', "vkTopicTooltip(this, '"+rp[1]+"', null, '"+(rp[3] || rp[2])+"','wall');");
+      link.setAttribu7e('onmouseover', "vkTopicTooltip(this, '"+rp[1]+"', null, '"+(rp[3] || rp[2])+"','wall');");
       return;
    } 
    //*/
@@ -2387,7 +2404,7 @@ function vkProcessTopicLink(link){ // Wall and Topics links
 
    if (!id) return;
    if(!link.hasAttribute('onmouseover') && !hasClass(link,'bp_date') && !hasClass(link,'wd_lnk') && !hasClass(link.parentNode,'bottom')){
-      link.setAttribute('onmouseover', "vkTopicTooltip(this, "+id[1]+","+id[2]+","+(post?post[1]:null)+");");
+      link.setAttribu7e('onmouseover', "vkTopicTooltip(this, "+id[1]+","+id[2]+","+(post?post[1]:null)+");");
    }
 }
 

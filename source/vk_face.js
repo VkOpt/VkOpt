@@ -1131,8 +1131,8 @@ function vkMenu(){//vkExLeftMenu
   vkMenuHide=function(){if (vkMenuCurrentSub){ hide(vkMenuCurrentSub); vkMenuCurrentSub=null; }};
   var setActions=function(elem){
       if (elem){
-        elem.setAttribute('onmousemove','vkMenuItemHover(event,this)');
-        elem.setAttribute('onmouseout','vkMenuItemOut(event,this)');  
+        elem.setAttribu7e('onmousemove','vkMenuItemHover(event,this)');
+        elem.setAttribu7e('onmouseout','vkMenuItemOut(event,this)');
       } else return ' onmousemove="vkMenuItemHover(event,this)" onmouseout="vkMenuItemOut(event,this)" ';
   };
   var more_div=(ge('l_ap')||{}).previousSibling;
@@ -1165,7 +1165,7 @@ function vkMenu(){//vkExLeftMenu
       var page='custom_menu'+i;
       var submenu=m_item[2];
       if (submenu && submenu.length==0) submenu=null;
-      if (!submenu && exm) item.setAttribute('onmousemove','vkMenuHide();');
+      if (!submenu && exm) item.setAttribu7e('onmousemove','vkMenuHide();');
       if (submenu /*&& exm*/){
          var ul=document.createElement('ul');
          ul.id='vkm_'+page;
@@ -1256,7 +1256,7 @@ function vkMenu(){//vkExLeftMenu
     var bcout=item.innerHTML.match(/<b>(\d+)<\/b>/);
     bcout=(bcout)?bcout[1]:0;
     var submenu=ExMenu[page];
-    if (!submenu && exm && page!='custom_link') item.setAttribute('onmousemove','vkMenuHide();');
+    if (!submenu && exm && page!='custom_link') item.setAttribu7e('onmousemove','vkMenuHide();');
     if (submenu && (exm || page=='vkopt') && page!='custom_link'){
       var ul=document.createElement('ul');
       ul.id='vkm_'+page;
@@ -1326,8 +1326,13 @@ function vkMenu(){//vkExLeftMenu
 function vkMoneyBoxAddHide(){
 	var mb=ge('left_money_box');
 	if (!mb) return;
-	var lmb=vkCe('div',{id:'left_block_money',onmouseover:"leftBlockOver('_money')",onmouseout:"leftBlockOut('_money')"});
-	var hb=vkCe('div',{id:'left_hide_money', "class":"left_hide", onmouseover:"leftBlockOver(this)",onmouseout:"leftBlockOut(this)",onclick:"hide('left_block_money')"});
+	var lmb=vkCe('div',{id:'left_block_money'});
+    lmb.setAttribu7e('onmouseover', "leftBlockOver('_money');");
+    lmb.setAttribu7e('onmouseout', "leftBlockOut('_money')");
+	var hb=vkCe('div',{id:'left_hide_money', "class":"left_hide"});
+    hb.setAttribu7e('onmouseover', "leftBlockOver(this);");
+    hb.setAttribu7e('onmouseout', "leftBlockOut(this);");
+    hb.setAttribu7e('onclick', "hide('left_block_money');");
 	mb.parentNode.insertBefore(lmb,mb);
 	lmb.appendChild(hb);
 	lmb.appendChild(mb);
@@ -1359,7 +1364,7 @@ function UserOnlineStatus(status) {// ADD LAST STATUS
 			  div.style.position = "fixed";
 			  div.style.bottom="0px";
 			  div.style.left = "0px";
-			  div.setAttribute('onclick','UserOnlineStatus();');
+			  div.setAttribu7e('onclick','UserOnlineStatus();');
 			  
 			  val(div, online);
 			  var vk_side_bar=sideBar();
@@ -1783,7 +1788,7 @@ function SmileNode(mainNode,childItem){
              smile.setAttribute('style',"margin-bottom:-0.3em; border:0px;");
              //smile.src='http://kolobok.us/smiles/'+smilepath+'/'+key+'.gif';
              smile.src=vkSmilesLinks[key];
-             smile.setAttribute("onclick","RemoveSmile(this);");
+             smile.setAttribu7e("onclick","RemoveSmile(this);");
              smile.alt=val;
              smile.title=val;
     

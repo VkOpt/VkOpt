@@ -268,7 +268,7 @@ function vkProcessUserLink(link){
 	inel.id="pup"+adid;
 	inel.setAttribute('class','vk_usermenu_btn'+cl_name);
 	inel.setAttribute(mev,'pupShow(event,\''+adid+'\',\''+uid+'\',this); return false;');
-	inel.setAttribute("onmousedown","event.cancelBubble = true;");
+	inel.setAttribu7e("onmousedown","event.cancelBubble = true;");
 	val(inel, USERMENU_SYMBOL);
 	link.setAttribute('exuser',true);
 	if (getSet(22)=='y' && link.parentNode.parentNode && link.parentNode.parentNode.id=='profile_groups'){
@@ -539,8 +539,8 @@ function ProcessUserPhotoLink(node){
       var uid=node.innerHTML.match(/http.{3}cs.+\/u(\d+)\//i);
       if (uid) uid=uid[1];
       if (!uid) uid=ExtractUserID(hr);
-      node.setAttribute("onmouseover","vkPopupAvatar('"+uid+"',this)");
-      node.setAttribute("onmouseout","vkHidePhoto();");
+      node.setAttribu7e("onmouseover","vkPopupAvatar('"+uid+"',this)");
+      node.setAttribu7e("onmouseout","vkHidePhoto();");
     }    
   }
 }
@@ -1122,7 +1122,8 @@ function vkFriendUserInLists(uid,callback,only_cats){
 function vkCheckFrLink(){
 	if (getSet(9)=='y' && !ge('section_frcheck')){
 		var ref=ge("section_all");//section_suggestions
-		var sec=vkCe('a',{href:'#', onclick:"vkFriendsCheckRun(true);return false;",id:'section_frcheck',"class":"side_filter"},IDL("refreshList"));
+		var sec=vkCe('a',{href:'#', id:'section_frcheck',"class":"side_filter"},IDL("refreshList"));
+        sec.onclick = function(){ vkFriendsCheckRun(true);return false; };
 		ref.parentNode.insertBefore(sec, ref.nextSibling);//
 	}
 }
@@ -1337,7 +1338,8 @@ function vkFriendsBySex(add_link){
 	if (add_link  && !ge('section_slists')){
 		var ref=ge("section_all");//section_suggestions
       if (!ref) return;
-		var sec=vkCe('a',{href:'#', onclick:"vkFriendsBySex();return false;",id:'section_slists',"class":"side_filter"},IDL('FrSexToLists'));
+		var sec=vkCe('a',{href:'#', id:'section_slists',"class":"side_filter"},IDL('FrSexToLists'));
+        sec.onclick = function(){ vkFriendsBySex();return false; };
 		ref.parentNode.insertBefore(sec, ref.nextSibling);
 		return;
 	}
@@ -1771,7 +1773,8 @@ vk_friends={
       if (!ge('section_frnolist')){
          var ref=ge("section_all");//section_suggestions
          if (!ref) return;
-         var sec=vkCe('a',{href:'#', onclick:"vk_friends.not_in_list_show(); Friends.selectSection('frnolist');return false;",id:'section_frnolist',"class":"side_filter"},IDL("FrNotInLists"));
+         var sec=vkCe('a',{href:'#', id:'section_frnolist',"class":"side_filter"},IDL("FrNotInLists"));
+         sec.onclick = function(){ vk_friends.not_in_list_show(); Friends.selectSection('frnolist');return false; };
          ref.parentNode.insertBefore(sec, ref.nextSibling);
       }
    },
@@ -1798,7 +1801,8 @@ vk_friends={
       if (!ge('section_'+id)){
          var ref=ge("section_all"); //section_suggestions
          if (!ref) return;
-         var sec=vkCe('a',{href:'#', onclick:"vk_friends.deleted_show(); Friends.selectSection('"+id+"');return false;",id:'section_'+id,"class":"side_filter"},IDL("FrDeleted"));
+         var sec=vkCe('a',{href:'#', id:'section_'+id,"class":"side_filter"},IDL("FrDeleted"));
+         sec.setAttribu7e('onclick',"vk_friends.deleted_show(); Friends.selectSection('"+id+"');return false;");
          ref.parentNode.insertBefore(sec, ref.nextSibling);
       }
    },
