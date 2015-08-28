@@ -95,7 +95,7 @@ function Ajax(options, worker) {
         headers['Content-type'] = contentType;
 
     if (data && (typeof data == 'object') && isEmptyObject(data)) data = null;
-    if (data && (typeof data == 'object')) data = serialize(data);
+    if (data && (typeof data == 'object') && Object.prototype.toString.call(data) !== '[object Array]') data = serialize(data);
 
     if (~contentType.indexOf('multipart/form-data') && method == 'POST' && data && data.length) {
         var buffer = new Uint8Array(data.length);
