@@ -947,9 +947,7 @@ var vkMozExtension = {
             if(!request) return false;
             request.onerror=function(){
                //alert('to <head>');
-               var element = document.createElement('script');
-               element.type = 'text/javascript';
-               element.src = url;
+               var element = vkCe('script', {type: 'text/javascript', src: url});
                if (id)
                   element.id=id;
                if (isFunction(callback))
