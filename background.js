@@ -251,7 +251,7 @@ var ex_loader = {
    get_scripts:function(url,callback,in_frame){
       var api_allowed = false;
       var domain=url;
-      if (url=='about:blank'){ 
+      if (url=='about:'+'blank'){    // AMO folly
          callback([]);
          return;
       }

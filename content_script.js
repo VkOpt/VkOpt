@@ -183,12 +183,15 @@ var ex_ldr={
       return true;      
    },
    inj_script:function(script,info,by_src){
+      var cre = function(t){    // AMO folly
+          return doc.createElement(t);
+      };
       var ext=(info || ".js").split('.').pop();
       switch(ext){
          case 'js':
             if (ext_browser.opera) win.eval(script);
             else {   /*if (ext_browser.chrome || ext_browser.safari || ext_browser.maxthon)*/
-               var js = doc.createElement('script');
+               var js = cre('script');
                js.type = 'text/javascript';
                js.charset = 'UTF-8';
                if (!by_src)
