@@ -5964,6 +5964,15 @@ vk_vid_down={
                el.innerHTML=html;
             });  
          };      
+         var get_coub=function(coub_id){
+             vk_vid_down.vkGetCoubLinks(coub_id,function(r){
+                 if (!r) return;
+                 var html='<a href="http://coub.com/view/'+coub_id+'">Coub</a>';
+                 for (var i=0;i<r.length;i++)
+                     html+='<a href="'+r[i][0]+'" class="vk_down_icon">'+r[i][1]+'<small class="divide">'+r[i][2]+'</small></a>';
+                 el.innerHTML=html;
+             });
+         };
          
          if (yid && (!type || type=='youtube')){
             getyt(yid);
@@ -5977,9 +5986,11 @@ vk_vid_down={
                getyt(obj.extra_data);            
             } else if (obj.extra=="22"){
                getvimeo(obj.extra_data);
-            } else if (obj.extra=="50"){// AND ALSO extra=50 - carambatv.ru??? О_о WTF?  //О_о coub.сom  links - http://coub.com/coubs/{coubID}.json
+            } else if (obj.extra=="50"){// AND ALSO extra=50 - carambatv.ru??? О_о WTF?
                if ((obj.extra_data||'').indexOf('ivi.ru')!=-1)
                   get_ivi(obj.extra_data);
+               else if (~(obj.extra_data||'').indexOf('coub.com'))
+                  get_coub(obj.extra_iframe.split('/').pop());
                else el.innerHTML='<small class="divide" >'+IDL('NA')+'('+obj.extra+')</small>';
             } else if (!obj.extra){
                var html='';
@@ -6273,6 +6284,20 @@ vk_vid_down={
       return '<span id="vkyoutubelinks"></span>';
    },
    /*END OF VIMEO FUNCTIONS */
+    vkGetCoubLinks: function (coub, callback) {
+        vk_aj.get('http://coub.com/coubs/' + coub + '.json', function (json) {
+            var links = [];
+            var info = JSON.parse(json);
+            for (var version in info.file_versions.web.versions)
+                for (var type in info.file_versions.web.types)
+                    links.push([
+                        info.file_versions.web.template.replace(/%\{type\}/g, info.file_versions.web.types[type]).replace(/%\{version\}/g, info.file_versions.web.versions[version]),
+                        info.file_versions.web.versions[version],
+                        info.file_versions.web.types[type]
+                    ]);
+            callback(links);
+        });
+    },
    vkVidLinks: function(){	
       var ctrls = ge('mv_controls');
       if (!ctrls) return;
