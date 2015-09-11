@@ -9,7 +9,7 @@
 
 //  functions for work with users
 var isUserRegEx=[
-/(^|\/)(reg|regstep|club|event|photo|photos|album|albums|audios|video|videos|note|notes|app|page|board|topic|write|public|publics|groups|wall|graffiti|tag\d|doc|gifts)-?\d+/i,
+/(^|\/)(reg|regstep|club|event|photo|photos|album|albums|audios|video|videos|note|notes|app|page|board|topic|write|public|publics|groups|wall|graffiti|tag\d|doc|gifts|market)-?\d+/i,
 /(^|\/)(events|changemail|mail|im([^a-z0-9]|$)|audio|apps|editapp|feed|friends|friendsphotos|search|invite|settings|edit|fave|stats|video|groups|notes|docs|gifts|support|bugs|dev)(\?.*#?|#|$)/i,
 /javascript|#|\.mp3|\.flv|\.mov|\.jpg|\.gif|\.png|http...www|\/ru\//i,
 /\.php($|\?)/i,
@@ -298,7 +298,8 @@ var PUPCss= //position: fixed;
 '.pupBottom2 { opacity: 0.05; filter:alpha(opacity=5); height: 1px;}'+
 '.pupSide { width: 1px; overflow: hidden; background: #000; opacity: 0.06; filter:alpha(opacity=6);}'+
 '.pupItem, .pupItemOn { padding: 3px 3px 3px 5px; background-color: #FFF; color: #2C587D; _width:132px;}'+
-'.pupItemOn { background-color: #EEF2F6;}';
+'.pupItemOn { background-color: #EEF2F6;}' +
+'a.market_item_owner_name { display:inline; }'; // фикс для страницы https://vk.com/market-XXX?w=product-XXX_XXX%2Fquery
 var pup_over = 0;
 var pup_show_delay=1500;
 var pup_tout;
