@@ -114,7 +114,7 @@ function replaceSelectedText(obj,cbFunc){
  if (document.selection){
    var s = document.selection.createRange();
    if (s.text){
-	eval("s.text="+cbFunc+"(s.text);");
+	s.text=cbFunc(s.text);
 	s.select();
 	return true;
    }
@@ -123,7 +123,7 @@ function replaceSelectedText(obj,cbFunc){
    if (obj.selectionStart!=obj.selectionEnd){
      var start = obj.selectionStart;
      var end = obj.selectionEnd;
-     eval("var rs = "+cbFunc+"(obj.value.substr(start,end-start));");
+     var rs = cbFunc(obj.value.substr(start,end-start));
      obj.value = obj.value.substr(0,start)+rs+obj.value.substr(end);
      obj.setSelectionRange(end,end);
    }
@@ -137,7 +137,7 @@ function replaceSelectedText(obj,cbFunc){
    }   
    if (el && el.contentEditable=="true"){
      var text = document.getSelection()+'';
-     eval("var rs = "+cbFunc+"(text);");
+     var rs = cbFunc(text);
      document.execCommand('insertHTML', false, rs);
      //return text.length;
    }
@@ -217,20 +217,17 @@ function vkTxtPanelButtons(eid,emoji){
          sendWrap: wrap,//ge('reply_media_lnk39226536_390').parentNode,
          onStickerSend: function(stNum) {   }
       });
-       
-
-
-      
-      return el;
    } else {
       vk_gen_smiles_funcs.push(function(el){
          if (need_gen){
-            el.getElementsByTagName('div')[0].innerHTML=AddSmileBtn(eid);
+            val(el.getElementsByTagName('div')[0], AddSmileBtn(eid));
             need_gen=false;
          }
       });
-      return vkCe('a',{"class":"vk_edit_btn smile_btn",href:"#","onmouseover":"vk_gen_smiles_funcs["+idx+"](this);"},'<div class="vk_edit_sub_panel">qqwe'+/*AddSmileBtn(eid)+*/'</div>');
+      var el = vkCe('a',{"class":"vk_edit_btn smile_btn",href:"#"},'<div class="vk_edit_sub_panel">qqwe'+/*AddSmileBtn(eid)+*/'</div>');
+      el.setAttribu7e('onmouseover',"vk_gen_smiles_funcs["+idx+"](this);");
    }
+   return el;
 }
 /*
 function vkPrepareTxtPanels(node){
@@ -346,8 +343,8 @@ function vkAddSmilePanel(el){
 			clearTimeout(touts[pid]);
 		};
 		txtareas_events.push(panel_mousemove);
-		panel.setAttribute('onmousemove','txtareas_events['+(txtareas_events.length-1)+'](event);');
-		panel.setAttribute('onclick','txtareas_events['+(txtareas_events.length-1)+'](event);');
+		panel.setAttribu7e('onmousemove','txtareas_events['+(txtareas_events.length-1)+'](event);');
+		panel.setAttribu7e('onclick','txtareas_events['+(txtareas_events.length-1)+'](event);');
 		/*addEvent(panel, 'mousemove', panel_mousemove);
 		addEvent(panel, 'click', panel_mousemove);*/
 		txtareas_events.push([show_panel,hide_panel]);
@@ -363,7 +360,7 @@ function vkAddSmilePanel(el){
 		};
 		if (!ta.getAttribute('onmousemove')){//onclick
 			txtareas_events.push(onclick_area);
-			ta.setAttribute('onmousemove','txtareas_events['+(txtareas_events.length-1)+'](event,this,'+feid+');');
+			ta.setAttribu7e('onmousemove','txtareas_events['+(txtareas_events.length-1)+'](event,this,'+feid+');');
 		}
 		addEvent(ta, 'focus', show_panel);
 		addEvent(ta, 'click', show_panel);
@@ -424,7 +421,7 @@ if(vk_EnableSwichText){
       case 81: // ctrl+Q
       case 221: case 1066: // Ctrl+]
 		    vk_EnableSwichText=false;
-		    setTimeout("vk_EnableSwichText=true;",200);
+		    setTimeout(function(){vk_EnableSwichText=true;},200);
 		    var acelem=document.activeElement;
 		    if (GetSelectedLength(acelem)>0){replaceSelectedText(acelem,SwichKeybText)}
 		    else if (document.activeElement.value){

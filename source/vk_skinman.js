@@ -98,7 +98,7 @@ function vkSetBodyScrResolution(){
            vbody.setAttribute('scrheight',window.screen.height);
            vbody.setAttribute('need_background',bg_info);
          } else {
-            setTimeout(add_scr_info,2);
+            setTimeout(function(){add_scr_info();},2);
          }
       };
       add_scr_info();
@@ -190,7 +190,7 @@ function vkStyleJS(url){
 function vkSkinnerInit(){
   //var lsready=vkLocalStoreReady();
   if (!window.AjCrossAttachJS){
-      setTimeout(vkSkinnerInit,2);
+      setTimeout(function(){vkSkinnerInit();},2);
       return;
   }
   if (EnableSetStyle && !ge('vkStyleCSS')) {                                                           
@@ -218,9 +218,7 @@ function vkSkinnerInit(){
       if (VK_CURRENT_CSSJS_URL!=""){
          AjCrossAttachJS(VK_CURRENT_CSSJS_URL,"vkStyleCSSJS");
       } else {
-         scriptElement = document.createElement("script");
-         scriptElement.type = "text/javascript";
-         scriptElement.id="vkStyleCSSJS";
+         scriptElement = vkCe('script', {type: "text/javascript", id: "vkStyleCSSJS"});
       }
       //if (!VK_CURRENT_CSSJS_URL=="") scriptElement.src=VK_CURRENT_CSSJS_URL;
       
@@ -252,7 +250,7 @@ vkSkinnerInit();
 
 function vkSwichCSS(code){
   vk_LSSetVal('VK_CURRENT_CSS_CODE',code);
-  ge('vkStyleNode').innerHTML=code;
+  val(ge('vkStyleNode'), code);
 }
 
 function vkSwichStyle(url,el,js){
@@ -310,7 +308,7 @@ function vkPrepareCats(skins){ // it's PIZDEC! Don't translate to Russian
 function vkCatNavigate(elem){
   var cat=elem.getAttribute("category");
   vkShowSkinMan(cat);
-  ge("header").innerHTML='<h1>'+IDL("SkinMan")+' | '+cat+'</h1>';
+  val(ge("header"), '<h1>'+IDL("SkinMan")+' | '+cat+'</h1>');
   return false;
 }
 function vkMakeCatMenu(cats){
@@ -441,7 +439,7 @@ function vkShowSkinMan(filter,page){
              '</div>'+
              
             '</div>';
-	  ge("content").innerHTML=html+'<div class="box_loader"></div>';
+	  val(ge("content"), html+'<div class="box_loader"></div>');
       var nows= new  Date(); 
       var datsig=nows.getYear()+"_"+nows.getMonth()+"_"+nows.getDate()+"_";
       datsig+=Math.floor(nows.getHours()/4); //raz v 4 chasa      
@@ -532,9 +530,9 @@ function vkShowSkinMan(filter,page){
   }
 
   html+='</div></div></div>';
-  ge("content").innerHTML=html;
-  ge("toppages").innerHTML=vkMakePageListS(page,Math.ceil(vkMyStyles.length/VK_THEMES_ON_PAGE)-1,"javascript:vkShowSkinMan("+(filter || false)+",%%);","vkShowSkinMan("+(filter || false)+",%%); return false;");
-  ge("header").innerHTML='<h1>'+IDL("SkinMan")+'</h1>';
+  val(ge("content"), html);
+  val(ge("toppages"), vkMakePageListS(page,Math.ceil(vkMyStyles.length/VK_THEMES_ON_PAGE)-1,"javascript:vkShowSkinMan("+(filter || false)+",%%);","vkShowSkinMan("+(filter || false)+",%%); return false;"));
+  val(ge("header"), '<h1>'+IDL("SkinMan")+'</h1>');
   vk_skinman.likes_load(pids);
   return false;
 }
@@ -583,7 +581,7 @@ vk_skinman={
             
             var icon=ge('s_like_icon'+pid),
                 count=ge('s_like_count'+pid);
-            if (count) count.innerHTML=cnt>0?cnt:'';
+            if (count) val(count, cnt>0?cnt:'');
             if (icon && my_like) addClass(icon,'my_like');
          }
       })
@@ -598,7 +596,7 @@ vk_skinman={
       var act=hasClass(icon,'my_like');
       (act?removeClass:addClass)(icon,'my_like');
       dApi.call(act?'likes.delete':'likes.add',{type:'photo', owner_id:oid,item_id:item_id},function(r){
-         count.innerHTML=r.response.likes;
+         val(count, r.response.likes);
          if (icon.parentNode.tt) icon.parentNode.tt.destroy();
          //icon.parentNode.tt=null;
          //vk_skinman.like_over(pid);
@@ -653,10 +651,10 @@ function vkSkinManInit(){
   div.id='chStyle';
   div.setAttribute("style","position:fixed; top:0px; left:0px; z-index:999;");
   var arrow_style='font-size:11px; font-weight:normal; margin: 0px; line-height:15px; padding:0px 0px 0px 0px;';
-  div.innerHTML='<div id="Strelki"><table><tr>'+
+  val(div, '<div id="Strelki"><table><tr>'+
      // '<td><div style="'+arrow_style+'"><a href="#" style="'+arrow_style+'" onclick="return vkSwichStyle(prompt());">[S]</a></div></td>'+
       '<td><div style="'+arrow_style+'"><a href="#" style="'+arrow_style+'" onclick="hide(this); return vkShowSkinMan();">[&uarr;]</a></div></td>'+
-      '</tr></table></div>';
+      '</tr></table></div>');
   body.appendChild(div);
   if (/\?skinman/.test(location.href)) vkShowSkinMan();
 }
