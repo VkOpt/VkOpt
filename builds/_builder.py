@@ -8,7 +8,7 @@ from subprocess import *
 
 sys.path.append('_tools/')
 from mxpack import *
-
+from amo_app_versions import *
 
 def zipdir(dirPath=None, zipFilePath=None, includeDirInZip=True, regEx=None, exclude_regex=None):
 
@@ -135,6 +135,10 @@ SetFirefoxVersion('firefox\\install.rdf', new_ver_ff)
 SetJsonVersion('maxthon\\def.json', new_ver)
 SetOperaVersion('opera.extension\\config.xml', new_ver)
 SetSafariVersion('vkopt.safariextension\\Info.plist', new_ver) 
+
+# вешаем последние актуальные em:maxVerion для FF
+UpdateManifestMaxVerions('firefox\\install.rdf')
+UpdateManifestMaxVerions('firefoxJetpack\\install.rdf')
 
 regex = None
 exclude_regex = "\.orig$"

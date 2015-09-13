@@ -62,4 +62,5 @@ def main():
       arg0 = sys.argv
    UpdateManifestMaxVerions(input)
    
-main()
+if __name__ == "__main__":   
+   main()
