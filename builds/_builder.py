@@ -137,7 +137,7 @@ SetOperaVersion('opera.extension\\config.xml', new_ver)
 SetSafariVersion('vkopt.safariextension\\Info.plist', new_ver) 
 
 regex = None
-exclude_regex = "\.orig$"
+exclude_regex = "\.(orig|gitignore)$"
 
 zipdir("firefox", "vkopt_%s_firefox.xpi" % full_ver, False,regex,exclude_regex)
 zipdir("opera.extension", "vkopt_%s_opera.oex" % full_ver, False,regex,exclude_regex)
