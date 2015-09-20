@@ -1440,7 +1440,7 @@ function vkGetCalendarInfo(callback,cnt){ //callback(month, year, events, holida
       }
       res=res.split(');')[0];
 		//eval(callback+'('+res+')');
-      var args=JSON.parse('['+res+']');
+      var args=ev41('['+res+']');
       callback.apply(this,args);
 	});
 }

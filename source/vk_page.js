@@ -1288,7 +1288,7 @@ function vkFaveProfileBlock(is_list){
    AjGet('/fave?section=users&al=1',function(t){
       var r=t.match(/"faveUsers"\s*:\s*(\[[^\]]+\])/);
       if (r){
-         r=JSON.parse(r[1]);
+         r=ev41('('+r[1]+')');
          var onlines=[];
          for(var i=0;i<r.length;i++) if(r[i].online) onlines.push(r[i]);
          var to=3;

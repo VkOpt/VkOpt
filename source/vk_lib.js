@@ -167,8 +167,7 @@ if (!window.JSON) JSON ={
 	},
 	parse: function (str) {
 		if (str === "") str = '""';
-		ev41("var p=" + str + ";");
-		return p;
+        return ev41('(' + str + ')');
 	}
 };
 JSON.Str=JSON.stringify;
