@@ -3744,54 +3744,6 @@ function vkCleanAudios(){
    var owner=(cur.oid>0?"id":"club")+Math.abs(cur.oid);
 	vkAlertBox(IDL('DelAudios'),'<b><a href="/'+owner+'">'+owner+'</a></b><br>'+IDL('DelAllAutiosConfirm'),run,true);
 }
-vkAudioEd = {
-   Delete:function(id,aid){
-    var el = ge('audio' + aid);
-    var h = getSize(geByClass1('play_btn', el))[1];
-    stManager.add(['audio_edit.js']);
-    ajax.post(Audio.address, {act: 'delete_audio', oid: cur.oid, aid: id, hash: cur.hashes.delete_hash, restore: 1}, {
-      onDone: function(text, delete_all) {
-        cur.deleting = false;
-        if (!cur.deletedAudios) cur.deletedAudios = [];
-        cur.deletedAudios[id] = ge('audio'+aid).innerHTML;
-        text=text.replace(/AudioEdit.restoreAudio\(\d+\)/,'vkAudioEd.Restore('+id+',\''+aid+'\')');
-        el.innerHTML = text;
-        h=30;
-        setStyle(geByClass1('dld', el), {height: h+'px'});
-        //el.style.cursor = 'auto';
-        //el.setAttribute('nosorthandle', '1');
-        if (delete_all) {
-          cur.summaryLang.delete_all = delete_all;
-        }
-        cur.audiosIndex.remove(cur.audios[id]);
-        cur.audios[id].deleted = true;
-        cur.sectionCount--;
-        Audio.changeSummary();
-        
-      }
-    });
-    return false;
-   },
-   Restore: function(id,aid) {
-    if (cur.restoring) {
-      return;
-    }
-    cur.restoring = true;
-    var el = ge('audio' + aid);
-    ajax.post(Audio.address, {act: 'restore_audio', oid: cur.oid, aid: id, hash: cur.hashes.restore_hash}, {
-      onDone: function() {
-        cur.restoring = false;
-        el.innerHTML = cur.deletedAudios[id];
-        //el.style.cursor = 'move';
-        //el.removeAttribute('nosorthandle');
-        cur.audiosIndex.add(cur.audios[id]);
-        cur.audios[id].deleted = false;
-        cur.sectionCount++;
-        Audio.changeSummary();
-      }
-    });
-  }
-};
 
 
 function vkParseAudioInfo(_aid,node,anode){
@@ -4022,7 +3974,6 @@ function vkShowAddAudioTip(el,id){
       
       name=(name[5]+' '+name[6]).replace(/[\?\&\s]/g,'+');
       var html = '';
-      html += (remixmid()==cur.oid || isGroupAdmin(cur.oid))?'<a href="#" onclick="vkAudioEd.Delete(\''+a[2]+'\',\''+id+'\',this); return false;">'+IDL('delete',2)+'</a>':'';
       html += show_add ?'<a href="#" onclick="vkAddAudioT(\''+a[1]+'\',\''+a[2]+'\',this); return false;">'+IDL('AddMyAudio')+'</a>':'';
       html += '<a href="#" onclick="vk_audio.add_to_group('+a[1]+','+a[2]+'); return false;">'+IDL('AddToGroup')+'</a>';
       html += '<a href="#" onclick="'+"showBox('like.php', {act: 'publish_box', object: 'audio"+a[1]+'_'+a[2]+"', to: 'mail'}, {stat: ['page.js', 'page.css', 'wide_dd.js', 'wide_dd.css', 'sharebox.js']});"+'return false;">'+IDL('Share')+'</a>';
