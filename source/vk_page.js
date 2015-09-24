@@ -1391,7 +1391,7 @@ function vkFrProfile(){
   if (c2) c2.id="page_list_module";
   
   var mod=function(el,postfix){
-    if (postfix=='online' && el.parentNode.id=='profile_friends') el.parentNode.id='profile_friends_online';
+    if (postfix=='Online' && el.parentNode.id=='profile_friends') el.parentNode.id='profile_friends_online';
     vkNextEl(el).id='friends_profile_'+postfix;
     var hdr=geByClass('p_header_bottom',el)[0];
 	if (!hdr) return;
@@ -1430,7 +1430,7 @@ function vkFrProfile(){
     insertAfter(div,el);
   };
   var fr_match={
-  'online':/section=online/,
+  'Online':/section=online/,
   'all':/friends(\?|$)(?!section).*/,
   'common':/section=common/
   };
@@ -1488,7 +1488,7 @@ function vkFriends_get(idx){
 //if (1) shut('profile_friends_'+idx);
   var count_el=ge('Fr'+idx+'Lnk');
   if (!count_el) return;
-  if (getSet(46) == 'n' && idx=='online') {
+  if (getSet(46) == 'n' && idx=='Online') {
     clearTimeout(window.IDFrOnlineTO);
 	var tout=getSet('-',5);
     IDFriendTime=(tout || 1)*60000;
