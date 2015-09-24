@@ -2489,16 +2489,42 @@ vkLdr={
 	}
 };
 
-function vkAlertBox(title, text, callback, confirm) {// [callback] - "Yes" or "Close" button; [confirm] - "No" button
-  var aBox = new MessageBox({title: title});
-  aBox.removeButtons();
-  if (confirm) {
-   aBox.addButton(getLang('box_no'),function(){  aBox.hide(); if (isFunction(confirm)) confirm();	 }, 'no').addButton(getLang('box_yes'),function(){  aBox.hide(); if (callback) callback();	 },'yes');
+function vkAlertBox(title, text, callback, confirm, minimizable) {// [callback] - "Yes" or "Close" button; [confirm] - "No" button
+  if (minimizable) {    // вывод контента в видеоплеере, который можно сворачивать
+      var vp = vkCe('div', {id: 'video_player', style: 'overflow:auto'});
+      var box_body = vkCe('div', {'class': 'box_body'}, text);
+      vp.appendChild(box_body);
+      stManager.add(['videoview.js', 'videoview.css', 'page.js', 'page.css'], function () {
+          videoview.show(false, '0_', '', {noHistory: 1, prevLoc: nav.objLoc});
+          mvcur.mvContent.appendChild(vp);
+          hide(mvcur.mvLoader, mvcur.mvControls); // скрыть картинку с анимацией загрузки и блок для комментариев
+          if (title) {  // заголовок будет отображаться только в свернутом окне.
+              mvcur.mvData.published = 1;
+              mvcur.mvData.title = title;
+          }
+      });
+      return {
+          setOptions: function (items) {    // для совместимости с MessageBox
+              for (var i in items)
+                  if (box_body.style.setProperty) {
+                      box_body.style.setProperty(i, items[i], '');
+                  } else box_body.style[i] = items[i];
+          },
+          content: function(html) {
+              box_body.innerHTML = html;
+          }
+      };
   } else {
-    aBox.addButton(getLang('box_close'),callback?function(){aBox.hide(); callback();}:aBox.hide);
+      var aBox = new MessageBox({title: title});
+      aBox.removeButtons();
+      if (confirm) {
+       aBox.addButton(getLang('box_no'),function(){  aBox.hide(); if (isFunction(confirm)) confirm();	 }, 'no').addButton(getLang('box_yes'),function(){  aBox.hide(); if (callback) callback();	 },'yes');
+      } else {
+        aBox.addButton(getLang('box_close'),callback?function(){aBox.hide(); callback();}:aBox.hide);
+      }
+      aBox.content(text);
+      return aBox.show();
   }
-  aBox.content(text);
-  return aBox.show();
 }
 //Download with normal name by dragout link
 function vkDragOutFile(el) {

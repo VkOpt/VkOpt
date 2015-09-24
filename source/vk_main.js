@@ -439,7 +439,7 @@ function vkWikiPagesList(add_btn){
             '<a href="#" onclick="return vkGetWikiCode('+obj.pid+','+obj.group_id+');">'+IDL('Code')+'</a><span class="divider">|</span>'+
             '   <b>'+obj.title+'</b>  (creator:'+obj.creator_name+')<br>';
       });
-      var box=vkAlertBox('Wiki Pages',t);
+      var box=vkAlertBox('Wiki Pages',t,null,null,true);
       box.setOptions({width:'680px'});
    });
 }
@@ -1723,7 +1723,7 @@ function vkIMSaveHistoryBox(peer){
       <div class="button_gray"><button href="#" onclick="vkMakeMsgHistory('+peer+',true); return false;">'+IDL('SaveHistoryCfg')+'</button></div>\
       </div>\
    </div>';
-   vkAlertBox(IDL('SaveHistory'), t);
+   vkAlertBox(IDL('SaveHistory'), t, null, null, true);
 }
 
 /* NOTIFIER */
