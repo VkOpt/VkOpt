@@ -681,7 +681,6 @@ function vkInitSettings(){
       {id:86,  text: "seDisableWallWikiBox"},
       {id:88,  text: "seGroupRequestsBlock",info:'infoUseNetTrafic'},
       {id:97,  wiki:"seSubscribeToPostComments", text:examples.seSubscribeToPostComments+IDL("seSubscribeToPostComments")},
-      {id:98,  text: "seShowAllComments"},
       {id:99,  text: "seSortByLikes"},
       {id:100,  text: "seTopicSearch"}
       //{id:64,  text: "seToTopOld"}
@@ -718,7 +717,7 @@ function vkInitSettings(){
    ]
   };
 
-   //LAST 105
+   //LAST 105 FREE: 98
 
    vkSetsType={
       "on"  :[IDL('on'),'y'],
