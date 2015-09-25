@@ -138,7 +138,6 @@ vk_profile={
       if (ge('vk_profile_inited')) return;
       ge('profile_info').appendChild(vkCe('input',{type:'hidden',id:'vk_profile_inited'}));
       //if (getSet(24) == 'y') vkAvkoNav();
-      if (getSet(25) == 'y') status_icq(ge('profile_full_info'));
       if (getSet(26) == 'y') vkProcessProfileBday(); //VkCalcAge();
       vkPrepareProfileInfo();
       vk_graff.upload_graff_item();
@@ -916,31 +915,6 @@ function vkProcessProfileBday(node){
    }
 }
 
-function status_icq(node) { //add image-link 'check status in ICQ'
-  var t,i,icq,skype=null;
-  var labels=geByClass('label',node);
-  for(i=0;i<labels.length;i++){
-    if(!icq && labels[i].innerHTML=='ICQ:'){    icq=labels[i];   }
-    if(!skype && labels[i].innerHTML=='Skype:'){    skype=labels[i];   }
-    if (icq && skype) break; 
-  }
-    
-  if(icq) {	
-	var el=icq.parentNode.getElementsByTagName('div')[1];//geByClass('dataWrap')[a];
-    t=el.innerHTML || '';
-    t=t.replace(/\D+/g,'') || '';
-    if(t.length)                                                                                                                                                   // http://kanicq.ru/invisible/favicon.ico
-      el.innerHTML+=' <a href="http://kanicq.ru/invisible/'+t+'" title="'+IDL("CheckStatus")+'" target=new><img src="'+location.protocol+'//status.icq.com/online.gif?img=26&icq='+t+'&'+Math.floor(Math.random()*(100000))+'" alt="'+IDL("CheckStatus")+'"></a>';
-  } 
-  //*
-  if(skype) {	
-	var el=skype.parentNode.getElementsByTagName('div')[1];
-    t=el.innerHTML || '';
-    t=t.match(/skype\:(.+)\?call/) || '';
-    if(t.length)                                                                                                                                                   // http://kanicq.ru/invisible/favicon.ico
-      el.innerHTML+='<img style="margin-bottom:-3px" src=" http://mystatus.skype.com/smallicon/'+t[1]+'?'+Math.floor(Math.random()*(100000))+'">';
-  } //*/
-}
 function vkAvkoNav(){
   avko_num = 0;
   if(!ge('profile_photo_link')) return;

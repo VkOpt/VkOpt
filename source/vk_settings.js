@@ -613,7 +613,7 @@ function vkInitSettings(){
          '</td></tr></table>'},       
       //{id 23 - store "is expland" profile} 
       //{id:24,  text: "seAvaArrows"},
-      {id:25,  text: "seICQico"},
+      //{id:25,  text: "seICQico"},
       {id:41,  header: "seExpland_ProfileInfo",  text: "seExplandProfileInfoText",ops:[0,1,2,3]},      
       {id:26,  text: "seCalcAge"},
       {id:39,  text: "seGrCom"},
