@@ -928,7 +928,7 @@ vk_lang_en={//by Hzy
 'seWhoFaved':'Show, who added me in faves',
 'seRightBar':'Clock and calendar on right panel',
 'seGS':'[ Get settings ]',
- 
+
 'seSelApp':'[ Show `Invite all` in apps ]',
 'seStyleBtns':'Advanced text edit',
 'seAudioLyr':'Audio. Link to search lyrics. Necessary turn on ',
@@ -972,12 +972,12 @@ vk_lang_en={//by Hzy
 'seQPhotos':'Quick album preview',
 'seQPhotosText':'- off<br>- over photo<br>- under photo',
 'seScroolPhoto':'Switching photos by mouse scroll',
- 
-'Media':'Media', 
-'Users':'Users',  
-'vkInterface':'Interface',  
-'Messages':'Messages',  
-'Others':'Others', 
+
+'Media':'Media',
+'Users':'Users',
+'vkInterface':'Interface',
+'Messages':'Messages',
+'Others':'Others',
 //
 'delme':'Delete me',
 'on':'On',
@@ -1026,7 +1026,7 @@ vk_lang_en={//by Hzy
 'UpPhoto4':'y_HD1:',
 'UpPhoto5':'z_HD2:',
 'LoadFakePhotoZ':'Upload photo with cutting',
- 
+
 'LoadGraffiti':'From file',
 'LoadFakeGraffiti':'Upload graffity from file',
 'UpGraffiti':' ',//'Upload graffity:  ',
@@ -1035,26 +1035,26 @@ vk_lang_en={//by Hzy
 'GraffitiFile':'Image:',
 'UploadFraffiti':'Upload',
 'GraffHelp':'<b>Hint:</b><br>To upload graffity:<br><ol><li>Select image in specified field.</li><li>Select same image to calculate key and press "Calculate". If you already have a key, type it near this button</li><li>Press button "Upload"</li></ol>',
- 
+
 'SaveHistory':'[ Save history ]',
 'SaveToFile':'Save to file',
 'ClickForSave':'To select place for saving press button: ',
 //<<
- 
+
 'admDelInvP':'Cancel visible',
- 
- 
+
+
 'InvAll':'[Invite all]',
 'InvMsg':'Invite friends to group?',
 'InvBtn':'Invite',
 'InvBoxTtl':'Inviting friends',
 'InvStart':'Start inviting',
 'InvProgr':'Request success progress: ',
- 
+
 'InvMsgApp':'Invite all friends in app?',
 'InvNormalApp':'Invite optionally',
 'InvAll2App':'Invite all friends',
- 
+
 'AppInstEmul':'[Fake app installation]',
 'AppAdd2Me':'Add to my page',
 'AppEmulSet':'Fake app installation button',
@@ -1066,7 +1066,7 @@ vk_lang_en={//by Hzy
 'sm_Style3':'&#800;\u0441&#800;\u0442&#800;\u0438&#800;\u043b&#800;\u044c&#800; &#800;\u0442&#800;\u0435&#800;\u043a&#800;\u0441&#800;\u0442&#800;\u0430&#800;',
 'sm_Style4':'&#864;\u0441&#864;\u0442&#864;\u0438&#864;\u043b&#864;\u044c &#864;\u0442&#864;\u0435&#864;\u043a&#864;\u0441&#864;\u0442&#864;\u0430',
 'sm_Style5':'&#804;\u0441&#804;\u0442&#804;\u0438&#804;\u043b&#804;\u044c&#804; &#804;\u0442&#804;\u0435&#804;\u043a&#804;\u0441&#804;\u0442&#804;\u0430&#804;',
- 
+
 'AudioLyr':'Text',
 'aDubDel':' Deleted ', 'aDublic':' Dublicate',
 //Player
@@ -1076,7 +1076,7 @@ vk_lang_en={//by Hzy
 'Off_red':'<font color="#FF5C5C">Turn off</font>',
 'PlayerEPC':' player controls are on this page with buttons under left menu',
 'SnufflePls':'Remix playlist',
- 
+
 'txMessage':'Message',
 'txHide':'Hide',
 'Lock':'Block',
@@ -1096,16 +1096,16 @@ vk_lang_en={//by Hzy
 'msgdelinbox':'[ Delete all recieved ]',
 'msgdeloutbox':'[ Delete all sent ]',
 'msgdelconfirm':'Do you really want to delete all messages?\nUndo this action is impossible!',
- 
+
 'FaveOnline':'Faves online',
 'AltInfo':'Alternative information',
 'banit':'Ban',
- 
+
 'checkAll':'Select all',
-'uncheckAll':'Unselect all', 
+'uncheckAll':'Unselect all',
 'delChecked':'Delete selected',
 'Done':'Done',
- 
+
 'SkinMan':'Skin manager',
 'Author':'Author',
 'Zoom':'Zoom',
@@ -1122,7 +1122,7 @@ vk_lang_en={//by Hzy
 'InsertCSSCode':'Insert CSS-code here:',
 'WrongCSSCode':'Error. In CSS-code there are <style> or <script> tags',//&lt;style&gt; or &lt;script&gt;
 'CSSCode':'User styles',
- 
+
 'ToggleQuickPreviews':'Show quick album preview',
 'ClearWall':'Wall clearing',
 'ClearBegin':'Begin clearing:',
@@ -1130,14 +1130,14 @@ vk_lang_en={//by Hzy
 'FromSecondPage':'with 2nd page',
 'ClearDone':'Clearing completed',
 'Deleted':'Deleted',
- 
+
 'Settings':'Settings',
 'SearchText':'[ Find text ]',
 'THFI':'Thanks for installing VkOpt!',
 'YIV':'You have been installed VkOpt v',
 'INCD':'<font color="red"><b>ATTENTION!</b></font><br><br><b>Remember</b>: To avoid fakes, which can stole your password, download script <b>only</b> from official <a href="http://vkopt.net/" target=_blank><b>site</b></a>.<br><br>To turn on/off functions you have to go to <a href="/settings?act=vkopt" target=_blank>settings</a>.<br><br>Don\'t turn on all (necessary and unnecessary) functions to avoid lags during page loads.<br><br><b>With questions</b> of using script go to <a href="http://vkopt.net/forum/forumdisplay.php?f=4"  target=_blank>forum</a><br><br>Description of Vkopt\'s functions can be found <a href="http://vkopt.net/forum/forumdisplay.php?f=4"  target=_blank>here</a><br><br>',
 'FIS':'To complete install refresh page.',
- 
+
 //miXOniN
 'ShowHistoryStatuses':'[ Show full status history ]',
 'ErrorStatus3pageClosed':'-3 (Unable to get statuses from closed profile!)',
@@ -1152,7 +1152,7 @@ vk_lang_en={//by Hzy
 'VsegoStatusov':'All statuses: ',
 'qDelAllStatus':'Do you really want to delete all visible statuses from history?',
 //
- 
+
 'vk_year':["","%s year.","%s years.","%s years."],
 'ParseFriends':'Friends parsing',
 'FrToCatsBySex':'New category names for friends sexes',
@@ -1202,7 +1202,7 @@ vk_lang_en={//by Hzy
 'paSureBanAll':'Add <b>{count}</b> to ban?',
 
 'CheckAll':'[ Select all ]',
-'UncheckAll':'[ Unselect ]', 
+'UncheckAll':'[ Unselect ]',
 'paBanAllAndDelPhotos':'[ Delete all photos and ban ]',
 'Search':'Search',
 'mSeMobile':'Mobile services',
@@ -1277,7 +1277,7 @@ vk_lang_en={//by Hzy
 	'UserAPI_e4':'Wrong email or password, no need in captcha',
 	'WTF_SID':'Bad SID. Authorization impossible',
 	'RefreshFrListConfirm':'Check list of added/deleted friends?',
-	'Donate':'Donate', 
+	'Donate':'Donate',
 	'Donate_text':'Donate to VkOpt project',
 	'DevRekv':'<b><a href="http://vkontakte.ru/id13391307">Raevskiy Mikhail [Kiber\u041f\u0441\u0438\u0445]</a>:</b>',
 	'NeedWMKeeper':'You need installed <br><b>WebMoney Keeper Classic</b>',
@@ -1378,11 +1378,11 @@ vk_lang_en={//by Hzy
     'seIMFullTime':'Show full time for every message in conversations (d.mm.yy HH:MM:ss)',
     'seIMAlwaysShowTime':'Show time for associated messages in conversations',
     'seOnRightPart':'on the right part',
-    'clFans':'Followers', 
+    'clFans':'Followers',
     'clSubscriptions':'Subscriptions',
     'sePopupBoardInfo':'Popup details about topic/post, when points link with mouse',
     'seExplandGroupNews':'Always expland group news',
-    
+
     'FrNotInLists':'[ Friends not in lists ]',
     'IncorrectVideoLink':'Incorrect video link',
     'EnterLinkToVideo':'[Link to video as `videoXXXX_YYYY`]',
@@ -1436,10 +1436,10 @@ vk_lang_en={//by Hzy
    'LastFMAddToLoved':'Add to "Loved"',
    'LastFMRemoveFromLoved':'Remove from "Loved"',
    /* end scrobbler lang */
-   
+
    'seShowLastActivity':'Information on profile, when user was online last time',
    'mGrAdmin':'Administration',
-      
+
    'Stats':'Stats',
    'mNeArticles':'Articles',
    'vk_cc':'vk.cc',
@@ -1467,7 +1467,7 @@ vk_lang_en={//by Hzy
    'seHideBigLike':'Hide big "Like" button of photos',
    'ViewResults':'[ Results ]',
    'seWallReplyMod':'Reply to more than one person in comments',
-   
+
    'NotInFriends':'Not in friend-list',
    'OutFriendRequests':'You have sent a friend request and started following this user.',
    'FriendRequests':'This user sent a friend request and started following you',
@@ -1498,7 +1498,7 @@ vk_lang_en={//by Hzy
    'seAPlayerCtrls':'Buttons for switching tracks in minimized player',
    'PrevPosts':'[ Previous ]',
    'MakeCover':'Make cover',
-   'UnbanAll':'[ Unban all ]', 
+   'UnbanAll':'[ Unban all ]',
    'UnbanAll_confirm':'Are you sure, that you want to unban all?',
    'EnterLinkToGroup':'Enter group link',
    'seVideoFullTitles':'Show full names of videos and folders',
@@ -1639,7 +1639,7 @@ vk_lang_en={//by Hzy
   ,"LinkOrId":"Link or owner id"
   ,"seExceptConferences":"Except conferences"
 };
- 
+
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
 'LangAuthor':'<a href="/id3476823">by Vall</a> & <a href="/vall_gorr">Vall_gorr</a>',
 'LangTite':'\u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0430 \u043c\u043e\u0432\u0430',
@@ -1820,7 +1820,7 @@ vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
 'seWhoFaved':'\u041f\u043e\u043a\u0430\u0437\u0443\u0432\u0430\u0442\u0438 \u0442\u0438\u0445, \u0445\u0442\u043e \u0434\u043e\u0434\u0430\u0432 \u043c\u0435\u043d\u0435 \u0443 \u0437\u0430\u043a\u043b\u0430\u0434\u043a\u0438',
 'seRightBar':'\u041f\u0430\u043d\u0435\u043b\u044c \u0433\u043e\u0434\u0438\u043d\u043d\u0438\u043a\u0430 \u0456 \u043a\u0430\u043b\u0435\u043d\u0434\u0430\u0440\u044f \u043f\u0440\u0430\u0432\u043e\u0440\u0443\u0447',
 'seGS':'[ \u041e\u0442\u0440\u0438\u043c\u0430\u0442\u0438 \u043d\u0430\u043b\u0430\u0448\u0442\u0443\u0432\u0430\u043d\u043d\u044f ]',
- 
+
 'seSelApp':'[ \u041f\u043e\u043a\u0430\u0437\u0443\u0432\u0430\u0442\u0438 `\u0417\u0430\u043f\u0440\u043e\u0441\u0438\u0442\u0438 \u0432\u0441\u0456\u0445` \u0432 \u0434\u043e\u0434\u0430\u0442\u043a\u0430\u0445 ]',
 'seStyleBtns':'\u0420\u043e\u0437\u0448\u0438\u0440\u0435\u043d\u0435 \u0440\u0435\u0434\u0430\u0433\u0443\u0432\u0430\u043d\u043d\u044f \u0442\u0435\u043a\u0441\u0442\u0443',
 'seAudioLyr':'\u0410\u0443\u0434\u0456\u043e. \u041f\u043e\u0441\u0438\u043b\u0430\u043d\u043d\u044f \u043d\u0430 \u043f\u043e\u0448\u0443\u043a \u0442\u0435\u043a\u0441\u0442\u0443 \u043f\u0456\u0441\u043d\u0456. \u041d\u0435\u043e\u0431\u0445\u0456\u0434\u043d\u043e \u0432\u043a\u043b\u044e\u0447\u0438\u0442\u0438 ',
@@ -1864,12 +1864,12 @@ vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
 'seQPhotos':'\u0428\u0432\u0438\u0434\u043a\u0438\u0439 \u043e\u0433\u043b\u044f\u0434 \u0430\u043b\u044c\u0431\u043e\u043c\u0443',
 'seQPhotosText':'- \u0432\u0438\u043a\u043b<br>- \u043d\u0430\u0434 \u0444\u043e\u0442\u043e<br>- \u043f\u0456\u0434 \u0444\u043e\u0442\u043e',
 'seScroolPhoto':'\u041f\u0435\u0440\u0435\u0433\u043e\u0440\u0442\u0430\u043d\u043d\u044f \u0444\u043e\u0442\u043e \u043a\u043e\u043b\u0456\u0449\u0430\u0442\u043a\u043e\u043c \u043c\u0438\u0448\u0456',
- 
-'Media':'\u041c\u0435\u0434\u0456\u0430', 
-'Users':'\u041a\u043e\u0440\u0438\u0441\u0442\u0443\u0432\u0430\u0447\u0456',  
-'vkInterface':'\u0406\u043d\u0442\u0435\u0440\u0444\u0435\u0439\u0441',  
-'Messages':'\u041f\u043e\u0432\u0456\u0434\u043e\u043c\u043b\u0435\u043d\u043d\u044f',  
-'Others':'\u0406\u043d\u0448\u0435', 
+
+'Media':'\u041c\u0435\u0434\u0456\u0430',
+'Users':'\u041a\u043e\u0440\u0438\u0441\u0442\u0443\u0432\u0430\u0447\u0456',
+'vkInterface':'\u0406\u043d\u0442\u0435\u0440\u0444\u0435\u0439\u0441',
+'Messages':'\u041f\u043e\u0432\u0456\u0434\u043e\u043c\u043b\u0435\u043d\u043d\u044f',
+'Others':'\u0406\u043d\u0448\u0435',
 //
 'delme':'\u0412\u0438\u0434\u0430\u043b\u0438\u0442\u0438 \u043c\u0435\u043d\u0435',
 'on':'\u0412\u043a\u043b',
@@ -1918,7 +1918,7 @@ vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
 'UpPhoto4':'y_HD1:',
 'UpPhoto5':'z_HD2:',
 'LoadFakePhotoZ':'\u0417\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0438\u0442\u0438 \u0444\u043e\u0442\u043e \u0437 \u043d\u0430\u0440\u0456\u0437\u043a\u043e\u044e',
- 
+
 'LoadGraffiti':'\u0417 \u0444\u0430\u0439\u043b\u0443',
 'LoadFakeGraffiti':'\u0417\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0438\u0442\u0438 \u0433\u0440\u0430\u0444\u0456\u0442\u0456 \u0437 \u0444\u0430\u0439\u043b\u0443',
 'UpGraffiti':' ',//'\u0417\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0435\u043d\u043d\u044f \u0433\u0440\u0430\u0444\u0456\u0442\u0456:  ',
@@ -1927,26 +1927,26 @@ vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
 'GraffitiFile':'\u0417\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u043d\u044f:',
 'UploadFraffiti':'\u0417\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0438\u0442\u0438',
 'GraffHelp':'<b>\u041f\u0456\u0434\u043a\u0430\u0437\u043a\u0430:</b><br>\u0414\u043b\u044f \u0437\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0435\u043d\u043d\u044f \u0433\u0440\u0430\u0444\u0456\u0442\u0456 \u043d\u0435\u043e\u0431\u0445\u0456\u0434\u043d\u043e:<br><ol><li>\u0412\u0438\u0431\u0440\u0430\u0442\u0438 \u0437\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u043d\u044f \u0443 \u0432\u0456\u0434\u043f\u043e\u0432\u0456\u0434\u043d\u043e\u043c\u0443 \u043f\u043e\u043b\u0456.</li><li>\u0412\u0438\u0431\u0440\u0430\u0442\u0438 \u0446\u0435 \u0436 \u0437\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u043d\u044f \u0434\u043b\u044f \u0440\u043e\u0437\u0440\u0430\u0445\u0443\u043d\u043a\u0443 \u043a\u043b\u044e\u0447\u0430 \u043d\u0430\u0442\u0438\u0441\u043a\u0430\u043d\u043d\u044f\u043c \u043d\u0430 \u043a\u043d\u043e\u043f\u043a\u0443 "\u041f\u043e\u0440\u0430\u0445\u0443\u0432\u0430\u0442\u0438". \u042f\u043a\u0449\u043e \u0443 \u0432\u0430\u0441 \u0432\u0436\u0435 \u0454 \u043a\u043b\u044e\u0447, \u0442\u043e \u0432\u043a\u0430\u0436\u0456\u0442\u044c \u0439\u043e\u0433\u043e \u043f\u043e\u0440\u044f\u0434 \u0437 \u0446\u0456\u0454\u044e \u043a\u043d\u043e\u043f\u043a\u043e\u044e</li><li>\u041d\u0430\u0442\u0438\u0441\u043d\u0443\u0442\u0438 \u043a\u043d\u043e\u043f\u043a\u0443 "\u0417\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0438\u0442\u0438"</li></ol>',
- 
+
 'SaveHistory':'[ \u0417\u0431\u0435\u0440\u0435\u0433\u0442\u0438 \u043b\u0438\u0441\u0442\u0443\u0432\u0430\u043d\u043d\u044f ]',
 'SaveToFile':'\u0417\u0431\u0435\u0440\u0435\u0436\u0435\u043d\u043d\u044f \u0434\u043e \u0444\u0430\u0439\u043b\u0443',
 'ClickForSave':'\u0414\u043b\u044f \u0432\u0438\u0431\u043e\u0440\u0443 \u043c\u0456\u0441\u0446\u044f \u0437\u0431\u0435\u0440\u0435\u0436\u0435\u043d\u043d\u044f \u043d\u0430\u0442\u0438\u0441\u043d\u0456\u0442\u044c \u043a\u043d\u043e\u043f\u043a\u0443: ',
 //<<
- 
+
 'admDelInvP':'\u0412\u0456\u0434\u043c\u0456\u043d\u0438\u0442\u0438 \u0432\u0438\u0434\u0438\u043c\u0456',
- 
- 
+
+
 'InvAll':'[\u0417\u0430\u043f\u0440\u043e\u0441\u0438\u0442\u0438 \u0432\u0441\u0456\u0445]',
 'InvMsg':'\u0417\u0430\u043f\u0440\u043e\u0441\u0438\u0442\u0438 \u0434\u0440\u0443\u0437\u0456\u0432 \u0432 \u0433\u0440\u0443\u043f\u0443?',
 'InvBtn':'\u0417\u0430\u043f\u0440\u043e\u0441\u0438\u0442\u0438',
 'InvBoxTtl':'\u0417\u0430\u043f\u0440\u043e\u0448\u0435\u043d\u043d\u044f \u0434\u0440\u0443\u0437\u0456\u0432',
 'InvStart':'\u041f\u043e\u0447\u0438\u043d\u0430\u0454\u043c\u043e \u0437\u0430\u043f\u0440\u043e\u0448\u0443\u0432\u0430\u0442\u0438',
 'InvProgr':'\u0425\u0456\u0434 \u0432\u0438\u043a\u043e\u043d\u0430\u043d\u043d\u044f \u0437\u0430\u043f\u0438\u0442\u0443: ',
- 
+
 'InvMsgApp':'\u0417\u0430\u043f\u0440\u043e\u0441\u0438\u0442\u0438 \u0432\u0441\u0456\u0445 \u0434\u0440\u0443\u0437\u0456\u0432 \u0432 \u0434\u043e\u0434\u0430\u0442\u043e\u043a?',
 'InvNormalApp':'\u0417\u0430\u043f\u0440\u043e\u0441\u0438\u0442\u0438 \u0432\u0438\u0431\u0456\u0440\u043a\u043e\u0432\u043e',
 'InvAll2App':'\u0417\u0430\u043f\u0440\u043e\u0441\u0438\u0442\u0438 \u0432\u0441\u0456\u0445 \u0434\u0440\u0443\u0437\u0456\u0432',
- 
+
 'AppInstEmul':'[\u0417\u043c\u0443\u0441\u0438\u0442\u0438 \u0434\u043e\u0434\u0430\u0442\u043e\u043a \u0434\u0443\u043c\u0430\u0442\u0438 \u0449\u043e \u0432\u043e\u043d\u043e \u0432\u0441\u0442\u0430\u043d\u043e\u0432\u043b\u0435\u043d\u0435]',
 'AppAdd2Me':'\u0414\u043e\u0434\u0430\u0442\u0438 \u043d\u0430 \u043c\u043e\u044e \u0441\u0442\u043e\u0440\u0456\u043d\u043a\u0443',
 'AppEmulSet':'\u041a\u043d\u043e\u043f\u043a\u0430 \u0456\u043c\u0456\u0442\u0430\u0446\u0456\u0457 \u0432\u0441\u0442\u0430\u043d\u043e\u0432\u043b\u0435\u043d\u043d\u044f \u0434\u043e\u0434\u0430\u0442\u043a\u0443',
@@ -1958,7 +1958,7 @@ vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
 'sm_Style3':'&#800;\u0441&#800;\u0442&#800;\u0438&#800;\u043b&#800;\u044c&#800; &#800;\u0442&#800;\u0435&#800;\u043a&#800;\u0441&#800;\u0442&#800;\u0430&#800;',
 'sm_Style4':'&#864;\u0441&#864;\u0442&#864;\u0438&#864;\u043b&#864;\u044c &#864;\u0442&#864;\u0435&#864;\u043a&#864;\u0441&#864;\u0442&#864;\u0430',
 'sm_Style5':'&#804;\u0441&#804;\u0442&#804;\u0438&#804;\u043b&#804;\u044c&#804; &#804;\u0442&#804;\u0435&#804;\u043a&#804;\u0441&#804;\u0442&#804;\u0430&#804;',
- 
+
 'AudioLyr':'\u0422\u0435\u043a\u0441\u0442',
 'aDubDel':' \u0412\u0438\u043b\u0443\u0447\u0435\u043d\u043e ', 'aDublic':' \u0434\u0443\u0431\u043b\u0456\u043a\u0430\u0442',
 //Player
@@ -1968,7 +1968,7 @@ vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
 'Off_red':'<font color="#FF5C5C">\u0412\u0438\u043c\u043a\u043d\u0443\u0442\u0438</font>',
 'PlayerEPC':' \u0443\u043f\u0440\u0430\u0432\u043b\u0456\u043d\u043d\u044f \u043f\u043b\u0435\u0454\u0440\u043e\u043c \u043d\u0430 \u0446\u0456\u0439 \u0441\u0442\u043e\u0440\u0456\u043d\u0446\u0456 \u043a\u043d\u043e\u043f\u043a\u0430\u043c\u0438 \u043f\u0456\u0434 \u043b\u0456\u0432\u0438\u043c \u043c\u0435\u043d\u044e',
 'SnufflePls':'\u041f\u0435\u0440\u0435\u043c\u0456\u0448\u0430\u0442\u0438 \u043f\u043b\u0435\u0439-\u043b\u0438\u0441\u0442',
- 
+
 'txMessage':'\u041f\u043e\u0432\u0456\u0434\u043e\u043c\u043b\u0435\u043d\u043d\u044f',
 'txHide':'\u0421\u0445\u043e\u0432\u0430\u0442\u0438',
 'Lock':'\u0417\u0430\u0431\u043b\u043e\u043a\u0443\u0432\u0430\u0442\u0438',
@@ -1988,16 +1988,16 @@ vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
 'msgdelinbox':'[ \u0412\u0438\u0434\u0430\u043b\u0438\u0442\u0438 \u0432\u0441\u0456 \u0432\u0445\u0456\u0434\u043d\u0456 ]',
 'msgdeloutbox':'[ \u0412\u0438\u0434\u0430\u043b\u0438\u0442\u0438 \u0432\u0441\u0456 \u0432\u0438\u0445\u0456\u0434\u043d\u0456 ]',
 'msgdelconfirm':'\u0412\u0438 \u0434\u0456\u0439\u0441\u043d\u043e \u0445\u043e\u0447\u0435\u0442\u0435 \u0432\u0438\u0434\u0430\u043b\u0438\u0442\u0438 \u0432\u0441\u0456 \u043f\u043e\u0432\u0456\u0434\u043e\u043c\u043b\u0435\u043d\u043d\u044f?<br>\u0412\u0456\u0434\u043c\u0456\u043d\u0438\u0442\u0438 \u0434\u0456\u044e \u0431\u0443\u0434\u0435 \u043d\u0435\u043c\u043e\u0436\u043b\u0438\u0432\u043e!',
- 
+
 'FaveOnline':'\u0417\u0430\u043a\u043b\u0430\u0434\u043a\u0438 \u043e\u043d\u043b\u0430\u0439\u043d',
 'AltInfo':'\u0410\u043b\u044c\u0442\u0435\u0440\u043d\u0430\u0442\u0438\u0432\u043d\u0430 \u0456\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0456\u044f',
 'banit':'\u0412 \u0431\u0430\u043d',
- 
+
 'checkAll':'\u041f\u043e\u0437\u043d\u0430\u0447\u0438\u0442\u0438 \u0432\u0441\u0435',
-'uncheckAll':'\u0417\u043d\u044f\u0442\u0438 \u043f\u043e\u0437\u043d\u0430\u0447\u0435\u043d\u043d\u044f', 
+'uncheckAll':'\u0417\u043d\u044f\u0442\u0438 \u043f\u043e\u0437\u043d\u0430\u0447\u0435\u043d\u043d\u044f',
 'delChecked':'\u0412\u0438\u0434\u0430\u043b\u0438\u0442\u0438 \u043f\u043e\u0437\u043d\u0430\u0447\u0435\u043d\u0456',
 'Done':'\u0412\u0438\u043a\u043e\u043d\u0430\u043d\u043e',
- 
+
 'SkinMan':'\u041c\u0435\u043d\u0435\u0434\u0436\u0435\u0440 \u0442\u0435\u043c',
 'Author':'\u0410\u0432\u0442\u043e\u0440',
 'Zoom':'\u0417\u0431\u0456\u043b\u044c\u0448\u0438\u0442\u0438',
@@ -2014,7 +2014,7 @@ vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
 'InsertCSSCode':'\u0412\u0441\u0442\u0430\u0432\u0442\u0435 CSS-\u043a\u043e\u0434 \u0442\u0443\u0442:',
 'WrongCSSCode':'\u041f\u043e\u043c\u0438\u043b\u043a\u0430. \u0412 CSS-\u043a\u043e\u0434\u0456 \u043f\u0440\u0438\u0441\u0443\u0442\u043d\u0456 <style> \u0430\u0431\u043e <script> \u0442\u0435\u0433\u0438',//&lt;style&gt; \u0430\u0431\u043e &lt;script&gt;
 'CSSCode':'\u0421\u0442\u0438\u043b\u0456 \u043a\u043e\u0440\u0438\u0441\u0442\u0443\u0432\u0430\u0447\u0430',
- 
+
 'ToggleQuickPreviews':'\u041f\u043e\u043a\u0430\u0437\u0430\u0442\u0438 \u0448\u0432\u0438\u0434\u043a\u0438\u0439 \u043f\u0435\u0440\u0435\u0433\u043b\u044f\u0434 \u0430\u043b\u044c\u0431\u043e\u043c\u0443',
 'ClearWall':'\u041e\u0447\u0438\u0449\u0435\u043d\u043d\u044f \u0441\u0442\u0456\u043d\u0438',
 'ClearBegin':'\u041f\u043e\u0447\u0430\u0442\u0438 \u043e\u0447\u0438\u0449\u0435\u043d\u043d\u044f:',
@@ -2022,14 +2022,14 @@ vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
 'FromSecondPage':'\u0437 \u0434\u0440\u0443\u0433\u043e\u0457 \u0441\u0442\u043e\u0440\u0456\u043d\u043a\u0438',
 'ClearDone':'\u041e\u0447\u0438\u0449\u0435\u043d\u043d\u044f \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043d\u043e',
 'Deleted':'\u0412\u0438\u043b\u0443\u0447\u0435\u043d\u043e',
- 
+
 'Settings':'\u041d\u0430\u043b\u0430\u0448\u0442\u0443\u0432\u0430\u043d\u043d\u044f',
 'SearchText':'[ \u0417\u043d\u0430\u0439\u0442\u0438 \u0442\u0435\u043a\u0441\u0442 ]',
 'THFI':'\u0414\u044f\u043a\u0443\u0454\u043c\u043e \u0437\u0430 \u0443\u0441\u0442\u0430\u043d\u043e\u0432\u043a\u0443 \u0441\u043a\u0440\u0438\u043f\u0442\u0430 \u0412\u043a\u041e\u043f\u0442!',
 'YIV':'\u0412\u0438 \u0432\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u043b\u0438 VkOpt v',
 'INCD':'<font color="red"><b>\u0423\u0412\u0410\u0413\u0410!</b></font><br><br><b>\u041f\u0430\u043c\'\u044f\u0442\u0430\u0439\u0442\u0435</b>: \u0429\u043e\u0431 \u0443\u043d\u0438\u043a\u043d\u0443\u0442\u0438 \u043f\u0456\u0434\u0440\u043e\u0431\u043e\u043a, \u044f\u043a\u0456 \u043c\u043e\u0436\u0443\u0442\u044c \u043a\u0440\u0430\u0441\u0442\u0438 \u043f\u0430\u0440\u043e\u043b\u0456 \u043a\u043e\u0440\u0438\u0441\u0442\u0443\u0432\u0430\u0447\u0456\u0432 , \u0441\u043a\u0440\u0438\u043f\u0442 \u0437\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0443\u0432\u0430\u0442\u0438 <b>\u0442\u0456\u043b\u044c\u043a\u0438</b> \u0437 \u043e\u0444\u0456\u0446\u0456\u0439\u043d\u043e\u0433\u043e <a href="http://vkopt.net/" target=_blank><b>\u0441\u0430\u0439\u0442\u0443</b></a>.<br><br>\u0414\u043b\u044f \u0432\u043a\u043b\u044e\u0447\u0435\u043d\u043d\u044f/\u0432\u0456\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u043d\u044f \u0444\u0443\u043d\u043a\u0446\u0456\u0439 \u0441\u043a\u0440\u0438\u043f\u0442\u0430 \u0432\u0430\u043c \u043d\u0435\u043e\u0431\u0445\u0456\u0434\u043d\u043e \u0437\u0430\u0439\u0442\u0438 \u0432 <a href="/settings.php?act=vkopt" target=_blank>\u043d\u0430\u043b\u0430\u0448\u0442\u0443\u0432\u0430\u043d\u043d\u044f</a>.<br><br>\u041d\u0435 \u0432\u043c\u0438\u043a\u0430\u0439\u0442\u0435 \u0432\u0441\u0435 \u043f\u0456\u0434\u0440\u044f\u0434 (\u0456 \u043f\u043e\u0442\u0440\u0456\u0431\u043d\u0456, \u0456 \u043d\u0435 \u043f\u043e\u0442\u0440\u0456\u0431\u043d\u0456) \u0444\u0443\u043d\u043a\u0446\u0456\u0457, \u0449\u043e\u0431 \u0443\u043d\u0438\u043a\u043d\u0443\u0442\u0438 \u043f\u0440\u0438\u0433\u0430\u043b\u044c\u043c\u043e\u0432\u0443\u0432\u0430\u043d\u043d\u044f \u043f\u0440\u0438 \u0437\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0435\u043d\u043d\u0456 \u0441\u0442\u043e\u0440\u0456\u043d\u043a\u0438.<br><br><b>\u0417 \u043f\u0438\u0442\u0430\u043d\u043d\u044f\u043c\u0438</b> \u0437 \u0432\u0438\u043a\u043e\u0440\u0438\u0441\u0442\u0430\u043d\u043d\u044f \u0441\u043a\u0440\u0438\u043f\u0442\u0430 \u0437\u0432\u0435\u0440\u0442\u0430\u0439\u0442\u0435\u0441\u044f \u043d\u0430 <a href="http://vkopt.net/forum/forumdisplay.php?f=4"  target=_blank>\u0444\u043e\u0440\u0443\u043c</a><br><br>\u041e\u043f\u0438\u0441 \u043f\u0440\u0438\u0437\u043d\u0430\u0447\u0435\u043d\u044c \u0444\u0443\u043d\u043a\u0446\u0456\u0439 Vkopt\'\u0430 \u043c\u043e\u0436\u043d\u0430 \u043f\u0440\u043e\u0447\u0438\u0442\u0430\u0442\u0438 <a href="http://vkopt.net/forum/forumdisplay.php?f=4"  target=_blank>\u0442\u0443\u0442</a><br><br>',
 'FIS':'\u0414\u043b\u044f \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043d\u043d\u044f \u0432\u0441\u0442\u0430\u043d\u043e\u0432\u043b\u0435\u043d\u043d\u044f \u043f\u0435\u0440\u0435\u0437\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0442\u0435 \u0441\u0442\u043e\u0440\u0456\u043d\u043a\u0443.',
- 
+
 //miXOniN
 'ShowHistoryStatuses':'[ \u041f\u043e\u043a\u0430\u0437\u0430\u0442\u0438 \u0432\u0441\u044e \u0456\u0441\u0442\u043e\u0440\u0456\u044e \u0441\u0442\u0430\u0442\u0443\u0441\u0456\u0432 ]',
 'ErrorStatus3pageClosed':'-3 (\u041d\u0435\u043c\u043e\u0436\u043b\u0438\u0432\u043e \u043e\u0442\u0440\u0438\u043c\u0430\u0442\u0438 \u0441\u0442\u0430\u0442\u0443\u0441\u0438 \u0432\u0456\u0434 \u0437\u0430\u043a\u0440\u0438\u0442\u043e\u0457 \u0432\u0456\u0434 \u0432\u0430\u0441 \u0441\u0442\u043e\u0440\u0456\u043d\u043a\u0438!)',
@@ -2044,7 +2044,7 @@ vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
 'VsegoStatusov':'\u0412\u0441\u044c\u043e\u0433\u043e \u0441\u0442\u0430\u0442\u0443\u0441\u0456\u0432: ',
 'qDelAllStatus':'\u0412\u0438 \u0434\u0456\u0439\u0441\u043d\u043e \u0445\u043e\u0447\u0435\u0442\u0435 \u0432\u0438\u0434\u0430\u043b\u0438\u0442\u0438 \u0432\u0441\u0456 \u0432\u0438\u0434\u0438\u043c\u0456 \u0441\u0442\u0430\u0442\u0443\u0441\u0438 \u0437 \u0456\u0441\u0442\u043e\u0440\u0456\u0457?',
 //
- 
+
 'vk_year':["","%s \u0440\u0456\u043a.","%s \u0440\u043e\u043a\u0438.","%s \u0440\u043e\u043a\u0456\u0432."],
 'ParseFriends':'\u0420\u043e\u0437\u0431\u0456\u0440 \u0434\u0440\u0443\u0437\u0456\u0432',
 'FrToCatsBySex':'\u0406\u043c\u0435\u043d\u0430 \u043d\u043e\u0432\u0438\u0445 \u043a\u0430\u0442\u0435\u0433\u043e\u0440\u0456\u0439 \u0434\u043b\u044f \u0434\u0440\u0443\u0437\u0456\u0432 \u0440\u0456\u0437\u043d\u043e\u0457 \u0441\u0442\u0430\u0442\u0456 ',
@@ -2091,9 +2091,9 @@ vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
 'paBanAll':'[ \u0417\u0430\u0431\u0430\u043d\u0438\u0442\u0438 \u0432\u0441\u0456\u0445 ]',
 'paBanUsers':'\u0411\u043b\u043e\u043a\u0443\u0432\u0430\u043d\u043d\u044f \u043a\u043e\u0440\u0438\u0441\u0442\u0443\u0432\u0430\u0447\u0456\u0432',
 'paSureBanAll':'\u0414\u043e\u0434\u0430\u0442\u0438 <b>{count}</b> \u0447\u043e\u043b. \u0432 \u0431\u0430\u043d?',
- 
+
 'CheckAll':'[ \u0412\u0456\u0434\u043c\u0456\u0442\u0438\u0442\u0438 \u0432\u0441\u0456 ]',
-'UncheckAll':'[ \u0417\u043d\u044f\u0442\u0438 \u043f\u043e\u0437\u043d\u0430\u0447\u043a\u0438 ]', 
+'UncheckAll':'[ \u0417\u043d\u044f\u0442\u0438 \u043f\u043e\u0437\u043d\u0430\u0447\u043a\u0438 ]',
 'paBanAllAndDelPhotos':'[ \u0412\u0438\u0434\u0430\u043b\u0438\u0442\u0438 \u0432\u0441\u0456 \u0444\u043e\u0442\u043e \u0456 \u0437\u0430\u0431\u0430\u043d\u0438\u0442\u0438 ]',
 'Search':'\u041f\u043e\u0448\u0443\u043a',
 'mSeMobile':'\u041c\u043e\u0431\u0456\u043b\u044c\u043d\u0456 \u0441\u0435\u0440\u0432\u0456\u0441\u0438',
@@ -2175,7 +2175,7 @@ vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
 'seMoreDarkViewer': '\u0427\u043e\u0440\u043d\u0438\u0439 \u043f\u0435\u0440\u0435\u0433\u043b\u044f\u0434\u0430\u0447 \u0444\u043e\u0442\u043e \u0432 \u0440\u0435\u0436\u0438\u043c\u0456 \u043d\u0456\u0447',
 'seCompactFave': '\u0417\u043c\u0435\u043d\u0448\u0438\u0442\u0438 \u0440\u043e\u0437\u043c\u0456\u0440 \u0430\u0432\u0430\u0442\u0430\u0440\u0456\u0432 \u0432 \u0437\u0430\u043a\u043b\u0430\u0434\u043a\u0430\u0445',
 'seLMenuWallLink': '\u041f\u043e\u0441\u0438\u043b\u0430\u043d\u043d\u044f \u043d\u0430 \u0441\u0442\u0456\u043d\u0443 \u0432 \u043b\u0456\u0432\u043e\u043c\u0443 \u043c\u0435\u043d\u044e',
-'seCfgBackupDate': '\u0414\u0430\u0442\u0430 \u0441\u0442\u0432\u043e\u0440\u0435\u043d\u043d\u044f \u0440\u0435\u0437\u0435\u0440\u0432\u043d\u043e\u0457 \u043a\u043e\u043f\u0456\u0457 \u043d\u0430\u043b\u0430\u0448\u0442\u0443\u0432\u0430\u043d\u044c:', 
+'seCfgBackupDate': '\u0414\u0430\u0442\u0430 \u0441\u0442\u0432\u043e\u0440\u0435\u043d\u043d\u044f \u0440\u0435\u0437\u0435\u0440\u0432\u043d\u043e\u0457 \u043a\u043e\u043f\u0456\u0457 \u043d\u0430\u043b\u0430\u0448\u0442\u0443\u0432\u0430\u043d\u044c:',
 'seCfgNoBackup': '\u041d\u0435\u043c\u0430\u0454 \u0440\u0435\u0437\u0435\u0440\u0432\u043d\u043e\u0457 \u043a\u043e\u043f\u0456\u0457 \u043d\u0430\u043b\u0430\u0448\u0442\u0443\u0432\u0430\u043d\u044c \u043d\u0430 \u0441\u0435\u0440\u0432\u0435\u0440\u0456',
 'seCfgRestored': '\u041d\u0430\u043b\u0430\u0448\u0442\u0443\u0432\u0430\u043d\u043d\u044f \u0437\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0435\u043d\u0456. \u041e\u043d\u043e\u0432\u0456\u0442\u044c \u0441\u0442\u043e\u0440\u0456\u043d\u043a\u0443.',
 'seCfgLoadError': '\u041f\u043e\u043c\u0438\u043b\u043a\u0430 \u0437\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0435\u043d\u043d\u044f \u043d\u0430\u043b\u0430\u0448\u0442\u0443\u0432\u0430\u043d\u044c.',
@@ -2378,7 +2378,7 @@ vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
    'seAPlayerCtrls':'\u041a\u043d\u043e\u043f\u043a\u0438 \u043f\u0435\u0440\u0435\u043a\u043b\u044e\u0447\u0435\u043d\u043d\u044f \u0442\u0440\u0435\u043a\u0456\u0432 \u0443 \u0437\u0433\u043e\u0440\u043d\u0443\u0442\u043e\u043c\u0443 \u0440\u0435\u0436\u0438\u043c\u0456',
    'PrevPosts':'[ \u041f\u043e\u043f\u0435\u0440\u0435\u0434\u043d\u0456 ]',
    'MakeCover':'\u0417\u0440\u043e\u0431\u0438\u0442\u0438 \u043e\u0431\u043a\u043b\u0430\u0434\u0438\u043d\u043a\u043e\u044e',
-   'UnbanAll':'[ \u0420\u043e\u0437\u0431\u0430\u043d\u0438\u0442\u0438 \u0432\u0441\u0456\u0445 ]', 
+   'UnbanAll':'[ \u0420\u043e\u0437\u0431\u0430\u043d\u0438\u0442\u0438 \u0432\u0441\u0456\u0445 ]',
    'UnbanAll_confirm':'\u0412\u0438 \u0432\u043f\u0435\u0432\u043d\u0435\u043d\u0456, \u0449\u043e \u0445\u043e\u0447\u0435\u0442\u0435 \u043f\u0440\u043e\u0432\u0435\u0441\u0442\u0438 \u0430\u043c\u043d\u0456\u0441\u0442\u0456\u044e?',
    'EnterLinkToGroup':'\u0412\u043a\u0430\u0436\u0456\u0442\u044c \u043f\u043e\u0441\u0438\u043b\u0430\u043d\u043d\u044f \u043d\u0430 \u0433\u0440\u0443\u043f\u0443',
    'seVideoFullTitles':'\u0412\u0456\u0434\u043e\u0431\u0440\u0430\u0436\u0430\u0442\u0438 \u043f\u043e\u0432\u043d\u0456 \u0456\u043c\u0435\u043d\u0430 \u0432\u0456\u0434\u0435\u043e \u0442\u0430 \u0430\u043b\u044c\u0431\u043e\u043c\u0456\u0432',
@@ -2708,7 +2708,7 @@ vk_lang_by={ //by Gavr id8610702
 'seWhoFaved':'\u041f\u0430\u043a\u0430\u0437\u0432\u0430\u0446\u044c \u0442\u044b\u0445, \u0445\u0442\u043e \u0434\u0430\u0434\u0430\u045e \u043c\u044f\u043d\u0435 \u045e \u0437\u0430\u043a\u043b\u0430\u0434\u043a\u0456',
 'seRightBar':'\u041f\u0430\u043d\u044d\u043b\u044c \u0433\u0430\u0434\u0437\u0456\u043d\u044c\u043di\u043a\u0430 \u0456 \u043a\u0430\u043b\u0435\u043d\u0434\u0430\u0440\u0430 \u0441\u043f\u0440\u0430\u0432\u0430',
 'seGS':'[ \u0410\u0442\u0440\u044b\u043c\u0430\u0446\u044c \u043d\u0430\u043b\u0430\u0434\u044b ]',
- 
+
 'seSelApp':'[ \u041f\u0430\u043a\u0430\u0437\u0432\u0430\u0446\u044c `\u0417\u0430\u043f\u0440\u0430\u0441\u0456\u0446\u044c \u0443\u0441\u0456\u0445` \u0443 \u043f\u0440\u0430\u0433\u0440\u0430\u043c\u0430\u0445 ]',
 'seStyleBtns':'\u041f\u0430\u0448\u044b\u0440\u0430\u043d\u0430\u0435 \u0440\u044d\u0434\u0430\u0433\u0430\u0432\u0430\u043d\u043d\u0435 \u0442\u044d\u043a\u0441\u0442\u0443',
 'seAudioLyr':'\u0410\u045e\u0434\u044b\u0451. \u0421\u043f\u0430\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 \u043f\u043e\u0448\u0443\u043a \u0442\u044d\u043a\u0441\u0442\u0443 \u043f\u0435\u0441\u043d\u0456. \u041d\u0435\u0430\u0431\u0445\u043e\u0434\u043d\u0430 \u045e\u043a\u043b\u044e\u0447\u044b\u0446\u044c ',
@@ -2752,12 +2752,12 @@ vk_lang_by={ //by Gavr id8610702
 'seQPhotos':'\u0425\u0443\u0442\u043a\u0456 \u043f\u0440\u0430\u0434\u043f\u0440\u0430\u0433\u043b\u044f\u0434 \u0430\u043b\u044c\u0431\u043e\u043c\u0430',
 'seQPhotosText':'- \u0432\u044b\u043a\u043b<br>- \u043d\u0430\u0434 \u0444\u043e\u0442\u0430<br>- \u043f\u0430\u0434 \u0444\u043e\u0442\u0430',
 'seScroolPhoto':'\u0413\u0430\u0440\u0442\u0430\u043d\u043d\u0435 \u0444\u043e\u0442\u0430 \u043a\u043e\u043b\u0446\u0430\u043c \u043c\u044b\u0448\u044b',
- 
-'Media':'\u041c\u0435\u0434\u044b\u0430', 
-'Users':'\u041a\u0430\u0440\u044b\u0441\u0442\u0430\u0447\u044b',  
-'vkInterface':'\u0406\u043d\u0442\u044d\u0440\u0444\u0435\u0439\u0441',  
-'Messages':'\u041f\u0430\u0432\u0435\u0434\u0430\u043c\u043b\u0435\u043d\u044c\u043d\u0456',  
-'Others':'\u0410\u0441\u0442\u0430\u0442\u043d\u044f\u0435', 
+
+'Media':'\u041c\u0435\u0434\u044b\u0430',
+'Users':'\u041a\u0430\u0440\u044b\u0441\u0442\u0430\u0447\u044b',
+'vkInterface':'\u0406\u043d\u0442\u044d\u0440\u0444\u0435\u0439\u0441',
+'Messages':'\u041f\u0430\u0432\u0435\u0434\u0430\u043c\u043b\u0435\u043d\u044c\u043d\u0456',
+'Others':'\u0410\u0441\u0442\u0430\u0442\u043d\u044f\u0435',
 //
 'delme':'\u0412\u044b\u0434\u0430\u043bi\u0446\u044c \u043c\u044f\u043d\u0435',
 'on':'\u0423\u043a\u043b',
@@ -2806,7 +2806,7 @@ vk_lang_by={ //by Gavr id8610702
 'UpPhoto4':'y_HD1:',
 'UpPhoto5':'z_HD2:',
 'LoadFakePhotoZ':'\u0417\u0430\u0433\u0440\u0443\u0437\u0456\u0446\u044c \u0444\u043e\u0442\u0430 \u0437 \u043d\u0430\u0440\u044d\u0437\u043a\u0430\u0439',
- 
+
 'LoadGraffiti':'\u0417 \u0444\u0430\u0439\u043b\u0430',
 'LoadFakeGraffiti':'\u0417\u0430\u0433\u0440\u0443\u0437\u0456\u0446\u044c \u0433\u0440\u0430\u0444\u0456\u0446\u0456 \u0437 \u0444\u0430\u0439\u043b\u0430',
 'UpGraffiti':' ',//'\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u0433\u0440\u0430\u0444\u0456\u0446\u0456:  ',
@@ -2815,26 +2815,26 @@ vk_lang_by={ //by Gavr id8610702
 'GraffitiFile':'\u041c\u0430\u043b\u044e\u043d\u0430\u043a:',
 'UploadFraffiti':'\u0417\u0430\u0433\u0440\u0443\u0437\u0456\u0446\u044c',
 'GraffHelp':'<b>\u041f\u0430\u0434\u043a\u0430\u0437\u043a\u0430:</b><br>\u0414\u043b\u044f \u0437\u0430\u0433\u0440\u0443\u0437\u043a\u0456 \u0433\u0440\u0430\u0444\u0456\u0446\u0456 \u043d\u0435\u0430\u0431\u0445\u043e\u0434\u043d\u0430:<br><ol><li>\u0410\u0431\u0440\u0430\u0446\u044c \u043c\u0430\u043b\u044e\u043d\u0430\u043a \u0443 \u0430\u0434\u043f\u0430\u0432\u0435\u0434\u043d\u044b\u043c \u043f\u043e\u043b\u0456.</li><li>\u0410\u0431\u0440\u0430\u0446\u044c \u0433\u044d\u0442\u044b \u0436 \u043c\u0430\u043b\u044e\u043d\u0430\u043a \u0434\u043b\u044f \u0440\u0430\u0437\u043b\u0456\u043a\u0443 \u043a\u043b\u044e\u0447\u0430 \u043d\u0430\u0446\u0456\u0441\u043a\u0430\u043c \u043d\u0430 \u043a\u043d\u043e\u043f\u043a\u0443 "\u041f\u0430\u043b\u0456\u0447\u044b\u0446\u044c". \u041a\u0430\u043b\u0456 \u045e \u0432\u0430\u0441 \u0443\u0436\u043e \u0451\u0441\u0446\u044c \u043a\u043b\u044e\u0447, \u0442\u043e \u043d\u0430\u043f\u0456\u0448\u044b\u0446\u0435 \u044f\u0433\u043e \u043f\u043e\u0431\u0430\u0447 \u0437 \u0433\u044d\u0442\u0430\u0439 \u043a\u043d\u043e\u043f\u043a\u0430\u0439</li><li>\u041d\u0430\u0446\u0456\u0441\u043d\u0443\u0446\u044c \u043a\u043d\u043e\u043f\u043a\u0443 "\u0417\u0430\u0433\u0440\u0443\u0437\u0456\u0446\u044c"</li></ol>',
- 
+
 'SaveHistory':'[ \u0417\u0430\u0445\u0430\u0432\u0430\u0446\u044c \u043f\u0435\u0440\u0430\u043f\u0456\u0441\u043a\u0443 ]',
 'SaveToFile':'\u0417\u0430\u0445\u0430\u0432\u0430\u043d\u044c\u043d\u0435 \u045e \u0444\u0430\u0439\u043b',
 'ClickForSave':'\u0414\u043b\u044f \u0432\u044b\u0431\u0430\u0440\u0443 \u043c\u0435\u0441\u0446\u0430 \u0437\u0430\u0445\u0430\u0432\u0430\u043d\u044c\u043d\u044f \u043d\u0430\u0446\u0456\u0441\u044c\u043d\u0456\u0446\u0435 \u043a\u043d\u043e\u043f\u043a\u0443: ',
 //<<
- 
+
 'admDelInvP':'\u0410\u0434\u043c\u044f\u043d\u0456\u0446\u044c \u0431\u0430\u0447\u043d\u044b\u044f',
- 
- 
+
+
 'InvAll':'[\u0417\u0430\u043f\u0440\u0430\u0441\u0456\u0446\u044c \u0443\u0441\u0456\u0445]',
 'InvMsg':'\u0417\u0430\u043f\u0440\u0430\u0441\u0456\u0446\u044c \u0441\u044f\u0431\u0440\u043e\u045e \u0443 \u0441\u0443\u043f\u043e\u043b\u043a\u0443?',
 'InvBtn':'\u0417\u0430\u043f\u0440\u0430\u0441\u0456\u0446\u044c',
 'InvBoxTtl':'\u0417\u0430\u043f\u0440\u0430\u0448\u044d\u043d\u044c\u043d\u0435 \u0441\u044f\u0431\u0440\u043e\u045e',
 'InvStart':'\u041f\u0430\u0447\u044b\u043d\u0430\u0435\u043c \u0437\u0430\u043f\u0440\u0430\u0448\u0430\u0446\u044c',
 'InvProgr':'\u0425\u043e\u0434 \u0432\u044b\u043a\u0430\u043d\u0430\u043d\u044c\u043d\u044f \u0437\u0430\u043f\u044b\u0442\u0443: ',
- 
+
 'InvMsgApp':'\u0417\u0430\u043f\u0440\u0430\u0441\u0456\u0446\u044c \u0443\u0441\u0456\u0445 \u0441\u044f\u0431\u0440\u043e\u045e \u0443 \u043f\u0440\u0430\u0433\u0440\u0430\u043c\u0443?',
 'InvNormalApp':'\u0417\u0430\u043f\u0440\u0430\u0441\u0456\u0446\u044c \u0432\u044b\u0431\u0430\u0440\u043a\u043e\u0432\u0430',
 'InvAll2App':'\u0417\u0430\u043f\u0440\u0430\u0441\u0456\u0446\u044c \u0443\u0441\u0456\u0445 \u0441\u044f\u0431\u0440\u043e\u045e',
- 
+
 'AppInstEmul':'[\u041f\u0440\u044b\u043c\u0443\u0441\u0456\u0446\u044c \u043f\u0440\u0430\u0433\u0440\u0430\u043c\u0443 \u0434\u0443\u043c\u0430\u0446\u044c \u0448\u0442\u043e \u044f\u043d\u0430 \u0443\u0436\u043e \u045e\u0441\u0442\u0430\u043b\u044f\u0432\u0430\u043d\u0430]',
 'AppAdd2Me':'\u0414\u0430\u0434\u0430\u0446\u044c \u043d\u0430 \u043c\u0430\u044e \u0441\u0442\u0430\u0440\u043e\u043d\u043a\u0443',
 'AppEmulSet':'\u041a\u043d\u043e\u043f\u043a\u0430 \u0456\u043c\u0456\u0442\u0430\u0446\u044b\u0456 \u045e\u0441\u0442\u0430\u043b\u0451\u045e\u043a\u0456 \u043f\u0440\u0430\u0433\u0440\u0430\u043c\u044b',
@@ -2846,7 +2846,7 @@ vk_lang_by={ //by Gavr id8610702
 'sm_Style3':'&#800;\u0441&#800;\u0442&#800;\u0438&#800;\u043b&#800;\u044c&#800; &#800;\u0442&#800;\u0435&#800;\u043a&#800;\u0441&#800;\u0442&#800;\u0430&#800;',
 'sm_Style4':'&#864;\u0441&#864;\u0442&#864;\u0438&#864;\u043b&#864;\u044c &#864;\u0442&#864;\u0435&#864;\u043a&#864;\u0441&#864;\u0442&#864;\u0430',
 'sm_Style5':'&#804;\u0441&#804;\u0442&#804;\u0438&#804;\u043b&#804;\u044c&#804; &#804;\u0442&#804;\u0435&#804;\u043a&#804;\u0441&#804;\u0442&#804;\u0430&#804;',
- 
+
 'AudioLyr':'\u0422\u044d\u043a\u0441\u0442',
 'aDubDel':' \u0412\u044b\u0434\u0430\u043b\u0435\u043d\u0430 ', 'aDublic':' \u0434\u0443\u0431\u043b\u0456\u043a\u0430\u0442',
 //Player
@@ -2856,7 +2856,7 @@ vk_lang_by={ //by Gavr id8610702
 'Off_red':'<font color="#FF5C5C">\u0412\u044b\u043a\u043b\u044e\u0447\u044b\u0446\u044c</font>',
 'PlayerEPC':' \u043a\u0456\u0440\u0430\u0432\u0430\u043d\u043d\u0435 \u043f\u043b\u044d\u0435\u0440\u0430\u043c \u043d\u0430 \u0433\u044d\u0442\u0430\u0439 \u0441\u0442\u0430\u0440\u043e\u043d\u0446\u044b \u043a\u043d\u043e\u043f\u043a\u0430\u043c\u0456 \u043f\u0430\u0434 \u043b\u0435\u0432\u044b\u043c \u043c\u0435\u043d\u044e',
 'SnufflePls':'\u041f\u0435\u0440\u0430\u043c\u044f\u0448\u0430\u0446\u044c \u043f\u043b\u044d\u0439-\u043b\u0456\u0441\u0442',
- 
+
 'txMessage':'\u041f\u0430\u0432\u0435\u0434\u0430\u043c\u043b\u0435\u043d\u044c\u043d\u0435',
 'txHide':'\u0421\u0445\u0430\u0432\u0430\u0446\u044c',
 'Lock':'\u0417\u0430\u0431\u043b\u0430\u043a\u0430\u0432\u0430\u0446\u044c',
@@ -2876,16 +2876,16 @@ vk_lang_by={ //by Gavr id8610702
 'msgdelinbox':'[ \u0412\u044b\u0434\u0430\u043b\u0456\u0446\u044c \u0443\u0441\u0435 \u0430\u0442\u0440\u044b\u043c\u0430\u043d\u044b\u044f ]',
 'msgdeloutbox':'[ \u0412\u044b\u0434\u0430\u043b\u0456\u0446\u044c \u0443\u0441\u0435 \u0434\u0430\u0441\u043b\u0430\u043d\u044b\u044f ]',
 'msgdelconfirm':'\u0412\u044b \u0441\u0430\u043f\u0440\u0430\u045e\u0434\u044b \u0436\u0430\u0434\u0430\u0435\u0446\u0435 \u0432\u044b\u0434\u0430\u043b\u0456\u0446\u044c \u0443\u0441\u0435 \u043f\u0430\u0432\u0435\u0434\u0430\u043c\u043b\u0435\u043d\u044c\u043d\u0456?\n\u0410\u0434\u043c\u044f\u043d\u0456\u0446\u044c \u0434\u0437\u0435\u044f\u043d\u044c\u043d\u0435 \u0431\u0443\u0434\u0437\u0435 \u043d\u0435\u043c\u0430\u0433\u0447\u044b\u043c\u0430!',
- 
+
 'FaveOnline':'\u0417\u0430\u043a\u043b\u0430\u0434\u043a\u0456 \u0430\u043d\u043b\u0430\u0439\u043d',
 'AltInfo':'\u0410\u043b\u044c\u0442\u044d\u0440\u043d\u0430\u0442\u044b\u045e\u043d\u0430\u044f \u0456\u043d\u0444\u0430\u0440\u043c\u0430\u0446\u044b\u044f',
 'banit':'\u0423 \u0431\u0430\u043d',
- 
+
 'checkAll':'\u0410\u0434\u0437\u043d\u0430\u0447\u044b\u0446\u044c \u0443\u0441\u0451',
-'uncheckAll':'\u0417\u043d\u044f\u0446\u044c \u0430\u0434\u0437\u043d\u0430\u043a\u0456', 
+'uncheckAll':'\u0417\u043d\u044f\u0446\u044c \u0430\u0434\u0437\u043d\u0430\u043a\u0456',
 'delChecked':'\u0412\u044b\u0434\u0430\u043b\u0456\u0446\u044c \u0430\u0434\u0437\u043d\u0430\u0447\u0430\u043d\u044b\u044f',
 'Done':'\u0412\u044b\u043a\u0430\u043d\u0430\u043d\u0430',
- 
+
 'SkinMan':'\u041c\u044d\u043d\u044d\u0434\u0436\u0430\u0440 \u0442\u044d\u043c',
 'Author':'\u0410\u045e\u0442\u0430\u0440',
 'Zoom':'\u041f\u0430\u0432\u044f\u043b\u0456\u0447\u044b\u0446\u044c',
@@ -2902,7 +2902,7 @@ vk_lang_by={ //by Gavr id8610702
 'InsertCSSCode':'\u0423\u0441\u0442\u0430\u045e\u0446\u0435 CSS-\u043a\u043e\u0434 \u0442\u0443\u0442:',
 'WrongCSSCode':'\u041f\u0430\u043c\u044b\u043b\u043a\u0430. \u0423 CSS-\u043a\u043e\u0434\u0437\u0435 \u043f\u0440\u044b\u0441\u0443\u0442\u043d\u0456\u0447\u0430\u044e\u0446\u044c <style> \u0446\u0456 script> \u0442\u044d\u0433\u0456',//&lt;style&gt; \u0446\u0456 &lt;script&gt;
 'CSSCode':'\u041a\u0430\u0440\u044b\u0441\u0442\u0430\u0446\u043a\u0456\u044f \u0441\u0442\u044b\u043b\u0456',
- 
+
 'ToggleQuickPreviews':'\u041f\u0430\u043a\u0430\u0437\u0430\u0446\u044c \u0445\u0443\u0442\u043a\u0456 \u043f\u0440\u0430\u0434\u043f\u0440\u0430\u0433\u043b\u044f\u0434 \u0430\u043b\u044c\u0431\u043e\u043c\u0430',
 'ClearWall':'\u0410\u0447\u044b\u0441\u0442\u043a\u0430 \u0441\u044c\u0446\u044f\u043d\u044b',
 'ClearBegin':'\u041f\u0430\u0447\u0430\u0446\u044c \u0430\u0447\u044b\u0441\u0442\u043a\u0443:',
@@ -2910,14 +2910,14 @@ vk_lang_by={ //by Gavr id8610702
 'FromSecondPage':'\u0437 \u0434\u0440\u0443\u0433\u043e\u0439 \u0441\u0442\u0430\u0440\u043e\u043d\u043a\u0456',
 'ClearDone':'\u0410\u0447\u044b\u0441\u0442\u043a\u0430 \u0437\u0430\u0432\u0435\u0440\u0448\u0430\u043d\u0430',
 'Deleted':'\u0412\u044b\u0434\u0430\u043b\u0435\u043d\u0430',
- 
+
 'Settings':'\u041d\u0430\u043b\u0430\u0434\u044b',
 'SearchText':'[ \u0417\u043d\u0430\u0439\u0441\u0446\u0456 \u0442\u044d\u043a\u0441\u0442 ]',
 'THFI':'\u0414\u0437\u044f\u043a\u0443\u0439 \u0437\u0430 \u045e\u0441\u0442\u0430\u043b\u0451\u045e\u043a\u0443 \u0441\u043a\u0440\u044b\u043f\u0442\u0443 \u0412\u043a\u041e\u043f\u0442!',
 'YIV':'\u0412\u044b \u045e\u0441\u0442\u0430\u043b\u044f\u0432\u0430\u043b\u0456 VkOpt v',
 'INCD':'<font color="red"><b>\u0423\u0412\u0410\u0413\u0410!</b></font><br><br><b>\u041f\u0430\u043c\u044f\u0442\u0430\u0439\u0446\u0435</b>: \u0423 \u043f\u0430\u0437\u0431\u044f\u0433\u0430\u043d\u043d\u0435 \u043f\u0430\u0434\u0440\u043e\u0431\u0430\u043a, \u044f\u043a\u0456\u044f \u043c\u043e\u0433\u0443\u0446\u044c \u043a\u0440\u0430\u0441\u0446\u0456 \u043f\u0430\u0440\u043e\u043b\u0456 \u043a\u0430\u0440\u044b\u0441\u0442\u0430\u0447\u043e\u045e, \u0441\u043a\u0440\u044b\u043f\u0442 \u043f\u0430\u0442\u0440\u044d\u0431\u043d\u0430 \u0441\u043f\u0430\u043c\u043f\u043e\u045e\u0432\u0430\u0446\u044c <b>\u0442\u043e\u043b\u044c\u043a\u0456</b> \u0437 \u0430\u0444\u0456\u0446\u044b\u0439\u043d\u0430\u0433\u0430 <a href="http://vkopt.net/" target=_blank><b>\u0441\u0430\u0439\u0442\u0430</b></a>.<br><br>\u0414\u043b\u044f \u045e\u043a\u043b\u044e\u0447\u044d\u043d\u043d\u044f/\u0430\u0434\u043a\u043b\u044e\u0447\u044d\u043d\u043d\u044f \u0444\u0443\u043d\u043a\u0446\u044b\u0439 \u0441\u043a\u0440\u044b\u043f\u0442\u0443 \u0432\u0430\u043c \u043d\u0435\u0430\u0431\u0445\u043e\u0434\u043d\u0430 \u0437\u0430\u0439\u0441\u0446\u0456 \u045e <a href="/settings.php?act=vkopt" target=_blank>\u043d\u0430\u043b\u0430\u0434\u044b</a>.<br><br>\u041d\u0435 \u045e\u043a\u043b\u044e\u0447\u0430\u0439\u0446\u0435 \u045e\u0441\u0435 \u0440\u0430\u0437\u0430\u043c (\u043f\u0430\u0442\u0440\u044d\u0431\u043d\u044b\u044f \u0456 \u043d\u0435 \u043f\u0430\u0442\u0440\u044d\u0431\u043d\u044b\u044f) \u0444\u0443\u043d\u043a\u0446\u044b\u0456, \u043a\u0430\u0431 \u043f\u0430\u0437\u0431\u0435\u0433\u043d\u0443\u0446\u044c \u0442\u0430\u0440\u043c\u0430\u0436\u044d\u043d\u044c\u043d\u044f \u043f\u0440\u044b \u0437\u0430\u0433\u0440\u0443\u0437\u0446\u044b \u0441\u0442\u0430\u0440\u043e\u043d\u043a\u0456.<br><br><b>\u0417 \u043f\u044b\u0442\u0430\u043d\u044c\u043d\u044f\u043c\u0456</b> \u043f\u0430 \u0432\u044b\u043a\u0430\u0440\u044b\u0441\u0442\u0430\u043d\u044c\u043d\u0456 \u0441\u043a\u0440\u044b\u043f\u0442\u0443 \u0437\u0432\u044f\u0440\u0442\u0430\u0439\u0446\u0435\u0441\u044f \u043d\u0430 <a href="http://vkopt.net/forum/forumdisplay.php?f=4"  target=_blank>\u0444\u043e\u0440\u0443\u043c</a><br><br>\u0410\u043f\u0456\u0441\u0430\u043d\u044c\u043d\u0435 \u043f\u0440\u044b\u0437\u043d\u0430\u0447\u044d\u043d\u043d\u044f\u045e \u0444\u0443\u043d\u043a\u0446\u044b\u0439 Vkopt\'\u0430 \u043c\u043e\u0436\u043d\u0430 \u043f\u0440\u0430\u0447\u044b\u0442\u0430\u0446\u044c <a href="http://vkopt.net/forum/forumdisplay.php?f=4"  target=_blank>\u0442\u0443\u0442</a><br><br>',
 'FIS':'\u0414\u043b\u044f \u0437\u0430\u043a\u0430\u043d\u0447\u044d\u043d\u044c\u043d\u044f \u045e\u0441\u0442\u0430\u043b\u0451\u045e\u043a\u0456 \u043f\u0435\u0440\u0430\u0437\u0430\u0433\u0440\u0443\u0437\u0456\u0446\u0435 \u0441\u0442\u0430\u0440\u043e\u043d\u043a\u0443.',
- 
+
 //miXOniN
 'ShowHistoryStatuses':'[ \u041f\u0430\u043a\u0430\u0437\u0430\u0446\u044c \u0443\u0441\u044e \u0433\u0456\u0441\u0442\u043e\u0440\u044b\u044e \u0441\u0442\u0430\u0442\u0443\u0441\u0430\u045e ]',
 'ErrorStatus3pageClosed':'-3 (\u041d\u0435\u043c\u0430\u0433\u0447\u044b\u043c\u0430 \u0430\u0442\u0440\u044b\u043c\u0430\u0446\u044c \u0441\u0442\u0430\u0442\u0443\u0441\u044b \u0430\u0434 \u0437\u0430\u0447\u044b\u043d\u0435\u043d\u0430\u0439 \u0430\u0434 \u0432\u0430\u0441 \u0441\u0442\u0430\u0440\u043e\u043d\u043a\u0456!)',
@@ -2932,7 +2932,7 @@ vk_lang_by={ //by Gavr id8610702
 'VsegoStatusov':'\u0423\u0441\u044f\u0433\u043e \u0441\u0442\u0430\u0442\u0443\u0441\u0430\u045e: ',
 'qDelAllStatus':'\u0412\u044b \u0441\u0430\u043f\u0440\u0430\u045e\u0434\u044b \u0436\u0430\u0434\u0430\u0435\u0446\u0435 \u0432\u044b\u0434\u0430\u043b\u0456\u0446\u044c \u0443\u0441\u0435 \u0431\u0430\u0447\u043d\u044b\u044f \u0441\u0442\u0430\u0442\u0443\u0441\u044b \u0437 \u0433\u0456\u0441\u0442\u043e\u0440\u044b\u0456?',
 //
- 
+
 'vk_year':["","%s \u0433\u043e\u0434.","%s \u0433\u0430\u0434\u044b.","%s \u0433\u0430\u0434\u043e\u045e."],
 
 'ParseFriends':'\u0420\u0430\u0437\u0431\u043e\u0440 \u0441\u044f\u0431\u0440\u043e\u045e',
@@ -2957,7 +2957,7 @@ vk_lang_by={ //by Gavr id8610702
 'No':'\u041d\u0435',
 'seMyFrLink':'\u0417\u0430\u043c\u0435\u043d\u044b \u0441\u043f\u0430\u0441\u044b\u043b\u043a\u0456 \u043f\u0443\u043d\u043a\u0442\u0430 "\u041c\u0430\u0435 \u0441\u044f\u0431\u0440\u044b":',
 'seMyFrLnkOps':'- \u041d\u0435 \u0437\u043c\u044f\u043d\u044f\u0446\u044c<br>- \u0410\u043d\u043b\u0430\u0439\u043d<br>- \u0423\u0441\u0435',
- 
+
 "paCheckUnik":"\u041f\u0440\u0430\u0432\u0435\u0440\u043a\u0430 \u045e\u043d\u0456\u043a\u0430\u043b\u044c\u043d\u0430\u0441\u044c\u0446\u0456",
 "paGetPByUser":"\u0417\u043d\u0430\u0439\u0434\u0437\u0456 \u043f\u0430 \u044e\u0437\u0430\u0440\u0443",
 "paDelOld":"\u0412\u044b\u0434\u0430\u043b\u0456\u0446\u044c \u0441\u0442\u0430\u0440\u044b\u044f",
@@ -2981,11 +2981,11 @@ vk_lang_by={ //by Gavr id8610702
 'paBanAll':'[ \u0417\u0430\u0431\u0430\u043d\u0456\u0446\u044c \u0443\u0441\u0456\u0445 ]',
 'paBanUsers':'\u0411\u043b\u0430\u043a\u0430\u0432\u0430\u043d\u044c\u043d\u0435 \u043a\u0430\u0440\u044b\u0441\u0442\u0430\u0447\u043e\u045e',
 'paSureBanAll':'\u0414\u0430\u0434\u0430\u0446\u044c <b>{count}</b> \u0447\u0430\u043b. \u0443 \u0431\u0430\u043d?',
- 
+
 /*Перевел Игорь Куликов (vk.com/trollhus)*/
 
 'CheckAll':'[ \u0410\u0434\u0437\u043d\u0430\u0447\u044b\u0446\u044c \u045e\u0441\u0435 ]',
-'UncheckAll':'[ \u0417\u043d\u044f\u0446\u044c \u0430\u0434\u0437\u043d\u0430\u043a\u0456 ]', 
+'UncheckAll':'[ \u0417\u043d\u044f\u0446\u044c \u0430\u0434\u0437\u043d\u0430\u043a\u0456 ]',
 'paBanAllAndDelPhotos':'[ \u0412\u044b\u0434\u0430\u043b\u0456\u0446\u044c \u0443\u0441\u0435 \u0444\u043e\u0442\u0430 \u0456 \u0437\u0430\u0431\u0430\u043d\u0456\u0446\u044c ]',
 'Search':'\u041f\u043e\u0448\u0443\u043a',
 
@@ -3060,7 +3060,7 @@ vk_lang_by={ //by Gavr id8610702
 	'UserAPI_e4':'\u041d\u044f\u0432\u0435\u0440\u043d\u044b email \u0430\u0431\u043e \u043f\u0430\u0440\u043e\u043b\u044c, captcha \u043d\u0435 \u043f\u0430\u0442\u0440\u044d\u0431\u043d\u0430',
 	'WTF_SID':'\u041a\u0440\u044b\u0432\u044b SID. \u0410\u045e\u0442\u0430\u0440\u044b\u0437\u0430\u0446\u044b\u044f \u043d\u0435 \u043c\u0430\u0433\u0447\u044b\u043c\u0430\u044f',
 	'RefreshFrListConfirm':'\u041f\u0440\u0430\u0432\u0435\u0440\u044b\u0446\u044c \u0441\u043f\u0456\u0441 \u043d\u043e\u0432\u044b\u0445/\u043f\u0440\u044b\u0431\u0440\u0430\u045e\u0448\u044b\u0445\u0441\u044f \u0441\u044f\u0431\u0440\u043e\u045e?',
-	'Donate':'\u0410\u0445\u0432\u044f\u0440\u0430\u0432\u0430\u0446\u044c', 
+	'Donate':'\u0410\u0445\u0432\u044f\u0440\u0430\u0432\u0430\u0446\u044c',
 	'Donate_text':'\u0410\u0445\u0432\u044f\u0440\u0430\u0432\u0430\u043d\u043d\u0435 \u043f\u0440\u0430\u0435\u043a\u0442\u0443 VkOpt',
 	'DevRekv':'<b><a href="http://vkontakte.ru/id13391307">\u0420\u0430\u0435\u0432\u0441\u043a\u0438\u0439 \u041c\u0438\u0445\u0430\u0438\u043b [Kiber\u041f\u0441\u0438\u0445]</a>:</b>',
 	'NeedWMKeeper':'\u041f\u0430\u0442\u0440\u044d\u0431\u043d\u044b \u0443\u0441\u0442\u0430\u043d\u043e\u045e\u043b\u0435\u043d\u044b <br><b>WebMoney Keeper Classic</b>',
@@ -3159,11 +3159,11 @@ vk_lang_by={ //by Gavr id8610702
     'seIMFullTime':'\u041f\u0430\u043a\u0430\u0437\u0432\u0430\u0446\u044c \u043f\u043e\u045e\u043d\u044b \u0447\u0430\u0441 \u043f\u0430\u0432\u0435\u0434\u0430\u043c\u043b\u0435\u043d\u043d\u044f \u045e \u0434\u044b\u044f\u043b\u043e\u0433\u0430\u0445 (d.mm.yy HH:MM:ss)',
     'seIMAlwaysShowTime':'\u041f\u0430\u043a\u0430\u0437\u0432\u0430\u0446\u044c \u0443 \u0434\u044b\u044f\u043b\u043e\u0433\u0430\u0445 \u0447\u0430\u0441 \u043a\u043e\u0436\u043d\u0430\u0433\u0430 \u0437 \u0430\u0431\'\u044f\u0434\u043d\u0430\u043d\u044b\u0445 \u043f\u0430\u0432\u0435\u0434\u0430\u043c\u043b\u0435\u043d\u043d\u044f\u045e',
     'seOnRightPart':'\u0443 \u043f\u0440\u0430\u0432\u0430\u0439 \u0447\u0430\u0441\u0442\u0446\u044b',
-    'clFans':'\u041f\u0430\u0434\u043f\u0456\u0441\u0430\u043d\u0442\u044b', 
+    'clFans':'\u041f\u0430\u0434\u043f\u0456\u0441\u0430\u043d\u0442\u044b',
     'clSubscriptions':'\u041f\u0430\u0434\u043f\u0456\u0441\u043a\u0456',
     'sePopupBoardInfo':'\u0412\u044b\u0441\u0432\u0435\u0447\u0432\u0430\u0446\u044c \u043f\u0430\u0434\u0440\u0430\u0431\u044f\u0437\u043d\u0430\u0441\u0446\u0456 \u043f\u0440\u044b \u043d\u0430\u0432\u044f\u0434\u0437\u0435\u043d\u043d\u0456 \u043d\u0430 \u0441\u043f\u0430\u0441\u044b\u043b\u043a\u0443 \u0442\u044d\u043c\u044b/\u043f\u0430\u0441\u0442\u0430',
     'seExplandGroupNews':'\u0410\u045e\u0442\u0430\u043c\u0430\u0442\u044b\u0447\u043d\u0430 \u0440\u0430\u0437\u0433\u043e\u0440\u0442\u0432\u0430\u0446\u044c \u043d\u0430\u0432\u0456\u043d\u044b \u045e \u0441\u0443\u043f\u043e\u043b\u043a\u0430\u0445 (\u043c\u044d\u043d\u044e \u0441\u0443\u043f\u043e\u043b\u043a\u0456)',
-    
+
     'FrNotInLists':'[ \u0421\u044f\u0431\u0440\u044b \u043f\u0430-\u0437\u0430 \u0441\u043f\u0456\u0441\u0430\u045e ]',
     'IncorrectVideoLink':'\u041d\u044f\u043f\u0440\u0430\u0432\u0456\u043b\u044c\u043d\u0430\u044f \u0441\u043f\u0430\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 \u0432\u0456\u0434\u044d\u0430\u0437\u0430\u043f\u0456\u0441',
     'EnterLinkToVideo':'[\u0421\u043f\u0430\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 \u0432\u0456\u0434\u044d\u0430 \u0432\u0456\u0434\u0443 `videoXXXX_YYYY`]',
@@ -3402,7 +3402,7 @@ vk_lang_it={ //by Maybkot /id5027410 (mayboroda.com.ua)
 'seWhoFaved':'Mostra chi me ha aggiunto in Segnalibri',
 'seRightBar':'Orologio e calendario a destra',
 'seGS':'[ Riceve impostazioni ]',
- 
+
 'seSelApp':'[ Mostra `Invita ad iscriversi tutti` in applicazioni ]',
 'seStyleBtns':'Redazione superiore di testo',
 'seAudioLyr':'Musica. Collegamento a cerca testo della canzone. Bisogna accendere ',
@@ -3446,12 +3446,12 @@ vk_lang_it={ //by Maybkot /id5027410 (mayboroda.com.ua)
 'seQPhotos':'Anteprima veloce del album',
 'seQPhotosText':'- spento<br>- sopra foto<br>- sotto foto',
 'seScroolPhoto':'Scorre le foto con rotella di mouse',
- 
-'Media':'Media', 
-'Users':'Utenti',  
-'vkInterface':'Interfaccia',  
-'Messages':'Messaggi',  
-'Others':'Resto', 
+
+'Media':'Media',
+'Users':'Utenti',
+'vkInterface':'Interfaccia',
+'Messages':'Messaggi',
+'Others':'Resto',
 //
 'delme':'Elimina me',
 'on':'Acceso',
@@ -3500,7 +3500,7 @@ vk_lang_it={ //by Maybkot /id5027410 (mayboroda.com.ua)
 'UpPhoto4':'y_HD1:',
 'UpPhoto5':'z_HD2:',
 'LoadFakePhotoZ':'Carica foto con taglia',
- 
+
 'LoadGraffiti':'Del file',
 'LoadFakeGraffiti':'Carica graffiti del file',
 'UpGraffiti':' ',//'Carica graffiti:  ',
@@ -3509,26 +3509,26 @@ vk_lang_it={ //by Maybkot /id5027410 (mayboroda.com.ua)
 'GraffitiFile':'Immagine:',
 'UploadFraffiti':'Carica',
 'GraffHelp':'<b>Suggerimento:</b><br>Per caricare un graffiti:<br><ol><li> Scelse una immagine.</li><li>Scelse l\'immagine per calcolare la firma e preme il tasto "Calcolare". Se ancora ho una calcola scrivi accanto a questo tasto.</li><li>Preme il tasto "Caricare"</li></ol>',
- 
+
 'SaveHistory':'[ Salva corrispondenza ]',
 'SaveToFile':'Salva in un file',
 'ClickForSave':'Per scelse un posto di salvare preme un tasto: ',
 //<<
- 
+
 'admDelInvP':'Cancella visibili',
- 
- 
+
+
 'InvAll':'[Invita tutti]',
 'InvMsg':'Invita gli amici nel gruppo?',
 'InvBtn':'Invita',
 'InvBoxTtl':'Invito gli amici',
 'InvStart':'Invitiamo...',
 'InvProgr':'Progressione: ',
- 
+
 'InvMsgApp':'Invita tutti gli amici nell\'applicazione?',
 'InvNormalApp':'Invita selettivo',
 'InvAll2App':'Invita tutti gli amici',
- 
+
 'AppInstEmul':'[Forzare applicazione pensare che %C3%A8 gia stata installata]',
 'AppAdd2Me':'Aggiungi alla mia pagina',
 'AppEmulSet':'Il tasto di false installazione dell\'applicazione ',
@@ -3540,7 +3540,7 @@ vk_lang_it={ //by Maybkot /id5027410 (mayboroda.com.ua)
 'sm_Style3':'&#800;\u0441&#800;\u0442&#800;\u0438&#800;\u043b&#800;\u044c&#800; &#800;\u0442&#800;\u0435&#800;\u043a&#800;\u0441&#800;\u0442&#800;\u0430&#800;',
 'sm_Style4':'&#864;\u0441&#864;\u0442&#864;\u0438&#864;\u043b&#864;\u044c &#864;\u0442&#864;\u0435&#864;\u043a&#864;\u0441&#864;\u0442&#864;\u0430',
 'sm_Style5':'&#804;\u0441&#804;\u0442&#804;\u0438&#804;\u043b&#804;\u044c&#804; &#804;\u0442&#804;\u0435&#804;\u043a&#804;\u0441&#804;\u0442&#804;\u0430&#804;',
- 
+
 'AudioLyr':'Testo',
 'aDubDel':' Rimosso ', 'aDublic':' duplicato',
 //Player
@@ -3550,7 +3550,7 @@ vk_lang_it={ //by Maybkot /id5027410 (mayboroda.com.ua)
 'Off_red':'<font color="#FF5C5C">Spento</font>',
 'PlayerEPC':' usare il player sulla questa pagina via tasti sotto menu sinistro',
 'SnufflePls':'Mixare playlist',
- 
+
 'txMessage':'Messaggio',
 'txHide':'Nasconde',
 'Lock':'Blocca',
@@ -3570,16 +3570,16 @@ vk_lang_it={ //by Maybkot /id5027410 (mayboroda.com.ua)
 'msgdelinbox':'[ Cancella ricevuti ]',
 'msgdeloutbox':'[ Cancella inviati ]',
 'msgdelconfirm':'Stai sicuro che vouoi cancellare tutti messaggi?\n Non potrai rinuovi loro!',
- 
+
 'FaveOnline':'Segnalibri on-line',
 'AltInfo':'Alternativo informazione',
 'banit':'In Lista Nera',
- 
+
 'checkAll':'Seleziona tutti',
-'uncheckAll':'Rimuovi la selezione', 
+'uncheckAll':'Rimuovi la selezione',
 'delChecked':'Cancella selezionato',
 'Done':'Pronto',
- 
+
 'SkinMan':'Manager dei temi',
 'Author':'Autore',
 'Zoom':'Zumare',
@@ -3596,7 +3596,7 @@ vk_lang_it={ //by Maybkot /id5027410 (mayboroda.com.ua)
 'InsertCSSCode':'Mette CSS-codice qui:',
 'WrongCSSCode':'Errore. C\'%C3%A8 <style> o <script> tag nel CSS-codice',//&lt;style&gt; o &lt;script&gt;
 'CSSCode':'I stili dei utenti',
- 
+
 'ToggleQuickPreviews':' Mostra un anteprima di un album',
 'ClearWall':'Elimina tutto di muro',
 'ClearBegin':'Comincia eliminazione:',
@@ -3604,14 +3604,14 @@ vk_lang_it={ //by Maybkot /id5027410 (mayboroda.com.ua)
 'FromSecondPage':'di seconda pagina',
 'ClearDone':'Eliminazione finito',
 'Deleted':'Eliminato',
- 
+
 'Settings':'Impostazioni',
 'SearchText':'[ Cerca testo ]',
 'THFI':'Grazie che hai installato VKopt!',
 'YIV':'Hai installato VkOpt versione ',
 'INCD':'<font color="red"><b>Attenzione!</b></font><br><br><b>Ricorde</b>: <b>Sempre</b> installi VKopt originale del sito officiale <a href="http://vkopt.net/" target=_blank></a>.<br><br>Per accendere/spegnere le funzioni deve andare agli <a href="/settings.php?act=vkopt" target=_blank>impostazioni</a>.<br><br>Non usa tutte funzioni se non sa come una funzione funziona.<br><br><b>Fare una domanda</b> di VKopt<a href="http://vkopt.net/forum/forumdisplay.php?f=4"  target=_blank>forum</a><br><br>Descrizione di funzioni di Vkopt \'pu%C3%B2 leggere <a href="http://vkopt.net/forum/forumdisplay.php?f=4"  target=_blank>qui</a><br><br>',
 'FIS':'Finendo installazione aggiorna la pagina.',
- 
+
 //miXOniN
 'ShowHistoryStatuses':'[ Mostra tutti stati ]',
 'ErrorStatus3pageClosed':'-3 (La pagina %C3%A8 chiusa per mostrare stato!)',
@@ -3626,7 +3626,7 @@ vk_lang_it={ //by Maybkot /id5027410 (mayboroda.com.ua)
 'VsegoStatusov':'Stati: ',
 'qDelAllStatus':'Realmente vuoi eliminare tutti stati dalla storia?',
 //
- 
+
 'vk_year':["","%s anno.","%s anni.","%s anni."],
 'ParseFriends':'Mette amici in ordine',
 'FrToCatsBySex':'Nuove categorie per i sessi',
@@ -3676,7 +3676,7 @@ vk_lang_it={ //by Maybkot /id5027410 (mayboroda.com.ua)
 'paSureBanAll':'Aggiunge <b>{count}</b> nella lista nera?',
 
 'CheckAll':'[ Segnala tutti ]',
-'UncheckAll':'[ Rimuve segnale ]', 
+'UncheckAll':'[ Rimuve segnale ]',
 'paBanAllAndDelPhotos':'[ Cancellare tutte foto e nella lista nera ]',
 'Search':'Cerca',
 'mSeMobile':'Servizi per cellulare',
@@ -3739,7 +3739,7 @@ vk_lang_it={ //by Maybkot /id5027410 (mayboroda.com.ua)
 'UserAPI_e4':'E-mail o password non %C3%A8 corretta. Non %C3%A8 bisogno di captcha',
 'WTF_SID':'SID %C3%A8 invalido. L\'autorizzazione non %C3%A8 possibile',
 'RefreshFrListConfirm':'Vuoi verificare la lista degli amici nuovi/eliminati?',
-'Donate':'Dona', 
+'Donate':'Dona',
 'Donate_text':'Una donazione al progetto VkOpt',
 'DevRekv':'<b><a href="http://vkontakte.ru/id13391307">%D0%A0%D0%B0%D0%B5%D0%B2%D1%81%D0%BA%D0%B8%D0%B9%20%D0%9C%D0%B8%D1%85%D0%B0%D0%B8%D0%BB%20[Kiber%D0%9F%D1%81%D0%B8%D1%85]</a>:</b>',
 'NeedWMKeeper':'Necessario installato <br><b>WebMoney Keeper Classic</b>',

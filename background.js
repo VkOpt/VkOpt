@@ -5,7 +5,7 @@ if (typeof console == 'undefined' || !(console || {}).log || !(console || {}).in
       info:function(){},
       error:function(){}
    };
-   
+
 var ex_loader = {
    type:'internal', // internal|beta|online
    base_path: 'http://vkopt.net/upd/',
@@ -40,7 +40,7 @@ var ex_loader = {
          "files":["vk_lib.js"],
          "domain":"vkontakte\\.ru|vk\\.com|vk\\.me|userapi\\.com",
          "exclude":"|notifier\\.php|im_frame\\.php|about:blank|i"
-      }      
+      }
    ],
    config:[ //Default config; example; overwritten;
       {
@@ -53,7 +53,7 @@ var ex_loader = {
          "domain":"example\\.com",
          "exclude":"|notifier\.php|im_frame\.php|about:blank|i", // RegEx "|pattern|flags" for excluding urls
          "api_enabled":true
-      }    
+      }
    ],
    update_time: 10*60*1000, //update scripts each 4 hours
    moz_strorage_id:"http://vkopt.loader.storage",
@@ -92,30 +92,30 @@ var ex_loader = {
       return spath;
       //var src=(filename.match(/https?:\/\//))?filename:spath+filename;
       //filename:ex_loader.base_path+ex_loader.scripts_path+filename
-      
+
    },
    init:function(){
-      var b = ex_loader.browsers;   
-      
+      var b = ex_loader.browsers;
+
       if (ex_loader.type=='internal' && b.maxthon){         // MAXTHON
          ex_loader.type='online';        // Maxthon 4 doesn't support inject scripts from internal resources
       }
-      
+
       ex_loader.init_config();
-      
+
       if (b.opera){                                   // OPERA
          opera.extension.onconnect = function(event)  {
             ext_api.ready=true;
-            event.source.postMessage({act:'connected'}); 
+            event.source.postMessage({act:'connected'});
          };
          opera.extension.onmessage = function(event) {
            var data = event.data;
            if (data.act=='get_scripts'){
                ex_loader.get_scripts(data.url,function(files,api_allowed){
                   event.source.postMessage({files:files, api_enabled:api_allowed,key:data.key});
-               },data.in_frame);           
+               },data.in_frame);
            }
-           
+
             var SendResponse=function(msg){
                   msg.key = data.key;
                   msg._req=data._req;
@@ -123,8 +123,8 @@ var ex_loader = {
             };
             ext_api.message_handler(data,SendResponse);
          };
-         
-      } else if (b.chrome){                          // CHROME         
+
+      } else if (b.chrome){                          // CHROME
          ext_api.ready=true;
          chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
             // request.url - contain url
@@ -132,7 +132,7 @@ var ex_loader = {
                ex_loader.get_scripts(request.url,function(files,api_allowed){
                   //console.log({url: request.url, inframe: request.in_frame, files:files});
                   sendResponse({files:files, api_enabled:api_allowed, key:request.key});
-               },request.in_frame);           
+               },request.in_frame);
                return;
             }
             // FOR API
@@ -141,9 +141,9 @@ var ex_loader = {
                data._req= request._req;
                sendResponse(data);
             };
-            ext_api.message_handler(request,SendResp);            
-            
-         });         
+            ext_api.message_handler(request,SendResp);
+
+         });
       } else if(b.safari){                         // SAFARI
          safari.application.addEventListener("message", function(e) {
             // e.message.url - contain url
@@ -151,7 +151,7 @@ var ex_loader = {
                ex_loader.get_scripts(e.message.url,function(files,api_allowed){
                   e.target.page.dispatchMessage("scripts", {files:files, api_enabled:api_allowed,key:e.message.key});
                },e.message.in_frame);
-               
+
             }
 
             var SendResponse=function(msg){
@@ -160,18 +160,18 @@ var ex_loader = {
                   e.target.page.dispatchMessage('extension_api',msg);
             };
             ext_api.message_handler(e.message,SendResponse);
-            
+
          }, false);
          ext_api.ready=true;
-         
+
       } else if (b.maxthon){         // MAXTHON
-            var rt = window.external.mxGetRuntime();            
+            var rt = window.external.mxGetRuntime();
             rt.listen('get_scripts', function(data){
                ex_loader.get_scripts(data.url,function(files,api_allowed){
                   rt.post('scripts',{files:files, api_enabled:api_allowed,key:data.key});
-               },data.in_frame);               
+               },data.in_frame);
             });
-            
+
             //console.log('Init api listeners');
             rt = window.external.mxGetRuntime();
             rt.listen('extension_bg_api', function(data){
@@ -181,10 +181,10 @@ var ex_loader = {
                   rt.post('extension_api',msg);
                };
                ext_api.message_handler(data,SendResponse);
-            });     
-            ext_api.ready=true;   
-            
-      } else if (b.mozilla){                // MOZILLA 
+            });
+            ext_api.ready=true;
+
+      } else if (b.mozilla){                // MOZILLA
          ex_loader.moz_ldr(function(doc,win){
                var bg={
                   get_scripts:ex_loader.get_scripts,
@@ -202,7 +202,7 @@ var ex_loader = {
       }
       setInterval(function(){ //Run update checker
          //ex_loader.update_config();
-         ex_loader.init_config();      
+         ex_loader.init_config();
       },ex_loader.update_time);
    },
    moz_ldr:function(callback){
@@ -233,25 +233,25 @@ var ex_loader = {
       in_frames = in_frames || 0;
       var inframe=(in_frame!=null)?in_frame:((doc || document).defaultView.parent != (doc || document).defaultView);
       switch (in_frames){ // 0 or null - execute in all; 1 - exclude frames; 2 - only in frames; 3 - disable scripts
-         case 0: 
+         case 0:
             return true; // include all
-         case 1: 
+         case 1:
             return inframe?false:true; // exclude frames
          case 2:
             return inframe?true:false; // only in frames
          case 3:
             return false;  // disable scripts
       }
-      return true;      
+      return true;
    },
    update_all:function(callback){
       ex_loader.set('scripts_config_hash',Math.random());
-      ex_loader.update_config(function(){ex_loader.init_config(callback);},true);   
+      ex_loader.update_config(function(){ex_loader.init_config(callback);},true);
    },
    get_scripts:function(url,callback,in_frame){
       var api_allowed = false;
       var domain=url;
-      if (url=='about:blank'){ 
+      if (url=='about:blank'){
          callback([]);
          return;
       }
@@ -265,7 +265,7 @@ var ex_loader = {
          if (x){
             rx=new RegExp(x[1],x[2]);
          }
-         
+
          var allow=true;
          var exclude_rx=data[i].exclude;
          if (exclude_rx){
@@ -275,9 +275,9 @@ var ex_loader = {
             }
             if (url.match(exclude_rx))
                allow=false;
-            
+
          }
-         
+
          if (allow && in_frame!=null) allow=ex_loader.is_allow_run(data[i].in_frames,null,in_frame);
 
          if (url.match(rx) && allow)
@@ -295,12 +295,12 @@ var ex_loader = {
                      }
                   }
                }
-                  
+
                if (add)
                   scripts.push([src,data[i].in_frames,data[i].files[j], (data[i].run_at || 0),0]);
             }
       }
-      
+
       if (scripts.length>1) console.info('ext_bg: get_scripts scr:',scripts,' url:'+url);
       //console.log('scripts:',scripts);
       var result=[];
@@ -312,7 +312,7 @@ var ex_loader = {
             callback(result, api_allowed);
             return;
          }
-         
+
          ex_loader.get_script_content(scripts[idx][0],function(script){
             scripts[idx][4]=(script==scripts[idx][0]);
             scripts[idx][0]=script;
@@ -324,7 +324,7 @@ var ex_loader = {
       load_next();
    },
    update_config:function(callback,clear){
-      if (ex_loader.type=='internal'){ 
+      if (ex_loader.type=='internal'){
          callback();
          return;
       }
@@ -332,14 +332,14 @@ var ex_loader = {
          if (!script) return;
          if (clear) ex_loader.clear();
          var ts=ex_loader.time();
-         ex_loader.set('scripts_config',ts+script);//store script and timesamp        
+         ex_loader.set('scripts_config',ts+script);//store script and timesamp
          callback();
       });
    },
    init_config:function(callback){
       var cur_ts=ex_loader.time();
-      var ts=0; 
-      if (ex_loader.type=='internal'){ 
+      var ts=0;
+      if (ex_loader.type=='internal'){
          ex_loader.config=ex_loader.packed_scripts;
          return;
       }
@@ -362,7 +362,7 @@ var ex_loader = {
             },ex_loader.update_time);
             return;
          }
-         
+
          if (old_hash!=hash){
             setTimeout(function(){
                var scripts=[];
@@ -374,22 +374,22 @@ var ex_loader = {
 
                var idx=0;
                var load_next=function(){
-                  if (idx>=scripts.length){ 
+                  if (idx>=scripts.length){
                      if (callback) callback();
                      return;
                   }
                   ex_loader.update_script(scripts[idx++],load_next);
                };
-               load_next(); 
+               load_next();
             },5);
          }
-         if (cur_ts - ts > ex_loader.update_time) setTimeout(function(){ex_loader.update_config(ex_loader.init_config);},10);// update if script date expired           
+         if (cur_ts - ts > ex_loader.update_time) setTimeout(function(){ex_loader.update_config(ex_loader.init_config);},10);// update if script date expired
       } else {
          ex_loader.update_config(function(){ex_loader.init_config(callback)});
-      } 
+      }
    },
    time:function() { return Math.round(new Date().getTime());},
-   error:function(s){console.log(s);},  
+   error:function(s){console.log(s);},
    load:function(path,callback){
       var req = new XMLHttpRequest();
       req.open('GET', path, true);
@@ -416,7 +416,7 @@ var ex_loader = {
          var uri = ios.newURI(url, "", null);
          var principal = ssm.getCodebasePrincipal(uri);
          var storage = dsm.getLocalStorageForPrincipal(principal, "");
-         
+
          return storage.getItem(key);
       }
       return localStorage[key];
@@ -433,8 +433,8 @@ var ex_loader = {
          var uri = ios.newURI(url, "", null);
          var principal = ssm.getCodebasePrincipal(uri);
          var storage = dsm.getLocalStorageForPrincipal(principal, "");
-         
-         storage.setItem(key, value);           
+
+         storage.setItem(key, value);
       } else
          localStorage[key]=value;
    },
@@ -450,10 +450,10 @@ var ex_loader = {
          var uri = ios.newURI(url, "", null);
          var principal = ssm.getCodebasePrincipal(uri);
          var storage = dsm.getLocalStorageForPrincipal(principal, "");
-         
+
          storage.clear();
       } else
-         localStorage.clear();    
+         localStorage.clear();
    },
    update_script:function(name,callback){
       ex_loader.load(name+'?rand='+Math.random(),function(script){
@@ -468,10 +468,10 @@ var ex_loader = {
    get_script_content:function(name,callback){
       //console.log('get_script_content:',name);
       var cur_ts=ex_loader.time();
-      var ts=0; 
+      var ts=0;
       var key=name.split('/').pop();
       var content=ex_loader.get(key);
-      
+
       if (content && name.match(/https?:\/\//)){
          content=String(content);
          ts=parseInt(content.substr(0,String(cur_ts).length));//parse script download time
@@ -482,8 +482,8 @@ var ex_loader = {
             ex_loader.update_script(name,function(){
                ex_loader.get_script_content(name,function(content){
                   callback(content);
-               }); 
-            });         
+               });
+            });
          } else {
             if (window.opera && opera.extension){
                if (!ex_loader.scripts_cache[key]){
@@ -500,7 +500,7 @@ var ex_loader = {
          }
          return;
       }
-      callback(content);    
+      callback(content);
    }
 };
 
@@ -545,7 +545,7 @@ ext_api={
             ext_api.get(data.url,function(t,status){
                send_response({act:'GET_response', response:t});
             });
-            break;         
+            break;
          case 'post':
             ext_api.post(data.url,data.params,function(t,status){
                send_response({act:'POST_response', response:t});
@@ -564,16 +564,16 @@ ext_api={
                   r.status    is xhr.status;
                      OR
                   r.error
-               */ 
+               */
                send_response({act:'AJAX_response', response:r});
             });
-            break;         
-            
+            break;
+
          case 'update_scripts':
             ex_loader.update_all(function(){
                send_response({act:'scripts_updated'});
             });
-            break;         
+            break;
          case 'download':
             /*
             if (browser.chrome){
@@ -582,7 +582,7 @@ ext_api={
                })
             } else */
             ext_api.download(data.url,data.name,obj.win);
-            break;         
+            break;
          default: if (send_response) send_response({act:'extension bg default response',msg:data,key:data.key});
       }
    },
@@ -687,14 +687,14 @@ ext_api={
       }
    },
    get:function(url,params,callback){
-      if (!callback){ 
+      if (!callback){
          callback=params;
          params=null;
       }
       ext_api.ajax({url:url, params:params, method:'GET'},function(r){
          callback(r.text,r.status);
       })
-   },   
+   },
    post:function(url,params,callback){
       ext_api.ajax({url:url, data:params, method:'POST'},function(r){
          callback(r.text,r.status);
@@ -710,11 +710,11 @@ ext_api={
       req.open("GET", url, true);
       req.responseType = "blob";
       req.onprogress=function(evt){
-            if (evt.lengthComputable){  
+            if (evt.lengthComputable){
               if (progress_callback)
                progress_callback(evt.loaded,evt.total)
                //var percentComplete = (evt.loaded / evt.total)*100;
-            } 
+            }
          };
 
       req.onload = function(oEvent) {
@@ -809,10 +809,10 @@ ext_api={
                   download_file_names['name'+details.requestId]=decodeURIComponent(url[2]);
                   return {redirectUrl: url[1]};
                }
-            }, 
+            },
             {urls: ["*://*.vk.me/*","*://*.userapi.me/*","*://*.vk-cdn.net/*"]},["blocking"]
          );
-                 
+
          chrome.webRequest.onHeadersReceived.addListener(
             function(details) {
                //console.log('onHeadersReceived:',details);
@@ -833,7 +833,7 @@ ext_api={
                      responseHeaders: details.responseHeaders
                   };
                }
-            }, 
+            },
             {urls: ["*://*.vk.me/*","*://*.userapi.me/*","*://*.vk-cdn.net/*"]}, ["responseHeaders","blocking"]
          );
       }

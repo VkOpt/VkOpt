@@ -2,7 +2,7 @@
 // @include       *.*
 // ==/UserScript==
 
-(function(){ 
+(function(){
 
 var ext_browser={
    mozilla:(function(){try{return Components.interfaces.nsIObserverService!=null} catch(e){return false} })(),
@@ -16,7 +16,7 @@ win = win || window;
 doc = doc || document;
 bg  = bg  || {};
 var api_enabled = false;
-var ex_ldr={ 
+var ex_ldr={
    mark:'vkopt_loader',
    key:(Math.round(Math.random()*10000000)).toString(35),
    init:function(){
@@ -31,7 +31,7 @@ var ex_ldr={
             var file=data[i];  //file[3] - run_at
             (file[3]?run_content_loaded:run_at_start).push(file);
          }
-         
+
          var inj=function(data){
             for (var i=0; i<data.length; i++){
                var file=data[i];
@@ -48,15 +48,15 @@ var ex_ldr={
             inj(run_content_loaded);
          }, false );
       })
-   }, 
+   },
    get_scripts:function(callback){
       if (ext_browser.opera){                                                      // OPERA
-         
+
          opera.extension.addEventListener('message',function(event){
             var data = event.data || {};
             /*if (data.key==ex_ldr.key)
                console.error('ext_content: ON_MESSAGE',data, data.files && data.files.length);*/
-               
+
             if (data.key==ex_ldr.key && data.files && data.files.length>0){
                callback(data.files);
             }
@@ -64,8 +64,8 @@ var ex_ldr={
                opera.extension.postMessage({act:'get_scripts', url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc),key:ex_ldr.key});
                console.log('ext_content: opera.extension.postMessage get_scripts');
             }
-            if (data.api_enabled) api_enabled = true;            
-            
+            if (data.api_enabled) api_enabled = true;
+
             ex_api.ready=true;
             if (data.key==ex_ldr.key){
                ex_api.message_handler(data);
@@ -79,7 +79,7 @@ var ex_ldr={
       } else if (ext_browser.chrome){                                              // CHROMIUM
          chrome.extension.sendRequest({act:'get_scripts', url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc),key:ex_ldr.key}, function(data) {
             if (data.key==ex_ldr.key && data.files && data.files.length>0){
-               if (data.api_enabled) 
+               if (data.api_enabled)
                   api_enabled = true;
                callback(data.files);
             }
@@ -92,7 +92,7 @@ var ex_ldr={
             chrome.extension.sendRequest(msg, function(data) {
                if (data.key==ex_ldr.key){
                   ex_api.message_handler(data);
-               } 
+               }
             });
             return msg;
          }
@@ -100,33 +100,33 @@ var ex_ldr={
          ex_api.ready=true;
          safari.self.addEventListener("message", function(e) {                                    // SAFARI
             if (e.message.key==ex_ldr.key && e.message.files && e.message.files.length>0){
-               if (e.message.api_enabled) 
+               if (e.message.api_enabled)
                   api_enabled = true;
-               callback(e.message.files);  
+               callback(e.message.files);
             }
             if (e.message.key==ex_ldr.key){
                ex_api.message_handler(e.message);
-            }               
+            }
          }, false);
          safari.self.tab.dispatchMessage("get_scripts",{url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc),key:ex_ldr.key});
-         
+
          ex_api.post_message=function(msg){
                msg=ex_api.prepare_data(msg);
                safari.self.tab.dispatchMessage('extension_api',msg);
                return msg;
-         } 
+         }
       } else if (ext_browser.maxthon){                                 // MAXTHON
          var rt = window.external.mxGetRuntime();
          rt.post('get_scripts',{url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc),key:ex_ldr.key});
          rt.listen('scripts', function(data){
             if (data.key==ex_ldr.key && data.files && data.files.length>0){
                //console.log('scripts on '+doc.location.href,data.files);
-               if (data.api_enabled) 
+               if (data.api_enabled)
                   api_enabled = true;
                callback(data.files);
             }
-         });  
-         
+         });
+
          ex_api.post_message=function(msg){
             msg=ex_api.prepare_data(msg);
             rt.post('extension_bg_api',msg);
@@ -135,29 +135,29 @@ var ex_ldr={
          rt.listen('extension_api', function(data){
             if (data.key==ex_ldr.key){
                ex_api.message_handler(data);
-            } 
-         });        
+            }
+         });
          ex_api.ready=true;
-          
+
       } else { //if (ext_browser.mozilla)                  // MOZILLA
-         
+
          bg.get_scripts(doc.location.href,function(files, api_allowed){
             if (files && files.length>0){
                //console.log('scripts on '+doc.location.href,data.files);
-               if (api_allowed) 
+               if (api_allowed)
                   api_enabled = true;
                callback(files);
             }
-         },ex_ldr.is_in_frame(doc));     
-         
+         },ex_ldr.is_in_frame(doc));
+
          ex_api.post_message=function(msg){
             msg=ex_api.prepare_data(msg);
             setTimeout(function(){
                bg.postMessage(msg,function(data){
                   if (data.key==ex_ldr.key){
                      ex_api.message_handler(data);
-                  }                   
-               });            
+                  }
+               });
             },1);
             return msg;
          }
@@ -171,16 +171,16 @@ var ex_ldr={
       in_frames = in_frames || 0;
       var inframe=((doc || document).defaultView.parent != (doc || document).defaultView);
       switch (in_frames){ // 0 or null - execute in all; 1 - exclude frames; 2 - only in frames; 3 - disable scripts
-         case 0: 
+         case 0:
             return true; // include all
-         case 1: 
+         case 1:
             return !inframe; // exclude frames
          case 2:
             return !!inframe; // only in frames
          case 3:
             return false;  // disable scripts
       }
-      return true;      
+      return true;
    },
    inj_script:function(script,info,by_src){
       var ext=(info || ".js").split('.').pop();
@@ -196,8 +196,8 @@ var ex_ldr={
                else
                   js.src=script;
                js.setAttribute(ex_ldr.mark,info);
-               doc.getElementsByTagName('head')[0].appendChild(js); 
-            }                         
+               doc.getElementsByTagName('head')[0].appendChild(js);
+            }
             break;
          case 'css':
             if (by_src){
@@ -205,7 +205,7 @@ var ex_ldr={
                cssNode.type = 'text/css';
                cssNode.rel = 'stylesheet';
                cssNode.setAttribute(ex_ldr.mark,info);
-               cssNode.href = script; 
+               cssNode.href = script;
                doc.getElementsByTagName("head")[0].appendChild(cssNode);
             } else {
                var styleElement = doc.createElement("style");
@@ -219,19 +219,19 @@ var ex_ldr={
    },
    init_keys:function(){
       var done=function(){
-         informer.show(ex_ldr.mark+" scripts updated",2000,doc); 
+         informer.show(ex_ldr.mark+" scripts updated",2000,doc);
       };
       var keyhandler = function(e){
          if (!e){  e = event; }
          if (e.altKey && e.ctrlKey){
-            switch (e.keyCode){            
-               case 85: /*case 1075: case 1043: case 117://alert("Alt+Ctrl+U"); */          
+            switch (e.keyCode){
+               case 85: /*case 1075: case 1043: case 117://alert("Alt+Ctrl+U"); */
                   ex_api.req({act:'update_scripts'},function(){
-                     done(); 
+                     done();
                   });
                   informer.show(ex_ldr.mark+" run update scripts<br/>(Alt+Ctrl+U)",2000,doc);
                   ex_ldr.inj_script("console.log('"+ex_ldr.mark+" run update scripts (Alt+Ctrl+U)');");
-                  
+
                   break;
             }
          }
@@ -262,13 +262,13 @@ var informer={
       div.insertBefore(a,div.firstChild);
       doc.body.appendChild(div);
       var old_left=div.style.left;
-      
+
       var visible=true;
       var hide=function(){
          if (!visible) return;
          visible=false;
          div.style.left=old_left;
-         setTimeout(function(){div.parentNode.removeChild(div);},400);      
+         setTimeout(function(){div.parentNode.removeChild(div);},400);
       };
       a.onclick=hide;
       setTimeout(function(){div.style.left='0px';},1);
@@ -341,7 +341,7 @@ var ex_api={
       }
       //console.log('REQ_ID: '+data._req);
    }
-   
+
 };
 
 
