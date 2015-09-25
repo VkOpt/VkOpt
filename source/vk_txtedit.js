@@ -95,8 +95,8 @@ obj.focus();
      return end-start;
    }
  } else if (obj.contentEditable=="true"){
-   var sel=window.getSelection(); 
-   var r=sel.getRangeAt(0);  
+   var sel=window.getSelection();
+   var r=sel.getRangeAt(0);
    var el=r.commonAncestorContainer;
    while(el && el.contentEditable!="true") {
         el = el.parentNode;
@@ -129,12 +129,12 @@ function replaceSelectedText(obj,cbFunc){
    }
    return true;
  } else if (obj.contentEditable=="true"){
-   var sel=window.getSelection(); 
+   var sel=window.getSelection();
    var r=sel.getRangeAt(0);
    var el=r.commonAncestorContainer;
    while(el && el.contentEditable!="true") {
         el = el.parentNode;
-   }   
+   }
    if (el && el.contentEditable=="true"){
      var text = document.getSelection()+'';
      eval("var rs = "+cbFunc+"(text);");
@@ -181,7 +181,7 @@ function vkTxtPanelButtons(eid,emoji){
 	var need_gen=true;
    if (emoji){
 
-      
+
       //var eid = 'reply_field39226536_390';
       /*var el=vkCe('a',{
          "class":"vk_edit_btn emoji_smile",
@@ -197,7 +197,7 @@ function vkTxtPanelButtons(eid,emoji){
       'onmouseup="return cancelEvent(event);" '+
       'onmousedown="console.log(this); Emoji.ttClick(cur.emojiId[\''+eid+'\'], this); return cancelEvent(event);" '+
       'style="opacity: 0.7; margin-top:-1px;"><div class="emoji_smile_icon_on"></div><div class="emoji_smile_icon vk_emoji_mini_icon"></div></div>');
-      
+
       var txt = ge(eid);//IM.getNewTxt();
       var wrap = se('<div class="fl_l"></div>');
       txt.parentNode.insertBefore(wrap,txt);
@@ -217,10 +217,10 @@ function vkTxtPanelButtons(eid,emoji){
          sendWrap: wrap,//ge('reply_media_lnk39226536_390').parentNode,
          onStickerSend: function(stNum) {   }
       });
-       
 
 
-      
+
+
       return el;
    } else {
       vk_gen_smiles_funcs.push(function(el){
@@ -240,14 +240,14 @@ function vkPrepareTxtPanels(node){
 	var te_btn_count=0;
 	var touts={};
 	if (!window.txtareas_events) txtareas_events=[];
-	
+
    var add_panel=function(ta){
-		if ((ta.getAttribute('onfocus') && ta.getAttribute('onfocus').indexOf('showEditPost')!=-1) || ta.getAttribute('vk_edit_btns')) 
+		if ((ta.getAttribute('onfocus') && ta.getAttribute('onfocus').indexOf('showEditPost')!=-1) || ta.getAttribute('vk_edit_btns'))
          return;//continue;//ge('edit_btns_'+ta.id)
 		var panel=vkCe('div',{id:'edit_btns_'+ta.id,"class":'vk_textedit_panel'},
 						//vkTxtPanelButtons(ta.id)+
 						'<div style="float:left; font-size:7px; margin-top:-10px; margin-right:3px;" onclick="fadeOut(\''+'edit_btns_'+ta.id+'\');">x</div>');
-		panel.appendChild(vkTxtPanelButtons(ta.id));				
+		panel.appendChild(vkTxtPanelButtons(ta.id));
 		//alert(panel.innerHTML);
 		ta.parentNode.insertBefore(panel,ta);
 		hide(panel);
@@ -290,7 +290,7 @@ function vkPrepareTxtPanels(node){
 		addEvent(ta, 'click', show_panel);
 		addEvent(ta, 'blur', hide_panel);
 		ta.vk_txt_panel_enabled=true;
-		ta.setAttribute('vk_edit_btns', true);   
+		ta.setAttribute('vk_edit_btns', true);
    };
 	for (var i=0;i<tas.length;i++){
 		var ta=tas[i];
@@ -307,7 +307,7 @@ function vkAddSmilePanel(el){
    //if (!window.txtareas_ids) txtareas_ids=0;
 	var btns_count = 0;
    var add_panel=function(ta){
-		if ((ta.getAttribute('onfocus') && ta.getAttribute('onfocus').indexOf('showEditPost')!=-1) || ta.getAttribute('vk_edit_btns') || !ta.id) 
+		if ((ta.getAttribute('onfocus') && ta.getAttribute('onfocus').indexOf('showEditPost')!=-1) || ta.getAttribute('vk_edit_btns') || !ta.id)
          return;//continue;//ge('edit_btns_'+ta.id)
 		//if (!ta.id) ta.id='vktextfield_'+(txtareas_ids++);
       var panel=vkCe('div',{id:'edit_btns_'+ta.id,"class":'vk_textedit_panel emoji_no_tabs'},
@@ -322,11 +322,11 @@ function vkAddSmilePanel(el){
             panel.appendChild(vkTxtPanelButtons(ta.id,panel));
             btns_count++;
          }
-      }      
+      }
 		//alert(panel.innerHTML);
       if (btns_count == 0) return;
 		ta.parentNode.insertBefore(panel,ta);
-      
+
       //ta.parentNode.insertBefore(vkTxtPanelButtons(ta.id,true),ta);
 		hide(panel);
 		var show_panel=function(e){
@@ -369,9 +369,9 @@ function vkAddSmilePanel(el){
 		addEvent(ta, 'click', show_panel);
 		addEvent(ta, 'blur', hide_panel);
 		ta.vk_txt_panel_enabled=true;
-		ta.setAttribute('vk_edit_btns', true);   
+		ta.setAttribute('vk_edit_btns', true);
    };
-   
+
    add_panel(el);
 	vklog('PreparePanel time:' + (unixtime()-tstart) +'ms');
 }
@@ -398,7 +398,7 @@ function SwichKeybText(str){
 					}
 		    }
 		  message=message+messer;
-	}	
+	}
    return message;
 }
 
@@ -430,7 +430,7 @@ if(vk_EnableSwichText){
 		    else if (document.activeElement.value){
             document.activeElement.value=SwichKeybText(document.activeElement.value);
           } else if (acelem.contentEditable=="true"){
-            
+
             FindAndProcessTextNodes(acelem,function(mainNode,childItem){
                var node = mainNode.childNodes[childItem];
                node.nodeValue=SwichKeybText(node.nodeValue);

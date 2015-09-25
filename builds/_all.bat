@@ -1,4 +1,4 @@
-@set /p answer=Version: 
+@set /p answer=Version:
 
 @echo need update on server "config.json" and "scripts" > vkopt_%answer%_!onserver.txt
 
