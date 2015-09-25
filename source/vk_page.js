@@ -138,7 +138,7 @@ vk_profile={
       if (ge('vk_profile_inited')) return;
       ge('profile_info').appendChild(vkCe('input',{type:'hidden',id:'vk_profile_inited'}));
       //if (getSet(24) == 'y') vkAvkoNav();
-      if (getSet(25) == 'y') status_icq(ge('profile_full_info'));
+      //if (getSet(25) == 'y') status_icq(ge('profile_full_info'));
       if (getSet(26) == 'y') vkProcessProfileBday(); //VkCalcAge();
       vkPrepareProfileInfo();
       vk_graff.upload_graff_item();
