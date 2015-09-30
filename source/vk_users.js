@@ -378,6 +378,7 @@ function ExGroupItems(gid,el){
 	uitems+=mkExItem(i++,'<a href="/apps?act=apps&gid=%GID">'+IDL('clAp')+'</a>');
 	uitems+=mkExItem(i++,'<a href="/search?c[section]=people&c[group]=%GID">'+IDL('clGu')+'</a>');
    uitems+=mkExItem(i++,'<a href="/club%GID?act=edit">'+IDL('mGrAdmin')+'</a>');
+    uitems+=mkExItem(i++,'<a href="/feed?obj=-%GID&section=mentions">'+IDL('mNeMe')+'</a>');
    uitems+=mkExItem(i++,'<a href="#" onclick="return vk_groups.leave(%GID);" class="fl_r">&times;</a><a href="#" onclick="return vk_groups.enter(%GID);">'+IDL('GroupJoin')+'</a>');
 	return uitems;
 }
@@ -412,6 +413,7 @@ function ExUserItems(id,el){
         //'<a href="/rate.php?act=vote&id=%uid">'+IDL("clRa")+'</a>',
         '<a href="/feed?section=source&source=%uid">' + IDL("mNeP") + '</a>',
         '<a href="/feed?owner=%uid&section=owner" onClick="return nav.go(this,event);">' + IDL("clNews") + '</a>',
+        '<a href="/feed?obj=%uid&section=mentions" onClick="return nav.go(this,event);">' + IDL("mNeMe") + '</a>',
         '<a href="javascript:vkRemoveFriend(%uid);" class="fl_r">&times;</a><a href="javascript:vkAddToFriends(%uid);">' + IDL("clAddFr") + '</a>',
         '<a href="javascript:vkAddToFave(%uid,1);" class="fl_r">&times;</a><a href="javascript:vkAddToFave(%uid);">' + IDL("clAddToFav") + '</a>',
         '<a href="#" style="cursor: hand;" onClick="vkAddToBL(%uid); return false;">' + IDL("addblack") + '</a>',
