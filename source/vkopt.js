@@ -19,7 +19,7 @@ if (!window.DefSetBits)
 
 var DefSetBits='yyyynnyyynyyy0n0yy0nnnynyyynyy0nynynnnnyy0yyy1yynnnnny0nynynynnnnyynnynnnynynyynnyn3nnnnynynnnnnyynnnnnnnn-3-0-#c5d9e7-#34a235-1-';
 
-var DefExUserMenuCfg='11111110111111111111'; // default user-menu items config
+var DefExUserMenuCfg='111111101111111111111'; // default user-menu items config
 var vk_upd_menu_timeout=20000;      //(ms) Update left menu timeout
 var vkMenuHideTimeout=400;          //(ms) Hide Menu Popups timeout
 var CHECK_FAV_ONLINE_DELAY = 20000; //(ms)  delay for check online statuses of faved users
