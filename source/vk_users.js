@@ -227,6 +227,7 @@ function GetUserMenuSett() {
                      //IDL("clRa"), 
                      IDL("mNeP"), 
                      IDL("clNews"),
+                     IDL("mNeMe"),
                      IDL("clAddFr"), 
                      IDL("clAddToFav"), 
                      IDL("addblack"),
