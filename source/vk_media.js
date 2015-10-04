@@ -841,7 +841,7 @@ var vk_photos = {
       });
    },
     albums_links: function (oid) {   // Реализация функции получения ссылок на все фотографии с группировкой по альбомам. (в виде скрипта)
-        var box = vkAlertBox(document.title, '<div id="vk_links_container1"></div><br/><div id="vk_links_container2"></div>', null, null, true);
+        var box = vkAlertBox(document.title, '<div id="vk_links_container1">'+vkBigLdrImg+'</div><br/><div id="vk_links_container2"></div>', null, null, true);
         var Progress = function (c, f) {    // обновление прогрессбара для альбомов
             if (!f) f = 1;
             ge('vk_links_container1').innerHTML = vkProgressBar(c, f, 350);
