@@ -50,6 +50,7 @@ function vkInj(file){
    case 'fave.js':         vk_fave.inj();           break;
    case 'photos.js':       vk_photos.inj_photos();  break;
    case 'emoji.js':        vk_features.emoji_inj(); break;
+   case 'upload.js':       vk_features.upload_inj(); break;
   }
   vk_plugins.onjs(file); 
 }
@@ -788,6 +789,32 @@ vk_features={
       if (getSet(95)=='y'){
          Inj.Replace('Emoji.addEmoji','Emoji.cssEmoji[code][1]','(Emoji.cssEmoji[code]?Emoji.cssEmoji[code][1]:Emoji.codeToChr(code))');
       }
+   },
+   upload_inj:function() {
+       Inj.End('Upload.onCheckComplete','vk_features.mod_upload_box();');   // если нужны опции, vk_features.mod_upload_box(options)
+   },
+   mod_upload_box: function () {    // Перенос контента из MessageBox-a в видеоплеер
+       if (!isVisible(window.mvLayerWrap) // если уже существует видеоплеер, ничего не делать, а то второй плеер не запустится, а темный слой останется.
+       && (nav.objLoc[0].indexOf('audio')==0 || nav.objLoc[0].indexOf('docs')==0)) { // и только для аудио и документов
+           var b = curBox(), cb = __bq.curBox; // бекап текущих переменных для правильной работы функции curBox
+           b.hide = function () {};
+           vkAlertBox(geByClass('box_title')[0].textContent, b.bodyNode.parentNode, function () {
+               // восстановление переменных
+               b.isVisible = function () {    
+                   return true;
+               };
+               b.hide = function () {
+                   Videoview.hide(false, true);
+               };
+               __bq.curBox = cb;    // 
+               _message_boxes[__bq.curBox] = b;
+           }, null, true);
+           // чтобы не разрушался Upload при переходе на другую страницу, убираем Upload.deinit из списка функций для уничтожения.
+           if (nav.objLoc[0].indexOf('audio')==0)
+               cur.destroy.pop();
+           else if (nav.objLoc[0].indexOf('docs')==0)
+               cur.destroy.splice(-3,1);
+       }
    }
 };
 
