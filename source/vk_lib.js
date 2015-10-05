@@ -2490,7 +2490,7 @@ vkLdr={
 };
 
 function vkAlertBox(title, text, callback, confirm, minimizable) {// [callback] - "Yes" or "Close" button / onShow() for "minimizable"; [confirm] - "No" button
-  if (minimizable) {    // вывод контента в видеоплеере, который можно сворачивать
+  if (minimizable && getSet(98)=='y') {    // вывод контента в видеоплеере, который можно сворачивать
       var vp = vkCe('div', {'id': 'video_player', 'class': 'popup_box_container box_dark', 'style': 'overflow:auto'});
       var box_body = (typeof text == 'string' ? vkCe('div', {'class': 'box_body'}, text) : text);
       vp.appendChild(box_body);

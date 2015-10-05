@@ -791,7 +791,8 @@ vk_features={
       }
    },
    upload_inj:function() {
-       Inj.End('Upload.onCheckComplete','vk_features.mod_upload_box();');   // если нужны опции, vk_features.mod_upload_box(options)
+       if (getSet(98)=='y')
+           Inj.End('Upload.onCheckComplete','vk_features.mod_upload_box();');   // если нужны опции, vk_features.mod_upload_box(options)
    },
    mod_upload_box: function () {    // Перенос контента из MessageBox-a в видеоплеер
        if (!isVisible(window.mvLayerWrap) // если уже существует видеоплеер, ничего не делать, а то второй плеер не запустится, а темный слой останется.
