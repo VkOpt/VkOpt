@@ -2455,7 +2455,7 @@ vk_videos = {
       ovid = lnk.href.match(/video(-?\d+)_(\d+)/);
       if (!ovid) return;
       
-      var found = false, inners = ['video_thumb_play','videocat_thumb','videocat_thumb_shadow','video_play_btn_wrap','videocat_duration','page_video_thumb','page_post_thumb_sized_photo'];
+      var found = false, inners = ['mv_recom_screen','video_thumb_play','videocat_thumb','videocat_thumb_shadow','video_play_btn_wrap','videocat_duration','page_video_thumb','page_post_thumb_sized_photo'];
       for (var i = 0; i < inners.length; i++)
          if (hasClass(lnk, inners[i]) || (geByClass(inners[i],lnk)||[])[0]){
             found = true;
@@ -2529,7 +2529,7 @@ vk_videos = {
          var athumb = se('<div class="vkv_athumb_wrap" id="vkv_athumb_wrap_%ID"><div class="vkv_athumb" id="vkv_athumb_%ID"></div></div>'.replace(/%ID/g,id));
          el = athumb.firstChild; //ge('vkv_athumb_'+id);
          
-         var append_to = geByClass('video_image_div',lnk)[0];
+         var append_to = geByClass('video_image_div',lnk)[0] || geByClass('mv_recom_screen',lnk)[0];
          (append_to || lnk).appendChild(athumb);
          
          spritesheetsUrls = data.timeline_thumbs_jpg.split(",");
