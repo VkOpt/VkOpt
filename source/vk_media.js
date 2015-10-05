@@ -2493,7 +2493,9 @@ vk_videos = {
       var over = function(){
          // Тут из-за возможности переключения отображения списка, из-за чего меняется размер превьюхи.
          wrap_sz = getSize(el.parentNode);
-         el.style.zoom = (Math.min(MAX_PREVIEW_ZOOM_FACTOR, wrap_sz[0]/thumbWidth)).toFixed(2);
+         var zoom = (Math.min(MAX_PREVIEW_ZOOM_FACTOR, wrap_sz[0]/thumbWidth)).toFixed(2);
+         el.style.zoom = zoom;
+         el.style.MozTransform = "scale("+zoom+")";
          addClass(el, 'vkv_animated');
          stopped = false;
          anim = setInterval(anim_func, 300);
@@ -2507,8 +2509,7 @@ vk_videos = {
             x = thumbWidth * (thumbIndex % thumbsPerRow);
             y = thumbHeight * Math.floor(thumbIndex % thumbsPerImage / thumbsPerRow);
             el.style.backgroundImage = "url('"+spritesheetsUrls[img_idx]+"')";
-            el.style.backgroundPositionX = '-'+x+'px';
-            el.style.backgroundPositionY = '-'+y+'px';
+            el.style.backgroundPosition = (-x)+'px '+(-y)+'px' // Firefox
             thumbIndex++;
             if (thumbIndex >= thumbsTotal) 
                thumbIndex = 0;
