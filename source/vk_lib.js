@@ -2489,19 +2489,23 @@ vkLdr={
 	}
 };
 
-function vkAlertBox(title, text, callback, confirm, minimizable) {// [callback] - "Yes" or "Close" button; [confirm] - "No" button
-  if (minimizable) {    // вывод контента в видеоплеере, который можно сворачивать
-      var vp = vkCe('div', {id: 'video_player', style: 'overflow:auto'});
-      var box_body = vkCe('div', {'class': 'box_body'}, text);
+function vkAlertBox(title, text, callback, confirm, minimizable) {// [callback] - "Yes" or "Close" button / onShow() for "minimizable"; [confirm] - "No" button
+  if (minimizable && getSet(98)=='y') {    // вывод контента в видеоплеере, который можно сворачивать
+      var vp = vkCe('div', {'id': 'video_player', 'class': 'popup_box_container box_dark', 'style': 'overflow:auto'});
+      var box_body = (typeof text == 'string' ? vkCe('div', {'class': 'box_body'}, text) : text);
       vp.appendChild(box_body);
       stManager.add(['videoview.js', 'videoview.css', 'page.js', 'page.css'], function () {
+          var _a = window.audioPlayer;  // Для предотвращения остановки аудио при открытии видеоплеера
+          window.audioPlayer = null;
           videoview.show(false, '0_', '', {noHistory: 1, prevLoc: nav.objLoc});
+          window.audioPlayer = _a;      // восстановление аудиоплеера
           mvcur.mvContent.appendChild(vp);
           hide(mvcur.mvLoader, mvcur.mvControls); // скрыть картинку с анимацией загрузки и блок для комментариев
           if (title) {  // заголовок будет отображаться только в свернутом окне.
               mvcur.mvData.published = 1;
               mvcur.mvData.title = title;
           }
+          if (isFunction(callback)) callback();
       });
       return {
           setOptions: function (items) {    // для совместимости с MessageBox
