@@ -1528,7 +1528,7 @@ function vkGetZipWithPhotos(oid, aid) {
             var next = function() {
                 Progress(links_length - i, links_length); // Потому что скачивание идет задом наперед  
                 dlphoto(--i);                             // продолжаем рекурсию                       
-            }
+            };
             var request = (vkAjTransport.readyState == 4 || vkAjTransport.readyState == 0) ? vkAjTransport : PrepReq();
             if (request) {
                 var cors_proxy_used = false;    // использовался ли уже CORS-прокси
@@ -1540,7 +1540,7 @@ function vkGetZipWithPhotos(oid, aid) {
                     } else {    // Не скачалось даже через прокси. Наверное, прокси лежит. Скачиваем файл через background.
                         vk_aj.ajax({url: links[i], method: 'GET', responseType: 'arraybuffer'}, function (response) {
                             if (response.status == 200)
-                                zip.file(i + ".jpg", response.raw);
+                                zip.file(i + '_'+ links[i].split('/').pop(), response.raw);
                             next();
                         });
                     }
@@ -1549,7 +1549,7 @@ function vkGetZipWithPhotos(oid, aid) {
                 request.onreadystatechange = function () {
                     if (request.readyState == 4) {
                         if (request.status == 200) {
-                            zip.file(i + ".jpg", request.response);     // Добавление скачанного файла в объект JSZip
+                            zip.file(i + '_' + links[i].split('/').pop(), request.response);     // Добавление скачанного файла в объект JSZip
                             next();
                         } else
                             onerror();

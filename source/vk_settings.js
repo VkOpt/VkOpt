@@ -709,6 +709,7 @@ function vkInitSettings(){
            ' <a onclick="return vkAddWall(this.previousElementSibling)">' + IDL('add') + '</a><br>' +
            '<div class="vkwalllist"></div></div>'
       }
+    , {id: 98, text: "seMinimizeAbility"}
    ],
    Hidden:[
       {id:82,  text: "FullThumb"},
@@ -717,7 +718,7 @@ function vkInitSettings(){
    ]
   };
 
-   //LAST 105 FREE: 98
+   //LAST 105
 
    vkSetsType={
       "on"  :[IDL('on'),'y'],
