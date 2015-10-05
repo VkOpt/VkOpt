@@ -2347,15 +2347,6 @@ function vkVideo(){
       Inj.Replace('Video.drawVideo','if (v[3]','if (false && v[3]');*/
 }
 
-function vkVideoPage(){
-   window.vk_vid_down && vk_vid_down.vid_page();
-   
-   vkVideoAddOpsBtn();
-   vkVideoNullAlbum();
-   
-   /*if (getSet(76)=='y')
-      vk_videos.update_vid_titles();*/
-}
 function vkVideoEditPage(){
    vkVidEditAlbumTitle(null,true);
 }
@@ -2390,6 +2381,34 @@ vk_videos = {
       #vk_more_acts .idd_item, #vk_more_acts .idd_item a{display:block}\
       #vk_more_acts .idd_item a{padding: 3px 0;}\
       #vk_more_acts .idd_item:hover{background-color:rgba(0, 51, 102, 0.117);}\
+      .vkv_athumb{\
+         background-repeat: no-repeat;\
+         left: 50% !important;\
+         top: 50% !important;\
+         bottom: auto !important;\
+         position: absolute !important;\
+      }\
+      .vkv_athumb_wrap, .video_module a.video div.vkv_athumb_wrap {\
+         overflow: hidden;\
+         background-color: rgba(0,0,0,0.7);\
+         top: 0 !important;\
+         left: 0 !important;\
+         width: 100% !important;\
+         height: 100% !important;\
+         position: absolute !important;\
+         pointer-events: none;\
+         background-size: contain;\
+         display: block !important;\
+         margin-top: 0px !important;\
+         opacity:0;\
+         -webkit-transition: opacity 100ms linear;\
+         -moz-transition: opacity 100ms linear;\
+         -o-transition: opacity 100ms linear;\
+         transition: opacity 100ms linear;\
+      }\
+      a:hover .vkv_athumb_wrap{\
+          opacity:1 !important;\
+      }\
       ';
       
       code+='\
@@ -2411,6 +2430,127 @@ vk_videos = {
       if (getSet(92)=='y') Inj.Start('Videoview.hide','if (!mvcur.minimized) force=true;');
       videoview.enabledResize=function(){return true;}
    },
+   page:function(){ 
+      window.vk_vid_down && vk_vid_down.vid_page();
+      vkVideoAddOpsBtn();
+      vkVideoNullAlbum();
+      // VIDATHUMB
+      cur.videoTplHTML = cur.videoTplHTML.replace(/(o.click="[^"]+Video\.show)/g,'o'+'nmouseover="vk_videos.init_animated_thumb(this);" $1')
+   },
+   process_link:function(link){
+      // AMO censored
+      var omo = 'o'+'nmouseover';
+      var sa = 'setA'+'ttribute';
+      // VIDATHUMB  
+      if (link && /video-?\d+_\d+/.test(link.href || '') && !link.hasAttribute(omo)){
+         link[sa](omo,'vk_videos.init_animated_thumb(this);')
+      }
+      
+   },
+   init_animated_thumb: function(lnk){
+      var MAX_PREVIEW_ZOOM_FACTOR = 2.5;
+      
+      lnk = ge(lnk);
+      if (!lnk) return;
+      ovid = lnk.href.match(/video(-?\d+)_(\d+)/);
+      if (!ovid) return;
+      
+      var found = false, inners = ['video_thumb_play','videocat_thumb','videocat_thumb_shadow','video_play_btn_wrap','videocat_duration','page_video_thumb','page_post_thumb_sized_photo'];
+      for (var i = 0; i < inners.length; i++)
+         if (hasClass(lnk, inners[i]) || (geByClass(inners[i],lnk)||[])[0]){
+            found = true;
+            break;
+         }
+      
+      if (!found) return;
+         
+      // page_post_thumb_sized_photo - append to <A>
+      var anim,
+          el,
+          spritesheetsUrls,
+          thumbsPerRow,
+          thumbsPerImage,
+          thumbsTotal,
+          thumbWidth,
+          thumbHeight,
+          stopped = false, 
+          img_idx = x = y = thumbIndex = 0;   
+      
+      if (hasClass(lnk,'vkv_anim_inited')) return;
+      addClass(lnk, 'vkv_anim_inited');
+      
+      var id = ovid[1]+'_'+ovid[2];
+      
+      var load_info = function(callback){
+         AjGet('/video.php?act=a_flash_vars&vid='+id,function(t){
+            if(t && t!='NO_ACCESS'){
+               var obj=JSON.parse(t);
+               !obj.extra ? callback(obj) : callback(null);
+            }         
+         });
+      }
+      
+      var over = function(){
+         // Тут из-за возможности переключения отображения списка, из-за чего меняется размер превьюхи.
+         wrap_sz = getSize(el.parentNode);
+         el.style.zoom = (Math.min(MAX_PREVIEW_ZOOM_FACTOR, wrap_sz[0]/thumbWidth)).toFixed(2);
+         addClass(el, 'vkv_animated');
+         stopped = false;
+         anim = setInterval(anim_func, 300);
+      }
+      var anim_func = function(){
+            if (!hasClass(el,'vkv_animated')){
+               clearInterval(anim);
+               return;
+            }
+            img_idx = Math.floor(thumbIndex / thumbsPerImage); // на каком листе искать кадр
+            x = thumbWidth * (thumbIndex % thumbsPerRow);
+            y = thumbHeight * Math.floor(thumbIndex % thumbsPerImage / thumbsPerRow);
+            el.style.backgroundImage = "url('"+spritesheetsUrls[img_idx]+"')";
+            el.style.backgroundPositionX = '-'+x+'px';
+            el.style.backgroundPositionY = '-'+y+'px';
+            thumbIndex++;
+            if (thumbIndex >= thumbsTotal) 
+               thumbIndex = 0;
+      }
+      
+      var stop = function(){
+         //removeEvent(el.parentNode.parentNode,'mouseout', stop);
+         stopped = true;
+         removeClass(el, 'vkv_animated'); 
+         clearInterval(anim);
+      }
+      
+      load_info(function(data){
+         if (!data || !data.timeline_thumbs_jpg){
+            console.log('video' + id + ' without preview');
+            return;            
+         }
+         var athumb = se('<div class="vkv_athumb_wrap" id="vkv_athumb_wrap_%ID"><div class="vkv_athumb" id="vkv_athumb_%ID"></div></div>'.replace(/%ID/g,id));
+         el = athumb.firstChild; //ge('vkv_athumb_'+id);
+         
+         var append_to = geByClass('video_image_div',lnk)[0];
+         (append_to || lnk).appendChild(athumb);
+         
+         spritesheetsUrls = data.timeline_thumbs_jpg.split(",");
+         thumbsPerRow = data.timeline_thumbs_per_row;
+         thumbsPerImage = data.timeline_thumbs_per_image;
+         thumbsTotal = data.timeline_thumbs_total;
+         thumbWidth = data.timeline_thumb_width;
+         thumbHeight = data.timeline_thumb_height;
+        
+         el.style.width = thumbWidth+'px';
+         el.style.height = thumbHeight+'px';  
+         el.style.marginLeft  =  '-'+(Math.round(thumbWidth/2))+'px';      
+         el.style.marginTop  =  '-'+(Math.round(thumbHeight/2))+'px';
+         
+         addEvent(el.parentNode.parentNode,'mouseout',stop);
+         addEvent(el.parentNode.parentNode,'mouseover',over);
+         
+         !stopped && over();
+      });
+   },
+   
    show_null_album:function(){
       var albumed = [];
       var fake_id = 10000000001;// c нулевым какие-то траблы. не разбирался.

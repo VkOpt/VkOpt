@@ -182,7 +182,7 @@ function vkOnNewLocation(startup){
 			case 'photos':		vk_photos.page(); break;
 			case 'audio':		vkAudioPage(); break;
 			case 'audio_edit':	vkAudioEditPage(); break;
-			case 'video':		vkVideoPage(); break;
+			case 'video':		vk_videos.page(); break;
 			case 'video_edit':	vkVideoEditPage(); break;
 			case 'notes':		vkNotesPage(); break;
 			case 'board':		vkBoardPage(); break;
@@ -312,6 +312,7 @@ function vkProccessLinks(el){
 	  if (getSet(38)=='y') ProcessHighlightFriendLink(nodes[i]);
      if (getSet(55)=='y') vk_im.process_date_link(nodes[i]);
      if (getSet(58)=='y') vkProcessTopicLink(nodes[i]);
+     vk_videos.process_link(nodes[i]);
      //vkProcessDocPhotoLink(nodes[i]);
 	  vk_plugins.processlink(nodes[i]);
     }
