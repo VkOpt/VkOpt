@@ -586,6 +586,7 @@ function vkInitSettings(){
       {id:2,   text: "seLinkVi"},
       {id:66,  text: "seVidDownloadLinks"},
       {id:92,   text: "seVideoHideConfirm"},
+      {id:106,   text: "seVideoAnimThumbs"},
       //{id:76,  text: "seVideoFullTitles"},
       
       {id:3,   text: "seCompactAudio"},
@@ -718,7 +719,7 @@ function vkInitSettings(){
    ]
   };
 
-   //LAST 105
+   //LAST 106
 
    vkSetsType={
       "on"  :[IDL('on'),'y'],

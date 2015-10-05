@@ -2435,17 +2435,17 @@ vk_videos = {
       vkVideoAddOpsBtn();
       vkVideoNullAlbum();
       // VIDATHUMB
-      cur.videoTplHTML = cur.videoTplHTML.replace(/(o.click="[^"]+Video\.show)/g,'o'+'nmouseover="vk_videos.init_animated_thumb(this);" $1')
+      if (getSet(106)=='y') cur.videoTplHTML = cur.videoTplHTML.replace(/(o.click="[^"]+Video\.show)/g,'o'+'nmouseover="vk_videos.init_animated_thumb(this);" $1')
    },
    process_link:function(link){
       // AMO censored
       var omo = 'o'+'nmouseover';
       var sa = 'setA'+'ttribute';
-      // VIDATHUMB  
-      if (link && /video-?\d+_\d+/.test(link.href || '') && !link.hasAttribute(omo)){
-         link[sa](omo,'vk_videos.init_animated_thumb(this);')
+      // VIDATHUMB 
+      if (getSet(106)=='y'){     
+         if (link && /video-?\d+_\d+/.test(link.href || '') && !link.hasAttribute(omo))
+            link[sa](omo,'vk_videos.init_animated_thumb(this);')
       }
-      
    },
    init_animated_thumb: function(lnk){
       var MAX_PREVIEW_ZOOM_FACTOR = 2.5;
