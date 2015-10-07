@@ -526,7 +526,7 @@ function vkStyles(){
 				.vkProg_BarBg{text-shadow: 0px 1px 0px #FFF; border:1px solid #EEE;  box-shadow: inset 0 10px 26px rgba(255, 255, 255, 0.5);}\
 			.vkaudio_down td{padding:0px !important;}\
 			.vk_tBar { padding: 10px 10px 0px 10px;  border-bottom: solid 1px #36638E;}\
-			input.file {display: none !important;}\
+			input.file {max-width: 150px;}\
 			.vk_tab_nav{ padding:0px; margin:0px;}\
 			.vk_tab_nav li{   float:left;   text-align:center;    list-style-type: none;  }\
 			.vk_tab_nav .tab_word {  margin: 5px 10px 0px 10px;  font-weight: normal;}\
