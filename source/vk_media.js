@@ -6755,7 +6755,10 @@ if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
             });
       },
       onPaste: function (e) {
+         var attr = e.target.getAttribute('contenteditable');   // бекап и восстановление атрибута contenteditable
+         e.target.setAttribute('contenteditable','');           // для избежания Emoji.getRange() в emoji.js:229
          setTimeout(function () {
+            e.target.setAttribute('contenteditable',attr);
             var img = geByTag('img', e.target)[0];
             if (img) {
                var binary = atob(img.src.split('base64,')[1]);
