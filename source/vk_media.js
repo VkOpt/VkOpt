@@ -6554,10 +6554,10 @@ vk_au_down={
 
             links.push(itm.url+(itm.url.indexOf('?')>0?'&/':'?/')+vkEncodeFileName(vkCleanFileName(itm.artist+" - "+itm.title))+".mp3");
 
-            wget_links.push('wget "'+itm.url+'" -O "'+winToUtf(vkCleanFileName(itm.artist+" - "+itm.title))+'.mp3"');
+            wget_links.push('wget "'+itm.url+'" -O "'+vkCleanFileName(winToUtf(itm.artist+" - "+itm.title))+'.mp3"');
             wget_links_nix.push('wget "'+itm.url+'" -O "'+winToUtf(itm.artist+" - "+itm.title).replace(/"/g,'\\"')+'.mp3"');
 			
-			metalinklist.push('<file name="'+winToUtf(vkCleanFileName(itm.artist+" - "+itm.title))+'.mp3'+'">'
+			metalinklist.push('<file name="'+vkCleanFileName(winToUtf(itm.artist+" - "+itm.title))+'.mp3'+'">'
 								+'<resources><url type="http" preference="100">'+itm.url+'</url></resources>'
 							+'</file>');
          }
