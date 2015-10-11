@@ -1918,11 +1918,11 @@ function utf8_encode ( str_data ) {
         if(c == 208 || c == 209){
           c2 = str.charCodeAt(i + 1);
           if(a[c][c2]) res += String.fromCharCode(a[c][c2]);
-          else res += '?';
-        } else res += '?';
+          else res += '_';
+        } else res += '_';
         i += 2;
       } else {
-        res += '?';
+        res += '_';
         i += 3;
       }
     }
