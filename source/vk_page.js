@@ -3311,7 +3311,9 @@ vk_feed={
                if (elem) {
                    while (elem && elem.getBoundingClientRect().top-topShift < -3 || elem.getBoundingClientRect().left==0)
                        elem = elem.nextElementSibling;
-                   elem = elem.previousElementSibling;         // в этом месте elem был текущим постом, а стал предыдущим
+                   do
+                       elem = elem.previousElementSibling;         // в этом месте elem был текущим постом, а стал предыдущим
+                   while (getXY(elem)[1]==0);   // для предотвращения перемотки к скрытому посту
                    if (elem) scrollToY(getXY(elem)[1]-topShift, 100);
                    window.scrollAnimation = false;
                    wall.scrollCheck(); // для подгрузки стены
