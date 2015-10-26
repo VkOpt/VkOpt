@@ -943,7 +943,7 @@ function vkMenu(){//vkExLeftMenu
   var vkmid=remixmid();//#nav li:hover ul{display:block;}\
   vkaddcss(vkmenu_css1+"\
       #nav li ul, #side_bar li ul, #sideBar li ul{display:none;}\
-      #nav li ul, #side_bar li ul, #sideBar li ul{position:absolute; z-index:999; /*background:#FFF;*/ width:130px; margin-left:70px;padding-left:0px; border:1px solid #AAA; }\
+      #nav li ul, #side_bar li ul, #sideBar li ul{position:absolute; z-index:999; /*background:#FFF;*/ width:135px; margin-left:70px;padding-left:0px; border:1px solid #AAA; }\
       #nav ul li, #side_bar li ul, #sideBar li ul{list-style:none;}\
       #side_bar ol li#myprofile ul a { display: block;  padding: 4px 3px 4px 6px; }\
 	   /*#stl_side { z-index: 0 !important;}*/\
@@ -998,7 +998,8 @@ function vkMenu(){//vkExLeftMenu
     'mail':[
         ['/im',IDL('mDialogsMessages')],
         ['/im?sel=-4',IDL("Spam")],
-        ['/im?sel=-5',IDL('mImportant')]
+        ['/im?sel=-5',IDL('mImportant')],
+        ['/im?q=day:'+dateFormat("ddmmyyyy"), IDL('mStealth')]
 		//,[['im.php?act=a_box&popup=1',''],IDL('mQuickMessages')]
     ],
     'notes':[   
