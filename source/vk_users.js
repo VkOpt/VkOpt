@@ -991,7 +991,7 @@ function vkGetGroup(gid, callback, no_switch_button) {
                 [type, IDL('Type')],
                 [profile.members_count, IDL('clGu')],
                 [MakeContacts(profile.contacts), IDL('Contacts')],
-                [profile.site ? '<a href="http://'+profile.site+'" target="_blank">'+profile.site+'</a>' : '', IDL('Site')],
+                [profile.site ? '<a href="http://'+profile.site.replace(/https?:\/\//,'')+'" target="_blank">'+profile.site+'</a>' : '', IDL('Site')],
                 [profile.can_post ? IDL('Yes') : IDL('No'), IDL('AbilityToPost')]
             ];
             if (profile.deactivated) {
