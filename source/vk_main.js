@@ -1374,10 +1374,10 @@ vk_im={
       vk_im.reply_btns(node);
    },
    process_date_link: function (node){
-      if (node.className=='im_date_link'){
+      if (node.parentNode.className=='im_date_link'){
          var inp=vkNextEl(node); 
          var ts;
-         var fmt=(node.parentNode && node.parentNode.parentNode && hasClass(node.parentNode.parentNode,'im_add_row'))?'HH:MM:ss':'d.mm.yy HH:MM:ss';
+         var fmt=gpeByClass('im_add_row', node) ? 'HH:MM:ss':'d.mm.yy HH:MM:ss';
          if (inp && (ts=parseInt(inp.value)))  node.innerHTML=(new Date((ts-vk.dt)*1000)).format(fmt); 
       }
    },
@@ -1472,8 +1472,9 @@ vk_im={
    reply_btns:function(node){
       if (getSet(81)!='y') return;
       var nodes=geByClass('im_date_link',node);//geByClass('im_log_author_chat_name',node);
-      for (var i=0; i<nodes.length; i++){
-         var mid=(nodes[i].href || '').match(/mail.+id=(\d+)/) || (nodes[i].href || '').match(/im\?.*msgid=(\d+)/);
+      for (var i=0; i<nodes.length; i++)
+        if (nodes[i].firstElementChild) {   // не делать кнопку "ответить" при просмотре результатов поиска
+         var mid=(nodes[i].firstElementChild.href || '').match(/mail.+id=(\d+)/) || (nodes[i].firstElementChild.href || '').match(/im\?.*msgid=(\d+)/);
          if (!mid) continue;
          mid = mid[1];
          var p=nodes[i].parentNode;
@@ -1507,7 +1508,7 @@ vk_im={
       
       var txt = IM.getTxt(cur.peer);
       if (cur.editable) {
-        IM.editableFocus(txt, false, true);
+        Emoji.editableFocus(txt, false, true);
       } else {
         elfocus(txt);
       }

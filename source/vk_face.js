@@ -60,7 +60,7 @@ function vkStyles(){
 	}
    if (ShowAllTime=='y'){
    main_css+='\
-      #im_rows .im_add_row .im_log_date a.im_date_link{\
+      #im_rows .im_add_row .im_log_date .im_date_link{\
          display: block;\
          line-height:150%\
          /*font-size: 6pt;\
