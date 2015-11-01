@@ -1374,10 +1374,10 @@ vk_im={
       vk_im.reply_btns(node);
    },
    process_date_link: function (node){
-      if (node.className=='im_date_link'){
+      if (node.parentNode.className=='im_date_link'){
          var inp=vkNextEl(node); 
          var ts;
-         var fmt=(node.parentNode && node.parentNode.parentNode && hasClass(node.parentNode.parentNode,'im_add_row'))?'HH:MM:ss':'d.mm.yy HH:MM:ss';
+         var fmt=gpeByClass('im_add_row', node) ? 'HH:MM:ss':'d.mm.yy HH:MM:ss';
          if (inp && (ts=parseInt(inp.value)))  node.innerHTML=(new Date((ts-vk.dt)*1000)).format(fmt); 
       }
    },
