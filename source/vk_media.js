@@ -6789,18 +6789,19 @@ if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
         performer: 0,   // поиск по исполнителю
         onLocation: function (nav_obj, cur_module_name) {
             if (cur_module_name == 'audio')
-                this.UI();
+                this.UI('audio_search_filters');
+            else if (cur_module_name == 'search' && nav_obj['c[section]'] == 'audio')
+                this.UI('filter_form');
         },
-        UI: function () {
+        UI: function (parent_id) {
             if (!ge('audioExactSearch')) { // создание галочки "искать в точности"
-                var parent = ge('pad_album_filters') || ge('album_filters');
-                var el = vkCe('div', {'class': 'audio_filter'}, '<div id="audioExactSearch" class="label"></div>');
+                var parent = ge('pad_audio_search_filters') || ge(parent_id);
+                var el = vkCe('div', {}, '<div id="audioExactSearch" class="label"></div>');
                 parent.insertBefore(el, domFC(parent));
-                stManager.add('ui_controls.js', function () {
-                    new Checkbox(ge('audioExactSearch'), {
-                        checked: false,
-                        label: IDL('searchExactly')
-                    });
+                new Checkbox(ge('audioExactSearch'), {
+                    checked: false,
+                    width: 150,
+                    label: IDL('searchExactly')
                 });
             }
         },
