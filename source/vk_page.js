@@ -3772,16 +3772,13 @@ function vk_tag_api(section,url,app_id){
       },
       auth:function(callback){
          var auth_data=localStorage[dk.ls_val] || '{}';
-         var auth_obj;
          try {
-            auth_obj=JSON.parse(auth_data);
+            auth_data=JSON.parse(auth_data);
             if (auth_data.auth_key && auth_data.api_id && auth_data.viewer_id){
                dk.auth_key=auth_data.auth_key;
                dk.api_id=auth_data.api_id;
                dk.viewer_id=auth_data.viewer_id;
                if (callback) callback();
-            } else {
-               auth_obj=null;
             }
          } catch (e) {}
          dk.post('/app'+dk.app_id,{},function(t){
