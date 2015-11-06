@@ -6470,19 +6470,10 @@ vk_au_down={
    },
    make_d_btn:function(url,el,id,name){
        url = url.replace(/https:\/\//,'http://');
-       var table=document.createElement('table');
-       table.className="vkaudio_down";
-       var tr=document.createElement('tr');
-       table.appendChild(tr);
-       el.parentNode.appendChild(table);
        
-       var td=document.createElement('td');
-       tr.appendChild(td);  
-       td.appendChild(el); 
-       td=document.createElement('td');
-       td.setAttribute('style',"vertical-align: top;");
-       td.innerHTML='<a href="'+url+'"  download="'+name+'" title="'+name+'" onmousedown="vk_audio.prevent_play();" onclick="vk_audio.prevent_play(); return vkDownloadFile(this);" onmouseover="vkDragOutFile(this);"><div onmouseover_="vk_audio.get_size(\''+id+'\',this)" class="play_new down_btn" id="down'+id+'"></div></a>';
-       tr.appendChild(td);  
+       var td=vkCe('div', {'class':"vkaudio_down"},'<a href="'+url+'"  download="'+name+'" title="'+name+'" onmousedown="vk_audio.prevent_play();" onclick="vk_audio.prevent_play(); return vkDownloadFile(this);" onmouseover="vkDragOutFile(this);"><div onmouseover_="vk_audio.get_size(\''+id+'\',this)" class="play_new down_btn" id="down'+id+'"></div></a>');
+       var parent = geByClass('title_wrap',el.parentNode.parentNode.parentNode)[0];
+       parent.insertBefore(td, parent.firstChild);
        el.setAttribute('vk_ok','1'); 
        if (AUDIO_AUTOLOAD_BITRATE){
           setTimeout(function(){
