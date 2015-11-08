@@ -377,6 +377,7 @@ function ExGroupItems(gid,el){
    uitems+=mkExItem(i++,'<a href="/audio?gid=%GID">'+IDL('clAu')+'</a>');
 	uitems+=mkExItem(i++,'<a href="/photos-%GID">'+IDL('clPhBrowse')+'</a>');
 	uitems+=mkExItem(i++,'<a href="/apps?act=apps&gid=%GID">'+IDL('clAp')+'</a>');
+    uitems+=mkExItem(i++,'<a href="/docs?oid=-%GID">'+IDL('clDocs')+'</a>');
 	uitems+=mkExItem(i++,'<a href="/search?c[section]=people&c[group]=%GID">'+IDL('clGu')+'</a>');
    uitems+=mkExItem(i++,'<a href="/club%GID?act=edit">'+IDL('mGrAdmin')+'</a>');
     uitems+=mkExItem(i++,'<a href="/feed?obj=-%GID&section=mentions">'+IDL('mNeMe')+'</a>');
