@@ -814,6 +814,12 @@ vk_features={
                };
                __bq.curBox = cb;    // 
                _message_boxes[__bq.curBox] = b;
+               // Исправление функции перетаскивания в окно
+               var dragElEvents = data(ge('box_layer_wrap'),'events');
+               var dragElNew = ge('mv_layer_wrap');
+               addEvent(dragElNew, 'dragenter', dragElEvents.dragenter.pop());
+               addEvent(dragElNew, 'dragover', dragElEvents.dragover.pop());
+               addEvent(dragElNew, 'dragleave', dragElEvents.dragleave.pop());
            }, null, true);
            // чтобы не разрушался Upload при переходе на другую страницу, убираем Upload.deinit из списка функций для уничтожения.
            if (nav.objLoc[0].indexOf('audio')==0)
