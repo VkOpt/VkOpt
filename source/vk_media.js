@@ -1734,17 +1734,6 @@ vk_photoadm={
          
          
    },
-   move_run:function(){
-      var photos=geByClass('vk_checked_ph');
-     
-      //var ph=photos[i].getAttribute('pid').split('_');// [0] - oid   [1] - pid
-      
-      //vk_photoadm.move_photos(oid,target_aid,pids)
-   },
-   move_photos:function(oid,target_aid,pids){
-      //dApi.call('photos.move',{pid:pids[idx],:target_aid,oid:oid},function(r){  });
-   },
-   
    get_album_info:function(oid,aid, callback){
       
       switch(aid){
@@ -4553,23 +4542,17 @@ vkLastFM={
    },
    get_loved:function(){
       var fm=vkLastFM;
-      var done=function(){
-         var lt=fm.loved_tracks.track;
-      };
       
       if (!fm.loved_tracks){
          fm.lastfm.user.getLovedTracks({user:fm.username,limit:1000},{
                success: function(data) {
                   if (vk_DEBUG) console.log(data);
                   fm.loved_tracks=data.lovedtracks;
-                  done();
                },
                error: function(code, message) {
                   if (vk_DEBUG) console.log(code, message)
                }
             });
-      } else {
-         done();
       }
    },
    scrobble_timer:function(audio_info){
