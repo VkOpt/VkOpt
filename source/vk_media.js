@@ -6791,7 +6791,7 @@ if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
             if (cur_module_name == 'audio')
                 this.UI('audio_search_filters');
             else if (cur_module_name == 'search' && nav_obj['c[section]'] == 'audio')
-                this.UI('filter_form');
+                this.UI('audio_lyrics_filter');
         },
         UI: function (parent_id) {
             if (!ge('audioExactSearch')) { // создание галочки "искать в точности"
