@@ -6782,16 +6782,21 @@ if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
 })();
 
 (function () {
-    var PLUGIN_ID = 'ExactAudioSearch';
-    vkopt_plugins[PLUGIN_ID] = {
+    var exact = {
         Name: 'Exact Audio Search',
         query: '',      // поисковый запрос
         performer: 0,   // поиск по исполнителю
+        init: function() {
+            if (!RegExp.escape)
+                RegExp.escape= function(s) {
+                    return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            };
+        },
         onLocation: function (nav_obj, cur_module_name) {
             if (cur_module_name == 'audio')
-                this.UI('audio_search_filters');
+                exact.UI('audio_search_filters');
             else if (cur_module_name == 'search' && nav_obj['c[section]'] == 'audio')
-                this.UI('audio_lyrics_filter');
+                exact.UI('audio_lyrics_filter');
         },
         UI: function (parent_id) {
             if (!ge('audioExactSearch')) { // создание галочки "искать в точности"
@@ -6801,6 +6806,15 @@ if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
                 new Checkbox(ge('audioExactSearch'), {
                     checked: false,
                     width: 150,
+                    onChange: function() {
+                        if (window.Audio.updateList) {
+                            var b = cur.ignoreEqual;
+                            cur.ignoreEqual=true;
+                            Audio.updateList();
+                            setTimeout(function(){cur.ignoreEqual = b},10);
+                        } else if (window['searcher'])
+                            searcher.updResults(true);
+                    },
                     label: IDL('searchExactly')
                 });
             }
@@ -6810,20 +6824,22 @@ if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
             for (var i in audios) {
                 var performer = geByTag('b', audios[i])[0].textContent.toLowerCase().trim();
                 var title = geByClass('title', audios[i])[0].textContent.toLowerCase().trim();
-                if (vkopt_plugins[PLUGIN_ID].performer == 1 && performer != vkopt_plugins[PLUGIN_ID].query
-                    || vkopt_plugins[PLUGIN_ID].performer == 0 && title != vkopt_plugins[PLUGIN_ID].query && performer + ' - ' + title != vkopt_plugins[PLUGIN_ID].query)
+                if ((exact.performer == 1 && performer != exact.query)
+                    || (!exact.performer && title != exact.query && !(new RegExp(RegExp.escape(performer) + '\\s*[\-–]\\s*' + RegExp.escape(title),'i')).test(exact.query)))
                     re(audios[i]);
             }
         },
         onResponseAnswer: function (answer, url, params) {  // Обработка поискового запроса
-            if (val(ge('audioExactSearch')) && url == '/audio' && params.act == 'search') {
-                this.performer = params.performer;    // поиск по исполнителю
-                this.query = params.q.toLowerCase().trim();  // поисковый запрос (регистронезависимый)
-                answer[0] = vkModAsNode(answer[0], this.filter);
-                answer[1] = vkModAsNode(answer[1], this.filter);
+            if (val(ge('audioExactSearch')) && ((url == '/audio' && params.act == 'search') || (url=='/al_search.php' && params['c[section]']=='audio'))) {
+                exact.performer = params.performer || params['c[performer]'];    // поиск по исполнителю
+                exact.query = (params.q || params['c[q]']).toLowerCase().trim();  // поисковый запрос (регистронезависимый)
+                if (typeof answer[0] == 'string') answer[0] = vkModAsNode(answer[0], exact.filter);
+                if (typeof answer[1] == 'string') answer[1] = vkModAsNode(answer[1], exact.filter);
             } else if (url == '/pads.php' && params.pad_id == 'mus')
-                setTimeout(vkopt_plugins[PLUGIN_ID].UI, 1);
+                setTimeout(exact.UI, 1);
         }
     };
+    var PLUGIN_ID = 'ExactAudioSearch';
+    vkopt_plugins[PLUGIN_ID] = exact;
     if (window.vkopt_ready) vkopt_plugin_run(PLUGIN_ID);
 })();
