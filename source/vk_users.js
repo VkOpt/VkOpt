@@ -9,7 +9,7 @@
 
 //  functions for work with users
 var isUserRegEx=[
-/(^|\/)(reg|regstep|club|event|photo|photos|album|albums|audios|video|videos|note|notes|app|page|board|topic|write|public|publics|groups|wall|graffiti|tag\d|doc|gifts|market)-?\d+/i,
+/(^|\/)(reg|regstep|club|event|photo|photos|album|albums|audios|video|videos|note|notes|app|page|board|topic|write|public|publics|groups|wall|graffiti|tag\d|doc|gifts|market|gim)-?\d+/i,
 /(^|\/)(events|changemail|mail|im([^a-z0-9]|$)|audio|apps|editapp|feed|friends|friendsphotos|search|invite|settings|edit|fave|stats|video|groups|notes|docs|gifts|support|bugs|dev)(\?.*#?|#|$)/i,
 /javascript|#|\.mp3|\.flv|\.mov|\.jpg|\.gif|\.png|http...www|\/ru\//i,
 /\.php($|\?)/i,
