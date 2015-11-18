@@ -6810,6 +6810,7 @@ if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
                         if (window.Audio.updateList) {
                             var b = cur.ignoreEqual;
                             cur.ignoreEqual=true;
+                            if (!cur.aSearch) cur.aSearch = ge('pad_search');
                             Audio.updateList();
                             setTimeout(function(){cur.ignoreEqual = b},10);
                         } else if (window['searcher'])
