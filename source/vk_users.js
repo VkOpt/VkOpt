@@ -371,7 +371,8 @@ function ExGroupItems(gid,el){
 	var i=0;
 	var uitems='';
 	uitems+=mkExItem(i++,'<a href="#" onclick="vkPopupAvatar(\'g%GID\',this,true); return false;" class="fl_r">&gt;</a><a href="/wall-%GID">'+IDL('wall')+'</a>');
-	uitems+=mkExItem(i++,'<a href="/board%GID">'+IDL('board')+'</a>');
+    uitems+=mkExItem(i++,'<a href="#" class="fl_r" onclick="TopSearch.writeBox(-%GID); return false;">' + IDL("Chat") + '</a><a class="fl_r" href="/im?sel=-%GID" onclick="return nav.go(this, event);">' + IDL('Dialog') + '</a><a class="fl_l" href="/write-%GID" onclick="return showWriteMessageBox(event, -%GID);">' + IDL('txMessage') + '</a>');
+	uitems+=mkExItem(i++,'<a href="/board%GID" class="clear">'+IDL('board')+'</a>');
 	uitems+=mkExItem(i++,'<a href="/albums-%GID">'+IDL('clPh')+'</a>');
 	uitems+=mkExItem(i++,'<a href="/video?gid=%GID">'+IDL('clVi')+'</a>');
    uitems+=mkExItem(i++,'<a href="/audio?gid=%GID">'+IDL('clAu')+'</a>');
