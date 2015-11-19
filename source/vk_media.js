@@ -6484,6 +6484,8 @@ vk_au_down={
          return;
       }
       //vkaddcss('#vk_mp3_links_area, #vk_m3u_playlist_area,#vk_pls_playlist_area, #vk_mp3_wget_links_area{width:520px; height:400px;}');
+      if (val(ge('audioExactSearch')))
+          return vk_audio.links_to_audio_on_page(); // В случае точного поиска получить ссылки со страницы
       var params={}; 
       if (cur.album_id && cur.album_id>0) params['album_id']=cur.album_id;
       var box=vkAlertBox('',vkBigLdrImg);
@@ -6502,7 +6504,7 @@ vk_au_down={
           params["count"] = 300;        // Максимум аудиозаписей (ограничение ВК)
           if (cur.autoComplete)         // Исправление ошибок. На практике, true при живом поиске и false при обновлении страницы
               params["auto_complete"] = 1;
-          params["sort"] = 2;           // Сортировка по популярноси. Стандартная у вконтакта.
+          params["sort"] = 2;           // Сортировка по популярности. Стандартная у вконтакта.
       }
       dApi.call(audio_method,params,function(r){
          var res='#EXTM3U\n';
@@ -6751,4 +6753,68 @@ if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
       }
    };
    if (window.vkopt_ready && browser.mozilla) vkopt_plugin_run(PLUGIN_ID);
+})();
+
+(function () {
+    var exact = {
+        Name: 'Exact Audio Search',
+        query: '',      // поисковый запрос
+        performer: 0,   // поиск по исполнителю
+        init: function() {
+            if (!RegExp.escape)
+                RegExp.escape= function(s) {
+                    return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            };
+        },
+        onLocation: function (nav_obj, cur_module_name) {
+            if (cur_module_name == 'audio')
+                exact.UI('audio_search_filters');
+            else if (cur_module_name == 'search' && nav_obj['c[section]'] == 'audio')
+                exact.UI('audio_lyrics_filter');
+        },
+        UI: function (parent_id) {
+            if (!ge('audioExactSearch')) { // создание галочки "искать в точности"
+                var parent = ge('pad_audio_search_filters') || ge(parent_id);
+                var el = vkCe('div', {}, '<div id="audioExactSearch" class="label"></div>');
+                parent.insertBefore(el, domFC(parent));
+                new Checkbox(ge('audioExactSearch'), {
+                    checked: false,
+                    width: 150,
+                    onChange: function() {
+                        if (window.Audio.updateList) {
+                            var b = cur.ignoreEqual;
+                            cur.ignoreEqual=true;
+                            if (!cur.aSearch) cur.aSearch = ge('pad_search');
+                            Audio.updateList();
+                            setTimeout(function(){cur.ignoreEqual = b},10);
+                        } else if (window['searcher'])
+                            searcher.updResults(true);
+                    },
+                    label: IDL('searchExactly')
+                });
+            }
+        },
+        filter: function (div) {    // чистка контейнера с аудиозаписями div от лишних аудио
+            var audios = geByClass('audio', div);
+            for (var i in audios) {
+                var performer = geByTag('b', audios[i])[0].textContent.toLowerCase().trim();
+                var title = geByClass('title', audios[i])[0].textContent.toLowerCase().trim();
+                if ((exact.performer == 1 && performer != exact.query)
+                    || (!exact.performer && title != exact.query && !(new RegExp(RegExp.escape(performer) + '\\s*[\-–]\\s*' + RegExp.escape(title),'i')).test(exact.query)))
+                    re(audios[i]);
+            }
+        },
+        onResponseAnswer: function (answer, url, params) {  // Обработка поискового запроса
+            if (val(ge('audioExactSearch')) && ((url == '/audio' && params.act == 'search') || (url=='/al_search.php' && params['c[section]']=='audio'))) {
+                exact.performer = params.performer || params['c[performer]'];    // поиск по исполнителю
+                exact.query = (params.q || params['c[q]']).toLowerCase().trim();  // поисковый запрос (регистронезависимый)
+                if (typeof answer[0] == 'string') answer[0] = vkModAsNode(answer[0], exact.filter);
+                if (typeof answer[1] == 'string') answer[1] = vkModAsNode(answer[1], exact.filter);
+            } else if (url == '/pads.php' && params.pad_id == 'mus')
+                setTimeout(exact.UI, 1);
+        }
+    };
+    var PLUGIN_ID = 'ExactAudioSearch';
+    vkopt_plugins[PLUGIN_ID] = exact;
+    if (window.vkopt_ready) vkopt_plugin_run(PLUGIN_ID);
 })();
