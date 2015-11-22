@@ -824,8 +824,21 @@ vk_features={
            // чтобы не разрушался Upload при переходе на другую страницу, убираем Upload.deinit из списка функций для уничтожения.
            if (nav.objLoc[0].indexOf('audio')==0)
                cur.destroy.pop();
-           else if (nav.objLoc[0].indexOf('docs')==0)
+           else if (nav.objLoc[0].indexOf('docs')==0) {
                cur.destroy.splice(-3,1);
+               // бекап и восстановление функций для сохранения документа, т.к. nav.go() чистит cur
+               window.curdocChangeType = cur.docChangeType;
+               window.curtagsDD = cur.tagsDD;
+               window.cursaveUploadedDoc = cur.saveUploadedDoc;
+               window.curdocTags = cur.docTags;
+               window.radioBtnsdocs_file_type = radioBtns.docs_file_type;
+               Inj.Start('Upload.onUploadComplete',
+                   'cur.docChangeType=curdocChangeType;' +
+                   'cur.tagsDD=curtagsDD;' +
+                   'cur.saveUploadedDoc=cursaveUploadedDoc;' +
+                   'cur.docTags=curdocTags;' +
+                   'radioBtns.docs_file_type=radioBtnsdocs_file_type;');
+           }
        }
    }
 };
