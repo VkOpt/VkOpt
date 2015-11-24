@@ -2407,6 +2407,7 @@ vk_videos = {
    },
    inj_common:function(){
       if (VIDEO_AUTOPLAY_DISABLE) Inj.Before('showVideo','ajax.post','vk_videos.change_show_video_params(options);');
+      vk_groups.block_autoplay();
    },
    inj_html5:function(){
       if (getSet(2)=='y') Inj.End('html5video.initHTML5Video','vkOnRenderFlashVars(vars);'); // перехват flash-переменных для скачивания видео

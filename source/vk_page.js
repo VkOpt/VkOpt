@@ -2507,6 +2507,13 @@ vk_groups = {
 
       vkAlertBox(IDL('LeaveGroups'),IDL('LeaveAllGroupsConfirm'),run,true);
    },
+   block_autoplay:function(){
+      if (getSet(108)=='y') {
+          Inj.Start('showInlineVideo','if (!ev) return;');
+          if (cur.pinnedVideo)  // Если не успели пропатчить showInlineVideo, останавливаем запущенное видео.
+            Inj.Wait('_videoLastInlined',function(){ revertLastInlineVideo(); });
+      }
+   },
    // UTILS
    leave:function(gid){
       vkAlertBox('', IDL('LeaveGroup'),function(){
