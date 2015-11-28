@@ -867,6 +867,13 @@ function vkGetProfile(uid,callback,no_switch_button){
 			[profile.faculty_name,IDL('Faculty')],
 			[profile.graduation,IDL('Graduation')]
 		];
+      info_labels.push(['<div id="vkRegDate"><img src="/images/upload.gif"/></div>', IDL('RegDate')]);
+      AjGet('/foaf.php?id=' + uid, function (text) {
+          setTimeout(function () {
+              val(ge('vkRegDate'), dateFormat(geByTag('ya:created', vkCe('div', {}, text))[0].getAttribute('dc:date'), "dd.mm.yyyy HH:MM:ss"));
+              LoadedProfiles[uid] = ge('vkbigPhoto').innerHTML;
+          }, SHOW_POPUP_PROFILE_DELAY);
+      });
       if (profile.deactivated){
          info_labels.push([(profile.deactivated || '').toUpperCase(),'&times;']);
       }
