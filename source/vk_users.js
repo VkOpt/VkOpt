@@ -754,6 +754,9 @@ function vkOnlineInfo(p){
             case '3136627':
                title='Twitter';
                break;
+            case '3698024':
+               title='Instagram';
+               break;            
             case '3226016':
                title='vk master';
                break;
