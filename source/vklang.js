@@ -747,6 +747,7 @@ vk_lang_ru={
    ,"seUseYoutubePlayer":"\u0418\u0441\u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u044c \u043f\u043b\u0435\u0435\u0440 Youtube \u0434\u043b\u044f \u0432\u0438\u0434\u0435\u043e \u0441 Youtube"
    ,"mStealth":"\u041f\u0440\u043e\u0447\u0438\u0442\u0430\u0442\u044c \u043d\u0435\u0437\u0430\u043c\u0435\u0442\u043d\u043e"
    ,"searchExactly":"\u0418\u0441\u043a\u0430\u0442\u044c \u0432 \u0442\u043e\u0447\u043d\u043e\u0441\u0442\u0438"
+   ,"RegDate":"\u0414\u0430\u0442\u0430 \u0440\u0435\u0433\u0438\u0441\u0442\u0440\u0430\u0446\u0438\u0438"
 };
 
 vk_lang_en={//by Hzy
@@ -1650,6 +1651,7 @@ vk_lang_en={//by Hzy
   ,"seUseYoutubePlayer":"Use Youtube player for videos from Youtube"
   ,"mStealth":"Read unnoticed"
   ,"searchExactly":"Search exactly"
+  ,"RegDate":"Registration date"
 };
  
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
@@ -2542,6 +2544,7 @@ vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
    "seUseYoutubePlayer":"\u0412\u0438\u043a\u043e\u0440\u0438\u0441\u0442\u043e\u0432\u0443\u0432\u0430\u0442\u0438 \u043f\u043b\u0435\u0454\u0440 Youtube \u0434\u043b\u044f \u0432\u0456\u0434\u0435\u043e \u0437 Youtube",
    "mStealth":"\u043f\u0440\u043e\u0447\u0438\u0442\u0430\u0442\u0438 \u043d\u0435\u043f\u043e\u043c\u0456\u0442\u043d\u043e",
    "searchExactly":"\u0448\u0443\u043a\u0430\u0442\u0438 \u0432 \u0442\u043e\u0447\u043d\u043e\u0441\u0442\u0456"
+   ,"RegDate":"\u0414\u0430\u0442\u0430 \u0440\u0435\u0454\u0441\u0442\u0440\u0430\u0446\u0456\u0457"
 };
 
 vk_lang_by={ //by Gavr id8610702
