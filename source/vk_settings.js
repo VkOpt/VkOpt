@@ -603,6 +603,7 @@ function vkInitSettings(){
       , {id:101,  text: "seUseHtml5ForVideo",info:'infoOnlyForCompatible'}
       , {id:104,  text: "seUseHtml5ForAudio"}
       , {id:107,  text: "seUseYoutubePlayer"}
+      , {id:108,  text: "seAutoplayOff"}
     ],
     Users:[
       // Явно указваем идентификатор wiki-страницы, т.к из параметра text не получить:
@@ -720,7 +721,7 @@ function vkInitSettings(){
    ]
   };
 
-   //LAST 107
+   //LAST 108
 
    vkSetsType={
       "on"  :[IDL('on'),'y'],
