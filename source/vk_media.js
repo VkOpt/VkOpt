@@ -2398,6 +2398,13 @@ vk_videos = {
       a:hover .vkv_athumb_wrap{\
           opacity:1 !important;\
       }\
+      .vk_vid_reverse_plst{\
+         background: url("/images/photoorder.gif") no-repeat;\
+         width: 15px;   height: 12px;\
+         margin-left: -45px; margin-top: 10px;\
+         position: absolute;   opacity: 0.6;   cursor:pointer;\
+      }\
+      .vk_vid_reverse_plst:hover{opacity: 1;}\
       ';
       
       code+='\
@@ -2421,6 +2428,7 @@ vk_videos = {
    },
    page:function(){ 
       window.vk_vid_down && vk_vid_down.vid_page();
+      vk_videos.reverse_playlist_mod_tpl();
       vkVideoAddOpsBtn();
       vkVideoNullAlbum();
       // VIDATHUMB
@@ -2541,6 +2549,21 @@ vk_videos = {
       });
    },
    
+   reverse_playlist_mod_tpl:function(){
+      if (window.cur  && cur.plb_tpl)
+         cur.plb_tpl = cur.plb_tpl.replace(/(<div[^>]+class="video_plb_header_collapse_icon")/,vk_videos.reverse_playlist_btn_tpl+" $1");
+      var p = geByClass('video_plb_header_collapse_icon');
+      if (p && !ge('vk_vid_reverse_plst')){
+         p.parentNode.insertBefore(se(vk_videos.reverse_playlist_btn_tpl),p)
+      }
+   },
+   reverse_playlist_btn_tpl: '<div class="fl_r" id="vk_vid_reverse_plst"><div class="vk_vid_reverse_plst" onclick="vk_videos.reverse_playlist(this);"></div></div>',
+   reverse_playlist:function(){
+      var blockEl = Videocat.getPlaylistBlockEl();
+      var list = blockEl ? data(blockEl, 'playlist') : false;
+      list.list.reverse();
+      Videocat.buildPlaylistBlock(list.id, true);
+   },
    show_null_album:function(){
       var albumed = [];
       var fake_id = 10000000001;// c нулевым какие-то траблы. не разбирался.
