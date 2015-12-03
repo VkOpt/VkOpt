@@ -2563,12 +2563,38 @@ vk_videos = {
    reverse_playlist_btn_tpl: '<div class="fl_r" id="vk_vid_reverse_plst"><div class="vk_vid_reverse_plst" onclick="vk_videos.reverse_playlist(this);"></div></div>',
    reverse_playlist:function(){
       var blockEl = Videocat.getPlaylistBlockEl();
-      var list = blockEl ? data(blockEl, 'playlist') : false;
-      list.list.reverse();
+      var data_list = blockEl ? data(blockEl, 'playlist') : false; // список кэшированный в данных элемента
+      var playlistId = data_list.id;
+      playlistId = (window.Video && (Video.isCurrentChannel() || Video.isCurrentCategory() || Video.isCurrentSectionAlbum() || Video.isInVideosList())) ? ('all_' + playlistId) : playlistId;
+      var list = (Videocat.lists || {})[playlistId]; // кэшированный плейлист для рендеринга
+      
+
+      // На случай если в конец нашему списку перевёрнутому были добавлены ещё видео
+      if (data_list.vk_reordered){
+         var reordered_list = list.list.splice(0,data_list.vk_reordered_count);// отрезаем наш перевёрнутый кусок
+         reordered_list.reverse();
+         list.list = reordered_list.concat(list.list); // возвращаем на место в нормальном порядке
+         list.vk_reordered = false;
+         list.vk_reordered_count = 0;
+      } else {
+         list.vk_reordered = true;
+         list.vk_reordered_count = list.list.length;
+          list.list.reverse();
+      }   
+            
+      
+      
+      // основной список видео в альбоме, из которого вырезается список для рендеринга (по 50 видео вперёд/назад от текущего видео)
+      if (window.cur && cur.videoList && cur.vSection && cur.videoList[cur.vSection] && cur.videoList[cur.vSection].list)
+         cur.videoList[cur.vSection].list.reverse(); 
+
+      data_list.list = list.list;
+      
       Videocat.buildPlaylistBlock(list.id, true);
       
-      Videoview.updatePlaylistBoxPosition();
-      Videocat.setPlaylistCurrentVideo(mvcur.videoRaw,true);
+      Videoview.updatePlaylistBoxPosition(); // пвозвращаем список на место
+      Videocat.setPlaylistCurrentVideo(mvcur.videoRaw,true); //проматываем до текущего видео
+      Videoview.updatePlaylistControls(); // обновляем видимость стрелок вперёд/назад
    },
    show_null_album:function(){
       var albumed = [];
