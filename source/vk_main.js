@@ -758,7 +758,7 @@ function vkProcessResponse(answer,url,q){
   if (VIDEO_PLAYER_DBG_ON && url=='/al_video.php' && q.act=='show') answer[2]=answer[2].replace('"dbg_on":0','"dbg_on":1');
   if (getSet(21)=='y' && url=='/al_video.php' && q.act=='show'){
      answer[2]=answer[2].replace(/"eid1"\s*:\s*"?\d+"?/i,'"eid1":0');
-     answer[2]=answer[2].replace(/"show_ads"\s*:\s*"?\d+"?/i,'"show_ads":0');
+     answer[2]=answer[2].replace(/"(show_ads[^"]*)"\s*:\s*"?\d+"?/ig,'"$1":0');
   }
   if (getSet(107)=='y' && url=='/al_video.php' && (q.act == 'show' || q.act == 'show_inline')) {
       answer[1]=answer[1].replace('controls=0','controls=1').replace('fs=0','fs=1').replace('<iframe','<iframe allowfullscreen="true"');
