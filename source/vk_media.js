@@ -2424,6 +2424,9 @@ vk_videos = {
       if (getSet(71)=='y') 
          Inj.Before('Videoview.commentTo','if (!v', 'vk_phviewer.reply_to(comm, toId, event, rf,v,replyName); if(false)' );
       if (getSet(92)=='y') Inj.Start('Videoview.hide','if (!mvcur.minimized) force=true;');
+      
+      Inj.End('Videoview.updatePlaylistBoxPosition','try{vk_videos.reverse_playlist_mod_tpl();} catch(e){}')
+      
       videoview.enabledResize=function(){return true;}
    },
    page:function(){ 
@@ -2550,10 +2553,10 @@ vk_videos = {
    },
    
    reverse_playlist_mod_tpl:function(){
-      if (window.cur  && cur.plb_tpl)
+      if (window.cur  && cur.plb_tpl && cur.plb_tpl.indexOf('vk_vid_reverse_plst') == -1)
          cur.plb_tpl = cur.plb_tpl.replace(/(<div[^>]+class="video_plb_header_collapse_icon")/,vk_videos.reverse_playlist_btn_tpl+" $1");
       var p = geByClass('video_plb_header_collapse_icon');
-      if (p && !ge('vk_vid_reverse_plst')){
+      if (p && p.parentNode && !ge('vk_vid_reverse_plst')){
          p.parentNode.insertBefore(se(vk_videos.reverse_playlist_btn_tpl),p)
       }
    },
@@ -2563,6 +2566,9 @@ vk_videos = {
       var list = blockEl ? data(blockEl, 'playlist') : false;
       list.list.reverse();
       Videocat.buildPlaylistBlock(list.id, true);
+      
+      Videoview.updatePlaylistBoxPosition();
+      Videocat.setPlaylistCurrentVideo(mvcur.videoRaw,true);
    },
    show_null_album:function(){
       var albumed = [];
