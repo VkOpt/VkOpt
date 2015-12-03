@@ -2413,7 +2413,10 @@ vk_videos = {
       return code;
    },
    inj_common:function(){
-      if (VIDEO_AUTOPLAY_DISABLE) Inj.Before('showVideo','ajax.post','vk_videos.change_show_video_params(options);');
+      if (VIDEO_AUTOPLAY_DISABLE){ 
+         Inj.Start('showVideo', 'vk_videos.change_show_video_params(options);');
+         Inj.Before('showVideo','ajax.post','vk_videos.change_show_video_params(options);');
+       }
    },
    inj_html5:function(){
       if (getSet(2)=='y') Inj.End('html5video.initHTML5Video','vkOnRenderFlashVars(vars);'); // перехват flash-переменных для скачивания видео
@@ -2638,10 +2641,15 @@ vk_videos = {
       return false;
    },
    change_show_video_params:function(opts){
-      if (!opts || !opts.params) return;
-      var params=opts.params;
-      if (VIDEO_AUTOPLAY_DISABLE)
-         params['autoplay']=0;            
+      if (!opts) return;
+      if (VIDEO_AUTOPLAY_DISABLE){
+         if (opts.autoplay) 
+            opts.autoplay = 0;
+         if (opts.params)
+            opts.params.autoplay = 0; 
+         if (opts.addParams)
+            opts.addParams.autoplay = 0; 
+      }         
       //params['force_hd']=3;
       //console.log('showVideo:',opts);
    },
