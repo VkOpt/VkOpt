@@ -3236,14 +3236,20 @@ vk_feed={
          if (t) {
             types.text=true;
              // Advertisements
-             switch (block_mode) {
-                 case block_modes.REGEXP:
-                     types.ad=block_conditions.test(t.innerHTML); break;
-                 case block_modes.KEYWORDS:
-                     for (var i = 0;i < block_conditions.length && !types.ad;i++)
-                         types.ad = (t.innerHTML.toLowerCase().indexOf(block_conditions[i]) > -1);
-                     break;
-             }
+             each(geByClass('wall_post_text', row), function () {
+                 switch (block_mode) {
+                     case block_modes.REGEXP:
+                         types.ad = block_conditions.test(this.innerHTML);
+                         if (types.ad) return false;
+                         break;
+                     case block_modes.KEYWORDS:
+                         for (var i = 0; i < block_conditions.length && !types.ad; i++) {
+                             types.ad = (this.innerHTML.toLowerCase().indexOf(block_conditions[i]) > -1);
+                             if (types.ad) return false;
+                         }
+                         break;
+                 }
+             });
          }
          //Links
          if (t && geByTag('a',t).length>0) 
