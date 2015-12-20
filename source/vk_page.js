@@ -4006,21 +4006,21 @@ function vk_tag_api(section,url,app_id){
          };
          load();
       },
-      update_dislike_view:function(obj_id,val,c){
+      update_dislike_view:function(obj_id,value,c){
          var el=ge('dislike_count'+obj_id);
          if (!el){
             //--костыль--// Если всегда обрабатывать только то, что уже выведено на страницу, то он не нужен
             c = c || 0;
-            if (c<10) setTimeout(function(){ dk.update_dislike_view(obj_id,val,c+1) },300);
+            if (c<10) setTimeout(function(){ dk.update_dislike_view(obj_id,value,c+1) },300);
             //-----------
             return false;
          }
-         var my=val<0;
-         val=Math.abs(val);
-         if (val>0)
-            val(ge('dislike_count'+obj_id), val);
+         var my=value<0;
+         value=Math.abs(value);
+         if (value>0)
+            val(ge('dislike_count'+obj_id), value);
          (my?addClass:removeClass)(ge('dislike_icon' + obj_id),'my_dislike');
-         (val>0?removeClass:addClass)(ge('dislike_icon' + obj_id),'no_dislikes'); 
+         (value>0?removeClass:addClass)(ge('dislike_icon' + obj_id),'no_dislikes'); 
          return true;
       },
       get_dislike_element:function(obj_id,count, my_dislike){
