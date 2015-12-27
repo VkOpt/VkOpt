@@ -570,14 +570,14 @@ function vkPopupAvatar(id,el,in_box){
          if (gid)
              vkGetGroup(gid, function (html) {
                  box.hide();
-                 box = vkAlertBox('club' + gid, html);
+                 box = vkAlertBox('club' + gid, html, null, null, true);
                  box.setOptions({width: "455px", hideButtons: true, bodyStyle: 'padding:0px;', onHide: __bq.hideLast});
              }, true);
          else
          vkGetProfile(id,function(html,uid){
             //LoadedProfiles[id]=html;
             box.hide();
-            box=vkAlertBox('id'+uid,html);
+            box=vkAlertBox('id'+uid,html,null,null,true);
             box.setOptions({width:"455px",hideButtons:true, bodyStyle:'padding:0px;', onHide:__bq.hideLast});
          },true);
          

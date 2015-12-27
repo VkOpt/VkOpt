@@ -678,7 +678,7 @@ function vkPollResults(post_id,pid){
          </div>\
       </div>';   
       
-      vkAlertBox(IDL('ViewResults'),html);
+      vkAlertBox(IDL('ViewResults'),html,null,null,true);
       vkPollVoters(data.owner_id,data.poll_id);
    };
    
