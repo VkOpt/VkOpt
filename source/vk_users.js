@@ -760,6 +760,12 @@ function vkOnlineInfo(p){
             case '3226016':
                title='vk master';
                break;
+            case '2685278':
+               title='Kate Mobile';
+               break;
+            case '4083558':
+               title='VKFeed (iPhone)';
+               break;
             default:
                title='Mobile [app'+p.online_app+']';
                break;
