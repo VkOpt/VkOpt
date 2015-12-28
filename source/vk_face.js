@@ -466,6 +466,8 @@ function vkStyles(){
       .vk_clear_input:hover{   opacity: 1;}\
       #vksetts_sbox{position: relative; height: 23px; text-align: center; padding-top:13px;}\
       .box_body #vksetts_sbox{padding-top:0px;}\
+      .wall_subscribe { width: 100%; }\
+      .wall_subscribe a { margin-top: 3px; }\
 	";
 	
 	var shut='\
