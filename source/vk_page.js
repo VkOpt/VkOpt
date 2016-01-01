@@ -4564,7 +4564,7 @@ if (!window.vkopt_plugins) vkopt_plugins = {};
                     for (var i = 0; i < 12 && m == undefined; i++)
                         if (getLang('month' + (i + 1) + 'sm_of') == datetime[1])
                             m = i;
-                    y = parseInt(datetime[2]) || new Date().getFullYear();
+                    y = parseInt(datetime[2]) || new Date().getFullYear() - +(m > (new Date().getMonth()));
                     if (datetime.length < 4) H = M = 0; // если нет времени
                 }
 
