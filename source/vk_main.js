@@ -561,7 +561,7 @@ function vkGetWikiCode(pid,gid){
          return;
       }
       var code=(data.source || "").replace(/<br>/gi,'\r\n');
-      var box=vkAlertBox('Wiki-code','<h2>'+data.title+'</h2><textarea id="vk_wikicode_area" style="width:460px; height:300px;">'+code+'</textarea>');
+      var box=vkAlertBox('Wiki-code','<h2>'+data.title+'</h2><textarea id="vk_wikicode_area" style="width:460px; height:300px;">'+code+'</textarea>',null,null,true);
       box.setOptions({width:'500px'});
    });
    return false;
