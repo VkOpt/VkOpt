@@ -411,7 +411,7 @@ function ExUserItems(id,el){
         //'<a href="/apps.php?mid=%uid">'+IDL("clAp")+'</a>',
         //'<a href="/events.php?id=%uid">'+IDL("clEv")+'</a>',
         '<a href="/notes%uid" onclick="return nav.go(this, event);">' + IDL("clNo") + '</a>',
-        '<a href="/gifts%uid">' + IDL("clGi") + '</a>',
+        '<a href="/gifts%uid" onclick="return !showBox(\'al_gifts.php\', {act: \'box\', mid: %uid}, {cache: 1, stat: [\'gifts.css\', \'gifts.js\']})">' + IDL("clGi") + '</a>',
         //'<a href="/rate.php?act=vote&id=%uid">'+IDL("clRa")+'</a>',
         '<a href="/feed?section=source&source=%uid">' + IDL("mNeP") + '</a>',
         '<a href="/feed?owner=%uid&section=owner" onClick="return nav.go(this,event);">' + IDL("clNews") + '</a>',
