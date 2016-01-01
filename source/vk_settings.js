@@ -557,7 +557,7 @@ function GenWallList(el){   // Генерация списка записей в
   var i = 0;
   for (var id in wall_list) {
       lnk = "wall" + id;
-      whtml += '<div id="wit' + id + '" style="width:170px"><a style="position:relative; left:100%" onclick="vkRemWall(this)" title="'+IDL('phDel')+'" i="' + id + '">x</a>' + (++i) + ') <a href="' + lnk + '">' + wall_list[id] + '</a></div>';
+      whtml += '<div id="wit' + id + '" class="wall_subscribe"><a class="vk_x_btn fl_r" onclick="vkRemWall(this)" title="'+IDL('phDel')+'" i="' + id + '"></a>' + (++i) + ') <a href="/' + lnk + '">' + wall_list[id] + '</a></div>';
   }
   if (!el) {return whtml;} else {el.innerHTML=whtml;}
 }
