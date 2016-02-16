@@ -272,6 +272,7 @@ function vkProcessUserLink(link){
 	inel.setAttribute("onmousedown","event.cancelBubble = true;");
 	inel.innerHTML=USERMENU_SYMBOL;
 	link.setAttribute('exuser',true);
+	try{ if (!geByTag('small',link)[0].innerText) link.removeChild(geByTag('br',link)[0]); }catch(e){}    // Чтобы в группах в блоке "участники" стрелочка была не на новой строке
 	if (getSet(22)=='y' && link.parentNode.parentNode && link.parentNode.parentNode.id=='profile_groups'){
 		inel.setAttribute('class','vk_usermenu_btn fl_r');
 		link.parentNode.insertBefore(inel,link);
