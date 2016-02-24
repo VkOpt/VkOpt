@@ -684,7 +684,7 @@ var vk_photos = {
                for (var i=0; i<att.length; i++){
                   if (!att[i].photo) continue;
                   var p=att[i].photo;
-                  links.push(p.src_xxxbig || p.src_xxbig || p.src_xbig || p.src_big || p.src_big);
+                  links.push(p.src_xxxbig || p.src_xxbig || p.src_xbig || p.src_big || p.src);
                   p=null;
                }
                att=null;
@@ -780,7 +780,7 @@ var vk_photos = {
                for (var i=0; i<att.length; i++){
                   if (!att[i].photo) continue;
                   var p=att[i].photo;
-                  links.push(p.src_xxxbig || p.src_xxbig || p.src_xbig || p.src_big || p.src_big);
+                  links.push(p.src_xxxbig || p.src_xxbig || p.src_xbig || p.src_big || p.src);
                   p=null;
                }
                att=null;
@@ -6660,21 +6660,20 @@ if (!window.vkopt_plugins) vkopt_plugins = {};
 
     vkopt_plugins[PLUGIN_ID] = {
         Name: 'Messages Attachments Download',
-        cur_w: '',  // что-то типа history12345_photo
+        media_type: '',  // тип материалов, который необходимо вернуть (например, photo)
         progress_div: null, // элемент для размещения прогрессбра
-        total: 1,   // общее количество материалов некоторой категории.
         abs_i: 0,   // для абсолютной (сквозной) нумерации файлов
         links: [],
         wget_links: [],
         el_id: 'vk_im_download', // id элемента (ссылки), чтобы она 2 раза не вставлялась
         // ФУНКЦИИ
         onLocation: function (nav_obj, cur_module_name) {   // при открытии окна с материалами беседы
-            if (cur_module_name == 'im' && nav_obj.w && nav_obj.w.indexOf('history') == 0 && !ge(this.el_id))
+            if (cur_module_name == 'im' && nav_obj.w && nav_obj.w.indexOf('history') == 0 && !ge(this.el_id) && !~nav.objLoc.w.indexOf('video'))
                 this.UI();
         },
         UI: function () {   // Добавление ссылки на скачивание
             var parent = ge('wk_history_wall');
-            this.progress_div = vkCe('div', {class: 'fl_r'}, '');
+            this.progress_div = vkCe('div', {'class': 'fl_r'}, '');
             parent.insertBefore(this.progress_div, parent.firstChild);
 
             var a = vkCe('a', {id: this.el_id, style: 'line-height:2em'}, IDL('Links'));
@@ -6682,73 +6681,45 @@ if (!window.vkopt_plugins) vkopt_plugins = {};
             parent.insertBefore(a, parent.firstChild);
         },
         onclick: function () {  // Нажатие на ссылку для скачивания
-            vkopt_plugins[PLUGIN_ID].cur_w = nav.objLoc.w;
+            vkopt_plugins[PLUGIN_ID].media_type = nav.objLoc.w.split('_')[1];
             vkopt_plugins[PLUGIN_ID].links = [];
             vkopt_plugins[PLUGIN_ID].wget_links = [];
             vkopt_plugins[PLUGIN_ID].abs_i = 0;
             vkopt_plugins[PLUGIN_ID].run(0);
+            vkopt_plugins[PLUGIN_ID].progress_div.innerHTML = vkBigLdrImg;
         },
         run: function (_offset) {
-            AjPost('/wkview.php', { // ajax.post нельзя, потому что в фоне начинают загружаться миниатюры.
-                act: 'show',
-                al: 1,
-                part: 1,
-                offset: _offset,
-                w: this.cur_w
-            }, function (text) {
-                var arr = text.split('<!>');
-
-                var json = JSON.parse(arr[arr.length - 3].replace('<!json>', ''));
-                var next_offset = json.offset;
-                vkopt_plugins[PLUGIN_ID].total = json.count;
-
-                vkopt_plugins[PLUGIN_ID].progress_div.innerHTML = vkProgressBar(_offset, vkopt_plugins[PLUGIN_ID].total, 400);  // обновление прогрессбара
-
-                if (vkopt_plugins[PLUGIN_ID].cur_w.indexOf('photo') > 0) {
-                    var images = winToUtf(arr[arr.length - 2]).match(/{"base":[^}]+}/g); // json-объекты, содержащие общее начало ссылок разных размеров и соответствующие концы.
-                    //var names = arr[arr.length - 2].match(/\d+_\d+/g);   // раскомментируйте, чтобы можно было сделать имена для файлов = id фотографий.
-                    if (images)
-                        for (var i = 0; i < images.length; i++) {
-                            var image = JSON.parse(images[i]);
-                            var url = image.base + (image.z_ || image.y_ || image.x_)[0] + '.jpg';                  // возвращается наилучшее качество
-                            var filename = ((100000 + vkopt_plugins[PLUGIN_ID].abs_i++) + '').substr(1) + '.jpg';   // для составления имен с фиксированной длиной. Основание фиксированное, т.к. заранее не знаем макс. номер
-                            vkopt_plugins[PLUGIN_ID].links.push(url + '?/' + filename);
-                            vkopt_plugins[PLUGIN_ID].wget_links.push('wget "' + url + '" -O "' + filename + '"');
+            dApi.call('messages.getHistoryAttachments', {
+                peer_id: cur.peer,
+                media_type: this.media_type,
+                start_from: _offset,
+                count: 200
+            }, function (r, response) {
+                for (var i in response)
+                    if (i != 0 && i != 'next_from') {
+                        var attachment = response[i][response[i].type];
+                        var url =
+                            attachment.url || // audio & doc
+                            attachment.src_xxxbig || attachment.src_xxbig || attachment.src_xbig || attachment.src_big || attachment.src;  // photo
+                        var filename;
+                        switch (response[i].type) {
+                            case 'audio':
+                                filename = vkCleanFileName(attachment.artist + ' - ' + attachment.title) + '.mp3';
+                                break;
+                            case 'doc':
+                                filename = vkCleanFileName(attachment.title);
+                                if (filename.toLowerCase().indexOf(attachment.ext) != filename.length - attachment.ext.length)
+                                    filename += '.' + attachment.ext;
+                                break;
+                            case 'photo':
+                                filename = ((100000 + vkopt_plugins[PLUGIN_ID].abs_i++) + '').substr(1) + '.jpg';           // для составления имен с фиксированной длиной. Основание фиксированное, т.к. заранее не знаем макс. номер
+                                break;
                         }
-                } else if (vkopt_plugins[PLUGIN_ID].cur_w.indexOf('audio') > 0) {
-                    var el = vkCe('div', {}, arr[6]);
-                    each(geByClass('audio', el), function (i, row) {
-                        var url = geByTag('input', row)[0].value;
-                        var filename = vkCleanFileName(geByClass('title_wrap', row)[0].innerText).replace(/`/g,'\'') + '.mp3';
-                        vkopt_plugins[PLUGIN_ID].links.push(url + '&/' + vkEncodeFileName(filename));
-                        vkopt_plugins[PLUGIN_ID].wget_links.push('wget "' + url + '" -O "' + winToUtf(filename) + '"');
-                    });
-                } else if (vkopt_plugins[PLUGIN_ID].cur_w.indexOf('video') > 0) { // Видео не поддерживается. Слишком геморно.
-                    alert('Not supported');
-                    next_offset = vkopt_plugins[PLUGIN_ID].total - 0;
-                //    var el = vkCe('div', {}, arr[6]);
-                //    each(geByTag('a', el), function (i, row) {
-                //        var oid = row.href.match(/video([-\d]+)/)[1];
-                //        var vid = row.href.match(/_(\d+)/)[1];
-                //        var temp_el = vkCe('div');
-                //        vk_vid_down.vkVidLoadLinks(oid,vid,temp_el); // TODO: отследить появление ссылок в temp_el и только тогда класть их в links
-                //        vkopt_plugins[PLUGIN_ID].links.push(url + '&/' + vkEncodeFileName(filename));
-                //        vkopt_plugins[PLUGIN_ID].wget_links.push('wget "' + url + '" -O "' + winToUtf(filename) + '"');
-                //    });
-                } else if (vkopt_plugins[PLUGIN_ID].cur_w.indexOf('doc') > 0) {
-                    var el = vkCe('div', {}, arr[6]);
-                    each(geByClass('media_desc', el), function (i, row) {
-                        var url = geByTag('a', row)[0].href + '&api=1';
-                        var filename = vkCleanFileName(
-                            (geByClass('fl_l', row, 'span')[0] ||       // gifки
-                            geByClass('page_doc_photo_hint', row)[0] || // картинки
-                            geByClass('a', row, 'span')[0]).innerText).replace(/`/g,'\''); // файлы
-                        vkopt_plugins[PLUGIN_ID].links.push(url + '&/' + vkEncodeFileName(filename));
-                        vkopt_plugins[PLUGIN_ID].wget_links.push('wget "' + url + '" -O "' + winToUtf(filename) + '"');
-                    });
-                }
-                if (next_offset != vkopt_plugins[PLUGIN_ID].total - 0) {
-                    vkopt_plugins[PLUGIN_ID].run(next_offset);
+                        vkopt_plugins[PLUGIN_ID].links.push(url + (~url.indexOf('?') ? '&' : '?') + '/' + vkEncodeFileName(filename));
+                        vkopt_plugins[PLUGIN_ID].wget_links.push('wget "' + url + '" -O "' + winToUtf(filename).replace(/`/g, '\'') + '"');
+                    }
+                if (response.next_from) {
+                    vkopt_plugins[PLUGIN_ID].run(response.next_from);
                 } else {
                     vkopt_plugins[PLUGIN_ID].progress_div.innerHTML = '';
                     // генерация списков и табов.
