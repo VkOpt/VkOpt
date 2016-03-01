@@ -3089,6 +3089,7 @@ vk_feed={
       .vkf_filter .vk_feed_friend,\
       .vkf_filter .vk_feed_ad,\
       .vkf_filter .vk_feed_repost{display:none !important}\
+      .vkf_filter .vk_feed_wo_repost{display:none !important}\
       \
       .vkf_photo .vk_feed_photo,\
       .vkf_video .vk_feed_video,\
@@ -3102,6 +3103,7 @@ vk_feed={
       .vkf_friend .vk_feed_friend,\
       .vkf_ad .vk_feed_ad,\
       .vkf_repost .vk_feed_repost{display:block !important}\
+      .vkf_wo_repost .vk_feed_wo_repost{display:block !important}\
       \
       .vkf_nophoto .vk_feed_photo,\
       .vkf_novideo .vk_feed_video,\
@@ -3115,6 +3117,7 @@ vk_feed={
       .vkf_nofriend .vk_feed_friend,\
       .vkf_noad .vk_feed_ad,\
       .vkf_norepost .vk_feed_repost{'+(FEEDFILTER_DEBUG ? 'border:2px solid red' : 'display:none')+' !important}\
+      .vkf_nowo_repost .vk_feed_wo_repost{' + (FEEDFILTER_DEBUG ? 'border:2px solid red' : 'display:none') + ' !important}\
       \
       .vk_scroll {\
         cursor: pointer;\
@@ -3195,6 +3198,7 @@ vk_feed={
             poll  :false,
             note  :false,
             repost:false,
+            wo_repost: false,
             text  :false,
             links :false,
             friend:false,
@@ -3232,6 +3236,8 @@ vk_feed={
          // Repost
          if (geByClass('published_by',row)[0]) 
             types.repost=true;  
+         else
+            types.wo_repost=true;
          //Text
          if (t) {
             types.text=true;
@@ -3398,7 +3404,8 @@ vk_feed={
          [IDL('with_links'), 'links', false],// 8    links 
          [IDL('from_friend'),'friend',false],// 9    friend
          [IDL('from_group'), 'group', false],// 10   group
-         [IDL('with_ad')+shesterenka, 'ad', false] // 11   ad
+         [IDL('with_ad')+shesterenka, 'ad', false], // 11   ad
+         [IDL('without_repost'), 'wo_repost', false] //12 without repost
       ];
       for (var i=0; i<items.length; i++){
          if (cfg[i]=='1') 
