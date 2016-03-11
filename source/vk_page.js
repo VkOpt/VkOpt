@@ -4626,4 +4626,66 @@ if (!window.vkopt_plugins) vkopt_plugins = {};
     if (window.vkopt_ready) vkopt_plugin_run(PLUGIN_ID);
 })();
 
+(function () {
+    var PLUGIN_ID = 'linkshighlight';
+    vkopt_plugins[PLUGIN_ID] = {
+        Name: 'links Highlight',
+        init: function () {
+            if (typeof String.prototype.endsWith !== 'function') {
+                String.prototype.endsWith = function (suffix) {
+                    return this.indexOf(suffix, this.length - suffix.length) !== -1;
+                };
+            }
+        },
+        processNode: function (node) {
+            if (getSet(109) == 'y') {
+                if (!node) node = ge('content');
+                var n, walk = document.createTreeWalker(node, NodeFilter.SHOW_TEXT, null, false);
+                while (n = walk.nextNode()) {
+                    n.data.replace(/https?:\/\/instagram\.com(?:\/\S*)?/, function (str, offset) {
+                        var newTextNode = n.splitText(offset);
+                        newTextNode.data = newTextNode.data.substr(str.length);
+
+                        var a = vkCe('a', {'href': str}, str);
+                        n.parentNode.insertBefore(a, n.nextSibling);
+
+                        walk.currentNode = a.firstChild;
+                    });
+                    var regexps = [/magnet:\S+/, /ftp:\/\/\S*/, /mega:\/\/\S*/, /skype:\w+/, /mailto:\S*/, /xmpp:\S*/];    // регулярки ссылок, которые уже частично подсвечиваются
+                    each(regexps, function () {
+                        var start = n.data.search(this);    // индекс начала ссылки
+                        if (start != -1) {
+                            var t = n, textContentAfter = n.textContent;
+                            while ((t = t.nextSibling) && t.tagName != 'BR')
+                                textContentAfter += t.textContent;
+                            var url = this.exec(textContentAfter)[0];   // полный url, который надо заменить
+                            if (start != 0) {   // если начало ссылки где-то в серердине ноды, то разделяем ее,
+                                n = n.splitText(start);
+                                walk.currentNode = n;
+                            }
+                            var end = -1;
+                            while (end == -1 && n) {
+                                end = n.data.indexOf(' ');              // конец ссылки - когда появился пробел
+                                if (end == -1 && url.endsWith(n.data))  // или когда вся нода - это конец ссылки
+                                    end = n.data.length;
+                                if (end == -1) {    // в текущей ноде нет конца ссылки. удаляем текст ноды и переходим к следующей.
+                                    n.data = '';
+                                    n = walk.nextNode();
+                                }
+                            }
+
+                            n.splitText(end);
+                            var a = vkCe('a', {'href': url}, url);
+                            n.parentNode.insertBefore(a, n.nextSibling);    // вставка ссылки вместо последней текстовой части
+                            n.data = '';
+                            walk.currentNode = a.firstChild;
+                        }
+                    });
+                }
+            }
+        }
+    };
+    if (window.vkopt_ready) vkopt_plugin_run(PLUGIN_ID);
+})();
+
 if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;

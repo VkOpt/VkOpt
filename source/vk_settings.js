@@ -713,6 +713,7 @@ function vkInitSettings(){
            '<div class="vkwalllist"></div></div>'
       }
     , {id: 98, text: "seMinimizeAbility"}
+    , {id:109, text: "seLinksHighlight", info: "infoLinksHighlight"}
    ],
    Hidden:[
       {id:82,  text: "FullThumb"},
@@ -721,7 +722,7 @@ function vkInitSettings(){
    ]
   };
 
-   //LAST 108
+   //LAST 109
 
    vkSetsType={
       "on"  :[IDL('on'),'y'],
