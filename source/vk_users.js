@@ -264,7 +264,7 @@ function vkProcessUserLink(link){
 	var txt=link.innerHTML;
 	if (!uid || uid.indexOf('?')!=-1 || /(href=|src=)/.test(txt)) return;
 	var adid=uid+'_'+(vkumlnks++);
-	var mev=(getSet(11)=='y')?'onclick':'onmouseover';
+	var mev=(getSet(10)=='1')?'onclick':'onmouseover';
 	var inel=document.createElement('a');
 	inel.id="pup"+adid;
 	inel.setAttribute('class','vk_usermenu_btn'+cl_name);
@@ -275,13 +275,15 @@ function vkProcessUserLink(link){
 	if (getSet(22)=='y' && link.parentNode.parentNode && link.parentNode.parentNode.id=='profile_groups'){
 		inel.setAttribute('class','vk_usermenu_btn fl_r');
 		link.parentNode.insertBefore(inel,link);
+    } else if (getSet(10)=='3') {
+        link.setAttribute('oncontextmenu', inel.getAttribute(mev));
 	} else {
 		insertAfter(inel,link);
 	}
 	// tmp1.parentNode.parentNode.id!='profile_groups' - insertBefore, class="fl_r"
 }
 function vkTsUserMenuLink(mid){
-   var mev=(getSet(11)=='y')?'onclick':'onmouseover';
+   var mev=(getSet(10)=='1')?'onclick':'onmouseover';
    return  '<span class="fl_r vk_ts_exmenu vk_usermenu_btn" onmousedown="cancelEvent(event);" '+
             mev+'="cancelEvent(event); pupShow(event,\'ts_vkm'+mid+'\',\'id'+mid+'\',this); return false;">'+
             USERMENU_SYMBOL+'</span>';
@@ -521,7 +523,7 @@ function vkUserAbuse(oid){
 }
 function vk_user_init(){
 	if (ge('pageLayout')||ge('page_layout')){
-	 if (getSet(10)=='y'){
+	 if (getSet(10)!='n'){
 		GetUserMenuCfg();
 		var addbg=' .pupBody { background:'+getStyle(document.body, 'background')+' !important;}';
 		vkaddcss(PUPCss+addbg);
