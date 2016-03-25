@@ -77,6 +77,7 @@ function InstallRelease(){
 
   }
   if (err.length) vkAlertBox(IDL('Error'),err.join('<br>'));
+  if (getSet(10) == 'y') setSet(10, getSet(11) == 'y' ? 1 : 2);
   return false;
 }
 	
