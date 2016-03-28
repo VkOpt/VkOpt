@@ -307,7 +307,7 @@ function vkProccessLinks(el){
  el=el || ge('content');//document
     var nodes=el.getElementsByTagName('a'); 
     for (var i=0;i<nodes.length;i++){  
-     if (getSet(10)=='y') vkProcessUserLink(nodes[i]);
+     if (getSet(10)!='n') vkProcessUserLink(nodes[i]);
 	  if (getSet(8)=='y')  ProcessUserPhotoLink(nodes[i]);
 	  if (getSet(6)=='y')  ProcessAwayLink(nodes[i]);
 	  if (getSet(38)=='y') ProcessHighlightFriendLink(nodes[i]);
@@ -696,7 +696,7 @@ function vkCommon(){
 	Inj.Start('renderFlash','vkOnRenderFlashVars(vars);');
 	Inj.End('nav.setLoc','setTimeout("vkOnNewLocation();",2);');
 	
-    if (getSet(10)=='y') Inj.After('TopSearch.row','name +','vkTsUserMenuLink(mid)+');
+    if (getSet(10)!='n') Inj.After('TopSearch.row','name +','vkTsUserMenuLink(mid)+');
    
    vk_pages.inj_common();
    vk_audio.inj_common();
