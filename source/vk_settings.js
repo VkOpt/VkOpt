@@ -77,7 +77,7 @@ function InstallRelease(){
 
   }
   if (err.length) vkAlertBox(IDL('Error'),err.join('<br>'));
-  if (getSet(10) == 'y') setSet(10, getSet(11) == 'y' ? 1 : 2);
+  if (vbuild < 160328 && getSet(10) == 'y') setSet(10, getSet(11) == 'y' ? 1 : 2);
   return false;
 }
 	
@@ -608,7 +608,7 @@ function vkInitSettings(){
     ],
     Users:[
       // Явно указваем идентификатор wiki-страницы, т.к из параметра text не получить:
-      {id:10, wiki:"seExUserMenu", ops:[1,2,3,"off"], text:IDL("seExUserMenu")+'<div>'+IDL("seExUMClik")+'</div><a href="#" onclick="toggle(\'vkExUMenuCFG\'); return false;">[<b> '+IDL("Settings")+' </b>]</a>'+
+      {id:10, wiki:"seExUserMenu", ops:[1,2,3,"off"], header:IDL("seExUserMenu"), text:IDL("seExUMClik")+'<br><a href="#" onclick="toggle(\'vkExUMenuCFG\'); return false;">[<b> '+IDL("Settings")+' </b>]</a>'+
                                            '<span id="vkExUMenuCFG" style="display:none"><hr />'+GetUserMenuSett()+'</span>'},
       {id:8,  text: "seZoomPhoto"},// {id:8,  header: "seZoomPhoto" ,  text: "seZoomPhHelp",ops:[0,1,2]},
       {id:38, wiki:"seLightFriends", text:'<table><tr><td> <table><tr><td width=20 height=20 id="spct11" bgcolor='+getFrColor()+'></td></tr></table> <td>'+
@@ -771,6 +771,10 @@ vk_settings = {
       }\
       .sett_block:hover .vk_sett_help_link a{ \
          opacity: 1;\
+      }\
+      #sbtns10 A[off] {\
+        border-top: 1px solid;\
+        border-radius: 5px;\
       }\
    ',
    dislikes_icons:function(){
