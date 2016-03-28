@@ -3450,6 +3450,7 @@ vk_audio={
          Inj.After('Audio.searchRequest',/cur.sPreload.innerHTML.+preload;/i,'vk_audio.process_node(cur.sPreload);');
          Inj.After('Audio.searchRequest',/cur.sContent.innerHTML.+res;/i,'vk_audio.process_node(cur.sContent);');
          Inj.Before('Audio.loadRecommendations','if (json)','if (rows) rows=vkModAsNode(rows,vk_audio.process_node); if(preload) preload=vkModAsNode(preload,vk_audio.process_node); ');
+         Inj.Replace('Audio.hideRecommendation', "geByTag1('a', title_wrap)", "geByTag1('a', geByTag1('b', title_wrap))");
       }
    },
    audio_node:function(node){
