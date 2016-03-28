@@ -624,7 +624,10 @@ function vkStyles(){
          .search_bar:hover .vk_idattach{display:block;}\
 	";
    if (getSet(107) == 'y')
-         main_css += '#mv_external_finish { height: 89% !important; }';
+         main_css += 'div#mv_external_finish {' +
+             'height: 85%;' +
+             'background: linear-gradient(to top, transparent, rgba(0,0,0,0.9) 10%);' +
+             '}';
    main_css+=vk_menu.css;
    main_css+=vk_settings.css;   
    main_css+=vk_board.css;
