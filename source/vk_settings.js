@@ -603,7 +603,6 @@ function vkInitSettings(){
       {id:93,  text: "seAlbumPhotosExInfo",info:'infoUseNetTrafic'}
       , {id:101,  text: "seUseHtml5ForVideo",info:'infoOnlyForCompatible'}
       , {id:104,  text: "seUseHtml5ForAudio"}
-      , {id:107,  text: "seUseYoutubePlayer"}
       , {id:108,  text: "seAutoplayOff"}
     ],
     Users:[
@@ -721,7 +720,7 @@ function vkInitSettings(){
    ]
   };
 
-   //LAST 108, FREE 11
+   //LAST 108, FREE 11, 107
 
    vkSetsType={
       "on"  :[IDL('on'),'y'],

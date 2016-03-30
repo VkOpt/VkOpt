@@ -623,8 +623,6 @@ function vkStyles(){
          .search_bar .vk_idattach{display:none;}\
          .search_bar:hover .vk_idattach{display:block;}\
 	";
-   if (getSet(107) == 'y')
-         main_css += '#mv_external_finish { height: 89% !important; }';
    main_css+=vk_menu.css;
    main_css+=vk_settings.css;   
    main_css+=vk_board.css;
