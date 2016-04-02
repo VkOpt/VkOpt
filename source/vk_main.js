@@ -760,10 +760,6 @@ function vkProcessResponse(answer,url,q){
      answer[2]=answer[2].replace(/"eid1"\s*:\s*"?\d+"?/i,'"eid1":0');
      answer[2]=answer[2].replace(/"(show_ads[^"]*)"\s*:\s*"?\d+"?/ig,'"$1":0');
   }
-  if (getSet(107)=='y' && url=='/al_video.php' && (q.act == 'show' || q.act == 'show_inline')) {
-      answer[1]=answer[1].replace('controls=0','controls=1').replace('fs=0','fs=1').replace('<iframe','<iframe allowfullscreen="true"');
-      answer[2]=answer[2].replace(/if \(1\)/g,'if (0)');
-  }
 }
 
 vk_features={
