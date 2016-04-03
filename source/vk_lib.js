@@ -1983,6 +1983,48 @@ var vk_ext_api={
          };
       window.postMessage(data,"*");
    },
+   /*
+   // Пишем:
+   vk_ext_api.storage.set('test_val','qwerty',function(){
+      console.log('ok');
+      //Читаем:
+      vk_ext_api.storage.get('test_val',function(value){
+         console.log(value)
+      })
+   });
+   
+   
+   vk_ext_api.storage.sets({'test_val':'qwe2','test4':qwe4},function(){
+      console.log('ok');
+      vk_ext_api.storage.gets(['test_val','test4'],function(values){
+         console.log(values)
+      })
+   });
+   
+   */
+   storage:{
+      get: function(key, callback){
+         vk_ext_api.req({act:'storage_get',key:key},function(r){
+            callback(r.value);
+         });    
+      },
+      set:function(key, val, callback){
+         vk_ext_api.req({act:'storage_set',key:key, value:val},function(r){
+            callback();
+         }); 
+      },
+      // Чтение и установка значений сразу нескольких полей
+      gets: function(keys, callback){ // keys - Array[key_name1, ...]
+         vk_ext_api.req({act:'storage_get',keys:keys},function(r){
+            callback(r.values);
+         });    
+      },
+      sets:function(values, callback){ // values - Object{key1:value1, ...}
+         vk_ext_api.req({act:'storage_set', values:values},function(r){
+            callback();
+         }); 
+      }
+   },
    ajax:{
       parse_headers:function(raw_headers){
          var raw=(raw_headers || '').split(/\r?\n/);

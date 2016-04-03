@@ -1,16 +1,17 @@
 // ==UserScript==
 // @include       *.*
 // ==/UserScript==
-
 (function(){ 
 
 var ext_browser={
    mozilla:(function(){try{return Components.interfaces.nsIObserverService!=null} catch(e){return false} })(),
+   mozilla_jetpack: typeof self != 'undefined' && self.port && self.port.emit && self.port.on,
    opera: window.opera && opera.extension,
    chrome: window.chrome && chrome.extension,
    safari: window.safari   && safari.self,
    maxthon: (function(){try{return window.external.mxGetRuntime!=null} catch(e){return false} })() //without try{}catch it fail script on Firefox
 };
+
 function init_content_script(win,doc,bg){
 win = win || window;
 doc = doc || document;
@@ -18,7 +19,7 @@ bg  = bg  || {};
 var api_enabled = false;
 var ex_ldr={ 
    mark:'vkopt_loader',
-   key:(Math.round(Math.random()*10000000)).toString(35),
+   __key:(Math.round(Math.random()*10000000)).toString(35),
    init:function(){
       ex_ldr.get_scripts(function(data){
          var obj=JSON.parse(win.localStorage['ldr_disabled_libs'] || "{}");
@@ -54,20 +55,20 @@ var ex_ldr={
          
          opera.extension.addEventListener('message',function(event){
             var data = event.data || {};
-            /*if (data.key==ex_ldr.key)
+            /*if (data.__key==ex_ldr.__key)
                console.error('ext_content: ON_MESSAGE',data, data.files && data.files.length);*/
                
-            if (data.key==ex_ldr.key && data.files && data.files.length>0){
+            if (data.__key==ex_ldr.__key && data.files && data.files.length>0){
                callback(data.files);
             }
             if (data.act=='connected'){
-               opera.extension.postMessage({act:'get_scripts', url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc),key:ex_ldr.key});
+               opera.extension.postMessage({act:'get_scripts', url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc), __key:ex_ldr.__key});
                console.log('ext_content: opera.extension.postMessage get_scripts');
             }
             if (data.api_enabled) api_enabled = true;            
             
             ex_api.ready=true;
-            if (data.key==ex_ldr.key){
+            if (data.__key==ex_ldr.__key){
                ex_api.message_handler(data);
             }
             ex_api.post_message=function(msg){
@@ -77,8 +78,8 @@ var ex_ldr={
             }
          },false);
       } else if (ext_browser.chrome){                                              // CHROMIUM
-         chrome.extension.sendRequest({act:'get_scripts', url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc),key:ex_ldr.key}, function(data) {
-            if (data.key==ex_ldr.key && data.files && data.files.length>0){
+         chrome.extension.sendRequest({act:'get_scripts', url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc), __key:ex_ldr.__key}, function(data) {
+            if (data.__key==ex_ldr.__key && data.files && data.files.length>0){
                if (data.api_enabled) 
                   api_enabled = true;
                callback(data.files);
@@ -90,7 +91,7 @@ var ex_ldr={
          ex_api.post_message=function(msg){
             msg=ex_api.prepare_data(msg);
             chrome.extension.sendRequest(msg, function(data) {
-               if (data.key==ex_ldr.key){
+               if (data.__key==ex_ldr.__key){
                   ex_api.message_handler(data);
                } 
             });
@@ -99,16 +100,16 @@ var ex_ldr={
       } else if (ext_browser.safari){
          ex_api.ready=true;
          safari.self.addEventListener("message", function(e) {                                    // SAFARI
-            if (e.message.key==ex_ldr.key && e.message.files && e.message.files.length>0){
+            if (e.message.__key==ex_ldr.__key && e.message.files && e.message.files.length>0){
                if (e.message.api_enabled) 
                   api_enabled = true;
                callback(e.message.files);  
             }
-            if (e.message.key==ex_ldr.key){
+            if (e.message.__key==ex_ldr.__key){
                ex_api.message_handler(e.message);
             }               
          }, false);
-         safari.self.tab.dispatchMessage("get_scripts",{url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc),key:ex_ldr.key});
+         safari.self.tab.dispatchMessage("get_scripts",{url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc), __key:ex_ldr.__key});
          
          ex_api.post_message=function(msg){
                msg=ex_api.prepare_data(msg);
@@ -117,9 +118,9 @@ var ex_ldr={
          } 
       } else if (ext_browser.maxthon){                                 // MAXTHON
          var rt = window.external.mxGetRuntime();
-         rt.post('get_scripts',{url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc),key:ex_ldr.key});
+         rt.post('get_scripts',{url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc), __key:ex_ldr.__key});
          rt.listen('scripts', function(data){
-            if (data.key==ex_ldr.key && data.files && data.files.length>0){
+            if (data.__key==ex_ldr.__key && data.files && data.files.length>0){
                //console.log('scripts on '+doc.location.href,data.files);
                if (data.api_enabled) 
                   api_enabled = true;
@@ -133,12 +134,43 @@ var ex_ldr={
             return msg;
          };
          rt.listen('extension_api', function(data){
-            if (data.key==ex_ldr.key){
+            if (data.__key==ex_ldr.__key){
                ex_api.message_handler(data);
             } 
          });        
          ex_api.ready=true;
-          
+      } else if (ext_browser.mozilla_jetpack){      
+         
+         self.port.on("scripts",function (data) {
+            //alert('on content script\n'+data.__key+'\n'+ex_ldr.__key+'\n'+data.files.length);
+            if (data.__key==ex_ldr.__key && data.files && data.files.length>0){
+               if (data.api_enabled) 
+                  api_enabled = true;
+               callback(data.files);
+            }
+         });
+         
+         var get_scr = function(data) {
+            self.port.emit("get_scripts", {url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc), __key:ex_ldr.__key});
+         }
+         
+         get_scr();
+         // изначально первое сообщение не доходило в background, из-за этого 'init' запрос был добавлен
+         // (вероятно глюк ночной сборки, либо onAttach срабатывал после отсылки сообщения).
+         //self.port.on("init",get_scr);
+         
+         ex_api.post_message=function(msg){
+            msg=ex_api.prepare_data(msg);
+            self.port.emit('extension_bg_api',msg);
+            return msg;
+         };
+         self.port.on('extension_api', function(data){
+            if (data.__key==ex_ldr.__key){
+               ex_api.message_handler(data);
+            } 
+         });        
+         ex_api.ready=true;
+
       } else { //if (ext_browser.mozilla)                  // MOZILLA
          
          bg.get_scripts(doc.location.href,function(files, api_allowed){
@@ -154,7 +186,7 @@ var ex_ldr={
             msg=ex_api.prepare_data(msg);
             setTimeout(function(){
                bg.postMessage(msg,function(data){
-                  if (data.key==ex_ldr.key){
+                  if (data.__key==ex_ldr.__key){
                      ex_api.message_handler(data);
                   }                   
                });            
@@ -280,13 +312,13 @@ var informer={
 
 //  win.postMessage({act:'get',url:'http://vkopt.net/download'},"*")
 var ex_api={
-   key:(Math.round(Math.random()*10000000)).toString(35),
+   __key:(Math.round(Math.random()*10000000)).toString(35),
    ready:false,
    callbacks:{},
    cid:1,
    prepare_data:function(msg){
       msg = msg || {};
-      msg.key=ex_ldr.key;
+      msg.__key=ex_ldr.__key;
       msg._req=ex_api.cid++;
       return msg
    },
@@ -312,15 +344,18 @@ var ex_api={
          case 'post':
          case 'head':
          case 'ajax':
+         
+         case 'storage_get':
+         case 'storage_set':   
+         case 'storage_keys':
+         case 'storage_delete':   
+         case 'storage_clear':
+         
          case 'download':
+         case 'check_ext':
          //case 'update_scripts':
             ex_api.req(res,function(data, sub){
-               win.postMessage({response:data,sub:sub},"*");
-            });
-            break;
-         case 'check_ext':
-            ex_api.req(res,function(data, sub){
-               win.postMessage({response:data,sub:sub},"*");
+               win.postMessage(JSON.parse(JSON.stringify({response:data,sub:sub})),"*");
             });
             break;
       }
@@ -352,7 +387,7 @@ ex_api.init(win);
 }
 
 
-if (ext_browser.opera || ext_browser.chrome || ext_browser.safari || ext_browser.maxthon){
+if (ext_browser.opera || ext_browser.chrome || ext_browser.safari || ext_browser.maxthon || ext_browser.mozilla_jetpack){
       init_content_script(window, document);
 }
 
