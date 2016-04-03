@@ -1667,8 +1667,6 @@ function vkImTypingEvent(uid,need_close){
    
    if (chat && getSet(105)=='y') return;
 
-   var NOTIFY_TIMEOUT= 15000; // 15sec
-   
    if (need_close){
       vkHideEvent('vk_typing_'+uid);
       return;
