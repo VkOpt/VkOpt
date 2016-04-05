@@ -1994,7 +1994,7 @@ var vk_ext_api={
    });
    
    
-   vk_ext_api.storage.sets({'test_val':'qwe2','test4':qwe4},function(){
+   vk_ext_api.storage.sets({'test_val':'qwe2','test4':'qwe4'},function(){
       console.log('ok');
       vk_ext_api.storage.gets(['test_val','test4'],function(values){
          console.log(values)

@@ -862,7 +862,10 @@ ext_api={
                     target: fp.file
                   }),
                   Downloads.getList(Downloads.PUBLIC)
-                ]).then(function ([dl, list]) {
+                ]).then(function (args) {
+                  var dl = args[0],
+                      list = args[1];
+                  console.log('download then:', arguments);
                   list.add(dl);
                   dl.start();
                   return dl;
