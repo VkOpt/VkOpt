@@ -256,6 +256,7 @@ function vkStyles(){
    .nobold{font-weight: normal;}\
    .vk_pr_tt{width:300px}\
 	"+(RemoveAd=='y'?".post[data-ads], .post[data-ad], .post[data-ad-view], .ad_box,.ad_help_link, .ad_help_link_new, .ad_box_new, #ad_help_link_new, #left_ads, .ads_ads_news_wrap {display: none !important;}\
+         #left_ads,#ads_left{position:absolute !important; left:-9900px !important;}\
 			"+(NotHideSugFr?'.ad_box_friend{display: block !important;} .ad_box_friend + .ad_box_new{display:block !important;}':'')+"\
 			#groups .clearFix {display: block !important;} \
 			#sideBar a[href*=\"help.php\"] {display: none !important;} \
