@@ -176,7 +176,9 @@ if (!window.localStorage) localStorage={
 
 /* FUNCTIONS LEVEL 0*/
 ///////////
-function isNewLib(){return window.showWriteMessageBox}
+function isNewLib(){return window.showWriteMessageBox} // deprecated
+function isNewVk(){return typeof prepareAudioLayer != 'undefined'}
+
 /* CROSS */
 var _ua_ = window.navigator.userAgent.toLowerCase();
 var vkbrowser = {
@@ -716,89 +718,159 @@ var vkMozExtension = {
 		}
 	}
 	/* Injection to JsFunctions Lib  */
-	Inj={// KiberInfinity's JS_InjToFunc_Lib v1.6
-		FRegEx:new RegExp("function.*\\((.*)\\)[\\s\\S]{0,1}{([\\s\\S]+)}$","im"),
-		DisableHistrory:false,
-		History:{},
-		Wait:function(func,callback,check_timeout,check_count,fail_callback){
-		  if (check_count == 0) {
-			if (fail_callback) fail_callback('WaitForFunc out of allow checkes');
-			return;
-		  }
-		  if (check_count) check_count--;
-		  var func_=func;
-		  if (typeof func == 'string') func_=eval(func);
-		  if (!check_timeout) check_timeout=1000;
-		  if (func_) callback(func_);
-		  else return   setTimeout(function(){Inj.Wait(func,callback,check_timeout,check_count,fail_callback)},check_timeout);
-		  return false;
+	Inj = { // KiberInfinity's JS_InjToFunc_Lib v2.1
+		FRegEx : /function[^\(]*\(\s*([^\)]*?)\s*\)[^\{]*\{([\s\S]+)\}/i,
+		DisableHistrory : false,
+		History : {},
+		Wait : function (func, callback, check_timeout, check_count, fail_callback) {
+			if (check_count == 0) {
+				if (fail_callback)
+					fail_callback('WaitForFunc out of allow checkes');
+				return;
+			}
+			if (check_count)
+				check_count--;
+			var func_ = func;
+			if (typeof func == 'string')
+				func_ = eval(func);
+			if (!check_timeout)
+				check_timeout = 1000;
+			if (func_)
+				callback(func_);
+			else
+				return setTimeout(function () {
+					Inj.Wait(func, callback, check_timeout, check_count, fail_callback)
+				}, check_timeout);
+			return false;
 		},
-		Parse:function(func){
-			var fn=eval('window.'+func);
-			if (!fn) vklog('Inj_Error: "'+func+'" not found',1);
-			var res=fn?String(fn).match(Inj.FRegEx):['','',''];
-			if (Inj.need_porno()){res[2]=res[2].replace(/\r?\n/g," ");}
-			return res;
+		Parse : function (func) {
+			// определение распарсить переданную функцию или же найти по имени функции.
+			var fn = isFunction(func) ? func : eval('window.' + func);
+			if (!fn)
+				vklog('Inj_Error: "' + func + '" not found', 1);
+			var res = fn ? String(fn).match(Inj.FRegEx) : ['', '', ''];
+			if (Inj.need_porno()) {
+				res[2] = res[2].replace(/\r?\n/g, " ");
+			}
+			return {
+				func_name : func, // для последующего использования в Make, функция должна быть передана в Parse по строковому имени, либо обязательно переопредление этого параметра на нужное строковое имя.
+				full : res[0],
+				args : res[1],
+				code : res[2],
+				args_names : res[1].split(/\s*,\s*/) // используется для макрозамены обозначенных аргументов в коде
+			}
 		},
-		Make:function(func,arg,code,args){
-			var h=Array.prototype.join.call(args, '#_#');
-			var hs=h.replace(/[^A-Za-z0-9]+/g,"");
-			if (code.indexOf(hs)!=-1) return;
-			var ac='\n_inj_label="'+hs+'";\n';
-			//try{
-         eval(func+'=function('+arg+'){'+ac+code+'}');        
-			//} catch(e){	vklog('Inj_Error: '+func+'=function('+arg+'){'+ac+code+'}',1);	}
+		Make : function (parsed_func, code, args) {
+			var h = Array.prototype.join.call(args, '#_#');
+			var hs = h.replace(/[^A-Za-z0-9]+/g, ""); // генерим "хеш" инъекции. не идеально, но так быстрее, чем crc/md5 и и.д считать.
+			if (code.indexOf(hs) != -1) // проверяем, если ли уже метка этой инъекции в функции.
+				return false;            // если инъекция уже была сделана ранее, то уходим.
+            
+			// Подстановка имён аргументов в места указанные в новом коде как #ARG1#, #ARG2# или __ARG0__, __ARG1__ и т.д
+			code = code.replace(/(#|__)ARG(\d+)\1/g, function (s, prefix, idx) {
+					var arg_idx = parseInt(idx);
+					return parsed_func.args_names[arg_idx];
+				})
+				var ac = '\n"[inj_label]' + hs + '";'
+				// добавляем косметический перенос строки перед родным кодом:
+				if (!/^[\r\n\s]*['"]\[inj_label\]/.test(code))
+					ac += '\n';
+				// перезаписываем функцию новой:
+				eval(parsed_func.func_name + '=function(' + parsed_func.args + '){' + ac + code + '}');
+			return true;
 		},
-      need_porno:function(){
-         return vkbrowser.mozilla && parseInt(vkbrowser.version) < 17;
-      },
-		toRE:function(s,m){
-			if (Inj.need_porno() && (typeof s)=='string' && (s.indexOf("+'")!=-1 ||s.indexOf("'+")!=-1 || s.indexOf('"+')!=-1)){
+		need_porno : function () {
+			return vkbrowser.mozilla && parseInt(vkbrowser.version) < 17;
+		},
+		toRE : function (s, m) {
+			if (Inj.need_porno() && (typeof s) == 'string' && (s.indexOf("+'") != -1 || s.indexOf("'+") != -1 || s.indexOf('"+') != -1)) {
 				/* this is Porno! */
-				s=s.replace(/([\(\)\[\]\\\/\.\^\$\|\?\+])/g,"\\$1");
-				s=s.replace(/(["']\\\+)/g,"\\\\?[\"']\\s*\\+\\s*");
-				s=s.replace(/(\\\+["'])/g,"\\s*\\+\\s*\\\\?[\"']");  
-				s=s.replace(/([^\[]|^)["]([^']|$)/g,"$1\\\\?[\"']$2");
-				return RegExp(s,m || '');
-			} else return s;
-		},
-		mc:function(s){
-			if (Inj.need_porno()){
-				if (s.substr(0,2)=="'+") s='"+'+s.substr(2);
-				if (s.substr(-2)=="+'") s=s.substr(0,s.length-2)+'+"';
+				s = s.replace(/([\(\)\[\]\\\/\.\^\$\|\?\+])/g, "\\$1");
+				s = s.replace(/(["']\\\+)/g, "\\\\?[\"']\\s*\\+\\s*");
+				s = s.replace(/(\\\+["'])/g, "\\s*\\+\\s*\\\\?[\"']");
+				s = s.replace(/([^\[]|^)["]([^']|$)/g, "$1\\\\?[\"']$2");
+				return RegExp(s, m || '');
+			} else
 				return s;
-			} else return s;
 		},
-		Start:function(func,inj_code){
-		  var s=Inj.Parse(func);
-		  Inj.Make(func,s[1],inj_code+' '+s[2],arguments);
+		mc : function (s) {
+			if (Inj.need_porno()) {
+				if (s.substr(0, 2) == "'+")
+					s = '"+' + s.substr(2);
+				if (s.substr(-2) == "+'")
+					s = s.substr(0, s.length - 2) + '+"';
+				return s;
+			} else
+				return s;
 		},
-		End:function(func,inj_code){
-		  var s=Inj.Parse(func);
-		  Inj.Make(func,s[1],s[2]+' '+inj_code,arguments);
+		Start : function (func, inj_code) {
+			var s = Inj.Parse(func);
+			if (isFunction(inj_code))                 // ну а что? Inj и так костыль, а с этим удобней местами - передали интересующий нас логически завершённый код завёрнутым в анонимную функцию 
+				inj_code = Inj.Parse(inj_code).code;   // и выдрали его из неё, а не строкой с экранированиями, без переносов и т.д
+			return Inj.Make(s, inj_code + ' ' + s.code, arguments);
 		},
-		Before:function(func,before_str,inj_code){
-		  var s=Inj.Parse(func);
-		  before_str=Inj.toRE(before_str);
-		  inj_code=Inj.mc(inj_code);
-		  var orig_code=((typeof before_str)=='string')?before_str:s[2].match(before_str);
-		  s[2]=s[2].split(before_str).join(inj_code+' '+orig_code+' ');//maybe split(orig_code) ?
-		  //if (func=='nav.go') alert(s[2]);
-		  Inj.Make(func,s[1], s[2],arguments);
+		End : function (func, inj_code) {
+			var s = Inj.Parse(func);
+			if (isFunction(inj_code))
+				inj_code = Inj.Parse(inj_code).code;
+			return Inj.Make(s, s.code + ' ' + inj_code, arguments);
 		},
-		After:function(func,after_str,inj_code){
-		  var s=Inj.Parse(func);
-		  after_str=Inj.toRE(after_str);
-		  inj_code=Inj.mc(inj_code);
-		  var orig_code=((typeof after_str)=='string')?after_str:s[2].match(after_str);
-		  s[2]=s[2].split(after_str).join(orig_code+' '+inj_code+' ');//maybe split(orig_code) ?
-		  //if (func=='stManager.add') alert(s[2]);
-		  Inj.Make(func,s[1], s[2],arguments);
+		Before : function (func, before_str, inj_code) {
+			var s = Inj.Parse(func);
+			before_str = Inj.toRE(before_str);
+
+			if (isFunction(inj_code))
+				inj_code = Inj.Parse(inj_code).code;
+			else
+				inj_code = Inj.mc(inj_code);
+
+			var orig_code = ((typeof before_str) == 'string') ? before_str : s.code.match(before_str);
+			s.code = s.code.split(before_str).join(inj_code + ' ' + orig_code + ' '); //maybe split(orig_code) ?
+			//if (func=='nav.go') alert(s.code);
+			return Inj.Make(s, s.code, arguments);
 		},
-		Replace:function(func,rep_str,inj_code){
-		  var s=Inj.Parse(func);
-		  s[2]=s[2].replace(rep_str,inj_code);//split(rep_str).join(inj_code);
-		  Inj.Make(func,s[1], s[2],arguments);
+		After : function (func, after_str, inj_code) {
+			var s = Inj.Parse(func);
+			after_str = Inj.toRE(after_str);
+         
+         if (isFunction(inj_code))
+				inj_code = Inj.Parse(inj_code).code;
+			else
+				inj_code = Inj.mc(inj_code);
+         
+			var orig_code = ((typeof after_str) == 'string') ? after_str : s.code.match(after_str);
+			s.code = s.code.split(after_str).join(orig_code + ' ' + inj_code + ' '); //maybe split(orig_code) ?
+			//if (func=='stManager.add') alert(s.code);
+			return Inj.Make(s, s.code, arguments);
+		},
+
+		BeforeR : function (func, before_rx, inj_code) {
+			var s = Inj.Parse(func);
+			
+         if (isFunction(inj_code))
+				inj_code = Inj.Parse(inj_code).code;
+			else
+				inj_code = Inj.mc(inj_code);
+         
+			s.code = s.code.replace(before_rx, inj_code + ' $&');
+			return Inj.Make(s, s.code, arguments);
+		},
+		AfterR : function (func, before_rx, inj_code) {
+			var s = Inj.Parse(func);
+			
+         if (isFunction(inj_code))
+				inj_code = Inj.Parse(inj_code).code;
+			else
+				inj_code = Inj.mc(inj_code);
+         
+			s.code = s.code.replace(before_rx, '$& ' + inj_code);
+			return Inj.Make(s, s.code, arguments);
+		},
+
+		Replace : function (func, rep_str, inj_code) {
+			var s = Inj.Parse(func);
+			s.code = s.code.replace(rep_str, inj_code); //split(rep_str).join(inj_code);
+			return Inj.Make(s, s.code, arguments);
 		}
 	};
 	
