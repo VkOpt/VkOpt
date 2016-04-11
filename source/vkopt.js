@@ -15,11 +15,13 @@ var vBuild = 160407;
 var vPostfix = ' ';
 if (!window.vk_DEBUG) var vk_DEBUG=false;
 
-var vkopt = {
+if (!window.vkopt) window.vkopt={};
+var vkopt_core = {
    disallow_location: /\/m\.vk\.com|login\.vk\.com|oauth\.vk\.com|al_index\.php|frame\.php|widget_.+php|notifier\.php|audio\?act=done_add/i,
    dom_ready: function(fn, ctx){
       var ready, timer;
       var onChange = function (e) {
+         if (!window.IDL || !window.VK_LANGS) return; // Ждём vk_lib.js и vklang.js
          if (document.getElementById('footer') || document.getElementById('footer_wrap')) {
             fireDOMReady();
          } else if (e && e.type == "DOMContentLoaded") {
@@ -58,28 +60,95 @@ var vkopt = {
       window.onload = onChange;
    },
    init: function(){
-      if (vkopt.disallow_location.test(document.location.href)) return;
+      if (vkopt_core.disallow_location.test(document.location.href)) return;
       //TODO: тут ещё бы дождаться подгрузки vk_lib.js
-      vkopt.dom_ready(function(){
-
+      vkopt_core.dom_ready(function(){
          if (!isNewVk()) return;
          console.log('init vkopt 3.x');
-         vkopt.run();
+         vkopt_core.run();
       }); 
    },
-   run:function(){
+   run: function(){
       for (var key in StaticFiles)  
          if (StaticFiles[key].t == 'js')
             vk_glue.inj_to_file(key); 
-      
+      vkBroadcast.Init(vkOnStorage);
+      vkopt_core.plugins.on_init();
       vk_glue.nav_handler();
    },
+   
+   mod_str_as_node: function(str, func, params){
+      if (!str || str.tagName)
+         return str;
+      var is_table = str.substr(0,3)=='<tr';
+      var div = vkCe(is_table?'table':'div');
+      div.innerHTML = str;
+      func(div,params);
+      var txt = div.innerHTML;
+      if (is_table && txt.substr(0,7) == "<tbody>")
+         txt = txt.substr(7,txt.length-15);
+      return txt;
+      //TODO: call to plugins 
+   }, 
+   setLoc: function(new_location){
+      nav.setLoc(new_location,'vkopt');
+   },   
+   /*
+   (function(){
+      var m = {
+         id: 'vkopt_any_plugin',
+         onLibFiles:       function(file_name){},               // место для инъекций = срабатывает при подключении нового js-файла движком контакта.
+         onLocation:       function(nav_obj,cur_module_name){}, // вызывается при переходе между страницами
+         onResponseAnswer: function(answer,url,params){},       // answer - массив, изменять только его элементы
+         onStorage :       function(command_id,command_obj){},  // слушает сообщения отосланные из других вкладок вк через vkCmd(command_id,command_obj)
+         processNode:      function(node, params){}             // обработка элемента
+         processLinks:     function(link, params){},            // обработка ссылки
+      };
+      window.vkopt = (window.vkopt || {});
+      window.vkopt[m.id] = m;
+   })();
+   
+   */
    plugins: {
-      on_js_file:function(file){
-         console.log('on *.js: '+file);
+      call_modules: function(){ // (method, arg1, arg2 ...)
+         var args = Array.prototype.slice.call(arguments);
+         var method = args.shift();
+         for (var plug_id in vkopt)
+            if (vkopt[plug_id][method]) // TODO: && isModuleEnabled(plug_id)
+               vkopt[plug_id][method].apply(window, args);
       },
-      on_location:function(){
-         console.log('on nav: ', cur.module, ' obj: ', JSON.stringify(nav.objLoc)); 
+      on_init:function(){
+         vkopt_core.plugins.call_modules('onInit');
+      },
+      on_js_file: function(file){
+         //console.log('on *.js: '+file);
+         vkopt_core.plugins.call_modules('onLibFiles', file);
+      },
+      on_location: function(){
+         //console.log('on nav: ', cur.module, ' obj: ', JSON.stringify(nav.objLoc)); 
+         vkopt_core.plugins.call_modules('onLocation', nav.objLoc, cur.module);
+      },
+      on_storage: function(id, cmd){ // listen messages for communicate between tabs
+         vkopt_core.plugins.call_modules('onStorage', id, cmd);
+      },
+      process_response: function(answer, url, q){
+         var _rx = /^\s*<(div|table|input|a)/i;
+         for (var i=0;i<answer.length;i++){
+            if (typeof answer[i]=='string' && _rx.test(answer[i]) ){
+               answer[i] = vkopt_core.mod_str_as_node(answer[i], vkopt_core.plugins.process_node, {source:'process_response', url:url, q:q});
+            }
+         }
+         vkopt_core.plugins.call_modules('onResponseAnswer', answer,url,q);
+      },
+      process_node: function(node, params){
+         var nodes=node.getElementsByTagName('a'); 
+         for (var i=0;i<nodes.length;i++)
+            vkopt_core.plugins.process_links(nodes[i],params);
+         //if (params && params.source = 'process_response' )
+         vkopt_core.plugins.call_modules('processNode', node, params);
+      },
+      process_links:function(link_el, params){
+         vkopt_core.plugins.call_modules('processLinks', link_el, params);
       }
    }
 }
@@ -88,7 +157,8 @@ var vk_glue = {
    inj_handler: function(files){ // call from stManager.add(files, callback, async)  ->   vk_glue.inj_handler(files)
       return function(no_pending){
          if (no_pending)
-            console.log('no need inject?', files);
+            console.log('no need inject?', files)
+            
          if (!isArray(files)) files = [files];
          for (var i in files){
             if (files[i].indexOf('.js') != -1) 
@@ -100,18 +170,19 @@ var vk_glue = {
       switch (file_name){
          case 'common.js':       vk_glue.inj.common();  break;
       }
-      vkopt.plugins.on_js_file(file_name); 
+      vkopt_core.plugins.on_js_file(file_name); 
    },
    inj: {
       common: function(){
          // перехватываем момент подключения скриптов:
          Inj.BeforeR("stManager.add",/__stm._waiters.push\(\[([^,]+)/,"__stm._waiters.push([$1, vk_glue.inj_handler(#ARG0#)]);");
+         
          // следующая строка не факт что нужна (а может оптимизированней будет, если её убрать), т.к она срабатывает только если у нас нет списка ожидания, 
          // т.е скрипты были ранее уже подгружены на страницу, и инъекции вероятно остались на месте.
-         Inj.BeforeR("stManager.add",/(if\s*\(![a-zA-z_]+.length\))/,"$1{vk_glue.inj_handler(#ARG0#)(true);}"); //"_matched_{vk_glue.inj...
+         //Inj.BeforeR("stManager.add",/(if\s*\(![a-zA-z_]+.length\))/,"$1{vk_glue.inj_handler(#ARG0#)(true);}"); //"_matched_{vk_glue.inj...
          
          // перехват события об аякс загрузке новой страницы / смене URL'а
-         Inj.End('nav.setLoc',';\nsetTimeout(vk_glue.nav_handler,2);\n');
+         Inj.End('nav.setLoc',';\nif (arguments[1]!="vkopt") setTimeout(vk_glue.nav_handler,2);\n');
          
 
          // Перехватываем результат ajax-запросов с возможностью модификации перед колбеком
@@ -122,7 +193,7 @@ var vk_glue = {
                if (__ARG2__.onDone){
                   var onDoneOrig = __ARG2__.onDone;
                   __ARG2__.onDone = function(){
-                     vk_glue.process_response(arguments, __ARG0__, __ARG1__);
+                     vk_glue.response_handler(arguments, __ARG0__, __ARG1__);
                      onDoneOrig.apply(window, arguments);
                   }
                }
@@ -133,7 +204,7 @@ var vk_glue = {
         
          
          /*
-         Inj.Start('ajax.framegot','if (#ARG1#) #ARG1#=vkopt.process_on_framegot(#ARG1#);');
+         Inj.Start('ajax.framegot','if (#ARG1#) #ARG1#=vkopt_core.process_on_framegot(#ARG1#);');
          Inj.Start('ajax.post','if (vkAllowPost(url, query, options)==false) return;');
          Inj.Start('renderFlash','vkOnRenderFlashVars(vars);');
          */
@@ -142,13 +213,82 @@ var vk_glue = {
    nav_handler: function(){
       // тут какие-то системные действия движка до передачи события в плагины
       // ...
-      vkopt.plugins.on_location();
+      vkopt_core.plugins.on_location();
    },
-   process_response: function(answer,url,q){
-      console.log('hook response:',url, q, answer);
+   response_handler: function(answer,url,q){
+      vkopt_core.plugins.process_response(answer, url, q);
    }
 }
 
+vkopt['settings'] =  {
+   tpls: null,
+   onInit: function(){
+      var values = {
+         full_title: vk_lib.format('Vkontakte Optimizer %1<sup><i>%2</i></sup> (build %3)', String(vVersion).split('').join('.'), vPostfix, vBuild)
+      };
+      // Кто-то что-то имеет против против такого пожирания ресурсов, в обмен на более удобное описание больших кусков текста? (и да, я в курсе что это создаст проблем в случае минимизации)
+      vkopt.settings.tpls = vk_lib.get_block_comments(function(){
+         /*right_menu_item:
+         <a id="ui_rmenu_vkopt" href="/settings?act=vkopt" class="ui_rmenu_item _ui_item_payments" onclick="return vkopt.settings.show(this);"><span>{lng.VkOpt}</span></a>
+         */
+         /*main:
+         <div id="vkopt_settings_block" class="page_block clear_fix">
+             <div class="page_block_header">{vals.full_title}</div>
+             <div id="vkopt_settings">
+               ☑ Check Me!
+               <!--CODE--!>   
+             </div>
+         </div>         
+         */
+      });
+      // Подставляем локализацию в шаблон:
+      for (var key in vkopt.settings.tpls)
+         vkopt.settings.tpls[key] = vk_lib.tpl_process(vkopt.settings.tpls[key],values);
+      
+   },
+   onLocation: function(nav_obj,cur_module_name){
+      if (nav_obj[0] != 'settings') return;
+      if (!ge('ui_rmenu_vkopt')){
+         var item = se(vkopt.settings.tpls.right_menu_item);
+         var p = (ge('ui_rmenu_general') || {}).parentNode;
+         p && p.appendChild(item);
+      }
+      if (nav_obj.act == 'vkopt'){
+         vkopt.settings.show();
+      }
+   },
+   show: function(el, in_box){
+      var p = null;
+      if (!in_box){
+         el = el || ge('ui_rmenu_vkopt');
+         el && uiRightMenu.switchMenu(el);
+         p = ge('wide_column');
+         vkopt_core.setLoc('settings?act=vkopt'); // вместо nav.setLoc для избежания рекурсии, обход реакции на смену URL'а
+      }
+      p.innerHTML = vkopt.settings.tpls.main;
+      return false;
+   }
+}
 
+vkopt['test_module'] =  {
+   onLibFiles:       function(file_name){
+      console.log('test onLibFiles:',file_name)
+   },
+   onLocation:       function(nav_obj,cur_module_name){
+      console.log('test onLocation:',nav_obj,cur_module_name)
+   },
+   onResponseAnswer: function(answer,url,params){
+      console.log('test onResponseAnswer:',url,params,answer)
+   },
+   onStorage :       function(command_id,command_obj){
+      console.log('test onStorage:', command_id, command_obj)
+   },
+   processNode:      function(node, params){
+      console.log('test processNode:',node, params)
+   },
+   processLinks:     function(link_el, params){
+      console.log('test processLinks:',link_el, params)
+   }
+}
 
-vkopt.init();
+vkopt_core.init();

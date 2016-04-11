@@ -173,6 +173,7 @@ if (!window.localStorage) localStorage={
 }
 */
 
+var vk_lib = {};
 
 /* FUNCTIONS LEVEL 0*/
 ///////////
@@ -873,6 +874,41 @@ var vkMozExtension = {
 			return Inj.Make(s, s.code, arguments);
 		}
 	};
+   
+   vk_lib.get_block_comments = function(func){ // извлекаем из кода функции содержимое блоковых комментариев
+      var code = Inj.Parse(func).code;
+      var obj_rx = /\*([a-z0-9_]+):\s*([\s\S]+?)\s*\*/ig; // при нахождении /*comment_name: содержимое */ всё будет распарсенно в объект {comment_name: содержимое}
+      var arr_rx = /\*(\s*)([\s\S]+?)\s*\*/g;             // иначе всё будет в виде массива 
+      var is_obj = obj_rx.test(code);
+      var comments = is_obj ? {} : [];
+      code.replace(is_obj ? obj_rx : arr_rx,function(s,name,comment){ // просто взял replace вместо while..regexp.exec
+         if (is_obj)
+            comments[name] = comment;
+         else
+            comments.push(comment)
+         return s;
+      });
+      return comments;
+   }
+   
+   vk_lib.tpl_process = function(tpl, values){
+      return (tpl || '').replace(/\{([a-z]+)\.([a-z0-9_-]+)\}/ig,function(s,type, id){
+         switch(type.toLowerCase()){
+            case 'lng': return IDL(id);
+            case 'vals': return (values || {})[id];
+            default: return s;
+         }
+         
+      })
+   }
+   
+   vk_lib.format = function(str){
+      var args = arguments;
+      return str.replace(/%(\d+)/g,function(s,id){
+         id = parseInt(id);
+         return args.length > id ? args[id] : s;
+      })
+   }
 	
 	/* Storage broadcast */
 	vkBroadcast={
