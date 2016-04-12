@@ -1696,7 +1696,7 @@ function vk_oauth_api(app_id,scope){
             }
          };
          
-         if (vk_ext_api.ready && (location.protocol == 'http:') && (api.protocol == 'https:')){
+         if (vk_ext_api.ready && ((location.protocol == 'http:') || (location.hostname != 'vk.com')) && (api.protocol == 'https:')){ //на new.vk.com не можем стучать на роут /api.php
             vk_aj.post('https://api.vk.com/method/'+method, params, onDoneRequest);
          } else {
             if (api.protocol != 'https:'){
@@ -1717,7 +1717,7 @@ function vk_oauth_api(app_id,scope){
             }
             params['method'] = method;
             params['oauth'] = 1;            
-            AjPost('/api.php', params, function(text){
+            AjPost('/api.php', params, function(text){ // https://new.vk.com/api.php редиректит на https://vk.com/api.php => тут фейл кроссдоменности
                onDoneRequest(text);
             })
          }         
