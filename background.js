@@ -3,6 +3,7 @@
 // <filefox_jetpack_init>
 if (typeof require != 'undefined' && typeof module != 'undefined'  && module.id == "vkopt/background"){ 
       this.mozilla_jetpack = true;
+      this.jetpack_lib_path = module.uri.match(/^(.+)\//)[1];
       this.window = false;
       this.navigator = false;
       
@@ -18,7 +19,7 @@ if (typeof require != 'undefined' && typeof module != 'undefined'  && module.id 
       this.scope = {};
      
       Cu.import('resource://gre/modules/devtools/Console.jsm', scope); // console import for Firefox Jetpack
-      Cu.import('resource://gre/modules/Timer.jsm', scope);
+      Cu.import(jetpack_lib_path+'/Timer.jsm', scope); // оказывается у некоторых браузеров в этом модуле нет setInterval и т.д, т.ч тянем копию нормального
       Cu.import("resource://gre/modules/Downloads.jsm", scope);
       Cu.import("resource://gre/modules/Task.jsm", scope);
       
@@ -116,7 +117,8 @@ ex_loader = {
             else if (b.chrome) spath=chrome.extension.getURL('scripts/'+filename);
             else if (b.safari) spath=safari.extension.baseURI+'scripts/'+filename;
             //else if (b.mozilla_jetpack) spath = 'resource://vkopt-at-vkopt-dot-net/vkopt/data/scripts/' + filename;
-            else if (b.mozilla_jetpack || b.mozilla) spath = 'resource://vkopt/' + filename;
+            else if (b.mozilla_jetpack ) spath = 'resource://vkopt_jetpack/' + filename;
+            else if (b.mozilla) spath = 'resource://vkopt/' + filename;
             break;
          case 'beta':
             spath= (ex_loader.beta_path.match(/^https?:\/\//)?'':ex_loader.base_path)+ex_loader.beta_path+filename;
@@ -230,8 +232,8 @@ ex_loader = {
       } else if (b.mozilla_jetpack){                // MOZILLA JETPACK
          console.log('init pageMod');
          pageMod.PageMod({
-            include: /.*/i,
-            exclude: /.*notifier\.php|.*im_frame\.php/i,
+            include: /.*/,
+            exclude: /.*notifier\.php|.*im_frame\.php/,
             contentScriptFile: [self.data.url("content_script.js")],
             contentScriptOptions: {qwe:123},
             contentScriptWhen: "start",
@@ -1022,9 +1024,12 @@ ext_api={
       }
    }
 };
-
+/*
 ex_loader.init();
 ext_api.utils.init_ls();
+*/
+ex_loader.init.apply(this);
+ext_api.utils.init_ls.apply(this);
 
 if (browser.chrome && !(window.external && window.external.mxGetRuntime))
    ext_api.utils.chrome_init()

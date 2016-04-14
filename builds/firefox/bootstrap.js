@@ -86,6 +86,7 @@ function startup(data, reasonCode) {
     let options = JSON.parse(readURI(rootURI + './harness-options.json'));
 
     let id = options.jetpackID;
+    let scripts_path_domain = options.scripts_path_domain;
     let name = options.name;
 
     // Clean the metadata
@@ -112,7 +113,11 @@ function startup(data, reasonCode) {
     let prefixURI = 'resource://' + domain + '/';
     let resourcesURI = ioService.newURI(rootURI + '/resources/', null, null);
     setResourceSubstitution(domain, resourcesURI);
-
+    
+    // делаем роут для скриптов
+    let scriptsURI = ioService.newURI(rootURI + '/scripts/', null, null);
+    setResourceSubstitution(scripts_path_domain, scriptsURI);
+    
     // Create path to URLs mapping supported by loader.
     let paths = {
       // Relative modules resolve to add-on package lib
