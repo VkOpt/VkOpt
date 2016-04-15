@@ -2051,6 +2051,43 @@ function remixmid() {
   return tmp;
 }
 // 
+var vk_ext_msg = {
+   handler: null,
+   init:function(callback){
+      vk_ext_msg.handler = callback;
+      if (typeof CustomEvent != 'undefined'){
+         window.addEventListener('vkopt_messaging_response', function(e) {
+            vk_ext_msg.handler(e.detail.data);
+         });  
+      } else {
+         /* для этого случая vk_ext_msg.handler вызывается в  vk_ext_msg.post_message
+         document.addEventListener('vkopt_messaging_response', function(e) {
+            vk_ext_msg.handler(e.detail.data);
+         });
+         */        
+      }
+   },
+   post_message: function(data){
+      var data_obj = {data:data};
+      if (typeof CustomEvent != 'undefined'){
+         var request = new CustomEvent("vkopt_messaging_request",{detail:data_obj});
+         window.dispatchEvent(request);
+      } else {
+         var request = document.createTextNode(JSON.stringify(data_obj));
+         request.addEventListener("vkopt_messaging_response", function (event) {
+            request.parentNode.removeChild(request);
+            if (vk_ext_msg.handler) {
+               var response = JSON.parse(request.nodeValue);
+               vk_ext_msg.handler(response);
+            }
+         }, false);
+         document.head.appendChild(request);
+         var event = document.createEvent("HTMLEvents");
+         event.initEvent("vkopt_messaging_request", true, false);
+         request.dispatchEvent(event);
+         }
+   }
+}
 var vk_ext_api={
    mark:'vkopt_loader',
    callbacks:{},
@@ -2058,19 +2095,22 @@ var vk_ext_api={
    ready: window._ext_ldr_vkopt_loader?true:false,
    init:function(){
       if (!vk_ext_api.inited){
-         window.addEventListener("message", vk_ext_api.on_message,false);
+         //window.addEventListener("message", vk_ext_api.on_message,false); // не нравится некоторым браузерам такой способ общения с контент-скриптом (якобы устаревший)
+         //последняя версия сафари доступная на винде не поддерживает CustomEvent, т.ч нужны и костыли и по старинке
+         vk_ext_msg.init(vk_ext_api.on_message);
          vk_ext_api.inited = true;
       }
       vk_ext_api.req()
    },
    on_message:function(e){
-		var res=e.data || {};
+		var res= e || {};//e.data || {};
       var data=res.response;
       var sub=res.sub || {};
       if (sub.cid && sub.mark==vk_ext_api.mark){
          vk_ext_api.callbacks['cb_'+sub.cid](data);
       }
    },
+   
    req:function(data,callback){
       /*
       {
@@ -2089,7 +2129,8 @@ var vk_ext_api={
             callback(response);
             delete vk_ext_api.callbacks['cb_'+cid];            
          };
-      window.postMessage(data,"*");
+      vk_ext_msg.post_message(data);
+      //window.postMessage(data,"*");
    },
    /*
    // Пишем:

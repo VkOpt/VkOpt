@@ -311,6 +311,40 @@ var informer={
 };
 
 //  win.postMessage({act:'get',url:'http://vkopt.net/download'},"*")
+var ex_msg={
+   init:function(handler){
+      if (!doc.head){ 
+         setTimeout(function(){
+           ex_msg.init(handler); 
+         },10)
+         return;
+      }
+      if (typeof CustomEvent != 'undefined'){
+         win.addEventListener('vkopt_messaging_request', function(e) {
+            handler(e.detail,function(data){
+               var data_obj = {data:data}
+               var response = new CustomEvent("vkopt_messaging_response",{detail:data_obj});
+               win.dispatchEvent(response);
+            });
+         });
+      } else {
+          doc.addEventListener("vkopt_messaging_request", function(event) {
+            var node = event.target;
+            if (!node || node.nodeType != Node.TEXT_NODE)
+              return;
+
+            var _doc = node.ownerDocument;
+            handler(JSON.parse(node.nodeValue), function(response) {
+              node.nodeValue = JSON.stringify(response);
+              var event = _doc.createEvent("HTMLEvents");
+              event.initEvent("vkopt_messaging_response", true, false);
+              return node.dispatchEvent(event);
+            });
+          }, false, true);
+      }
+   }   
+}
+
 var ex_api={
    __key:(Math.round(Math.random()*10000000)).toString(35),
    ready:false,
@@ -325,7 +359,9 @@ var ex_api={
    post_message:function(data){console.log("can't post message to bg process",data)},
    init:function(win){
       win = win || window;
-      win.addEventListener("message", ex_api.on_message,false);
+     
+      ex_msg.init(ex_api.on_message);
+      //win.addEventListener("message", ex_api.on_message,false);
    },
    message_handler:function(data){
       data = data || {};
@@ -335,7 +371,7 @@ var ex_api={
          if (data._req) console.log('Response from bg:',data);
       }
    },
-   on_message:function(e){ // FOR PAGE <-> CONTENT SCRIPT
+   on_message:function(e,send_response){ // FOR PAGE <-> CONTENT SCRIPT
       var res = e.data;
       //console.log('msg_get:',res);
       if (!res.act || res.mark!=ex_ldr.mark) return;
@@ -355,7 +391,8 @@ var ex_api={
          case 'check_ext':
          //case 'update_scripts':
             ex_api.req(res,function(data, sub){
-               win.postMessage(JSON.parse(JSON.stringify({response:data,sub:sub})),"*");
+               //win.postMessage(JSON.parse(JSON.stringify({response:data,sub:sub})),"*");
+               send_response(JSON.parse(JSON.stringify({response:data,sub:sub})));
             });
             break;
       }
