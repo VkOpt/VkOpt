@@ -1,19 +1,22 @@
-cp source/* builds/chrome/scripts
-cp source/* builds/firefox/scripts
-cp source/* builds/vkopt.safariextension/scripts
-cp source/* builds/opera.extension/scripts
-cp source/* builds/firefoxJetpack/resources/vkopt/data/scripts
+#! /bin/sh
 
-cp background.js builds/chrome/background.js
-cp background.js builds/firefox/resources/vkopt/lib/background.js
-cp background.js builds/maxthon/background.js
-cp background.js builds/opera.extension/background.js
-cp background.js builds/vkopt.safariextension/background.js
-cp background.js builds/firefoxJetpack/resources/vkopt/data/background.js
+DIR_CHR=builds/chrome
+DIR_FFX=builds/firefox
+DIR_SFR=builds/vkopt.safariextension
+DIR_OPR=builds/opera.extension
+DIR_FJT=builds/firefoxJetpack/resources/vkopt/data
 
-cp content_script.js builds/chrome/content_script.js
-cp content_script.js builds/firefox/resources/vkopt/data/content_script.js
-cp content_script.js builds/maxthon/content_script.js
-cp content_script.js builds/opera.extension/includes/content_script.js
-cp content_script.js builds/vkopt.safariextension/content_script.js
-cp content_script.js builds/firefoxJetpack/resources/vkopt/data/content_script.js
+BCGJS=background.js
+CNTJS=content_script.js
+
+cp source/* $DIR_CHR/scripts
+cp source/* $DIR_FFX/scripts
+cp source/* $DIR_SFR/scripts
+cp source/* $DIR_OPR/scripts
+cp source/* $DIR_FJT/scripts
+
+cp $BCGJS $CNTJS $DIR_CHR
+cp $BCGJS $CNTJS $DIR_FFX
+cp $BCGJS $CNTJS $DIR_SFR
+cp $BCGJS $CNTJS $DIR_OPR
+cp $BCGJS $CNTJS $DIR_FJT
