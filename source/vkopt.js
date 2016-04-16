@@ -10,8 +10,8 @@
 // (c) All Rights Reserved. VkOpt.
 //
 /* VERSION INFO */
-var vVersion	= 232;
-var vBuild = 160407;
+var vVersion	= 233;
+var vBuild = 160416;
 var vPostfix = ' ';
 if (!window.vk_DEBUG) var vk_DEBUG=false;
 
@@ -75,6 +75,8 @@ var vkopt_core = {
       vkBroadcast.Init(vkOnStorage);
       vkopt_core.plugins.on_init();
       vk_glue.nav_handler();
+      window.vkopt_core_ready = true;
+      vkCheckUpdates();
    },
    
    mod_str_as_node: function(str, func, params){
@@ -97,6 +99,7 @@ var vkopt_core = {
    (function(){
       var m = {
          id: 'vkopt_any_plugin',
+         onInit:           function(){},                        // выполняется один раз после загрузки стрницы
          onLibFiles:       function(file_name){},               // место для инъекций = срабатывает при подключении нового js-файла движком контакта.
          onLocation:       function(nav_obj,cur_module_name){}, // вызывается при переходе между страницами
          onResponseAnswer: function(answer,url,params){},       // answer - массив, изменять только его элементы
@@ -106,19 +109,57 @@ var vkopt_core = {
       };
       window.vkopt = (window.vkopt || {});
       window.vkopt[m.id] = m;
+      if (window.vkopt_core_ready) vkopt_core.plugins.delayed_run(m.id);
    })();
    
    */
    plugins: {
+      delayed_run: function(plug_id){ //функция для пуска отдельного плагина, который не был подключен до основного запуска вкопта
+         
+         var css = vkopt_core.plugins.get_css(plug_id);
+         if (css != '') 
+            vkaddcss(code);
+         
+         vkopt_core.plugins.call_method(plug_id, 'onInit');
+         
+         for (var key in StaticFiles) 
+            if (StaticFiles[key].t == 'js')
+               vkopt_core.plugins.call_method(plug_id, 'onLibFiles', key);
+            
+         vkopt_core.plugins.call_method(plug_id, 'onLocation', nav.objLoc, cur.module);
+         vkopt_core.plugins.call_method(plug_id, 'processNode', null, {source:'delayed_run'});
+      },
+      call_method: function(){ // (plug_id, method, arg1, arg2 ...)
+         var args = Array.prototype.slice.call(arguments);
+         var plug_id = args.shift();
+         var method = args.shift();
+         if (vkopt[plug_id][method]) // TODO: && isModuleEnabled(plug_id)
+            return vkopt[plug_id][method].apply(window, args); 
+         return null;
+      },
       call_modules: function(){ // (method, arg1, arg2 ...)
          var args = Array.prototype.slice.call(arguments);
-         var method = args.shift();
-         for (var plug_id in vkopt)
-            if (vkopt[plug_id][method]) // TODO: && isModuleEnabled(plug_id)
-               vkopt[plug_id][method].apply(window, args);
+         var results = [];
+         for (var plug_id in vkopt){
+            var res = vkopt_core.plugins.call_method.apply(this, [plug_id].concat(args));
+            if (res) results.push(res);
+         }
+         return results;
       },
       on_init:function(){
+         vkopt_core.plugins.add_css();
          vkopt_core.plugins.call_modules('onInit');
+      },
+      add_css:function(){
+         var code = '';
+         for (var plug_id in vkopt)
+            code += vkopt_core.plugins.get_css(plug_id);
+         vkaddcss(code);
+      },
+      get_css:function(plug_id){
+         var css = vkopt[plug_id].css;
+         if (!css) return '';
+         return (Object.prototype.toString.call(p.css) === '[object Function]')?css():css;
       },
       on_js_file: function(file){
          //console.log('on *.js: '+file);
@@ -141,6 +182,7 @@ var vkopt_core = {
          vkopt_core.plugins.call_modules('onResponseAnswer', answer,url,q);
       },
       process_node: function(node, params){
+         node = node || ge('content');
          var nodes=node.getElementsByTagName('a'); 
          for (var i=0;i<nodes.length;i++)
             vkopt_core.plugins.process_links(nodes[i],params);
@@ -235,7 +277,7 @@ vkopt['settings'] =  {
          <div id="vkopt_settings_block" class="page_block clear_fix">
              <div class="page_block_header">{vals.full_title}</div>
              <div id="vkopt_settings">
-               ☑ Check Me!
+               Comming soon! <!--☑ Check Me!--!>
                <!--CODE--!>   
              </div>
          </div>         
@@ -269,7 +311,7 @@ vkopt['settings'] =  {
       return false;
    }
 }
-
+/*
 vkopt['test_module'] =  {
    onLibFiles:       function(file_name){
       console.log('test onLibFiles:',file_name)
@@ -290,5 +332,5 @@ vkopt['test_module'] =  {
       console.log('test processLinks:',link_el, params)
    }
 }
-
+*/
 vkopt_core.init();

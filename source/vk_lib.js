@@ -703,7 +703,8 @@ var vkMozExtension = {
 		var updatejs = 'upd_opera.js';
 		if (vkbrowser.chrome) updatejs='upd_chrome.js';
 		if (vkbrowser.mozilla) updatejs='upd_mozila.js'; 
-		if (vkbrowser.safari) updatejs='upd_safari.js'; 
+		if (vkbrowser.safari) updatejs='upd_safari.js';
+      if (isNewVk()) updatejs='upd_fixes.js';
 		updatejs=updhost+updatejs;
 		if (heads.length > 0) {
 			AjCrossAttachJS(updatejs+"?"+datsig);
