@@ -1,4 +1,10 @@
 @echo off
+del /Q builds\chrome\scripts\vk*
+del /Q builds\firefox\scripts\vk*
+del /Q builds\vkopt.safariextension\scripts\vk*
+del /Q builds\opera.extension\scripts\vk*
+
+
 copy source builds\chrome\scripts\
 copy source builds\firefox\scripts\
 copy source builds\vkopt.safariextension\scripts\
