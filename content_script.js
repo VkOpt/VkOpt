@@ -326,7 +326,7 @@ var ex_msg={
          win.addEventListener('vkopt_messaging_request', function(e) {
             handler(e.detail,function(data){
                var data_obj = {data:data}
-               var response = new CustomEvent("vkopt_messaging_response",{detail:data_obj});
+               var response = new CustomEvent("vkopt_messaging_response",{detail:JSON.stringify(data_obj)});
                win.dispatchEvent(response);
             });
          });

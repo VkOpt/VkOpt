@@ -2061,7 +2061,7 @@ var vk_ext_msg = {
       vk_ext_msg.handler = callback;
       if (typeof CustomEvent != 'undefined'){
          window.addEventListener('vkopt_messaging_response', function(e) {
-            vk_ext_msg.handler(e.detail.data);
+            vk_ext_msg.handler(JSON.parse(e.detail).data);
          });  
       } else {
          /* для этого случая vk_ext_msg.handler вызывается в  vk_ext_msg.post_message
