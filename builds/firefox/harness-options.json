@@ -1,0 +1,57 @@
+{
+ "abort_on_missing": false, 
+ "check_memory": false, 
+ "enable_e10s": false, 
+ "is-sdk-bundled": false, 
+ "jetpackID": "vkopt_moz@vkopt.net.ru", 
+ "loader": "addon-sdk/lib/sdk/loader/cuddlefish.js", 
+ "main": "background", 
+ "mainPath": "vkopt/background", 
+ "manifest": {
+  "vkopt/background": {
+   "docsSHA256": null, 
+   "jsSHA256": null, 
+   "moduleName": "background", 
+   "packageName": "vkopt", 
+   "requirements": {
+    "chrome": "chrome", 
+    "sdk/page-mod": "sdk/page-mod", 
+    "sdk/self": "sdk/self",
+    "sdk/window/utils": "sdk/window/utils",
+    "sdk/net/xhr": "sdk/net/xhr",
+    "./promise": "./promise"
+   }, 
+   "sectionName": "lib"
+  }
+ }, 
+ "metadata": {
+  "addon-sdk": {
+   "description": "Add-on development made easy.", 
+   "keywords": [
+    "javascript", 
+    "engine", 
+    "addon", 
+    "extension", 
+    "xulrunner", 
+    "firefox", 
+    "browser"
+   ], 
+   "license": "MPL 2.0", 
+   "name": "addon-sdk"
+  }, 
+  "vkopt": {
+   "author": "Kiber\u041f\u0441\u0438\u0445", 
+   "description": "\u0414\u043e\u0431\u0430\u0432\u043b\u0435\u043d\u0438\u0435 \u043c\u043d\u043e\u0436\u0435\u0441\u0442\u0432\u0430 \u0444\u0443\u043d\u043a\u0446\u0438\u0439 \u0434\u043b\u044f \u0441\u0430\u0439\u0442\u0430 \u0412\u041a\u043e\u043d\u0442\u0430\u043a\u0442\u0435", 
+   "license": "MPL 2.0", 
+   "main": "main", 
+   "name": "vkopt", 
+   "version": "2.3.0"
+  }
+ }, 
+ "name": "vkopt", 
+ "parseable": false, 
+ "preferencesBranch": "vkopt_moz@vkopt.net.ru", 
+ "sdkVersion": "1.17", 
+ "staticArgs": {}, 
+ "verbose": false
+}

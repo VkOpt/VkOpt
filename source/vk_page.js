@@ -138,7 +138,6 @@ vk_profile={
       if (ge('vk_profile_inited')) return;
       ge('profile_info').appendChild(vkCe('input',{type:'hidden',id:'vk_profile_inited'}));
       //if (getSet(24) == 'y') vkAvkoNav();
-      if (getSet(25) == 'y') status_icq(ge('profile_full_info'));
       if (getSet(26) == 'y') vkProcessProfileBday(); //VkCalcAge();
       vkPrepareProfileInfo();
       vk_graff.upload_graff_item();
@@ -481,15 +480,6 @@ vk_wall = {
       val(title, '');
    },
     process_node: function (node) {
-        if (getSet(98) == 'y') {    // Показывать все комментарии к посту при разворачивании
-            var anchors = geByClass('wr_header', node); // Ссылки "развернуть"
-
-            for (var i = 0; i < anchors.length; i++)  // Меняем обработчики: второй аргумент - оч. большое число
-                if (!hasClass(anchors[i], 'feed_reposts_more_link') && !hasClass(anchors[i], 'wrh_all')) {  // Исключаем ссылки "показать похожие записи" и "Скрыть комментарии"
-                    anchors[i].setAttribu7e('onclick', anchors[i].getAttribute('onclick').replace("', false", "', 99999"))
-                    val(anchors[i].firstElementChild, IDL('showAllComments')+' ('+anchors[i].getAttribute('offs').split('/')[1]+')');
-                }
-        }
         if (getSet(99) == 'y') {    // Функция сортировки комментариев по количеству лайков
             stManager.add(['wkview.css']);  // нужно для кнопочки со стрелками в разные стороны
             vkaddcss('.margin5 {margin: 5px;}');    // отступ от краев кнопки "развернуть комментарии"
@@ -694,7 +684,7 @@ function vkPollResults(post_id,pid){
          </div>\
       </div>';   
       
-      vkAlertBox(IDL('ViewResults'),html);
+      vkAlertBox(IDL('ViewResults'),html,null,null,true);
       vkPollVoters(data.owner_id,data.poll_id);
    };
    
@@ -932,31 +922,6 @@ function vkProcessProfileBday(node){
    }
 }
 
-function status_icq(node) { //add image-link 'check status in ICQ'
-  var t,i,icq,skype=null;
-  var labels=geByClass('label',node);
-  for(i=0;i<labels.length;i++){
-    if(!icq && labels[i].innerHTML=='ICQ:'){    icq=labels[i];   }
-    if(!skype && labels[i].innerHTML=='Skype:'){    skype=labels[i];   }
-    if (icq && skype) break; 
-  }
-    
-  if(icq) {	
-	var el=icq.parentNode.getElementsByTagName('div')[1];//geByClass('dataWrap')[a];
-    t=el.innerHTML || '';
-    t=t.replace(/\D+/g,'') || '';
-    if(t.length)                                                                                                                                                   // http://kanicq.ru/invisible/favicon.ico
-      el.innerHTML+=' <a href="http://kanicq.ru/invisible/'+t+'" title="'+IDL("CheckStatus")+'" target=new><img src="'+location.protocol+'//status.icq.com/online.gif?img=26&icq='+t+'&'+Math.floor(Math.random()*(100000))+'" alt="'+IDL("CheckStatus")+'"></a>';
-  } 
-  //*
-  if(skype) {	
-	var el=skype.parentNode.getElementsByTagName('div')[1];
-    t=el.innerHTML || '';
-    t=t.match(/skype\:(.+)\?call/) || '';
-    if(t.length)                                                                                                                                                   // http://kanicq.ru/invisible/favicon.ico
-      el.innerHTML+='<img style="margin-bottom:-3px" src=" http://mystatus.skype.com/smallicon/'+t[1]+'?'+Math.floor(Math.random()*(100000))+'">';
-  } //*/
-}
 function vkAvkoNav(){
   avko_num = 0;
   if(!ge('profile_photo_link')) return;
@@ -1678,11 +1643,10 @@ vk_graff={
 
 function vkModGroupBlocks(){
    var el=ge('group_albums');// || ge('public_albums');
-   if (el && !ge('gr_photo_browse')){
-      el=geByClass('p_header_bottom',el)[0];
-      var a=vkCe('a',{id:'gr_photo_browse', href:'/photos'+cur.oid},IDL("obzor",1));
-      a.setAttribu7e('onclick',"event.cancelBubble = true; return nav.go(this, event)");
-      el.appendChild(a);
+   if (el && !ge('gr_photo_browse') && (el=geByClass('p_header_bottom',el)[0])){
+       var a=vkCe('a',{id:'gr_photo_browse', href:'/photos'+cur.oid},IDL("obzor",1));
+       a.setAttribu7e('onclick',"event.cancelBubble = true; return nav.go(this, event)");
+       el.appendChild(a);
       //el.innerHTML+='<a href="/photos'+cur.oid+'" onmousedown="event.cancelBubble = true;" onclick="event.cancelBubble = true; return nav.go(this, event);">[ '+IDL("obzor")+' ]</a>';
    }
 }
@@ -1899,7 +1863,7 @@ function vkDocsShowBox(tpl) {	// создание таблички со сылк
 			for (var i in vkDocsLinks) {
 				var item = vkDocsLinks[i];
 				links+=item.url+'&/'+vkEncodeFileName(vkCleanFileName(item.filename))+'\n';
-				wget_links+='wget "'+item.url+'" -O "'+winToUtf(item.filename).replace(/"/g,'\\"')+'"\n';
+				wget_links+='wget "'+item.url+'" -O "'+winToUtf(item.filename).replace(/"/g,'\\"').replace(/`/g,'\'')+'"\n';
 			}
 			var links_html='<textarea class="vk_docs_links_area">'+links+'</textarea>\
 					   <a download="DocumentsLinks.txt" href="data:text/plain;base64,' + base64_encode(utf8ToWindows1251(utf8_encode(links))) + '">'+vkButton(IDL('.TXT'))+'</a>\
@@ -2553,6 +2517,13 @@ vk_groups = {
 
       vkAlertBox(IDL('LeaveGroups'),IDL('LeaveAllGroupsConfirm'),run,true);
    },
+   block_autoplay:function(){
+      if (getSet(108)=='y') {
+          Inj.Start('showInlineVideo','if (!ev) return;');
+          if (cur.pinnedVideo)  // Если не успели пропатчить showInlineVideo, останавливаем запущенное видео.
+            Inj.Wait('_videoLastInlined',function(){ revertLastInlineVideo(); });
+      }
+   },
    // UTILS
    leave:function(gid){
       vkAlertBox('', IDL('LeaveGroup'),function(){
@@ -3130,6 +3101,7 @@ vk_feed={
       .vkf_filter .vk_feed_friend,\
       .vkf_filter .vk_feed_ad,\
       .vkf_filter .vk_feed_repost{display:none !important}\
+      .vkf_filter .vk_feed_wo_repost{display:none !important}\
       \
       .vkf_photo .vk_feed_photo,\
       .vkf_video .vk_feed_video,\
@@ -3143,6 +3115,7 @@ vk_feed={
       .vkf_friend .vk_feed_friend,\
       .vkf_ad .vk_feed_ad,\
       .vkf_repost .vk_feed_repost{display:block !important}\
+      .vkf_wo_repost .vk_feed_wo_repost{display:block !important}\
       \
       .vkf_nophoto .vk_feed_photo,\
       .vkf_novideo .vk_feed_video,\
@@ -3156,6 +3129,7 @@ vk_feed={
       .vkf_nofriend .vk_feed_friend,\
       .vkf_noad .vk_feed_ad,\
       .vkf_norepost .vk_feed_repost{'+(FEEDFILTER_DEBUG ? 'border:2px solid red' : 'display:none')+' !important}\
+      .vkf_nowo_repost .vk_feed_wo_repost{' + (FEEDFILTER_DEBUG ? 'border:2px solid red' : 'display:none') + ' !important}\
       \
       .vk_scroll {\
         cursor: pointer;\
@@ -3236,6 +3210,7 @@ vk_feed={
             poll  :false,
             note  :false,
             repost:false,
+            wo_repost: false,
             text  :false,
             links :false,
             friend:false,
@@ -3273,18 +3248,26 @@ vk_feed={
          // Repost
          if (geByClass('published_by',row)[0]) 
             types.repost=true;  
+         else
+            types.wo_repost=true;
          //Text
          if (t) {
             types.text=true;
              // Advertisements
-             switch (block_mode) {
-                 case block_modes.REGEXP:
-                     types.ad=block_conditions.test(t.innerHTML); break;
-                 case block_modes.KEYWORDS:
-                     for (var i = 0;i < block_conditions.length && !types.ad;i++)
-                         types.ad = (t.innerHTML.toLowerCase().indexOf(block_conditions[i]) > -1);
-                     break;
-             }
+             each(geByClass('wall_post_text', row), function () {
+                 switch (block_mode) {
+                     case block_modes.REGEXP:
+                         types.ad = block_conditions.test(this.innerHTML);
+                         if (types.ad) return false;
+                         break;
+                     case block_modes.KEYWORDS:
+                         for (var i = 0; i < block_conditions.length && !types.ad; i++) {
+                             types.ad = (this.innerHTML.toLowerCase().indexOf(block_conditions[i]) > -1);
+                             if (types.ad) return false;
+                         }
+                         break;
+                 }
+             });
          }
          //Links
          if (t && geByTag('a',t).length>0) 
@@ -3359,7 +3342,9 @@ vk_feed={
                if (elem) {
                    while (elem && elem.getBoundingClientRect().top-topShift < -3 || elem.getBoundingClientRect().left==0)
                        elem = elem.nextElementSibling;
-                   elem = elem.previousElementSibling;         // в этом месте elem был текущим постом, а стал предыдущим
+                   do
+                       elem = elem.previousElementSibling;         // в этом месте elem был текущим постом, а стал предыдущим
+                   while (getXY(elem)[1]==0);   // для предотвращения перемотки к скрытому посту
                    if (elem) scrollToY(getXY(elem)[1]-topShift, 100);
                    window.scrollAnimation = false;
                    wall.scrollCheck(); // для подгрузки стены
@@ -3431,7 +3416,8 @@ vk_feed={
          [IDL('with_links'), 'links', false],// 8    links 
          [IDL('from_friend'),'friend',false],// 9    friend
          [IDL('from_group'), 'group', false],// 10   group
-         [IDL('with_ad')+shesterenka, 'ad', false] // 11   ad
+         [IDL('with_ad')+shesterenka, 'ad', false], // 11   ad
+         [IDL('without_repost'), 'wo_repost', false] //12 without repost
       ];
       for (var i=0; i<items.length; i++){
          if (cfg[i]=='1') 
@@ -3766,22 +3752,12 @@ function vk_tag_api(section,url,app_id){
 
 (function(){
    var dk={
-      app_id:3395854,
       server:'http://dislike.server/like.php',
-      ls_val:'dislike_auth',
       ids_per_req:5,//10,//20,
       delay:1000,
       cache_time:3 * 60 * 1000,// 3 min
-      is_enabled:function(set){
-         if (document.location.href.indexOf('vk_dislikes_enabled')>0) vkSetVal('vk_dislikes_enabled','true');
-         
-         var d=new Date(2013, 3, 1, 0, 0, 0, 0); // Activate at 00:00 of 1 April
-         var cur_date=new Date();
-         var enabled=(d<cur_date || vk_DEBUG || vkGetVal('vk_dislikes_enabled'));
-         if (enabled && !set){
-            enabled = (getSet(79) == 'y');
-         }
-         return enabled;    
+      is_enabled:function(){
+          return getSet(79) == 'y';
       },
       lang:{
          'dislike':'\u041d\u0435 \u043d\u0440\u0430\u0432\u0438\u0442\u0441\u044f',
@@ -3805,45 +3781,12 @@ function vk_tag_api(section,url,app_id){
          'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAWCAYAAAAW5GZjAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAStJREFUeNqUka1OQ0EQhbeAbIKpaECQkPQ1EDhCgq7kx5D0DapQvAEEA0gkJS19ALjVrQGDwBEEoj+yheUbOLssN0C4k3yZO3POnbt7p+S9d82zG0dU4BQ2YR5e4Rr24OVwd80tuM+owgOU3VfYC1vwCDV4npNwkjOmUZbugtk+PYBl6KnXUz2QHs12nC48QaZeprorPZ75HpqwChvq7cMK1KXHycfKJizCjnI91YP5CDrJpc6T5470aLa4VD7I5dD/ZraLjOEWvPJY/Y8o2Qb/G+lkW/cVzDR5proSHTYZqjDxP8dEejS3/N/RSs1T6MMSZDJkqvvSi607TL7TtAsY6nmo2kuP5kbujNu5upGajfYvl2sHT6F1p5PtX45gHd6UR+EfG4XW/S7AABuBTwpSct69AAAAAElFTkSuQmCC'
       ],
       icon_index:3,
-      auth_key:'',
-      api_id:'',
-      viewer_id:'',
       queue:[],
-      last_req_ts:0,
       cache:{},
       init:function(){
          //dk.auth();
          if (!dk.is_enabled()) return;
          dk.storage=new vk_tag_api('dislike','http://vk.dislike.server/',3429306);
-      },
-      auth:function(callback){
-         var auth_data=localStorage[dk.ls_val] || '{}';
-         var auth_obj;
-         try {
-            auth_obj=JSON.parse(auth_data);
-            if (auth_data.auth_key && auth_data.api_id && auth_data.viewer_id){
-               dk.auth_key=auth_data.auth_key;
-               dk.api_id=auth_data.api_id;
-               dk.viewer_id=auth_data.viewer_id;
-               if (callback) callback();
-            } else {
-               auth_obj=null;
-            }
-         } catch (e) {}
-         dk.post('/app'+dk.app_id,{},function(t){
-            var data=(t.match(/var params = (\{[^\}]+\})/)||[])[1]; // parse flash params
-            var obj=JSON.parse(data);
-            var auth_data={
-               auth_key:obj.auth_key,
-               api_id:obj.api_id,
-               viewer_id:obj.viewer_id
-            };
-            dk.auth_key=auth_data.auth_key;
-            dk.api_id=auth_data.api_id;
-            dk.viewer_id=auth_data.viewer_id;
-            localStorage[dk.ls_val]=JSON.stringify(auth_data);
-            if (callback) callback();
-         });
       },
 
       post:function(url,params,callback){
@@ -4640,7 +4583,7 @@ if (!window.vkopt_plugins) vkopt_plugins = {};
                     for (var i = 0; i < 12 && m == undefined; i++)
                         if (getLang('month' + (i + 1) + 'sm_of') == datetime[1])
                             m = i;
-                    y = parseInt(datetime[2]) || new Date().getFullYear();
+                    y = parseInt(datetime[2]) || new Date().getFullYear() - +(m > (new Date().getMonth()));
                     if (datetime.length < 4) H = M = 0; // если нет времени
                 }
 

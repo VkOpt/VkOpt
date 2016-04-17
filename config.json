@@ -1,0 +1,29 @@
+[ 
+   15,
+   {
+      "in_frames":1,
+      "run_at":0,
+      "files":[
+         "vkopt.js",
+         "vk_face.js",
+         "vk_lib.js",
+         "vk_main.js",
+         "vk_media.js",
+         "vk_page.js",
+         "vk_resources.js",
+         "vk_settings.js",
+         "vk_skinman.js",
+         "vk_txtedit.js",
+         "vk_users.js",
+         "vklang.js"
+      ],
+      "api_enabled":true,
+      "domain":"vkontakte\\.ru|vk\\.com",
+      "exclude":"|notifier\\.php|im_frame\\.php|about:blank|i"
+   },
+   {
+      "files":["vk_lib.js"],
+      "domain":"vkontakte\\.ru|vk\\.com|youtube\\.com|vimeo\\.com|vk\\.me|userapi\\.com",
+      "exclude":"|notifier\\.php|im_frame\\.php|about:blank|i"
+   }      
+]

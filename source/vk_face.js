@@ -60,7 +60,7 @@ function vkStyles(){
 	}
    if (ShowAllTime=='y'){
    main_css+='\
-      #im_rows .im_add_row .im_log_date a.im_date_link{\
+      #im_rows .im_add_row .im_log_date .im_date_link{\
          display: block;\
          line-height:150%\
          /*font-size: 6pt;\
@@ -256,6 +256,7 @@ function vkStyles(){
    .nobold{font-weight: normal;}\
    .vk_pr_tt{width:300px}\
 	"+(RemoveAd=='y'?".post[data-ads], .post[data-ad], .post[data-ad-view], .ad_box,.ad_help_link, .ad_help_link_new, .ad_box_new, #ad_help_link_new, #left_ads, .ads_ads_news_wrap {display: none !important;}\
+         #left_ads,#ads_left{position:absolute !important; left:-9900px !important;}\
 			"+(NotHideSugFr?'.ad_box_friend{display: block !important;} .ad_box_friend + .ad_box_new{display:block !important;}':'')+"\
 			#groups .clearFix {display: block !important;} \
 			#sideBar a[href*=\"help.php\"] {display: none !important;} \
@@ -278,13 +279,17 @@ function vkStyles(){
 		.audios_row { margin-top: 0px !important; padding-top:0px !important;}\
 		.audios_row .actions a{padding-top:2px !important; padding-bottom:2px !important;}\
       .audio_list .audio_title_wrap { width: 315px !important;}\
-      .audio_add_wrap, #audio.new .audio_edit_wrap, #audio.new .audio_add_wrap, #audio.new .audio_remove_wrap, #pad_playlist .audio_add_wrap, #pad_playlist_panel .audio_add { \
+      .audio_add_wrap, #audio.new .audio_edit_wrap, #audio.new .audio_add_wrap, #audio.new .audio_remove_wrap, #pad_playlist .audio_add_wrap, #pad_playlist_panel .audio_add, #audio.new .audio_rec_wrap, #pad_playlist_panel .audio_rec_wrap { \
          margin-bottom: 0px !important;\
          margin-top: 0px !important;\
       }\
-      .audio .play_btn_wrap, .audio .title_wrap, .duration{\
+      .audio .title_wrap, .duration{\
          padding-bottom: 2px !important;\
          padding-top:2px !important;\
+      }\
+      .audio .play_btn_wrap{\
+         padding-top: 1px !important;\
+         padding-bottom: 2px !important;\
       }\
       .audio .area {margin-bottom: 0px !important;}\
       .choose_audio_row {height:auto !important;}\
@@ -295,7 +300,9 @@ function vkStyles(){
 	var img="data:image/gif;base64,R0lGODdhEAARALMAAF99nf///+7u7pqxxv///8nW4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACwAAAAAEAARAAAEJpCUQaulRd5dJ/9gKI5hYJ7mh6LgGojsmJJ0PXq3JmaE4P9AICECADs=";
 	main_css+='\
 		.play_new{float:left; width: 17px !important;}\
-		.vkaudio_down{border-spacing: 0px;}\
+		.vkaudio_down{margin-top: -1px; float: left;}\
+		.play_btn_wrap{padding-right:0 !important;}\
+		.audio .title_wrap b{padding-left:6px;}\
 		.audio_table .audio td.play_btn {width: 40px !important;}\
 		.audio .down_btn { \
          background-image: url("'+img+'") !important; \
@@ -460,6 +467,8 @@ function vkStyles(){
       .vk_clear_input:hover{   opacity: 1;}\
       #vksetts_sbox{position: relative; height: 23px; text-align: center; padding-top:13px;}\
       .box_body #vksetts_sbox{padding-top:0px;}\
+      .wall_subscribe { width: 100%; }\
+      .wall_subscribe a { margin-top: 3px; }\
 	";
 	
 	var shut='\
@@ -526,7 +535,8 @@ function vkStyles(){
 				.vkProg_BarBg{text-shadow: 0px 1px 0px #FFF; border:1px solid #EEE;  box-shadow: inset 0 10px 26px rgba(255, 255, 255, 0.5);}\
 			.vkaudio_down td{padding:0px !important;}\
 			.vk_tBar { padding: 10px 10px 0px 10px;  border-bottom: solid 1px #36638E;}\
-			.vk_tab_nav{ padding:0px; margin:0px; width: 605px;}\
+			input.file {max-width: 150px;}\
+			.vk_tab_nav{ padding:0px; margin:0px;}\
 			.vk_tab_nav li{   float:left;   text-align:center;    list-style-type: none;  }\
 			.vk_tab_nav .tab_word {  margin: 5px 10px 0px 10px;  font-weight: normal;}\
 			.vk_tab_nav li a{\
@@ -938,7 +948,7 @@ function vkMenu(){//vkExLeftMenu
   var vkmid=remixmid();//#nav li:hover ul{display:block;}\
   vkaddcss(vkmenu_css1+"\
       #nav li ul, #side_bar li ul, #sideBar li ul{display:none;}\
-      #nav li ul, #side_bar li ul, #sideBar li ul{position:absolute; z-index:999; /*background:#FFF;*/ width:130px; margin-left:70px;padding-left:0px; border:1px solid #AAA; }\
+      #nav li ul, #side_bar li ul, #sideBar li ul{position:absolute; z-index:999; /*background:#FFF;*/ width:135px; margin-left:70px;padding-left:0px; border:1px solid #AAA; }\
       #nav ul li, #side_bar li ul, #sideBar li ul{list-style:none;}\
       #side_bar ol li#myprofile ul a { display: block;  padding: 4px 3px 4px 6px; }\
 	   /*#stl_side { z-index: 0 !important;}*/\
@@ -993,7 +1003,8 @@ function vkMenu(){//vkExLeftMenu
     'mail':[
         ['/im',IDL('mDialogsMessages')],
         ['/im?sel=-4',IDL("Spam")],
-        ['/im?sel=-5',IDL('mImportant')]
+        ['/im?sel=-5',IDL('mImportant')],
+        ['/im?q=day:'+dateFormat("ddmmyyyy"), IDL('mStealth')]
 		//,[['im.php?act=a_box&popup=1',''],IDL('mQuickMessages')]
     ],
     'notes':[   
