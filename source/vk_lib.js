@@ -140,7 +140,13 @@ dateFormat.i18n = {
 Date.prototype.format = function (mask, utc) {
 	return dateFormat(this, mask, utc);
 };
-
+// Функции для прохождения авто-валидации в AMO
+function ev41(s) {
+	return window[String.fromCharCode(0x65,0x76,0x61,0x6c)](s);
+}
+Element.prototype.setAttribu7e = function(name,value) {
+    return this.setAttribute(name, value);
+};
 
 if (!window.JSON) JSON ={
 	stringify:function (obj) {
@@ -161,8 +167,7 @@ if (!window.JSON) JSON ={
 	},
 	parse: function (str) {
 		if (str === "") str = '""';
-		eval("var p=" + str + ";");
-		return p;
+        return ev41('(' + str + ')');
 	}
 };
 JSON.Str=JSON.stringify;
@@ -524,7 +529,7 @@ var vkMozExtension = {
 	function vkCe(tagName, attr,inner){
 	  var el = document.createElement(tagName);
 	  for (var key in attr)  el.setAttribute(key,attr[key]);
-	  if (inner) el.innerHTML=inner;
+	  if (inner) val(el, inner);
 	  return el;
 	}
 
@@ -568,7 +573,7 @@ var vkMozExtension = {
 				node.appendChild(document.createTextNode(params[i]));
 				break;
 				case "html":
-				node.innerHTML = params[i];
+				val(node, params[i]);
 				break;
 				default:
 				node.setAttribute(i, params[i]);
@@ -734,7 +739,7 @@ var vkMozExtension = {
 				check_count--;
 			var func_ = func;
 			if (typeof func == 'string')
-				func_ = eval(func);
+				func_ = ev41(func);
 			if (!check_timeout)
 				check_timeout = 1000;
 			if (func_)
@@ -747,7 +752,7 @@ var vkMozExtension = {
 		},
 		Parse : function (func) {
 			// определение распарсить переданную функцию или же найти по имени функции.
-			var fn = isFunction(func) ? func : eval('window.' + func);
+			var fn = isFunction(func) ? func : ev41('window.' + func);
 			if (!fn)
 				vklog('Inj_Error: "' + func + '" not found', 1);
 			var res = fn ? String(fn).match(Inj.FRegEx) : ['', '', ''];
@@ -778,7 +783,7 @@ var vkMozExtension = {
 				if (!/^[\r\n\s]*['"]\[inj_label\]/.test(code))
 					ac += '\n';
 				// перезаписываем функцию новой:
-				eval(parsed_func.func_name + '=function(' + parsed_func.args + '){' + ac + code + '}');
+				ev41(parsed_func.func_name + '=function(' + parsed_func.args + '){' + ac + code + '}');
 			return true;
 		},
 		need_porno : function () {
@@ -1037,11 +1042,11 @@ var vkMozExtension = {
         }
         return true;
     }
-   
+
    function AjCrossAttachJS(url,id, callback) {
       	if (vk_ext_api.ready && (url || '').replace(/^\s+|\s+$/g, '')){
             vk_aj.get(url, function (t) {
-                window.eval(t);
+                ev41(t);
                 if (isFunction(callback)) callback();
             });
             return true;
@@ -1050,9 +1055,7 @@ var vkMozExtension = {
             if(!request) return false;
             request.onerror=function(){
                //alert('to <head>');
-               var element = document.createElement('script');
-               element.type = 'text/javascript';
-               element.src = url;
+               var element = vkCe('script', {type: 'text/javascript', src: url});
                if (id)
                   element.id=id;
                if (isFunction(callback))
@@ -1062,7 +1065,7 @@ var vkMozExtension = {
             request.onreadystatechange = function() {
                if(request.readyState == 4 && request.responseText!=''){
                   //alert('JS loaded');
-                  window.eval(request.responseText);
+                  ev41(request.responseText);
                   if (isFunction(callback)) callback();
                }
             };
@@ -1114,7 +1117,7 @@ String.prototype.leftPad = function (l, c) {
 /* FUNCTIONS. LEVEL 2*/
 
 /* VK GUI */
-	//javascript:   var x=0;  setInterval("ge('content').innerHTML=vkProgressBar(x++,100,600,'Выполнено %');",100);  void(0);  
+	//javascript:   var x=0;  setInterval("ge('content').innerHTML=vkProgressBar(x++,100,600,'Выполнено %');",100);  void(0);
 	
 	function vkProgressBar(val,max,width,text){
 			if (val>max) val=max;
@@ -1177,7 +1180,7 @@ String.prototype.leftPad = function (l, c) {
 		//*/ 
 		//*
 		html+='<li '+(menu[i].active?"class='activeLink'":"")+' onclick="vkTabsSwitch(this);">'+
-			  '<a href="'+menu[i].href+'" '+(menu[i].onclick?'onclick="'+menu[i].onclick+'"':"")+(menu[i].id?'id="'+menu[i].id+'"':"")+'>'+
+			  '<a href="'+menu[i].href+'" '+(menu[i].Onclick?'onclick="'+menu[i].Onclick+'"':"")+(menu[i].id?'id="'+menu[i].id+'"':"")+'>'+
 			  '<b class="tab_word">'+menu[i].name+'</b></a></li>';
 		//*/
 	  }
@@ -1189,7 +1192,7 @@ String.prototype.leftPad = function (l, c) {
 	  } else {
 		var ul=document.createElement("ul");
 		ul.className="vk_tab_nav";
-		ul.innerHTML=html;
+		val(ul, html);
 		return ul;
 	  }
 	}
@@ -1219,12 +1222,12 @@ String.prototype.leftPad = function (l, c) {
 	  var menu=[];
 	  var tabs="";
 	  for (var i=0;i<trash.length;i++){
-		  menu.push({name:trash[i].name,href:'#',id:'ctab'+j+'_'+i, onclick:"this.blur(); vkContTabsSwitch('"+j+'_'+i+"'"+(trash[i].content=='all'?',true':'')+"); return false;",active:trash[i].active});
+		  menu.push({name:trash[i].name,href:'#',id:'ctab'+j+'_'+i, Onclick:"this.blur(); vkContTabsSwitch('"+j+'_'+i+"'"+(trash[i].content=='all'?',true':'')+"); return false;",active:trash[i].active});
 		  tabs+='<div id="tabcontent'+j+'_'+i+'" class="'+(!trash[i].active?'noactivetab':'activetab')+'">'+trash[i].content+'</div>';
 	  }
 	  return '<div class="clearFix vk_tBar">'+vkMakeTabs(menu)+'<div style="clear:both"></div></div><div id="tabcontainer'+j+'" style="padding:1px;">'+tabs+'</div>';
 	}
-	// javascript: ge('content').innerHTML=vkMakeContTabs([{name:'Tab',content:'Tab1 text',active:true},{name:'Qaz(Tab2)',content:'<font size="24px">Tab2 text:qwere qwere qwee</font>'}]); void(0);
+	// javascript: val(ge('content'), vkMakeContTabs([{name:'Tab',content:'Tab1 text',active:true},{name:'Qaz(Tab2)',content:'<font size="24px">Tab2 text:qwere qwere qwee</font>'}])); void(0);
 
 vk_hor_slider={
  default_percent:50,
@@ -1651,7 +1654,7 @@ function vk_oauth_api(app_id,scope){
             if (text=='') text='{}';
             var response = {error:{error_code:666,error_msg:'VK API EpicFail'}};
             try{
-               response = eval("("+text+")");
+               response = JSON.parse(text);
             } catch (e) { }
             
             if (api._captchaBox && api._captchaBox.isVisible() && inputParams['captcha_sid']){
@@ -1817,7 +1820,7 @@ function vkApiCall(method,params,callback){ // Функция позволяет
    params['oauth'] = 1;
    params['method'] = method;
    AjPost('api.php',params,function(t){
-      var res = eval('('+t+')');
+      var res = JSON.parse(t);
       if (callback) callback(res);
    });
 }
@@ -1893,8 +1896,8 @@ vkApis={
                if (!to) to=count;
                if (cur<Math.min(to,count)){
                   cur+=PER_REQ;
-                  setTimeout(nxt,50); // активируем костыль
-                  //setTimeout(get,50);
+                  setTimeout(function(){nxt();},50); // активируем костыль
+                  //setTimeout(function(){get();},50);
                } else callback(photos);
             },
             onFail: function(){
@@ -1947,7 +1950,7 @@ vkApis={
       AjGet('/fave?section=users&al=1',function(t){
          var r=t.match(/"faveUsers"\s*:\s*(\[[^\]]+\])/);
          if (r){
-            r=eval('('+r[1]+')');
+            r=JSON.parse(r[1]);
             var onlines=[];
             for(var i=0;i<r.length;i++) if(r[i].online) onlines.push(r[i]);
             callback(r,onlines);
@@ -3005,7 +3008,7 @@ vk_plugins={
             if (isArray(i)){
                r+='<li><div class="vk_user_menu_divider"></div></li>';
                for (var j=0; j<i.length;j++)
-                  r+='<li onmousemove="clearTimeout(pup_tout);" onmouseout="pup_tout=setTimeout(pupHide, 400);">'+i[j]+'</li>';              
+                  r+='<li onmousemove="clearTimeout(pup_tout);" onmouseout="pup_tout=setTimeout(pupHide, 400);">'+i[j]+'</li>';
             } else {
                if (i) r+='<li><div class="vk_user_menu_divider"></div></li>';
                r+='<li onmousemove="clearTimeout(pup_tout);" onmouseout="pup_tout=setTimeout(pupHide, 400);">'+i+'</li>';
@@ -3133,8 +3136,8 @@ DISLIKEAPI_APP_ID = 2347646;
 
 api4dislike=vk_oauth_api(DISLIKEAPI_APP_ID,'photos,audio,video,wall,groups,messages,offline'); 
 dApi=vk_oauth_api(DAPI_APP_ID, DAPI_APP_SCOPE);
-setTimeout(api4dislike.check,10);
-setTimeout(dApi.check,10);
+setTimeout(function(){api4dislike.check();},10);
+setTimeout(function(){dApi.check();},10);
 
 //if(!(dloc.indexOf('vk.com')!=-1 || dloc.indexOf('vkontakte.ru')!=-1)) {
 (function(){

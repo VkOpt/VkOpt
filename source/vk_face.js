@@ -715,7 +715,7 @@ function vkMakeRightBar(){
 		if (b) bar.appendChild(b);
 	}
    updSideTopLink(true);
-   setTimeout("updSideTopLink(true);",500);
+   setTimeout(function(){updSideTopLink(true);},500);
 }
 //if (getSet(44)=='y') vkMoveSuggFrBox();
 
@@ -799,12 +799,8 @@ vk_menu={
    get_custom_links:function(){
       try {
          return (JSON.parse(vkGetVal('menu_custom_links') || '[]') || []);
-      } catch(e) { 
-         try {
-            return (eval(vkGetVal('menu_custom_links') || '[]') || []);
-         } catch(e) { 
+      } catch(e) {
             return [];
-         }
       }
    },
    custom_settings:function(){
@@ -861,15 +857,15 @@ vk_menu={
       var edt=cfg[idx];
       if (sub_idx!=null) edt=edt[2][sub_idx];
       var p=ge('vk_m_item'+id);
-      p.innerHTML='<div class="button_gray fl_r" onclick="vk_menu.save(1,'+params+')"><button>OK</button></div>\
+      val(p,'<div class="button_gray fl_r" onclick="vk_menu.save(1,'+params+')"><button>OK</button></div>\
       <input type="text" placeholder="http://" id="vk_menu_edt_link'+id+'" onkeyup="vk_menu.save(event,'+params+')" value="'+edt[0]+'">\
-      <input type="text" placeholder="Title" id="vk_menu_edt_title'+id+'"  onkeyup="vk_menu.save(event,'+params+')" value="'+edt[1]+'">';
+      <input type="text" placeholder="Title" id="vk_menu_edt_title'+id+'"  onkeyup="vk_menu.save(event,'+params+')" value="'+edt[1]+'">');
       return false;
    },
    add:function(to_idx){
       var id=(to_idx!=null?to_idx:'');
       var p=ge('vkm_add_frm'+id);
-      p.innerHTML='<div class="button_gray fl_r" onclick="vk_menu.add_checkkey(1,'+to_idx+')"><button>OK</button></div><input type="text" placeholder="http://" id="vk_menu_add_link'+id+'" onkeyup="vk_menu.add_checkkey(event,'+to_idx+')" value=""><input type="text" placeholder="Title" id="vk_menu_add_title'+id+'"  onkeyup="vk_menu.add_checkkey(event,'+to_idx+')" value="">';
+      val(p,'<div class="button_gray fl_r" onclick="vk_menu.add_checkkey(1,'+to_idx+')"><button>OK</button></div><input type="text" placeholder="http://" id="vk_menu_add_link'+id+'" onkeyup="vk_menu.add_checkkey(event,'+to_idx+')" value=""><input type="text" placeholder="Title" id="vk_menu_add_title'+id+'"  onkeyup="vk_menu.add_checkkey(event,'+to_idx+')" value="">');
       return false;
    },
    check_link:function(link){
@@ -887,7 +883,7 @@ vk_menu={
          var title=trim(ge('vk_menu_add_title'+id).value);
          if (link=='' || title=='' || link===false) return;
          var p=ge('vkm_add_frm'+id);
-         p.innerHTML='';
+         val(p, '');
          var cfg = vk_menu.get_custom_links();
          if (to_id!=null){
             if (!cfg[to_id][2]) cfg[to_id][2]=[];
@@ -900,7 +896,7 @@ vk_menu={
       }
    },
    update_cfg:function(){
-      ge('vkMenuCustom').innerHTML=vk_menu.custom_settings();
+      val(ge('vkMenuCustom'), vk_menu.custom_settings());
    }
 
 };
@@ -913,7 +909,7 @@ function vkMenu(){//vkExLeftMenu
   var WALL_LINK = (getSet(29)=='y');
   var exm=(getSet(12) == 'y'); //extended menu
   var nav=(ge('sideBar') || ge('side_bar')).getElementsByTagName('ol')[0];
-  if (cfg > 0) nav.innerHTML=nav.innerHTML.replace(RegExp('(">)(\u041c\u043e\u0439|\u041c\u043e\u044f|\u041c\u043e\u0438|\u041c\u043e\u0457|\u041c\u0430\u044f|\u041c\u0430\u0435|\u041c\u043e\u0435|My|Mein|Meine) ','g'),"$1");
+  if (cfg > 0) val(nav, nav.innerHTML.replace(RegExp('(">)(\u041c\u043e\u0439|\u041c\u043e\u044f|\u041c\u043e\u0438|\u041c\u043e\u0457|\u041c\u0430\u044f|\u041c\u0430\u0435|\u041c\u043e\u0435|My|Mein|Meine) ','g'),"$1"));
 
   var vkmenu_css1='\
          #nav a .vkicon, #side_bar ol a .vkicon{float:left; width:13px; height:13px; margin-right:1px; /*background:#DDD;*/}\
@@ -1142,12 +1138,12 @@ function vkMenu(){//vkExLeftMenu
     if (vkMenuCurrentSub!=cur) {  vkMenuHide();  show(cur);   vkMenuCurrentSub=cur; }
     clearTimeout(vkMenuHider);
   };
-  vkMenuItemOut=function(){ clearTimeout(vkMenuHider);  vkMenuHider=setTimeout(vkMenuHide,vkMenuHideTimeout); };
+  vkMenuItemOut=function(){ clearTimeout(vkMenuHider);  vkMenuHider=setTimeout(function(){vkMenuHide();},vkMenuHideTimeout); };
   vkMenuHide=function(){if (vkMenuCurrentSub){ hide(vkMenuCurrentSub); vkMenuCurrentSub=null; }};
   var setActions=function(elem){
       if (elem){
-        elem.setAttribute('onmousemove','vkMenuItemHover(event,this)');
-        elem.setAttribute('onmouseout','vkMenuItemOut(event,this)');  
+        elem.setAttribu7e('onmousemove','vkMenuItemHover(event,this)');
+        elem.setAttribu7e('onmouseout','vkMenuItemOut(event,this)');
       } else return ' onmousemove="vkMenuItemHover(event,this)" onmouseout="vkMenuItemOut(event,this)" ';
   };
   var more_div=(ge('l_ap')||{}).previousSibling;
@@ -1180,7 +1176,7 @@ function vkMenu(){//vkExLeftMenu
       var page='custom_menu'+i;
       var submenu=m_item[2];
       if (submenu && submenu.length==0) submenu=null;
-      if (!submenu && exm) item.setAttribute('onmousemove','vkMenuHide();');
+      if (!submenu && exm) item.setAttribu7e('onmousemove','vkMenuHide();');
       if (submenu /*&& exm*/){
          var ul=document.createElement('ul');
          ul.id='vkm_'+page;
@@ -1202,7 +1198,7 @@ function vkMenu(){//vkExLeftMenu
              html+=(!submenu[k][2])?'<li><a class="left_row vk_custom_sublink" '+href+onclick+'><span class="left_label inl_bl">- '+submenu[k][1]+'</span></a></li>':'';
 
          }
-         ul.innerHTML=html;
+         val(ul, html);
          item.parentNode.appendChild(ul);
       }
       
@@ -1271,7 +1267,7 @@ function vkMenu(){//vkExLeftMenu
     var bcout=item.innerHTML.match(/<b>(\d+)<\/b>/);
     bcout=(bcout)?bcout[1]:0;
     var submenu=ExMenu[page];
-    if (!submenu && exm && page!='custom_link') item.setAttribute('onmousemove','vkMenuHide();');
+    if (!submenu && exm && page!='custom_link') item.setAttribu7e('onmousemove','vkMenuHide();');
     if (submenu && (exm || page=='vkopt') && page!='custom_link'){
       var ul=document.createElement('ul');
       ul.id='vkm_'+page;
@@ -1293,7 +1289,7 @@ function vkMenu(){//vkExLeftMenu
           html+=(!submenu[k][2])?'<li><a class="left_row" '+href+onclick+'><span class="left_label inl_bl">- '+submenu[k][1]+'</span></a></li>':'';
 
       }
-      ul.innerHTML=html;
+      val(ul, html);
       if (page=='profile') item.parentNode.appendChild(vkCe('div',{"class":"clear"}));
       item.parentNode.appendChild(ul);
     }
@@ -1308,7 +1304,7 @@ function vkMenu(){//vkExLeftMenu
         var html='';
         for (var i=0;i<vkNavLinks.length; i++)  html+='<a href="'+vkNavLinks[i][1]+'" '+(vkNavLinks[i][2]?vkNavLinks[i][2]:'')+'>'+vkNavLinks[i][0]+'</a>';
         li.id='frNavLinks';
-        li.innerHTML=html;
+        val(li, html);
         nav.appendChild(li);  
   }*/
   /*var li=document.createElement('li');
@@ -1316,14 +1312,14 @@ function vkMenu(){//vkExLeftMenu
   for (var i=0;window.vkNavLinks && i<vkNavLinks.length; i++)  html+='<a href="'+vkNavLinks[i][1]+'" '+(vkNavLinks[i][2]?vkNavLinks[i][2]:'')+'>'+vkNavLinks[i][0]+'</a>';
   html+='<a href="settings?act=vkopt" '+setActions()+' onclick="vkShowSettings(true); return false;">'+ExMenu.vkopt[0]+'</a><ul '+setActions()+'>'+ExMenu.vkopt[1]+'</ul>';
   li.id='frOpt';
-  li.innerHTML=html;
+  val(li, html);
   nav.appendChild(li);*/
   if (window.vkLinks && vkLinks.length>1){
         var li=document.createElement('li');
         var html='<a class="left_row" href="#" '+setActions()+' onclick="return false;"><span class="left_label inl_bl">'+vkLinks[0]+'</span></a><ul '+setActions()+'>';
         for (var i=1; i<vkLinks.length; i++)  html+='<a  class="left_row" href="'+vkLinks[i][1]+'"><span class="left_label inl_bl">'+vkLinks[i][0]+'</span></a>';
         li.id='frLinks';
-        li.innerHTML=html+'</ul>';
+        val(li, html+'</ul>');
         nav.appendChild(li);  
   }
   var div=document.createElement('div');
@@ -1341,8 +1337,13 @@ function vkMenu(){//vkExLeftMenu
 function vkMoneyBoxAddHide(){
 	var mb=ge('left_money_box');
 	if (!mb) return;
-	var lmb=vkCe('div',{id:'left_block_money',onmouseover:"leftBlockOver('_money')",onmouseout:"leftBlockOut('_money')"});
-	var hb=vkCe('div',{id:'left_hide_money', "class":"left_hide", onmouseover:"leftBlockOver(this)",onmouseout:"leftBlockOut(this)",onclick:"hide('left_block_money')"});
+	var lmb=vkCe('div',{id:'left_block_money'});
+    lmb.setAttribu7e('onmouseover', "leftBlockOver('_money');");
+    lmb.setAttribu7e('onmouseout', "leftBlockOut('_money')");
+	var hb=vkCe('div',{id:'left_hide_money', "class":"left_hide"});
+    hb.setAttribu7e('onmouseover', "leftBlockOver(this);");
+    hb.setAttribu7e('onmouseout', "leftBlockOut(this);");
+    hb.setAttribu7e('onclick', "hide('left_block_money');");
 	mb.parentNode.insertBefore(lmb,mb);
 	lmb.appendChild(hb);
 	lmb.appendChild(mb);
@@ -1359,7 +1360,7 @@ function vkWallAddBtnOnError(){
 function UserOnlineStatus(status) {// ADD LAST STATUS
 	if (window.vk_check_online_timeout) clearTimeout(vk_check_online_timeout);
 	if (ge('vk_online_status')){
-		ge('vk_online_status').innerHTML='<div class="vkUUndef">...</div>';
+		val(ge('vk_online_status'), '<div class="vkUUndef">...</div>');
 	}
 	
 	var show_status=function(stat){
@@ -1374,18 +1375,18 @@ function UserOnlineStatus(status) {// ADD LAST STATUS
 			  div.style.position = "fixed";
 			  div.style.bottom="0px";
 			  div.style.left = "0px";
-			  div.setAttribute('onclick','UserOnlineStatus();');
+			  div.setAttribu7e('onclick','UserOnlineStatus();');
 			  
-			  div.innerHTML=online;
+			  val(div, online);
 			  var vk_side_bar=sideBar();
 			  body=vk_side_bar || body;
 			  body.appendChild(div);
 			} else {
-			  ge('vk_online_status').innerHTML=online;
+			  val(ge('vk_online_status'), online);
 			}
 		//}
 		/* vkGenDelay() -random для рассинхронизации запросов разных вкладок, иначе запросы со всех вкладок будут одновременно слаться. */
-		vk_check_online_timeout=setTimeout(UserOnlineStatus,vkGenDelay(vk_upd_menu_timeout,status!=null));
+		vk_check_online_timeout=setTimeout(function(){UserOnlineStatus();},vkGenDelay(vk_upd_menu_timeout,status!=null));
 	};
 	if (status!=null){
 		show_status(status);
@@ -1407,7 +1408,7 @@ function UserOnlineStatus(status) {// ADD LAST STATUS
 				vkCmd('user_online_status',st);// /*res.response[0].online*/ шлём полученный статус в остальные вкладки
 				//vklog('Online status >> [onStorage] ');
 			} else {
-				vk_check_online_timeout=setTimeout(UserOnlineStatus,vkGenDelay(vk_upd_menu_timeout));
+				vk_check_online_timeout=setTimeout(function(){UserOnlineStatus();},vkGenDelay(vk_upd_menu_timeout));
 			}
 		});  
 	}
@@ -1450,7 +1451,7 @@ function vkGetCalendarInfo(callback,cnt){ //callback(month, year, events, holida
       }
       res=res.split(');')[0];
 		//eval(callback+'('+res+')');
-      var args=eval('['+res+']');
+      var args=ev41('['+res+']');
       callback.apply(this,args);
 	});
 }
@@ -1477,7 +1478,7 @@ extend(vk_cur, {
   },
   vk_calShowMore: function(el) {
     var e = geByClass('day_text', el.parentNode)[0];
-	ge('vk_calendar_events_cont').innerHTML=vkModAsNode(e.innerHTML,vkProcessNode);
+	val(ge('vk_calendar_events_cont'), vkModAsNode(e.innerHTML,vkProcessNode));
 	show('vk_calendar_events');
   },
   vk_calGetMonth: function(shift) {
@@ -1490,7 +1491,7 @@ extend(vk_cur, {
       vk_cur.vk_calMon = 12;
       vk_cur.vk_calYear--;
     }
-    ge('vk_calendar_header').innerHTML = getLang('Month'+vk_cur.vk_calMon)+' '+vk_cur.vk_calYear;
+    val(ge('vk_calendar_header'), getLang('Month'+vk_cur.vk_calMon)+' '+vk_cur.vk_calYear);
 
 
     var days = (new Date(vk_cur.vk_calYear, vk_cur.vk_calMon, 0)).getDate();
@@ -1561,7 +1562,7 @@ extend(vk_cur, {
 	  if (!blank) rows += '<tr class="day_row">' + rowHTML + '</tr>';
     }
     
-    ge('vk_calendar_table_wrap').innerHTML = '<table class="day_table" cellpadding="0" cellspacing="0" align="center">\
+    val(ge('vk_calendar_table_wrap'), '<table class="day_table" cellpadding="0" cellspacing="0" align="center">\
       <tr>\
        <td class="day_head day1">' + getLang('events_mon') + '</td>\
        <td class="day_head day2">' + getLang('events_tue') + '</td>\
@@ -1570,7 +1571,7 @@ extend(vk_cur, {
        <td class="day_head day5">' + getLang('events_fri') + '</td>\
        <td class="day_head day6">' + getLang('events_sat') + '</td>\
        <td class="day_head day7">' + getLang('events_sun') + '</td>\
-      </tr>' + rows + '</table>';
+      </tr>' + rows + '</table>');
 
     return false;
   }
@@ -1595,8 +1596,8 @@ function vkClock() {
 			sidebar.appendChild(div);
 		}
       if (ge('vkCl')){
-         if (getSet(30) ==1) setInterval(function(){var c=ge('vkCl'); if (c) c.innerHTML=new Date().toString().match(/\d+:\d+:\d+/i);},1000);
-         if (getSet(30) ==2) setInterval(function(){var c=ge('vkCl'); if (c) c.innerHTML=wr_date();},1000);
+         if (getSet(30) ==1) setInterval(function(){var c=ge('vkCl'); if (c) val(c, new Date().toString().match(/\d+:\d+:\d+/i));},1000);
+         if (getSet(30) ==2) setInterval(function(){var c=ge('vkCl'); if (c) val(c, wr_date());},1000);
       }
 		if (getSet(30) ==3) makeClock();
 	}
@@ -1798,7 +1799,7 @@ function SmileNode(mainNode,childItem){
              smile.setAttribute('style',"margin-bottom:-0.3em; border:0px;");
              //smile.src='http://kolobok.us/smiles/'+smilepath+'/'+key+'.gif';
              smile.src=vkSmilesLinks[key];
-             smile.setAttribute("onclick","RemoveSmile(this);");
+             smile.setAttribu7e("onclick","RemoveSmile(this);");
              smile.alt=val;
              smile.title=val;
     

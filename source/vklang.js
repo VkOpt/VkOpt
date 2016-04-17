@@ -198,7 +198,7 @@ vk_lang_ru={
    "Messages": "\u0421\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u044f",
    "Others": "\u041e\u0441\u0442\u0430\u043b\u044c\u043d\u043e\u0435",
    "delme": "\u0423\u0434\u0430\u043b\u0438\u0442\u044c \u043c\u0435\u043d\u044f",
-   "on": "\u0412\u043a\u043b",
+   "On": "\u0412\u043a\u043b",
    "of": "\u0412\u044b\u043a\u043b",
    "au": "\u0410\u0432\u0442.",
    "ru": "\u0412\u0440\u0443\u0447.",
@@ -989,7 +989,7 @@ vk_lang_en={//by Hzy
 'Others':'Others', 
 //
 'delme':'Delete me',
-'on':'On',
+'On':'On',
 'of':'Off',
 'au':'Auto',
 'ru':'Manual',
@@ -1889,7 +1889,7 @@ vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
 'Others':'\u0406\u043d\u0448\u0435', 
 //
 'delme':'\u0412\u0438\u0434\u0430\u043b\u0438\u0442\u0438 \u043c\u0435\u043d\u0435',
-'on':'\u0412\u043a\u043b',
+'On':'\u0412\u043a\u043b',
 'of':'\u0412\u0438\u043a\u043b',
 'au':'\u0410\u0432\u0442.',
 'ru':'\u0412\u0440\u0443\u0447.',
@@ -2784,7 +2784,7 @@ vk_lang_by={ //by Gavr id8610702
 'Others':'\u0410\u0441\u0442\u0430\u0442\u043d\u044f\u0435', 
 //
 'delme':'\u0412\u044b\u0434\u0430\u043bi\u0446\u044c \u043c\u044f\u043d\u0435',
-'on':'\u0423\u043a\u043b',
+'On':'\u0423\u043a\u043b',
 'of':'\u0412\u044b\u043a\u043b',
 'au':'\u0410\u045e\u0442.',
 'ru':'\u0423\u0440\u0443\u0447.',
@@ -3478,7 +3478,7 @@ vk_lang_it={ //by Maybkot /id5027410 (mayboroda.com.ua)
 'Others':'Resto', 
 //
 'delme':'Elimina me',
-'on':'Acceso',
+'On':'Acceso',
 'of':'Spento',
 'au':'Aut.',
 'ru':'Manuale.',
@@ -4068,7 +4068,7 @@ vk_lang_tat = {//by eurotat /id15202178
     Messages: "\u0425\u04d9\u0431\u04d9\u0440\u043b\u04d9\u0440",
     Others: "\u041a\u0430\u043b\u0433\u0430\u043d\u043d\u0430\u0440\u044b",
     delme: "\u041c\u0438\u043d\u0435 \u0431\u0435\u0442\u0435\u0440\u0435\u0440\u0433\u04d9",
-    on: "\u041a\u0430\u0431\u044b\u0437\u044b\u0440\u0433\u0430",
+    On: "\u041a\u0430\u0431\u044b\u0437\u044b\u0440\u0433\u0430",
     of: "\u0421\u04af\u043d\u0434\u0435\u0440\u0435\u0440\u0433\u04d9",
     au: "\u0410\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u043a",
     ru: "\u041a\u0443\u043b\u043b\u0430\u043f.",

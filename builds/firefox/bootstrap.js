@@ -30,7 +30,13 @@ const vc = Cc["@mozilla.org/xpcom/version-comparator;1"].
 const REASON = [ 'unknown', 'startup', 'shutdown', 'enable', 'disable',
                  'install', 'uninstall', 'upgrade', 'downgrade' ];
 
-const bind = Function.call.bind(Function.bind);
+//const bind = Function.call.bind(Function.bind);
+
+function bind (fn, ctx) {
+    return function () {
+        fn.call(ctx);
+    };
+}
 
 let loader = null;
 let unload = null;
@@ -256,7 +262,7 @@ function startup(data, reasonCode) {
     require('sdk/addon/runner').startup(reason, {
       loader: loader,
       main: main,
-      prefsURI: rootURI + 'defaults/preferences/prefs.js'
+      prefsURI: rootURI + 'defaults/preferences/addon_prefs.js'
     });
   } catch (error) {
     dump('Bootstrap error: ' +
