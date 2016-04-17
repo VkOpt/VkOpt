@@ -1028,8 +1028,9 @@ ext_api={
 ex_loader.init();
 ext_api.utils.init_ls();
 */
-ex_loader.init.apply(this);
 ext_api.utils.init_ls.apply(this);
+ex_loader.init.apply(this);
+
 
 if (browser.chrome && !(window.external && window.external.mxGetRuntime))
    ext_api.utils.chrome_init()
