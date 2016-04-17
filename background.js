@@ -1,12 +1,53 @@
 (function(){
-if (typeof console == 'undefined' || !(console || {}).log || !(console || {}).info)
-   var console = {
+
+// <filefox_jetpack_init>
+if (typeof require != 'undefined' && typeof module != 'undefined'  && module.id == "vkopt/background"){ 
+      this.mozilla_jetpack = true;
+      this.window = false;
+      this.navigator = false;
+      
+      this.Chrome  = require("chrome");
+      this.Promise = require("./promise").Promise;
+      this.pageMod = require("sdk/page-mod");
+      this.self = require("sdk/self");
+      this.XMLHttpRequest = require("sdk/net/xhr").XMLHttpRequest;
+      
+      this.Cc=Chrome.Cc;
+      this.Ci=Chrome.Ci;
+      this.Cu=Chrome.Cu;
+      this.scope = {};
+     
+      Cu.import('resource://gre/modules/devtools/Console.jsm', scope); // console import for Firefox Jetpack
+      Cu.import('resource://gre/modules/Timer.jsm', scope);
+      Cu.import("resource://gre/modules/Downloads.jsm", scope);
+      Cu.import("resource://gre/modules/Task.jsm", scope);
+      
+      
+      this.console = scope.console;
+      this.setTimeout = scope.setTimeout; 
+      this.clearTimeout = scope.clearTimeout; 
+      this.setInterval = scope.setInterval; 
+      this.clearInterval = scope.clearInterval;
+      this.Task = scope.Task;
+      this.Downloads = scope.Downloads;
+
+      console.log('vkopt jetpack inited',!!setTimeout);
+}
+// </filefox_jetpack_init>
+
+if (typeof console == 'undefined' || !(console || {}).log || !(console || {}).info){
+   this.console = {
+      dummy: true,
       log:function(){},
       info:function(){},
       error:function(){}
    };
-   
-var ex_loader = {
+}
+
+  
+var ex_loader, ext_api;
+    
+ex_loader = {
    type:'internal', // internal|beta|online
    base_path: 'http://vkopt.net/upd/',
    config_url:'http://vkopt.net/upd/upd/config.json',
@@ -59,9 +100,10 @@ var ex_loader = {
    moz_strorage_id:"http://vkopt.loader.storage",
    browsers:{
       mozilla:(function(){try{return Components.interfaces.nsIObserverService!=null} catch(e){return false} })(),
-      opera: window.opera && opera.extension,
-      chrome: window.chrome && chrome.extension,
-      safari: window.safari && safari.extension,
+      mozilla_jetpack: (typeof require != 'undefined' && typeof module != 'undefined'  && module.id == "vkopt/background"),
+      opera:  window && window.opera && opera.extension,
+      chrome: window && window.chrome && chrome.extension,
+      safari: window && window.safari && safari.extension,
       maxthon: (function(){try{return window.external.mxGetRuntime!=null} catch(e){return false} })() //without try{}catch it fail script on Firefox
    },
    get_script_path:function(filename){
@@ -73,11 +115,8 @@ var ex_loader = {
             if (b.opera) spath='scripts/'+filename;
             else if (b.chrome) spath=chrome.extension.getURL('scripts/'+filename);
             else if (b.safari) spath=safari.extension.baseURI+'scripts/'+filename;
-            else if (b.mozilla)
-                if (!Components.classes) // Firefox Jetpack
-                    spath = 'resource://vkopt-at-vkopt-dot-net/vkopt/data/scripts/' + filename;
-                else
-                    spath = 'resource://vkopt/' + filename;
+            //else if (b.mozilla_jetpack) spath = 'resource://vkopt-at-vkopt-dot-net/vkopt/data/scripts/' + filename;
+            else if (b.mozilla_jetpack || b.mozilla) spath = 'resource://vkopt/' + filename;
             break;
          case 'beta':
             spath= (ex_loader.beta_path.match(/^https?:\/\//)?'':ex_loader.base_path)+ex_loader.beta_path+filename;
@@ -97,6 +136,10 @@ var ex_loader = {
    init:function(){
       var b = ex_loader.browsers;   
       
+      if (b.mozilla_jetpack){
+         console.log('vkopt init, is mozilla: ',b.mozilla,', is mozilla_jetpack:',b.mozilla_jetpack);
+      }
+      
       if (ex_loader.type=='internal' && b.maxthon){         // MAXTHON
          ex_loader.type='online';        // Maxthon 4 doesn't support inject scripts from internal resources
       }
@@ -112,12 +155,12 @@ var ex_loader = {
            var data = event.data;
            if (data.act=='get_scripts'){
                ex_loader.get_scripts(data.url,function(files,api_allowed){
-                  event.source.postMessage({files:files, api_enabled:api_allowed,key:data.key});
+                  event.source.postMessage({files:files, api_enabled:api_allowed, __key:data.__key});
                },data.in_frame);           
            }
            
             var SendResponse=function(msg){
-                  msg.key = data.key;
+                  msg.__key = data.__key;
                   msg._req=data._req;
                   event.source.postMessage(msg);
             };
@@ -131,13 +174,13 @@ var ex_loader = {
             if (request.act=='get_scripts' && request.url){
                ex_loader.get_scripts(request.url,function(files,api_allowed){
                   //console.log({url: request.url, inframe: request.in_frame, files:files});
-                  sendResponse({files:files, api_enabled:api_allowed, key:request.key});
+                  sendResponse({files:files, api_enabled:api_allowed, __key:request.__key});
                },request.in_frame);           
                return;
             }
             // FOR API
             var SendResp=function(data){
-               data.key = request.key;
+               data.__key = request.__key;
                data._req= request._req;
                sendResponse(data);
             };
@@ -149,13 +192,13 @@ var ex_loader = {
             // e.message.url - contain url
             if (e.name === "get_scripts"){
                ex_loader.get_scripts(e.message.url,function(files,api_allowed){
-                  e.target.page.dispatchMessage("scripts", {files:files, api_enabled:api_allowed,key:e.message.key});
+                  e.target.page.dispatchMessage("scripts", {files:files, api_enabled:api_allowed, __key:e.message.__key});
                },e.message.in_frame);
                
             }
 
             var SendResponse=function(msg){
-                  msg.key = e.message.key;
+                  msg.__key = e.message.__key;
                   msg._req= e.message._req;
                   e.target.page.dispatchMessage('extension_api',msg);
             };
@@ -168,7 +211,7 @@ var ex_loader = {
             var rt = window.external.mxGetRuntime();            
             rt.listen('get_scripts', function(data){
                ex_loader.get_scripts(data.url,function(files,api_allowed){
-                  rt.post('scripts',{files:files, api_enabled:api_allowed,key:data.key});
+                  rt.post('scripts',{files:files, api_enabled:api_allowed, __key:data.__key});
                },data.in_frame);               
             });
             
@@ -176,7 +219,7 @@ var ex_loader = {
             rt = window.external.mxGetRuntime();
             rt.listen('extension_bg_api', function(data){
                var SendResponse=function(msg){
-                  msg.key = data.key;
+                  msg.__key = data.__key;
                   msg._req= data._req;
                   rt.post('extension_api',msg);
                };
@@ -184,13 +227,43 @@ var ex_loader = {
             });     
             ext_api.ready=true;   
             
+      } else if (b.mozilla_jetpack){                // MOZILLA JETPACK
+         console.log('init pageMod');
+         pageMod.PageMod({
+            include: /.*/i,
+            exclude: /.*notifier\.php|.*im_frame\.php/i,
+            contentScriptFile: [self.data.url("content_script.js")],
+            contentScriptOptions: {qwe:123},
+            contentScriptWhen: "start",
+            onAttach: function (worker) {
+               //worker.port.emit("init", {});
+               console.log('onAttach');
+               worker.port.on("get_scripts", function (data) {
+                  console.log('on get_scripts');
+                  ex_loader.get_scripts(data.url,function(files,api_allowed){
+                     console.log('send get_scripts response');
+                     worker.port.emit("scripts", {files:files, api_enabled:api_allowed, __key:data.__key});
+                  },data.in_frame);
+               }); 
+               
+               worker.port.on('extension_bg_api', function(data){
+                  var SendResponse=function(msg){
+                     msg.__key = data.__key;
+                     msg._req= data._req;
+                     worker.port.emit('extension_api',msg);
+                  };
+                  ext_api.message_handler(data,SendResponse);
+               });     
+               ext_api.ready=true;
+            }
+         });         
       } else if (b.mozilla){                // MOZILLA 
          ex_loader.moz_ldr(function(doc,win){
                var bg={
                   get_scripts:ex_loader.get_scripts,
                   postMessage:function(data,callback){
                      var SendResponse=function(msg){
-                        msg.key = data.key;
+                        msg.__key = data.__key;
                         msg._req= data._req;
                         callback(msg);
                      };
@@ -200,13 +273,16 @@ var ex_loader = {
                vkopt_ldr_init_content_script(win, doc, bg);
          });
       }
-      setInterval(function(){ //Run update checker
+      ex_loader._upd_interval = setInterval(function(){ //Run update checker
          //ex_loader.update_config();
          ex_loader.init_config();      
       },ex_loader.update_time);
    },
+   deinit:function(){
+      clearInterval(_upd_interval);
+   },
    moz_ldr:function(callback){
-       if (!Components.classes) // Firefox Jetpack
+       if (ex_loader.browsers.mozilla_jetpack) // Firefox Jetpack
            callback(document, document.defaultView);
        else {
            var srv = {
@@ -405,55 +481,17 @@ var ex_loader = {
       //return req.status==200?req.responseText:null;
    },
    get:function(key){
-      if (window.navigator.userAgent.match('Mozilla')&& typeof Components !="undefined"  && typeof Components.classes !="undefined"){
-         var url = ex_loader.moz_strorage_id;
-         var ios = Components.classes["@mozilla.org/network/io-service;1"]
-                   .getService(Components.interfaces.nsIIOService);
-         var ssm = Components.classes["@mozilla.org/scriptsecuritymanager;1"]
-                   .getService(Components.interfaces.nsIScriptSecurityManager);
-         var dsm = Components.classes["@mozilla.org/dom/storagemanager;1"]
-                   .getService(Components.interfaces.nsIDOMStorageManager);
-         var uri = ios.newURI(url, "", null);
-         var principal = ssm.getCodebasePrincipal(uri);
-         var storage = dsm.getLocalStorageForPrincipal(principal, "");
-         
-         return storage.getItem(key);
+      try{
+         return ext_api.utils.ls.getItem(key);
+      } catch(e){
+         console.error('ls.getItem error key:"'+key+'" ', e);
       }
-      return localStorage[key];
    },
    set:function(key,value){
-      if (window.navigator.userAgent.match('Mozilla')  && typeof Components !="undefined" && typeof Components.classes !="undefined"){
-         var url = ex_loader.moz_strorage_id;
-         var ios = Components.classes["@mozilla.org/network/io-service;1"]
-                   .getService(Components.interfaces.nsIIOService);
-         var ssm = Components.classes["@mozilla.org/scriptsecuritymanager;1"]
-                   .getService(Components.interfaces.nsIScriptSecurityManager);
-         var dsm = Components.classes["@mozilla.org/dom/storagemanager;1"]
-                   .getService(Components.interfaces.nsIDOMStorageManager);
-         var uri = ios.newURI(url, "", null);
-         var principal = ssm.getCodebasePrincipal(uri);
-         var storage = dsm.getLocalStorageForPrincipal(principal, "");
-         
-         storage.setItem(key, value);           
-      } else
-         localStorage[key]=value;
+      ext_api.utils.ls.setItem(key, value);
    },
    clear:function(){
-      if (window.navigator.userAgent.match('Mozilla')  && typeof Components !="undefined" && typeof Components.classes !="undefined"){
-         var url = ex_loader.moz_strorage_id;
-         var ios = Components.classes["@mozilla.org/network/io-service;1"]
-                   .getService(Components.interfaces.nsIIOService);
-         var ssm = Components.classes["@mozilla.org/scriptsecuritymanager;1"]
-                   .getService(Components.interfaces.nsIScriptSecurityManager);
-         var dsm = Components.classes["@mozilla.org/dom/storagemanager;1"]
-                   .getService(Components.interfaces.nsIDOMStorageManager);
-         var uri = ios.newURI(url, "", null);
-         var principal = ssm.getCodebasePrincipal(uri);
-         var storage = dsm.getLocalStorageForPrincipal(principal, "");
-         
-         storage.clear();
-      } else
-         localStorage.clear();    
+      ext_api.utils.ls.clear();    
    },
    update_script:function(name,callback){
       ex_loader.load(name+'?rand='+Math.random(),function(script){
@@ -504,7 +542,7 @@ var ex_loader = {
    }
 };
 
-var _ua = navigator.userAgent.toLowerCase();
+var _ua = navigator ? navigator.userAgent.toLowerCase() : '';
 var browser = {
   version: (_ua.match( /.+(?:me|ox|on|rv|it|era|opr|ie)[\/: ]([\d.]+)/ ) || [0,'0'])[1],
   opera: (/opera/i.test(_ua) || /opr/i.test(_ua)),
@@ -534,6 +572,7 @@ var browser = {
 
 ext_api={
    ready:false,
+   store_val_prefix: 'custval_',
    message_handler:function(data,send_response,obj){
       obj = obj || {};
       console.log('BG_GET:',data,send_response);
@@ -568,7 +607,81 @@ ext_api={
                send_response({act:'AJAX_response', response:r});
             });
             break;         
-            
+         
+         case 'storage_get':
+            var prefix = data.reserved_access_allowed ? '' : ext_api.store_val_prefix;
+            if (data.keys){
+               var vals={};
+               for (var i=0; i<data.keys.length; i++){
+                  if (!ext_api.storage_is_allowed_key(data.keys[i]) && !data.reserved_access_allowed){ 
+                     console.log('access to key ' + data.keys[i] + ' not allowed');
+                     continue;
+                  }                  
+                  console.log('key: ', data.keys[i], ex_loader.get(prefix+data.keys[i]));
+                  vals[data.keys[i]] = ex_loader.get(prefix+data.keys[i]) || null;
+               }
+               send_response({act:'storage_value',values:vals});
+            } else if(data.key){  
+               if (ext_api.storage_is_allowed_key(data.key) || data.reserved_access_allowed){
+                  send_response({act:'storage_value', key:data.key, value: ex_loader.get(prefix+data.key) || null  });
+               } else {
+                  console.log('write access to key ' + data.key + ' not allowed');
+               }
+            }
+            break;
+         case 'storage_set':
+            var prefix = data.reserved_access_allowed ? '' : ext_api.store_val_prefix;
+            if (data.values){
+               for (var key in data.values){
+                  if (!ext_api.storage_is_allowed_key(key) && !data.reserved_access_allowed){
+                     console.log('write access to key ' + key + ' not allowed');
+                     continue;
+                  }
+                  ex_loader.set(prefix+key, data.values[key]);
+               }
+            } else if(data.value && data.key){  
+               if (ext_api.storage_is_allowed_key(data.key) || data.reserved_access_allowed){
+                  ex_loader.set(prefix+data.key, data.value);
+               } else {
+                  console.log('write access to key ' + data.key + ' not allowed');
+               }
+            }
+            send_response({act:'storage_set_ok'});
+            break;
+         case 'storage_keys':
+            var i, keys, raw_keys = Object.keys(ext_api.utils.ls);
+            for (i = 0; i < raw_keys.length; i++ )
+               if (ext_api.storage_is_allowed_key(raw_keys[i]) || data.reserved_access_allowed) // не нужно давать инфу о закэшированных скриптах
+                  keys.push(raw_keys[i]);
+            send_response({act:'storage_obj_keys',keys:keys});
+            break;
+         case 'storage_delete':
+            if (data.keys){
+               var vals={};
+               for (var i=0; i<data.keys.length; i++){
+                  if (!ext_api.storage_is_allowed_key(data.keys[i]) || data.reserved_access_allowed){ 
+                     console.log('access to key ' + data.keys[i] + ' not allowed');
+                     continue;
+                  }
+                  ext_api.utils.ls.removeItem(data.keys[i]);
+               }
+               send_response({act:'storage_delete_keys'});
+            } else if(data.key){  
+               if (ext_api.storage_is_allowed_key(data.key)  || data.reserved_access_allowed){
+                  ext_api.utils.ls.removeItem(data.key);
+                  send_response({act:'storage_delete_key'});
+               } else {
+                  console.log('write access to key ' + data.key + ' not allowed');
+               }
+            }
+            break;   
+         case 'storage_clear':
+            var i, keys = Object.keys(ext_api.utils.ls);
+            for (i = 0; i < keys.length; i++ )
+               if (ext_api.storage_is_allowed_key(keys[i]) || data.reserved_access_allowed) // не нужно удалять закэшированные скрипты
+                  ext_api.utils.ls.removeItem(keys[i]);  
+            break;
+         
          case 'update_scripts':
             ex_loader.update_all(function(){
                send_response({act:'scripts_updated'});
@@ -583,8 +696,15 @@ ext_api={
             } else */
             ext_api.download(data.url,data.name,obj.win);
             break;         
-         default: if (send_response) send_response({act:'extension bg default response',msg:data,key:data.key});
+         default: if (send_response) send_response({act:'extension bg default response',msg:data, __key:data.__key});
       }
+   },
+   storage_is_allowed_key:function(key){
+      if (['scripts_config','scripts_config_hash'].indexOf(key)>-1) 
+         return false;
+      if (/\.(js|css)$/.test(key))
+         return false;
+      return true;
    },
    ajax:function(options,callback){
       /*
@@ -596,19 +716,6 @@ ext_api={
             headers: if headers['Content-type']=='multipart/form-data'  use data as Uint8Array
          }
       */
-      if (browser.mozilla && !Components.classes) {    // Firefox Jetpack
-          options.mozTime=Date.now();
-          self.port.emit("ajax", options);
-          function ajaxResponse(obj) {
-              if (options.mozTime == obj.mozTime) {
-                  delete obj.mozTime;
-                  callback(obj);
-                  self.port.removeListener("ajax_response", ajaxResponse);
-              }
-          }
-          self.port.on("ajax_response", ajaxResponse);
-      }
-      else {
           if (!options.url || (options.url || '').replace(/^\s+|\s+$/g, '') == '') {
               var response = {};
               response.text = '';
@@ -637,7 +744,7 @@ ext_api={
               headers = options.headers || {},
               data = options.data || null,
               url = options.url || '',
-              responseType = options.responseType,
+              responseType = options.responseType || '',
               contentType = headers['Content-type'] || 'application/x-www-form-urlencoded';
           if (!headers['Content-type'])
               headers['Content-type'] = contentType;
@@ -684,7 +791,6 @@ ext_api={
                   error: e
               });
           }
-      }
    },
    get:function(url,params,callback){
       if (!callback){ 
@@ -733,13 +839,62 @@ ext_api={
       return req;
    },*/
    download:function(url, title, win,  fileType, aShouldBypassCache){ // ONLY MOZILLA
-       if (!Components.classes) // Firefox Jetpack
-           self.port.emit("download", url, title);
-       else {
+      if (ex_loader.browsers.mozilla_jetpack) { // Firefox Jetpack
+      	// Показ диалогового окна выбора пути для сохранения файла
+      	var nsIFilePicker = Ci.nsIFilePicker;
+      	var fp = Cc["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+      	var window = require("sdk/window/utils").getMostRecentBrowserWindow();
+      	fp.init(window, "Save As", nsIFilePicker.modeSave);
+      	fp.defaultString = title;
+      	var fileType = title.substr(title.lastIndexOf(".") + 1, 3);
+      	fp.appendFilter(fileType, "*." + fileType);
+      	var rv = fp.show();
+      	if (rv == nsIFilePicker.returnOK || rv == nsIFilePicker.returnReplace) {
+      		// Добавление закачки в менеджер закачек
+      		Task.spawn(function () {
+      			///////////////////////
+                if (!Downloads.getList) {
+                  return Promise.reject(Error('downloader.js -> get -> module is not implimented'));
+                }
+                return Promise.all([
+                  Downloads.createDownload({
+                    source: url,
+                    target: fp.file
+                  }),
+                  Downloads.getList(Downloads.PUBLIC)
+                ]).then(function (args) {
+                  var dl = args[0],
+                      list = args[1];
+                  console.log('download then:', arguments);
+                  list.add(dl);
+                  dl.start();
+                  return dl;
+                });
+               
+               
+               ///////////////////////
+               
+              /* 
+               
+               try {
+      				let list = yield Downloads.getList(Downloads.ALL);
+      				let download = yield Downloads.createDownload({
+      						source : url,
+      						target : fp.file
+      					});
+      				yield list.add(download);
+      				yield download.start();
+      			} catch (e) {
+      				console.error(e);
+      			}*/
+      		}).then(null, Cu.reportError);
+         }
+      } else {
            function getDownloadFile(defaultString, fileType) {
-               var nsIFilePicker = Components.interfaces.nsIFilePicker;
+               
+               var nsIFilePicker = Ci.nsIFilePicker//Components.interfaces.nsIFilePicker;
 
-               var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+               var fp = /*Components.classes*/Cc["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
                fp.init(window, "Save As", nsIFilePicker.modeSave);
                try {
                    var urlExt = defaultString.substr(defaultString.lastIndexOf(".") + 1, 3);
@@ -763,14 +918,14 @@ ext_api={
                fileType = url.substr(url.lastIndexOf(".") + 1, 3);
 
            var file = getDownloadFile(title, fileType);
-           var persist = Components.classes['@mozilla.org/embedding/browser/nsWebBrowserPersist;1'].createInstance(Components.interfaces.nsIWebBrowserPersist);
-           var ios = Components.classes['@mozilla.org/network/io-service;1'].getService(Components.interfaces.nsIIOService);
+           var persist = /*Components.classes*/Cc['@mozilla.org/embedding/browser/nsWebBrowserPersist;1'].createInstance(/*Components.interfaces*/Ci.nsIWebBrowserPersist);
+           var ios = /*Components.classes*/Cc['@mozilla.org/network/io-service;1'].getService(/*Components.interfaces*/Ci.nsIIOService);
            var uri = ios.newURI(url, null, null);
 
            var fileURL = ios.newFileURI(file);
 
            persist = makeWebBrowserPersist();
-           const nsIWBP = Components.interfaces.nsIWebBrowserPersist;
+           const nsIWBP = /*Components.interfaces*/Ci.nsIWebBrowserPersist;
            const flags = nsIWBP.PERSIST_FLAGS_REPLACE_EXISTING_FILES;
 
            if (win && "undefined" != typeof(PrivateBrowsingUtils) && PrivateBrowsingUtils.privacyContextFromWindow) {
@@ -789,7 +944,7 @@ ext_api={
            }
            persist.persistFlags |= nsIWBP.PERSIST_FLAGS_AUTODETECT_APPLY_CONVERSION;
            persist.persistFlags |= nsIWBP.PERSIST_FLAGS_DONT_CHANGE_FILENAMES;
-           var tr = Components.classes["@mozilla.org/transfer;1"].createInstance(Components.interfaces.nsITransfer);
+           var tr = /*Components.classes*/Cc["@mozilla.org/transfer;1"].createInstance(/*Components.interfaces*/Ci.nsITransfer);
            tr.init(uri, fileURL, "", null, null, null, persist, isPrivate);
            persist.progressListener = tr;
            if (browser.version < 36)
@@ -799,6 +954,34 @@ ext_api={
        }
    },
    utils:{
+      ls:null,
+      init_ls:function(){
+         
+         if (ex_loader.browsers.mozilla || ex_loader.browsers.mozilla_jetpack){
+            var url = ex_loader.moz_strorage_id;
+            if (ex_loader.browsers.mozilla_jetpack){
+               var ios = Cc["@mozilla.org/network/io-service;1"]
+                         .getService(Ci.nsIIOService);
+               var ssm = Cc["@mozilla.org/scriptsecuritymanager;1"]
+                         .getService(Ci.nsIScriptSecurityManager);
+               var dsm = Cc["@mozilla.org/dom/storagemanager;1"]
+                         .getService(Ci.nsIDOMStorageManager);
+            } else {
+               var ios = Components.classes["@mozilla.org/network/io-service;1"]
+                         .getService(Components.interfaces.nsIIOService);
+               var ssm = Components.classes["@mozilla.org/scriptsecuritymanager;1"]
+                         .getService(Components.interfaces.nsIScriptSecurityManager);
+               var dsm = Components.classes["@mozilla.org/dom/storagemanager;1"]
+                         .getService(Components.interfaces.nsIDOMStorageManager);               
+            }
+            var uri = ios.newURI(url, "", null);
+            var principal = ssm.getCodebasePrincipal(uri);
+            var storage = dsm.getLocalStorageForPrincipal(principal, "");
+            
+            ext_api.utils.ls = storage;
+         } else 
+            ext_api.utils.ls = localStorage;
+      },
       chrome_init: function(){
          var download_file_names={};
          chrome.webRequest.onBeforeRequest.addListener(
@@ -840,8 +1023,8 @@ ext_api={
    }
 };
 
-
 ex_loader.init();
+ext_api.utils.init_ls();
 
 if (browser.chrome && !(window.external && window.external.mxGetRuntime))
    ext_api.utils.chrome_init()

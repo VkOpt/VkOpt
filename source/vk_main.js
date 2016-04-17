@@ -50,6 +50,7 @@ function vkInj(file){
    case 'fave.js':         vk_fave.inj();           break;
    case 'photos.js':       vk_photos.inj_photos();  break;
    case 'emoji.js':        vk_features.emoji_inj(); break;
+   case 'upload.js':       vk_features.upload_inj(); break;
   }
   vk_plugins.onjs(file); 
 }
@@ -182,7 +183,7 @@ function vkOnNewLocation(startup){
 			case 'photos':		vk_photos.page(); break;
 			case 'audio':		vkAudioPage(); break;
 			case 'audio_edit':	vkAudioEditPage(); break;
-			case 'video':		vkVideoPage(); break;
+			case 'video':		vk_videos.page(); break;
 			case 'video_edit':	vkVideoEditPage(); break;
 			case 'notes':		vkNotesPage(); break;
 			case 'board':		vkBoardPage(); break;
@@ -306,12 +307,13 @@ function vkProccessLinks(el){
  el=el || ge('content');//document
     var nodes=el.getElementsByTagName('a'); 
     for (var i=0;i<nodes.length;i++){  
-     if (getSet(10)=='y') vkProcessUserLink(nodes[i]);
+     if (getSet(10)!='n') vkProcessUserLink(nodes[i]);
 	  if (getSet(8)=='y')  ProcessUserPhotoLink(nodes[i]);
 	  if (getSet(6)=='y')  ProcessAwayLink(nodes[i]);
 	  if (getSet(38)=='y') ProcessHighlightFriendLink(nodes[i]);
      if (getSet(55)=='y') vk_im.process_date_link(nodes[i]);
      if (getSet(58)=='y') vkProcessTopicLink(nodes[i]);
+     vk_videos.process_link(nodes[i]);
      //vkProcessDocPhotoLink(nodes[i]);
 	  vk_plugins.processlink(nodes[i]);
     }
@@ -428,24 +430,52 @@ function vkWikiPagesList(add_btn){
    var ldr=ge('vk_wiki_pages_list_loader');
    if (ldr) show(ldr);
    var gid=Math.abs(cur.oid);
-   //if (gid==1) gid=-1; 
+   //if (gid==1) gid=-1;
+   stManager.add('wk.css');
    dApi.call('pages.getTitles',{gid: gid},function(r){
       if (ldr) hide(ldr);
       var t='<h3>Owner: '+(cur.oid && cur.oid<0?'club':'id')+Math.abs(cur.oid || vk.id)+
           '<a class="fl_r" id="vk_add_wiki_page" href="#" onclick="vkWikiNew(); return false;">'+IDL('Add')+'</a>' +
           '<span class="divider fl_r">|</span>' +
-          '<a class="fl_r" onclick="vkWikiDownload('+cur.oid+')">'+IDL('downloadAll')+'</a></h3><br>';
+          '<a class="fl_r" onclick="vkWikiDownload('+cur.oid+')">'+IDL('downloadAll')+'</a></h3><br>' +
+          '<table class="wk_table" cellspacing="0" cellpadding="0">' +
+          '<tr>' +
+            '<th><a onclick="vkWikiSortColumn(0, this)">'+IDL('Page')+' </a></th>' +
+            '<th>'+IDL('History')+'</th>'+
+            '<th>'+IDL('Code')+'</th>' +
+            '<th><a onclick="vkWikiSortColumn(3, this)">'+IDL('Author')+' </a></th>' +
+            '<th><a title="'+IDL('sortByDate')+'" onclick="vkWikiSortColumn(4, this)">'+IDL('Date')+' &#9650;<a></th>' +
+          '</tr>';
       (r.response || []).map(function(obj){
          //console.log(obj);
          var page='page-'+obj.group_id+'_'+obj.pid;
-         t+='<a class="vk_wiki_link" pid="'+obj.pid+'" href="/'+page+'">'+page+'</a><span class="divider">|</span>'+
-            '<a href="/pages.php?oid=-'+obj.group_id+'&p='+encodeURIComponent(obj.title)+'&act=history" target="_blank">'+IDL('History')+'</a><span class="divider">|</span>'+
-            '<a href="#" onclick="return vkGetWikiCode('+obj.pid+','+obj.group_id+');">'+IDL('Code')+'</a><span class="divider">|</span>'+
-            '   <b>'+obj.title+'</b>  (creator:'+obj.creator_name+')<br>';
+         t+='<tr>' +
+             '<td><a class="vk_wiki_link" pid="'+obj.pid+'" href="/'+page+'">'+obj.title+'</a></td>' +
+             '<td><a href="/pages.php?oid=-'+obj.group_id+'&p='+encodeURIComponent(obj.title)+'&act=history" target="_blank">'+IDL('History')+'</a></td>' +
+             '<td><a href="#" onclick="return vkGetWikiCode('+obj.pid+','+obj.group_id+');">'+IDL('Code')+'</a></td>' +
+             '<td>' + obj.creator_name + '</td>' +
+             '<td>' + obj.created + '</td>' +
+         '</tr>';
       });
-      var box=vkAlertBox('Wiki Pages',t);
+      t+='</table>';
+      var box=vkAlertBox('Wiki Pages',t,null,null,true);
       box.setOptions({width:'680px'});
    });
+}
+function vkWikiSortColumn(index, anchor) {  // сортировка строк таблицы
+    var table = geByClass('wk_table')[0];
+    var rows = [].slice.call(geByTag('tr', table));
+    var header = rows.shift();   // заголовок таблицы не участвует в сортировке
+    var descending = anchor.innerHTML.indexOf('\u25B2'); // ▲
+    rows.sort(function (a, b) {
+        return a.childNodes[index].textContent.toUpperCase() < b.childNodes[index].textContent.toUpperCase() ? descending : -descending;
+    });
+    for (var i in rows)
+        table.appendChild(rows[i]);
+    each(geByTag('a', header), function (i, a) {
+        a.innerHTML = a.innerHTML.replace(/[\u25BC\u25B2]/, '');
+    });
+    anchor.innerHTML += ~descending ? '\u25BC' : '\u25B2';
 }
 
 function vkWikiDownload(oid) {
@@ -563,7 +593,7 @@ function vkGetWikiCode(pid,gid){
          return;
       }
       var code=(data.source || "").replace(/<br>/gi,'\r\n');
-      var box=vkAlertBox('Wiki-code','<h2>'+data.title+'</h2><textarea id="vk_wikicode_area" style="width:460px; height:300px;">'+code+'</textarea>');
+      var box=vkAlertBox('Wiki-code','<h2>'+data.title+'</h2><textarea id="vk_wikicode_area" style="width:460px; height:300px;">'+code+'</textarea>',null,null,true);
       box.setOptions({width:'500px'});
    });
    return false;
@@ -698,7 +728,7 @@ function vkCommon(){
 	Inj.Start('renderFlash','vkOnRenderFlashVars(vars);');
 	Inj.End('nav.setLoc','setTimeout(vkOnNewLocation,2);');
 	
-    if (getSet(10)=='y') Inj.After('TopSearch.row','name +','vkTsUserMenuLink(mid)+');
+    if (getSet(10)!='n') Inj.After('TopSearch.row','name +','vkTsUserMenuLink(mid)+');
    
    vk_pages.inj_common();
    vk_audio.inj_common();
@@ -760,7 +790,7 @@ function vkProcessResponse(answer,url,q){
   if (VIDEO_PLAYER_DBG_ON && url=='/al_video.php' && q.act=='show') answer[2]=answer[2].replace('"dbg_on":0','"dbg_on":1');
   if (getSet(21)=='y' && url=='/al_video.php' && q.act=='show'){
      answer[2]=answer[2].replace(/"eid1"\s*:\s*"?\d+"?/i,'"eid1":0');
-     answer[2]=answer[2].replace(/"show_ads"\s*:\s*"?\d+"?/i,'"show_ads":0');
+     answer[2]=answer[2].replace(/"(show_ads[^"]*)"\s*:\s*"?\d+"?/ig,'"$1":0');
   }
 }
 
@@ -792,6 +822,52 @@ vk_features={
       if (getSet(95)=='y'){
          Inj.Replace('Emoji.addEmoji','Emoji.cssEmoji[code][1]','(Emoji.cssEmoji[code]?Emoji.cssEmoji[code][1]:Emoji.codeToChr(code))');
       }
+   },
+   upload_inj:function() {
+       if (getSet(98)=='y')
+           Inj.End('Upload.onCheckComplete','vk_features.mod_upload_box();');   // если нужны опции, vk_features.mod_upload_box(options)
+   },
+   mod_upload_box: function () {    // Перенос контента из MessageBox-a в видеоплеер
+       if (!isVisible(window.mvLayerWrap) // если уже существует видеоплеер, ничего не делать, а то второй плеер не запустится, а темный слой останется.
+       && (nav.objLoc[0].indexOf('audio')==0 || nav.objLoc[0].indexOf('docs')==0)) { // и только для аудио и документов
+           var b = curBox(), cb = __bq.curBox; // бекап текущих переменных для правильной работы функции curBox
+           b.hide = function () {};
+           vkAlertBox(geByClass('box_title')[0].textContent, b.bodyNode.parentNode, function () {
+               // восстановление переменных
+               b.isVisible = function () {    
+                   return true;
+               };
+               b.hide = function () {
+                   Videoview.hide(false, true);
+               };
+               __bq.curBox = cb;    // 
+               _message_boxes[__bq.curBox] = b;
+               // Исправление функции перетаскивания в окно
+               var dragElEvents = data(ge('box_layer_wrap'),'events');
+               var dragElNew = ge('mv_layer_wrap');
+               addEvent(dragElNew, 'dragenter', dragElEvents.dragenter.pop());
+               addEvent(dragElNew, 'dragover', dragElEvents.dragover.pop());
+               addEvent(dragElNew, 'dragleave', dragElEvents.dragleave.pop());
+           }, null, true);
+           // чтобы не разрушался Upload при переходе на другую страницу, убираем Upload.deinit из списка функций для уничтожения.
+           if (nav.objLoc[0].indexOf('audio')==0)
+               cur.destroy.pop();
+           else if (nav.objLoc[0].indexOf('docs')==0) {
+               cur.destroy.splice(-3,1);
+               // бекап и восстановление функций для сохранения документа, т.к. nav.go() чистит cur
+               window.curdocChangeType = cur.docChangeType;
+               window.curtagsDD = cur.tagsDD;
+               window.cursaveUploadedDoc = cur.saveUploadedDoc;
+               window.curdocTags = cur.docTags;
+               window.radioBtnsdocs_file_type = radioBtns.docs_file_type;
+               Inj.Start('Upload.onUploadComplete',
+                   'cur.docChangeType=curdocChangeType;' +
+                   'cur.tagsDD=curtagsDD;' +
+                   'cur.saveUploadedDoc=cursaveUploadedDoc;' +
+                   'cur.docTags=curdocTags;' +
+                   'radioBtns.docs_file_type=radioBtnsdocs_file_type;');
+           }
+       }
    }
 };
 
@@ -1357,10 +1433,10 @@ vk_im={
       vk_im.reply_btns(node);
    },
    process_date_link: function (node){
-      if (node.className=='im_date_link'){
+      if (node.parentNode.className=='im_date_link'){
          var inp=vkNextEl(node); 
          var ts;
-         var fmt=(node.parentNode && node.parentNode.parentNode && hasClass(node.parentNode.parentNode,'im_add_row'))?'HH:MM:ss':'d.mm.yy HH:MM:ss';
+         var fmt=gpeByClass('im_add_row', node) ? 'HH:MM:ss':'d.mm.yy HH:MM:ss';
          if (inp && (ts=parseInt(inp.value)))  val(node, (new Date((ts-vk.dt)*1000)).format(fmt));
       }
    },
@@ -1456,8 +1532,9 @@ vk_im={
    reply_btns:function(node){
       if (getSet(81)!='y') return;
       var nodes=geByClass('im_date_link',node);//geByClass('im_log_author_chat_name',node);
-      for (var i=0; i<nodes.length; i++){
-         var mid=(nodes[i].href || '').match(/mail.+id=(\d+)/) || (nodes[i].href || '').match(/im\?.*msgid=(\d+)/);
+      for (var i=0; i<nodes.length; i++)
+        if (nodes[i].firstElementChild) {   // не делать кнопку "ответить" при просмотре результатов поиска
+         var mid=(nodes[i].firstElementChild.href || '').match(/mail.+id=(\d+)/) || (nodes[i].firstElementChild.href || '').match(/im\?.*msgid=(\d+)/);
          if (!mid) continue;
          mid = mid[1];
          var p=nodes[i].parentNode;
@@ -1491,7 +1568,7 @@ vk_im={
       
       var txt = IM.getTxt(cur.peer);
       if (cur.editable) {
-        IM.editableFocus(txt, false, true);
+        Emoji.editableFocus(txt, false, true);
       } else {
         elfocus(txt);
       }
@@ -1635,8 +1712,6 @@ function vkImTypingEvent(uid,need_close){
    
    if (chat && getSet(105)=='y') return;
 
-   var NOTIFY_TIMEOUT= 15000; // 15sec
-   
    if (need_close){
       vkHideEvent('vk_typing_'+uid);
       return;
@@ -1740,7 +1815,7 @@ function vkIMSaveHistoryBox(peer){
       <div class="button_gray"><button href="#" onclick="vkMakeMsgHistory('+peer+',true); return false;">'+IDL('SaveHistoryCfg')+'</button></div>\
       </div>\
    </div>';
-   vkAlertBox(IDL('SaveHistory'), t);
+   vkAlertBox(IDL('SaveHistory'), t, null, null, true);
 }
 
 /* NOTIFIER */

@@ -77,6 +77,7 @@ function InstallRelease(){
 
   }
   if (err.length) vkAlertBox(IDL('Error'),err.join('<br>'));
+  if (vbuild < 160328 && getSet(10) == 'y') setSet(10, getSet(11) == 'y' ? 1 : 2);
   return false;
 }
 	
@@ -553,7 +554,7 @@ function GenWallList(el){   // Генерация списка записей в
   var i = 0;
   for (var id in wall_list) {
       lnk = "wall" + id;
-      whtml += '<div id="wit' + id + '" style="width:170px"><a style="position:relative; left:100%" onclick="vkRemWall(this)" title="'+IDL('phDel')+'" i="' + id + '">x</a>' + (++i) + ') <a href="' + lnk + '">' + wall_list[id] + '</a></div>';
+      whtml += '<div id="wit' + id + '" class="wall_subscribe"><a class="vk_x_btn fl_r" onclick="vkRemWall(this)" title="'+IDL('phDel')+'" i="' + id + '"></a>' + (++i) + ') <a href="/' + lnk + '">' + wall_list[id] + '</a></div>';
   }
   if (!el) {return whtml;} else {val(el, whtml);}
 }
@@ -582,6 +583,7 @@ function vkInitSettings(){
       {id:2,   text: "seLinkVi"},
       {id:66,  text: "seVidDownloadLinks"},
       {id:92,   text: "seVideoHideConfirm"},
+      {id:106,   text: "seVideoAnimThumbs"},
       //{id:76,  text: "seVideoFullTitles"},
       
       {id:3,   text: "seCompactAudio"},
@@ -597,19 +599,19 @@ function vkInitSettings(){
       {id:93,  text: "seAlbumPhotosExInfo",info:'infoUseNetTrafic'}
       , {id:101,  text: "seUseHtml5ForVideo",info:'infoOnlyForCompatible'}
       , {id:104,  text: "seUseHtml5ForAudio"}
+      , {id:108,  text: "seAutoplayOff"}
     ],
     Users:[
       // Явно указваем идентификатор wiki-страницы, т.к из параметра text не получить:
-      {id:10, wiki:"seExUserMenu", text:IDL("seExUserMenu")+'<br><a href="#" onclick="toggle(\'vkExUMenuCFG\'); return false;">[<b> '+IDL("Settings")+' </b>]</a>'+
-                                           '<span id="vkExUMenuCFG" style="display:none"><div>'+vkCheckboxSetting(11,IDL("seExUMClik"))+'</div><hr />'+GetUserMenuSett()+'</span>'},
-      //{id:11,  text: "seExUMClik"},
+      {id:10, wiki:"seExUserMenu", ops:[1,2,3,"off"], header:IDL("seExUserMenu"), text:IDL("seExUMClik")+'<br><a href="#" onclick="toggle(\'vkExUMenuCFG\'); return false;">[<b> '+IDL("Settings")+' </b>]</a>'+
+                                           '<span id="vkExUMenuCFG" style="display:none"><hr />'+GetUserMenuSett()+'</span>'},
       {id:8,  text: "seZoomPhoto"},// {id:8,  header: "seZoomPhoto" ,  text: "seZoomPhHelp",ops:[0,1,2]},
       {id:38, wiki:"seLightFriends", text:'<table><tr><td> <table><tr><td width=20 height=20 id="spct11" bgcolor='+getFrColor()+'></td></tr></table> <td>'+
          '<span class="cltool"><a onclick="init_colorpicker(this.parentNode,FrCol_click,\'' + getFrColor() + '\')">'+IDL("seLightFriends")+'</a></span>'+
          '</td></tr></table>'},       
       //{id 23 - store "is expland" profile} 
       //{id:24,  text: "seAvaArrows"},
-      {id:25,  text: "seICQico"},
+      //{id:25,  text: "seICQico"},
       {id:41,  header: "seExpland_ProfileInfo",  text: "seExplandProfileInfoText",ops:[0,1,2,3]},      
       {id:26,  text: "seCalcAge"},
       {id:39,  text: "seGrCom"},
@@ -677,7 +679,6 @@ function vkInitSettings(){
       {id:86,  text: "seDisableWallWikiBox"},
       {id:88,  text: "seGroupRequestsBlock",info:'infoUseNetTrafic'},
       {id:97,  wiki:"seSubscribeToPostComments", text:examples.seSubscribeToPostComments+IDL("seSubscribeToPostComments")},
-      {id:98,  text: "seShowAllComments"},
       {id:99,  text: "seSortByLikes"},
       {id:100,  text: "seTopicSearch"}
       //{id:64,  text: "seToTopOld"}
@@ -706,6 +707,7 @@ function vkInitSettings(){
            ' <a onclick="return vkAddWall(this.previousElementSibling)">' + IDL('add') + '</a><br>' +
            '<div class="vkwalllist"></div></div>'
       }
+    , {id: 98, text: "seMinimizeAbility"}
    ],
    Hidden:[
       {id:82,  text: "FullThumb"},
@@ -714,7 +716,7 @@ function vkInitSettings(){
    ]
   };
 
-   //LAST 105
+   //LAST 108, FREE 11, 107
 
    vkSetsType={
       "on"  :[IDL('On'),'y'],
@@ -764,6 +766,10 @@ vk_settings = {
       }\
       .sett_block:hover .vk_sett_help_link a{ \
          opacity: 1;\
+      }\
+      #sbtns10 A[off] {\
+        border-top: 1px solid;\
+        border-radius: 5px;\
       }\
    ',
    dislikes_icons:function(){

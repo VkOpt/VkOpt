@@ -1,9 +1,2 @@
-content   vkopt                 chrome/content/
-content   vkopt                 chrome/content/ contentaccessible=yes
-resource  vkopt                          scripts/
-skin      vkopt   classic/1.0   chrome/skin/
-locale    vkopt   en-US         chrome/locale/en-US/
-
-
-overlay   chrome://browser/content/browser.xul     chrome://vkopt/content/ff-overlay.xul
-overlay   chrome://navigator/content/navigator.xul chrome://vkopt/content/ff-overlay.xul
+content   vkopt                 content/
+resource  vkopt                 scripts/
