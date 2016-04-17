@@ -10,7 +10,7 @@
  "manifest": {
   "vkopt/main": {
    "docsSHA256": null, 
-   "jsSHA256": "3370468543c731ecf0305129a54f3a399ddab7c252e5279eed7ab9361835139b", 
+   "jsSHA256": "ef8682a23d2163c20d058f7214554deb9bfdc0213048a1c2c14fc8cdbfdb7c53",
    "moduleName": "main", 
    "packageName": "vkopt", 
    "requirements": {

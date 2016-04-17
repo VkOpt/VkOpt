@@ -3,15 +3,14 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. --><RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <Description about="urn:mozilla:install-manifest">
     <em:id>vkopt_moz@vkopt.net.ru</em:id>
-    <em:version>2.3.2.160401</em:version>
     <em:name>VkOpt</em:name>
-    <em:description>Добавление множества функций для сайта ВКонтакте</em:description>
+    <em:version>2.3.3.160417</em:version>
     <em:creator>KiberПсих</em:creator>
     <em:homepageURL>http://vkopt.net/</em:homepageURL>    
     <em:iconURL>chrome://vkopt/content/vkopt_icon.svg</em:iconURL>    
-	 <!--
+	<!--
     <em:iconURL>chrome://vkopt/content/icon48.png</em:iconURL>    
-	 <em:icon64URL>chrome://vkopt/content/icon64.png</em:icon64URL>
+	<em:icon64URL>chrome://vkopt/content/icon64.png</em:icon64URL>
     -->    
     <em:type>2</em:type>
     <em:bootstrap>true</em:bootstrap>
@@ -25,15 +24,15 @@
         <!-- fennec -->
         <em:id>{a23983c0-fd0e-11dc-95ff-0800200c9a66}</em:id>
         <em:minVersion>4.0</em:minVersion>
-        <em:maxVersion>80.*</em:maxVersion>
+        <em:maxVersion>40.0</em:maxVersion>
       </Description>
     </em:targetApplication>
     <em:targetApplication>
       <Description>
         <!-- fennec2 -->
         <em:id>{aa3c5121-dab2-40e2-81ca-7ea25febc110}</em:id>
-        <em:minVersion>4.0</em:minVersion>
-        <em:maxVersion>80.*</em:maxVersion>
+        <em:minVersion>10.0a1</em:minVersion>
+        <em:maxVersion>44.0</em:maxVersion>
       </Description>
     </em:targetApplication>
     <em:targetApplication>
@@ -41,7 +40,7 @@
         <!-- firefox -->
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
         <em:minVersion>4.0</em:minVersion>
-        <em:maxVersion>80.*</em:maxVersion>
+        <em:maxVersion>44.0</em:maxVersion>
       </Description>
     </em:targetApplication>
     <em:targetApplication>
@@ -49,7 +48,7 @@
         <!-- seamonkey -->
         <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
         <em:minVersion>2.5</em:minVersion>
-        <em:maxVersion>80.*</em:maxVersion>
+        <em:maxVersion>2.39</em:maxVersion>
       </Description>
     </em:targetApplication>
     

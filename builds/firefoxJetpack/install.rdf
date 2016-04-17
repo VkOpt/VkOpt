@@ -12,15 +12,15 @@
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-        <em:minVersion>26.0</em:minVersion>
-        <em:maxVersion>99.0</em:maxVersion>
+        <em:minVersion>3.5</em:minVersion>
+        <em:maxVersion>44.0</em:maxVersion>
       </Description>
     </em:targetApplication>
 
     <!-- Front End MetaData -->
-    <em:name>VkOpt</em:name>
+    <em:name>VkOpt Jetpack</em:name>
     <em:description>Добавление множества функций для сайта ВКонтакте</em:description>
-    <em:creator>KiberПсих</em:creator>
+    <em:creator>VkOpt team</em:creator>
     
     
     
