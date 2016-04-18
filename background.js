@@ -19,7 +19,7 @@ if (typeof require != 'undefined' && typeof module != 'undefined'  && module.id 
       this.scope = {};
      
       Cu.import('resource://gre/modules/devtools/Console.jsm', scope); // console import for Firefox Jetpack
-      Cu.import(jetpack_lib_path+'/Timer.jsm', scope); // оказывается у некоторых браузеров в этом модуле нет setInterval и т.д, т.ч тянем копию нормального
+      Cu.import(jetpack_lib_path+'/timer.jsm', scope); // оказывается у некоторых браузеров в этом модуле нет setInterval и т.д, т.ч тянем копию нормального
       Cu.import("resource://gre/modules/Downloads.jsm", scope);
       Cu.import("resource://gre/modules/Task.jsm", scope);
       
@@ -1028,8 +1028,9 @@ ext_api={
 ex_loader.init();
 ext_api.utils.init_ls();
 */
-ex_loader.init.apply(this);
 ext_api.utils.init_ls.apply(this);
+ex_loader.init.apply(this);
+
 
 if (browser.chrome && !(window.external && window.external.mxGetRuntime))
    ext_api.utils.chrome_init()
