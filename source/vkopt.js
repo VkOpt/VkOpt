@@ -13,7 +13,6 @@
 var vVersion	= 233;
 var vBuild = 160418;
 var vPostfix = ' ';
-if (!window.vk_DEBUG) var vk_DEBUG=false;
 
 if (!window.vkopt) window.vkopt={};
 var vkopt_core = {

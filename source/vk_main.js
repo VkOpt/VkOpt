@@ -15,8 +15,9 @@
 
 //<vkopt.js v2.x>
 /* EXT CONFIG */
-if (!window.DefSetBits)
+if (!window.vk_DEBUG) var vk_DEBUG=false;
 
+if (!window.DefSetBits)
 var DefSetBits='yyyynnyyynyyy0n0yy0nnnynyyynyy0nynynnnnyy0yyy1yynnnnny0nynynynnnnyynnynnnynynyynnyn3nnnnynynnnnnyynnnnnnnnynn-3-0-#c5d9e7-#34a235-1-';
 
 var DefExUserMenuCfg='111111101111111111111'; // default user-menu items config
