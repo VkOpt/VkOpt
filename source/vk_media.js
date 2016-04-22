@@ -1520,49 +1520,97 @@ function vkGetZipWithPhotos(oid, aid) {
     /* </ Создание прогресс-бара > */
 
     var CORS_PROXY = location.protocol+'//crossorigin.me/';  // константа, содержащая адрес прокси для CORS-запросов
+    var MAX_CORS_FAILS = 3; // после трёх неудач скачать через прокси, будем качать через background
+    var cors_proxy_fail_count = 0;
     var zip;            // переменная для объекта JSZip
     var links;          // переменная для массива ссылок на фотки
     var links_length;   // длина этого массива. Чтобы каждый раз не дергать .length
+            
+    var get_binary = function(url,callbacks){
+       var already_failed = false;
+       var on_err = function(){
+         if (already_failed) return;
+         already_failed = true;
+         callbacks.on_error(); 
+       }
+       var request = (vkAjTransport.readyState == 4 || vkAjTransport.readyState == 0) ? vkAjTransport : PrepReq();
+       if (!request) {
+         on_err(); 
+         return;
+       }
+       request.responseType = 'arraybuffer';
+       request.onreadystatechange = function () {
+           if (request.readyState == 4) {
+               if (request.status == 200) {
+                   callbacks.on_done(request.response);
+               } else
+                   on_err();
+           }
+       };
+       request.onerror=on_err;
+       request.open('GET', url, true);
+       request.send();
+    }
+
     var dlphoto = function (i) {  // рекурсивная функция скачивания фоток. i - номер ссылки в массиве
+        console.log('dl photo #'+i);
         if (i > -1) {   // условие продолжения рекурсии
-            var next = function() {
+            var file_name = i + '_' + links[i].split('/').pop();
+            var file_url = links[i];
+            var next = function(src) {
                 Progress(links_length - i, links_length); // Потому что скачивание идет задом наперед  
                 dlphoto(--i);                             // продолжаем рекурсию                       
             };
-            var request = (vkAjTransport.readyState == 4 || vkAjTransport.readyState == 0) ? vkAjTransport : PrepReq();
-            if (request) {
-                var cors_proxy_used = false;    // использовался ли уже CORS-прокси
-                var onerror = function() {
-                    if (!cors_proxy_used) {                  // Если еще не использовали прокси, используем
-                        cors_proxy_used = true;
-                        request.open('GET', CORS_PROXY + links[i], true);
-                        request.send();
-                    } else {    // Не скачалось даже через прокси. Наверное, прокси лежит. Скачиваем файл через background.
-                        vk_aj.ajax({url: links[i], method: 'GET', responseType: 'arraybuffer'}, function (response) {
-                            if (response.status == 200)
-                                zip.file(i + '_'+ links[i].split('/').pop(), response.raw);
-                            next();
-                        });
-                    }
-                };
-                request.responseType = 'arraybuffer';
-                request.onreadystatechange = function () {
-                    if (request.readyState == 4) {
-                        if (request.status == 200) {
-                            zip.file(i + '_' + links[i].split('/').pop(), request.response);     // Добавление скачанного файла в объект JSZip
-                            next();
-                        } else
-                            onerror();
-                    }
-                };
-                request.onerror=onerror;
-                request.open('GET', links[i], true);
-                request.send();
-            } else next();
+            
+            var on_download = function(response){
+               zip.file(file_name, response);
+               next();
+            }
+            
+            var ext_api_method = function(){                 
+                     vk_aj.ajax({url: file_url, method: 'GET', responseType: 'arraybuffer'}, function (response) {
+                        if (response.status == 200)
+                           on_download(response.raw);
+                        else
+                           next();
+                     });                        
+            } 
+            
+
+            var other_method = function (onfail){       // пробуем использовать CORS-прокси
+               // CORS-прокси бывает недоступен, а серверов вк без родной поддержки CORS много
+               // нужно убедиться что запросы к нему фейлятся и
+               if (cors_proxy_fail_count >= MAX_CORS_FAILS){ // пропускаем этот метод в дальнейшем
+                  ext_api_method();
+                  return;
+               }
+               get_binary(CORS_PROXY + file_url, {      
+                  on_done: on_download,
+                  on_error: function(){                // не скачалось через прокси (лежит?) => cкачиваем через background
+                     cors_proxy_fail_count++;          // отмечаем себе количество ошибок
+                     console.log('CORS-proxy failed #' + cors_proxy_fail_count);
+                     ext_api_method();
+                  }
+               });                  
+            }
+
+            
+            get_binary(file_url, {      // пробуем качать обычным запросом (часть серверов статики вк разрешает кросдоменные запросы)
+               on_done: on_download,
+               on_error: other_method  // не смогли скачать обычным способом
+            });
         }
         else {      // При завершении скачивания сохраняем сгенерированный архивчик
             var content = zip.generate({type: "blob"});
-            saveAs(content, "photos_" + vkCleanFileName((oid || '') + '_' + (aid || '')).substr(0, 250) + ".zip");
+            var zip_name = ["photos", oid || '', aid || '']; 
+            if (cur.module == 'photos'){
+               var el = geByClass1('active_link');
+               if (el){
+                  var album_name = trim(el.innerText || el.textContent || '').replace(/\s+/g,'_');
+                  album_name != '' && zip_name.push(album_name);
+               }
+            }
+            saveAs(content, vkCleanFileName(zip_name.join('_')).substr(0, 250) + ".zip");
             div.innerHTML = ''; // очистить прогрессбар
         }
     };
