@@ -281,6 +281,23 @@ vkopt['settings'] =  {
              </div>
          </div>         
          */
+         /*checkbox:
+         <div class="checkbox " id="{vals.id}" onclick="checkbox(this);">{vals.caption}</div>       
+         */
+         /*radiobtn:
+         <div class="radiobtn on" data-val="0" onclick="radiobtn(this, 0, 'im_submit')">
+            <b>Enter</b> — отправка сообщения<br><b>Shift+Enter</b> — перенос строки
+         </div>
+         <div class="radiobtn" data-val="0" onclick="radiobtn(this, 0, 'im_submit')">
+            <b>Enter</b> — отправка сообщения<br><b>Shift+Enter</b> — перенос строки
+         </div>
+         */  
+         /*
+         radioBtns.im_submit = {
+                           els : Array.prototype.slice.apply(geByClass("radiobtn", ge("im_submit_hint_opts"))),
+                           val : e
+                        };
+         */         
       });
       // Подставляем локализацию в шаблон:
       for (var key in vkopt.settings.tpls)
@@ -308,6 +325,11 @@ vkopt['settings'] =  {
       }
       p.innerHTML = vkopt.settings.tpls.main;
       return false;
+   },
+   get_switcher_code:function(){
+      // чекбоксы
+      //
+      
    }
 }
 /*
