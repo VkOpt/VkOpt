@@ -229,6 +229,10 @@ function vkLocationCheck(){
 }
 
 function VkOptMainInit(){
+  if (isNewVk()){
+     console.log('prevent run vkopt 2.x');
+     return;
+  }
   vk_settings.cfg_override();
   if (vkLocationCheck()) return;
   InstallRelease();

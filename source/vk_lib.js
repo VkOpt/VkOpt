@@ -176,7 +176,8 @@ if (!window.localStorage) localStorage={
 
 /* FUNCTIONS LEVEL 0*/
 ///////////
-function isNewLib(){return window.showWriteMessageBox}
+function isNewLib(){return window.showWriteMessageBox} // deprecated
+function isNewVk(){return typeof prepareAudioLayer != 'undefined'}
 /* CROSS */
 var _ua_ = window.navigator.userAgent.toLowerCase();
 var vkbrowser = {
