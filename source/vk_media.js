@@ -6798,42 +6798,70 @@ if (!window.vkopt_plugins) vkopt_plugins = {};
 if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
 
 (function(){
-   var PLUGIN_ID = 'vkMozImgPaste';
+   var PLUGIN_ID = 'ExtraImgPaste';
 
    vkopt_plugins[PLUGIN_ID] = {
       Name: 'Paste images in messages',
-      onLocation: function (nav_obj, cur_module_name) {
-         if (cur_module_name == 'im' && nav_obj.sel)
-            each(geByClass('im_editable'), function () {
-               var events = data(this, 'events');
-               if (events) {
-                  if (!events.paste)
-                     events.paste = [];
-                  if (events.paste[0] != vkopt_plugins[PLUGIN_ID].onPaste)
-                     events.paste.unshift(vkopt_plugins[PLUGIN_ID].onPaste);
-               }
-            });
+      onLibFiles: function(file){
+         if (!EXTRA_IMG_PASTE) return;
+         if (file != 'emoji.js') return;
+         Inj.Start('Emoji.onEditablePaste','vkopt_plugins.ExtraImgPaste.onPaste(e);'); // добавляем свой обработчик вставки из буфера обмена
+         
+         // блокируем Emoji.getRange() только при отсутсвии обрабатываемых типов в буфере
+         // нужно для того, чтоб получить необработанные данные вставленными в поле в виде html-кода
+         // по умолчанию вк вставляет в поле только данные plain/text и image
+         Inj.Before('Emoji.onEditablePaste',"txt.getAttribute('contenteditable')", "Emoji.getClipboard(e) &&"); 
       },
       onPaste: function (e) {
-         var attr = e.target.getAttribute('contenteditable');   // бекап и восстановление атрибута contenteditable
-         e.target.setAttribute('contenteditable','');           // для избежания Emoji.getRange() в emoji.js:229
-         setTimeout(function () {
-            e.target.setAttribute('contenteditable',attr);
-            var img = geByTag('img', e.target)[0];
-            if (img) {
-               var binary = atob(img.src.split('base64,')[1]);
-               re(img);
-               var array = new Uint8Array(binary.length);
-               for (var i = 0; i < binary.length; i++)
-                  array[i] = binary.charCodeAt(i);
-               var blob = new Blob([array], {type: 'image/png'});
-
-               if (blob) {
-                  blob.name = blob.filename = 'upload_' + new Date().toISOString() + '.png';
-                  Upload.onFileApiSend(cur.imUploadInd, [blob]);
+         var rx_b64 = /^data:[a-z\/-]+;base64,/;
+         var base64upload= function(src){
+            var binary = atob(src.split('base64,')[1]);
+            var array = new Uint8Array(binary.length);
+            for (var i = 0; i < binary.length; i++)
+               array[i] = binary.charCodeAt(i);
+            var blob = new Blob([array], {type: 'image/png'});
+            if (blob) {
+               blob.name = blob.filename = 'upload_' + new Date().toISOString() + '.png';
+               Upload.onFileApiSend(cur.imUploadInd, [blob]);
+            }            
+         }
+         var has = function(types, type){ // clipboardData.types не всегда Array. в Firefox это DOMStringList без метода indexOf
+            for (var i = 0; i < types.length; i++)
+               if (types[i] == type)
+                  return true;
+            return false;
+         }
+         if (e.clipboardData && e.clipboardData.types){
+            if(e.clipboardData.types.length > 0){  // из JS доступно содержимое буфера
+               if(has(e.clipboardData.types, 'text/html')){ // Хотим выпарсить ссылку на картинку из html-кода
+                  var html = e.clipboardData.getData('text/html');
+                  var img_src = (html.match(/<img\s+[^>]*src=(['"])([^'"]+)\1/i) || [])[2];
+                  if (img_src) {
+                     if (rx_b64.test(img_src)){ // Грузим как Blob
+                        base64upload(img_src);
+                     } else if (/^https?:\/\//.test(img_src)){
+                        if (cur.imMedia){
+                           cur.imMedia.checkURL(img_src); // грузим по URL
+                           if (cur.imMedia.urlAttachmentLoading && cur.imMedia.urlAttachmentLoading[1])
+                              cur.imMedia.urlAttachmentLoading[1] = ''; // обход проверки наличия загружаемого URL в тексте сообщения.
+                        }
+                     }
+                  }            
                }
+            } else {// похоже Firefox не хочет показывать то, что мы хотим вставить.
+               var bkp = val(e.target); // бекапим содержимое для последующего восстановления, т.к Emoji.getClipboard вернула бы пустой результат
+               setTimeout(function () {
+                  var img = geByTag('img', e.target)[0];
+                  if (img) {
+                     var img_src = img.src || '';
+                     val(e.target,bkp);
+                     if (rx_b64.test(img_src))
+                        base64upload(img_src);
+                  }
+               }, 0);
             }
-         }, 0);
+         }
+         // TODO: добавить загрузку всех изображений из перехваченного фрагмента
       }
    };
    if (window.vkopt_ready && browser.mozilla) vkopt_plugin_run(PLUGIN_ID);
