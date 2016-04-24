@@ -6810,9 +6810,24 @@ if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
          // блокируем Emoji.getRange() только при отсутсвии обрабатываемых типов в буфере
          // нужно для того, чтоб получить необработанные данные вставленными в поле в виде html-кода
          // по умолчанию вк вставляет в поле только данные plain/text и image
-         Inj.Before('Emoji.onEditablePaste',"txt.getAttribute('contenteditable')", "Emoji.getClipboard(e) &&"); 
+         Inj.Before('Emoji.onEditablePaste',"txt.getAttribute('contenteditable')", "(vkopt_plugins.ExtraImgPaste.clipboardHasImageFile(e) || Emoji.getClipboard(e)) &&"); 
+      },
+      clipboardHasImageFile: function(e){
+         var data = e.clipboardData  || e.originalEvent.clipboardData;
+         if (data && data.items){
+            // проверяем, если ли в буфере изображение
+            var items = data.items;
+            for (var i = 0; items && i < items.length; i++) {
+               if (items[i].type.indexOf("image") == 0) {
+                  return true;// есть. значит оно будет загружено стандартными средствами. нам тут делать нечего.
+               }
+            }
+         }
+         return false;
       },
       onPaste: function (e) {
+         if (vkopt_plugins[PLUGIN_ID].clipboardHasImageFile(e)) 
+            return; 
          var rx_b64 = /^data:[a-z\/-]+;base64,/;
          var base64upload= function(src){
             var binary = atob(src.split('base64,')[1]);
@@ -6832,6 +6847,14 @@ if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
             return false;
          }
          if (e.clipboardData && e.clipboardData.types){
+            // проверяем, если ли в буфере изображение
+            var items = e.clipboardData.items;
+            for (var i = 0; items && i < items.length; i++) {
+               if (items[i].type.indexOf("image") == 0) {
+                  return // есть. значит оно будет загружено стандартными средствами. нам тут делать нечего.
+               }
+            }
+              
             if(e.clipboardData.types.length > 0){  // из JS доступно содержимое буфера
                if(has(e.clipboardData.types, 'text/html')){ // Хотим выпарсить ссылку на картинку из html-кода
                   var html = e.clipboardData.getData('text/html');
