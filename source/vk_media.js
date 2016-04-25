@@ -6888,7 +6888,7 @@ if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
       }
    };
    vkopt_plugins[PLUGIN_ID] = plug;
-   if (window.vkopt_ready && browser.mozilla) vkopt_plugin_run(PLUGIN_ID);
+   if (window.vkopt_ready) vkopt_plugin_run(PLUGIN_ID);
 })();
 
 (function () {
