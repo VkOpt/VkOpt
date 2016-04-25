@@ -6799,8 +6799,7 @@ if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
 
 (function(){
    var PLUGIN_ID = 'ExtraImgPaste';
-
-   vkopt_plugins[PLUGIN_ID] = {
+   var plug =  {
       Name: 'Paste images in messages',
       onLibFiles: function(file){
          if (!EXTRA_IMG_PASTE) return;
@@ -6810,7 +6809,15 @@ if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
          // блокируем Emoji.getRange() только при отсутсвии обрабатываемых типов в буфере
          // нужно для того, чтоб получить необработанные данные вставленными в поле в виде html-кода
          // по умолчанию вк вставляет в поле только данные plain/text и image
-         Inj.Before('Emoji.onEditablePaste',"txt.getAttribute('contenteditable')", "(vkopt_plugins.ExtraImgPaste.clipboardHasImageFile(e) || Emoji.getClipboard(e)) &&"); 
+         Inj.Before('Emoji.onEditablePaste',"txt.getAttribute('contenteditable')", "vkopt_plugins.ExtraImgPaste.isNeedClear(e) &&"); 
+      },
+      isNeedClear:function(e){
+         // нам надо разрешить в поле вставку только того, что мы не видим через ивент вставки, в этом случае очисткой поля от вставленного хлама занимаемся мы.
+         var data = e.clipboardData  || e.originalEvent.clipboardData;
+         if (data && data.types && data.types.length > 0)
+            return true;
+         else
+            return false;
       },
       clipboardHasImageFile: function(e){
          var data = e.clipboardData  || e.originalEvent.clipboardData;
@@ -6824,10 +6831,10 @@ if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
             }
          }
          return false;
-      },
+      }, 
       onPaste: function (e) {
-         if (vkopt_plugins[PLUGIN_ID].clipboardHasImageFile(e)) 
-            return; 
+         if (vkopt_plugins[PLUGIN_ID].clipboardHasImageFile(e)) // в этом случае вк без нас умеет вставлять, а т.к вставка нескольких изображений выпарсенных из html буфера одним махом не делалась,
+            return;                                             // не проверялась и не отлаживалась, то лучше проигнорировать + могут получится дубликаты загрузок (вк по файлам + мы по html'у)
          var rx_b64 = /^data:[a-z\/-]+;base64,/;
          var base64upload= function(src){
             var binary = atob(src.split('base64,')[1]);
@@ -6846,15 +6853,7 @@ if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
                   return true;
             return false;
          }
-         if (e.clipboardData && e.clipboardData.types){
-            // проверяем, если ли в буфере изображение
-            var items = e.clipboardData.items;
-            for (var i = 0; items && i < items.length; i++) {
-               if (items[i].type.indexOf("image") == 0) {
-                  return // есть. значит оно будет загружено стандартными средствами. нам тут делать нечего.
-               }
-            }
-              
+         if (e.clipboardData && e.clipboardData.types){              
             if(e.clipboardData.types.length > 0){  // из JS доступно содержимое буфера
                if(has(e.clipboardData.types, 'text/html')){ // Хотим выпарсить ссылку на картинку из html-кода
                   var html = e.clipboardData.getData('text/html');
@@ -6871,13 +6870,14 @@ if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
                      }
                   }            
                }
-            } else {// похоже Firefox не хочет показывать то, что мы хотим вставить.
+            } else {// похоже Firefox не хочет показывать то, что мы хотим вставить. изображение будем выдирать из вставленного в поле кода (а через ивент мы не смогли до него добраться)
                var bkp = val(e.target); // бекапим содержимое для последующего восстановления, т.к Emoji.getClipboard вернула бы пустой результат
                setTimeout(function () {
                   var img = geByTag('img', e.target)[0];
                   if (img) {
                      var img_src = img.src || '';
-                     val(e.target,bkp);
+                     if (val(e.target) != bkp)
+                        val(e.target,bkp);
                      if (rx_b64.test(img_src))
                         base64upload(img_src);
                   }
@@ -6887,6 +6887,7 @@ if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
          // TODO: добавить загрузку всех изображений из перехваченного фрагмента
       }
    };
+   vkopt_plugins[PLUGIN_ID] = plug;
    if (window.vkopt_ready && browser.mozilla) vkopt_plugin_run(PLUGIN_ID);
 })();
 
