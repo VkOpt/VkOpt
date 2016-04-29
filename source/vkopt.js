@@ -91,7 +91,7 @@ var vkopt_core = {
       return txt;
       //TODO: call to plugins 
    }, 
-   setLoc: function(new_location){
+   setLoc: function(new_location){  // использовать вместо nav.setLoc для избежания рекурсии, обход реакции на смену URL'а
       nav.setLoc(new_location,'vkopt');
    },   
    /*
@@ -114,7 +114,6 @@ var vkopt_core = {
    */
    plugins: {
       delayed_run: function(plug_id){ //функция для пуска отдельного плагина, который не был подключен до основного запуска вкопта
-         
          var css = vkopt_core.plugins.get_css(plug_id);
          if (css != '') 
             vkaddcss(code);
@@ -132,16 +131,17 @@ var vkopt_core = {
          var args = Array.prototype.slice.call(arguments);
          var plug_id = args.shift();
          var method = args.shift();
-         if (vkopt[plug_id][method]) // TODO: && isModuleEnabled(plug_id)
-            return vkopt[plug_id][method].apply(window, args); 
+         var field = vkopt[plug_id][method];
+         if (field) // TODO: && isModuleEnabled(plug_id)
+            return isFunction(field) ? field.apply(this, args) : field; 
          return null;
       },
       call_modules: function(){ // (method, arg1, arg2 ...)
          var args = Array.prototype.slice.call(arguments);
-         var results = [];
+         var results = {};
          for (var plug_id in vkopt){
-            var res = vkopt_core.plugins.call_method.apply(this, [plug_id].concat(args));
-            if (res) results.push(res);
+            var res = vkopt_core.plugins.call_method.apply({plugin_id:plug_id}, [plug_id].concat(args));
+            if (res) results[plug_id] = res;
          }
          return results;
       },
@@ -158,7 +158,7 @@ var vkopt_core = {
       get_css:function(plug_id){
          var css = vkopt[plug_id].css;
          if (!css) return '';
-         return (Object.prototype.toString.call(p.css) === '[object Function]')?css():css;
+         return (Object.prototype.toString.call(css) === '[object Function]')?css():css;
       },
       on_js_file: function(file){
          //console.log('on *.js: '+file);
@@ -275,9 +275,11 @@ vkopt['settings'] =  {
          /*main:
          <div id="vkopt_settings_block" class="page_block clear_fix">
              <div class="page_block_header">{vals.full_title}</div>
-             <div id="vkopt_settings">
-               Comming soon! <!--☑ Check Me!--!>
-               <!--CODE--!>   
+             <div id="vkopt_settings" class="settings_panel clear_fix">
+                <div class="settings_line">
+                  Comming soon! <!--☑ Check Me!--!>
+                  <!--CODE--!>   
+                </div>
              </div>
          </div>         
          */
@@ -285,14 +287,15 @@ vkopt['settings'] =  {
          <div class="checkbox " id="{vals.id}" onclick="checkbox(this);">{vals.caption}</div>       
          */
          /*radiobtn:
+         <div class="radiobtn {vals.on_class}" data-val="{vals.value}" onclick="radiobtn(this, {vals.value}, '{vals.group_id}')">{vals.caption}</div>
+         */ 
+         
+         /* Usage as
+         
          <div class="radiobtn on" data-val="0" onclick="radiobtn(this, 0, 'im_submit')">
             <b>Enter</b> — отправка сообщения<br><b>Shift+Enter</b> — перенос строки
-         </div>
-         <div class="radiobtn" data-val="0" onclick="radiobtn(this, 0, 'im_submit')">
-            <b>Enter</b> — отправка сообщения<br><b>Shift+Enter</b> — перенос строки
-         </div>
-         */  
-         /*
+         </div>  
+         
          radioBtns.im_submit = {
                            els : Array.prototype.slice.apply(geByClass("radiobtn", ge("im_submit_hint_opts"))),
                            val : e
@@ -312,10 +315,14 @@ vkopt['settings'] =  {
          p && p.appendChild(item);
       }
       if (nav_obj.act == 'vkopt'){
-         vkopt.settings.show();
+         Inj.Wait('cur.module == "settings"',function(){ // для предотвращения фейла родных скриптов
+            vkopt.settings.show();
+         },100)
       }
    },
    show: function(el, in_box){
+      var list = vkopt.settings.get_options_list();
+      console.log(list);
       var p = null;
       if (!in_box){
          el = el || ge('ui_rmenu_vkopt');
@@ -326,13 +333,106 @@ vkopt['settings'] =  {
       p.innerHTML = vkopt.settings.tpls.main;
       return false;
    },
+   get_options_list:function(){
+      var raw_list = vkopt_core.plugins.call_modules('onSettings'); // собираем опции со всех плагинов в один список
+      var options = {};
+      var options_id = {}; // <conflicts />
+      for (var plug_id in raw_list){
+         var setts = raw_list[plug_id];
+         for (var cat in setts){
+            var opts = setts[cat];
+            if (!options[cat])
+               options[cat] = {};
+            for (var option_id in opts){
+               var option_data = opts[option_id];
+               option_data.plug_id = plug_id;
+               options[cat][option_id] = option_data; 
+               
+               // <conflicts>
+               if (!options_id[option_id]) // собираем инфу, чтоб потом проверить, нет ли повторов ID опций в других плагинах
+                  options_id[option_id] = []
+               options_id[option_id].push(plug_id);
+               // </conflicts>
+            }
+         }
+      }
+      
+      // <conflicts>
+      var conflicts = [];
+      for (var option_id in options_id)
+         if (options_id[option_id] && options_id[option_id].length > 1)
+            conflicts.push(vk_lib.format('Option: <b>%1</b>. Found in: %2', option_id, options_id[option_id].join(', ')));
+         
+      if (conflicts.length)
+         new MessageBox({title:'Conflicts',hideButtons:true}).content(conflicts.join('<br>')).show();
+      // </conflicts>
+      
+      return options;
+   },
    get_switcher_code:function(){
       // чекбоксы
       //
       
    }
 }
-/*
+
+vkopt['photoview'] =  {
+   onSettings:{
+      Media:{
+         scroll_to_next:{
+            title: 'seScroolPhoto'
+         }
+      }
+   },
+   onLibFiles: function(file_name){
+      if (file_name == 'photoview.js')
+         Inj.Start('photoview.afterShow','vkopt.photoview.scroll_view();');
+   },
+   scroll_view: function() {
+   	vkopt.photoview.allow_scroll_view = true;
+   	var on_scroll = function (is_next) {
+   		if (vkopt.photoview.allow_scroll_view && isVisible('pv_nav_right') && isVisible('pv_nav_left')) {
+   			if (!cur.pvTagger && !boxQueue.count() && !document.activeElement.focused ) { //&& (!cur.pvComment || !cur.pvComment.focused)
+   				if (is_next) {
+   					photoview.show(cur.pvListId, cur.pvIndex + 1);
+   				} else {
+   					photoview.show(cur.pvListId, cur.pvIndex - 1);
+   				}
+   			}
+   			vkopt.photoview.allow_scroll_view = false;
+   			setTimeout(function(){ vkopt.photoview.allow_scroll_view = true }, 200);
+   		}
+   	};
+   	var _next = function (e) {
+   		on_scroll(1, e)
+   	};
+   	var _prev = function (e) {
+   		on_scroll(0, e)
+   	};
+   	vkSetMouseScroll(geByClass1("pv_img_area_wrap"), _next, _prev);
+   }
+}
+vkopt['face'] =  {
+   onSettings:{
+      vkInterface:{
+         ad_block:{
+            title: 'seADRem'
+         }
+      }
+   },
+   css: function(){
+      var codes = vk_lib.get_block_comments(function(){
+         /*ad_block:
+         div#ads_left{
+            position: absolute;
+            left: -9500px;
+         } 
+         */
+      });
+      return codes.ad_block;
+   }
+}
+
 vkopt['test_module'] =  {
    onLibFiles:       function(file_name){
       console.log('test onLibFiles:',file_name)
@@ -341,17 +441,17 @@ vkopt['test_module'] =  {
       console.log('test onLocation:',nav_obj,cur_module_name)
    },
    onResponseAnswer: function(answer,url,params){
-      console.log('test onResponseAnswer:',url,params,answer)
+      //console.log('test onResponseAnswer:',url,params,answer)
    },
    onStorage :       function(command_id,command_obj){
       console.log('test onStorage:', command_id, command_obj)
    },
    processNode:      function(node, params){
-      console.log('test processNode:',node, params)
+      //console.log('test processNode:',node, params)
    },
    processLinks:     function(link_el, params){
-      console.log('test processLinks:',link_el, params)
+      //console.log('test processLinks:',link_el, params)
    }
 }
-*/
+
 vkopt_core.init();
