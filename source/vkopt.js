@@ -15,6 +15,14 @@ var vBuild = 160422;
 var vPostfix = ' ';
 
 if (!window.vkopt) window.vkopt={};
+
+var vkopt_defaults = {
+   config: {
+      scroll_to_next: false,
+      ad_block: true
+   }
+}
+
 var vkopt_core = {
    disallow_location: /\/m\.vk\.com|login\.vk\.com|oauth\.vk\.com|al_index\.php|frame\.php|widget_.+php|notifier\.php|audio\?act=done_add/i,
    dom_ready: function(fn, ctx){
@@ -267,11 +275,12 @@ vkopt['settings'] =  {
       var values = {
          full_title: vk_lib.format('Vkontakte Optimizer %1<sup><i>%2</i></sup> (build %3)', String(vVersion).split('').join('.'), vPostfix, vBuild)
       };
-      // Кто-то что-то имеет против против такого пожирания ресурсов, в обмен на более удобное описание больших кусков текста? (и да, я в курсе что это создаст проблем в случае минимизации)
+      // Кто-то что-то имеет против против такого пожирания ресурсов, в обмен на более удобное описание больших кусков текста? (и да, я в курсе, что это создаст проблем в случае минимизации)
       vkopt.settings.tpls = vk_lib.get_block_comments(function(){
          /*right_menu_item:
          <a id="ui_rmenu_vkopt" href="/settings?act=vkopt" class="ui_rmenu_item _ui_item_payments" onclick="return vkopt.settings.show(this);"><span>{lng.VkOpt}</span></a>
          */
+         
          /*main:
          <div id="vkopt_settings_block" class="page_block clear_fix">
              <div class="page_block_header">{vals.full_title}</div>
@@ -283,11 +292,18 @@ vkopt['settings'] =  {
              </div>
          </div>         
          */
+         /*cat_block:
+         <div class="settings_line">
+            <div class="settings_label">{vals.caption}</div>
+            <div class="settings_labeled_text settings_inotify">{vals.content}</div>
+         </div>
+         */
+         
          /*checkbox:
-         <div class="checkbox " id="{vals.id}" onclick="checkbox(this);">{vals.caption}</div>       
+         <div class="checkbox {vals.on_class}" id="vkcfg_{vals.id}" onclick="checkbox(this); vkopt.settings.set('{vals.id}', isChecked(this));">{vals.caption}</div>       
          */
          /*radiobtn:
-         <div class="radiobtn {vals.on_class}" data-val="{vals.value}" onclick="radiobtn(this, {vals.value}, '{vals.group_id}')">{vals.caption}</div>
+         <div class="radiobtn {vals.on_class}" data-val="{vals.value}" onclick="radiobtn(this, '{vals.value}', '{vals.id}'); vkopt.settings.set('{vals.id}', '{vals.value}');">{vals.caption}</div>
          */ 
          
          /* Usage as
@@ -300,7 +316,7 @@ vkopt['settings'] =  {
                            els : Array.prototype.slice.apply(geByClass("radiobtn", ge("im_submit_hint_opts"))),
                            val : e
                         };
-         */         
+         */
       });
       // Подставляем локализацию в шаблон:
       for (var key in vkopt.settings.tpls)
@@ -322,6 +338,19 @@ vkopt['settings'] =  {
    },
    show: function(el, in_box){
       var list = vkopt.settings.get_options_list();
+      var html = '';
+      for (var cat in list){
+         var content = '';
+         for (var option_id in list[cat]){
+            content += vkopt.settings.get_switcher_code(list[cat][option_id]);
+         }
+         
+         html += vk_lib.tpl_process(vkopt.settings.tpls['cat_block'], {
+               caption: IDL(cat, 2),
+               content: content
+            });         
+         
+      }
       console.log(list);
       var p = null;
       if (!in_box){
@@ -330,8 +359,35 @@ vkopt['settings'] =  {
          p = ge('wide_column');
          vkopt_core.setLoc('settings?act=vkopt'); // вместо nav.setLoc для избежания рекурсии, обход реакции на смену URL'а
       }
-      p.innerHTML = vkopt.settings.tpls.main;
+      p.innerHTML = vkopt.settings.tpls['main'];
+      ge('vkopt_settings').innerHTML = html;
+      // vkopt.settings.prepare_radiobtns();
       return false;
+   },
+   config: function(new_config){
+      if (new_config){
+         localStorage['vkopt_config'] = JSON.stringify(new_config);
+         return new_config;
+      }
+      var config = vkopt_defaults.config;
+      try {
+         config = JSON.parse(localStorage['vkopt_config'] || '{}')
+      } catch(e) {
+         new MessageBox({title:'Vkopt error',hideButtons:true}).content('Config parse error. Use default config').show();
+         localStorage['vkopt_config'] = JSON.stringify(config);
+         // TODO: add ping to statisitcs about fail
+      }
+      return config;      
+   },
+   set:function(option_id, val){
+      var cfg = vkopt.settings.config();
+      cfg[option_id] = val;
+      vkopt.settings.config(cfg);
+      vkopt_core.plugins.call_modules('onOptionChanged', option_id, val);
+   },
+   get:function(option_id){
+      var cfg = vkopt.settings.config();
+      return (typeof cfg[option_id] == 'undefined') ? vkopt_defaults.config[option_id] : cfg[option_id];
    },
    get_options_list:function(){
       var raw_list = vkopt_core.plugins.call_modules('onSettings'); // собираем опции со всех плагинов в один список
@@ -346,6 +402,7 @@ vkopt['settings'] =  {
             for (var option_id in opts){
                var option_data = opts[option_id];
                option_data.plug_id = plug_id;
+               option_data.id = option_id;
                options[cat][option_id] = option_data; 
                
                // <conflicts>
@@ -369,10 +426,20 @@ vkopt['settings'] =  {
       
       return options;
    },
-   get_switcher_code:function(){
+   get_switcher_code:function(option_data){
       // чекбоксы
       //
-      
+      var html = '';
+      if (!option_data.options){ // checkbox
+         html = vk_lib.tpl_process(vkopt.settings.tpls['checkbox'], {
+               id: option_data.id,
+               caption: IDL(option_data.title, 2),
+               on_class: vkopt.settings.get(option_data.id) ? 'on': ''
+            });
+      } else { // radio group
+         
+      }
+      return html;
    }
 }
 
@@ -389,7 +456,10 @@ vkopt['photoview'] =  {
          Inj.Start('photoview.afterShow','vkopt.photoview.scroll_view();');
    },
    scroll_view: function() {
-   	vkopt.photoview.allow_scroll_view = true;
+   	 // можно конечно для оптимизации и в onLibFiles перенести проверку активности опции + вызов onLibFiles по событию onOptionChanged('scroll_to_next'), для инъекции на лету при переключении опции
+       // но есть ли смысл? падения вызывать не должно, т.к в самое начало функции инъектится
+      if (!vkopt.settings.get('scroll_to_next')) return;
+      vkopt.photoview.allow_scroll_view = true;
    	var on_scroll = function (is_next) {
    		if (vkopt.photoview.allow_scroll_view && isVisible('pv_nav_right') && isVisible('pv_nav_left')) {
    			if (!cur.pvTagger && !boxQueue.count() && !document.activeElement.focused ) { //&& (!cur.pvComment || !cur.pvComment.focused)
@@ -412,6 +482,7 @@ vkopt['photoview'] =  {
    	vkSetMouseScroll(geByClass1("pv_img_area_wrap"), _next, _prev);
    }
 }
+
 vkopt['face'] =  {
    onSettings:{
       vkInterface:{
@@ -420,19 +491,39 @@ vkopt['face'] =  {
          }
       }
    },
+   option_ids:[],
+   onOptionChanged: function(option_id, val){
+      if (vkopt.face.option_ids.indexOf(option_id) > -1){ // фильтруем только свои
+         vkopt.face.setEnabledFeature(option_id, val);
+      }
+   },
    css: function(){
       var codes = vk_lib.get_block_comments(function(){
          /*ad_block:
-         div#ads_left{
+         .vk_ad_block div#ads_left{
             position: absolute;
             left: -9500px;
          } 
          */
       });
       return codes.ad_block;
+   },
+   onInit: function(){
+      var options = [];
+      for (var cat in vkopt.face.onSettings) // сбор id опций этого модуля, чтоб реагировать на изменение только своих.
+         for (var option_id in vkopt.face.onSettings[cat])
+            options.push(option_id);
+      
+      vkopt.face.option_ids = options;
+      for(var i = 0; i < options.length; i++) // активируем опции в соотвествии с настройками
+         vkopt.face.setEnabledFeature(options[i], vkopt.settings.get(options[i]));
+   },
+   setEnabledFeature: function(option_id, enabled){ // активность добавленного стиля-опции активируется добавлением имени соответствующего класса к тегу <html>
+      (enabled ? addClass : removeClass)(geByTag1('html'), 'vk_'+option_id);// у <body> className порой полностью перезаписывается обработчиками вк, т.ч вешаем класс на <html>
    }
 }
 
+/*
 vkopt['test_module'] =  {
    onLibFiles:       function(file_name){
       console.log('test onLibFiles:',file_name)
@@ -453,5 +544,6 @@ vkopt['test_module'] =  {
       //console.log('test processLinks:',link_el, params)
    }
 }
+//*/
 
 vkopt_core.init();

@@ -896,7 +896,7 @@ var vkMozExtension = {
       return (tpl || '').replace(/\{([a-z]+)\.([a-z0-9_-]+)\}/ig,function(s,type, id){
          switch(type.toLowerCase()){
             case 'lng': return IDL(id);
-            case 'vals': return (values || {})[id];
+            case 'vals': return values && typeof values[id] != 'undefined' ? values[id] : s;
             default: return s;
          }
          
