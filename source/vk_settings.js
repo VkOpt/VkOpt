@@ -11,15 +11,27 @@
 // (c) All Rights Reserved. VkOpt.
 //
 
-function InstallRelease(){
+function InstallRelease(callback){
+  if (!vkgetCookie('remixbit')){
+     vk_settings.restore(function(){
+        if (!vkgetCookie('remixbit')){
+           vksetCookie('remixbit',DefSetBits)
+           InstallRelease(callback);
+        } else
+           location.href = location.href;
+     })
+     return;
+  }
+  
   if (window.vkopt_plugins && vkopt_plugins['vkdislikes']){
       alert('Please uninstall old vkopt dislike plugin');
+      callback && callback();
       return;
   }
   
   if (!window.vk || !vk.id) return;
   if (isNewLib() && !window.lastWindowWidth){
-      setTimeout(InstallRelease,50);
+      setTimeout(function(){InstallRelease(callback)},50);
       return;
   }  
   var err=[];
@@ -78,6 +90,7 @@ function InstallRelease(){
   }
   if (err.length) vkAlertBox(IDL('Error'),err.join('<br>'));
   if (vbuild < 160328 && getSet(10) == 'y') setSet(10, getSet(11) == 'y' ? 1 : 2);
+  callback && callback();
   return false;
 }
 	
@@ -935,7 +948,58 @@ vk_settings = {
          vkSetVal('vk_cfg_override','{}');
          ge('vk_adv_settings_content').parentNode.innerHTML=vk_settings.cfg_override_edit();
       }
-   }
+   },
+   backup_handler: function(){
+      clearTimeout(vk_settings.__bkp_timeout);
+      vk_settings.__bkp_timeout = setTimeout(function(){
+         vk_settings.backup();
+      },400)
+     
+   },
+   backup:function(callback){
+      var full_config = {// remixbit|remixumbit|FavList|menu_custom_links|
+            ts: (new Date()/1),
+            vkOVer: vkgetCookie('vkOVer'),
+            remixbit: vkgetCookie('remixbit'),
+            remixumbit: vkgetCookie('remixumbit'),
+            FavList: vkGetVal('FavList'),
+            menu_custom_links: vkGetVal('menu_custom_links'),
+            vk_sounds_vol: vkGetVal("vk_sounds_vol") || "",
+            WallsID: vkGetVal("WallsID") || "",
+            VK_CURRENT_CSS_URL: vkGetVal('VK_CURRENT_CSS_URL'),
+            VK_CURRENT_CSSJS_URL: vkGetVal('VK_CURRENT_CSSJS_URL'),
+            VK_CURRENT_CSS_CODE: vkGetVal('VK_CURRENT_CSS_CODE'),
+            vklang: vkgetCookie('vklang')
+      }
+      var msg_pattern=vkGetVal('VK_SAVE_MSG_HISTORY_PATTERN') || SAVE_MSG_HISTORY_PATTERN;
+      var date_fmt=vkGetVal('VK_SAVE_MSG_HISTORY_DATE_FORMAT') || SAVE_MSG_HISTORY_DATE_FORMAT;
+      
+      if(msg_pattern != SAVE_MSG_HISTORY_PATTERN)
+         full_config.VK_SAVE_MSG_HISTORY_PATTERN = vkGetVal('VK_SAVE_MSG_HISTORY_PATTERN');
+      if(date_fmt != SAVE_MSG_HISTORY_DATE_FORMAT)
+      full_config.VK_SAVE_MSG_HISTORY_DATE_FORMAT = vkGetVal('VK_SAVE_MSG_HISTORY_DATE_FORMAT');
+      
+      vk_ext_api.storage.set('vkopt_cfg_backup_'+vk.id, JSON.stringify(full_config), function(){
+         console.log('config '+vk.id+' copied to bg ok');
+         callback && callback();
+      });
+   
+   },
+   restore:function(callback){
+      vk_ext_api.storage.get('vkopt_cfg_backup_'+vk.id,function(value){
+         var cfg = JSON.parse(value || '{}');
+         for (var key in cfg) if ((typeof cfg[key] != 'undefined' && typeof cfg[key] != 'null') && key !='ts') 
+            vksetCookie(key,cfg[key]);
+         console.log('config '+vk.id+' restored from bg ok');
+         callback && callback();
+      })      
+   },
+   remove_backup:function(callback){
+      vk_ext_api.storage.set('vkopt_cfg_backup', '{}', function(){
+         console.log('empty config copied to bg ok');
+         callback && callback();
+      });      
+   }   
 };
 function vksettobj(){
   vkoptSetsObj={};

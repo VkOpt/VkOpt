@@ -541,6 +541,7 @@ function vkOnOffButton(){
 function vkResetVkOptSetting(){
   vksetCookie('remixbit',DefSetBits);
   vkSetVal('remixbit',DefSetBits);
+  vk_settings.remove_backup();
   location.reload();
 }
 
@@ -831,9 +832,8 @@ function VkOptMainInit(){
   }
   vk_settings.cfg_override();
   if (vkLocationCheck()) return;
-  InstallRelease();
-  
-  
+  InstallRelease(function(){ //<on_check_ok>
+
   if (isNewLib() && !window.lastWindowWidth){
       setTimeout(VkOptMainInit,50);
       return;
@@ -892,7 +892,8 @@ function VkOptMainInit(){
   setTimeout(vkFriendsCheckRun,2000);
   window.vk_vid_down &&  setTimeout(vk_vid_down.vkVidLinks,0);
   if (vkgetCookie('IDFriendsUpd') && (vkgetCookie('IDFriendsUpd') != '_')) {	vkShowFriendsUpd();  }
-  
+     
+  }); //</on_check_ok>
 }
 
 function vkOnDocumentClick() {

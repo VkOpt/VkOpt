@@ -598,6 +598,7 @@ var vkMozExtension = {
 	  else if (typeof GM_SetValue!='undefined'){ GM_SetValue(key,val); }//Mozilla
 	  else if (typeof sessionStorage!='undefined'){sessionStorage.setItem(key, val);} //Opera 10.5x+
 	  else { vksetCookie(key,val)}
+     window.vkopt_ready && vk_settings.backup_handler(); // сохранение дампа настроек в хранилище расширения (не домена vk.com)
 	}
 
 	function vkGetVal(key){
