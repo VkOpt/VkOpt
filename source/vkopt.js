@@ -541,6 +541,7 @@ function vkOnOffButton(){
 function vkResetVkOptSetting(){
   vksetCookie('remixbit',DefSetBits);
   vkSetVal('remixbit',DefSetBits);
+  vk_settings.remove_backup();
   location.reload();
 }
 
