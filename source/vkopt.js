@@ -19,7 +19,9 @@ if (!window.vkopt) window.vkopt={};
 var vkopt_defaults = {
    config: {
       scroll_to_next: false,
-      ad_block: true
+      ad_block: true,
+      compact_audio: false,
+      disable_border_radius: false
    }
 }
 
@@ -271,6 +273,13 @@ var vk_glue = {
 
 vkopt['settings'] =  {
    tpls: null,
+   css:'\
+   .vk_settings_block .checkbox{\
+      margin-top: 10px\
+   }\
+   .vk_settings_block .checkbox:first-child {\
+      margin-top: 0\
+   }',
    onInit: function(){
       var values = {
          full_title: vk_lib.format('Vkontakte Optimizer %1<sup><i>%2</i></sup> (build %3)', String(vVersion).split('').join('.'), vPostfix, vBuild)
@@ -295,7 +304,7 @@ vkopt['settings'] =  {
          /*cat_block:
          <div class="settings_line">
             <div class="settings_label">{vals.caption}</div>
-            <div class="settings_labeled_text settings_inotify">{vals.content}</div>
+            <div class="settings_labeled_text vk_settings_block">{vals.content}</div>
          </div>
          */
          
@@ -485,10 +494,18 @@ vkopt['photoview'] =  {
 
 vkopt['face'] =  {
    onSettings:{
+      Media:{
+         compact_audio: {
+            title: 'seCompactAudio'
+         }
+      },
       vkInterface:{
          ad_block:{
             title: 'seADRem'
-         }
+         },
+         disable_border_radius:{
+            title: 'seDisableBorderRadius'
+         },         
       }
    },
    option_ids:[],
@@ -499,14 +516,27 @@ vkopt['face'] =  {
    },
    css: function(){
       var codes = vk_lib.get_block_comments(function(){
-         /*ad_block:
+         /*main:
          .vk_ad_block div#ads_left{
             position: absolute;
             left: -9500px;
-         } 
+         }
+         .vk_disable_border_radius body *{
+            border-radius: 0px !important;
+         }
+         .vk_compact_audio .audio_row{
+            padding: 0px;
+         }
+         .vk_compact_audio .audio_row .audio_play {
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+            background-position: 5px 4px;
+         }
+        
          */
       });
-      return codes.ad_block;
+      return codes.main;
    },
    onInit: function(){
       var options = [];
