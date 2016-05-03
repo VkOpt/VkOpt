@@ -990,6 +990,8 @@ ext_api={
             function(details) {
                //console.log('onBeforeRequest:',details);
                var url=details.url.match(/^(.+)[&\?]\/(.+\.[a-z0-9]+)/);
+               if (!url)
+                  url=details.url.match(/^(.+)#FILENAME\/(.+\.[a-z0-9]+)/);
                if (url){
                   download_file_names['name'+details.requestId]=decodeURIComponent(url[2]);
                   return {redirectUrl: url[1]};

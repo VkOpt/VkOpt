@@ -22,6 +22,7 @@ var vkopt_defaults = {
       ad_block: true,
       compact_audio: false,
       disable_border_radius: false,
+      audio_dl: true,
       
       //Extra:
       photo_replacer: true
@@ -536,19 +537,31 @@ vkopt['audio'] =  {
          background-image: url(/images/dev_toplink.png);
          background-position: 0 -16px;
          width: 15px;
-      }      
+      }
+      .dl_url_loading{
+         opacity:0.3;
+         background: url(/images/upload_inv_mini.gif) no-repeat 0% 50%;
+         width: 17px;
+         margin-left: -2px;
+      }
       */
       });
       return codes.dl;
    },
    tpls: {},
    onSettings:{
-      Media:{}
+      Media:{
+         audio_dl: {
+            title: 'seLinkAu'
+         }
+      }
    },
    onLibFiles: function(file_name){
       if (file_name == 'audioplayer.js'){
-         Inj.Start('AudioPlayer.prototype.toggleAudio','if (vkopt.audio.prevent_play_check()) return true;'); // для предотвращения воспроизведения при нажатии на "скачать"
-         Inj.Replace('AudioUtils.drawAudio',/return ([a-z_]+)(.+)/,'$1$2; $1 = vkopt.audio.mod_audio_row_tpl($1); return $1;');
+         if (vkopt.settings.get('audio_dl')){
+            Inj.Start('AudioPlayer.prototype.toggleAudio','if (vkopt.audio.prevent_play_check()) return true;'); // для предотвращения воспроизведения при нажатии на "скачать"
+            Inj.Replace('AudioUtils.drawAudio',/return ([a-z_]+)(.+)/,'$1$2; $1 = vkopt.audio.mod_audio_row_tpl($1); return $1;');
+         }
       }
    },
    onInit: function(){
@@ -561,16 +574,32 @@ vkopt['audio'] =  {
    mod_audio_row_tpl:function(audio_row){
       return vkopt_core.mod_str_as_node(audio_row, vkopt.audio.processNode);
    },
-   check_dl_url: function(el){
+   check_dl_url: function(el){   // если на странице не было ссылок на аудио, то при наведении на кнопку загрузки ждём их появления в кэше.
       if (el.getAttribute('href') == ''){
+         addClass(el,'dl_url_loading');
          var id = el.dataset["aid"];
-         var info = vkopt.audio.__full_audio_info_cache[id];
-         if (info)
-            el.setAttribute('href', info.url);
-         //addClass('dl_url_loading');
+         function wait_and_set_url(){
+            var info = vkopt.audio.__full_audio_info_cache[id];
+            if (info){
+               var name = vkCleanFileName(info.performer + ' - ' + info.title);
+               var url = vkopt.audio.make_dl_url(info.url, name);
+               el.setAttribute('href', url);
+               removeClass(el,'dl_url_loading');
+            } else {
+               setTimeout(function(){
+                  wait_and_set_url();
+               },300);
+            }           
+         }
+         wait_and_set_url();
       }
    },
+   make_dl_url: function(url, name){
+      name = vkCleanFileName(name);
+      return url + '#FILENAME/' + vkEncodeFileName(name) + '.mp3';
+   },
    processNode: function(node, params){
+      if (!vkopt.settings.get('audio_dl')) return;
       if (!vkopt.audio.__full_audio_info_cache)
          vkopt.audio.__full_audio_info_cache = {};
       var cache = vkopt.audio.__full_audio_info_cache;
@@ -587,24 +616,25 @@ vkopt['audio'] =  {
          }         
          if (!acts || !info) continue;
          var info_obj = AudioUtils.asObject(info);
-         if (info_obj.url==""){
+         if (info_obj.url==""){                    // собираем очередь из аудио, которым требуется подгрузка инфы
             if (cache[info_obj.fullId])
                info_obj = cache[info_obj.fullId];
             else
                if (vkopt.audio.__load_queue.indexOf(info_obj.fullId) == -1 && vkopt.audio.__loading_queue.indexOf(info_obj.fullId) == -1)
-                  vkopt.audio.__load_queue.push(info_obj.fullId); //load_audio_urls
+                  vkopt.audio.__load_queue.push(info_obj.fullId);
          }
          var name = vkCleanFileName(info[3]+' - '+info[4]);
          var btn = se(
             vk_lib.tpl_process(vkopt.audio.tpls['dl_button'], {
                id: info_obj.fullId,
                filename: name+'.mp3',
-               url: info_obj.url
+               url: info_obj.url ? vkopt.audio.make_dl_url(info_obj.url, name) : ''
             })
          );
+         console.log(info_obj.fullId, btn.getAttribute('href'));
          !geByClass1('vk_audio_dl_btn',acts) && acts.appendChild(btn);
       }
-      vkopt.audio.load_audio_urls();
+      vkopt.audio.load_audio_urls(); // запускаем процесс загрузки инфы об аудио из очереди
    },
    __load_queue:[],
    __loading_queue:[],
@@ -639,9 +669,6 @@ vkopt['audio'] =  {
    },
    prevent_play:function(){
       vkopt.audio.__play_blocked = true; 
-   },
-   insert_dl_btn: function(){
-     
    }
 }
 
@@ -707,18 +734,17 @@ vkopt['face'] =  {
    }
 }
 
-//*
+/*
 vkopt['test_module'] =  {
-   /*
    onLibFiles:       function(file_name){
       console.log('test onLibFiles:',file_name)
    },
    onLocation:       function(nav_obj,cur_module_name){
       console.log('test onLocation:',nav_obj,cur_module_name)
-   },*/
+   },
    onResponseAnswer: function(answer,url,params){
       console.log('test onResponseAnswer:',url,params,answer[1], answer)
-   }/*,
+   },
    onStorage :       function(command_id,command_obj){
       console.log('test onStorage:', command_id, command_obj)
    },
@@ -727,7 +753,7 @@ vkopt['test_module'] =  {
    },
    processLinks:     function(link_el, params){
       //console.log('test processLinks:',link_el, params)
-   }*/
+   }
 }
 //*/
 
