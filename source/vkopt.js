@@ -255,11 +255,10 @@ var vk_glue = {
                // End of callback mod
             }
          );
-         
-        
-         
+         // айфремовая загрузка выглядит так - загрузили каркас с частью данных, дальше по ходу загрузки айфреймовой страницы выполняются куски заполнения элементов карскаса.
+         // эти кучки тоже надор перезватывать.
+         Inj.Start('ajax.framegot','if (#ARG1#) #ARG1#=vk_glue.process_on_framegot(#ARG1#);'); 
          /*
-         Inj.Start('ajax.framegot','if (#ARG1#) #ARG1#=vkopt_core.process_on_framegot(#ARG1#);');
          Inj.Start('ajax.post','if (vkAllowPost(url, query, options)==false) return;');
          Inj.Start('renderFlash','vkOnRenderFlashVars(vars);');
          */
@@ -269,6 +268,9 @@ var vk_glue = {
       // тут какие-то системные действия движка до передачи события в плагины
       // ...
       vkopt_core.plugins.on_location();
+   },
+   process_on_framegot: function(html){
+      return vkopt_core.mod_str_as_node(html, vkopt_core.plugins.process_node);
    },
    response_handler: function(answer,url,q){
       vkopt_core.plugins.process_response(answer, url, q);
@@ -510,7 +512,7 @@ vkopt['photos'] =  {
    },   
    onResponseAnswer: function(answer,url,q){
       if (url == '/al_photos.php' && q.act == 'edit_photo' && (vkopt.settings.get('photo_replacer'))){
-         answer[1] = vkModAsNode(answer[1], vkopt.photos.update_photo_btn, url, q);
+         answer[1] = vkopt_core.mod_str_as_node(answer[1], vkopt.photos.update_photo_btn, {source:'process_edit_photo_response', url:url, q:q});
       }
    },    
    update_photo: function(photo_id){
@@ -557,7 +559,7 @@ vkopt['audio'] =  {
       });
    },
    mod_audio_row_tpl:function(audio_row){
-      return vkModAsNode(audio_row, vkopt.audio.processNode);
+      return vkopt_core.mod_str_as_node(audio_row, vkopt.audio.processNode);
    },
    check_dl_url: function(el){
       if (el.getAttribute('href') == ''){
@@ -705,17 +707,18 @@ vkopt['face'] =  {
    }
 }
 
-/*
+//*
 vkopt['test_module'] =  {
+   /*
    onLibFiles:       function(file_name){
       console.log('test onLibFiles:',file_name)
    },
    onLocation:       function(nav_obj,cur_module_name){
       console.log('test onLocation:',nav_obj,cur_module_name)
-   },
+   },*/
    onResponseAnswer: function(answer,url,params){
-      //console.log('test onResponseAnswer:',url,params,answer)
-   },
+      console.log('test onResponseAnswer:',url,params,answer[1], answer)
+   }/*,
    onStorage :       function(command_id,command_obj){
       console.log('test onStorage:', command_id, command_obj)
    },
@@ -724,7 +727,7 @@ vkopt['test_module'] =  {
    },
    processLinks:     function(link_el, params){
       //console.log('test processLinks:',link_el, params)
-   }
+   }*/
 }
 //*/
 
