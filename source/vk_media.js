@@ -645,7 +645,14 @@ var vk_photos = {
                            box.hide();
                            vkMsg(IDL('Done'),2000);
                            if (photoObj && thumb) {
-                              Filters.changeThumbs(thumb);
+                              if (typeof FiltersPE != 'undefined'){
+                                 FiltersPE.changeThumbs(thumb);
+                              }
+                              if (typeof Filters != 'undefined'){
+                                 Filters.changeThumbs(thumb);
+                              }
+                                 
+                              
                            }
                         }
                      });
