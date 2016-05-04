@@ -338,6 +338,7 @@ vkopt['settings'] =  {
       for (var key in vkopt.settings.tpls)
          vkopt.settings.tpls[key] = vk_lib.tpl_process(vkopt.settings.tpls[key],values);
       
+      vkopt.settings.top_menu_item();
    },
    onLocation: function(nav_obj,cur_module_name){
       if (nav_obj[0] != 'settings') return;
@@ -350,6 +351,13 @@ vkopt['settings'] =  {
          Inj.Wait('cur.module == "settings"',function(){ // для предотвращения фейла родных скриптов
             vkopt.settings.show();
          },100)
+      }
+   },
+   top_menu_item: function(){
+      var ref = ge('top_support_link');
+      var item = se('<a class="top_profile_mrow" id="top_vkopt_settings_link" href="/settings?act=vkopt" onclick="return vkopt.settings.show(this, true);">VkOpt</a>');
+      if (ref && !ge('top_vkopt_settings_link')){
+         ref.parentNode.insertBefore(item, ref);
       }
    },
    show: function(el, in_box){
@@ -375,6 +383,9 @@ vkopt['settings'] =  {
          el && uiRightMenu.switchMenu(el);
          p = ge('wide_column');
          vkopt_core.setLoc('settings?act=vkopt'); // вместо nav.setLoc для избежания рекурсии, обход реакции на смену URL'а
+      } else {
+         vkopt.settings.__box = new MessageBox({title:'VkOpt configuration', width: 800 ,hideButtons:true}).content('<div id="vkopt_settings_box"></div>').show();
+         p = ge('vkopt_settings_box');
       }
       p.innerHTML = vkopt.settings.tpls['main'];
       ge('vkopt_settings').innerHTML = html;
