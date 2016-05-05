@@ -1336,7 +1336,13 @@ function vkShowFriendsUpd(ret,names){
             html.rem+html.add+
          '</div>';
   vkProccessLinks(el);
-   if (names) dApi.call('getProfiles',{uids:names.join(',')},function(r){
+  if (!names) { 
+    names = [];
+    if (idfrupd[0].length) names = names.concat(idfrupd[0].split('-'));
+    if (idfrupd[1].length) names = names.concat(idfrupd[1].split('+'));
+  }
+  
+   if (names.length) dApi.call('getProfiles',{uids:names.join(',')},function(r){
       for (var i=0;r.response && i<r.response.length;i++){
          var user=r.response[i];
          var elem=ge('vkfrsb'+user.uid);
