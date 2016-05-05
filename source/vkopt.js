@@ -288,8 +288,9 @@ vkopt['settings'] =  {
       margin-top: 0\
    }',
    onInit: function(){
+      vkopt.settings.__full_title = vk_lib.format('Vkontakte Optimizer %1<sup><i>%2</i></sup> (build %3)', String(vVersion).split('').join('.'), vPostfix, vBuild);
       var values = {
-         full_title: vk_lib.format('Vkontakte Optimizer %1<sup><i>%2</i></sup> (build %3)', String(vVersion).split('').join('.'), vPostfix, vBuild)
+         full_title: vkopt.settings.__full_title
       };
       // Кто-то что-то имеет против против такого пожирания ресурсов, в обмен на более удобное описание больших кусков текста? (и да, я в курсе, что это создаст проблем в случае минимизации)
       vkopt.settings.tpls = vk_lib.get_block_comments(function(){
@@ -383,12 +384,15 @@ vkopt['settings'] =  {
          el && uiRightMenu.switchMenu(el);
          p = ge('wide_column');
          vkopt_core.setLoc('settings?act=vkopt'); // вместо nav.setLoc для избежания рекурсии, обход реакции на смену URL'а
+         p.innerHTML = vkopt.settings.tpls['main'];
+         ge('vkopt_settings').innerHTML = html;         
       } else {
-         vkopt.settings.__box = new MessageBox({title:'VkOpt configuration', width: 800 ,hideButtons:true}).content('<div id="vkopt_settings_box"></div>').show();
-         p = ge('vkopt_settings_box');
+         stManager.add('settings.css',function(){
+            vkopt.settings.__box = new MessageBox({title:vkopt.settings.__full_title, width: 650 ,hideButtons:true}).content(html).show();        
+         })
+       
       }
-      p.innerHTML = vkopt.settings.tpls['main'];
-      ge('vkopt_settings').innerHTML = html;
+
       // vkopt.settings.prepare_radiobtns();
       return false;
    },
@@ -642,7 +646,6 @@ vkopt['audio'] =  {
                url: info_obj.url ? vkopt.audio.make_dl_url(info_obj.url, name) : ''
             })
          );
-         console.log(info_obj.fullId, btn.getAttribute('href'));
          !geByClass1('vk_audio_dl_btn',acts) && acts.appendChild(btn);
       }
       vkopt.audio.load_audio_urls(); // запускаем процесс загрузки инфы об аудио из очереди
