@@ -549,7 +549,7 @@ vkopt['audio'] =  {
          background-position: 0 -16px;
          width: 15px;
       }
-      .dl_url_loading{
+      .audio_row .audio_acts .audio_act.vk_audio_dl_btn.dl_url_loading>div{
          opacity:0.3;
          background: url(/images/upload_inv_mini.gif) no-repeat 0% 50%;
          width: 17px;
