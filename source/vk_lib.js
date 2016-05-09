@@ -685,6 +685,7 @@ var vkMozExtension = {
 	}
 
 	function vkRand(){return Math.round((Math.random() * (100000000 - 1)));}
+   function vkRandomRange(start, end){return start + Math.round((end - start) * Math.random())}
 	function unixtime() { return Math.round(new Date().getTime());}
 	function getScrH(){ return window.innerHeight ? window.innerHeight : (document.documentElement.clientHeight ? document.documentElement.clientHeight : document.body.offsetHeight);}
 	function getScrollTop(){ return self.pageYOffset || (document.documentElement && document.documentElement.scrollTop) || (document.body && document.body.scrollTop)}
@@ -897,7 +898,7 @@ var vkMozExtension = {
       return (tpl || '').replace(/\{([a-z]+)\.([a-z0-9_-]+)\}/ig,function(s,type, id){
          switch(type.toLowerCase()){
             case 'lng': return IDL(id);
-            case 'vals': return values && typeof values[id] != 'undefined' ? values[id] : s;
+            case 'vals': return (values && typeof values[id] != 'undefined') ? values[id] : s;
             default: return s;
          }
          
