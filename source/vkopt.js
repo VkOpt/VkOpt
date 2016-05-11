@@ -887,9 +887,10 @@ vkopt['scrobbler'] = {
          //Inj.End('audioPlayer.setGraphics','vkLastFM.onPlayerState(act);');
    },
    onPlayerNotify: function(event_name, data, var1){
+      /*
       if (['buffered','progress'].indexOf(event_name) == -1)
          console.log(event_name, data, var1);
-      
+      */
       var act = '';
       switch(event_name){
          case 'start':
@@ -953,7 +954,7 @@ vkopt['scrobbler'] = {
             }
             showTooltip(el, {
                content: '<div class="tt_text">' + text + '</div>',
-               showdt: 0, black: 1, shift: [11, 0, 0]});
+               showdt: 0, black: 1, shift: [15, 4, 0]});
          }
       }   
    },   
