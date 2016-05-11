@@ -860,6 +860,135 @@ vkopt['audio'] =  {
    }
 }
 
+vkopt['scrobbler'] = {
+   css: function(){
+      return '.lastfm_audio_page{position: absolute;margin-top: -20px;margin-left: 5px;} ' + vkopt_plugins['vklastfm'].css;
+   },
+   onLocation: function(){
+      vkLastFM.on_location();
+   },
+   onInit: function(){
+      vkLastFM.audio_info = vkopt.scrobbler.audio_info;
+      vkLastFM.ui = vkopt.scrobbler.ui;
+      vkLastFM.tip = vkopt.scrobbler.tip;
+      vkLastFM.set_love_icon = vkopt.scrobbler.set_love_icon;
+      vkLastFM.init();
+   },
+   onLibFiles: function(file_name){
+      if (file_name=='audioplayer.js')
+         /*  можно конечно по адекватному через метод AudioPlayer.prototype.on добавлять обработчики событий плеера в массив subscribers, но как оно себя поведёт  - надо проверять.
+         var pl = getAudioPlayer(), 
+             pl.on(this, AudioPlayer.EVENT_UPDATE, function(){console.log('update ', arguments)}),
+             pl.on(this, AudioPlayer.EVENT_PLAY, function(){console.log('play ', arguments)}),
+             pl.on(this, AudioPlayer.EVENT_PAUSE, function(){console.log('pause ', arguments)});
+         */
+         
+         Inj.End('AudioPlayer.prototype.notify','vkopt.scrobbler.onPlayerNotify(#ARG0#, #ARG1#, #ARG2#)');
+         //Inj.End('audioPlayer.setGraphics','vkLastFM.onPlayerState(act);');
+   },
+   onPlayerNotify: function(event_name, data, var1){
+      if (['buffered','progress'].indexOf(event_name) == -1)
+         console.log(event_name, data, var1);
+      
+      var act = '';
+      switch(event_name){
+         case 'start':
+            data && vkLastFM.onPlayerState('load');
+            vkLastFM.onPlayerState('play');
+            break;
+         case 'pause':
+            vkLastFM.onPlayerState('pause');
+            break;
+         case 'stop': // происходит только при разлогивании
+            vkLastFM.onPlayerState('stop');
+            break;   
+      }
+   },
+   audio_info:function(){
+      var fm=vkLastFM;
+      if (!(window.AudioUtils)) return {};
+      var cur_audio = AudioUtils.asObject(getAudioPlayer().getCurrentAudio());
+      var a = cur_audio || {};
+      return {
+         title    :fm.clean(a.title),
+         artist   :fm.clean(a.performer),
+         duration :a.duration,
+         url      :a.url,
+         oid      :a.owner_id,
+         aid      :a.id
+      };
+   },
+   tip:function(el,text, opts){ 
+         var dx, dy1, dy2;
+         opts = opts || {};
+         dx=7;
+         dy1=-13;
+         dy2=-12;
+         if (el.tt && el.tt.container) {
+            val(geByClass1('tt_text', el.tt.container), text);
+         }
+         showTooltip(el, {
+            content: '<div class="tt_text">' + text + '</div>',
+            //className: 'slider_hint',
+            black: 1,
+            shift: [4 + intval(dx), 13 + intval(dy1), 16 + intval(dy2)],
+            showdt:300,
+            onHide:opts.onHide,
+            onShowStart:opts.onShowStart
+         });     
+   },
+   set_love_icon:function(is_loved){
+      var els=geByClass('lastfm_fav_icon');
+      for (var i=0; i<els.length;i++){ 
+         var el=els[i];
+         (is_loved?removeClass:addClass)(el,'loved');
+         
+         if (el.tt) el.tt.hide();
+         el.onmouseover=function(e){
+            var el=e.target;
+            var text=IDL(!hasClass(el,'loved')?'LastFMAddToLoved':'LastFMRemoveFromLoved');
+            
+            if (el.tt && el.tt.container) {
+               val(geByClass1('tt_text', el.tt.container), text);
+            }
+            showTooltip(el, {
+               content: '<div class="tt_text">' + text + '</div>',
+               showdt: 0, black: 1, shift: [11, 0, 0]});
+         }
+      }   
+   },   
+   ui:function(){
+     var fm=vkLastFM;
+     var controls=
+         '<div class="lastfm_status">\
+            <div class="fl_l lastfm_status_icon"></div>\
+            <div class="fl_r vk_lastfm_icon'+(fm.enable_scrobbling?'':' disabled')+'" onclick="vkLastFM.toggle();"  onmousedown="cancelEvent(event)"></div>\
+            <div class="fl_r lastfm_fav_icon" onclick="vkLastFM.on_love_btn(this);"></div>\
+         </div>';
+
+     var wraps = geByClass('audio_page_player_volume_wrap');
+     for (var i = 0; i < wraps.length; i++){
+        var ap = wraps[i].firstChild;
+        if (ap && !geByClass('lastfm_status',ap.parentNode)[0]){
+            ap.parentNode.insertBefore(vkCe('div',{'class':'fl_r lastfm_audio_page'},controls),ap);
+        }
+     }
+  
+     var els=geByClass('vk_lastfm_icon');
+     for (var i=0; i<els.length;i++){
+         els[i].onmouseover=
+         (function(z){
+            return function(){
+               var text=IDL(fm.enable_scrobbling?'ScrobblingOn':'ScrobblingOff').replace(/<username>/g,fm.username);
+               text+=' <a href="#" onclick="vkLastFM.logout();">'+IDL('Logout')+'</a>';
+               if (!fm.username) text=IDL('AuthNeeded');
+               fm.tip(els[z],text);  
+            }
+         })(i);
+         
+     }
+   } 
+}
 
 vkopt['face'] =  {
    onSettings:{
