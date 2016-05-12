@@ -863,7 +863,15 @@ vkopt['audio'] =  {
 
 vkopt['scrobbler'] = {
    css: function(){
-      return '.lastfm_audio_page{position: absolute;margin-top: -20px;margin-left: 5px;} ' + vkopt_plugins['vklastfm'].css;
+      return '\
+      .lastfm_audio_page{position: absolute;margin-top: -20px;margin-left: 5px;} \
+      .lastfm_white .vk_lastfm_icon{background-image:url("'+vkLastFM.res.white.last_fm+'");}\
+      .lastfm_white .vk_lastfm_playing_icon{background-image:url("'+vkLastFM.res.white.playing_icon+'");}\
+      .lastfm_white .vk_lastfm_paused_icon{background-image:url("'+vkLastFM.res.white.paused_icon+'");}\
+      .lastfm_white .vk_lastfm_ok_icon{background-image:url("'+vkLastFM.res.white.scrobble_ok+'");}\
+      .lastfm_white .vk_lastfm_fail_icon{background-image:url("'+vkLastFM.res.white.scrobble_fail+'");}\
+      .lastfm_white .lastfm_fav_icon{background-position: 0 -10px;}\
+      ' + vkopt_plugins['vklastfm'].css;
    },
    onLocation: function(){
       vkLastFM.on_location();
@@ -964,8 +972,8 @@ vkopt['scrobbler'] = {
      var controls=
          '<div class="lastfm_status">\
             <div class="fl_l lastfm_status_icon"></div>\
-            <div class="fl_r vk_lastfm_icon'+(fm.enable_scrobbling?'':' disabled')+'" onclick="vkLastFM.toggle();"  onmousedown="cancelEvent(event)"></div>\
-            <div class="fl_r lastfm_fav_icon" onclick="vkLastFM.on_love_btn(this);"></div>\
+            <div class="fl_r vk_lastfm_icon'+(fm.enable_scrobbling?'':' disabled')+'" onclick="vkLastFM.toggle(); cancelEvent(event); return false;"  onmousedown="cancelEvent(event)"></div>\
+            <div class="fl_r lastfm_fav_icon" onclick="vkLastFM.on_love_btn(this); cancelEvent(event); return false;"></div>\
          </div>';
 
      var wraps = geByClass('audio_page_player_volume_wrap');
@@ -975,6 +983,14 @@ vkopt['scrobbler'] = {
             ap.parentNode.insertBefore(vkCe('div',{'class':'fl_r lastfm_audio_page'},controls),ap);
         }
      }
+     
+     var wraps = geByClass('top_audio_player_title_wrap');
+     for (var i = 0; i < wraps.length; i++){
+        var ap = wraps[i].firstChild;
+        if (ap && !geByClass('lastfm_status',ap.parentNode)[0]){
+            ap.parentNode.insertBefore(vkCe('div',{'class':'fl_r lastfm_white'},controls),ap);
+        }
+     }     
   
      var els=geByClass('vk_lastfm_icon');
      for (var i=0; i<els.length;i++){
