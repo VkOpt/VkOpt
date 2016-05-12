@@ -27,7 +27,8 @@ var vkopt_defaults = {
       
       //Extra:
       photo_replacer: true,
-
+      add_to_next_fix: true, // кнопка "Воспроизвести следующей" теперь добавляет в текущий список воспроизведения из посторонних
+      
       //Consts:
       AUDIO_INFO_LOAD_THREADS_COUNT: 5,
       AUTO_LIST_DRAW_ROWS_INJ: true // На случай, если инъекция будет убивать редер автоподгружаемых списков
@@ -991,6 +992,37 @@ vkopt['scrobbler'] = {
    } 
 }
 
+vkopt['audioplayer'] = {
+   onSettings:{
+      Extra:{
+         add_to_next_fix: {}
+      }
+   },   
+   audioObjToArr: function(obj){
+      if (isObject(obj)){
+         var arr = ["", "", "", "", "", 0, 0, 0, "", 0, 0, "", "[]"];
+         arr[AudioUtils.AUDIO_ITEM_INDEX_ID] = obj.id;
+         arr[AudioUtils.AUDIO_ITEM_INDEX_OWNER_ID] = obj.ownerId;
+         arr[AudioUtils.AUDIO_ITEM_INDEX_TITLE] = obj.title;
+         arr[AudioUtils.AUDIO_ITEM_INDEX_PERFORMER] = obj.performer;
+         arr[AudioUtils.AUDIO_ITEM_INDEX_DURATION] = obj.duration;
+         arr[AudioUtils.AUDIO_ITEM_INDEX_URL] = obj.url;
+         arr[AudioUtils.AUDIO_ITEM_INDEX_FLAGS] = obj.flags;
+         arr[AudioUtils.AUDIO_ITEM_INDEX_CONTEXT] = obj.context;
+         arr[AudioUtils.AUDIO_ITEM_INDEX_EXTRA] = obj.extra;
+         return arr;
+      } else {
+         return obj;
+      }
+   },
+   onLibFiles: function(file_name){
+      if (!vkopt.settings.get('add_to_next_fix')) return;
+      if (file_name=='audioplayer.js')
+         // багфикс: при добавлении инфы об аудио в виде объекта в плейлист, оно не добавляется. впихиваем костыль для конверта объекта в массив. 
+         Inj.Replace('AudioPlaylist.prototype.addAudio',/(([a-z_0-9]+)\.length)(\s*&&\s*([a-z_0-9]+)\(\2\))/,'($1$3) || ($2.fullId && $4(vkopt.audioplayer.audioObjToArr($2)))') 
+      
+   }
+}
 vkopt['face'] =  {
    onSettings:{
       Media:{
