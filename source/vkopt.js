@@ -23,7 +23,8 @@ var vkopt_defaults = {
       compact_audio: false,
       disable_border_radius: false,
       audio_dl: true,
-      audio_size_info: false, 
+      audio_size_info: false,
+      scrobbler: true,   
       
       //Extra:
       photo_replacer: true,
@@ -873,7 +874,16 @@ vkopt['scrobbler'] = {
       .lastfm_white .lastfm_fav_icon{background-position: 0 -10px;}\
       ' + vkopt_plugins['vklastfm'].css;
    },
+   onSettings:{
+      Media:{
+         scrobbler: {
+            title: 'seScrobbler',
+            need_reload: true
+         }
+      }
+   },
    onLocation: function(){
+      if (!vkopt.settings.get('scrobbler')) return;
       vkLastFM.on_location();
    },
    onInit: function(){
@@ -884,6 +894,7 @@ vkopt['scrobbler'] = {
       vkLastFM.init();
    },
    onLibFiles: function(file_name){
+      if (!vkopt.settings.get('scrobbler')) return;
       if (file_name=='audioplayer.js')
          /*  можно конечно по адекватному через метод AudioPlayer.prototype.on добавлять обработчики событий плеера в массив subscribers, но как оно себя поведёт  - надо проверять.
          var pl = getAudioPlayer(), 
@@ -891,7 +902,6 @@ vkopt['scrobbler'] = {
              pl.on(this, AudioPlayer.EVENT_PLAY, function(){console.log('play ', arguments)}),
              pl.on(this, AudioPlayer.EVENT_PAUSE, function(){console.log('pause ', arguments)});
          */
-         
          Inj.End('AudioPlayer.prototype.notify','vkopt.scrobbler.onPlayerNotify(#ARG0#, #ARG1#, #ARG2#)');
          //Inj.End('audioPlayer.setGraphics','vkLastFM.onPlayerState(act);');
    },
