@@ -724,7 +724,7 @@ vkopt['audio'] =  {
       }
       vkopt.audio.load_audio_urls(); // запускаем процесс загрузки инфы об аудио из очереди
    },
-   _sizes_cache: {},
+   _sizes_cache: {}, // надо бы его загонять в локальное хранилище, но например кэш размеров со списка в ~500 аудио занимает около 10кб. т.е его нужно будет как-то по умному чистить.
    info_thread_count: 0,   
    load_size_info: function(id, url){
       if (vkopt.audio.info_thread_count >= vkopt_defaults.config.AUDIO_INFO_LOAD_THREADS_COUNT){
@@ -1090,6 +1090,9 @@ vkopt['face'] =  {
             margin-top: 0px;
             background-position: 5px 4px;
          }
+         .vk_compact_audio .audio_row .audio_play.playing, .vk_compact_audio .audio_row.audio_row_playing .audio_play {
+            background-position: 5px -19px;
+         }
          .vk_compact_audio .audio_row .audio_acts .audio_act{
             padding: 0px 6px;
          }
@@ -1102,6 +1105,9 @@ vkopt['face'] =  {
          .vk_compact_audio .audio_row .audio_info{
             line-height: 17px;
             padding-top: 0px;
+         }
+         .vk_compact_audio .choose_audio_rows .choose_link {
+            margin: 0px;
          }
          */
       });
