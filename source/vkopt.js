@@ -32,7 +32,8 @@ var vkopt_defaults = {
       
       //Consts:
       AUDIO_INFO_LOAD_THREADS_COUNT: 5,
-      AUTO_LIST_DRAW_ROWS_INJ: true // На случай, если инъекция будет убивать редер автоподгружаемых списков
+      AUTO_LIST_DRAW_ROWS_INJ: true, // На случай, если инъекция будет убивать редер автоподгружаемых списков
+      MAX_CACHE_AUDIO_SIZE_ITEMS: 10000 // максимальное количество запомненных размеров аудио в локальном хранилище
    }
 }
 
@@ -634,6 +635,7 @@ vkopt['audio'] =  {
       </small>        
       */
       });
+      vkopt.audio.load_sizes_cache();
    },
    check_dl_url: function(el){   // если на странице не было ссылок на аудио, то при наведении на кнопку загрузки ждём их появления в кэше.
       if (el.getAttribute('href') == ''){
@@ -696,11 +698,20 @@ vkopt['audio'] =  {
                url: info_obj.url ? vkopt.audio.make_dl_url(info_obj.url, name) : ''
             })
          );
+         
+         var size = vkopt.audio._sizes_cache[info_obj.id];
+         var sz_labels = size ? vkopt.audio.size_to_bitrare(size, info_obj.duration) : {};
+         if (size){
+            row.dataset['kbps'] = sz_labels.kbps_raw; 
+            row.dataset['filesize'] = size;
+            addClass(row, 'vk_info_loaded');
+         }
+         
          var sz_info = se(vk_lib.tpl_process(vkopt.audio.tpls['size_info'], {
                id: info_obj.fullId,
                url: info_obj.url || '',
-               size:'? Mb',
-               kbps:'? Kbps'
+               size: sz_labels.size || '? Mb',
+               kbps: sz_labels.kbps || '? Kbps'
             }));
          
          
@@ -725,7 +736,43 @@ vkopt['audio'] =  {
       vkopt.audio.load_audio_urls(); // запускаем процесс загрузки инфы об аудио из очереди
    },
    _sizes_cache: {}, // надо бы его загонять в локальное хранилище, но например кэш размеров со списка в ~500 аудио занимает около 10кб. т.е его нужно будет как-то по умному чистить.
-   info_thread_count: 0,   
+   info_thread_count: 0,  
+   save_sizes_cache:function(){
+      clearTimeout(vkopt.audio._save_size_cache);
+      vkopt.audio._save_size_cache = setTimeout(function(){
+         var cache = vkopt.audio._sizes_cache;
+         var len = 0;
+         var max_items = vkopt_defaults.config.MAX_CACHE_AUDIO_SIZE_ITEMS;
+         for (var key in cache) len++;
+         if (len > max_items){
+            var new_cache = {};
+            var i = 0;
+            for (var key in cache){
+               i++;
+               if (i > len - max_items)
+                  new_cache[key] = cache[key];
+            }
+            cache = new_cache;
+         }
+         localStorage['vkopt_audio_sizes_cache'] = JSON.stringify(cache);
+      },1500);
+   },
+   load_sizes_cache:function(){
+      var sz_cache = {};
+      try{
+         sz_cache = JSON.parse(localStorage['vkopt_audio_sizes_cache'] || '{}');
+      } catch(e){}
+      vkopt.audio._sizes_cache = sz_cache;
+   },   
+   size_to_bitrare: function(size, duration){
+      var kbit = size / 128;
+      var kbps = Math.ceil(Math.round(kbit/duration)/16)*16;
+      return {
+         size: vkFileSize(size, 1).replace(/([\d\.]+)/,'<b>$1</b>'),
+         kbps: (kbps > 0 ? '<b>' + kbps + '</b> Kbps' : ''),
+         kbps_raw: kbps
+      }      
+   },
    load_size_info: function(id, url){
       if (vkopt.audio.info_thread_count >= vkopt_defaults.config.AUDIO_INFO_LOAD_THREADS_COUNT){
          var t = setInterval(function(){
@@ -750,16 +797,17 @@ vkopt['audio'] =  {
             var size_el = geByClass1('vk_audio_size', el);
             var kbps_el = geByClass1('vk_audio_kbps', el);
             
-            var kbit = size / 128;
-            var kbps = Math.ceil(Math.round(kbit/info.duration)/16)*16;
-            val(size_el, vkFileSize(size, 1).replace(/([\d\.]+)/,'<b>$1</b>'));
-            val(kbps_el, kbps > 0 ? '<b>' + kbps + '</b> Kbps' : '');
+            var sz_info = vkopt.audio.size_to_bitrare(size, info.duration);
+            val(size_el, sz_info.size);
+            val(kbps_el, sz_info.kbps);
             
-            el.dataset['kbps'] = kbps; 
+            el.dataset['kbps'] = sz_info.kbps_raw; 
             el.dataset['filesize'] = size;
             addClass(el, 'vk_info_loaded');
-            if (kbps > 0)
-               vkopt.audio._sizes_cache[aid] = size;  
+            if (sz_info.kbps_raw > 0 && !vkopt.audio._sizes_cache[aid]){
+               vkopt.audio._sizes_cache[aid] = size;
+               vkopt.audio.save_sizes_cache();
+            }
          }
       };
       if (size){
@@ -776,8 +824,7 @@ vkopt['audio'] =  {
             if (rb){
                vkopt.audio.info_thread_count--;
             }
-            if (size > 0){               
-               
+            if (size > 0){
                set_size_info(size);
             } else {
                // TODO: видать ссылка протухла. нужно подгрузить актуальный URL и снова запросить размер
