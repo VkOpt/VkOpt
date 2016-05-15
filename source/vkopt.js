@@ -564,9 +564,10 @@ vkopt['audio'] =  {
          display:block;
       }
       .audio_row .audio_acts .audio_act.vk_audio_dl_btn>div {
-         background-image: url(/images/dev_toplink.png);
-         background-position: 0 -16px;
-         width: 15px;
+         background-image: url(/images/blog/about_icons.png);
+         width: 12px;
+         height: 14px;
+         background-position: 0px -309px;
       }
       .audio_row .audio_acts .audio_act.vk_audio_dl_btn.dl_url_loading>div{
          opacity:0.3;
@@ -586,9 +587,18 @@ vkopt['audio'] =  {
       .vk_audio_size_info_wrap{
          font-size: 10px;
          line-height: 9px;
-         height: 18px; 
          margin-right: 3px;
       }
+      
+      .vk_compact_audio .vk_audio_size_info_wrap{
+         margin-top: 0px;
+         height: 18px;
+      }      
+      .vk_audio_size_info_wrap{
+         margin-top: -4px;
+         height: 20px;
+      }
+      
       .vk_audio_size_info{
          display: table-cell;
          vertical-align: middle;
