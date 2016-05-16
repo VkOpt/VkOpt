@@ -583,7 +583,10 @@ vkopt['audio'] =  {
       }
       .vk_info_loaded .vk_audio_size_info_wrap{
          display: table;
-      }      
+      }
+      .narrow_column .audios_module .vk_audio_size_info_wrap{
+         display: none;
+      }
       .vk_audio_size_info_wrap{
          font-size: 10px;
          line-height: 9px;
