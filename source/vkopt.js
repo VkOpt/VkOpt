@@ -923,6 +923,7 @@ vkopt['scrobbler'] = {
    css: function(){
       return '\
       .lastfm_audio_page{position: absolute;margin-top: -20px;margin-left: 5px;} \
+      .top_audio_player_title_wrap .lastfm_status{position:fixed; z-index: 121;}\
       .lastfm_white .vk_lastfm_icon{background-image:url("'+vkLastFM.res.white.last_fm+'");}\
       .lastfm_white .vk_lastfm_playing_icon{background-image:url("'+vkLastFM.res.white.playing_icon+'");}\
       .lastfm_white .vk_lastfm_paused_icon{background-image:url("'+vkLastFM.res.white.paused_icon+'");}\
