@@ -29,6 +29,7 @@ var vkopt_defaults = {
       //Extra:
       photo_replacer: true,
       add_to_next_fix: true, // кнопка "Воспроизвести следующей" теперь добавляет в текущий список воспроизведения из посторонних
+      audio_more_acts: true, // доп. менюшка для каждой аудиозаписи
       
       //Consts:
       AUDIO_INFO_LOAD_THREADS_COUNT: 5,
@@ -575,6 +576,16 @@ vkopt['audio'] =  {
          width: 17px;
          margin-left: -2px;
       }
+      
+      .audio_row .audio_acts .audio_act.vk_audio_acts{
+         display:block;
+      }      
+      .audio_row .audio_acts .audio_act.vk_audio_acts>div {
+         background: url(/images/icons/profile_dots.png) no-repeat 0 5px;
+         height: 13px;
+         width: 17px;
+      }
+      
       .audio_duration_wrap.vk_with_au_info .audio_duration{
          display: inline;
       }
@@ -639,6 +650,9 @@ vkopt['audio'] =  {
       /*dl_button:
       <a class="audio_act vk_audio_dl_btn" id="vk_dl_{vals.id}" data-aid="{vals.id}" download="{vals.filename}" href="{vals.url}" onmousedown="vkopt.audio.prevent_play();" onclick="vkopt.audio.prevent_play(); return vkDownloadFile(this);" onmouseover="vkopt.audio.check_dl_url(this); vkDragOutFile(this);"><div></div></a>
       */
+      /*acts_button:
+      <a class="audio_act vk_audio_acts" id="vk_acts_{vals.id}" data-aid="{vals.id}" onmousedown="vkopt.audio.prevent_play();" onmouseover="vkopt.audio.acts.menu(this);" onclick="vkopt.audio.prevent_play();"><div></div></a>
+      */      
       /*size_info:
       <small class="fl_l vk_audio_size_info_wrap" id="vk_audio_size_info_{vals.id}">
          <div class="vk_audio_size_info">
@@ -646,6 +660,18 @@ vkopt['audio'] =  {
             <span class="vk_audio_kbps">{vals.kbps}</span>
          </div>
       </small>        
+      */
+      /*wiki_code:
+      <center>
+         <input type="text" value="[[audio{vals.full_id}]]" readonly class="text" style="text-align: center;" onClick="this.focus();this.select();" size="30"/>
+         <!--
+         <br><br>
+         <a href="/audio?{vals.oid_type}={vals.oid_abs}&audio_id={vals.aid}">{lng.Link}</a>
+         --!>
+      </center>      
+      */
+      /*acts_menu:
+      <a href="#" onclick="vkopt.audio.acts.wiki('{vals.fullId}',{vals.owner_id},{vals.id}); return false">{lng.Wiki}</a>
       */
       });
       vkopt.audio.load_sizes_cache();
@@ -675,7 +701,7 @@ vkopt['audio'] =  {
       return url + '#FILENAME/' + vkEncodeFileName(name) + '.mp3';
    },
    processNode: function(node, params){
-      if (!vkopt.settings.get('audio_dl')) return;
+      if (!vkopt.settings.get('audio_dl') && !vkopt.settings.get('audio_more_acts')) return;
       if (!vkopt.audio.__full_audio_info_cache)
          vkopt.audio.__full_audio_info_cache = {};
       var cache = vkopt.audio.__full_audio_info_cache;
@@ -712,6 +738,12 @@ vkopt['audio'] =  {
             })
          );
          
+         var acts_btn = se(
+            vk_lib.tpl_process(vkopt.audio.tpls['acts_button'], {
+               id: info_obj.fullId
+            })
+         ); 
+         
          var size = vkopt.audio._sizes_cache[info_obj.id];
          var sz_labels = size ? vkopt.audio.size_to_bitrare(size, info_obj.duration) : {};
          if (size){
@@ -727,26 +759,34 @@ vkopt['audio'] =  {
                kbps: sz_labels.kbps || '? Kbps'
             }));
          
-         
-         if (info_obj.url)
-            setTimeout(
-               (function(id, url){
-                  return function(){
-                     vkopt.audio.load_size_info(id, url);
-                  }
-               })(info_obj.fullId, info_obj.url),
-               200
-            );
-         
-         if (!geByClass1('vk_audio_dl_btn',acts)){ 
-            if (dur){
+         // Инфа о размере/битрейте
+         if (vkopt.settings.get('audio_size_info')){
+            if (info_obj.url)
+               setTimeout(
+                  (function(id, url){
+                     return function(){
+                        vkopt.audio.load_size_info(id, url);
+                     }
+                  })(info_obj.fullId, info_obj.url),
+                  200
+               );
+            
+            if (dur && !hasClass('vk_with_au_info',dur.parentNode)){
                dur.parentNode.insertBefore(sz_info, dur);
                addClass(dur.parentNode, 'vk_with_au_info');
             }
-            acts.appendChild(btn);
          }
+         // Кнопка скачивания
+         if (vkopt.settings.get('audio_dl') && !geByClass1('vk_audio_dl_btn',acts))
+            acts.appendChild(btn);
+         
+         // Менюшка
+         if (vkopt.settings.get('audio_more_acts'))
+            acts.firstChild ? acts.insertBefore(acts_btn, acts.firstChild) : acts.appendChild(acts_btn);
       }
-      vkopt.audio.load_audio_urls(); // запускаем процесс загрузки инфы об аудио из очереди
+      
+      if (vkopt.settings.get('audio_size_info') || vkopt.settings.get('audio_dl')) // URL'ы нужны только для этих опций
+         vkopt.audio.load_audio_urls(); // запускаем процесс загрузки инфы об аудио из очереди
    },
    _sizes_cache: {}, // надо бы его загонять в локальное хранилище, но например кэш размеров со списка в ~500 аудио занимает около 10кб. т.е его нужно будет как-то по умному чистить.
    info_thread_count: 0,  
@@ -919,7 +959,42 @@ vkopt['audio'] =  {
    },
    prevent_play: function(){
       vkopt.audio.__play_blocked = true; 
+   },
+   acts: {
+      menu : function (btn) {
+         var audioRow = gpeByClass('_audio_row', btn);
+
+         var info = AudioUtils.getAudioFromEl(audioRow);
+         var info_obj = AudioUtils.asObject(info);
+         
+         var menu_code = vk_lib.tpl_process(vkopt.audio.tpls['acts_menu'], info_obj);
+
+         var options = {
+            text : function () {
+               return menu_code;
+            },
+            dir: "down",
+            shift : [14, 5, 0],
+            hasover: true,
+            onCreate: function(){
+               addEvent(btn.tt.container, 'click', vkopt.audio.prevent_play);
+               addEvent(btn.tt.container, 'mousedown', vkopt.audio.prevent_play);
+            }
+         };
+         showTooltip(btn, options);
+      },
+      wiki: function(full_id,oid,id){
+         var code = vk_lib.tpl_process(vkopt.audio.tpls['wiki_code'], {
+               full_id: full_id,
+               aid: id,
+               oid: oid,
+               oid_abs: Math.abs(oid),
+               oid_type: (parseInt(oid)>0?'id':'gid')
+         });
+         vkAlertBox('Wiki-code:',code);
+      }
    }
+   
 }
 
 vkopt['scrobbler'] = {
@@ -1170,6 +1245,13 @@ vkopt['face'] =  {
          .vk_compact_audio .choose_audio_rows .choose_link {
             margin: 0px;
          }
+         
+         .vk_more_acts_icon{
+            background: url(/images/icons/profile_dots.png) no-repeat 0 4px;
+            height: 13px;
+            width: 17px;
+         }
+
          */
       });
       return codes.main;
