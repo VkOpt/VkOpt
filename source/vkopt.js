@@ -31,6 +31,7 @@ var vkopt_defaults = {
       photo_replacer: true,
       add_to_next_fix: true, // кнопка "Воспроизвести следующей" теперь добавляет в текущий список воспроизведения из посторонних
       audio_more_acts: true, // доп. менюшка для каждой аудиозаписи
+      audio_dl_acts_2_btns: false, // разделить на аудио кнопки скачивания и меню доп.действий 
       
       //Consts:
       AUDIO_INFO_LOAD_THREADS_COUNT: 5,
@@ -676,6 +677,29 @@ vkopt['audio'] =  {
          width: 17px;
       }
       
+      .audio_row .audio_acts .audio_act.vk_audio_dl_btn.vk_audio_acts>div{
+         background: url(/images/icons/profile_dots.png) no-repeat 0 5px;
+         height: 13px;
+         width: 17px;
+         transition: none;
+      }     
+      .audio_row .audio_acts .audio_act.vk_audio_dl_btn.vk_audio_acts:hover>div{
+         background-image: url(/images/blog/about_icons.png);
+         width: 12px;
+         height: 14px;
+         margin-left:3px;
+         margin-right:3px;
+         background-position: 0px -309px;         
+      }
+      .audio_row .audio_acts .audio_act.vk_audio_dl_btn.dl_url_loading>div,
+      .audio_row .audio_acts .audio_act.vk_audio_dl_btn.dl_url_loading:hover>div{
+         opacity:0.3;
+         background: url(/images/upload_inv_mini.gif) no-repeat 0% 50%;
+         width: 17px;
+         _margin-left: -2px;
+      }
+      
+      
       .audio_duration_wrap.vk_with_au_info .audio_duration{
          display: inline;
       }
@@ -745,6 +769,10 @@ vkopt['audio'] =  {
                }
             }
          }
+      },
+      Extra:{
+         audio_more_acts:{},
+         audio_dl_acts_2_btns:{}
       }
    },
    onLibFiles: function(file_name){
@@ -757,7 +785,7 @@ vkopt['audio'] =  {
    onInit: function(){
       vkopt.audio.tpls = vk_lib.get_block_comments(function(){
       /*dl_button:
-      <a class="audio_act vk_audio_dl_btn" id="vk_dl_{vals.id}" data-aid="{vals.id}" download="{vals.filename}" href="{vals.url}" onmousedown="vkopt.audio.prevent_play();" onclick="vkopt.audio.prevent_play(); return vkDownloadFile(this);" onmouseover="vkopt.audio.check_dl_url(this); vkDragOutFile(this);"><div></div></a>
+      <a class="audio_act vk_audio_dl_btn" id="vk_dl_{vals.id}" data-aid="{vals.id}" download="{vals.filename}" href="{vals.url}" onmousedown="vkopt.audio.prevent_play();" onclick="vkopt.audio.prevent_play(); return vkDownloadFile(this);" onmouseover="vkopt.audio.btn_over(this);"><div></div></a>
       */
       /*acts_button:
       <a class="audio_act vk_audio_acts" id="vk_acts_{vals.id}" data-aid="{vals.id}" onmousedown="vkopt.audio.prevent_play();" onmouseover="vkopt.audio.acts.menu(this);" onclick="vkopt.audio.prevent_play();"><div></div></a>
@@ -784,6 +812,12 @@ vkopt['audio'] =  {
       */
       });
       vkopt.audio.load_sizes_cache();
+   },
+   btn_over: function(el){
+      vkopt.audio.check_dl_url(el); 
+      vkDragOutFile(el); 
+      if (!vkopt.settings.get('audio_dl_acts_2_btns') && vkopt.settings.get('audio_more_acts'))
+         vkopt.audio.acts.menu(el);
    },
    check_dl_url: function(el){   // если на странице не было ссылок на аудио, то при наведении на кнопку загрузки ждём их появления в кэше.
       if (el.getAttribute('href') == ''){
@@ -847,6 +881,10 @@ vkopt['audio'] =  {
             })
          );
          
+         if (!vkopt.settings.get('audio_dl_acts_2_btns') && vkopt.settings.get('audio_more_acts')){
+            addClass(btn,'vk_audio_acts');
+         }
+         
          var acts_btn = se(
             vk_lib.tpl_process(vkopt.audio.tpls['acts_button'], {
                id: info_obj.fullId
@@ -887,11 +925,11 @@ vkopt['audio'] =  {
          }
          // Кнопка скачивания
          if (vkopt.settings.get('audio_dl') && !geByClass1('vk_audio_dl_btn',acts))
-            acts.appendChild(btn);
-         
+            (acts.firstChild && !vkopt.settings.get('audio_dl_acts_2_btns')) ? acts.insertBefore(btn, acts.firstChild) : acts.appendChild(btn);
+
          // Менюшка
-         if (vkopt.settings.get('audio_more_acts'))
-            acts.firstChild ? acts.insertBefore(acts_btn, acts.firstChild) : acts.appendChild(acts_btn);
+          if ((!vkopt.settings.get('audio_dl') || vkopt.settings.get('audio_dl_acts_2_btns')) && vkopt.settings.get('audio_more_acts'))
+             acts.firstChild ? acts.insertBefore(acts_btn, acts.firstChild) : acts.appendChild(acts_btn);
       }
       
       if (vkopt.settings.get('audio_size_info') || vkopt.settings.get('audio_dl')) // URL'ы нужны только для этих опций
@@ -1318,8 +1356,8 @@ vkopt['face'] =  {
       var codes = vk_lib.get_block_comments(function(){
          /*main:
          .vk_ad_block div#ads_left{
-            position: absolute;
-            left: -9500px;
+            position: absolute !important;
+            left: -9500px !important;
          }
          .vk_disable_border_radius body *{
             border-radius: 0px !important;
