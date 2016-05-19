@@ -752,6 +752,7 @@ vk_lang_ru={
    ,"seAutoplayOff":"\u041e\u0442\u043a\u043b\u044e\u0447\u0438\u0442\u044c \u0430\u0432\u0442\u043e\u0432\u043e\u0441\u043f\u0440\u043e\u0438\u0437\u0432\u0435\u0434\u0435\u043d\u0438\u0435 \u0437\u0430\u043a\u0440\u0435\u043f\u043b\u0435\u043d\u043d\u043e\u0433\u043e \u0432\u0438\u0434\u0435\u043e"
    ,"seDisableBorderRadius":"\u0423\u0431\u0440\u0430\u0442\u044c \u0432\u0441\u0435 \u0441\u043a\u0440\u0443\u0433\u043b\u0435\u043d\u0438\u044f \u044d\u043b\u0435\u043c\u0435\u043d\u0442\u043e\u0432"
    ,"seScrobbler": "Last.fm scrobbler"
+   ,"seAudioSizeShowOnCtrl":"\u043f\u043e\u043a\u0430\u0437\u044b\u0432\u0430\u0442\u044c \u0442\u043e\u043b\u044c\u043a\u043e \u043f\u0440\u0438 \u0432\u043a\u043b\u044e\u0447\u0435\u043d\u043d\u043e\u043c \u043e\u0442\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u0438 \u043c\u0435\u0442\u043e\u043a <div class=\"vk_audio_hq_label\"></div>"
 };
 
 vk_lang_en={//by Hzy
@@ -1659,6 +1660,7 @@ vk_lang_en={//by Hzy
   ,"RegDate":"Registration date"
   ,"seAutoplayOff":"Disable autoplay of pinned video "
   ,"seDisableBorderRadius":"Remove all round corners of elements"
+  ,"seAudioSizeShowOnCtrl":"show only when icon <div class=\"vk_audio_hq_label\"></div> is visible"
 };
  
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
