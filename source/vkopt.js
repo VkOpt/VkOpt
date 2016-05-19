@@ -142,6 +142,7 @@ var vkopt_core = {
             vkaddcss(code);
          
          vkopt_core.plugins.call_method(plug_id, 'onInit');
+         vkopt_core.plugins.call_modules('onModuleDelayedInit', plug_id); // сообщаем всем модулям о подключении опоздавшего
          
          for (var key in StaticFiles) 
             if (StaticFiles[key].t == 'js')
@@ -304,6 +305,7 @@ vkopt['settings'] =  {
       margin-top: 0\
    }',
    onInit: function(){
+      // <UI>
       vkopt.settings.__full_title = vk_lib.format('Vkontakte Optimizer %1<sup><i>%2</i></sup> (build %3)', String(vVersion).split('').join('.'), vPostfix, vBuild);
       var values = {
          full_title: vkopt.settings.__full_title
@@ -356,6 +358,11 @@ vkopt['settings'] =  {
          vkopt.settings.tpls[key] = vk_lib.tpl_process(vkopt.settings.tpls[key],values);
       
       vkopt.settings.top_menu_item();
+      // </UI>
+      
+      // Инит фич настроек плагинов
+      var list = vkopt.settings.get_options_list();
+      vkopt.settings.init_features(list);
    },
    onLocation: function(nav_obj,cur_module_name){
       if (nav_obj[0] != 'settings') return;
@@ -369,6 +376,22 @@ vkopt['settings'] =  {
             vkopt.settings.show();
          },100)
       }
+   },
+   onModuleDelayedInit: function(plug_id){
+      var list = vkopt_core.plugins.call_method(plug_id, 'onSettings');
+      vkopt.settings.init_features(list, plug_id);
+   },
+   init_features: function(list, plug_id){
+      for (var cat in list){
+         for (var option_id in list[cat]){
+            var option_data = list[cat][option_id];
+            if (plug_id){
+               option_data.plug_id = plug_id;      // TODO: убрать дублирование кода. (второй дубль в get_options_list)
+               option_data.id = option_id;
+            }
+            vkopt.settings.set_feature(option_data, vkopt.settings.get(option_data.id));
+         }
+      }         
    },
    top_menu_item: function(){
       var ref = ge('top_support_link');
@@ -431,12 +454,37 @@ vkopt['settings'] =  {
       var cfg = vkopt.settings.config();
       cfg[option_id] = val;
       vkopt.settings.config(cfg);
-      vkopt_core.plugins.call_modules('onOptionChanged', option_id, val);
+      
+      var option_data = vkopt.settings.get_option_data(option_id);
+      vkopt.settings.set_feature(option_data, val);
+      
+      vkopt_core.plugins.call_modules('onOptionChanged', option_id, val, option_data);
    },
    get:function(option_id){
       var cfg = vkopt.settings.config();
       return (typeof cfg[option_id] == 'undefined') ? vkopt_defaults.config[option_id] : cfg[option_id];
    },
+
+   get_option_data: function(option_id){
+      var list = vkopt.settings.get_options_list();
+      var option_data = null;
+      search:
+      for (var cat in list){
+         for (var opt_id in list[cat]){
+            if (opt_id == option_id){
+               option_data = list[cat][opt_id];
+               break search;
+            }
+         }
+      }
+      return option_data;
+   },
+   set_feature: function(option_data, val){
+      if (!option_data) return;
+      if (option_data.class_toggler) // если опция переключает наличие css-класса применяемого ко всей странице
+         (val ? addClass : removeClass)(geByTag1('html'), 'vk_'+option_data.id);// у <body> className порой полностью перезаписывается обработчиками вк, т.ч вешаем класс на <html>
+   },
+   
    get_options_list:function(){
       var raw_list = vkopt_core.plugins.call_modules('onSettings'); // собираем опции со всех плагинов в один список
       var options = {};
@@ -592,10 +640,10 @@ vkopt['audio'] =  {
       .vk_audio_size_info_wrap{
          display: none;
       }
-      .vk_info_loaded .vk_audio_size_info_wrap{
+      .vk_info_loaded .vk_audio_size_info_wrap, .vk_size_info_on_ctrl .ctrl_key_pressed .audio_row .vk_audio_size_info_wrap{
          display: table;
       }
-      .narrow_column .audios_module .vk_audio_size_info_wrap{
+      .narrow_column .audios_module .vk_audio_size_info_wrap, .vk_size_info_on_ctrl .audio_row .vk_audio_size_info_wrap{
          display: none;
       }
       .vk_audio_size_info_wrap{
@@ -634,7 +682,13 @@ vkopt['audio'] =  {
          },
          audio_size_info: {
             title: 'seAudioSizeAuto',
-            info: 'infoUseNetTrafic'
+            info: 'infoUseNetTrafic',
+            sub: {
+               size_info_on_ctrl: {
+                  title: 'seAudioSizeShowOnCtrl',
+                  class_toggler: true
+               }
+            }
          }
       }
    },
@@ -1189,22 +1243,20 @@ vkopt['face'] =  {
    onSettings:{
       Media:{
          compact_audio: {
-            title: 'seCompactAudio'
+            title: 'seCompactAudio',
+            class_toggler: true
          }
       },
       vkInterface:{
          ad_block:{
-            title: 'seADRem'
+            title: 'seADRem',
+            class_toggler: true
+            
          },
          disable_border_radius:{
-            title: 'seDisableBorderRadius'
+            title: 'seDisableBorderRadius',
+            class_toggler: true
          },         
-      }
-   },
-   option_ids:[],
-   onOptionChanged: function(option_id, val){
-      if (vkopt.face.option_ids.indexOf(option_id) > -1){ // фильтруем только свои
-         vkopt.face.setEnabledFeature(option_id, val);
       }
    },
    css: function(){
@@ -1255,19 +1307,6 @@ vkopt['face'] =  {
          */
       });
       return codes.main;
-   },
-   onInit: function(){
-      var options = [];
-      for (var cat in vkopt.face.onSettings) // сбор id опций этого модуля, чтоб реагировать на изменение только своих.
-         for (var option_id in vkopt.face.onSettings[cat])
-            options.push(option_id);
-      
-      vkopt.face.option_ids = options;
-      for(var i = 0; i < options.length; i++) // активируем опции в соотвествии с настройками
-         vkopt.face.setEnabledFeature(options[i], vkopt.settings.get(options[i]));
-   },
-   setEnabledFeature: function(option_id, enabled){ // активность добавленного стиля-опции активируется добавлением имени соответствующего класса к тегу <html>
-      (enabled ? addClass : removeClass)(geByTag1('html'), 'vk_'+option_id);// у <body> className порой полностью перезаписывается обработчиками вк, т.ч вешаем класс на <html>
    }
 }
 
