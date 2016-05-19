@@ -24,6 +24,7 @@ var vkopt_defaults = {
       disable_border_radius: false,
       audio_dl: true,
       audio_size_info: false,
+      size_info_on_ctrl: true,
       scrobbler: true,   
       
       //Extra:
@@ -297,13 +298,20 @@ var vk_glue = {
 
 vkopt['settings'] =  {
    tpls: null,
-   css:'\
-   .vk_settings_block .checkbox{\
-      margin-top: 10px\
-   }\
-   .vk_settings_block .checkbox:first-child {\
-      margin-top: 0\
-   }',
+   css: function(){
+      return vk_lib.get_block_comments(function(){
+         /*settings_css:
+         .vk_settings_block .checkbox{
+            margin-top: 10px
+         }
+         .vk_settings_block .checkbox:first-child {
+            margin-top: 0
+         }
+         .vk_sub_options{padding-left:20px; margin-top:5px;}
+         */
+      }).settings_css;
+
+   },
    onInit: function(){
       // <UI>
       vkopt.settings.__full_title = vk_lib.format('Vkontakte Optimizer %1<sup><i>%2</i></sup> (build %3)', String(vVersion).split('').join('.'), vPostfix, vBuild);
@@ -340,6 +348,9 @@ vkopt['settings'] =  {
          /*radiobtn:
          <div class="radiobtn {vals.on_class}" data-val="{vals.value}" onclick="radiobtn(this, '{vals.value}', '{vals.id}'); vkopt.settings.set('{vals.id}', '{vals.value}');">{vals.caption}</div>
          */ 
+         /*sub_block:
+         <div class="vk_sub_options">{vals.content}</div>
+         */
          
          /* Usage as
          
@@ -382,15 +393,23 @@ vkopt['settings'] =  {
       vkopt.settings.init_features(list, plug_id);
    },
    init_features: function(list, plug_id){
-      for (var cat in list){
-         for (var option_id in list[cat]){
-            var option_data = list[cat][option_id];
+      
+      var each_in_opts = function(list){
+         for (var option_id in list){
+            var option_data = list[option_id];
             if (plug_id){
                option_data.plug_id = plug_id;      // TODO: убрать дублирование кода. (второй дубль в get_options_list)
                option_data.id = option_id;
             }
             vkopt.settings.set_feature(option_data, vkopt.settings.get(option_data.id));
+            
+            if (list[option_id].sub)              // обходим вложенные опции.
+               each_in_opts(list[option_id].sub);
          }
+         return null;
+      }
+      for (var cat in list){
+         each_in_opts(list[cat]);
       }         
    },
    top_menu_item: function(){
@@ -468,16 +487,24 @@ vkopt['settings'] =  {
    get_option_data: function(option_id){
       var list = vkopt.settings.get_options_list();
       var option_data = null;
-      search:
-      for (var cat in list){
-         for (var opt_id in list[cat]){
-            if (opt_id == option_id){
-               option_data = list[cat][opt_id];
-               break search;
+      var each_in_opts = function(list){
+         for (var opt_id in list){
+            if (opt_id == option_id)
+               return list[opt_id];
+            
+            if (list[opt_id].sub){              // ищем среди вложенных опций.
+               var data = each_in_opts(list[opt_id].sub);
+               if (data)
+                  return data;
             }
          }
+         return null;
       }
-      return option_data;
+      for (var cat in list){
+         var option_data = each_in_opts(list[cat]);
+         if (option_data)
+            return option_data
+      }
    },
    set_feature: function(option_data, val){
       if (!option_data) return;
@@ -489,24 +516,32 @@ vkopt['settings'] =  {
       var raw_list = vkopt_core.plugins.call_modules('onSettings'); // собираем опции со всех плагинов в один список
       var options = {};
       var options_id = {}; // <conflicts />
-      for (var plug_id in raw_list){
-         var setts = raw_list[plug_id];
-         for (var cat in setts){
-            var opts = setts[cat];
-            if (!options[cat])
-               options[cat] = {};
+      
+      var each_in_cat = function(plug_id, opts, options, cat){
             for (var option_id in opts){
                var option_data = opts[option_id];
                option_data.plug_id = plug_id;
                option_data.id = option_id;
-               options[cat][option_id] = option_data; 
+               if (options && cat)
+                  options[cat][option_id] = option_data; 
                
                // <conflicts>
                if (!options_id[option_id]) // собираем инфу, чтоб потом проверить, нет ли повторов ID опций в других плагинах
                   options_id[option_id] = []
                options_id[option_id].push(plug_id);
                // </conflicts>
-            }
+               if (option_data.sub){
+                  each_in_cat(plug_id, option_data.sub);
+               }
+            }         
+      }
+      for (var plug_id in raw_list){
+         var setts = raw_list[plug_id];
+         for (var cat in setts){
+            var opts = setts[cat];
+            if (!options[cat])
+               options[cat] = {};
+            each_in_cat(plug_id, opts, options, cat);
          }
       }
       
@@ -532,6 +567,13 @@ vkopt['settings'] =  {
                caption: IDL(option_data.title || option_data.plug_id+'.'+option_data.id, 2),
                on_class: vkopt.settings.get(option_data.id) ? 'on': ''
             });
+         if (option_data.sub){
+            var content = '';
+            for (var option_id in option_data.sub){
+               content += vkopt.settings.get_switcher_code(option_data.sub[option_id]);
+            }
+            html += vk_lib.tpl_process(vkopt.settings.tpls['sub_block'], {content: content});
+         }
       } else { // radio group
          
       }
@@ -637,13 +679,20 @@ vkopt['audio'] =  {
       .audio_duration_wrap.vk_with_au_info .audio_duration{
          display: inline;
       }
-      .vk_audio_size_info_wrap{
-         display: none;
-      }
-      .vk_info_loaded .vk_audio_size_info_wrap, .vk_size_info_on_ctrl .ctrl_key_pressed .audio_row .vk_audio_size_info_wrap{
+
+      .audio_row.vk_info_loaded .vk_audio_size_info_wrap, 
+      .vk_size_info_on_ctrl .ctrl_key_pressed .audio_row.vk_info_loaded .vk_audio_size_info_wrap,
+      .vk_size_info_on_ctrl .audio_hq_label_show .audio_row.vk_info_loaded .vk_audio_size_info_wrap{
          display: table;
       }
-      .narrow_column .audios_module .vk_audio_size_info_wrap, .vk_size_info_on_ctrl .audio_row .vk_audio_size_info_wrap{
+      
+      .vk_audio_size_info_wrap,
+      .narrow_column .audios_module .vk_audio_size_info_wrap, 
+      .vk_size_info_on_ctrl .audio_row .vk_audio_size_info_wrap,
+      .audio_row:hover .vk_audio_size_info_wrap,
+      .vk_size_info_on_ctrl .audio_hq_label_show .audio_row:hover .vk_audio_size_info_wrap,
+      .vk_size_info_on_ctrl .audio_row:hover .vk_audio_size_info_wrap
+      {
          display: none;
       }
       .vk_audio_size_info_wrap{
@@ -665,10 +714,16 @@ vkopt['audio'] =  {
          display: table-cell;
          vertical-align: middle;
       }
-      .audio_row:hover .vk_audio_size_info_wrap{
-         display: none;
+      .vk_audio_hq_label {
+         display: inline-block;
+         width: 15px;
+         height: 11px;
+         background-image: url(/images/icons/audio_hq.png);
+         opacity: 0.35;
+         vertical-align: top;
+         margin-top: 3px;
+         margin-right: 4px;
       }
-
       */
       });
       return codes.dl;
