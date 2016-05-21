@@ -118,25 +118,7 @@ var vkopt_core = {
    }, 
    setLoc: function(new_location){  // использовать вместо nav.setLoc для избежания рекурсии, обход реакции на смену URL'а
       nav.setLoc(new_location,'vkopt');
-   },   
-   /*
-   (function(){
-      var m = {
-         id: 'vkopt_any_plugin',
-         onInit:           function(){},                        // выполняется один раз после загрузки стрницы
-         onLibFiles:       function(file_name){},               // место для инъекций = срабатывает при подключении нового js-файла движком контакта.
-         onLocation:       function(nav_obj,cur_module_name){}, // вызывается при переходе между страницами
-         onResponseAnswer: function(answer,url,params){},       // answer - массив, изменять только его элементы
-         onStorage :       function(command_id,command_obj){},  // слушает сообщения отосланные из других вкладок вк через vkCmd(command_id,command_obj)
-         processNode:      function(node, params){}             // обработка элемента
-         processLinks:     function(link, params){},            // обработка ссылки
-      };
-      window.vkopt = (window.vkopt || {});
-      window.vkopt[m.id] = m;
-      if (window.vkopt_core_ready) vkopt_core.plugins.delayed_run(m.id);
-   })();
-   
-   */
+   },
    plugins: {
       delayed_run: function(plug_id){ //функция для пуска отдельного плагина, который не был подключен до основного запуска вкопта
          var css = vkopt_core.plugins.get_css(plug_id);
@@ -296,6 +278,33 @@ var vk_glue = {
       vkopt_core.plugins.process_response(answer, url, q);
    }
 }
+
+/*
+(function(){
+   var m = {
+      id: 'vkopt_any_plugin',
+      // <core>
+      onInit:                 function(){},                                // выполняется один раз после загрузки стрницы
+      onLibFiles:             function(file_name){},                       // место для инъекций = срабатывает при подключении нового js-файла движком контакта.
+      onLocation:             function(nav_obj,cur_module_name){},         // вызывается при переходе между страницами
+      onResponseAnswer:       function(answer,url,params){},               // answer - массив, изменять только его элементы
+      onStorage :             function(command_id,command_obj){},          // слушает сообщения отосланные из других вкладок вк через vkCmd(command_id,command_obj)
+      processNode:            function(node, params){}                     // обработка элемента
+      processLinks:           function(link, params){},                    // обработка ссылки
+      onModuleDelayedInit:    function(plugin_id){},                       // реакция на подключение модуля, опоздавшего к загрузке страницы.
+      
+      // <settings>
+      onSettings:             function(){} || {}                           // возвращаем объект с перечисленными по категориям настройками этого модуля
+      onOptionChanged:        function(option_id, val, option_data){},     // реакция на изменение опции
+      
+      // <audio>
+      onAudioRowMenuItems: function(audio_info_obj){},                     // вернуть массив из строк с пунктами-ссылками "<a>..</a>"
+   };
+   window.vkopt = (window.vkopt || {});
+   window.vkopt[m.id] = m;
+   if (window.vkopt_core_ready) vkopt_core.plugins.delayed_run(m.id);      // запускает модуль, если мы опоздали к загрузке страницы, провоцирует вызов события onModuleDelayedInit
+})();
+*/
 
 vkopt['settings'] =  {
    tpls: null,
@@ -748,6 +757,10 @@ vkopt['audio'] =  {
          margin-top: 3px;
          margin-right: 4px;
       }
+      .vk_acts_menu_block a{
+         display: block;
+         white-space: nowrap;
+      }
       */
       });
       return codes.dl;
@@ -771,8 +784,11 @@ vkopt['audio'] =  {
          }
       },
       Extra:{
-         audio_more_acts:{},
-         audio_dl_acts_2_btns:{}
+         audio_more_acts:{
+            sub:{
+               audio_dl_acts_2_btns:{}
+            }
+         }
       }
    },
    onLibFiles: function(file_name){
@@ -808,10 +824,32 @@ vkopt['audio'] =  {
       </center>      
       */
       /*acts_menu:
+      <a href="#" onclick="vkopt.audio.add_to_group({vals.ownerId}, {vals.id}); return false;">{lng.AddToGroup}</a>
+      <a href="#" onclick="return vkopt.audio.share('{vals.fullId}');">{lng.Share}</a>
       <a href="#" onclick="vkopt.audio.acts.wiki('{vals.fullId}',{vals.owner_id},{vals.id}); return false">{lng.Wiki}</a>
+      
       */
       });
       vkopt.audio.load_sizes_cache();
+   },
+   share: function(audio_fullId){
+      showBox("like.php", {
+            act: "publish_box",
+            object: "audio" + audio_fullId,
+            //list: "s" + vk.id, ???
+            to: "mail"
+      }, {
+            stat: ["page.js", "page.css", "wide_dd.js", "wide_dd.css", "sharebox.js"],
+            onFail: function(t) {
+                return showDoneBox(t),
+                !0
+            }
+      })
+      return false;
+   },
+   add_to_group: function(oid, aid, to_gid){
+      // TODO: move code from vk_media.js
+      vk_audio.add_to_group(oid, aid, to_gid);
    },
    btn_over: function(el){
       vkopt.audio.check_dl_url(el); 
@@ -1110,11 +1148,16 @@ vkopt['audio'] =  {
    acts: {
       menu : function (btn) {
          var audioRow = gpeByClass('_audio_row', btn);
-
          var info = AudioUtils.getAudioFromEl(audioRow);
          var info_obj = AudioUtils.asObject(info);
+         var menu_code = vk_lib.tpl_process(vkopt.audio.tpls['acts_menu'], info_obj) 
          
-         var menu_code = vk_lib.tpl_process(vkopt.audio.tpls['acts_menu'], info_obj);
+         var raw_list = vkopt_core.plugins.call_modules('onAudioRowMenuItems',info_obj); // собираем доп. пункты со всех плагинов в один список
+         var additional_items = [];
+         for (var plug_id in raw_list) 
+            additional_items = additional_items.concat(raw_list[plug_id]);
+     
+         menu_code += additional_items.join('\n');
 
          var options = {
             text : function () {
@@ -1124,8 +1167,10 @@ vkopt['audio'] =  {
             shift : [14, 5, 0],
             hasover: true,
             onCreate: function(){
+               addClass(btn.tt.container, 'vk_acts_menu_block');
                addEvent(btn.tt.container, 'click', vkopt.audio.prevent_play);
                addEvent(btn.tt.container, 'mousedown', vkopt.audio.prevent_play);
+               addEvent(btn.tt.container, 'mousedown', cancelEvent); // блочим перетаскивание за меню
             }
          };
          showTooltip(btn, options);
@@ -1403,8 +1448,16 @@ vkopt['face'] =  {
    }
 }
 
-/*
+
 vkopt['test_module'] =  {
+   /*   
+   onAudioRowMenuItems: function(info){
+      return [
+         '<div>---</div>',
+         '<div>'+info.fullId+'</div>',
+         '<div>^^^</div>',
+      ];
+   },
    onLibFiles:       function(file_name){
       console.log('test onLibFiles:',file_name)
    },
@@ -1422,8 +1475,9 @@ vkopt['test_module'] =  {
    },
    processLinks:     function(link_el, params){
       //console.log('test processLinks:',link_el, params)
-   }
+   },
+   //*/
 }
-//*/
+
 
 vkopt_core.init();
