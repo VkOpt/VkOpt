@@ -24,6 +24,7 @@ var vkopt_defaults = {
       disable_border_radius: false,
       audio_dl: true,
       audio_size_info: false,
+      audio_clean_titles: false,
       size_info_on_ctrl: true,
       scrobbler: true,
       im_dialogs_right: false,
@@ -691,7 +692,7 @@ vkopt['audio'] =  {
       .audio_row .audio_acts .audio_act.vk_audio_dl_btn.vk_audio_acts>div{
          background: url(/images/icons/profile_dots.png) no-repeat 0 5px;
          height: 13px;
-         width: 17px;
+         width: 18px;
          transition: none;
       }     
       .audio_row .audio_acts .audio_act.vk_audio_dl_btn.vk_audio_acts:hover>div{
@@ -706,8 +707,7 @@ vkopt['audio'] =  {
       .audio_row .audio_acts .audio_act.vk_audio_dl_btn.dl_url_loading:hover>div{
          opacity:0.3;
          background: url(/images/upload_inv_mini.gif) no-repeat 0% 50%;
-         width: 17px;
-         _margin-left: -2px;
+         width: 18px;
       }
       
       
@@ -783,6 +783,9 @@ vkopt['audio'] =  {
                   class_toggler: true
                }
             }
+         },
+         audio_clean_titles: {
+            title: 'seAudioUntrashTitle'
          }
       },
       Extra:{
@@ -834,6 +837,14 @@ vkopt['audio'] =  {
       });
       vkopt.audio.load_sizes_cache();
    },
+   remove_trash:function(s){
+      s=vkRemoveTrash(s); // удаление символов не являющихся буквами/иероглифами/и т.д
+      // Удаление лишних дефисов в названиях и приведение их к одному виду
+      s=s.replace(/\[\s*\]|\(\s*\)|\{\s*\}/g,'');
+      s=s.replace(/[\u1806\u2010\u2011\u2012\u2013\u2014\u2015\u2212\u2043\u02D7\u2796\-]+/g,'\u2013').replace(/\u2013\s*\u2013/g,'\u2013');
+      s=s.replace(/[\u1806\u2010\u2011\u2012\u2013\u2014\u2015\u2212\u2043\u02D7\u2796\-]+$/,'');// ^[\s\u1806\u2010\u2011\u2012\u2013\u2014\u2015\u2212\u2043\u02D7\u2796\-]+
+      return s;
+   },
    share: function(audio_fullId){
       showBox("like.php", {
             act: "publish_box",
@@ -884,6 +895,21 @@ vkopt['audio'] =  {
       return url + '#FILENAME/' + vkEncodeFileName(name) + '.mp3';
    },
    processNode: function(node, params){
+      if (vkopt.settings.get('audio_clean_titles')){ // clean titles
+         var nodes=geByClass('audio_title_wrap',node);
+         for (var i=0; i<nodes.length; i++){
+            FindAndProcessTextNodes(nodes[i],function(mainNode,childItem){
+               var el = mainNode.childNodes[childItem];
+               if (el.nodeValue && !/^[\u2013\s]+$/.test(el.nodeValue)){
+                  el.nodeValue=vkopt.audio.remove_trash(el.nodeValue);
+               }
+               return childItem;
+            });
+         }
+      }
+      
+      
+      
       if (!vkopt.settings.get('audio_dl') && !vkopt.settings.get('audio_more_acts')) return;
       if (!vkopt.audio.__full_audio_info_cache)
          vkopt.audio.__full_audio_info_cache = {};
