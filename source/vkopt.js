@@ -25,13 +25,15 @@ var vkopt_defaults = {
       audio_dl: true,
       audio_size_info: false,
       size_info_on_ctrl: true,
-      scrobbler: true,   
+      scrobbler: true,
+      im_dialogs_right: false,
       
       //Extra:
       photo_replacer: true,
       add_to_next_fix: true, // кнопка "Воспроизвести следующей" теперь добавляет в текущий список воспроизведения из посторонних
       audio_more_acts: true, // доп. менюшка для каждой аудиозаписи
       audio_dl_acts_2_btns: false, // разделить на аудио кнопки скачивания и меню доп.действий 
+      im_hide_dialogs: false,
       
       //Consts:
       AUDIO_INFO_LOAD_THREADS_COUNT: 5,
@@ -1377,6 +1379,93 @@ vkopt['audioplayer'] = {
       
    }
 }
+
+vkopt['messages'] = {
+   css: function(){
+      return vk_lib.get_block_comments(function(){
+         /*css:
+         .vk_im_dialogs_right .im-page-wrapper .im-page .im-page--dialogs{
+            float: right;
+         }
+         .vk_im_dialogs_right .im-page-wrapper .im-page .im-page--history {
+            margin-left: 0px;
+            margin-right: 317px;
+         }
+         .vk_im_dialogs_right .im-page-wrapper .im-page .im-create{
+            left: auto;
+            right: 0px;
+         }
+         
+         .vk_im_hide_dialogs .im-page-wrapper .im-page .im-page--dialogs{
+            display: none;
+            position: absolute;
+         }
+         .vk_im_hide_dialogs.vk_im_dialogs_right .im-page-wrapper .im-page .im-page--dialogs {
+            right: 0px;
+         }
+         
+         .vk_im_hide_dialogs.vk_im_dialogs_right .im-page-wrapper .im-page .im-page--history,
+         .vk_im_hide_dialogs .im-page-wrapper .im-page .im-page--history
+         {
+            margin: 0px;
+         }
+         .vk_im_hide_dialogs .im-page-wrapper .im-page .im-chat-input .im-chat-input--textarea {
+            width: 720px;
+         }
+         .vk_im_hide_dialogs .im-mess-stack .im-mess-stack--content .im-mess-stack--lnk{
+            max-width: auto;
+         }
+         */
+      }).css
+   },
+   onSettings:{
+      Messages: {
+         im_dialogs_right:{
+            title: 'seDialogsListToRight',
+            class_toggler: true
+         }
+      },
+      Extra: {
+         im_hide_dialogs:{
+            class_toggler: true
+         }
+      }
+   },
+
+   onOptionChanged: function(option_id, val, option_data){
+      if (option_id == 'im_hide_dialogs'){
+         if (!val)
+            show(geByClass1('im-page--dialogs'));
+         else
+            vkopt.messages.dialogs_hide_init();
+         
+      }
+   },
+   onLocation: function(nav_obj, cur_module_name){
+      if (!vkopt.settings.get('im_hide_dialogs')) 
+         return;
+      vkopt.messages.dialogs_hide_init();
+   },
+   dialogs_hide_init: function(){
+      if (nav.objLoc[0] != 'im') 
+         return;
+      var dialogs  = geByClass1('im-page--dialogs');
+      
+      if (geByClass1('im-page--history_empty')) 
+         show(dialogs);
+
+      !hasClass('im--page','vk_hide_dialogs_toggler') && addEvent('im--page','click',function(e){
+         if (!vkopt.settings.get('im_hide_dialogs'))
+            return;
+         addClass('im--page','vk_hide_dialogs_toggler');
+         if (domClosest('im-page--chat-body',e.target) || domClosest('im-page--chat-input',e.target))
+            hide(dialogs)
+         if (domClosest('im-page--header-chat',e.target))
+            toggle(dialogs)
+      });      
+   }
+}
+
 vkopt['face'] =  {
    onSettings:{
       Media:{
