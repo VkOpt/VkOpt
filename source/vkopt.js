@@ -34,6 +34,7 @@ var vkopt_defaults = {
       add_to_next_fix: true, // кнопка "Воспроизвести следующей" теперь добавляет в текущий список воспроизведения из посторонних
       audio_more_acts: true, // доп. менюшка для каждой аудиозаписи
       audio_dl_acts_2_btns: false, // разделить на аудио кнопки скачивания и меню доп.действий 
+      audio_edit_box_album_selector: true, // поле выбора альбома в окне редактирования названия аудио
       im_hide_dialogs: false,
       
       //Consts:
@@ -793,7 +794,8 @@ vkopt['audio'] =  {
             sub:{
                audio_dl_acts_2_btns:{}
             }
-         }
+         },
+         audio_edit_box_album_selector:{}
       }
    },
    onLibFiles: function(file_name){
@@ -836,6 +838,88 @@ vkopt['audio'] =  {
       */
       });
       vkopt.audio.load_sizes_cache();
+   },
+   onResponseAnswer: function(answer, url, q){
+      if (vkopt.settings.get('audio_edit_box_album_selector') && q.act=='edit_audio_box' && answer[2]) answer[2]=answer[2]+'\n vkopt.audio.edit_box_move("'+q.aid+'");';
+   },
+   album_cache: {},
+   edit_box_move: function(full_aid){
+      var x=full_aid.split('_');
+      var oid=parseInt(x[0]);
+      var aid=parseInt(x[1]);
+      
+      var info = AudioUtils.getAudioFromEl(ge('audio_'+full_aid))
+      var def_aid = info[AudioUtils.AUDIO_ITEM_INDEX_ALBUM_ID];
+      
+      var cur_offset=0;
+      var alb_count=100;
+      var albums=[];
+      var get_albums=function(callback){
+         if (vkopt.audio.album_cache[''+oid]) {
+            callback(vkopt.audio.album_cache[''+oid]);
+            return;
+         }
+         var params={count:100,offset:cur_offset};
+         params[oid<0?'gid':'uid']=Math.abs(oid);
+         dApi.call('audio.getAlbums',params,function(r){
+            var _albums=r.response;
+            alb_count=_albums.shift();
+            
+            albums=albums.concat(_albums);
+            if (_albums.length<100){
+               vkopt.audio.album_cache[''+oid]=albums;
+               callback(albums);
+            } else {
+               cur_offset+=100;
+               get_albums(callback);
+            }   
+         });
+      };
+      var p=ge('audio_extra_link');
+      if (!p) return;
+      var div=vkCe('div',{id:'vk_audio_mover', 'class':'audio_edit_row clear_fix'},'\
+                    <div class="audio_edit_label fl_l ta_r">'+IDL('SelectAlbum',1)+'</div>\
+                    <div class="audio_edit_input fl_l"><div id="vk_audio_album_selector"></div><div id="vk_au_alb_ldr">'+vkLdrImg+'</div></div>\
+                  ');
+      p.parentNode.insertBefore(div,p); 
+      
+      get_albums(function(list){         
+         stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
+            var items=[];
+            items.push(['0',IDL('NotInAlbums')]);
+            for (var i=0; i<list.length;i++){
+               items.push([list[i].album_id,list[i].title]);
+            }
+            
+            cur.vk_auMoveToAlbum = new Dropdown(ge('vk_audio_album_selector'), items, {
+                 width: 298,
+                 selectedItems: [def_aid],
+                 autocomplete: (items.length > 7),
+                 onChange: function(val) {
+                   if (!intval(val)) {
+                     cur.vk_auMoveToAlbum.val(0);
+                   }
+                   var to_album=cur.vk_auMoveToAlbum.val();
+                   show('vk_au_alb_ldr');
+                   
+                   //*
+                   var params={aids:aid,album_id:to_album};
+                   if (oid<0) params['gid']=Math.abs(oid);
+                   dApi.call('audio.moveToAlbum',params,function(r){
+                     if(r.response==1){
+                        // TODO: допилить. ибо в закэшированных плейлистах не изменяется до перезагрузки страницы
+                        var u = {};
+                        u[AudioUtils.AUDIO_ITEM_INDEX_ALBUM_ID] = to_album,
+                        getAudioPlayer().updateAudio(info, u);
+                        
+                        hide('vk_au_alb_ldr');
+                     } 
+                   });
+                 }
+            });
+            hide('vk_au_alb_ldr');
+         });         
+      });
    },
    remove_trash:function(s){
       s=vkRemoveTrash(s); // удаление символов не являющихся буквами/иероглифами/и т.д
@@ -1500,6 +1584,7 @@ vkopt['face'] =  {
             class_toggler: true
          }
       },
+
       vkInterface:{
          ad_block:{
             title: 'seADRem',
