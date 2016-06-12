@@ -11,7 +11,7 @@
 //
 /* VERSION INFO */
 var vVersion	= 233;
-var vBuild = 160422;
+var vBuild = 160612;
 var vPostfix = ' ';
 
 if (!window.vkopt) window.vkopt={};
@@ -35,7 +35,8 @@ var vkopt_defaults = {
       audio_more_acts: true, // доп. менюшка для каждой аудиозаписи
       audio_dl_acts_2_btns: false, // разделить на аудио кнопки скачивания и меню доп.действий 
       audio_edit_box_album_selector: true, // поле выбора альбома в окне редактирования названия аудио
-      im_hide_dialogs: false,
+      im_hide_dialogs: false, // Новый стиль диалогов. Полотно переписки на всю ширину, список диалогов скрывается при клике по истории, показ списка - клик по заголовку переписки
+      attach_media_by_id: true, // при вставке айди медиа в поле поиска из диалога прикрепления, в диалог подгружается медиа-файл с этим айди
       
       //Consts:
       AUDIO_INFO_LOAD_THREADS_COUNT: 5,
@@ -315,6 +316,10 @@ vkopt['settings'] =  {
    css: function(){
       return vk_lib.get_block_comments(function(){
          /*settings_css:
+         .vkopt_icon,
+         #side_bar .left_icon.vkopt_icon{
+            background: url("data:image/svg+xml,%3Csvg%20version%3D%221.1%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2216%22%20height%3D%2216%22%09%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20fill%3D%22%237D9AB7%22%20d%3D%22M204.1%2C66l-25.3%2C30.4c-14.1-25-44.3-37.6-72.7-28.5%09c-32.5%2C10.4-50.5%2C45.2-40%2C77.8c6.2%2C19.4%2C21.2%2C33.6%2C39.1%2C39.7c7.4%2C14%2C15.4%2C31.9%2C21.1%2C46c-7.5%2C7.8-12.1%2C19.6-12.1%2C19.6l-30.9-6.7%09l3.5-26.3c-4.8-2-9.5-4.4-13.9-7.2L53.6%2C229l-23.4-21.3l16.2-21c-3.1-4.1-6-8.5-8.5-13.2l-25.8%2C6l-9.7-30.1l24.5-10.1%09c-0.7-5.3-0.9-10.5-0.8-15.7L0.8%2C116l6.7-30.9l26.3%2C3.5c2-4.8%2C4.4-9.5%2C7.2-13.9L22.8%2C55.3l21.3-23.4l21%2C16.2c4.1-3.1%2C8.5-6%2C13.2-8.5%09l-6-25.8l30.1-9.7l10.1%2C24.5c5.3-0.7%2C10.5-0.9%2C15.7-0.8l7.7-25.4l30.9%2C6.7l-3.5%2C26.3c4.8%2C2%2C9.5%2C4.4%2C13.9%2C7.2l19.3-18.2l23.4%2C21.3%09l-15.4%2C20L204.1%2C66z%20M79%2C106.3l49.8-18.1l44.6%2C87.8l31.7-95.6l50%2C18.1c-11%2C24.1-21%2C48.8-30.1%2C74c-9.1%2C25.2-17.2%2C50.9-24.4%2C77h-50.9%09c-9.5-22.9-20.2-46.3-32-70.2C105.8%2C155.3%2C92.9%2C131%2C79%2C106.3z%22/%3E%3C/svg%3E") 8px 4px no-repeat;
+         }
          .vk_settings_block .checkbox{
             margin-top: 10px
          }
@@ -337,7 +342,16 @@ vkopt['settings'] =  {
          /*right_menu_item:
          <a id="ui_rmenu_vkopt" href="/settings?act=vkopt" class="ui_rmenu_item _ui_item_payments" onclick="return vkopt.settings.show(this);"><span>{lng.VkOpt}</span></a>
          */
-         
+         /*left_menu_item:
+         <li id="l_vkopt">
+           <a href="/settings?act=vkopt" onclick="return vkopt.settings.show(this);" class="left_row">
+             <span class="left_fixer">
+               <span class="left_icon fl_l vkopt_icon"></span>
+               <span class="left_label inl_bl">{lng.VkOpt}</span>
+             </span>
+           </a>
+         </li>
+         */         
          /*main:
          <div id="vkopt_settings_block" class="page_block clear_fix">
              <div class="page_block_header">{vals.full_title}</div>
@@ -383,6 +397,7 @@ vkopt['settings'] =  {
          vkopt.settings.tpls[key] = vk_lib.tpl_process(vkopt.settings.tpls[key],values);
       
       vkopt.settings.top_menu_item();
+      // vkopt.settings.left_menu_item(); // пока непонятно как избавиться от добавления класса ui_rmenu_item_sel при клике по пункту меню
       // </UI>
       
       // Инит фич настроек плагинов
@@ -391,6 +406,9 @@ vkopt['settings'] =  {
    },
    onLocation: function(nav_obj,cur_module_name){
       if (nav_obj[0] != 'settings') return;
+      
+
+      
       if (!ge('ui_rmenu_vkopt')){
          var item = se(vkopt.settings.tpls.right_menu_item);
          var p = (ge('ui_rmenu_general') || {}).parentNode;
@@ -431,6 +449,13 @@ vkopt['settings'] =  {
       var item = se('<a class="top_profile_mrow" id="top_vkopt_settings_link" href="/settings?act=vkopt" onclick="return vkopt.settings.show(this, true);">VkOpt</a>');
       if (ref && !ge('top_vkopt_settings_link')){
          ref.parentNode.insertBefore(item, ref);
+      }
+   },
+   left_menu_item: function(){
+      if (!ge('l_vkopt')){
+         var item = se(vkopt.settings.tpls.left_menu_item);
+         var p = (ge('l_pr') || {}).parentNode;
+         p && p.appendChild(item);
       }
    },
    show: function(el, in_box){
@@ -683,11 +708,11 @@ vkopt['audio'] =  {
       
       .audio_row .audio_acts .audio_act.vk_audio_acts{
          display:block;
-      }      
+      }
       .audio_row .audio_acts .audio_act.vk_audio_acts>div {
          background: url(/images/icons/profile_dots.png) no-repeat 0 5px;
          height: 13px;
-         width: 17px;
+         width: 18px;
       }
       
       .audio_row .audio_acts .audio_act.vk_audio_dl_btn.vk_audio_acts>div{
@@ -710,7 +735,6 @@ vkopt['audio'] =  {
          background: url(/images/upload_inv_mini.gif) no-repeat 0% 50%;
          width: 18px;
       }
-      
       
       .audio_duration_wrap.vk_with_au_info .audio_duration{
          display: inline;
@@ -763,6 +787,16 @@ vkopt['audio'] =  {
       .vk_acts_menu_block a{
          display: block;
          white-space: nowrap;
+         text-decoration: none;
+      }
+      .vk_acts_menu_block a:hover{
+         background-color: rgba(0, 51, 127, 0.039);
+         margin: 0px -14px;
+         padding: 0 14px;
+      }
+      .tt_w.vk_acts_menu_block .tt_text {
+         padding-bottom: 5px;
+         padding-top: 5px;
       }
       */
       });
@@ -1576,6 +1610,122 @@ vkopt['messages'] = {
    }
 }
 
+vkopt['attacher'] = {
+   tpls: null,
+   onSettings:{
+      Extra: {
+         attach_media_by_id:{}
+      }
+   },
+   onInit: function(){
+      vkopt.attacher.tpls = vk_lib.get_block_comments(function(){
+         /*choose_audio_row:
+         <div class="choose_audio_row">
+            <a class="choose_link" onclick="return vkopt.attacher.audio.choose(event, this, '{vals.full_aid}');">{lng.Attach}</a>
+            <div class="choose_row">{vals.audio_row}</div>
+         </div>
+         */
+      });
+   },
+   onResponseAnswer: function(answer, url, q){
+      if (!vkopt.settings.get('attach_media_by_id'))
+            return;
+      if (url == '/audio' && q.act == 'a_choose_audio_box' && !q.q && (answer[2] || null).replace){
+         if (answer[2].indexOf('vkopt.attacher.audio.check_query') == -1)
+            answer[2] = answer[2].replace(/(cur\.onChangeAudioQuery\s*=\s*function[^\{]+\{([\r\n\s]*))/,'$1vkopt.attacher.audio.check_query(arguments[0]);$2');
+            answer[2] = answer[2].replace(/(box\.hideCloseProgress\(\);)/,'$1\n   vkopt.attacher.audio.check_query(cur.chooseAudioQuery);');
+      }
+         /*
+         setTimeout(function(){
+            Inj.Start('cur.onChangeAudioQuery','vkopt.attacher.audio.check_query(arguments[0]);')
+         });
+         */
+   },
+   
+   audio: {
+      cache:{},     
+      check_query: function(s){
+         clearTimeout(vkopt.attacher.audio.__debounce_check);
+         vkopt.attacher.audio.__debounce_check = setTimeout(function(){
+            var full_id = ((s || '').match(/audio_?(-?\d+_\d+)/i) || [])[1];
+            if (full_id){
+               if ((vkopt.attacher.audio.__last_aid != full_id) || !geByClass1('_audio_row_'+full_id,ge('choose_audio'))) // что повторно не вызывать перерендеринг
+                  vkopt.attacher.audio.load_info(full_id);
+               vkopt.attacher.audio.__last_aid = full_id;
+            } else 
+               vkopt.attacher.audio.__last_aid = null;
+         },400);
+      },
+      load_info: function(full_aid){
+         if (vkopt.attacher.audio.cache[full_aid]){
+            vkopt.attacher.audio.render(full_aid);
+         } else
+            ajax.post("al_audio.php", {
+               act : "reload_audio",
+               ids :  full_aid
+            }, {
+               onDone : function (data) {
+                  if (!data){ // вероятно косяк с детектом множества однотипных действий
+                     console.log('Load audio info failed:', full_aid);
+                     setTimeout(function(){
+                        console.log('try load again');
+                        vkopt.attacher.audio.load_info(full_aid);
+                     }, 10000);
+                  } else {
+                     each(data, function (i, info) {
+                        var info_obj = AudioUtils.asObject(info);
+                        vkopt.attacher.audio.cache[info_obj.fullId] = {arr: info, obj: info_obj};
+                     });
+                     vkopt.attacher.audio.render(full_aid);
+                  }
+               }
+            })
+         
+      },
+      render: function(full_aid){
+         var cont = ge('choose_audio_rows');
+         if (!cont ||  geByClass1('_audio_row_'+full_aid, cont)) return; // избегаем вывода дублей
+         
+         var info_obj = vkopt.attacher.audio.cache[full_aid].obj;
+         var info_arr = vkopt.attacher.audio.cache[full_aid].arr;
+         var row = se(
+            vk_lib.tpl_process(vkopt.attacher.tpls['choose_audio_row'], {
+               full_aid: info_obj.fullId,
+               audio_row: AudioUtils.drawAudio(info_arr)
+            })
+         );
+         cont.appendChild(row);
+      },
+      choose: function(ev, el, full_aid){
+         window.event = window.event || ev;
+         if (el.selected !== undefined) {
+            cur.lastAddMedia.unchooseMedia(el.selected);
+            el.selected = undefined;
+            removeClass(domPN(el), 'audio_selected');
+            el.innerHTML = IDL('Attach');
+         } else {
+            var info = vkopt.attacher.audio.cache[full_aid];
+            var cnt = cur.attachCount && cur.attachCount() || 0;
+            cur.chooseMedia('audio', full_aid, {
+               performer : info.obj.performer,
+               title : info.obj.title,
+               info : info.obj.url,
+               duration : info.obj.duration
+            });
+            if (!cur.attachCount || cur.attachCount() > cnt) {
+               if (cur.lastAddMedia) {
+                  el.selected = cur.lastAddMedia.chosenMedias.length - 1;
+                  addClass(domPN(el), 'audio_selected');
+                  el.innerHTML = IDL('Cancel');
+               };
+            }
+         };
+         window.event = undefined;
+         return false;
+      }      
+   }
+
+}
 vkopt['face'] =  {
    onSettings:{
       Media:{
@@ -1635,13 +1785,14 @@ vkopt['face'] =  {
          .vk_compact_audio .choose_audio_rows .choose_link {
             margin: 0px;
          }
-         
+         .vk_compact_audio .page_preview_audio_wrap .page_media_x_wrap {
+            top: 0px;
+         }
          .vk_more_acts_icon{
             background: url(/images/icons/profile_dots.png) no-repeat 0 4px;
             height: 13px;
             width: 17px;
          }
-
          */
       });
       return codes.main;
