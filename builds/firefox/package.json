@@ -46,7 +46,10 @@
    "license": "MPL 2.0", 
    "main": "main", 
    "name": "vkopt", 
-   "version": "2.3.0"
+   "version": "2.3.0",
+   "permissions": {
+      "private-browsing": true
+   }
   }
  }, 
  "name": "vkopt", 

@@ -83,7 +83,7 @@ function startup(data, reasonCode) {
 
     // TODO: Maybe we should perform read harness-options.json asynchronously,
     // since we can't do anything until 'sessionstore-windows-restored' anyway.
-    let options = JSON.parse(readURI(rootURI + './harness-options.json'));
+    let options = JSON.parse(readURI(rootURI + './package.json'));
 
     let id = options.jetpackID;
     let scripts_path_domain = options.scripts_path_domain;
