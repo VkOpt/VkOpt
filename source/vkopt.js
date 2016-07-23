@@ -28,6 +28,7 @@ var vkopt_defaults = {
       size_info_on_ctrl: true,
       scrobbler: true,
       im_dialogs_right: false,
+      cut_bracket: false,
       
       //Extra:
       photo_replacer: true,
@@ -98,6 +99,9 @@ var vkopt_core = {
       }); 
    },
    run: function(){
+      // Под новый дизайн чуть другие функции работы с локализацией.
+      vkopt.lang.override(); // TODO: убрать этот костыль при удалении скриптов для старого дизайна
+      
       for (var key in StaticFiles)  
          if (StaticFiles[key].t == 'js')
             vk_glue.inj_to_file(key); 
@@ -186,11 +190,20 @@ var vkopt_core = {
          vkopt_core.plugins.call_modules('onStorage', id, cmd);
       },
       process_response: function(answer, url, q){
+         // answer - массив, элементы которого в последствии становятся аргументами вызываемых колбеков. можно править его элементы
          var _rx = /^\s*<(div|table|input|a)/i;
          for (var i=0;i<answer.length;i++){
             if (typeof answer[i]=='string' && _rx.test(answer[i]) ){
                answer[i] = vkopt_core.mod_str_as_node(answer[i], vkopt_core.plugins.process_node, {source:'process_response', url:url, q:q});
             }
+         }
+         // для случаев, когда тело html'а передано не отдельным аргументом, а внутри какого-то JSON'а:
+         switch (url){
+            case '/al_im.php':
+               if (q.act == 'a_start' && answer[0] && answer[0].history){ // открытие диалога
+                  answer[0].history = vkopt_core.mod_str_as_node(answer[0].history, vkopt_core.plugins.process_node, {source:'process_response_im_a_start', url:url, q:q});
+               }
+               break;
          }
          vkopt_core.plugins.call_modules('onResponseAnswer', answer,url,q);
       },
@@ -280,7 +293,11 @@ var vk_glue = {
       return vkopt_core.mod_str_as_node(html, vkopt_core.plugins.process_node);
    },
    response_handler: function(answer,url,q){
+      // try{
       vkopt_core.plugins.process_response(answer, url, q);
+      // catch(e){
+      //    vkopt_core.ping_stat({type: 'fail', source: 'response_handler', url: url, q: q ? q.act : ''})
+      // }
    }
 }
 
@@ -312,13 +329,22 @@ var vk_glue = {
 */
 
 vkopt['settings'] =  {
+   backup_key_prefix: 'vkopt_settings_backup_',
    tpls: null,
    css: function(){
       return vk_lib.get_block_comments(function(){
          /*settings_css:
          .vkopt_icon,
-         #side_bar .left_icon.vkopt_icon{
+         #side_bar .left_icon.vkopt_icon, .vkopt_icon_inline{
             background: url("data:image/svg+xml,%3Csvg%20version%3D%221.1%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2216%22%20height%3D%2216%22%09%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20fill%3D%22%237D9AB7%22%20d%3D%22M204.1%2C66l-25.3%2C30.4c-14.1-25-44.3-37.6-72.7-28.5%09c-32.5%2C10.4-50.5%2C45.2-40%2C77.8c6.2%2C19.4%2C21.2%2C33.6%2C39.1%2C39.7c7.4%2C14%2C15.4%2C31.9%2C21.1%2C46c-7.5%2C7.8-12.1%2C19.6-12.1%2C19.6l-30.9-6.7%09l3.5-26.3c-4.8-2-9.5-4.4-13.9-7.2L53.6%2C229l-23.4-21.3l16.2-21c-3.1-4.1-6-8.5-8.5-13.2l-25.8%2C6l-9.7-30.1l24.5-10.1%09c-0.7-5.3-0.9-10.5-0.8-15.7L0.8%2C116l6.7-30.9l26.3%2C3.5c2-4.8%2C4.4-9.5%2C7.2-13.9L22.8%2C55.3l21.3-23.4l21%2C16.2c4.1-3.1%2C8.5-6%2C13.2-8.5%09l-6-25.8l30.1-9.7l10.1%2C24.5c5.3-0.7%2C10.5-0.9%2C15.7-0.8l7.7-25.4l30.9%2C6.7l-3.5%2C26.3c4.8%2C2%2C9.5%2C4.4%2C13.9%2C7.2l19.3-18.2l23.4%2C21.3%09l-15.4%2C20L204.1%2C66z%20M79%2C106.3l49.8-18.1l44.6%2C87.8l31.7-95.6l50%2C18.1c-11%2C24.1-21%2C48.8-30.1%2C74c-9.1%2C25.2-17.2%2C50.9-24.4%2C77h-50.9%09c-9.5-22.9-20.2-46.3-32-70.2C105.8%2C155.3%2C92.9%2C131%2C79%2C106.3z%22/%3E%3C/svg%3E") 8px 4px no-repeat;
+         }
+         .vkopt_icon_inline{
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            background-position: 0 0;
+            margin-top: -8px;
+            margin-bottom: -4px;
          }
          .vk_settings_block .checkbox{
             margin-top: 10px
@@ -327,7 +353,104 @@ vkopt['settings'] =  {
             margin-top: 0
          }
          .vk_sub_options{padding-left:20px; margin-top:5px;}
-         */
+         
+         .vk_welcome_r{
+            width: 70px;
+         }
+         .vk_welcome_r .vk_lang{
+            width: auto;
+            height: auto;
+         }
+         .vk_welcome_r .vk_lang a{
+            font-size: 10px;
+            width: 55px;
+            height: 75px;
+            line-height: 12px;
+         }
+         .vk_welcome_r .vk_lang_about{
+            display: none;
+         }
+         .vk_welcome_l{
+            width: 530px;
+         }
+         .vk_welcome_warn{
+            font-weight:bold;
+            color:#F00;            
+         }
+         .first_run_guide #top_vkopt_settings_link:before {
+             content: '';
+             display: block;
+             width: 0px;
+             height: 0px;
+             position: absolute;
+             border: 10px solid transparent;
+             border-left-color: #2a5885;
+             margin-top: 5px;
+             margin-left: -30px;
+             border-left-width: 15px;
+         }
+         
+         .first_run_guide #top_vkopt_settings_link:before{
+           animation: top_vkopt_settings_arrow ease-in-out 0.5s infinite alternate;
+           -webkit-animation: top_vkopt_settings_arrow ease-in-out 0.5s infinite alternate;
+           -moz-animation: top_vkopt_settings_arrow ease-in-out 0.5s infinite alternate;
+           -o-animation: top_vkopt_settings_arrow ease-in-out 0.5s infinite alternate;
+           -ms-animation: top_vkopt_settings_arrow ease-in-out 0.5s infinite alternate;
+         }
+         @keyframes top_vkopt_settings_arrow{
+           0%{transform:  translate(0px,0px)}
+           100%{transform:  translate(10px,0px)}
+         }
+
+         @-moz-keyframes top_vkopt_settings_arrow{
+           0%{-moz-transform:  translate(0px,0px)}
+           100%{-moz-transform:  translate(10px,0px)}
+         }
+
+         @-webkit-keyframes top_vkopt_settings_arrow {
+           0%{-webkit-transform:  translate(0px,0px)}
+           100%{-webkit-transform:  translate(10px,0px)}
+         }
+
+         @-o-keyframes top_vkopt_settings_arrow {
+           0%{-o-transform:  translate(0px,0px)}
+           100%{-o-transform:  translate(10px,0px)}
+         }
+
+         @-ms-keyframes top_vkopt_settings_arrow {
+           0%{-ms-transform:  translate(0px,0px)}
+           100%{-ms-transform:  translate(10px,0px)}
+         }
+
+         .first_run_guide #top_vkopt_settings_link {
+            -webkit-animation: top_vkopt_settings_bg ease-in-out 1s infinite alternate;
+            -moz-animation: top_vkopt_settings_bg ease-in-out 1s infinite alternate;
+            -ms-animation: top_vkopt_settings_bg ease-in-out 1s infinite alternate;
+            -o-animation: top_vkopt_settings_bg ease-in-out 1s infinite alternate;
+            animation: top_vkopt_settings_bg ease-in-out 1s infinite alternate;
+         }         
+         @-webkit-keyframes top_vkopt_settings_bg {
+            from { background-color: rgba(228, 234, 240, 0.2)}
+            to { background-color: rgb(228, 234, 240)}
+         }
+         @-moz-keyframes top_vkopt_settings_bg {
+            from { background-color: rgba(228, 234, 240, 0.2)}
+            to { background-color: rgb(228, 234, 240)}
+         }
+         @-ms-keyframes top_vkopt_settings_bg {
+            from { background-color: rgba(228, 234, 240, 0.2)}
+            to { background-color: rgb(228, 234, 240)}
+         }
+         @-o-keyframes top_vkopt_settings_bg {
+            from { background-color: rgba(228, 234, 240, 0.2)}
+            to { background-color: rgb(228, 234, 240)}
+         }
+         @keyframes top_vkopt_settings_bg {
+            from { background-color: rgba(228, 234, 240, 0.2)}
+            to { background-color: rgb(228, 234, 240)}
+         }
+         
+        */
       }).settings_css;
 
    },
@@ -391,6 +514,13 @@ vkopt['settings'] =  {
                            val : e
                         };
          */
+         
+         /*welcome_layout:
+         <div class="clear_fix">
+            <div class="vk_welcome_r fl_r">{vals.right}</div>
+            <div class="vk_welcome_l fl_l">{vals.left}</div>
+         </div>
+         */
       });
       // Подставляем локализацию в шаблон:
       for (var key in vkopt.settings.tpls)
@@ -403,8 +533,15 @@ vkopt['settings'] =  {
       // Инит фич настроек плагинов
       var list = vkopt.settings.get_options_list();
       vkopt.settings.init_features(list);
+      setTimeout(function(){
+         vkopt.settings.first_launch();
+      },0);
    },
    onLocation: function(nav_obj,cur_module_name){
+      if (vkopt.settings.__last_user_id == 0 && vk.id > 0){
+         vkopt.settings.__last_user_id = vk.id;
+         vkopt.settings.first_launch();
+      }
       if (nav_obj[0] != 'settings') return;
       
 
@@ -423,6 +560,69 @@ vkopt['settings'] =  {
    onModuleDelayedInit: function(plug_id){
       var list = vkopt_core.plugins.call_method(plug_id, 'onSettings');
       vkopt.settings.init_features(list, plug_id);
+   },
+   first_launch: function(){
+      var check_ver = function(){
+         var cur_ver = parseInt(vkopt.settings.get('version'));
+         var cur_build = parseInt(vkopt.settings.get('build'));
+         // Устанавливаем язык вкопта исходя из выбранного в вк, либо выбранного руками ранее.
+         vkopt.lang.set(vkopt.lang.get_prefered(), true);
+         
+         if (!cur_ver)
+            vkopt_core.plugins.call_modules('firstRun');
+         
+         if (!cur_build || cur_build<vBuild){
+            dApi.call('account.getAppPermissions',{},function(r){
+               if (r.response != vk_api_permissions.to_int(DAPI_APP_SCOPE)){
+                  if (vk_DEBUG) console.log('API auth reason: different scopes');
+                  dApi.auth();
+               }
+            }); 
+            vkopt.settings.set('version', vVersion);
+            vkopt.settings.set('build', vBuild);
+
+            var box = new MessageBox({title: IDL('THFI'),width:"660px"});
+            box.removeButtons();
+            box.addButton('OK',function(){box.hide( 200 );},'no');
+            
+            // Для быстрого просмотра выбранной локализации
+            var box_content = function(){
+               //var welcome_html = 
+               //welcome_html += '<br><br>' + vkopt.lang.choose(true, box_content);
+               var welcome_html = vk_lib.tpl_process(vkopt.settings.tpls['welcome_layout'],{
+                  left: IDL('FirstUpdateLaunch',{
+                     ver: String(vVersion).split('').join('.'),
+                     build: vBuild,
+                     b: '<b>%s</b>',
+                     n: '<br />',
+                     warn: '<span class="vk_welcome_warn">%s</span>',
+                     a_site:'<a href=\"http://vkopt.net/\" target=_blank><b>%s</b></a>',
+                     a_cfg:'<a href=\"/settings.php?act=vkopt\" target=_blank>%s</a>',
+                     a_forum:'<a href=\"http://vkopt.net/forum/forumdisplay.php?f=4\" target=_blank>%s</a>',
+                     a_faq:'<a href=\"http://vkopt.net/forum/forumdisplay.php?f=4\" target=_blank>%s</a>'
+                  }),
+                  right: vkopt.lang.choose(true, box_content)
+               });
+               box.content(welcome_html);
+               box.setOptions({title: IDL('THFI')});
+            }
+            box_content();
+            box.show();         
+         
+         }
+
+      }
+      if (vk.id == 0){
+         vkopt.settings.__last_user_id = 0;
+         return;
+      }
+      if (!vkopt.settings.get('version')){
+         vkopt.settings.restore(function(){
+            check_ver();
+         });
+      } else {
+         check_ver();
+      }
    },
    init_features: function(list, plug_id){
       
@@ -517,6 +717,7 @@ vkopt['settings'] =  {
       vkopt.settings.set_feature(option_data, val);
       
       vkopt_core.plugins.call_modules('onOptionChanged', option_id, val, option_data);
+      window.vkopt_core_ready && vkopt.settings.backup_handler();
    },
    get:function(option_id){
       var cfg = vkopt.settings.config();
@@ -617,9 +818,218 @@ vkopt['settings'] =  {
          
       }
       return html;
+   },
+   
+   backup_handler: function(){
+      clearTimeout(vk_settings.__bkp_timeout);
+      vk_settings.__bkp_timeout = setTimeout(function(){
+         vkopt.settings.backup();
+      },400)
+     
+   },
+   backup:function(callback){
+      var full_config = {
+         config: vkopt.settings.config(),
+      }
+      vk_ext_api.storage.set('vkopt_cfg_backup_'+vk.id, JSON.stringify(full_config), function(){
+         console.log('config '+vk.id+' copied to bg ok');
+         callback && callback();
+      });
+
+   },
+   restore:function(callback){
+      vk_ext_api.storage.get('vkopt_cfg_backup_'+vk.id,function(value){
+         var cfg = JSON.parse(value || '{}');
+         if (cfg.config)
+            vkopt.settings.config(cfg.config);
+         
+         console.log('config '+vk.id+' restored from bg ok');
+         callback && callback();
+      })      
+   },
+   remove_backup:function(callback){
+      vk_ext_api.storage.set('vkopt_cfg_backup_'+vk.id, '{}', function(){
+         console.log('empty config copied to bg ok');
+         callback && callback();
+      });      
    }
 }
 
+vkopt['lang'] = {
+   tpls: null,
+   __callbacks: [function(){}],
+   onSettings:{
+      Others:{
+         cut_bracket:{
+            title: 'seCutBracket'
+         }
+      }
+   },   
+   css: function(){
+      return vk_lib.get_block_comments(function(){
+         /*css:
+         .vk_lang{
+            margin:auto;
+            width:470px;
+            height:120pt;
+         }
+         .vk_lang a{
+            text-align:center;
+            display:block;
+            float:left;
+            padding:2pt 5pt;
+            margin:2pt;
+            border_:solid 1pt #5c82ab;
+            background:#fff;
+            width:100pt;
+            height:50pt;
+         }
+         .vk_lang a.selected{
+            background-color: #e5ebf1;
+         }
+         .vk_lang a{
+           -o-transition: all 0.25s ease-out;
+           -webkit-transition: all 200ms linear;
+           -moz-transition: all 200ms linear;
+           -o-transition: all 200ms linear;
+           transition: all 200ms linear;
+         }
+         .vk_lang a:hover, .vk_lang a:focus, .vk_lang a.selected:hover{
+            text-decoration:none; 
+            color:#fff;
+            background:#476d96;
+         }
+         .vk_lang .vk_lang_icon{margin:auto;display:block;clear:both;width:48px;height:48px;}
+         .vk_lang .vk_lang_icon_ru{background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAAAXVBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD////eEBgRWKnfEhrgGyMTWqnPDxYmZ7AzcLVCe7o6dbcsa7IPV6gOVqcNVaceYazSDxcwbrTbGiLYFh3VEhpMgr4qarKTDQFWAAAACHRSTlMAJxtZDRUIRLAAvJYAAACPSURBVEjH7ctHEsIwDAVQJWCHYsWFkp77HxOLXEDfM8yw8Ns/qlTsGWCJzAViqMVCSw0Wmhr+JYQtqm1BQkxqUcKUglqaJDwAEnYP2HPwDPASbgAJAxIGCfxU4yO81L6B+a3GnMPs7mpuLgmLu6q5pSSsSFhLwoiE8eehz6F3ekdA5GC6E6AzZE0LMJYqhQ/0BEft1j2DHgAAAABJRU5ErkJggg==");}
+         .vk_lang .vk_lang_icon_ua{background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAAAhFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/7wj/7wr/8BP/8BD/7w1RnMDv4AdClLosh7Izi7Umg7CNv9Z6tM92ss1rrMlmqMdgpcVKmb1YoMNxr8sTeak7kLdRncA5kLdMmr/66xT05QqIvNRElbv/8SP97hv36A8TeqmAt9EUeql73+oKAAAACXRSTlMAJwxZGxQiRAeVBSjSAAAA7UlEQVRIx+3Ny5KCMBCF4TgzQR2YkAG5Kknwfnn/95PTWi7URbcLV34VKumk/kJ9sHyJKKWNiFaRmQmYSI36dcG27kcISjYK2uOC7dgOwaao2IoNgrJmKxHYqmGrLIJ6zlYjcI3xxhjvjQcM9GHG9fVMQ+OGIPiWbR4Q9JatR5BZ54IDCFjhcgxYgJ3ebIYgZGwBwb8IglwAQd49c7jbcTp1XT4E21hgiyARQLCLE7Z4R8EfGwVLSbCk4JctoSARBvvbH6Z3z4+X8Z6CKRsFK0mwekuQSoL0tYAPQZSKREqPvwXGWk30j4CeqA+GMxMNaQHX9GMOAAAAAElFTkSuQmCC");}
+         .vk_lang .vk_lang_icon_by{background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAABcVBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABasSRcsibdHyXdGyFUpSLnXGDlTlLjRkviQEXhOj5itS/ulJfgMzjeIifsfoHqdXjoaW3mXGDlVVnren7pb3PnY2bdHiTsg4b5qq31fYJgtCz4pKj3nJ///v77y836uLv5srX3nqL2kZT2iY30c3j0a3D++vr+8PH+7e3w5uz7xMX5sLP5rbD4p6r2k5f2hYnsgoXxTFL+9/fw7vT96Oj82Nn5vcD5trj2jZH0eH30b3TyWmDx6u/x5Ovu4Obo2+L83N381df7ztD7yMr5u73zZGnyYmfwREruLTRYqiTy8PXq6e/g4Of94ePh1dvd0Nfbx87bwsrttLv3mJzti471gYbmV1vxUlnlUVbxSE7vP0VcrinrDRby8/jy8fb17PDm4ez96erp4+nm4+nk4unMxdL6vsDXhZDXg43pb3LxV17mWV3uNj7hNDneLzTdLDLdKC7cJSptsklgAAAACXRSTlMAJwxZGxQiRAeVBSjSAAABxklEQVRIx+3PV28TQRDA8TNwTpyQ2CE9oXg31/v5KmfcS3C3KemNhNB7h0/PDUggJB7G7/k97Wr11+wwF1AujYVh2OfN/c3mfrMxi8IyyWct0m6RYn4BYy3JJJ6IYqknloRs9nb2Nzj9c/tzWPiUYBI5qeCSF661jHB4HAdPHbEsd8rCdYTDdZjQVrsdVbRWELKP4uB+p1cq9RzzBsIyBA2uyAdF3lpFWEnHwR1Hkl1JMm8ifIAgJxpvu4ZjryGsZmAHP9LUKBDWEWYhaBgGrep1K41wPAc7BHWF7x+ZGYQ0BDnJUzVPtucQMhBsap5WIZWtayjwpfDEJ3WaX8SAIEdqWljjrCWMLzCBDjlyqpvTGItxcLfKValCW6jgKyztKVRXfPsWwtK3OHigf9bCs4F5FWH6exy8PBvWT6KRjQp+wITwfGCc68IUwsYGLF0ecfLILaCDVxwfqLySnwKpv4+p/wWPYYLhDD52+4UUwq/gNXdQqRzweVRwLw62y6e+PPQK6OChylOqHAnoYEdv1/rF2hYmmJ+BCYFPqyQU0MG2FBE5cu15BAiSb/be7e2+392ZQUky7MTlMUywzCR7ZQzsJHMB4ScOwJ2mzVrpiwAAAABJRU5ErkJggg==");}
+         .vk_lang .vk_lang_icon_en{background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAAAxlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD////gAhngBBviDiTRAhdMTIgJCVzhBx1ERIM0NHkmJm8MDF5tbZ5hYZZTU43pTV3729/yk549PX4eHmroQlPkMzv0pa3wiY/mPUnkJzrfChL86euJibHzn6hycqFbW5IsLHTrXGrqYWZ2dqRnZ5p1daTWBRv39/fx8fHdDiPgFiY4OHvtbXXnSFPlOUX86+385ej1rrWCgq18fKjxj5hgYJZQUIvwf4oaGmjCyrWuAAAACXRSTlMAJwxZGxQiBUSTska8AAABDklEQVRIx+3RS1ODMBSG4aAGejSA4K0a2loVAQV6s633y///Uyad6eqczCQsuuoz82X3Ls6E7dkIDpwEjEcmfQpnfpRDnlO7Jax85kV5XbdtW6u33mr1HrHRr8e85KMooMArgKKDzwuaMaihaRpiI+z9SwWyuKQ9Y8uxDpqyhBKvfMKWAxW8fF/RHrDXNx2UoH6JmOno9CehXVN0kEgJEk+OsdVQBZVMaUNsvQlSqKqK2A1FBWcmQNFBlmWAppiC7NxgQOjrIIY4pnZPWKjgLza4I6xVAE66BAtxak3oG+bixJqYdwmm4GDaJZiIY2tispNgBg5mXYJQOAg95odOfMZ7hw56nAX8yAEP2J6Ff6oZds4sz/U+AAAAAElFTkSuQmCC");}
+         .vk_lang .vk_lang_icon_it{background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAAAxlBMVEUAAAABAAAAAAAAAAAAAAAUDAoeCAQZGRQ1NTUAAAD///8Xk1TcFx0fl1oalVbdGyHcGB7eISYimV3nXGDdHiRcs4cdllgVik7OFRtOrHzlVVnlTlLgMjfeIynu7u5GqndApnI6o20zoGjjRkviQEXhOj6UzrHulJdVsIGDxaN+w6B1v5lvvJVpuZBjtozsg4bsfoHqdXjpb3PoaW3ren7nY2Z6wZ16wp0bkVVYsYTXHiTTGR+Lyanti44tnWTdKjDcJSraIijFix7TAAAACnRSTlMAJhtZDCsXEglEphuazgAAASpJREFUSMft0ltTgkAYxvHFArWi4mAKSJiYeT4WZtnp+3+pdqGL532nQXC89Lezl/95LnbFSSHnJVSrNVFtUBeMQxmi0ugTPHgiHE1o2/4Q8WCOsmA3QjxYoA9fBoNdslFnkySJvDx4RlkwHCMeLNFcBd5ogniwQotABeMp4sEaLQNdBpMZ4sELWqmFaFr84daxLoPZAPHAR04sFzpbD/EgQH5PBV6EeBCjIA2iDuJBD8UqeKB48EipoEvwoE2ooGsTPLBSoZVpq8Ak/gkUCD7zA5dIA/sO5QbWlwxsMze4QX/BNcoPvmVglgjcH03oe4Jb5L7J4NW8RMcNLBloe4IrZL0fEjRLB3bxIGwdEOjN/O8domyBumdahAyM+lkJdUPUjEoJRk2cFPALAAaA9oogdCMAAAAASUVORK5CYII=");}
+         .vk_lang .vk_lang_icon_tat{background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAAAYFBMVEUAAAAKhQoAAADdHiTkS1D///+SyZJ3u3dut25ptGlksmRfr19ZrFlSqVLO5878vr9MpkxGo0Y/nz83mzculi7eJiwmkiYAgACDwYONxo3Y7Nj9y8zI5Mj0lJZ6vXrlUVbnrokrAAAAA3RSTlMA/oyUR8fmAAAAg0lEQVRIx+3LNxaDMBAFQGxhKzubHO5/S6Rdat7fgk7TT1Wc4yKSQnsXaHPoNaznYGAcOgvrODjYHjyMwxJgCwUdYZqCecEMBfuGWQruA3MU/BfmKYQfLFCIDSzmMA0P2DClcBNJYR6fsHFOQa1/2KpyqBWsLqGEw4DjIJHDVaQqTrEBM5w1uYWmqN8AAAAASUVORK5CYII=");}
+         
+         .vk_lang_about {
+            text-align:center;
+            clear:both;
+         }
+         */
+      }).css;
+   },
+   onInit: function(){
+      vkopt.lang.tpls = vk_lib.get_block_comments(function(){         
+         /*lang_item:
+         <a href="#" class="vk_lang_item {vals.subclass}" onclick="vkopt.lang.set({vals.lang_idx},{vals.no_reload}); vkopt.lang.__callbacks[{vals.after_lang_set}](); return false;"><div class="vk_lang_icon vk_lang_icon_{vals.lang_id}"/></div>{vals.lang_name}
+         */
+         
+         /*lang_block:
+         <div class="vk_lang">{vals.items}</div>
+         <div class="vk_lang_about"><b><a href="javascript: toggle('vklang_author')">{lng.About_languages}</a></b><div id="vklang_author" style="display:none">{vals.about}</div></div>
+         */
+      });
+   },
+   override: function(){
+      vkLangGet = vkopt.lang.get;
+      vkLangSet = vkopt.lang.set;
+      IDL  = vkopt.lang.lng;
+   },
+   lng: function(id,options){ // if options is [Object] - apply macro replacing to lang string; else if  options = 2 - remove [], other  - add []
+      vkopt.lang.get();
+      var str = vkopt.lang.str_by_name(id);
+      if (isObject(options)) {
+         str = str.replace(/\{([a-z_\-\.]+)(?:\|([^\{\}]*?))?\}/g, function(s,key, val){
+            if (options[key]){
+               return val ? options[key].replace(/%s/g, val) : options[key]
+            } else {
+               return val ? val : s;
+            }
+         });
+         return str;
+      }
+      else if (options)
+         return vkopt.lang.cut_bracket(str, options);
+      else
+         return str;
+   },
+   cut_bracket: function(s,bracket){ // bracket = 2 - remove [], other  - add []
+      if (isArray(s)) return s;
+      if (vkopt.settings.get('cut_bracket') || bracket==2) s=(s.substr(0,1)=='[')?s.substr(1,s.length-2):s;
+      else if (bracket &&  bracket!=2) s='[ '+s+' ]';
+		return s;
+	},
+   str_by_name: function(id){
+      var dec = function (val) {
+      	try {
+      		return decodeURI(val);
+      	} catch (e) {}
+      	return val;
+      };
+      var raw = vk_lang[id] || vk_lang_ru[id] || (window.vk_lang_add && vk_lang_add[id])
+      return raw ? dec(raw) : id;
+   },
+   get: function(){
+	  var id=vkopt.settings.get('vklang');
+     if (!window.vk_lang){
+		 if (!id) id=0;
+		 vk_lang=VK_LANGS[id]?VK_LANGS[id]:VK_LANGS[0];
+	  }
+	  return id;
+	},
+   set: function(id,no_reload){
+      vkopt.settings.set('vklang',id);
+      vk_lang=VK_LANGS[id];
+      if (!no_reload)
+         location.reload();
+	},
+   get_prefered: function(){
+      var cur_lang_id = parseInt(vkopt.settings.get('vklang'));
+      if (isNaN(cur_lang_id)) 
+         cur_lang_id = -1;
+      if (cur_lang_id == -1){
+         var lng = 'en';
+         for (var key in VK_LANGS_ASSOC){
+            if (VK_LANGS_ASSOC[key].indexOf(vk.lang) > -1){
+               lng = key;
+            }
+         }
+         return VK_LANGS_IDS.indexOf(lng);
+      } else {
+         return cur_lang_id;
+      }
+   },
+   choose: function(no_reload, after_lang_set){
+      var cb_idx = 0;
+      if (after_lang_set){
+         vkopt.lang.__callbacks.push(after_lang_set);
+         cb_idx = vkopt.lang.__callbacks.length - 1;
+      }
+      var cur_lang_id = parseInt(vkopt.settings.get('vklang')) || 0;
+      
+      var lng=[];
+      for (var i=0; i<VK_LANGS_IDS.length; i++){
+         lng.push([VK_LANGS_IDS[i],VK_LANGS[i]['LangTite'],VK_LANGS[i]['LangAuthor']])
+      }
+      var html=[];
+      var about=[];
+      for (var i=0;i<lng.length;i++) {
+         html.push(vk_lib.tpl_process(vkopt.lang.tpls.lang_item, {
+                     lang_idx: i,
+                     no_reload: no_reload,
+                     after_lang_set: cb_idx || 0,
+                     lang_id: lng[i][0],
+                     lang_name: lng[i][1],
+                     subclass: i == cur_lang_id ? 'selected' : ''
+                  }));
+
+         about.push('<b>'+lng[i][1]+'</b> - '+lng[i][2]);
+      }
+
+      return vk_lib.tpl_process(vkopt.lang.tpls.lang_block, {
+         items: html.join(''),
+         about: about.join('<br>')
+      });
+
+      return html;
+   }   
+}
 vkopt['photoview'] =  {
    onSettings:{
       Media:{
