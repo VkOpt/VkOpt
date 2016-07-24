@@ -29,6 +29,7 @@ var vkopt_defaults = {
       scrobbler: true,
       im_dialogs_right: false,
       cut_bracket: false,
+      postpone_custom_interval: true,
       
       //Extra:
       photo_replacer: true,
@@ -38,6 +39,7 @@ var vkopt_defaults = {
       audio_edit_box_album_selector: true, // поле выбора альбома в окне редактирования названия аудио
       im_hide_dialogs: false, // Новый стиль диалогов. Полотно переписки на всю ширину, список диалогов скрывается при клике по истории, показ списка - клик по заголовку переписки
       attach_media_by_id: true, // при вставке айди медиа в поле поиска из диалога прикрепления, в диалог подгружается медиа-файл с этим айди
+      datepicker_inj: true, // активна ли инъекция в конструктор DatePicker'а
       
       //Consts:
       AUDIO_INFO_LOAD_THREADS_COUNT: 5,
@@ -318,9 +320,16 @@ var vk_glue = {
       // <settings>
       onSettings:             function(){} || {}                           // возвращаем объект с перечисленными по категориям настройками этого модуля
       onOptionChanged:        function(option_id, val, option_data){},     // реакция на изменение опции
+      firstRun:               function(){}                                 // вызывается при первом запуске (не найдены ранее прописанные настройки vkopt'a), 
+                                                                           // P.S. вкопт из хранилища расширения восстанавливает только данные из своего конфига, если они были сохранены,
+                                                                           // тогда это первым запуском не считается, но в локальном хранилище могут отсутствовать данные от других модулей, 
+                                                                           // хранящих инфу не через vkopt.settings.get | vkopt.settings.set
       
       // <audio>
       onAudioRowMenuItems: function(audio_info_obj){},                     // вернуть массив из строк с пунктами-ссылками "<a>..</a>"
+      
+      // <wall>
+      onDatepickerCreate: function(args){},                                // вызывается при создании селектора даты new Datepicker(), args - массив аргументов переданных в конструктор
    };
    window.vkopt = (window.vkopt || {});
    window.vkopt[m.id] = m;
@@ -1745,7 +1754,7 @@ vkopt['audio'] =  {
    
 }
 
-vkopt['scrobbler'] = {
+vkopt['scrobbler'] = { // lastfm: { } //TODO: after disable old vk design, replace in lastfm module localStorage[Key] to vkopt.settings.get(Key)/.set(Key,val)
    css: function(){
       return '\
       .lastfm_audio_page{position: absolute;margin-top: -20px;margin-left: 5px;} \
@@ -2209,6 +2218,85 @@ vkopt['face'] =  {
    }
 }
 
+vkopt['wall'] = {
+   onSettings:{
+      vkInterface:{
+         postpone_custom_interval:{
+            title: 'sePostponeCustomInterval'
+         }    
+      },
+      Extra: {
+         datepicker_inj:{}
+      }
+   },
+   onLibFiles: function(file_name){
+      
+      /* Задача - хотим менять дефолтный интервал между создаваемыми отложенными постами.
+      Вариант 1.
+      if (file_name == 'ui_media_selector.js')
+         Inj.Replace('MediaSelector',/\+\s*3600/g, ' + vkopt.wall.postponed.date_mod()') // заменяем то самое место, где захардкожен интервал.
+      Но если обновить страницу, на которой стена, то фикс не применится, т.к медиаселектор создаёт свой экземпляр раньше, чем вкопт изменит его код.
+      Поэтому будем править время уже в самом datepicker'е
+      */
+     if (file_name == 'datepicker.js' && vkopt.settings.get('datepicker_inj')){ // передаём в наш перехватчик id элемента в котром указана дата.  
+         //Inj.Start('Datepicker','vkopt.wall.postponed.datepicker(#ARG0#);'); // обломс. невозможно пересоздать так. 
+         if (!window.vkorigDatepicker ||  (window.Datepicker  && Datepicker.toString().indexOf('onDatepickerCreate') == -1)){
+            window.vkorigDatepicker = window.Datepicker;
+            window.Datepicker = function(el, options){
+               // vkopt.wall.onLibFiles mod. Attach to this by event onDatepickerCreate
+               var args = Array.prototype.slice.call(arguments);
+               vkopt_core.plugins.call_modules('onDatepickerCreate', args);
+               vkorigDatepicker.apply(this, args);
+            }
+         }
+     }   
+      
+   },  
+   onDatepickerCreate: function(args){
+      // args[0] - element_id 
+      // args[1] - options
+      
+      if (vkopt.settings.get('postpone_custom_interval') && args && args.length > 0)
+         vkopt.wall.postponed.datepicker(args[0],args[1])
+   },
+   postponed: {
+      additional_interval: 0,
+      datepicker: function(el,options){
+         el = ge(el);
+         if (el && el.id && /postpone_date/.test(el.id) && el.value){ // если создаётся селектор даты для таймера публикации поста
+            val(el, parseInt(val(el)) + vkopt.wall.postponed.date_mod()); // добавляем к дефолтному времени своё значение.
+            if (isObject(options) && options.onUpdate){
+               var orig_onUpdate = options.onUpdate;
+               options.onUpdate = function(){
+                  console.log(arguments); 
+                  var args = Array.prototype.slice.call(arguments);
+                  orig_onUpdate.apply(this, args);
+                  
+                  vkopt.wall.postponed.on_update(parseInt(val(ge(el.id)))); // el != ge(el.id)   WTF? o_O
+               }
+            }
+         }
+      },
+      on_update: function(new_time){
+         var cur_dt = Math.round((new Date).getTime() / 1e3);
+         var pp_last_dt = intval(cur.postponedLastDate);
+         // Считаем интервал между последним отложенным и создаваемым
+         var interval = new_time - (pp_last_dt && (pp_last_dt > cur_dt) ? pp_last_dt : cur_dt) 
+         
+         if (interval){
+            // видираем хардкод временного шага создания поста и функции прикрепения таймера
+            var default_step = ((cur.chooseMedia && cur.chooseMedia.toString().match(/cur.postponedLastDate[^;\d]+(\d+)/)) || [0,3600])[1]; 
+            // Вычисляем величину, на которую будем автоматически дополнять время таймера для нового поста
+            vkopt.wall.postponed.additional_interval = interval - default_step
+         }
+      },
+      date_mod: function(){
+         //var hours = 3; // нужна опция выбора величины интервала между постами. 
+         return vkopt.wall.postponed.additional_interval;//hours * 60*60;
+      }      
+   }
+
+}
 
 vkopt['test_module'] =  {
    /*   
