@@ -2263,6 +2263,7 @@ vkopt['wall'] = {
       additional_interval: 0,
       datepicker: function(el,options){
          el = ge(el);
+         var vk_post_date =  parseInt(val(el));
          if (el && el.id && /postpone_date/.test(el.id) && el.value){ // если создаётся селектор даты для таймера публикации поста
             val(el, parseInt(val(el)) + vkopt.wall.postponed.date_mod()); // добавляем к дефолтному времени своё значение.
             if (isObject(options) && options.onUpdate){
@@ -2272,20 +2273,29 @@ vkopt['wall'] = {
                   var args = Array.prototype.slice.call(arguments);
                   orig_onUpdate.apply(this, args);
                   
-                  vkopt.wall.postponed.on_update(parseInt(val(ge(el.id)))); // el != ge(el.id)   WTF? o_O
+                  vkopt.wall.postponed.on_update(parseInt(val(ge(el.id))), vk_post_date); // el != ge(el.id)   WTF? o_O
                }
             }
          }
       },
-      on_update: function(new_time){
+      on_update: function(new_time, orig_time){
+         // видираем хардкод временного шага создания поста и функции прикрепения таймера
+         var default_step = ((cur.chooseMedia && cur.chooseMedia.toString().match(/cur.postponedLastDate[^;\d]+(\d+)/)) || [0,3600])[1]; 
+         
+         // поведение вк - если предлагаемое бекэндом время поста меньше текущего, то инкрементим до текущего. 
+         // делаем себе такую же логику для корректного определения кастомного промежутка:
+         var orig_post_time = orig_time - default_step;
          var cur_dt = Math.round((new Date).getTime() / 1e3);
+         if (orig_post_time > cur_dt)
+            cur_dt = orig_post_time;
+      
          var pp_last_dt = intval(cur.postponedLastDate);
          // Считаем интервал между последним отложенным и создаваемым
          var interval = new_time - (pp_last_dt && (pp_last_dt > cur_dt) ? pp_last_dt : cur_dt) 
          
          if (interval){
-            // видираем хардкод временного шага создания поста и функции прикрепения таймера
-            var default_step = ((cur.chooseMedia && cur.chooseMedia.toString().match(/cur.postponedLastDate[^;\d]+(\d+)/)) || [0,3600])[1]; 
+            
+            
             // Вычисляем величину, на которую будем автоматически дополнять время таймера для нового поста
             vkopt.wall.postponed.additional_interval = interval - default_step
          }
