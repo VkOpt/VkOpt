@@ -355,11 +355,36 @@ vkopt['settings'] =  {
             margin-top: -8px;
             margin-bottom: -4px;
          }
+         
+         .vk_settings_block {
+             margin-left: 0px;
+             width: 293px;
+         }
+         .wide_column .vk_settings_block {
+             width: 248px;
+         }         
+         
+         .vk_settings_block.vk_settings_block_left {
+             border-right: 1px solid #e7e8ec;
+             padding-right: 5px;
+         }
+         .vk_settings_block.vk_settings_block_right {
+             padding-left: 5px;
+             border-left: 1px solid #e7e8ec;
+             margin-left: -1px;
+         }    
+         
+         .vk_setts_cat_header{
+            float:none;
+         }
          .vk_settings_block .checkbox{
             margin-top: 10px
          }
          .vk_settings_block .checkbox:first-child {
             margin-top: 0
+         }
+         .vk_settings_block .checkbox .vk_checkbox_caption{
+            padding-left:20px;
          }
          .vk_sub_options{padding-left:20px; margin-top:5px;}
          
@@ -496,14 +521,15 @@ vkopt['settings'] =  {
          </div>         
          */
          /*cat_block:
-         <div class="settings_line" id="vk_setts_{vals.cat}">
-            <div class="settings_label">{vals.caption}</div>
-            <div class="settings_labeled_text vk_settings_block">{vals.content}</div>
+         <div class="settings_line clear_fix" id="vk_setts_{vals.cat}">
+            <div class="settings_label vk_setts_cat_header">{vals.caption}</div>
+            <div class="settings_labeled_text vk_settings_block vk_settings_block_left fl_l">{vals.content_left}</div>
+            <div class="settings_labeled_text vk_settings_block vk_settings_block_right fl_l">{vals.content_right}</div>
          </div>
          */
-         
+
          /*checkbox:
-         <div class="checkbox {vals.on_class}" id="vkcfg_{vals.id}" onclick="checkbox(this); vkopt.settings.set('{vals.id}', isChecked(this));">{vals.caption}</div>       
+         <div class="checkbox {vals.on_class}" id="vkcfg_{vals.id}" onclick="checkbox(this); vkopt.settings.set('{vals.id}', isChecked(this));"><div class="vk_checkbox_caption">{vals.caption}</div></div>       
          */
          /*radiobtn:
          <div class="radiobtn {vals.on_class}" data-val="{vals.value}" onclick="radiobtn(this, '{vals.value}', '{vals.id}'); vkopt.settings.set('{vals.id}', '{vals.value}');">{vals.caption}</div>
@@ -671,19 +697,21 @@ vkopt['settings'] =  {
       var list = vkopt.settings.get_options_list();
       var html = '';
       for (var cat in list){
-         var content = '';
+         var content = ['',''],
+             i = 0;
          for (var option_id in list[cat]){
-            content += vkopt.settings.get_switcher_code(list[cat][option_id]);
+            content[i++ % 2] += vkopt.settings.get_switcher_code(list[cat][option_id]);
          }
          
          html += vk_lib.tpl_process(vkopt.settings.tpls['cat_block'], {
                caption: IDL(cat, 2),
-               content: content,
+               content_left: content[0],
+               content_right: content[1],
                cat: cat
             });         
          
       }
-      console.log(list);
+      //console.log(list);
       var p = null;
       if (!in_box){
          el = el || ge('ui_rmenu_vkopt');
@@ -763,7 +791,14 @@ vkopt['settings'] =  {
    
    get_options_list:function(){
       var raw_list = vkopt_core.plugins.call_modules('onSettings'); // собираем опции со всех плагинов в один список
-      var options = {};
+      var options = {
+         Media:{},
+         vkInterface:{},
+         Messages:{},
+         Others:{},
+         Extra:{}
+         //Sounds:{}
+      };
       var options_id = {}; // <conflicts />
       
       var each_in_cat = function(plug_id, opts, options, cat){
