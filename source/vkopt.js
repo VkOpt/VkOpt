@@ -356,11 +356,11 @@ vkopt['settings'] =  {
             margin-bottom: -4px;
          }
          
-         .vk_settings_block {
+         .settings_labeled_text.vk_settings_block {
              margin-left: 0px;
              width: 293px;
          }
-         .wide_column .vk_settings_block {
+         .wide_column .settings_labeled_text.vk_settings_block {
              width: 248px;
          }         
          
@@ -374,7 +374,7 @@ vkopt['settings'] =  {
              margin-left: -1px;
          }    
          
-         .vk_setts_cat_header{
+         .settings_label.vk_setts_cat_header{
             float:none;
          }
          .vk_settings_block .checkbox{
