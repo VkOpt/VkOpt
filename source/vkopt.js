@@ -1092,7 +1092,10 @@ vkopt['photoview'] =  {
       if (!vkopt.settings.get('scroll_to_next')) return;
       vkopt.photoview.allow_scroll_view = true;
    	var on_scroll = function (is_next) {
-   		if (vkopt.photoview.allow_scroll_view && isVisible('pv_nav_right') && isVisible('pv_nav_left')) {
+   		if (vkopt.photoview.allow_scroll_view && (
+               (isVisible('pv_nav_right') && isVisible('pv_nav_left')) || 
+               (isVisible('pv_nav_btn_left') && isVisible('pv_nav_btn_right'))
+            )) {
    			if (!cur.pvTagger && !boxQueue.count() && !document.activeElement.focused ) { //&& (!cur.pvComment || !cur.pvComment.focused)
    				if (is_next) {
    					photoview.show(cur.pvListId, cur.pvIndex + 1);
