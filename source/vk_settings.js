@@ -995,7 +995,7 @@ vk_settings = {
       })      
    },
    remove_backup:function(callback){
-      vk_ext_api.storage.set('vkopt_cfg_backup', '{}', function(){
+      vk_ext_api.storage.set('vkopt_cfg_backup_'+vk.id, '{}', function(){
          console.log('empty config copied to bg ok');
          callback && callback();
       });      
