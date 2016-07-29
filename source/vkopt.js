@@ -30,6 +30,7 @@ var vkopt_defaults = {
       im_dialogs_right: false,
       cut_bracket: false,
       postpone_custom_interval: true,
+      pv_comm_move_down: false,
       
       //Extra:
       photo_replacer: true,
@@ -1080,11 +1081,55 @@ vkopt['photoview'] =  {
          scroll_to_next:{
             title: 'seScroolPhoto'
          }
+      },
+      vkInterface: {
+         pv_comm_move_down: {
+            title: 'sePvCommMoveDown',
+            class_toggler: true
+         }         
       }
    },
+   css: function(){
+      return vk_lib.get_block_comments(function(){
+         /*css:
+         .vk_pv_comm_move_down .pv_left_wrap, 
+         .vk_pv_comm_move_down .pv_narrow_column_wrap{
+            clear:both !important;
+         }
+         .vk_pv_comm_move_down .pv_narrow_column_cont .narrow_column{
+            width: auto !important;
+            height: auto !important;
+         }
+         .vk_pv_comm_move_down .pv_narrow_column_cont .ui_scroll_outer{
+            padding-right: 10px !important;
+         }
+         .vk_pv_comm_move_down .pv_cont .pv_photo_wrap .pv_narrow_column_wrap{
+            display:block;
+            float: none;
+         }
+         .vk_pv_comm_move_down .pv_cont .pv_narrow_column_cont .pv_reply_form_wrap{
+            width: auto !important;
+         }
+         .vk_pv_comm_move_down .pv_cont .pv_narrow_column_cont .pv_no_commments_placeholder_wrap{
+            margin-top: 50px !important;
+         }
+         
+         */
+      }).css;
+   },   
    onLibFiles: function(file_name){
-      if (file_name == 'photoview.js')
-         Inj.Start('photoview.afterShow','vkopt.photoview.scroll_view();');
+      if (file_name == 'photoview.js'){
+         Inj.Start('Photoview.afterShow','vkopt.photoview.scroll_view();');
+         vkopt.photoview.move_comments_block.inj();
+      }
+   },
+   onOptionChanged: function(option_id, val, option_data){
+      if (option_id == 'pv_comm_move_down'){
+         if (val)
+            vkopt.photoview.move_comments_block.inj();
+         else 
+            Photoview.SIDE_COLUMN_WIDTH = vkopt.photoview._SIDE_COLUMN_WIDTH_BKP;
+      }
    },
    scroll_view: function() {
    	 // можно конечно для оптимизации и в onLibFiles перенести проверку активности опции + вызов onLibFiles по событию onOptionChanged('scroll_to_next'), для инъекции на лету при переключении опции
@@ -1115,7 +1160,19 @@ vkopt['photoview'] =  {
    	};
    	vkSetMouseScroll(geByClass1("pv_img_area_wrap"), _next, _prev);
    },
-
+   move_comments_block:{
+      inj: function(){
+         if (vkopt.settings.get('pv_comm_move_down')){
+            Inj.Replace('Photoview.updateVerticalPosition', /Math\.round/g, 'vkopt.photoview.move_comments_block.mod');
+            if (!vkopt.photoview._SIDE_COLUMN_WIDTH_BKP && Photoview.SIDE_COLUMN_WIDTH)
+               vkopt.photoview._SIDE_COLUMN_WIDTH_BKP = Photoview.SIDE_COLUMN_WIDTH
+            Photoview.SIDE_COLUMN_WIDTH = 0;
+         }         
+      },
+      mod:function(t){
+         return vkopt.settings.get('pv_comm_move_down') ? Math.max(Math.round(t),10) : Math.round(t);
+      }
+   }
 }
 
 vkopt['photos'] =  {
