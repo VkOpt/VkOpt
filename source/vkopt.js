@@ -1113,7 +1113,17 @@ vkopt['photoview'] =  {
          .vk_pv_comm_move_down .pv_cont .pv_narrow_column_cont .pv_no_commments_placeholder_wrap{
             margin-top: 50px !important;
          }
-         
+         .vk_pv_comm_move_down .pe_editor,
+         .vk_pv_comm_move_down .pe_sticker_pack_list{
+            width: auto !important;
+            height: auto !important;
+         }
+         .vk_pv_comm_move_down .pe_sticker_pack_list .ui_scroll_outer{
+            padding-right: 12px !important;
+         }
+         .vk_pv_comm_move_down .pe_main_wrap {
+            padding-bottom: 50px;
+         }
          */
       }).css;
    },   
