@@ -1134,7 +1134,21 @@ String.prototype.leftPad = function (l, c) {
 	//javascript:   var x=0;  setInterval("ge('content').innerHTML=vkProgressBar(x++,100,600,'Выполнено %');",100);  void(0);  
 	
 	function vkProgressBar(val,max,width,text){
-			if (val>max) val=max;
+			/*css:
+            .vkProgBar{height:30px;  text-align:center;line-height:30px;}
+            .vkProgBarFr{ background-color: #6D8FB3; color:#FFF; text-shadow: 0px 1px 0px #45688E;   border-style: solid;  border-width: 1px;  border-color: #7E9CBC #5C82AB #5C82AB;}
+            .vkPBFrame{position:absolute; border:1px solid #36638e; overflow:hidden}
+            .vkProgBarBgFrame{ background-color: #EEE; border:1px solid #ccc;}
+            .vkProgBarBg{text-shadow: 0px 1px 0px #FFF; border:1px solid #EEE;}
+            .vkProgressBarBg{background-color: #fff; border:1px solid #ccc}
+            .vkProgressBarFr{background-color: #5c7893; border:1px solid #36638e; height: 14px;}
+            .vkProg_Bar{height:19px;  text-align:center;line-height:17px; font-size:10px;}
+            .vkProg_BarFr{ background-image:url("/images/progress_grad.gif"); background-color: #6D8FB3; color:#FFF; text-shadow: 0px 1px 0px #45688E;   border-style: solid;  border-width: 1px;  border-color: #7E9CBC #5C82AB #5C82AB;}
+            .vkPB_Frame{position:absolute; border:1px solid #36638e; overflow:hidden}
+            .vkProg_BarBgFrame{ background-color: #EEE; border:1px solid #ccc;}
+            .vkProg_BarBg{text-shadow: 0px 1px 0px #FFF; border:1px solid #EEE;  box-shadow: inset 0 10px 26px rgba(255, 255, 255, 0.5);}
+         */
+         if (val>max) val=max;
 			var pos=(val*100/max).toFixed(2).replace(/\.00/,'');
 			var perw=(val/max)*width;
 			text=(text || '%').replace("%",pos+'%');

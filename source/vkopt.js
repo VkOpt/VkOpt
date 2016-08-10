@@ -31,7 +31,8 @@ var vkopt_defaults = {
       cut_bracket: false,
       postpone_custom_interval: true,
       pv_comm_move_down: false,
-      
+      calc_age: true,
+          
       //Extra:
       photo_replacer: true,
       add_to_next_fix: true, // кнопка "Воспроизвести следующей" теперь добавляет в текущий список воспроизведения из посторонних
@@ -41,6 +42,7 @@ var vkopt_defaults = {
       im_hide_dialogs: false, // Новый стиль диалогов. Полотно переписки на всю ширину, список диалогов скрывается при клике по истории, показ списка - клик по заголовку переписки
       attach_media_by_id: true, // при вставке айди медиа в поле поиска из диалога прикрепления, в диалог подгружается медиа-файл с этим айди
       datepicker_inj: true, // активна ли инъекция в конструктор DatePicker'а
+      zodiak_ophiuchus:false, // 13ый знак зодиака, Змееносец, между 30 ноября и 17 декабря     
       
       //Consts:
       AUDIO_INFO_LOAD_THREADS_COUNT: 5,
@@ -337,7 +339,7 @@ var vk_glue = {
    if (window.vkopt_core_ready) vkopt_core.plugins.delayed_run(m.id);      // запускает модуль, если мы опоздали к загрузке страницы, провоцирует вызов события onModuleDelayedInit
 })();
 */
-
+      
 vkopt['settings'] =  {
    backup_key_prefix: 'vkopt_settings_backup_',
    tpls: null,
@@ -794,6 +796,7 @@ vkopt['settings'] =  {
       var raw_list = vkopt_core.plugins.call_modules('onSettings'); // собираем опции со всех плагинов в один список
       var options = {
          Media:{},
+         Users: {},
          vkInterface:{},
          Messages:{},
          Others:{},
@@ -1075,6 +1078,7 @@ vkopt['lang'] = {
       return html;
    }   
 }
+
 vkopt['photoview'] =  {
    onSettings:{
       Media:{
@@ -2319,10 +2323,117 @@ vkopt['face'] =  {
          }
          */
       });
-      return codes.main;
+      var progress_bar = vk_lib.get_block_comments(vkProgressBar).css;
+      
+      return codes.main + progress_bar;
    }
 }
 
+vkopt['profile'] = {
+   tpls: null,
+   rx_lnk_monthday:/c(?:%5B|\[)bday(?:%5D|\])=(\d+).+c(?:%5B|\[)bmonth(?:%5D|\])=(\d+)/,
+   rx_lnk_year:/c(?:%5B|\[)byear(?:%5D|\])=(\d+)/,
+   
+   onSettings:{
+      Users: {
+         calc_age:{
+            title: 'seCalcAge',
+         }
+      },
+      Extra: {
+         zodiak_ophiuchus:{}
+      }
+   },
+   
+   onInit: function(){
+      vkopt.profile.tpls = vk_lib.get_block_comments(function(){
+         /*calc_age_el:
+         <span id="vk_calc_age_el">
+            <a href="#" onmouseover="showTooltip(this, {center:true, className:'vk_pr_tt', text:'{lng.CalcAgeWarning}'})" onclick="return vkopt.profile.search_age(cur.oid,'vk_calc_age_el');">
+               {vals.year_text}
+            </a>
+         </span>
+         */
+      });
+   },
+   processNode: function(node, params){
+         if (!vkopt.settings.get('calc_age'))
+             return;
+         var nodes = geByClass('profile_info_row');
+         for (var i = 0; i < nodes.length; i++){
+            var row = nodes[i];
+            var html = row.innerHTML;
+            var mday = html.match(vkopt.profile.rx_lnk_monthday);
+            var year = html.match(vkopt.profile.rx_lnk_year);
+            if (!mday && !year || /vk_age_info/.test(html))
+               continue;
+            
+            var info = vkopt.profile.bday_info(mday && mday[1], mday && mday[2], year && year[1]);
+            if (!info.length)
+               continue;
+            
+            var p = geByClass1('labeled',row);
+            if (!p)
+               continue;        
+            
+            if (!year) // добавляем кнопку на поиск возраста
+               info.push(
+                  vk_lib.tpl_process(vkopt.profile.tpls['calc_age_el'], {
+                     oid: cur.oid,
+                     year_text: langNumeric('?', vk_lang["vk_year"])
+                  })
+               );
+            
+            info = ' ('+info.join(', ')+')';
+            
+            p.appendChild(se('<span id="vk_age_info">'+info+'</span>'));
+         }
+   }, 
+   bday_info: function(day,month,year){
+      var zodiac_cfg=[20,19,20,20,21,21,22,23,23,23,22,21];// days
+      //'zodiac_signs':['Козерог','Водолей','Рыбы','Овен','Телец','Близнецы','Рак','Лев','Дева','Весы','Скорпион','Стрелец']
+      var info=[];
+      
+      if (day && month){
+         if (year){
+            var date=new Date(year, month-1, day);
+            var cur_date = new Date();  
+            var bDay = new Date(cur_date.getFullYear(), date.getMonth(), date.getDate());
+            var years = cur_date.getFullYear() - date.getFullYear() - (bDay > cur_date?1:0);
+            info.push(langNumeric(years, vk_lang["vk_year"]));
+         }
+     
+      
+         var zodiacs=vk_lang['zodiac_signs'];
+         var idx = day > zodiac_cfg[month-1] ? (month) % 12 : (month - 1);
+         var zodiac = zodiacs[idx];
+         //30 nov - 17 dec - Змееносец
+         if (
+               vkopt.settings.get('zodiak_ophiuchus') && 
+               zodiacs[12] && (
+                  (month == 11 && day > 29) || (month == 12 && day < 18)
+               )
+            ){ 
+            zodiac = zodiacs[12];
+         }
+         info.push(zodiac);
+      }
+      return info;
+   },
+   search_age: function(uid,el){
+      var _el=ge(el);
+      var a=geByTag('a',_el)[0];
+      if (a && a.tt) a.tt.hide();
+      addClass(_el,'fl_r');
+      vk_users.find_age(uid,function(age){// TODO: move code of vk_users.find_age from vk_users.js
+         var txt=age?langNumeric(age, vk_lang["vk_year"]):'N/A';
+         removeClass(_el,'fl_r');
+         _el.innerHTML=txt;
+      },{el:el,width:50});
+      return false;
+   }
+   
+}
 vkopt['wall'] = {
    onSettings:{
       vkInterface:{
