@@ -394,6 +394,10 @@ vkopt['settings'] =  {
          }
          .vk_sub_options{padding-left:20px; margin-top:5px;}
          
+         #vk_setts_Extra{
+            display:none;
+         }
+         
          .vk_welcome_r{
             width: 70px;
          }
@@ -527,6 +531,11 @@ vkopt['settings'] =  {
          /*main:
          <div id="vkopt_settings_block" class="page_block clear_fix">
              <div class="page_block_header">{vals.full_title}</div>
+             <div class="ui_search ui_search_field_empty ui_search_custom _wrap">
+                <div class="ui_search_input_block">
+                  <input type="text" class="ui_search_field _field" id="vk_setts_search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" onkeyup="vkopt.settings.filter_change( this, vkopt.settings.filter);" onpaste="vkopt.settings.filter_change( this, vkopt.settings.filter);" oncut="vkopt.settings.filter_change( this, vkopt.settings.filter);" placeholder="{lng.Search}">
+                </div>
+             </div>             
              <div id="vkopt_settings" class="settings_panel clear_fix">
                 <div class="settings_line">
                   Comming soon! <!--☑ Check Me!--!>
@@ -534,6 +543,14 @@ vkopt['settings'] =  {
                 </div>
              </div>
          </div>         
+         */
+         /*search_block:
+         <div class="ui_search ui_search_field_empty ui_search_custom _wrap">
+           <div class="ui_search_input_block">
+             <input type="text" class="ui_search_field _field" id="vk_setts_search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" onkeyup="vkopt.settings.filter_change( this, vkopt.settings.filter);" onpaste="vkopt.settings.filter_change( this, vkopt.settings.filter);" oncut="vkopt.settings.filter_change( this, vkopt.settings.filter);" placeholder="{lng.Search}">
+           </div>
+         </div>
+         <div class="vk_setts_wrap" id="vkopt_settings">{vals.content}</div>
          */
          /*cat_block:
          <div class="settings_line clear_fix" id="vk_setts_{vals.cat}">
@@ -715,28 +732,41 @@ vkopt['settings'] =  {
          p && p.appendChild(item);
       }
    },
-   show: function(el, in_box){
-      vkopt.settings.set('vkopt_guide', false); // скрываем подсказки по поиску кнопки настроек      
+   render_options: function(filter){
       var list = vkopt.settings.get_options_list();
       var html = '';
       for (var cat in list){
          var content = ['',''],
              i = 0;
          for (var option_id in list[cat]){
-            content[i++ % 2] += vkopt.settings.get_switcher_code(list[cat][option_id]);
+            var option_data = list[cat][option_id];
+            var option_text = (IDL(option_data.title) + ' ' + option_data.plug_id + ' ' + option_data.id).toLowerCase(); // в этой строке будем искать строку вбитую в фильтре
+            if (filter  && trim(filter) != ''){
+               filter = trim(filter).toLowerCase();
+               if (filter == 'extra' && cat != 'Extra')
+                  continue;
+               
+               if (filter != 'extra' && option_text.indexOf(filter) == -1) // если фильтр вбит 
+                  continue;
+            }
+            content[i++ % 2] += vkopt.settings.get_switcher_code(option_data);
          }
-         
-         html += vk_lib.tpl_process(vkopt.settings.tpls['cat_block'], {
-               caption: IDL(cat, 2),
-               content_left: content[0],
-               content_right: content[1],
-               cat: cat
-            });         
+         if (content[0] || content[1])
+            html += vk_lib.tpl_process(vkopt.settings.tpls['cat_block'], {
+                  caption: IDL(cat, 2),
+                  content_left: content[0],
+                  content_right: content[1],
+                  cat: cat
+               });         
          
       }
-      //console.log(list);
+      return html;
+   },
+   show: function(el, in_box){
+      vkopt.settings.set('vkopt_guide', false); // скрываем подсказки по поиску кнопки настроек      
+      var html = vkopt.settings.render_options();
       var p = null;
-      if (!in_box){
+      if (!in_box || ge('vkopt_settings_block')){ // показ на странице, а не во всплывающем окне
          el = el || ge('ui_rmenu_vkopt');
          el && uiRightMenu.switchMenu(el);
          p = ge('wide_column');
@@ -745,14 +775,29 @@ vkopt['settings'] =  {
          ge('vkopt_settings').innerHTML = html;         
       } else {
          stManager.add('settings.css',function(){
-            vkopt.settings.__box = new MessageBox({title:vkopt.settings.__full_title, width: 650 ,hideButtons:true}).content(html).show();        
+            html = vk_lib.tpl_process(vkopt.settings.tpls['search_block'], {content: html});
+            vkopt.settings.__box = new MessageBox({title:vkopt.settings.__full_title, width: 650 ,hideButtons:true, bodyStyle: 'padding:0px;'}).content(html).show();        
          })
        
       }
-
-      // vkopt.settings.prepare_radiobtns();
       return false;
    },
+   filter: function(val){
+      ge('vkopt_settings').innerHTML = vkopt.settings.render_options(val);
+      (trim(val).toLowerCase() == 'extra' ? show : hide)('vk_setts_Extra');
+   },
+   _vk_inp_to:{'__cnt_id':0},
+   filter_change: function(obj,callback){
+      //var val=trim(obj.value);
+      if (!obj.id){ 
+         obj.id='vkobjid_'+vkopt.settings._vk_inp_to['__cnt_id'];
+         vkopt.settings._vk_inp_to['__cnt_id']= vkopt.settings._vk_inp_to['__cnt_id']+1;
+      }
+      if (vkopt.settings._vk_inp_to[obj.id]) clearTimeout(vkopt.settings._vk_inp_to[obj.id]);
+      vkopt.settings._vk_inp_to[obj.id]=setTimeout(function(){
+         callback(trim(obj.value));
+      },50);
+   },   
    config: function(new_config){
       if (new_config){
          localStorage['vkopt_config'] = JSON.stringify(new_config);
@@ -811,7 +856,6 @@ vkopt['settings'] =  {
       if (option_data.class_toggler) // если опция переключает наличие css-класса применяемого ко всей странице
          (val ? addClass : removeClass)(geByTag1('html'), 'vk_'+option_data.id);// у <body> className порой полностью перезаписывается обработчиками вк, т.ч вешаем класс на <html>
    },
-   
    get_options_list:function(){
       var raw_list = vkopt_core.plugins.call_modules('onSettings'); // собираем опции со всех плагинов в один список
       var options = {
