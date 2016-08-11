@@ -34,6 +34,7 @@ var vkopt_defaults = {
       calc_age: true,
           
       //Extra:
+      vkopt_guide: true,   // показываем, где находится кнопка настроек, до тех пор, пока в настройки всё же не зайдут
       photo_replacer: true,
       add_to_next_fix: true, // кнопка "Воспроизвести следующей" теперь добавляет в текущий список воспроизведения из посторонних
       audio_more_acts: true, // доп. менюшка для каждой аудиозаписи
@@ -358,7 +359,9 @@ vkopt['settings'] =  {
             margin-top: -8px;
             margin-bottom: -4px;
          }
-         
+         .vk_setts_wrap{
+            padding: 0 25px;
+         }
          .settings_labeled_text.vk_settings_block {
              margin-left: 0px;
              width: 293px;
@@ -414,7 +417,8 @@ vkopt['settings'] =  {
             font-weight:bold;
             color:#F00;            
          }
-         .first_run_guide #top_vkopt_settings_link:before {
+         .vk_vkopt_guide #top_vkopt_settings_link:before,
+         .vk_vkopt_guide .top_profile_link:before {
              content: '';
              display: block;
              width: 0px;
@@ -426,8 +430,16 @@ vkopt['settings'] =  {
              margin-left: -30px;
              border-left-width: 15px;
          }
-         
-         .first_run_guide #top_vkopt_settings_link:before{
+         .vk_vkopt_guide .top_profile_link:before{
+            border-left-color: rgba(255,255,255,0.7);
+            margin-top: 11px;
+         }
+         .vk_vkopt_guide .top_profile_link.active:before{
+            border:0px;
+         }
+         .vk_vkopt_guide #top_vkopt_settings_link:before,
+         .vk_vkopt_guide .top_profile_link:before
+         {
            animation: top_vkopt_settings_arrow ease-in-out 0.5s infinite alternate;
            -webkit-animation: top_vkopt_settings_arrow ease-in-out 0.5s infinite alternate;
            -moz-animation: top_vkopt_settings_arrow ease-in-out 0.5s infinite alternate;
@@ -459,7 +471,7 @@ vkopt['settings'] =  {
            100%{-ms-transform:  translate(10px,0px)}
          }
 
-         .first_run_guide #top_vkopt_settings_link {
+         .vk_vkopt_guide #top_vkopt_settings_link {
             -webkit-animation: top_vkopt_settings_bg ease-in-out 1s infinite alternate;
             -moz-animation: top_vkopt_settings_bg ease-in-out 1s infinite alternate;
             -ms-animation: top_vkopt_settings_bg ease-in-out 1s infinite alternate;
@@ -599,6 +611,13 @@ vkopt['settings'] =  {
       var list = vkopt_core.plugins.call_method(plug_id, 'onSettings');
       vkopt.settings.init_features(list, plug_id);
    },
+   onSettings:{
+      Extra:{
+         vkopt_guide:{
+            class_toggler: true
+         }
+      }
+   },
    first_launch: function(){
       var check_ver = function(){
          var cur_ver = parseInt(vkopt.settings.get('version'));
@@ -697,6 +716,7 @@ vkopt['settings'] =  {
       }
    },
    show: function(el, in_box){
+      vkopt.settings.set('vkopt_guide', false); // скрываем подсказки по поиску кнопки настроек      
       var list = vkopt.settings.get_options_list();
       var html = '';
       for (var cat in list){
