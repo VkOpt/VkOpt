@@ -1179,6 +1179,9 @@ vkopt['photoview'] =  {
          .vk_pv_comm_move_down .pv_narrow_column_cont .ui_scroll_outer{
             padding-right: 10px !important;
          }
+         .vk_pv_comm_move_down .pv_narrow_column_cont .ui_scroll_blocker{
+            padding-right: 0px !important;
+         }
          .vk_pv_comm_move_down .pv_cont .pv_photo_wrap .pv_narrow_column_wrap{
             display:block;
             float: none;
@@ -1187,8 +1190,15 @@ vkopt['photoview'] =  {
             width: auto !important;
          }
          .vk_pv_comm_move_down .pv_cont .pv_narrow_column_cont .pv_no_commments_placeholder_wrap{
-            margin-top: 50px !important;
+            margin-top: 0px !important;
          }
+         .vk_pv_comm_move_down .pv_cont .pv_narrow_column_cont .pv_no_commments_placeholder ,
+         .vk_pv_comm_move_down .pv_cont .pv_narrow_column_cont .pv_closed_commments_placeholder{
+            padding: 9px 30px 4px;
+            background-image: none;
+            height: auto;
+         }
+         
          .vk_pv_comm_move_down .pe_editor,
          .vk_pv_comm_move_down .pe_sticker_pack_list{
             width: auto !important;
