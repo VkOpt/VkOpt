@@ -542,6 +542,7 @@ vkopt['settings'] =  {
                   <!--CODE--!>   
                 </div>
              </div>
+             <div id="vkopt_lang_settings"></div>
          </div>         
          */
          /*search_block:
@@ -551,6 +552,7 @@ vkopt['settings'] =  {
            </div>
          </div>
          <div class="vk_setts_wrap" id="vkopt_settings">{vals.content}</div>
+         <div id="vkopt_lang_settings"></div>
          */
          /*cat_block:
          <div class="settings_line clear_fix" id="vk_setts_{vals.cat}">
@@ -764,19 +766,24 @@ vkopt['settings'] =  {
    },
    show: function(el, in_box){
       vkopt.settings.set('vkopt_guide', false); // скрываем подсказки по поиску кнопки настроек      
-      var html = vkopt.settings.render_options();
+      
+      var update_view = function(){
+         ge('vkopt_settings').innerHTML = vkopt.settings.render_options();
+         ge('vkopt_lang_settings').innerHTML = vkopt.lang.choose(true, update_view);
+      }
       var p = null;
       if (!in_box || ge('vkopt_settings_block')){ // показ на странице, а не во всплывающем окне
          el = el || ge('ui_rmenu_vkopt');
          el && uiRightMenu.switchMenu(el);
          p = ge('wide_column');
          vkopt_core.setLoc('settings?act=vkopt'); // вместо nav.setLoc для избежания рекурсии, обход реакции на смену URL'а
-         p.innerHTML = vkopt.settings.tpls['main'];
-         ge('vkopt_settings').innerHTML = html;         
+         p.innerHTML = vkopt.settings.tpls['main']; 
+         update_view();
       } else {
          stManager.add('settings.css',function(){
-            html = vk_lib.tpl_process(vkopt.settings.tpls['search_block'], {content: html});
-            vkopt.settings.__box = new MessageBox({title:vkopt.settings.__full_title, width: 650 ,hideButtons:true, bodyStyle: 'padding:0px;'}).content(html).show();        
+            html = vk_lib.tpl_process(vkopt.settings.tpls['search_block'], {content: ''});
+            vkopt.settings.__box = new MessageBox({title:vkopt.settings.__full_title, width: 650 ,hideButtons:true, bodyStyle: 'padding:0px;'}).content(html).show();   
+            update_view();
          })
        
       }
@@ -785,6 +792,7 @@ vkopt['settings'] =  {
    filter: function(val){
       ge('vkopt_settings').innerHTML = vkopt.settings.render_options(val);
       (trim(val).toLowerCase() == 'extra' ? show : hide)('vk_setts_Extra');
+      (trim(val) == '' ? show : hide)('vkopt_lang_settings');
    },
    _vk_inp_to:{'__cnt_id':0},
    filter_change: function(obj,callback){
