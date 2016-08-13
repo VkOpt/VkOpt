@@ -45,6 +45,7 @@ var vkopt_defaults = {
       attach_media_by_id: true, // при вставке айди медиа в поле поиска из диалога прикрепления, в диалог подгружается медиа-файл с этим айди
       datepicker_inj: true, // активна ли инъекция в конструктор DatePicker'а
       zodiak_ophiuchus:false, // 13ый знак зодиака, Змееносец, между 30 ноября и 17 декабря     
+      photo_search_copy: true,
       
       //Consts:
       AUDIO_INFO_LOAD_THREADS_COUNT: 5,
@@ -224,6 +225,9 @@ var vkopt_core = {
       },
       process_links:function(link_el, params){
          vkopt_core.plugins.call_modules('processLinks', link_el, params);
+      },
+      eltt_first_show: function(ett){
+         vkopt_core.plugins.call_modules('onElementTooltipFirstTimeShow', ett, ett._opts);
       }
    }
 }
@@ -283,6 +287,8 @@ var vk_glue = {
          Inj.Start('ajax.post','if (vkAllowPost(url, query, options)==false) return;');
          Inj.Start('renderFlash','vkOnRenderFlashVars(vars);');
          */
+         // перехват тултипов при создании их контента. например для перехвата создания меню "Ещё" перед его показом в просмотрщике фото
+         Inj.After('ElementTooltip.prototype.show',/this\._opts.onFirstTimeShow[^;]+;/,'vkopt_core.plugins.eltt_first_show(this);');
       },
       auto_list: function(){
          if (vkopt_defaults.config.AUTO_LIST_DRAW_ROWS_INJ){
@@ -321,6 +327,7 @@ var vk_glue = {
       processNode:            function(node, params){}                     // обработка элемента
       processLinks:           function(link, params){},                    // обработка ссылки
       onModuleDelayedInit:    function(plugin_id){},                       // реакция на подключение модуля, опоздавшего к загрузке страницы.
+      onElementTooltipFirstTimeShow: function(ett, ett_options)            // реакция на первый показ ElementTooltip, при создании его контента. На момент вызова в элементе ett._ttel уже есть контент. По ett._opts.id можно определить к чему тултип относится.
       
       // <settings>
       onSettings:             function(){} || {}                           // возвращаем объект с перечисленными по категориям настройками этого модуля
@@ -1164,8 +1171,12 @@ vkopt['photoview'] =  {
             title: 'sePvCommMoveDown',
             class_toggler: true
          }         
+      },
+      Extra:{
+         photo_search_copy:{}
       }
    },
+   tpls:{},
    css: function(){
       return vk_lib.get_block_comments(function(){
          /*css:
@@ -1211,6 +1222,19 @@ vkopt['photoview'] =  {
          .vk_pv_comm_move_down .pe_main_wrap {
             padding-bottom: 50px;
          }
+         
+         #pv_more_acts_tt .vk_ph_copy_search.pv_more_act_item{
+            padding: 8px 10px;
+         }
+         #pv_more_acts_tt .vk_ph_copy_search.pv_more_act_item:before{
+            display: none;
+         }
+         .vk_ph_copy_search_label{
+            padding:5px 12px;
+         }
+         .vk_ph_copy_search_links{
+            padding-left:6px;
+         }
          */
       }).css;
    },   
@@ -1226,6 +1250,33 @@ vkopt['photoview'] =  {
             vkopt.photoview.move_comments_block.inj();
          else 
             Photoview.SIDE_COLUMN_WIDTH = vkopt.photoview._SIDE_COLUMN_WIDTH_BKP;
+      }
+   },
+   onInit: function(){
+      vkopt.photoview.tpls = vk_lib.get_block_comments(function(){
+         /*acts_menu:
+         <div class="vk_pv_acts">
+            <div class="pv_counter vk_ph_copy_search_label">{lng.ImgCopySeacrh}</div>
+            <div class="vk_ph_copy_search_links">
+            <a target="_blank" class="pv_more_act_item fl_l vk_ph_copy_search" href="https://www.google.com/searchbyimage?image_url={vals.src}">Google</a>
+            <a target="_blank" class="pv_more_act_item fl_l vk_ph_copy_search" href="http://www.tineye.com/search?url={vals.src}">TinEye</a>
+            <a target="_blank" class="pv_more_act_item fl_l vk_ph_copy_search" href="http://images.yandex.ru/yandsearch?rpt=imagecbir&img_url={vals.src}">Yandex</a>
+            <a target="_blank" class="pv_more_act_item fl_l vk_ph_copy_search" href="/feed?section=photos_search&q=copy%3Aphoto{vals.photo_id}">VK</a> 
+            <div class="clear"></div>
+            </div>
+         </div>
+         */
+      });
+   },
+   onElementTooltipFirstTimeShow: function(ett, ett_options){
+      if (!ett_options || ett_options.id != 'pv_more_acts_tt' || !ett._ttel)
+         return;
+      if (vkopt.settings.get('photo_search_copy')){
+         var html = vk_lib.tpl_process(vkopt.photoview.tpls['acts_menu'],{
+            src: cur.pvCurData.src,
+            photo_id: cur.pvCurPhoto.id,
+         });
+         ett._ttel.appendChild(se(trim(html)));
       }
    },
    scroll_view: function() {
