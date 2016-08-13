@@ -21,6 +21,7 @@ var vkopt_defaults = {
       scroll_to_next: false,
       ad_block: true,
       compact_audio: false,
+      audio_full_title: false,
       disable_border_radius: false,
       audio_dl: true,
       audio_size_info: false,
@@ -2342,6 +2343,10 @@ vkopt['face'] =  {
          compact_audio: {
             title: 'seCompactAudio',
             class_toggler: true
+         },
+         audio_full_title: {
+            title: 'seAudioFullTitles',
+            class_toggler: true            
          }
       },
 
@@ -2397,6 +2402,9 @@ vkopt['face'] =  {
          }
          .vk_compact_audio .page_preview_audio_wrap .page_media_x_wrap {
             top: 0px;
+         }
+         .vk_audio_full_title .audio_row .audio_title_wrap {
+            white-space: normal;
          }
          .vk_more_acts_icon{
             background: url(/images/icons/profile_dots.png) no-repeat 0 4px;
