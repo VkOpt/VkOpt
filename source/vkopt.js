@@ -1294,7 +1294,7 @@ vkopt['photoview'] =  {
          */
          /*links_menu:
          <div id="pv_hd_links">
-            <a href="#" onclick="toggle('vk_ph_links_list'); return false;" class="vk_ph_sz_btn fl_l pv_more_act_item">{lng.Links}: </a>{vals.hd_links}
+            <a href="#" onclick="return vkopt.photoview.links_toogle();" class="vk_ph_sz_btn fl_l pv_more_act_item">{lng.Links}: </a>{vals.hd_links}
             <div id="vk_ph_links_list" class="clear" style="display:none;">{vals.links}</div>
             <div class="clear"></div>
          </div>         
@@ -1353,6 +1353,11 @@ vkopt['photoview'] =  {
       }
 
 
+   },
+   links_toogle: function(){
+      toggle('vk_ph_links_list'); 
+      cur.pvMoreActionsTooltip && cur.pvMoreActionsTooltip.updatePosition(); 
+      return false;
    },
    scroll_view: function() {
    	 // можно конечно для оптимизации и в onLibFiles перенести проверку активности опции + вызов onLibFiles по событию onOptionChanged('scroll_to_next'), для инъекции на лету при переключении опции
