@@ -1235,6 +1235,32 @@ vkopt['photoview'] =  {
          .vk_ph_copy_search_links{
             padding-left:6px;
          }
+         #pv_more_acts_tt .pv_more_act_item.vk_ph_sz_link{
+            float:left;
+            padding: 8px 6px;
+         }
+         #pv_more_acts_tt .pv_more_act_item.vk_ph_sz_hdlink {
+             float: right;
+             padding: 8px 6px;
+         }
+         #pv_more_acts_tt .vk_ph_sz_link.pv_more_act_item:before,
+         #pv_more_acts_tt .vk_ph_sz_hdlink.pv_more_act_item:before{
+            display: none;
+         }
+         #pv_more_acts_tt .vk_ph_sz_btn.pv_more_act_item:before,
+         #pv_more_acts_tt .vk_ph_copy_search_label.pv_more_act_item:before{
+            background-image: url("data:image/svg+xml,%3Csvg%20version%3D%221.1%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2216%22%20height%3D%2216%22%09%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20fill%3D%22%23FFFFFF%22%20d%3D%22M204.1%2C66l-25.3%2C30.4c-14.1-25-44.3-37.6-72.7-28.5%09c-32.5%2C10.4-50.5%2C45.2-40%2C77.8c6.2%2C19.4%2C21.2%2C33.6%2C39.1%2C39.7c7.4%2C14%2C15.4%2C31.9%2C21.1%2C46c-7.5%2C7.8-12.1%2C19.6-12.1%2C19.6l-30.9-6.7%09l3.5-26.3c-4.8-2-9.5-4.4-13.9-7.2L53.6%2C229l-23.4-21.3l16.2-21c-3.1-4.1-6-8.5-8.5-13.2l-25.8%2C6l-9.7-30.1l24.5-10.1%09c-0.7-5.3-0.9-10.5-0.8-15.7L0.8%2C116l6.7-30.9l26.3%2C3.5c2-4.8%2C4.4-9.5%2C7.2-13.9L22.8%2C55.3l21.3-23.4l21%2C16.2c4.1-3.1%2C8.5-6%2C13.2-8.5%09l-6-25.8l30.1-9.7l10.1%2C24.5c5.3-0.7%2C10.5-0.9%2C15.7-0.8l7.7-25.4l30.9%2C6.7l-3.5%2C26.3c4.8%2C2%2C9.5%2C4.4%2C13.9%2C7.2l19.3-18.2l23.4%2C21.3%09l-15.4%2C20L204.1%2C66z%20M79%2C106.3l49.8-18.1l44.6%2C87.8l31.7-95.6l50%2C18.1c-11%2C24.1-21%2C48.8-30.1%2C74c-9.1%2C25.2-17.2%2C50.9-24.4%2C77h-50.9%09c-9.5-22.9-20.2-46.3-32-70.2C105.8%2C155.3%2C92.9%2C131%2C79%2C106.3z%22/%3E%3C/svg%3E");
+            background-position: 0 0;
+            background-repeat: no-repeat;
+            width: 16px;
+            margin-top: -2px;
+         }
+         #pv_more_acts_tt .vk_ph_sz_btn.pv_more_act_item{
+            padding: 8px 12px;
+         }
+         #vk_ph_links_list{
+            padding-left: 8px;
+         }
          */
       }).css;
    },   
@@ -1256,7 +1282,7 @@ vkopt['photoview'] =  {
       vkopt.photoview.tpls = vk_lib.get_block_comments(function(){
          /*acts_menu:
          <div class="vk_pv_acts">
-            <div class="pv_counter vk_ph_copy_search_label">{lng.ImgCopySeacrh}</div>
+            <div class="pv_counter vk_ph_copy_search_label pv_more_act_item">{lng.ImgCopySeacrh}</div>
             <div class="vk_ph_copy_search_links">
             <a target="_blank" class="pv_more_act_item fl_l vk_ph_copy_search" href="https://www.google.com/searchbyimage?image_url={vals.src}">Google</a>
             <a target="_blank" class="pv_more_act_item fl_l vk_ph_copy_search" href="http://www.tineye.com/search?url={vals.src}">TinEye</a>
@@ -1266,18 +1292,67 @@ vkopt['photoview'] =  {
             </div>
          </div>
          */
+         /*links_menu:
+         <div id="pv_hd_links">
+            <a href="#" onclick="toggle('vk_ph_links_list'); return false;" class="vk_ph_sz_btn fl_l pv_more_act_item">{lng.Links}: </a>{vals.hd_links}
+            <div id="vk_ph_links_list" class="clear" style="display:none;">{vals.links}</div>
+            <div class="clear"></div>
+         </div>         
+         */
       });
    },
    onElementTooltipFirstTimeShow: function(ett, ett_options){
       if (!ett_options || ett_options.id != 'pv_more_acts_tt' || !ett._ttel)
          return;
+      var append_menu = function(content){
+         ett._ttel.appendChild(se(trim(content)));
+      }
+      
+      // Поиск копий
       if (vkopt.settings.get('photo_search_copy')){
          var html = vk_lib.tpl_process(vkopt.photoview.tpls['acts_menu'],{
             src: cur.pvCurData.src,
-            photo_id: cur.pvCurPhoto.id,
+            photo_id: cur.pvCurPhoto.id
          });
-         ett._ttel.appendChild(se(trim(html)));
+         append_menu(html);
       }
+      
+      
+      // Список ссылок на варианты фото:
+      var d_name=function(p,pfx){
+         if (!PHOTO_DOWNLOAD_NAMES) return '';
+         return ' onclick="return vkDownloadFile(this);" download="photo'+p.id+pfx+'.jpg" ';
+      };    
+
+      var html='',
+          max_size
+          links=[], 
+          hd_links=[], 
+          ph = cur.pvCurPhoto;
+          
+      var sizes=["w","z","y","x","r","q","p","o","m","s"];
+      for (var i=0; i<sizes.length; i++){
+         var size = sizes[i];
+         var sz=ph[size+'_'];
+         var src=ph[size+'_src'];
+         if (sz && sz[1] && src){
+            links.push('<a href="'+src+'" class="pv_more_act_item vk_ph_sz_link" '+d_name(ph,size)+'>'+size+':'+sz[1]+'x'+sz[2]+'</a>');
+            if (i < 3)
+               hd_links.push('<a href="'+src+'" '+d_name(ph,size)+' title="'+sz[1]+'x'+sz[2]+'" class="pv_more_act_item vk_ph_sz_hdlink">HD'+(3-i)+'</a>')
+         }
+      }      
+      if (!hd_links.length && links.length)
+         hd_links.push(links[0]);
+      
+      if (links.length){
+         html = vk_lib.tpl_process(vkopt.photoview.tpls['links_menu'],{
+            hd_links: hd_links.join('\n'),
+            links: links.join('\n')
+         });
+         append_menu(html);  
+      }
+
+
    },
    scroll_view: function() {
    	 // можно конечно для оптимизации и в onLibFiles перенести проверку активности опции + вызов onLibFiles по событию onOptionChanged('scroll_to_next'), для инъекции на лету при переключении опции
