@@ -1347,7 +1347,8 @@ vkopt['photoview'] =  {
          if (val)
             vkopt.photoview.move_comments_block.inj();
          else 
-            Photoview.SIDE_COLUMN_WIDTH = vkopt.photoview._SIDE_COLUMN_WIDTH_BKP;
+            if (typeof Photoview != 'undefined') 
+               Photoview.SIDE_COLUMN_WIDTH = vkopt.photoview._SIDE_COLUMN_WIDTH_BKP;
       }
    },
    onInit: function(){
@@ -1462,7 +1463,7 @@ vkopt['photoview'] =  {
    },
    move_comments_block:{
       inj: function(){
-         if (vkopt.settings.get('pv_comm_move_down')){
+         if (vkopt.settings.get('pv_comm_move_down') && typeof Photoview != 'undefined'){
             Inj.Replace('Photoview.updateVerticalPosition', /Math\.round/g, 'vkopt.photoview.move_comments_block.mod');
             if (!vkopt.photoview._SIDE_COLUMN_WIDTH_BKP && Photoview.SIDE_COLUMN_WIDTH)
                vkopt.photoview._SIDE_COLUMN_WIDTH_BKP = Photoview.SIDE_COLUMN_WIDTH
