@@ -26,6 +26,7 @@ var vkopt_defaults = {
       audio_dl: true,
       audio_size_info: false,
       audio_clean_titles: false,
+      audio_album_info: true,
       size_info_on_ctrl: true,
       scrobbler: true,
       im_dialogs_right: false,
@@ -2286,7 +2287,7 @@ vkopt['scrobbler'] = { // lastfm: { } //TODO: after disable old vk design, repla
             need_reload: true
          }
       }
-   },
+   },  
    onLocation: function(){
       if (!vkopt.settings.get('scrobbler')) return;
       var fm=vkopt.scrobbler;
@@ -2841,7 +2842,7 @@ vkopt['scrobbler'] = { // lastfm: { } //TODO: after disable old vk design, repla
                if (fm.last_track.aid == info.aid) return;
                fm.set_love_icon(true);
                fm.last_track=info;
-               vkViewAlbumInfo(info.artist,info.title);
+               vkopt.audio_info.view(info.artist,info.title);
                if (fm.s_timer) fm.s_timer.pause();
                fm.scrobled=false;
                fm.scrobble_timer(info);
@@ -2849,7 +2850,7 @@ vkopt['scrobbler'] = { // lastfm: { } //TODO: after disable old vk design, repla
                fm.set_icon(info,'playing');        // add scrobbler icon track         
             break;
          case 'play':    //if (fm.last_track.aid!=info.aid){ } else { }
-             vkViewAlbumInfo(info.artist,info.title);
+             vkopt.audio_info.view(info.artist,info.title);
              if (!fm.scrobled){ 
                 fm.s_timer.resume();
                 fm.set_icon(info,'playing');          // animate scrobbler icon track
@@ -2871,6 +2872,244 @@ vkopt['scrobbler'] = { // lastfm: { } //TODO: after disable old vk design, repla
             break;
       }
    }   
+}
+
+vkopt['audio_info'] = {
+   onSettings:{
+      Media:{
+         audio_album_info: {
+            title: 'seLoadAudioAlbumInfo'
+         }
+      }
+   },
+   css: function(){
+      return vk_lib.get_block_comments(function(){
+      /*css:
+      #vk_album_info {}
+      #vk_album_info h4{cursor:pointer; min-height:30px; padding:3px 10px; border: 0px;}
+      #vk_album_info h4:hover{background-color: rgba(219, 227, 235, 0.5);}
+      #vk_album_info h4 img.small{max-width:30px;max-height:30px; margin-right:3px;}
+      #vk_album_info h4 img:hover{box-shadow: 0px 0px 4px #717171;}
+      #vk_album_info h4 img.big{max-width:155px;max-height:170px; margin:0 auto; margin-bottom:4px; display:none;}
+      #vk_album_info.view_big .small{display:none;}
+      #vk_album_info.view_big .big{display:block;}
+      #vk_album_info h4 .fix_btn{opacity:0;}
+      #vk_album_info h4:hover .fix_btn{opacity:0.4;}
+      #vk_album_info h4 .fix_btn:hover{opacity:0.7;}
+      #vk_album_info.fixed_album h4 .fix_btn,#vk_album_info.fixed_album h4 .fix_btn:hover{opacity:1;}
+      #vk_album_info .bio{padding:4px;}
+      .vk_album_thumb{padding:3px;}
+      .vk_album_tracks ul{list-style-type: disc; margin:0px; padding:0px; padding-left:4px; margin-left: 17px; color:#AAA;}
+      .vk_album_tracks .vk_tracks_search_btn{padding:3px 10px;}
+      .vk_audio_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -221px; line-height: 11px; }
+      */      
+      }).css;
+   },
+   preview_album_info_tpl: '\
+                          <h4 onclick="slideToggle(\'vk_album_full_info\');">\
+                              <img onclick="vkopt.audio_info.toggle_thumb(event);" class="big" src="%IMG2%">\
+                              <img onclick="vkopt.audio_info.toggle_thumb(event);" class="small fl_l" src="%IMG%"><span class="divide_">\
+                              <div class="fl_r fix_btn" onclick="vkopt.audio_info.pin(event)" onmouseover="vkopt.audio_info.pin(this,true)"><span class="vk_audio_icon"></span></div>\
+                              <b>%ARTIST%</b><br>%NAME%</span>\
+                          </h4>\
+                          <div id="vk_album_full_info" style="display:none;">\
+                             <!--<img class="fl_r vk_album_thumb" src="%IMG%">-->\
+                             <div class="vk_album_tracks">%TRACKS%</div>\
+                          </div>\
+   ',
+
+   alb_last_track: '',
+   current_album_info: null,
+   current_album_full_thumb: false,
+
+   pin: function(e,over){
+      if (over){
+         showTooltip(e, {text: IDL('FixAlbumInfo'), showdt: 0, black: 1, shift: [11, 0, 0]});
+         return;
+      }
+      cancelEvent(e);
+      toggleClass('vk_album_info','fixed_album');
+   },
+   toggle_thumb: function(ev){//vkViewAlbumThumb
+      cancelEvent(ev);
+      toggleClass('vk_album_info','view_big');
+      vkopt.audio_info.current_album_full_thumb=hasClass('vk_album_info','view_big');
+      vkopt.settings.set('vk_album_info_thumb',vkopt.audio_info.current_album_full_thumb?1:0);
+   },
+   view: function(artist,track){
+      if (!vkopt.settings.get('audio_album_info')) return;
+      var p = geByClass1('ui_rmenu');
+      if (!p) return;
+      if (!ge('vk_album_info')){
+         var div=se('<div id="vk_album_info" class="page_block ui_rmenu">');
+         insertAfter(div,p);
+         vkopt.audio_info.current_album_full_thumb=parseInt(vkopt.settings.get('vk_album_info_thumb') || '0') || false;
+      } else if (vkopt.audio_info.alb_last_track==artist+'-'+track && ge('vk_album_info').innerHTML!=''){
+         return;
+      }
+      if (hasClass('vk_album_info','fixed_album')) return;
+      ge('vk_album_info').innerHTML='';
+      vkopt.audio_info.alb_last_track=artist+'-'+track;
+      vkopt.audio_info.current_album_info=null;
+      vkopt.audio_info.get_info(artist,track,function(data,tracks){
+         if (!ge('vk_album_info')) return;
+         if (vkopt.audio_info.current_album_full_thumb) 
+            addClass('vk_album_info','view_big');
+         if (vk_DEBUG) console.log(data);
+         var html='';
+         /*
+         console.log(
+            data.artist,
+            data.name,
+            data.releasedate,
+            data.image[1]['#text'],
+            tracks
+         );
+         */
+         if (tracks){
+            vkopt.audio_info.current_album_info=data;
+            for (var i=0; i<tracks.length;i++){
+               var track_artist = data.artist || data.name;
+               var track_name = (track_artist == 'Various Artists' ? '' : track_artist + ' - ') + tracks[i];
+               html+='<li><a href="/search?c[q]='+encodeURIComponent(track_name)+'&c[section]=audio" '+
+                  'onclick="if (checkEvent(event)) { event.cancelBubble = true; return}; '+
+                     'vk_audio.search_track(event, \''+track_name.replace(/'/,'\\\'')+'\'); return false">'+tracks[i]+'</a></li>';
+            }
+            html='<ul>'+html+'</ul>';//'<div class="vk_tracks_search_btn"><div class="button_blue button_wide"><button onclick="vkAlbumCollectPlaylist()">'+IDL('SearchAlbumTracks')+'</button></div></div>';
+         }
+         if (data.act!='artist_info'){
+            var year=(new Date(data.releasedate)).getFullYear();
+            html=vkopt.audio_info.preview_album_info_tpl.replace(/%ALBUM%/g,IDL('Album'))
+                                       .replace(/%NAME%/g,'<a href="'+data.url+'" target="_blank">'+data.name+(year?' ('+year+')':'')+'</a>')
+                                       .replace(/%ARTIST%/g,data.artist)
+                                       .replace(/%IMG%/g,data.image[1]['#text'] || '/images/question_c.gif')
+                                       .replace(/%IMG2%/g,data.image[2]['#text'] || '/images/question_c.gif')
+                                       .replace(/%TRACKS%/g,html);
+         } else {
+            html=vkopt.audio_info.preview_album_info_tpl.replace(/%ALBUM%/g,IDL('Album'))
+                                       .replace(/%NAME%/g,'')
+                                       .replace(/%ARTIST%/g,'<a href="'+data.url+'" target="_blank">'+data.name+'</a>')
+                                       .replace(/%IMG%/g,data.image[1]['#text'] || '/images/question_c.gif')
+                                       .replace(/%IMG2%/g,data.image[2]['#text'] || '/images/question_c.gif')
+                                       .replace(/%TRACKS%/g,html || (data.bio.summary?'<div class="bio">'+data.bio.summary+'</div>':''));      
+         }
+         ge('vk_album_info').innerHTML=html;
+         
+      });
+   },
+   album_info_cache:[],
+   get_info: function(artist,track,callback){
+      var in_cache=function(artist,track){
+         for (var i=0; i<vkopt.audio_info.album_info_cache.length;i++){
+            var c=vkopt.audio_info.album_info_cache[i];
+            if (c.artist==artist && c.track==track)
+               return c.data;
+         }
+         return false;
+      };
+      var x=in_cache(artist,track);
+      if (x){ 
+         if (vk_DEBUG) console.log('in cache',x);
+         setTimeout(function(){callback(x,x.tracks)},2);
+      } else
+         vkopt.scrobbler.lastfm.track.getInfo({
+               artist: artist,
+               track: track,
+               //username:LastFM_UserName,
+               autocorrect: 1
+            }, {
+               success: function(data) {
+                     if (vk_DEBUG) console.log(data);
+                     if (data.track.album) {
+                        var params={
+                           mbid: data.track.album.mbid
+                        };
+                        if (!data.track.album.mbid || data.track.album.mbid=="")
+                           params={
+                              artist: data.track.album.artist,
+                              album:data.track.album.title
+                           };
+                        vkopt.scrobbler.lastfm.album.getInfo(params, {
+                           success: function(data) { 
+                              data=data.album;
+                              var tracks=[];
+                              for (var i=0; i<data.tracks.track.length;i++){
+                                 var t=data.tracks.track[i];
+                                 if (data.artist == 'Various Artists')
+                                     tracks.push(t.artist.name + ' - ' + t.name);
+                                 else
+                                     tracks.push(t.name);
+                                 if (!in_cache(artist,t.name)){
+                                    vkopt.audio_info.album_info_cache.push({
+                                       artist: artist,
+                                       track: t.name, 
+                                       data:data
+                                    });
+                                 }
+                              }
+                              vkopt.audio_info.album_info_cache.push({
+                                 artist: artist,
+                                 track: track, 
+                                 data:data
+                              });
+                              data.tracks=tracks;
+                              callback(data,tracks);
+                           }
+                        });
+                     } else if (data.track.artist && (data.track.artist.mbid || data.track.artist.name)){//data.track.artist.name
+                        if (vk_DEBUG) console.log('no album info... load artist info');
+                        var params={lang:'ru'};
+                        if (data.track.artist.mbid)
+                           params['mbid']=data.track.artist.mbid;
+                        else 
+                           params['artist']=data.track.artist.name;
+                        //*  
+                        // GET ARTIST INFO
+                        vkopt.scrobbler.lastfm.artist.getInfo(params, {
+                           success: function(a_data) {
+                             a_data=a_data.artist;
+                             a_data.act='artist_info';
+                             if (vk_DEBUG) console.log(a_data);
+
+                             // GET TOP TRACKS INFO
+                             params['limit']=100;
+                              vkopt.scrobbler.lastfm.artist.getTopTracks(params, {
+                                 success: function(data) {
+                                    data=data.toptracks;
+                                    data.act='top_tracks';
+                                    var tracks=[];
+                                    for (var i=0; i<data.track.length;i++){
+                                       var t=data.track[i];
+                                       tracks.push(t.name);
+                                    }
+                                    vkopt.audio_info.album_info_cache.push({
+                                       artist: artist,
+                                       track: track, 
+                                       data:a_data
+                                    });
+                                    a_data.tracks=tracks;
+                                    callback(a_data,tracks);
+                                 },
+                                 error: function(code, message) {
+                                    if (vk_DEBUG) console.log(code, message);
+                                    callback(a_data,null);
+                                 }
+                              });                          
+                           }
+                        });
+                        
+                        
+                        
+                     }
+                     else if (vk_DEBUG) console.log('no info')
+                  }, 
+               error: function(code, message) {
+                     if (vk_DEBUG) console.log(code, message)
+                  }
+            }
+         );
+   }
+
 }
 
 vkopt['audioplayer'] = {

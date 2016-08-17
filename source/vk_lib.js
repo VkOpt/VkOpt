@@ -18,7 +18,8 @@
 
 
 var vk_DEBUG = false,
-    ENABLE_CACHE=false;
+    ENABLE_CACHE = false,
+    LOAD_HEADERS_BY_HEAD_REQ = false; // для получения запросом только хидеров использовать HEAD запрос (иначе GET c хидером запроса Range: bytes=0-1)
 var SetsOnLocalStore={
   'vkOVer':'c',
   'dapi_mid':'c',
