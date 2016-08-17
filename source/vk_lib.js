@@ -2824,7 +2824,7 @@ function vkDragOutFile(el) {
 }
 function vkDownloadFile(el,ignore) { 
    if (!vkbrowser.mozilla || ignore) return true;
-   if (getSet(1) == 'n') return true;
+   //if (getSet(1) == 'n') return true;
    var a = el.getAttribute("href");
    var d = el.getAttribute("download");
    var url=a;
@@ -2833,7 +2833,13 @@ function vkDownloadFile(el,ignore) {
       a = a.split("&/");
       url=a[0];
       name=d || decodeURI(a[1]);
-   }
+   } else
+   if (a.indexOf("#FILENAME/") != -1 || (d && d!='')) {
+      a = a.split("#FILENAME/");
+      url=a[0];
+      name=d || decodeURI(a[1]);
+   } 
+   
    if (!name) return true;//name = url.split('/').pop();
    if (vk_ext_api.ready)
       vk_ext_api.req({act:'download',url:url,name:name},function(r){});
