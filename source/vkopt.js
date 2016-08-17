@@ -1263,6 +1263,10 @@ vkopt['photoview'] =  {
          .vk_pv_comm_move_down .pv_narrow_column_cont .ui_scroll_outer{
             padding-right: 10px !important;
          }
+         .vk_pv_comm_move_down .pv_narrow_column_cont .ui_scroll_blocker,
+         .vk_pv_comm_move_down .pv_narrow_column_cont  .ui_scroll_outer{
+            overflow-y: auto;
+         }
          .vk_pv_comm_move_down .pv_narrow_column_cont .ui_scroll_blocker{
             padding-right: 0px !important;
          }
@@ -1293,8 +1297,7 @@ vkopt['photoview'] =  {
          }
          .vk_pv_comm_move_down .pe_main_wrap {
             padding-bottom: 50px;
-         }
-         
+         }         
          #pv_more_acts_tt .vk_ph_copy_search.pv_more_act_item{
             padding: 8px 10px;
          }
@@ -1393,7 +1396,7 @@ vkopt['photoview'] =  {
       
       // Список ссылок на варианты фото:
       var d_name=function(p,pfx){
-         if (!PHOTO_DOWNLOAD_NAMES) return '';
+         //if (!PHOTO_DOWNLOAD_NAMES) return ''; <-- TODO
          return ' onclick="return vkDownloadFile(this);" download="photo'+p.id+pfx+'.jpg" ';
       };    
 
