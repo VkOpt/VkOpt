@@ -434,6 +434,18 @@ vkopt['settings'] =  {
             font-weight:bold;
             color:#F00;            
          }
+         .box_body #vkopt_donate_block{
+            margin-left: 50px;
+         }
+         .vk_donations_left{
+            width:300px;
+         }
+         .vk_donations_right{
+            width:auto;
+         }
+         #vkopt_donate_block{
+            padding: 5px 20px;
+         }
          .vk_vkopt_guide #top_vkopt_settings_link:before,
          .vk_vkopt_guide .top_profile_link:before {
              content: '';
@@ -556,6 +568,7 @@ vkopt['settings'] =  {
                 </div>
              </div>
              <div id="vkopt_lang_settings"></div>
+             <div id="vkopt_donate_block"></div>
          </div>         
          */
          /*search_block:
@@ -566,6 +579,20 @@ vkopt['settings'] =  {
          </div>
          <div class="vk_setts_wrap" id="vkopt_settings">{vals.content}</div>
          <div id="vkopt_lang_settings"></div>
+         <div id="vkopt_donate_block"></div>
+         */
+         /*donate_form:
+         <div>{lng.Donations}</div>
+         <div class="vk_donations">
+            <div class="vk_donations_left fl_l">
+               <div>{lng.DevRekv}</div>
+               <div id="vk_purses_list">WMPursesList('wmdonate')</div>
+            </div>
+            <div class="vk_donations_right fl_l">
+            <div id="wmdonate">WMDonateForm(30,'R255120081922')</div>
+            </div>
+            <div class="clear_fix">
+         </div>
          */
          /*cat_block:
          <div class="settings_line clear_fix" id="vk_setts_{vals.cat}">
@@ -781,8 +808,12 @@ vkopt['settings'] =  {
       vkopt.settings.set('vkopt_guide', false); // скрываем подсказки по поиску кнопки настроек      
       
       var update_view = function(){
-         ge('vkopt_settings').innerHTML = vkopt.settings.render_options();
-         ge('vkopt_lang_settings').innerHTML = vkopt.lang.choose(true, update_view);
+         val('vkopt_settings', vkopt.settings.render_options());
+         val('vkopt_lang_settings', vkopt.lang.choose(true, update_view));
+         
+         val('vkopt_donate_block', vk_lib.tpl_process(vkopt.settings.tpls['donate_form'], {}));
+         val('vk_purses_list', WMPursesList('wmdonate')); 
+         val('wmdonate', WMDonateForm(30,'R255120081922'));
       }
       var p = null;
       if (!in_box || ge('vkopt_settings_block')){ // показ на странице, а не во всплывающем окне
