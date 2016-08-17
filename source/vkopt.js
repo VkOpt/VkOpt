@@ -1419,12 +1419,66 @@ vkopt['photos'] =  {
       }
    },    
    update_photo: function(photo_id){
-      vk_photos.update_photo(photo_id)
-      // TODO: move code here from vk_media.js
+      var box=vkAlertBox(IDL('Upload'),'<center><div id="vk_upd_photo"></div><div id="vk_upd_photo_progress"></div></center>');
+      stManager.add('upload.js',function(){
+         var photo=photo_id;
+         if (/photo-?\d+_\d+/.test(photo)) photo=photo.match(/photo(-?\d+_\d+)/)[1];
+         AjPost('/al_photos.php',{'act':'edit_photo', 'al': 1, 'photo': photo},function(t){
+               var upload_url=t.match(/"upload_url":"(.*)"/);
+               var hash=t.match(/', '([a-f0-9]{18})'\)/);
+               var aid=t.match(/selectedItems:\s*\[(-?\d+)\]/)[1];
+               upload_url = upload_url[1].replace(/\\\//g, '/').split('"')[0];
+               if (vk_DEBUG) console.log('url',upload_url);
+               Upload.init('vk_upd_photo', upload_url, {}, {
+                  file_name: 'photo',
+                  file_size_limit: 1024 * 1024 * 5,
+                  file_types_description: 'Image files (*.jpg, *.jpeg, *.png, *.gif)',
+                  file_types: '*.jpg;*.JPG;*.jpeg;*.JPEG;*.png;*.PNG;*.gif;*.GIF',
+                  onUploadStart:function(){
+                     ge('vk_upd_photo_progress').innerHTML=vkBigLdrImg;
+                     //lockButton
+                  },
+                  onUploadComplete: function(u,res){
+                     var params = {
+                        '_query' 	 : res,
+                        'act' 	 	 : 'save_desc',
+                        'aid' 	 	 : aid,
+                        'al' 	 	    : 1,
+                        'conf' 	 	 : '///',
+                        'cover'  	 : '',	
+                        'filter_num' : 0,
+                        'hash' 		 : hash[1],
+                        'photo'		 : photo,
+                        'text' 		 :''
+                     };
+                     ajax.post('/al_photos.php', params,{
+                        onDone: function(text, album, photoObj, thumb) {
+                           box.hide();
+                           vkMsg(IDL('Done'),2000);
+                           if (photoObj && thumb) {
+                              if (typeof FiltersPE != 'undefined'){
+                                 FiltersPE.changeThumbs(thumb);
+                              }
+                              if (typeof Filters != 'undefined'){
+                                 Filters.changeThumbs(thumb);
+                              }
+                                 
+                              
+                           }
+                        }
+                     });
+                  },
+                  lang: { "button_browse":IDL("Browse",1) }
+               });         
+         });         
+      });
+      return false;
    },
    update_photo_btn:function(node){
-      vk_photos.update_photo_btn(node);
-      // TODO: move code here from vk_media.js
+      var p = geByClass('pe_filter_buttons',node)[0] ? geByClass('pe_filter_buttons',node)[0] : geByClass('pv_filter_buttons',node)[0];
+      if (!p) return;
+      var btn = se('<div class="button_gray fl_r" id="vk_ph_upd_btn"><button onclick="vk_photos.update_photo(cur.filterPhoto);">'+IDL('Update',2)+'</button></div>');
+      p.appendChild(btn);
    }   
 }
 
