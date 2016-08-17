@@ -57,7 +57,12 @@ var vkopt_defaults = {
       AUDIO_INFO_LOAD_THREADS_COUNT: 5,
       AUTO_LIST_DRAW_ROWS_INJ: true, // На случай, если инъекция будет убивать редер автоподгружаемых списков
       MAX_CACHE_AUDIO_SIZE_ITEMS: 10000 // максимальное количество запомненных размеров аудио в локальном хранилище
-   }
+   },
+   popular: [
+      'scroll_to_next',
+      'pv_comm_move_down', 
+      'disable_border_radius' 
+   ]
 }
 
 var vkopt_core = {
@@ -382,8 +387,17 @@ vkopt['settings'] =  {
          }
          .wide_column .settings_labeled_text.vk_settings_block {
              width: 248px;
-         }         
-         
+         }        
+         .welcome_cfg .settings_labeled_text.vk_settings_block {
+             width: 255px;
+         }           
+         .welcome_cfg .settings_label.vk_setts_cat_header{
+            width: auto;
+         }
+         .vk_all_options{
+            text-align: center;
+            padding-top: 10px;
+         }
          .vk_settings_block.vk_settings_block_left {
              border-right: 1px solid #e7e8ec;
              padding-right: 5px;
@@ -628,7 +642,11 @@ vkopt['settings'] =  {
          /*welcome_layout:
          <div class="clear_fix">
             <div class="vk_welcome_r fl_r">{vals.right}</div>
-            <div class="vk_welcome_l fl_l">{vals.left}</div>
+            <div class="vk_welcome_l fl_l">{vals.left}<div id="vkopt_settings" class="welcome_cfg">{vals.cfg}</div>
+               <div class="vk_all_options">
+                  <a class="flat_button" href="#" onclick="val('vkopt_settings', vkopt.settings.render_options()); hide(this); return false;">{lng.ShowAllOptions}</a>
+               </div>
+            </div>
          </div>
          */
       });
@@ -706,6 +724,19 @@ vkopt['settings'] =  {
             var box_content = function(){
                //var welcome_html = 
                //welcome_html += '<br><br>' + vkopt.lang.choose(true, box_content);
+               var settings =  {
+                  PopularOptions:{}
+               }
+               var list = vkopt.settings.get_options_list();
+               for (var cat in list){
+                      i = 0;
+                  for (var option_id in list[cat]){
+                     if (vkopt_defaults.popular.indexOf(option_id) == -1) 
+                        continue;
+                     settings.PopularOptions[option_id] = list[cat][option_id];
+                  }
+               }         
+
                var welcome_html = vk_lib.tpl_process(vkopt.settings.tpls['welcome_layout'],{
                   left: IDL('FirstUpdateLaunch',{
                      ver: String(vVersion).split('').join('.'),
@@ -718,11 +749,13 @@ vkopt['settings'] =  {
                      a_forum:'<a href=\"http://vkopt.net/forum/forumdisplay.php?f=4\" target=_blank>%s</a>',
                      a_faq:'<a href=\"http://vkopt.net/forum/forumdisplay.php?f=4\" target=_blank>%s</a>'
                   }),
-                  right: vkopt.lang.choose(true, box_content)
+                  right: vkopt.lang.choose(true, box_content),
+                  cfg: vkopt.settings.render_options('',settings)
                });
                box.content(welcome_html);
                box.setOptions({title: IDL('THFI')});
             }
+            stManager.add(['settings.css']);
             box_content();
             box.show();         
          
@@ -775,8 +808,8 @@ vkopt['settings'] =  {
          p && p.appendChild(item);
       }
    },
-   render_options: function(filter){
-      var list = vkopt.settings.get_options_list();
+   render_options: function(filter, list){
+      list =  list || vkopt.settings.get_options_list();
       var html = '';
       for (var cat in list){
          var content = ['',''],
@@ -1516,7 +1549,7 @@ vkopt['photos'] =  {
       if (!p) return;
       var btn = se('<div class="button_gray fl_r" id="vk_ph_upd_btn"><button onclick="vk_photos.update_photo(cur.filterPhoto);">'+IDL('Update',2)+'</button></div>');
       p.appendChild(btn);
-   }   
+   }
 }
 
 vkopt['audio'] =  {
@@ -2224,7 +2257,7 @@ vkopt['audio'] =  {
 }
 
 // Scrobbling API documentation: http://users.last.fm/~tims/scrobbling/scrobbling2.html
-vkopt['scrobbler'] = { // lastfm: { } //TODO: after disable old vk design, replace in lastfm module localStorage[Key] to vkopt.settings.get(Key)/.set(Key,val)
+vkopt['scrobbler'] = {
    css: function(){
       return '\
       .lastfm_audio_page{position: absolute;margin-top: -20px;margin-left: 5px;} \
@@ -3346,6 +3379,7 @@ vkopt['attacher'] = {
    }
 
 }
+
 vkopt['face'] =  {
    onSettings:{
       Media:{
@@ -3589,6 +3623,7 @@ vkopt['profile'] = {
       })
    }   
 }
+
 vkopt['wall'] = {
    onSettings:{
       vkInterface:{
