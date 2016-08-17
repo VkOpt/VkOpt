@@ -3254,14 +3254,70 @@ vkopt['profile'] = {
       var a=geByTag('a',_el)[0];
       if (a && a.tt) a.tt.hide();
       addClass(_el,'fl_r');
-      vk_users.find_age(uid,function(age){// TODO: move code of vk_users.find_age from vk_users.js
+      vkopt.profile.find_age(uid,function(age){
          var txt=age?langNumeric(age, vk_lang["vk_year"]):'N/A';
          removeClass(_el,'fl_r');
          _el.innerHTML=txt;
       },{el:el,width:50});
       return false;
-   }
-   
+   },
+   find_age:function(target_uid,callback,ops){
+      var min=12;
+      var max=80;   
+      ops = ops || {};
+      var mid;
+      var first = min;
+      var last = max;
+      var step = 0;
+      if (!ops.el){
+         box=new MessageBox({title: IDL('Scaning'),closeButton:true,width:"350px"});
+         box.removeButtons();
+         box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no');
+      }
+      var html='<div id="vk_scan_bar" style="padding-bottom:10px;">'+vkBigLdrImg+'</div>';
+      if (!ops.el) box.content(html).show();
+      else ge(ops.el).innerHTML=vkLdrImg;
+      
+      var fid=0; 
+      var scan=function(){
+         ge(ops.el || 'vk_scan_bar').innerHTML=vkProgressBar(++step,8,(ops.width || 310),' %');
+         mid = first + Math.floor( (last - first) / 2 );
+         //callback(first + ';' + last + '-' + mid);
+         ajax.post('/friends',{act:'filter_friends',al:1,city:0,sex:0,age_from:first,age_to:mid,uid:fid},{
+            onDone:function(uids){
+               x=inArr(uids,target_uid);
+               if (x) {
+                  last = mid;                  
+               } else {
+                  first=mid+1;                  
+               }
+		
+                if (first == last && first!=80)
+                {
+                  if (!ops.el) box.hide();
+                  callback(first);
+                }
+                else		
+                if (first>last || first==80){
+                	callback(null);
+                } else {
+                	setTimeout(scan,300);
+                }
+
+            }
+         });
+      }; 
+      dApi.call('friends.get',{uid:target_uid,count:10},function(r){
+         if (!r.response || !r.response[0]){
+            alert('Sorry... Mission impossible...');
+            if (!ops.el) box.hide();
+            return;
+         }
+         if (vk_DEBUG) console.log('fid',r.response[0]);
+         fid=r.response[0];
+         scan();
+      })
+   }   
 }
 vkopt['wall'] = {
    onSettings:{
