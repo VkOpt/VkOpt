@@ -1933,6 +1933,8 @@ vkopt['audio'] =  {
    },
    make_dl_url: function(url, name){
       name = vkCleanFileName(name);
+      if (/^https:.+\.vk-cdn\.net\//i.test(url))
+         url = url.replace(/^https:/,'http:');
       return url + '#FILENAME/' + vkEncodeFileName(name) + '.mp3';
    },
    processNode: function(node, params){

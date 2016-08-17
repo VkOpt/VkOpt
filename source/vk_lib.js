@@ -566,6 +566,17 @@ var vkMozExtension = {
 	  while(next_el && next_el.nodeType==3) next_el=next_el.nextSibling;
 	  return next_el;
 	}
+   
+   function FindAndProcessTextNodes(node,func){
+       var childItem =0;
+       while(node.childNodes[childItem]){
+           if(node.childNodes[childItem].nodeType==3 && node.tagName!="SCRIPT" && node.tagName!="STYLE" && node.tagName!="TEXTAREA" ){
+               childItem = func(node,childItem);
+           }else{ FindAndProcessTextNodes(node.childNodes[childItem],func);  }
+           childItem++;
+       }
+   }  
+   
 	function vkaddcss(addcss,id) {
 		var styleElement = document.createElement("style");
 		styleElement.type = "text/css";
