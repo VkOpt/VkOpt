@@ -1774,9 +1774,64 @@ vkopt['audio'] =  {
       })
       return false;
    },
-   add_to_group: function(oid, aid, to_gid){
-      // TODO: move code from vk_media.js
-      vk_audio.add_to_group(oid, aid, to_gid);
+   add_to_group: function(oid, aid, to_gid){//vk_audio.add_to_group(oid,aid,to_gid)
+         if (to_gid){
+            if (vk_audio._add_box) vk_audio._add_box.hide();
+            dApi.call('audio.add',{aid:aid,oid:oid,gid:Math.abs(to_gid)},function(r){
+               if (r.response){
+                  vkMsg('<b><a href="/audio?id=-'+Math.abs(to_gid)+'&audio_id='+r.response+'">'+r.response+'</a></b><br>'+aid+' -> club'+to_gid);
+               } else {
+                  alert('aid:'+aid+'\n'+'Add error');
+               }
+            });      
+            return false;
+         }
+         var show_box=function(){
+            var html=''; // TODO: в шаблоны
+            html+='<h4>'+IDL('EnterLinkToGroup')+'</h4><div class="clear_fix">\
+              <input id="aidtogrouplink" type="text" placeholder="http://vk.com/club123" class="text fl_l" style="width:336px">\
+              <div class="button_blue fl_l"><button style="padding: 2px 8px;" id="aidtogroup">OK</button></div>\
+            </div><br>';
+            html+='<h4>'+IDL('SelectGroup')+'</h4>';
+            for (var i=0; i<_vk_vid_adm_gr.length;i++){
+               html+='<a href="/'+_vk_vid_adm_gr[i].screen_name+'" onclick="return vk_audio.add_to_group('+oid+','+aid+','+_vk_vid_adm_gr[i].gid+');">'+_vk_vid_adm_gr[i].name+'</a><br>';
+            }
+            vk_audio._add_box=vkAlertBox(IDL('Add'),html);
+            var btn=ge('aidtogroup');
+            var old_val=localStorage['vk_aid_to_group'];
+            if (old_val) ge('aidtogrouplink').value=old_val;
+            btn.onclick=function(){
+               var url=ge('aidtogrouplink').value;
+               if (!url || trim(url)=='') {
+                  alert('Incorrect link');
+                  return;
+               }
+               lockButton(btn);
+               getGidUid(url,function(uid,gid){
+                  if (gid){
+                     localStorage['vk_aid_to_group']=url;
+                     vk_audio.add_to_group(oid,aid,gid);
+                  } else {
+                     alert('Incorrect link');
+                     unlockButton(btn);
+                  }
+                  
+               });
+            }
+         };
+         
+         if (_vk_vid_adm_gr==null){
+         dApi.call('groups.get',{extended:1,filter:'admin'},function(r){
+            //console.log(r)
+            r.response.shift();
+            _vk_vid_adm_gr=r.response;
+            show_box();
+            });
+         } else {
+            show_box();
+         }
+
+      return false;
    },
    btn_over: function(el){
       vkopt.audio.check_dl_url(el); 
