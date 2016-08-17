@@ -5,16 +5,7 @@
       "run_at":0,
       "files":[
          "vkopt.js",
-         "vk_face.js",
          "vk_lib.js",
-         "vk_main.js",
-         "vk_media.js",
-         "vk_page.js",
-         "vk_resources.js",
-         "vk_settings.js",
-         "vk_skinman.js",
-         "vk_txtedit.js",
-         "vk_users.js",
          "vklang.js"
       ],
       "api_enabled":true,

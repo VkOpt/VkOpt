@@ -10,8 +10,8 @@
 // (c) All Rights Reserved. VkOpt.
 //
 /* VERSION INFO */
-var vVersion	= 233;
-var vBuild = 160612;
+var vVersion	= 235;
+var vBuild = 160816;
 var vPostfix = ' ';
 
 if (!window.vkopt) window.vkopt={};
@@ -118,7 +118,7 @@ var vkopt_core = {
       for (var key in StaticFiles)  
          if (StaticFiles[key].t == 'js')
             vk_glue.inj_to_file(key); 
-      vkBroadcast.Init(vkOnStorage);
+      //vkBroadcast.Init(vkOnStorage); 
       vkopt_core.plugins.on_init();
       vk_glue.nav_handler();
       window.vkopt_core_ready = true;
@@ -954,8 +954,8 @@ vkopt['settings'] =  {
    },
    
    backup_handler: function(){
-      clearTimeout(vk_settings.__bkp_timeout);
-      vk_settings.__bkp_timeout = setTimeout(function(){
+      clearTimeout(vkopt.settings.__bkp_timeout);
+      vkopt.settings.__bkp_timeout = setTimeout(function(){
          vkopt.settings.backup();
       },400)
      

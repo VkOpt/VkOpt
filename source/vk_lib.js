@@ -15,6 +15,17 @@
 //*
 
 //*/
+
+
+var vk_DEBUG = false,
+    ENABLE_CACHE=false;
+var SetsOnLocalStore={
+  'vkOVer':'c',
+  'dapi_mid':'c',
+  'dapi_sid':'c',
+  'dapi_secret':'c',
+};
+   
 /*!
  * Date Format 1.2.3
  * (c) 2007-2009 Steven Levithan <stevenlevithan.com>
@@ -623,7 +634,6 @@ var vkMozExtension = {
 	  else { return vkgetCookie(key)}
 	}
 	
-
 	function vksetCookie(cookieName,cookieValue,nDays,domain){
 		if (vkLocalStoreReady() && (SetsOnLocalStore[cookieName] || /api\d+_[a-z]+/.test(cookieName))){
 		vkSetVal(cookieName,cookieValue);
