@@ -12,7 +12,7 @@
 /* VERSION INFO */
 var vVersion	= 235;
 var vBuild = 160816;
-var vPostfix = ' ';
+var vPostfix = ' beta';
 
 if (!window.vkopt) window.vkopt={};
 
@@ -130,7 +130,9 @@ var vkopt_core = {
       window.vkopt_core_ready = true;
       vkCheckUpdates();
    },
-   
+   timeout: function(fn, t){
+      return window['set'+'Timeout'](fn,t);
+   },
    mod_str_as_node: function(str, func, params){
       if (!str || str.tagName)
          return str;
@@ -2010,11 +2012,11 @@ vkopt['audio'] =  {
                size: sz_labels.size || '? Mb',
                kbps: sz_labels.kbps || '? Kbps'
             }));
-         
+
          // Инфа о размере/битрейте
          if (vkopt.settings.get('audio_size_info')){
             if (info_obj.url)
-               setTimeout(
+               vkopt_core.timeout( //setTimeout
                   (function(id, url){
                      return function(){
                         vkopt.audio.load_size_info(id, url);
@@ -2376,7 +2378,7 @@ vkopt['scrobbler'] = {
         if (!paused) return;
         start = new Date();
         if (timerId) window.clearTimeout(timerId);
-        timerId = window.setTimeout(callback, remaining);
+        timerId = vkopt_core.timeout(callback, remaining);
         paused=false;
       };
       this.reset = function(){
@@ -3605,7 +3607,7 @@ vkopt['profile'] = {
                 if (first>last || first==80){
                 	callback(null);
                 } else {
-                	setTimeout(scan,300);
+                	vkopt_core.timeout(scan,300);
                 }
 
             }
