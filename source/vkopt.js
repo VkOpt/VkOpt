@@ -2902,12 +2902,16 @@ vkopt['scrobbler'] = {
          case 'play':    //if (fm.last_track.aid!=info.aid){ } else { }
              vkopt.audio_info.view(info.artist,info.title);
              if (!fm.scrobled){ 
+                if (!fm.s_timer)
+                   fm.scrobble_timer(info);
                 fm.s_timer.resume();
                 fm.set_icon(info,'playing');          // animate scrobbler icon track
              }
             break;
          case 'pause': 
             if (!fm.scrobled){
+               if (!fm.s_timer)
+                   fm.scrobble_timer(info);
                fm.s_timer.pause();         
                fm.set_icon(info,'paused'); // pause scrobbler icon track (stop animate);
             }             
