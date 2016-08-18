@@ -362,6 +362,15 @@ var vk_glue = {
 })();
 */
       
+vkopt['res'] = {
+   img: {
+      ldr: '<img src="/images/upload.gif">',
+      ldr_mono: '<img src="/images/upload_inv_mono.gif">',
+      ldr_mini: '<img src="/images/upload_inv_mini.gif">',
+      ldr_big: '<center><img src="/images/progress7.gif"></center>'
+   }
+}
+      
 vkopt['settings'] =  {
    backup_key_prefix: 'vkopt_settings_backup_',
    tpls: null,
@@ -1511,7 +1520,7 @@ vkopt['photos'] =  {
                   file_types_description: 'Image files (*.jpg, *.jpeg, *.png, *.gif)',
                   file_types: '*.jpg;*.JPG;*.jpeg;*.JPEG;*.png;*.PNG;*.gif;*.GIF',
                   onUploadStart:function(){
-                     ge('vk_upd_photo_progress').innerHTML=vkBigLdrImg;
+                     ge('vk_upd_photo_progress').innerHTML = vkopt.res.img.ldr_big;
                      //lockButton
                   },
                   onUploadComplete: function(u,res){
@@ -1785,7 +1794,7 @@ vkopt['audio'] =  {
       if (!p) return;
       var div=vkCe('div',{id:'vk_audio_mover', 'class':'audio_edit_row clear_fix'},'\
                     <div class="audio_edit_label fl_l ta_r">'+IDL('SelectAlbum',1)+'</div>\
-                    <div class="audio_edit_input fl_l"><div id="vk_audio_album_selector"></div><div id="vk_au_alb_ldr">'+vkLdrImg+'</div></div>\
+                    <div class="audio_edit_input fl_l"><div id="vk_audio_album_selector"></div><div id="vk_au_alb_ldr">'+vkopt.res.img.ldr+'</div></div>\
                   ');
       p.parentNode.insertBefore(div,p); 
       
@@ -3586,9 +3595,9 @@ vkopt['profile'] = {
          box.removeButtons();
          box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no');
       }
-      var html='<div id="vk_scan_bar" style="padding-bottom:10px;">'+vkBigLdrImg+'</div>';
+      var html='<div id="vk_scan_bar" style="padding-bottom:10px;">'+vkopt.res.img.ldr_big+'</div>';
       if (!ops.el) box.content(html).show();
-      else ge(ops.el).innerHTML=vkLdrImg;
+      else ge(ops.el).innerHTML=vkopt.res.img.ldr;
       
       var fid=0; 
       var scan=function(){
