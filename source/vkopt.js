@@ -1859,9 +1859,25 @@ vkopt['audio'] =  {
       })
       return false;
    },
+   search_track:function(event, ref, name){
+      cur.cancelClick = true;
+
+      var audioEl = gpeByClass('audio_layout ', ref);
+      var isInAudioPage = window.AudioPage && audioEl && ge('audio_search');
+      if (isInAudioPage) {
+         return nav.change({
+            q : name
+         }, event, {
+            searchPerformer : false
+         });
+      } else {
+         return nav.go(ref, event);
+      }
+   },
+   _adm_gr: null,
    add_to_group: function(oid, aid, to_gid){//vk_audio.add_to_group(oid,aid,to_gid)
          if (to_gid){
-            if (vk_audio._add_box) vk_audio._add_box.hide();
+            if (vkopt.audio._add_box) vkopt.audio._add_box.hide();
             dApi.call('audio.add',{aid:aid,oid:oid,gid:Math.abs(to_gid)},function(r){
                if (r.response){
                   vkMsg('<b><a href="/audio?id=-'+Math.abs(to_gid)+'&audio_id='+r.response+'">'+r.response+'</a></b><br>'+aid+' -> club'+to_gid);
@@ -1878,10 +1894,10 @@ vkopt['audio'] =  {
               <div class="button_blue fl_l"><button style="padding: 2px 8px;" id="aidtogroup">OK</button></div>\
             </div><br>';
             html+='<h4>'+IDL('SelectGroup')+'</h4>';
-            for (var i=0; i<_vk_vid_adm_gr.length;i++){
-               html+='<a href="/'+_vk_vid_adm_gr[i].screen_name+'" onclick="return vk_audio.add_to_group('+oid+','+aid+','+_vk_vid_adm_gr[i].gid+');">'+_vk_vid_adm_gr[i].name+'</a><br>';
+            for (var i=0; i<vkopt.audio._adm_gr.length;i++){
+               html+='<a href="/'+vkopt.audio._adm_gr[i].screen_name+'" onclick="return vkopt.audio.add_to_group('+oid+','+aid+','+vkopt.audio._adm_gr[i].gid+');">'+vkopt.audio._adm_gr[i].name+'</a><br>';
             }
-            vk_audio._add_box=vkAlertBox(IDL('Add'),html);
+            vkopt.audio._add_box=vkAlertBox(IDL('Add'),html);
             var btn=ge('aidtogroup');
             var old_val=localStorage['vk_aid_to_group'];
             if (old_val) ge('aidtogrouplink').value=old_val;
@@ -1895,7 +1911,7 @@ vkopt['audio'] =  {
                getGidUid(url,function(uid,gid){
                   if (gid){
                      localStorage['vk_aid_to_group']=url;
-                     vk_audio.add_to_group(oid,aid,gid);
+                     vkopt.audio.add_to_group(oid,aid,gid);
                   } else {
                      alert('Incorrect link');
                      unlockButton(btn);
@@ -1905,11 +1921,11 @@ vkopt['audio'] =  {
             }
          };
          
-         if (_vk_vid_adm_gr==null){
+         if (vkopt.audio._adm_gr==null){
          dApi.call('groups.get',{extended:1,filter:'admin'},function(r){
             //console.log(r)
             r.response.shift();
-            _vk_vid_adm_gr=r.response;
+            vkopt.audio._adm_gr=r.response;
             show_box();
             });
          } else {
@@ -3028,7 +3044,7 @@ vkopt['audio_info'] = {
                var track_name = (track_artist == 'Various Artists' ? '' : track_artist + ' - ') + tracks[i];
                html+='<li><a href="/search?c[q]='+encodeURIComponent(track_name)+'&c[section]=audio" '+
                   'onclick="if (checkEvent(event)) { event.cancelBubble = true; return}; '+
-                     'vk_audio.search_track(event, \''+track_name.replace(/'/,'\\\'')+'\'); return false">'+tracks[i]+'</a></li>';
+                     'vkopt.audio.search_track(event, this, \''+track_name.replace(/'/,'\\\'')+'\'); return false">'+tracks[i]+'</a></li>';
             }
             html='<ul>'+html+'</ul>';//'<div class="vk_tracks_search_btn"><div class="button_blue button_wide"><button onclick="vkAlbumCollectPlaylist()">'+IDL('SearchAlbumTracks')+'</button></div></div>';
          }
