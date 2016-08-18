@@ -2935,7 +2935,8 @@ vkopt['audio_info'] = {
    css: function(){
       return vk_lib.get_block_comments(function(){
       /*css:
-      #vk_album_info {}
+      #vk_album_info {display:none;}
+      .audio_layout #vk_album_info {display:block;} 
       #vk_album_info h4{cursor:pointer; min-height:30px; padding:3px 10px; border: 0px;}
       #vk_album_info h4:hover{background-color: rgba(219, 227, 235, 0.5);}
       #vk_album_info h4 img.small{max-width:30px;max-height:30px; margin-right:3px;}
