@@ -3867,7 +3867,7 @@ vk_lang_it={ //by Maybkot /id5027410 (mayboroda.com.ua)
 
 vk_lang_tat = {//by eurotat /id15202178
     'LangAuthor':'<a href="/id15202178">by eurotat</a>',
-    'LangTite':'\u0422\u0430\u0442\u0430\u0440\u0441\u043a\u0438\u0439 \u044f\u0437\u044b\u043a',
+    'LangTite':'\u0422\u0430\u0442\u0430\u0440 \u0442\u0435\u043b\u0435',
     'LangFlag':'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAAAaCAIAAABdDBlVAAAATklEQVR42u2TMQoAMAjEbnPrm619uAX7BrNUCXJb8EBpS1G0BlDjtVtD+x0vUBqgMUdLAwBLI65h3tPC7BSdQYkMplkLQCmC0YxmNL9rLnAGNdbLnWjxAAAAAElFTkSuQmCC',
     LinksGet: "\u0421\u044b\u043b\u0442\u0430\u0443",
     download: "[ \u0421\u0430\u043a\u043b\u0430\u0440\u0433\u0430 ]",
