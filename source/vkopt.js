@@ -11,7 +11,7 @@
 //
 /* VERSION INFO */
 var vVersion	= 300;
-var vBuild = 160817;
+var vBuild = 160819;
 var vPostfix = ' beta';
 
 if (!window.vkopt) window.vkopt={};
