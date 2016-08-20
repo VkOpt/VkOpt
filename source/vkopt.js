@@ -47,6 +47,7 @@ var vkopt_defaults = {
       datepicker_inj: true, // активна ли инъекция в конструктор DatePicker'а
       zodiak_ophiuchus:false, // 13ый знак зодиака, Змееносец, между 30 ноября и 17 декабря     
       photo_search_copy: true,
+      ph_download_with_name: false,
       
       lastfm_enable_scrobbling: false,
       lastfm_token: '',
@@ -1254,7 +1255,8 @@ vkopt['photoview'] =  {
          }         
       },
       Extra:{
-         photo_search_copy:{}
+         photo_search_copy:{},
+         ph_download_with_name:{}
       }
    },
    tpls:{},
@@ -1405,7 +1407,7 @@ vkopt['photoview'] =  {
       
       // Список ссылок на варианты фото:
       var d_name=function(p,pfx){
-         //if (!PHOTO_DOWNLOAD_NAMES) return ''; <-- TODO
+         if (!vkopt.settings.get('ph_download_with_name')) return '';
          return ' onclick="return vkDownloadFile(this);" download="photo'+p.id+pfx+'.jpg" ';
       };    
 
