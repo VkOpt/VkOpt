@@ -48,6 +48,7 @@ var vkopt_defaults = {
       zodiak_ophiuchus:false, // 13ый знак зодиака, Змееносец, между 30 ноября и 17 декабря     
       photo_search_copy: true,
       ph_download_with_name: false,
+      stealth_addons: true, // прикидываемся перед ТП, что у нас не стоит расширение для скачивания.
       
       lastfm_enable_scrobbling: false,
       lastfm_token: '',
@@ -3771,6 +3772,18 @@ vkopt['wall'] = {
 
 }
 
+vkopt['support'] = {
+   onSettings:{
+      Extra: {
+         stealth_addons:{}
+      }
+   },
+   onRequestQuery: function(url, q, options){
+      if (!vkopt.settings.get('stealth_addons')) return;
+      if (q.act == "save" && q.audio_orig && q.audio_html)
+         q.audio_html = q.audio_orig;
+   }
+}
 vkopt['test_module'] =  {
    /*   
    onAudioRowMenuItems: function(info){
