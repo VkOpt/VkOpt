@@ -3453,6 +3453,9 @@ vkopt['face'] =  {
             position: absolute !important;
             left: -9500px !important;
          }
+         .vk_ad_block .feed_row .post[data-ad]{
+            display: none;
+         }
          .vk_disable_border_radius body *{
             border-radius: 0px !important;
          }
