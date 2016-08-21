@@ -211,6 +211,13 @@ var vkopt_core = {
       on_storage: function(id, cmd){ // listen messages for communicate between tabs
          vkopt_core.plugins.call_modules('onStorage', id, cmd);
       },
+      on_ajax_post: function(url, query, options){
+         var res = vkopt_core.plugins.call_modules('onRequestQuery', url, query, options);
+         for (var i = 0; i < res.length; i++) 
+            if (res[i] === false)
+               return false;
+         return true;
+      },
       process_response: function(answer, url, q){
          // answer - массив, элементы которого в последствии становятся аргументами вызываемых колбеков. можно править его элементы
          var _rx = /^\s*<(div|table|input|a)/i;
@@ -297,8 +304,10 @@ var vk_glue = {
          // айфремовая загрузка выглядит так - загрузили каркас с частью данных, дальше по ходу загрузки айфреймовой страницы выполняются куски заполнения элементов карскаса.
          // эти кучки тоже надо перехватывать.
          Inj.Start('ajax.framegot','if (#ARG1#) #ARG1#=vk_glue.process_on_framegot(#ARG1#);'); 
+         
+         // Можем модифицировать поля запроса перед отсылкой ajax-запроса, либо заблокировать его
+         Inj.Start('ajax.post','if (vk_glue.process_on_post(#ARG0#, #ARG1#, #ARG2#) === false) return;');//(url, query, options)
          /*
-         Inj.Start('ajax.post','if (vkAllowPost(url, query, options)==false) return;');
          Inj.Start('renderFlash','vkOnRenderFlashVars(vars);');
          */
          // перехват тултипов при создании их контента. например для перехвата создания меню "Ещё" перед его показом в просмотрщике фото
@@ -319,6 +328,9 @@ var vk_glue = {
    process_on_framegot: function(html){
       return vkopt_core.mod_str_as_node(html, vkopt_core.plugins.process_node);
    },
+   process_on_post: function(url, query, options){
+      return vkopt_core.plugins.on_ajax_post(url, query, options);
+   },   
    response_handler: function(answer,url,q){
       // try{
       vkopt_core.plugins.process_response(answer, url, q);
@@ -336,6 +348,7 @@ var vk_glue = {
       onInit:                 function(){},                                // выполняется один раз после загрузки стрницы
       onLibFiles:             function(file_name){},                       // место для инъекций = срабатывает при подключении нового js-файла движком контакта.
       onLocation:             function(nav_obj,cur_module_name){},         // вызывается при переходе между страницами
+      onRequestQuery:         function(url, query, options){}              // вызывается перед выполнением ajax.post метода. если функция вернёт false, то запрос выполнен не будет.
       onResponseAnswer:       function(answer,url,params){},               // answer - массив, изменять только его элементы
       onStorage :             function(command_id,command_obj){},          // слушает сообщения отосланные из других вкладок вк через vkCmd(command_id,command_obj)
       processNode:            function(node, params){}                     // обработка элемента
