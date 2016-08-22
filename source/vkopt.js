@@ -42,6 +42,7 @@ var vkopt_defaults = {
       audio_more_acts: true, // доп. менюшка для каждой аудиозаписи
       audio_dl_acts_2_btns: false, // разделить на аудио кнопки скачивания и меню доп.действий 
       audio_edit_box_album_selector: true, // поле выбора альбома в окне редактирования названия аудио
+      audio_force_flash: false, // принудительно использовать Flash для аудио-плеера
       im_hide_dialogs: false, // Новый стиль диалогов. Полотно переписки на всю ширину, список диалогов скрывается при клике по истории, показ списка - клик по заголовку переписки
       attach_media_by_id: true, // при вставке айди медиа в поле поиска из диалога прикрепления, в диалог подгружается медиа-файл с этим айди
       datepicker_inj: true, // активна ли инъекция в конструктор DatePicker'а
@@ -2733,7 +2734,7 @@ vkopt['scrobbler'] = {
       var fm=vkopt.scrobbler;
       if (!(window.AudioUtils)) return {};
       var cur_audio = AudioUtils.asObject(getAudioPlayer().getCurrentAudio());
-      var a = cur_audio || {};
+      var a = cur_audio || {title:'', performer: ''};
       return {
          title    :fm.clean(a.title),
          artist   :fm.clean(a.performer),
@@ -3203,7 +3204,8 @@ vkopt['audio_info'] = {
 vkopt['audioplayer'] = {
    onSettings:{
       Extra:{
-         add_to_next_fix: {}
+         add_to_next_fix: {},
+         audio_force_flash: {}
       }
    },   
    audioObjToArr: function(obj){
@@ -3224,11 +3226,34 @@ vkopt['audioplayer'] = {
       }
    },
    onLibFiles: function(file_name){
-      if (!vkopt.settings.get('add_to_next_fix')) return;
-      if (file_name=='audioplayer.js')
-         // багфикс: при добавлении инфы об аудио в виде объекта в плейлист, оно не добавляется. впихиваем костыль для конверта объекта в массив. 
+      
+      if (file_name != 'audioplayer.js') 
+         return;   
+      // багфикс: при добавлении инфы об аудио в виде объекта в плейлист, оно не добавляется. впихиваем костыль для конверта объекта в массив. 
+      if (vkopt.settings.get('add_to_next_fix'))
          Inj.Replace('AudioPlaylist.prototype.addAudio',/(([a-z_0-9]+)\.length)(\s*&&\s*([a-z_0-9]+)\(\2\))/,'($1$3) || ($2.fullId && $4(vkopt.audioplayer.audioObjToArr($2)))') 
       
+      // У меня HTML5 плеер аудио глючит, вызывая артефакты со случайными перескакиваниями проигрываемой позиции по хронометражу.
+      if (vkopt.settings.get('audio_force_flash')){
+         Inj.Start('AudioPlayerHTML5.isSupported','if (vkopt.settings.get("audio_force_flash")) return false;');
+         Inj.Start('AudioPlayer.prototype.play','vkopt.audioplayer.init_flash_impl();');
+      }
+   },
+   init_flash_impl: function(){
+      if (!vkopt.settings.get('audio_force_flash'))
+         return;
+      var cur_pl = getAudioPlayer();
+      if (cur_pl && cur_pl._impl.type != 'flash'){
+         cur_pl._impl = new AudioPlayerFlash();
+         cur_pl._initImpl();
+         cur_pl._initEvents();
+         cur_pl._restoreVolumeState();
+         setTimeout(function() {
+            cur_pl._restoreState(),
+            AudioUtils.toggleAudioHQBodyClass(),
+            cur_pl.updateCurrentPlaying()
+         })
+      }      
    }
 }
 
