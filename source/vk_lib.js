@@ -1009,16 +1009,6 @@ var vkMozExtension = {
 ////////////////
 // VkOpt Ajax //
 ////////////////
-	function PrepReq() {
-	  var tran = null;
-	  try { tran = new XMLHttpRequest(); }
-	  catch(e) { tran = null; }
-	  try { if(!tran) tran = new ActiveXObject("Msxml2.XMLHTTP"); }
-	  catch(e) { tran = null; }
-	  try { if(!tran) tran = new ActiveXObject("Microsoft.XMLHTTP"); }
-	  catch(e) { tran = null; }
-	return tran;}
-
 	function urlEncData(data) {
 		var query = [];
 		if (data instanceof Object) {
@@ -1036,7 +1026,7 @@ var vkMozExtension = {
     function AjGet(url, callback, unsyn) {
         var hash;
         if (!ENABLE_CACHE || !AjCache[hash = vkMD5(url)]) {
-            var request = (vkAjTransport.readyState == 4 || vkAjTransport.readyState == 0) ? vkAjTransport : PrepReq();
+            var request = (vkAjTransport.readyState == 4 || vkAjTransport.readyState == 0) ? vkAjTransport : new XMLHttpRequest();
             vkAjTransport = request;
             if (!request) return false;
             request.onreadystatechange = function () {
@@ -1058,7 +1048,7 @@ var vkMozExtension = {
     function AjPost(url, data, callback) {
         var hash;
         if (!ENABLE_CACHE || !AjCache[hash = vkMD5(url + JSON.stringify(data))]) {
-            var request = PrepReq();
+            var request = new XMLHttpRequest();
             if (!request) return false;
             request.onreadystatechange = function () {
                 if (request.readyState == 4 && callback) {
@@ -1085,7 +1075,7 @@ var vkMozExtension = {
             });
             return true;
          } else {
-            var request = PrepReq();
+            var request = new XMLHttpRequest();
             if(!request) return false;
             request.onerror=function(){
                //alert('to <head>');
