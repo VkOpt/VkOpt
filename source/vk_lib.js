@@ -26,7 +26,7 @@ var SetsOnLocalStore={
   'dapi_sid':'c',
   'dapi_secret':'c',
 };
-   
+
 /*!
  * Date Format 1.2.3
  * (c) 2007-2009 Steven Levithan <stevenlevithan.com>
@@ -249,19 +249,19 @@ if (vkbrowser.mozilla){
 		   "PARAM": true,
 		   "HR": true
 		};
-		
+
 		HTMLElement.prototype.__defineGetter__("outerHTML", function () {
 		   var attrs = this.attributes;
 		   var str = "<" + this.tagName;
 		   for (var i = 0; i < attrs.length; i++)
 			  str += " " + attrs[ i ].name + "=\"" + attrs[ i ].value + "\"";
-		
+
 		   if (_emptyTags[this.tagName])
 			  return str + ">";
-		
+
 		   return str + ">" + this.innerHTML + "</" + this.tagName + ">";
 		});
-		
+
 		HTMLElement.prototype.__defineSetter__("outerHTML", function (sHTML) {
 		   var r = this.ownerDocument.createRange();
 		   r.setStartBefore(this);
@@ -280,7 +280,7 @@ if (!window.Audio){
 
 var vkMozExtension = {
    callbacks: [],
-   send_request: function (data, callback) { // analogue of chrome.extension.sendRequest  
+   send_request: function (data, callback) { // analogue of chrome.extension.sendRequest
       var set_data = function (el, field, data) {
          if(el.dataset) {
             el.dataset[field] = JSON.stringify(data);
@@ -324,7 +324,7 @@ var vkMozExtension = {
    }
 };
 /* FUNCTIONS. LEVEL 1 */
-	//LANG   
+	//LANG
    function print_r( array) {
       var pad_char = " ", pad_val = 4;
 
@@ -383,7 +383,7 @@ var vkMozExtension = {
 	  if (window.vk_lang_add && vk_lang_add[i]) return vkCutBracket(dec(vk_lang_add[i]),bracket);
 	  else return vkCutBracket(i,bracket);
 	}
-   
+
    function vkopt_brackets(s){
       var s1=vkCutBracket(s,2);
       if (!CUT_VKOPT_BRACKET) s1='[ '+s1+' ]';
@@ -392,7 +392,7 @@ var vkMozExtension = {
 
 	function vkExtendLang(obj) {    // Используется в некоторых плагинах к вкопту. Там узкоспециализированные скрипты по мелочам. Человек 5 использует.
 	  if (!window.vk_lang_add) vk_lang_add={};
-	  for (var key in obj)  vk_lang_add[key]=obj[key]; 
+	  for (var key in obj)  vk_lang_add[key]=obj[key];
 	}
 
 	function vkLangSet(id,no_reload){
@@ -410,7 +410,7 @@ var vkMozExtension = {
 	  }
 	  return id;
 	}
-	
+
 	function replaceChars(text, nobr) {
 		var res = "";
 		for (var i = 0; i<text.length; i++) {
@@ -429,7 +429,7 @@ var vkMozExtension = {
 		}
 		return res;
 	}
-   
+
    function vk_string_escape(str){
       function encodeCharx(original){
         var thecharchar=original.charAt(0);
@@ -454,7 +454,7 @@ var vkMozExtension = {
       for(var i=0;i<preescape.length;i++){
          escaped=escaped+encodeCharx(preescape.charAt(i));
       }
-      return escaped;         
+      return escaped;
    }
    function vkRemoveTrash(s,additional_excludes){
       additional_excludes = additional_excludes || '';
@@ -471,13 +471,13 @@ var vkMozExtension = {
       // &., -(разные дефисы)
       var rx='';
       for (var key in normal_ranges) rx+=normal_ranges[key];
-      
+
       var trash_rx=new RegExp('[^'+rx+additional_excludes+']','g');
       s=s.replace(trash_rx,' ');
       s=s.replace(/\s\s+/g,' ');
       return s;
    }
-   
+
    function vkCleanFileName(s){   return trim(s.replace(/[\\\/:\*\?"<>\|]/g,'_').replace(/\u2013/g,'-').replace(/&#\d+;/g,'_').replace(/\s\s/g,'').substr(0,200));   }
    function vkEncodeFileName(s){
       try {
@@ -485,11 +485,11 @@ var vkMozExtension = {
             return encodeURIComponent(s);
          else
             return s.replace(/([^A-Za-z\u0410-\u042f\u0430-\u044f])/g,function (str, p1) {return encodeURIComponent(p1)});
-      }catch(e){ 
+      }catch(e){
          return s;
       }
    }
-   
+
    function vkUnescapeCyrLink(str){ // auto detect decode from utf8/win1251 escaped
       return str.replace(/(%[A-F0-9]{2})+/ig, function(s){
          try {
@@ -498,13 +498,13 @@ var vkMozExtension = {
          catch (e) {
             try {
                return vkCyr.unescape(s);
-            } catch (e) {  
+            } catch (e) {
                return s;
             }
          }
       });
    }
-   
+
 	function vkLinksUnescapeCyr(str){
      var escaped=["%B8", "%E9", "%F6", "%F3", "%EA", "%E5", "%ED", "%E3", "%F8", "%F9", "%E7", "%F5", "%FA", "%F4", "%FB", "%E2", "%E0", "%EF", "%F0", "%EE", "%EB", "%E4", "%E6", "%FD", "%FF", "%F7", "%F1", "%EC", "%E8", "%F2", "%FC", "%E1", "%FE","%A8", "%C9", "%D6", "%D3", "%CA", "%C5", "%CD", "%C3", "%D8", "%D9", "%C7", "%D5", "%DA", "%D4", "%DB", "%C2", "%C0", "%CF", "%D0", "%CE", "%CB", "%C4", "%C6", "%DD", "%DF", "%D7", "%D1", "%CC", "%C8", "%D2", "%DC", "%C1", "%DE"];
 	  var unescaped=["\u0451", "\u0439", "\u0446", "\u0443", "\u043a", "\u0435", "\u043d", "\u0433", "\u0448", "\u0449", "\u0437", "\u0445", "\u044a", "\u0444", "\u044b", "\u0432", "\u0430", "\u043f", "\u0440", "\u043e", "\u043b", "\u0434", "\u0436", "\u044d", "\u044f", "\u0447", "\u0441", "\u043c", "\u0438", "\u0442", "\u044c", "\u0431", "\u044e","\u0401", "\u0419", "\u0426", "\u0423", "\u041a", "\u0415", "\u041d", "\u0413", "\u0428", "\u0429", "\u0417", "\u0425", "\u042a", "\u0424", "\u042b", "\u0412", "\u0410", "\u041f", "\u0420", "\u041e", "\u041b", "\u0414", "\u0416", "\u042d", "\u042f", "\u0427", "\u0421", "\u041c", "\u0418", "\u0422", "\u042c", "\u0411", "\u042e"];
@@ -513,7 +513,7 @@ var vkMozExtension = {
      str=str.replace('%23','#');
 	  return str;
 	}
-   
+
    function vkFormatTime(t){
       var res, sec, min;
       t = Math.max(t, 0);
@@ -529,9 +529,9 @@ var vkMozExtension = {
       }
       return res;
    }
-	function disableSelectText(node) {    
+	function disableSelectText(node) {
 		node=ge(node);
-		  node.onselectstart = function() { return false; }; 
+		  node.onselectstart = function() { return false; };
 		node.unselectable = "on";
 		if (typeof node.style.MozUserSelect != "undefined") node.style.MozUserSelect = "none";
 	}
@@ -566,7 +566,7 @@ var vkMozExtension = {
 	  while(next_el && next_el.nodeType==3) next_el=next_el.nextSibling;
 	  return next_el;
 	}
-   
+
    function FindAndProcessTextNodes(node,func){
        var childItem =0;
        while(node.childNodes[childItem]){
@@ -575,8 +575,8 @@ var vkMozExtension = {
            }else{ FindAndProcessTextNodes(node.childNodes[childItem],func);  }
            childItem++;
        }
-   }  
-   
+   }
+
 	function vkaddcss(addcss,id) {
 		var styleElement = document.createElement("style");
 		styleElement.type = "text/css";
@@ -584,7 +584,7 @@ var vkMozExtension = {
 		styleElement.appendChild(document.createTextNode(addcss));
 		document.getElementsByTagName("head")[0].appendChild(styleElement);
 	}
-	
+
 	function $c(type,params){
 		if(type == "#text" || type == "#"){
 			return document.createTextNode(params);
@@ -645,7 +645,7 @@ var vkMozExtension = {
 	  else if (typeof sessionStorage!='undefined'){ return sessionStorage.getItem(key);}//Opera 10.5x+
 	  else { return vkgetCookie(key)}
 	}
-	
+
 	function vksetCookie(cookieName,cookieValue,nDays,domain){
 		if (vkLocalStoreReady() && (SetsOnLocalStore[cookieName] || /api\d+_[a-z]+/.test(cookieName))){
 		vkSetVal(cookieName,cookieValue);
@@ -680,14 +680,14 @@ var vkMozExtension = {
 		if (end == -1)	{		end = dc.length;	}
 		return decodeURIComponent(dc.substring(begin + prefix.length, end));
 	}
-	
+
 	function delCookie(name, path, domain) {
 		if ( vkgetCookie( name ) ) document.cookie = name + '=' +
 		( ( path ) ? ';path=' + path : '') +
 		( ( domain ) ? ';domain=' + domain : '' ) +
 		';expires=Thu, 01-Jan-1970 00:00:01 GMT';
 	}
-	
+
 	function getSet(num,type) {
 	  /*if (!SettBit){
 	  if (!vkgetCookie('remixbit')) return null;}*/
@@ -698,8 +698,8 @@ var vkMozExtension = {
       }
 	  if (!type) type=0;
 	  if (num=='-')	return SettBit.split('-')[type];
-	  
-	  
+
+
 	  var bit=SettBit.split('-')[type].charAt(num);
 	  if (!bit) {
 	    bit=DefSetBits.split('-')[type].charAt(num);
@@ -726,13 +726,13 @@ var vkMozExtension = {
 	function unixtime() { return Math.round(new Date().getTime());}
 	function getScrH(){ return window.innerHeight ? window.innerHeight : (document.documentElement.clientHeight ? document.documentElement.clientHeight : document.body.offsetHeight);}
 	function getScrollTop(){ return self.pageYOffset || (document.documentElement && document.documentElement.scrollTop) || (document.body && document.body.scrollTop)}
-	
+
 	function inArr(arr,item){
 	  for (var i=0;i<arr.length;i++)
 		if (arr[i]==item) return [true,i];
 	  return false;
 	}
-	
+
 	function vkCheckUpdates(){
 		var heads = document.getElementsByTagName("head");
 		var nows=  new  Date(); var datsig=nows.getYear()+"_"+nows.getMonth()+"_"+nows.getDate()+"_";
@@ -741,7 +741,7 @@ var vkMozExtension = {
 		var updhost='htt'+'p:/'+'/vko'+'pt.n'+'et/upd/';
 		var updatejs = 'upd_opera.js';
 		if (vkbrowser.chrome) updatejs='upd_chrome.js';
-		if (vkbrowser.mozilla) updatejs='upd_mozila.js'; 
+		if (vkbrowser.mozilla) updatejs='upd_mozila.js';
 		if (vkbrowser.safari) updatejs='upd_safari.js';
       if (isNewVk()) updatejs='upd_fixes.js';
 		updatejs=updhost+updatejs;
@@ -806,7 +806,7 @@ var vkMozExtension = {
 			var hs = h.replace(/[^A-Za-z0-9]+/g, ""); // генерим "хеш" инъекции. не идеально, но так быстрее, чем crc/md5 и и.д считать.
 			if (code.indexOf(hs) != -1) // проверяем, если ли уже метка этой инъекции в функции.
 				return false;            // если инъекция уже была сделана ранее, то уходим.
-            
+
 			// Подстановка имён аргументов в места указанные в новом коде как #ARG1#, #ARG2# или __ARG0__, __ARG1__ и т.д
 			code = code.replace(/(#|__)ARG(\d+)\1/g, function (s, prefix, idx) {
 					var arg_idx = parseInt(idx);
@@ -846,7 +846,7 @@ var vkMozExtension = {
 		},
 		Start : function (func, inj_code) {
 			var s = Inj.Parse(func);
-			if (isFunction(inj_code))                 // ну а что? Inj и так костыль, а с этим удобней местами - передали интересующий нас логически завершённый код завёрнутым в анонимную функцию 
+			if (isFunction(inj_code))                 // ну а что? Inj и так костыль, а с этим удобней местами - передали интересующий нас логически завершённый код завёрнутым в анонимную функцию
 				inj_code = Inj.Parse(inj_code).code;   // и выдрали его из неё, а не строкой с экранированиями, без переносов и т.д
 			return Inj.Make(s, inj_code + ' ' + s.code, arguments);
 		},
@@ -873,12 +873,12 @@ var vkMozExtension = {
 		After : function (func, after_str, inj_code) {
 			var s = Inj.Parse(func);
 			after_str = Inj.toRE(after_str);
-         
+
          if (isFunction(inj_code))
 				inj_code = Inj.Parse(inj_code).code;
 			else
 				inj_code = Inj.mc(inj_code);
-         
+
 			var orig_code = ((typeof after_str) == 'string') ? after_str : s.code.match(after_str);
 			s.code = s.code.split(after_str).join(orig_code + ' ' + inj_code + ' '); //maybe split(orig_code) ?
 			//if (func=='stManager.add') alert(s.code);
@@ -887,23 +887,23 @@ var vkMozExtension = {
 
 		BeforeR : function (func, before_rx, inj_code) {
 			var s = Inj.Parse(func);
-			
+
          if (isFunction(inj_code))
 				inj_code = Inj.Parse(inj_code).code;
 			else
 				inj_code = Inj.mc(inj_code);
-         
+
 			s.code = s.code.replace(before_rx, inj_code + ' $&');
 			return Inj.Make(s, s.code, arguments);
 		},
 		AfterR : function (func, before_rx, inj_code) {
 			var s = Inj.Parse(func);
-			
+
          if (isFunction(inj_code))
 				inj_code = Inj.Parse(inj_code).code;
 			else
 				inj_code = Inj.mc(inj_code);
-         
+
 			s.code = s.code.replace(before_rx, '$& ' + inj_code);
 			return Inj.Make(s, s.code, arguments);
 		},
@@ -914,11 +914,11 @@ var vkMozExtension = {
 			return Inj.Make(s, s.code, arguments);
 		}
 	};
-   
+
    vk_lib.get_block_comments = function(func){ // извлекаем из кода функции содержимое блоковых комментариев
       var code = Inj.Parse(func).code;
       var obj_rx = /\*([a-z0-9_]+):\s*([\s\S]+?)\s*\*\//ig; // при нахождении /*comment_name: содержимое */ всё будет распарсенно в объект {comment_name: содержимое}
-      var arr_rx = /\*(\s*)([\s\S]+?)\s*\*\//g;             // иначе всё будет в виде массива 
+      var arr_rx = /\*(\s*)([\s\S]+?)\s*\*\//g;             // иначе всё будет в виде массива
       var is_obj = obj_rx.test(code);
       var comments = is_obj ? {} : [];
       code.replace(is_obj ? obj_rx : arr_rx,function(s,name,comment){ // просто взял replace вместо while..regexp.exec
@@ -930,7 +930,7 @@ var vkMozExtension = {
       });
       return comments;
    }
-   
+
    vk_lib.tpl_process = function(tpl, values){
       return (tpl || '').replace(/\{([a-z]+)\.([a-z0-9_-]+)\}/ig,function(s,type, id){
          switch(type.toLowerCase()){
@@ -938,10 +938,10 @@ var vkMozExtension = {
             case 'vals': return (values && typeof values[id] != 'undefined') ? values[id] : s;
             default: return s;
          }
-         
+
       })
    }
-   
+
    vk_lib.format = function(str){
       var args = arguments;
       return str.replace(/%(\d+)/g,function(s,id){
@@ -949,7 +949,7 @@ var vkMozExtension = {
          return args.length > id ? args[id] : s;
       })
    }
-	
+
 	/* Storage broadcast */
 	vkBroadcast={
 		disabled:false,
@@ -972,7 +972,7 @@ var vkMozExtension = {
 				window.addEventListener('storage', vkBroadcast.onStorage, false);
 			} else { // Note: FF listens on document.body or document
 				document.body.addEventListener('storage', vkBroadcast.onStorage, false);
-			}		
+			}
 		},
 		Send:function(id,params){
 			if (vkBroadcast.disabled) return;
@@ -981,7 +981,7 @@ var vkMozExtension = {
 			localStorage.setItem(vkBroadcast.cmd_item, cmd);
 			if (window.opera || vkbrowser.safari || vkbrowser.chrome) { // Note: Opera and WebKits don't fire storage event on event source window
 				vkBroadcast.onStorage();
-			}		
+			}
 		},
 		onStorage:function(){
 			var cur_cmd=localStorage.getItem(vkBroadcast.cmd_item);
@@ -992,7 +992,7 @@ var vkMozExtension = {
 				var cmd=x.cmd;
 				if (vkBroadcast.ignore_current_window && x.guid==vkBroadcast.guid) return;
 				vkBroadcast.handler(id,cmd);
-			}		
+			}
 		}
 	};
 	vkCmd=vkBroadcast.Send;
@@ -1002,10 +1002,10 @@ var vkMozExtension = {
 		more_ms = more_ms==null?3000:more_ms;
 		var d=base_timeout+parseInt(Math.random()*base_rnd);
 		if (more_delay) d+=more_ms;
-		return d;	
+		return d;
 	}
-	
-	
+
+
 ////////////////
 // VkOpt Ajax //
 ////////////////
@@ -1076,7 +1076,7 @@ var vkMozExtension = {
         }
         return true;
     }
-   
+
    function AjCrossAttachJS(url,id, callback) {
       	if (vk_ext_api.ready && (url || '').replace(/^\s+|\s+$/g, '')){
             vk_aj.get(url, function (t) {
@@ -1153,8 +1153,8 @@ String.prototype.leftPad = function (l, c) {
 /* FUNCTIONS. LEVEL 2*/
 
 /* VK GUI */
-	//javascript:   var x=0;  setInterval("ge('content').innerHTML=vkProgressBar(x++,100,600,'Выполнено %');",100);  void(0);  
-	
+	//javascript:   var x=0;  setInterval("ge('content').innerHTML=vkProgressBar(x++,100,600,'Выполнено %');",100);  void(0);
+
 	function vkProgressBar(val,max,width,text){
 			/*css:
             .vkProgBar{height:30px;  text-align:center;line-height:30px;}
@@ -1180,8 +1180,8 @@ String.prototype.leftPad = function (l, c) {
 				'<div  class="vkProg_Bar vkProg_BarBgFrame" style="width: '+width+'px;">'+
 					'<div class="vkProg_Bar vkProg_BarBg" style="width: '+width+'px;">'+text+'</div>'+
 				'</div>';
-	}	
-	
+	}
+
 	function vkRoundButton(){ //vkRoundButton(['caption','href'],['caption2','href2'])
 	  var html='<div>';//'<ul class="nNav" style="display:inline-block">';
 	  for (var i=0;i<arguments.length;i++){
@@ -1208,10 +1208,10 @@ String.prototype.leftPad = function (l, c) {
 		var to=Math.min(end,cur+after);
 		for (var i=from;i<=to;i++){
 		  html+=(i==cur)?'<li class="current">'+(i+1)+'</li>':'<li><a href="'+href.replace(/%%/g,(i*step))+'" onclick="'+onclick.replace(/%%/g,(i*step))+'">'+(i+1)+'</a></li>';
-		}    
+		}
 		if (end-cur>after) html+='<li><a href="'+href.replace(/%%/g,end*step)+'" onclick="'+onclick.replace(/%%/g,end*step)+'">&raquo;</a></li>';
 	  html+=(!without_ul)?'</ul>':'';
-	  return html; 
+	  return html;
 	}
 
 	function vkMakeTabs(menu,return_ul_element){
@@ -1220,21 +1220,21 @@ String.prototype.leftPad = function (l, c) {
 		if (nodes[0]) nodes[0].className="";
 		el.className="activeLink";
 	  };
-	  //vkaddcss();  
+	  //vkaddcss();
 	  var html='';
 	  for (var i=0;i<menu.length;i++){
 		/*
 		html+='<li '+(menu[i].active?"class='activeLink'":"")+' onclick="vkTabsSwitch(this);">'+
 			  '<a href="'+menu[i].href+'" '+(menu[i].onclick?'onclick="'+menu[i].onclick+'"':"")+(menu[i].id?'id="'+menu[i].id+'"':"")+'><b class="tl1"><b></b></b><b class="tl2"></b>'+
 			  '<b class="tab_word">'+menu[i].name+'</b></a></li>';
-		//*/ 
+		//*/
 		//*
 		html+='<li '+(menu[i].active?"class='activeLink'":"")+' onclick="vkTabsSwitch(this);">'+
 			  '<a href="'+menu[i].href+'" '+(menu[i].onclick?'onclick="'+menu[i].onclick+'"':"")+(menu[i].id?'id="'+menu[i].id+'"':"")+'>'+
 			  '<b class="tab_word">'+menu[i].name+'</b></a></li>';
 		//*/
 	  }
-	  
+
 	  if (!return_ul_element){
 		//html='<ul class="t0">'+html+'</ul>';
 		html='<ul class="vk_tab_nav">'+html+'</ul>';
@@ -1261,12 +1261,12 @@ String.prototype.leftPad = function (l, c) {
 				nodes[i].className="activetab";
 			} else {
 			  var nodes=geByClass("activetab",ge('tabcontainer'+ids[0])).slice();
-			  for (var i=0; i<nodes.length; i++) nodes[i].className="noactivetab"; 
+			  for (var i=0; i<nodes.length; i++) nodes[i].className="noactivetab";
 			  //while(nodes[0]) nodes[0].className="noactivetab";
 			}
-			
+
 		   var el=ge("tabcontent"+idx);
-		   //if (!show_all) 
+		   //if (!show_all)
 		   el.className=(!show_all)?"activetab":"noactivetab";
 	  };
 	  var menu=[];
@@ -1286,7 +1286,7 @@ vk_hor_slider={
  init:function(id,max_value,value,callback,on_update,width){
    var el=ge(id);
    var rh=false;
-   if (!el){ 
+   if (!el){
       el=vkCe('div',{id:id, style:"width:"+(width || 100)+"px; opacity:0.01;"});
       document.getElementsByTagName('body')[0].appendChild(el);
       rh=true;
@@ -1300,7 +1300,7 @@ vk_hor_slider={
    if (on_update){
       vk_hor_slider.upd_callbacks.push(on_update);
       ucback=' ucallback="'+(vk_hor_slider.upd_callbacks.length-1)+'" ';
-   }   
+   }
    var div=vkCe('div',{"id":id+"_slider_wrap",
                        "class":"vk_slider_wrap",
                        "style":"position:relative; width:"+(width || getSize(el,true)[0])+"px;"},'\
@@ -1320,7 +1320,7 @@ vk_hor_slider={
       var sr=el.innerHTML;
       el.parentNode.removeChild(el);
       return sr;
-      
+
    }
  },
  sliderScaleClick: function (e,el) {
@@ -1342,7 +1342,7 @@ vk_hor_slider={
     var id=el.getAttribute("slider_id");
     if (checkEvent(e)) return;
     e.cancelBubble = true;
-    
+
     var startX = e.clientX || e.pageX,
         slider = ge(id+'_slider'),
         maxVal=parseInt(el.getAttribute("max_value")) || 0,
@@ -1357,7 +1357,7 @@ vk_hor_slider={
       percent = margin / maxX * 100;
       position = margin / maxX * maxVal;
 
-      
+
       if (maxVal<100){
          percent = Math.round(position)*100/maxVal;
          position = percent / 100 * maxVal;
@@ -1370,7 +1370,7 @@ vk_hor_slider={
         percent = defPercent;
       }
       */
- 
+
 
       percent = intval(percent);
       margin = maxX * percent / 100;
@@ -1396,19 +1396,19 @@ vk_hor_slider={
       percent = intval(percent);
       ge(id+'_select').value=percent;
       ge(id+'_position').value=val;
-      
+
       var slider = ge(id+'_slider'),
       maxX = (slider.parentNode.clientWidth || 100) - slider.offsetWidth;
-      setStyle(id+'_slider', 'marginLeft', maxX * percent / 100); 
-      
+      setStyle(id+'_slider', 'marginLeft', maxX * percent / 100);
+
       var cid=parseInt(ge(id+'_slider_scale').getAttribute('ucallback'));
-      if (cid) vk_hor_slider.upd_callbacks[cid](parseInt(ge(id+'_position').value),parseInt(ge(id+'_select').value));   
+      if (cid) vk_hor_slider.upd_callbacks[cid](parseInt(ge(id+'_position').value),parseInt(ge(id+'_select').value));
   },
   sliderApply: function (id) {
    var cid=parseInt(ge(id+'_slider_scale').getAttribute('callback'));
    if (cid) vk_hor_slider.callbacks[cid](parseInt(ge(id+'_position').value),parseInt(ge(id+'_select').value));
   }
-};  
+};
 
 vk_v_slider={
  default_percent:50,
@@ -1417,7 +1417,7 @@ vk_v_slider={
  init:function(id,max_value,value,callback,on_update,height){
    var el=ge(id);
    var rh=false;
-   if (!el){ 
+   if (!el){
       el=vkCe('div',{id:id, style:"height:"+(height || 100)+"px; opacity:0.01;"});
       document.getElementsByTagName('body')[0].appendChild(el);
       rh=true;
@@ -1431,7 +1431,7 @@ vk_v_slider={
    if (on_update){
       vk_v_slider.upd_callbacks.push(on_update);
       ucback=' ucallback="'+(vk_v_slider.upd_callbacks.length-1)+'" ';
-   } 
+   }
 	var h=(height || getSize(el,true)[1]);
    var div=vkCe('div',{"id":id+"_slider_wrap",
                        "class":"vk_vslider_wrap",
@@ -1454,7 +1454,7 @@ vk_v_slider={
       var sr=el.innerHTML;
       el.parentNode.removeChild(el);
       return sr;
-      
+
    }
  },
  sliderScaleClick: function (e,el) {
@@ -1463,7 +1463,7 @@ vk_v_slider={
     disableSelectText(ge(id+'_slider'));
     disableSelectText(ge(id+'_slider_line'));
     disableSelectText(ge(id+'_slider_line_bg'));
-    
+
     if (checkEvent(e)) return;
     var slider = ge(id+'_slider'),
 		h = ge(id+'_slider_line').offsetHeight,
@@ -1485,7 +1485,7 @@ vk_v_slider={
     var id=el.getAttribute("slider_id");
     if (checkEvent(e)) return;
     e.cancelBubble = true;
-    
+
     var startY = e.clientY || e.pageY,
         slider = ge(id+'_slider'),
 		halfH=(slider.offsetHeight / 2),
@@ -1530,32 +1530,32 @@ vk_v_slider={
       percent = intval(percent);
       ge(id+'_select').value=percent;
       ge(id+'_position').value=val;
-      
+
       var slider = ge(id+'_slider'),
 	  halfH =slider.offsetHeight / 2,
       maxY = (slider.parentNode.clientHeight || 100) - halfH/*- slider.offsetHeight*/,
       margin= maxY * (100-percent) / 100;
 	  setStyle(id+'_slider', 'marginTop', margin-halfH);
-	  //console.log(percent, val,'\n',margin,halfH, slider.style.marginTop);	  
+	  //console.log(percent, val,'\n',margin,halfH, slider.style.marginTop);
 	  setStyle(id+'_slider_line_bg', {'marginTop': Math.floor(margin), 'height':Math.ceil(ge(id+'_slider_line').offsetHeight-margin)});
 		// id+'_slider_line_bg' 100px height:70px;  margin-top:30px
       var cid=parseInt(ge(id+'_slider_scale').getAttribute('ucallback'));
-      if (cid) vk_v_slider.upd_callbacks[cid](parseInt(ge(id+'_position').value),parseInt(ge(id+'_select').value));   
+      if (cid) vk_v_slider.upd_callbacks[cid](parseInt(ge(id+'_position').value),parseInt(ge(id+'_select').value));
   },
   sliderApply: function (id) {
    var cid=parseInt(ge(id+'_slider_scale').getAttribute('callback'));
    if (cid) vk_v_slider.callbacks[cid](parseInt(ge(id+'_position').value),parseInt(ge(id+'_select').value));
   }
-}; 
+};
 
-//vk_v_slider.init('photos_albums_container',100,20,function(){},function(){},100);  
- 
+//vk_v_slider.init('photos_albums_container',100,20,function(){},function(){},100);
+
 /*END OF VK GUI*/
 
 function vkSetMouseScroll(el,next,back){
  addEvent(ge(el),'mousewheel DOMMouseScroll',function(e){
-      e = e || window.event; 
-      var wheelData = e.detail ? e.detail * -1 : e.wheelDelta / 40; 
+      e = e || window.event;
+      var wheelData = e.detail ? e.detail * -1 : e.wheelDelta / 40;
       if (Math.abs(wheelData)>100) { wheelData=Math.round(wheelData/100); }
       if (wheelData<0) next(e); else back(e);
       return cancelEvent(e);
@@ -1578,23 +1578,23 @@ function vk_oauth_api(app_id,scope){
          api.auth_process = true;
          api.allow_call = false;
          // Для http://vk.com при наличии соединения с background.js используем запросы к https через background
-         if (vk_ext_api.ready || (location.protocol == 'https:')) 
+         if (vk_ext_api.ready || (location.protocol == 'https:'))
             api.protocol = 'https:';
          if (vk_DEBUG) console.log('Auth for protocol: ', api.protocol, vk_ext_api.ready);
          vksetCookie('api'+api.API_ID+'_prot', api.protocol);
-        
+
          var appId=api.API_ID;
          var settings=api.SETTINGS+(api.protocol!='https:'?',nohttps':'');
-         
-         var auth_url=(api.protocol)+'//oauth.vk.com/authorize?client_id=' + appId + 
-                                                   '&scope=' + settings + 
+
+         var auth_url=(api.protocol)+'//oauth.vk.com/authorize?client_id=' + appId +
+                                                   '&scope=' + settings +
                                                    '&redirect_uri=http://oauth.vk.com/blank.html'+
                                                    '&display=popup'+
                                                    '&response_type=token';
          XFR.post(auth_url,{},function(t){
             var g=t.match(/https:\/\/[^"]+\.vk\.com\/[^"]+grant_access[^"]+/g);
             g = (g && g[1] && g[1].indexOf('cancel')==-1)?g[1]:(g || [])[0];
-            
+
             var frame_url=auth_url;
             if (g){
                if (vk_DEBUG) console.log('VkOpt API Auth :',g);
@@ -1618,29 +1618,29 @@ function vk_oauth_api(app_id,scope){
                      api.access_token=auth_info['access_token'];
                      api.mid=auth_info['user_id'];
                      api.secret=auth_info['secret'];
-                     
+
                      vksetCookie('api'+api.API_ID+'_atoken', api.access_token);
                      vksetCookie('api'+api.API_ID+'_mid', api.mid);
                      vksetCookie('api'+api.API_ID+'_secret', api.secret);
-                     
+
                      api.auth_process=false;
                      api.allow_call = true;
                      if (api.auth_frame) {
-                        window.removeEventListener("message", onmess,false);  
+                        window.removeEventListener("message", onmess,false);
                         api.auth_frame.parentNode.removeChild(api.auth_frame);
                         api.auth_frame=null;
                      }
                      if (callback) callback(api.mid,api.access_token);
                   }
             };
-            window.addEventListener("message", onmess,false);                     
+            window.addEventListener("message", onmess,false);
          });
       },
       check:function(){
          var dloc=document.location.href;
          if (/\?xfr_query=/.test(dloc) || !/access_token/.test(dloc)) return;
          if (/login_success\.html/.test(dloc) || /blank\.html/.test(dloc)){
-               parent.window.postMessage({act:"oapi_login_success",href:dloc},"*");	
+               parent.window.postMessage({act:"oapi_login_success",href:dloc},"*");
          }
       },
       show_error:function(r){
@@ -1692,21 +1692,21 @@ function vk_oauth_api(app_id,scope){
             apiReAuth();
             return;
          }
- 
-         var params = {			
+
+         var params = {
             v: '3.0',
             format:'json'
          };// "v": "4.6"
-         if (inputParams) for (var i in inputParams) params[i] = inputParams[i];  
+         if (inputParams) for (var i in inputParams) params[i] = inputParams[i];
          params['access_token']=api.access_token;
-         
+
          var onDoneRequest = function(text){
             if (text=='') text='{}';
             var response = {error:{error_code:666,error_msg:'VK API EpicFail'}};
             try{
                response = eval("("+text+")");
             } catch (e) { }
-            
+
             if (api._captchaBox && api._captchaBox.isVisible() && inputParams['captcha_sid']){
                api._captchaBox.hide();
             }
@@ -1717,39 +1717,39 @@ function vk_oauth_api(app_id,scope){
                   },500);
                } else if ( response.error.error_code == 4 || (response.error.error_code == 3 || response.error.error_code == 7 || response.error.error_code == 5) ){
                   if (vk_DEBUG) console.log('reauth reason: error_code', response.error.error_code, response);
-                  apiReAuth();				
+                  apiReAuth();
                } else if(response.error.error_code == 14) { // Captcha needed
                   api.captcha_visible=true;
                   api.captcha(response.error.captcha_sid, response.error.captcha_img, function(sid, value) {
                      inputParams['captcha_sid'] = sid;  inputParams['captcha_key'] = value;
                      api.call(method, inputParams, callback, true);
-                  }, false, function() { 
+                  }, false, function() {
                         if (callback.ok){
-                              callback.ok(response,response.response,response.error);  
+                              callback.ok(response,response.response,response.error);
                         } else
-                           callback(response,response.response,response.error);  
+                           callback(response,response.response,response.error);
                   });
                }else {
-                  if (!callback || !callback.error) api.show_error(response); 
+                  if (!callback || !callback.error) api.show_error(response);
                   if (captcha) {
-                     api._captchaBox.setOptions({onHide: function(){api.captcha_visible=false}}).hide();  
-                     //api._captchaBox.hide();  
+                     api._captchaBox.setOptions({onHide: function(){api.captcha_visible=false}}).hide();
+                     //api._captchaBox.hide();
                   }
-                  
+
                   if (callback.error){
                      callback.error(response,response.error);
                   } else
-                     callback(response,response.response,response.error);  
-               } 
-            } else { 
-               if (captcha) api._captchaBox.setOptions({onHide: function(){api.captcha_visible=false}}).hide(); //api._captchaBox.hide();  
+                     callback(response,response.response,response.error);
+               }
+            } else {
+               if (captcha) api._captchaBox.setOptions({onHide: function(){api.captcha_visible=false}}).hide(); //api._captchaBox.hide();
                if (callback.ok){
-                     callback.ok(response,response.response,response.error);  
+                     callback.ok(response,response.response,response.error);
                } else
-                  callback(response,response.response,response.error);    
+                  callback(response,response.response,response.error);
             }
          };
-         
+
          if (vk_ext_api.ready && ((location.protocol == 'http:') || (location.hostname != 'vk.com')) && (api.protocol == 'https:')){ //на new.vk.com не можем стучать на роут /api.php
             vk_aj.post('https://api.vk.com/method/'+method, params, onDoneRequest);
          } else {
@@ -1770,12 +1770,12 @@ function vk_oauth_api(app_id,scope){
                params['sig']=vkMD5(sig);
             }
             params['method'] = method;
-            params['oauth'] = 1;            
+            params['oauth'] = 1;
             AjPost('/api.php', params, function(text){ // https://new.vk.com/api.php редиректит на https://vk.com/api.php => тут фейл кроссдоменности
                onDoneRequest(text);
             })
-         }         
-            
+         }
+
       },
       captcha: function(sid, img, onClick, onShow, onCancel/*onHide*/) {
          if (ge('captcha_container')) re('captcha_container');
@@ -1797,7 +1797,7 @@ function vk_oauth_api(app_id,scope){
          };
          box.addButton(getLang('captcha_cancel'), function(){
             removeEvent(key, 'keypress');
-            box.hide(); 
+            box.hide();
             if (isFunction(onCancel)) onCancel()
          },'no');
          box.addButton(getLang('captcha_send'),onClickHandler);
@@ -1816,7 +1816,7 @@ function vk_oauth_api(app_id,scope){
    };
    return api;
 }
- 
+
 //vk_api_permissions.to_str(1522942)
 //vk_api_permissions.to_int('wall,groups,messages,stats,offline')
 var vk_api_permissions = {
@@ -1927,7 +1927,7 @@ vkApis={
          to=params.to;
          if (from) cur=from;
       }
-      
+
 		var get=function(){
 			if (progress) progress(cur,count);
 			ajax.post('al_photos.php', {act: 'show', list: listId, offset: cur}, {
@@ -1935,7 +1935,7 @@ vkApis={
                if (!count) count=ph_count;
                for(var i=0; i<data.length;i++){
                   if (temp[data[i].id]) continue;
-                  temp[data[i].id]=true;	
+                  temp[data[i].id]=true;
                   var p=data[i];
                   var max_src= p.w_src || p.z_src || p.y_src || p.x_src;
                   //p.max_src=max_src;
@@ -1959,7 +1959,7 @@ vkApis={
 		};
       var next=true;
       var nxt=function(){next=true;};
-      setInterval(function(){ // знаю... этот ужасный костыль для избежания наращивания стека вызовов... 
+      setInterval(function(){ // знаю... этот ужасный костыль для избежания наращивания стека вызовов...
          if (!next) return;
          next=false;
          get();
@@ -2016,10 +2016,10 @@ function vkMD5(string) {
 	function FF(a,b,c,d,x,s,ac) {		a = AddUnsigned(a, AddUnsigned(AddUnsigned(F(b, c, d), x), ac));		return AddUnsigned(RotateLeft(a, s), b);	};
 	function GG(a,b,c,d,x,s,ac) {		a = AddUnsigned(a, AddUnsigned(AddUnsigned(G(b, c, d), x), ac));		return AddUnsigned(RotateLeft(a, s), b);	};
 	function HH(a,b,c,d,x,s,ac) {		a = AddUnsigned(a, AddUnsigned(AddUnsigned(H(b, c, d), x), ac));		return AddUnsigned(RotateLeft(a, s), b);	};
-	function II(a,b,c,d,x,s,ac) {		a = AddUnsigned(a, AddUnsigned(AddUnsigned(I(b, c, d), x), ac));		return AddUnsigned(RotateLeft(a, s), b);	}; 
+	function II(a,b,c,d,x,s,ac) {		a = AddUnsigned(a, AddUnsigned(AddUnsigned(I(b, c, d), x), ac));		return AddUnsigned(RotateLeft(a, s), b);	};
 	function ConvertToWordArray(string) {		var lWordCount;		var lMessageLength = string.length;		var lNumberOfWords_temp1=lMessageLength + 8;		var lNumberOfWords_temp2=(lNumberOfWords_temp1-(lNumberOfWords_temp1 % 64))/64;		var lNumberOfWords = (lNumberOfWords_temp2+1)*16;		var lWordArray=Array(lNumberOfWords-1);		var lBytePosition = 0;	var lByteCount = 0;		while ( lByteCount < lMessageLength ) {			lWordCount = (lByteCount-(lByteCount % 4))/4;			lBytePosition = (lByteCount % 4)*8;			lWordArray[lWordCount] = (lWordArray[lWordCount] | (string.charCodeAt(lByteCount)<<lBytePosition));			lByteCount++;	}		lWordCount = (lByteCount-(lByteCount % 4))/4;		lBytePosition = (lByteCount % 4)*8;		lWordArray[lWordCount] = lWordArray[lWordCount] | (0x80<<lBytePosition);		lWordArray[lNumberOfWords-2] = lMessageLength<<3;		lWordArray[lNumberOfWords-1] = lMessageLength>>>29;		return lWordArray;};
 	function WordToHex(lValue) {		var WordToHexValue="",WordToHexValue_temp="",lByte,lCount;		for (lCount = 0;lCount<=3;lCount++) {		lByte = (lValue>>>(lCount*8)) & 255;	WordToHexValue_temp = "0" + lByte.toString(16);	WordToHexValue = WordToHexValue + WordToHexValue_temp.substr(WordToHexValue_temp.length-2,2);	}		return WordToHexValue;};
-	function Utf8Encode(string) {		string = string.replace(/\r\n/g,"\n");		var utftext = "";		for (var n = 0; n < string.length; n++) { var c = string.charCodeAt(n);			if (c < 128) {	utftext += String.fromCharCode(c);			}			else if((c > 127) && (c < 2048)) {utftext += String.fromCharCode((c >> 6) | 192);	utftext += String.fromCharCode((c & 63) | 128);		}			else {	utftext += String.fromCharCode((c >> 12) | 224);	utftext += String.fromCharCode(((c >> 6) & 63) | 128);	utftext += String.fromCharCode((c & 63) | 128);			}		}	return utftext;}; 
+	function Utf8Encode(string) {		string = string.replace(/\r\n/g,"\n");		var utftext = "";		for (var n = 0; n < string.length; n++) { var c = string.charCodeAt(n);			if (c < 128) {	utftext += String.fromCharCode(c);			}			else if((c > 127) && (c < 2048)) {utftext += String.fromCharCode((c >> 6) | 192);	utftext += String.fromCharCode((c & 63) | 128);		}			else {	utftext += String.fromCharCode((c >> 12) | 224);	utftext += String.fromCharCode(((c >> 6) & 63) | 128);	utftext += String.fromCharCode((c & 63) | 128);			}		}	return utftext;};
 	var x=Array();	var k,AA,BB,CC,DD,a,b,c,d;	var S11=7, S12=12, S13=17, S14=22;	var S21=5, S22=9 , S23=14, S24=20;	var S31=4, S32=11, S33=16, S34=23;	var S41=6, S42=10, S43=15, S44=21;	string = Utf8Encode(string);	x = ConvertToWordArray(string);	a = 0x67452301; b = 0xEFCDAB89; c = 0x98BADCFE; d = 0x10325476;
 	for (k=0;k<x.length;k+=16) {		AA=a; BB=b; CC=c; DD=d;		a=FF(a,b,c,d,x[k+0], S11,0xD76AA478);		d=FF(d,a,b,c,x[k+1], S12,0xE8C7B756);		c=FF(c,d,a,b,x[k+2], S13,0x242070DB);		b=FF(b,c,d,a,x[k+3], S14,0xC1BDCEEE);		a=FF(a,b,c,d,x[k+4], S11,0xF57C0FAF);		d=FF(d,a,b,c,x[k+5], S12,0x4787C62A);		c=FF(c,d,a,b,x[k+6], S13,0xA8304613);		b=FF(b,c,d,a,x[k+7], S14,0xFD469501);		a=FF(a,b,c,d,x[k+8], S11,0x698098D8);		d=FF(d,a,b,c,x[k+9], S12,0x8B44F7AF);		c=FF(c,d,a,b,x[k+10],S13,0xFFFF5BB1);		b=FF(b,c,d,a,x[k+11],S14,0x895CD7BE);		a=FF(a,b,c,d,x[k+12],S11,0x6B901122);		d=FF(d,a,b,c,x[k+13],S12,0xFD987193);		c=FF(c,d,a,b,x[k+14],S13,0xA679438E);		b=FF(b,c,d,a,x[k+15],S14,0x49B40821);		a=GG(a,b,c,d,x[k+1], S21,0xF61E2562);		d=GG(d,a,b,c,x[k+6], S22,0xC040B340);		c=GG(c,d,a,b,x[k+11],S23,0x265E5A51);		b=GG(b,c,d,a,x[k+0], S24,0xE9B6C7AA);		a=GG(a,b,c,d,x[k+5], S21,0xD62F105D);		d=GG(d,a,b,c,x[k+10],S22,0x2441453);		c=GG(c,d,a,b,x[k+15],S23,0xD8A1E681);		b=GG(b,c,d,a,x[k+4], S24,0xE7D3FBC8);		a=GG(a,b,c,d,x[k+9], S21,0x21E1CDE6);		d=GG(d,a,b,c,x[k+14],S22,0xC33707D6);		c=GG(c,d,a,b,x[k+3], S23,0xF4D50D87);		b=GG(b,c,d,a,x[k+8], S24,0x455A14ED);		a=GG(a,b,c,d,x[k+13],S21,0xA9E3E905);		d=GG(d,a,b,c,x[k+2], S22,0xFCEFA3F8);		c=GG(c,d,a,b,x[k+7], S23,0x676F02D9);		b=GG(b,c,d,a,x[k+12],S24,0x8D2A4C8A);		a=HH(a,b,c,d,x[k+5], S31,0xFFFA3942);		d=HH(d,a,b,c,x[k+8], S32,0x8771F681);		c=HH(c,d,a,b,x[k+11],S33,0x6D9D6122);		b=HH(b,c,d,a,x[k+14],S34,0xFDE5380C);		a=HH(a,b,c,d,x[k+1], S31,0xA4BEEA44);		d=HH(d,a,b,c,x[k+4], S32,0x4BDECFA9);		c=HH(c,d,a,b,x[k+7], S33,0xF6BB4B60);		b=HH(b,c,d,a,x[k+10],S34,0xBEBFBC70);		a=HH(a,b,c,d,x[k+13],S31,0x289B7EC6);		d=HH(d,a,b,c,x[k+0], S32,0xEAA127FA); c=HH(c,d,a,b,x[k+3], S33,0xD4EF3085);		b=HH(b,c,d,a,x[k+6], S34,0x4881D05);		a=HH(a,b,c,d,x[k+9], S31,0xD9D4D039);		d=HH(d,a,b,c,x[k+12],S32,0xE6DB99E5);		c=HH(c,d,a,b,x[k+15],S33,0x1FA27CF8);		b=HH(b,c,d,a,x[k+2], S34,0xC4AC5665);		a=II(a,b,c,d,x[k+0], S41,0xF4292244);		d=II(d,a,b,c,x[k+7], S42,0x432AFF97);		c=II(c,d,a,b,x[k+14],S43,0xAB9423A7);		b=II(b,c,d,a,x[k+5], S44,0xFC93A039);		a=II(a,b,c,d,x[k+12],S41,0x655B59C3);		d=II(d,a,b,c,x[k+3], S42,0x8F0CCC92);		c=II(c,d,a,b,x[k+10],S43,0xFFEFF47D);		b=II(b,c,d,a,x[k+1], S44,0x85845DD1);		a=II(a,b,c,d,x[k+8], S41,0x6FA87E4F);		d=II(d,a,b,c,x[k+15],S42,0xFE2CE6E0);		c=II(c,d,a,b,x[k+6], S43,0xA3014314);		b=II(b,c,d,a,x[k+13],S44,0x4E0811A1);		a=II(a,b,c,d,x[k+4], S41,0xF7537E82);		d=II(d,a,b,c,x[k+11],S42,0xBD3AF235);		c=II(c,d,a,b,x[k+2], S43,0x2AD7D2BB); b=II(b,c,d,a,x[k+9], S44,0xEB86D391);		a=AddUnsigned(a,AA);		b=AddUnsigned(b,BB);		c=AddUnsigned(c,CC);		d=AddUnsigned(d,DD);}	var temp = WordToHex(a)+WordToHex(b)+WordToHex(c)+WordToHex(d); 	return temp.toLowerCase();
 }
@@ -2036,7 +2036,7 @@ var vkCyr = {
              throw "Character "+s.charAt(i)+" isn't supported by win1251!"
          L.push(String.fromCharCode(map[ord]))
      }
-     return L.join('')      
+     return L.join('')
    },
    toWin: function(s){
       return vkCyr.coder(s, vkCyr.enc_map);
@@ -2049,7 +2049,7 @@ var vkCyr = {
    },
    unescape: function(s){
       return (vkCyr.toUnicode(unescape(s)));
-   } 
+   }
 }
 
 function base64_encode(str){ var res = '';    var c1, c2, c3, e1, e2, e3, e4;    var key = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";    var i = 0; while(i < str.length)   {   c1 = str.charCodeAt(i++);  c2 = str.charCodeAt(i++);  c3 = str.charCodeAt(i++);  e1 = c1 >> 2;   e2 = ((c1 & 3) << 4) | (c2 >> 4);  e3 = ((c2 & 15) << 2) | (c3 >> 6);  e4 = c3 & 63;  if(isNaN(c2)) {e3 = e4 = 64;} else if(isNaN(c3)){ e4 = 64;}   res += key.charAt(e1) + key.charAt(e2) + key.charAt(e3) + key.charAt(e4);} return res;}
@@ -2125,14 +2125,14 @@ function remixmid() {
   var sidebar=(ge('sideBar') || ge('side_bar'));
   if (window.im) return im.id;
   var tmp=null;
-  if (sidebar){ 
+  if (sidebar){
 	tmp=sidebar.innerHTML.match(/albums(\d+)/);
 	tmp=tmp?tmp[1]:'';
-  } 
-  
+  }
+
   return tmp;
 }
-// 
+//
 var vk_ext_msg = {
    handler: null,
    init:function(callback){
@@ -2140,13 +2140,13 @@ var vk_ext_msg = {
       if (typeof CustomEvent != 'undefined'){
          window.addEventListener('vkopt_messaging_response', function(e) {
             vk_ext_msg.handler(JSON.parse(e.detail).data);
-         });  
+         });
       } else {
          /* для этого случая vk_ext_msg.handler вызывается в  vk_ext_msg.post_message
          document.addEventListener('vkopt_messaging_response', function(e) {
             vk_ext_msg.handler(e.detail.data);
          });
-         */        
+         */
       }
    },
    post_message: function(data){
@@ -2192,7 +2192,7 @@ var vk_ext_api={
          vk_ext_api.callbacks['cb_'+sub.cid](data);
       }
    },
-   
+
    req:function(data,callback){
       /*
       {
@@ -2201,15 +2201,15 @@ var vk_ext_api={
          url:
          params:
          options: only for ajax
-      }*/     
+      }*/
       var cid=vk_ext_api.cid++;
       data = data || {};
       data.mark = vk_ext_api.mark;
       data._sub = {cid:cid,mark:vk_ext_api.mark};
-      if (callback) 
+      if (callback)
          vk_ext_api.callbacks['cb_'+cid]=function(response){
             callback(response);
-            delete vk_ext_api.callbacks['cb_'+cid];            
+            delete vk_ext_api.callbacks['cb_'+cid];
          };
       vk_ext_msg.post_message(data);
       //window.postMessage(data,"*");
@@ -2223,37 +2223,37 @@ var vk_ext_api={
          console.log(value)
       })
    });
-   
-   
+
+
    vk_ext_api.storage.sets({'test_val':'qwe2','test4':'qwe4'},function(){
       console.log('ok');
       vk_ext_api.storage.gets(['test_val','test4'],function(values){
          console.log(values)
       })
    });
-   
+
    */
    storage:{
       get: function(key, callback){
          vk_ext_api.req({act:'storage_get',key:key},function(r){
             callback(r.value);
-         });    
+         });
       },
       set:function(key, val, callback){
          vk_ext_api.req({act:'storage_set',key:key, value:val},function(r){
             callback();
-         }); 
+         });
       },
       // Чтение и установка значений сразу нескольких полей
       gets: function(keys, callback){ // keys - Array[key_name1, ...]
          vk_ext_api.req({act:'storage_get',keys:keys},function(r){
             callback(r.values);
-         });    
+         });
       },
       sets:function(values, callback){ // values - Object{key1:value1, ...}
          vk_ext_api.req({act:'storage_set', values:values},function(r){
             callback();
-         }); 
+         });
       }
    },
    ajax:{
@@ -2272,23 +2272,23 @@ var vk_ext_api={
       get:function(url,callback){
          vk_ext_api.req({act:'get',url:url},function(r){
             callback(r.response);
-         });      
+         });
       },
       post:function(url,params,callback){
          vk_ext_api.req({act:'post',url:url,params:params},function(r){
             callback(r.response);
-         });        
-      },      
+         });
+      },
       head:function(url,callback){
          vk_ext_api.req({act:'head',url:url},function(r){
-            headers = vk_ext_api.ajax.parse_headers(r.response);            
+            headers = vk_ext_api.ajax.parse_headers(r.response);
             callback(headers);
-         });        
+         });
       },
       ajax:function(options,callback){
          vk_ext_api.req({act:'ajax',options:options},function(r){
             callback(r.response);
-         });        
+         });
       }
    }
 };
@@ -2305,15 +2305,15 @@ var XFR={
    vk_ext_api_exclude:/oauth\.vk\.com\/authorize/,
 	post:function(url,data,callback,only_head){
 		var prot = 'http://';//(location.protocol?location.protocol+'//':'http://');
-      
-      if (/^https:\/\//.test(url) || (location.protocol == 'https://')) 
+
+      if (/^https:\/\//.test(url) || (location.protocol == 'https://'))
          prot = 'https://';
-         
+
       var domain= prot+url.split('/')[2];
-     
+
       if (domain.indexOf('youtube.com')!=-1) domain+='/embed/';
       if (domain.indexOf('player.vimeo.com')!=-1) domain+='/video/';
-      
+
       if (vk_ext_api.ready && url && !XFR.vk_ext_api_exclude.test(url)){
          if (only_head){
             if (LOAD_HEADERS_BY_HEAD_REQ){
@@ -2346,7 +2346,7 @@ var XFR={
          } else {
             vk_aj.post(url,data,function(t){
                callback(t);
-            });         
+            });
          }
          return;
       }
@@ -2363,7 +2363,7 @@ var XFR={
 	},
 	onMessage:function(e){
 		var res=e.data;
-		try { 
+		try {
 			res=JSON.parse(res);
 			var xfr=res.shift();
 			if (xfr!='xfr') return;
@@ -2385,7 +2385,7 @@ var XFR={
 				//vklog(request.readyState);
 				//vklog(request.getAllResponseHeaders().replace(/\r?\n/g,'<br>'));
 				//if(request.readyState == 2) alert(request.getResponseHeader("Location"));
-        
+
 				if(request.readyState == 4 && callback) callback(request,request.responseText);
 			};
 			try { request.send(urlEncData(data)); } catch (e) {}
@@ -2394,7 +2394,7 @@ var XFR={
 		var dloc=document.location.href;
 		var q=dloc.split('xfr_query=')[1];
 		if (q){
-			
+
          q=JSON.parse(decodeURIComponent(q));
 			var url=q[0];
 			var data=q[1];
@@ -2442,7 +2442,7 @@ var XFR2 = {
       this.req_options[req_id] = [fr, options];
    },
    onMessage: function(e) {
-      
+
       var res = e.data;
       var req_id = res.id!=null?res.id: -1;
       if (req_id == -1) return;
@@ -2458,7 +2458,7 @@ var XFR2 = {
          XFR2.callbacks[req_id].apply(this, [res.response]);
       }
    },
-   
+
    check: function() {
       var dloc = document.location.href;
       var q = dloc.split('xfr__query=')[1];
@@ -2475,7 +2475,7 @@ var XFR2 = {
                    }
                    return pairs.join('&');
                };
-               
+
                var res = e.data;
                if (res._xfr_request) {
                   var options = res.options; /*///////////////////////////////////////*/
@@ -2499,7 +2499,7 @@ var XFR2 = {
                   url += ~url.indexOf('?') ? '&' + params : '?' + params;
 
                   var callback = function(r) {
-                        
+
                         parent.window.postMessage({
                            id: req_id,
                            response: r,
@@ -2522,9 +2522,9 @@ var XFR2 = {
                            callback(response);
                         }
                      };
-                     
+
                      xhr.send(data);
-                     
+
                   } catch (e) {
                      if (vk_DEBUG) console.log('XHR ERROR', e);
                      callback({
@@ -2541,7 +2541,7 @@ var XFR2 = {
          parent.window.postMessage({
             id: req_id,
             get_request_options: true
-         }, "*");         
+         }, "*");
       }
    }
 };
@@ -2560,7 +2560,7 @@ var VKFDS_SWF_LINK='http://cs6147.vk.me/u13391307/c0b944fc2c34a1.zip';
 var VKFDS_SWF_HTTPS_LINK='https://pp.vk.me/c6147/u13391307/c0b944fc2c34a1.zip';
 
 var VKTextToSave="QweQwe Test File"; var VKFNameToSave="vkontakte.txt";
-  
+
 function vkOnSaveDebug(t,n){/*alert(n+"\n"+t)*/}
 function vkOnResizeSaveBtn(w,h){        // Вызывается из флешки как и vkOnSaveDebug
 			ge("vkdatasaver").setAttribute("height",h);
@@ -2646,7 +2646,7 @@ function vkLoadTxt(callback,mask){
 	vkOnDataLoaded=function(text){
 		//alert(text);
       Box.hide();
-		setTimeout(function(){callback(text);},10);	
+		setTimeout(function(){callback(text);},10);
 	};
 	vkOnInitDataLoader=function(w,h){
 	  ge("vkdataloader").style.width=w+2;
@@ -2659,15 +2659,15 @@ function vkLoadTxt(callback,mask){
 		 '</div>';
 	Box.removeButtons();
 	Box.addButton(IDL('Cancel'),Box.hide,'no');
-	Box.content(html).show(); 
+	Box.content(html).show();
    var swf=location.protocol=='https:'?VKFDL_SWF_HTTPS_LINK:VKFDL_SWF_LINK;
-   
+
 	var params={width:100, height:29, "allowscriptaccess":"always","wmode":"transparent","preventhide":"1","scale":"noScale"};
 	var vars={'idl_browse':IDL('Browse'),'mask_name':mask[0],'mask_ext':mask[1]};
 	renderFlash('dlcontainer',
 		{url:swf,id:"vkdataloader"},
 		params,vars
-	); 
+	);
 }
 //END DATA LOADER
 
@@ -2680,7 +2680,7 @@ function vkWnd(text,title){
 	var url='about:blank';
 	var as_data=true;
 	text='<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"><html><head><title>'+(title || 'VkOpt')+'</title></head><body>'+text+'</body></html>';
-	if (as_data){		
+	if (as_data){
 		url='data:text/html;charset=utf-8,'+encodeURIComponent(text);//charset=utf-8,
 	}
 	var wnd	= window.open(url, '_blank', '');//dialog,width=300,height=150,scrollbars=yes
@@ -2730,7 +2730,7 @@ vkaddcss("/* Box notify * /\
 }\
 div.vk_top_result_header {  font-weight: bold;  font-size: 12px;  padding-bottom: 5px;}\
 div.vk_top_result_baloon a {  color: #B1DAFF;  font-weight: bold;}\
-"); 
+");
  if (!show_timeout) show_timeout=1000;
   text = text.replace('<b>', '<div class="vk_top_result_header">').replace('</b>', '</div>');
   var pageW = bodyNode.offsetWidth,
@@ -2752,9 +2752,9 @@ vkLdr={
 	show:function(){
 		vkLdr.box=new MessageBox({title:''});
 		vkLdr.box.setOptions({title: false, hideButtons: true,onHide:__bq.hideLast}).show();
-		hide(vkLdr.box.bodyNode); 
+		hide(vkLdr.box.bodyNode);
 		show(boxLoader);
-		boxRefreshCoords(boxLoader);	
+		boxRefreshCoords(boxLoader);
 	},
 	hide:function(){
 		vkLdr.box.hide();
@@ -2822,7 +2822,7 @@ function vkDragOutFile(el) {
         e.dataTransfer.setData("DownloadURL", a);
     },false);
 }
-function vkDownloadFile(el,ignore) { 
+function vkDownloadFile(el,ignore) {
    if (!vkbrowser.mozilla || ignore) return true;
    //if (getSet(1) == 'n') return true;
    var a = el.getAttribute("href");
@@ -2838,12 +2838,12 @@ function vkDownloadFile(el,ignore) {
       a = a.split("#FILENAME/");
       url=a[0];
       name=d || decodeURI(a[1]);
-   } 
-   
+   }
+
    if (!name) return true;//name = url.split('/').pop();
    if (vk_ext_api.ready)
       vk_ext_api.req({act:'download',url:url,name:name},function(r){});
-   else 
+   else
       vkMozExtension.send_request({download:1,url:url,name:name});
    return false;
 }
@@ -2854,7 +2854,7 @@ function vkNotifyCustomSInit(){
       Inj.Before('Notifier.pushEvents','curNotifier.sound.play();','if (arguments[2]) vkNotifierSound(arguments[2]); else ');
       Inj.After('Notifier.lcRecv','!data.full',', data.sound');
 }
-function vkShowNotify(params){ 
+function vkShowNotify(params){
    params = params || {};
    var vk_nf_id=unixtime()+vkRand();//window.vk_nf_id || 0;
    params.id='vk_nf_id_'+vk_nf_id;//(++);
@@ -2871,7 +2871,7 @@ function vkShowNotify(params){
          params.link,
          params.onclick,
          params.add,
-         params.id  
+         params.id
       ];
       Notifier.lcSend('feed',{events:[notify.join('<!>')],full:true,sound:params.sound});
       Notifier.pushEvents([notify.join('<!>')],false,params.sound);
@@ -2890,9 +2890,9 @@ function vkShowEvent(obj){ // vkShowEvent({id:'vk_typing_123',title:'%USERNAME%'
    obj=obj || {};
    var vk_nf_id=unixtime()+vkRand();
    var id=obj.id || 'vk_nf_id_'+vk_nf_id;
- 
+
    Inj.Wait('curNotifier.version',function(){
-      
+
       if (_vk_notifiers[id]){
          Notifier.lcSend('hide', {event_id: id+_vk_notifiers[id]});
          Notifier.onEventHide(id+_vk_notifiers[id]);
@@ -2900,7 +2900,7 @@ function vkShowEvent(obj){ // vkShowEvent({id:'vk_typing_123',title:'%USERNAME%'
       if (!_vk_notifiers[id]) _vk_notifiers[id]=0;
       _vk_notifiers[id]++;
       id=id+_vk_notifiers[id];
-      
+
       var msg=[
          curNotifier.version,
          obj.type || 'vkcustomnotifier',
@@ -2918,14 +2918,14 @@ function vkShowEvent(obj){ // vkShowEvent({id:'vk_typing_123',title:'%USERNAME%'
       ];
       //console.log(msg.join('<!>'));
       var events=[msg.join('<!>')];
-      
+
       //Notifier.lcSend('feed', extend({full: curNotifier.idle_manager && curNotifier.idle_manager.is_idle && !this.canNotifyUi(), key: curNotifier.key}, response));
       //Notifier.pushEvents(events);
       //*
-      
+
       var response={events:events,sound:obj.sound};
       Notifier.lcSend('feed',extend({
-                                       full: curNotifier.idle_manager && curNotifier.idle_manager.is_idle && !Notifier.canNotifyUi(), 
+                                       full: curNotifier.idle_manager && curNotifier.idle_manager.is_idle && !Notifier.canNotifyUi(),
                                        key: curNotifier.key
                                     }, response));
       curNotifier.timestamp = vkNow();
@@ -2951,13 +2951,13 @@ vk_plugins={
 		if (p.css) vkaddcss(p.css);
 		if (p.onLocation) vkOnNewLocation();
 		if (p.onLibFiles) {
-		  for (var key in StaticFiles)  if (key.indexOf('.js') != -1) vkInj(key); 
+		  for (var key in StaticFiles)  if (key.indexOf('.js') != -1) vkInj(key);
 		}
 		if (p.processLinks) vkProccessLinks();
 		/*
 		if (cur.vkAlbumMenu && p.album_actions && !p.album_actions_ok) {
 			var m=nav.objLoc[0].match(/album(-?\d+)_(\d+)/);
-			if(m && ! /album\d+_00/.test(nav.objLoc[0])){	
+			if(m && ! /album\d+_00/.test(nav.objLoc[0])){
 				var oid=m[1];
 				var aid=m[2];
 				var a=p.album_actions();
@@ -2970,7 +2970,7 @@ vk_plugins={
 			var p=vkopt_plugins[key];
 			if (p.init){
 				var tstart=unixtime();
-				p.init();	
+				p.init();
 				vklog('Plugin "'+key+'" inited. '+(unixtime()-tstart)+'ms');
 			}
 		}
@@ -2979,14 +2979,14 @@ vk_plugins={
 		var css='';
 		for (var key in vkopt_plugins){
 			var p=vkopt_plugins[key];
-			if (p.css) css+=(Object.prototype.toString.call(p.css) === '[object Function]')?p.css():p.css;	
+			if (p.css) css+=(Object.prototype.toString.call(p.css) === '[object Function]')?p.css():p.css;
 		}
 		return css;
 	},
 	onloc:function(){
 		for (var key in vkopt_plugins){
 			var p=vkopt_plugins[key];
-			if (p.onLocation){ 
+			if (p.onLocation){
 				var tstart=unixtime();
 				p.onLocation(nav.objLoc,cur.module);
 				vklog('Plugin "'+key+'" onLocation: '+(unixtime()-tstart)+'ms');
@@ -3012,7 +3012,7 @@ vk_plugins={
 	processnode:function(node,is_lite){
 		for (var key in vkopt_plugins){
 			var p=vkopt_plugins[key];
-			if (p.processNode){ 
+			if (p.processNode){
 				var tstart=unixtime();
 				p.processNode(node,is_lite);
 				vklog('Plugin "'+key+'" ProcessNode: '+(unixtime()-tstart)+'ms');
@@ -3028,7 +3028,7 @@ vk_plugins={
 				r+=isFunction(p.pvActions)?p.pvActions(ph):p.pvActions;
 				vklog('Plugin "'+key+'" PhView actions: '+(unixtime()-tstart)+'ms');
 			}
-		}		
+		}
 		return r;
 	},
 	album_actions:function(oid,aid){
@@ -3040,8 +3040,8 @@ vk_plugins={
 				a=a.concat(isFunction(p.albumActions)?p.albumActions(oid,aid):p.albumActions);
 				vklog('Plugin "'+key+'" Album actions items: '+(unixtime()-tstart)+'ms');
 			}
-			p.album_actions_ok=true;	
-		}	
+			p.album_actions_ok=true;
+		}
 		return a;
 	},
    videos_actions:function(oid,aid){
@@ -3053,8 +3053,8 @@ vk_plugins={
 				a=a.concat(isFunction(p.videosActions)?p.videosActions(oid,aid):p.videosActions);
 				vklog('Plugin "'+key+'" Videos actions items: '+(unixtime()-tstart)+'ms');
 			}
-		}	
-		return a;   
+		}
+		return a;
    },
 	video_links:function(video_data,links_array){
 		var r='';
@@ -3065,8 +3065,8 @@ vk_plugins={
 				r+=isFunction(p.vidActLinks)?p.vidActLinks(video_data,links_array):p.vidActLinks;
 				vklog('Plugin "'+key+'" VidLinks actions: '+(unixtime()-tstart)+'ms');
 			}
-		}		
-		return r;		
+		}
+		return r;
 	},
 	process_response:function(answer,url,params){
 		var r='';
@@ -3079,8 +3079,8 @@ vk_plugins={
 					vklog('Plugin "'+key+'" onResponseAnswer: '+(unixtime()-tstart)+'ms');
 				}
 			}
-		}		
-		//return r;		
+		}
+		//return r;
 	},
    user_menu_items:function(uid,gid){
 		var r='';
@@ -3092,15 +3092,15 @@ vk_plugins={
             if (isArray(i)){
                r+='<li><div class="vk_user_menu_divider"></div></li>';
                for (var j=0; j<i.length;j++)
-                  r+='<li onmousemove="clearTimeout(pup_tout);" onmouseout="pup_tout=setTimeout(pupHide, 400);">'+i[j]+'</li>';              
+                  r+='<li onmousemove="clearTimeout(pup_tout);" onmouseout="pup_tout=setTimeout(pupHide, 400);">'+i[j]+'</li>';
             } else {
                if (i) r+='<li><div class="vk_user_menu_divider"></div></li>';
                r+='<li onmousemove="clearTimeout(pup_tout);" onmouseout="pup_tout=setTimeout(pupHide, 400);">'+i+'</li>';
-            } 
-				if (r) vklog('Plugin "'+key+'" user_menu_items: '+(unixtime()-tstart)+'ms');	
+            }
+				if (r) vklog('Plugin "'+key+'" user_menu_items: '+(unixtime()-tstart)+'ms');
 			}
-		}		
-		return r;		   
+		}
+		return r;
    }
 };
 vkopt_plugin_run=vk_plugins.run;
@@ -3110,7 +3110,7 @@ vkopt_plugin_run=vk_plugins.run;
 if (!window.vkopt_plugins) vkopt_plugins={};
 (function(){
    var PLUGIN_ID = 'vkmyplugin';
-   var PLUGIN_NAME = 'vk my test plugin';   
+   var PLUGIN_NAME = 'vk my test plugin';
    var ADDITIONAL_CSS='';
 
    vkopt_plugins[PLUGIN_ID]={
@@ -3182,7 +3182,7 @@ var wmicons_img = {r: 'data:image/gif;base64,R0lGODlhEAAQANUAAGmSr86/n7SVLri5rfd
     e: 'data:image/gif;base64,R0lGODlhEAAQANUAAPHONanD1////zBoltS4OLCULFhOLIyKWGyTtOTm5Ed6plyYxHirqsi7mrfM4dfY1HSGaPzkWHa23FyVvJy3ybmulDA6SGSdxLfTfEt0lWyo1FSSvHiozPz6/JymtFSOtMzKzERynPz+TESCtHSu3JS61JR6PPziTL6nQPT29CRWhMzibPzmZMzGtMSuVKy2xJzCjFyKrIy2nOC8KHR+jNzg6ERmfKCSSOzyVOzs7pTC3OS6HPzeRFR2hISypISy1CH5BAAAAAAALAAAAAAQABAAAAa0QIFw2DCZWp2hkuhiRW6P5FLYQEUiJ8IhNxVUsQAAyjYYOKSCCooXJkBGJMlIwU0XwjOIIq5ZTAYUHRV3MwcKGhJ9EwsbChkJBjs3GReJOD4rGDUWGwMvBj2VGgwMMhekNBYLjggOOgsLGCsTGwswGIwbKjUIARywtX60fh8qAr0lFxMiw8wfAxkeAjkxDj+wywvPIR4gD0IUFL61z9HeOSlCHRkOJX/mDwloQg4hIfAJ6UNBADs=',
     z: 'data:image/gif;base64,R0lGODlhEAAQANUAAOlrDKyRL/HNNXmpymxWIP///+zs7PzlXJW71/d4BcTb6o+Xj9SvLE8+GaiWaJSGXKajlJd/R6zK39zt+dfY1JCOdMm7nKqPRLmtlHdpRNCmfNxkGPz6/GxmRPT6/Oz2/Mzm9MzKzORiFPT29FyWxMzi7PT2/PTCpMSuTNxaFOyaZMS+rPS+nH92Uby2pNzWxOTg3KScgPy6dLyylOyeXPyuXExOTGmhxNTi5LymQJR2PNTOxMzCrPzChPzhSuTm5CH5BAAAAAAALAAAAAAQABAAAAa6wIJwaInoeJyhkog6HC6UpdLSPPgYD4O0MMv5fAIBI+KI7JJCjDfMuGhUnlc2HWC7VRyPKPVYjSB1bTE0HnobJh8bLT8EDAELNyQKAACIMA0TLS4EFQMICAM3Hx8iLAs2LCkZDgoSnwMkACITEycnIAoNMBCtoCQIE7K4IiINBTE4EjcDCgkAJZMiCx0QBQYVCiUJCSDaANMQIVEFGD0yEyDb4OIGI0IcGQY1CesUP2hDKxkt1OzuQ0EAADs='
     };
-    
+
 function WMPursesList(result_el){
 	var purses=[['R'+'2551200'+'81922',30],['E'+'101435'+'675230',1],['Z'+'498828'+'961904',1],['*41001'+'96245'+'7205',30]/*,['*41001486412536',30]*/];
 	var html='<style  type="text/css">\
@@ -3198,8 +3198,8 @@ function WMPursesList(result_el){
 		var yad=purses[i][0].split('*')[1];
 		if (!yad)
 			html+='<a href=# class="purse_link" onclick="ge(\''+result_el+'\').innerHTML=WMDonateForm('+purses[i][1]+',\''+purses[i][0]+'\'); return false" style="background:url(\''+wmicons_img[type]+'\') 0px 0px no-repeat;">'+purses[i][0]+'<span style="float:right">WebMoney</span></a>';
-		else 
-			html+='<a href=# class="purse_yad_link" onclick="ge(\''+result_el+'\').innerHTML=YMDonateForm('+purses[i][1]+',\''+yad+'\'); return false"><div class="purse_yad_link_img" ></div>'+yad+'<span style="float:right">\u042f\u043d\u0434\u0435\u043a\u0441.\u0414\u0435\u043d\u044c\u0433\u0438</span></a>';	 
+		else
+			html+='<a href=# class="purse_yad_link" onclick="ge(\''+result_el+'\').innerHTML=YMDonateForm('+purses[i][1]+',\''+yad+'\'); return false"><div class="purse_yad_link_img" ></div>'+yad+'<span style="float:right">\u042f\u043d\u0434\u0435\u043a\u0441.\u0414\u0435\u043d\u044c\u0433\u0438</span></a>';
 	}
    html+='<a href=# class="purse_ad_link" id="purse_ad_link" style="display:none;" onclick="ge(\''+result_el+'\').innerHTML=AdDonateForm(); return false"><div class="purse_ad_link_img" ></div>\u0420\u0435\u043a\u043b\u0430\u043c\u0430</a>';
 	html+='</div>';
@@ -3223,7 +3223,7 @@ DAPI_APP_ID=2168679;
 DAPI_APP_SCOPE = "friends,photos,audio,video,docs,notes,pages,status,offers,questions,wall,groups,messages,stats,offline"; //vk_api_permissions.to_str(1522942)
 DISLIKEAPI_APP_ID = 2347646;
 
-api4dislike=vk_oauth_api(DISLIKEAPI_APP_ID,'photos,audio,video,wall,groups,messages,offline'); 
+api4dislike=vk_oauth_api(DISLIKEAPI_APP_ID,'photos,audio,video,wall,groups,messages,offline');
 dApi=vk_oauth_api(DAPI_APP_ID, DAPI_APP_SCOPE);
 setTimeout(api4dislike.check,10);
 setTimeout(dApi.check,10);
@@ -3246,5 +3246,3 @@ setTimeout(dApi.check,10);
 /////////////////////
 
 if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
-
-
