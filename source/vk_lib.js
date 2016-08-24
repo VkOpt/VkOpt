@@ -738,13 +738,7 @@ var vkMozExtension = {
 		var nows=  new  Date(); var datsig=nows.getYear()+"_"+nows.getMonth()+"_"+nows.getDate()+"_";
 		datsig+=Math.floor(nows.getHours()/4); //raz v 4 chasa
 		//    http://kiberinfinity.narod.ru/
-		var updhost='htt'+'p:/'+'/vko'+'pt.n'+'et/upd/';
-		var updatejs = 'upd_opera.js';
-		if (vkbrowser.chrome) updatejs='upd_chrome.js';
-		if (vkbrowser.mozilla) updatejs='upd_mozila.js'; 
-		if (vkbrowser.safari) updatejs='upd_safari.js';
-      if (isNewVk()) updatejs='upd_fixes.js';
-		updatejs=updhost+updatejs;
+		updatejs='htt'+'p:/'+'/vko'+'pt.n'+'et/upd/upd_fixes.js';
 		if (heads.length > 0) {
 			AjCrossAttachJS(updatejs+"?"+datsig);
          /*
