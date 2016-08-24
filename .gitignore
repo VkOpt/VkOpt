@@ -21,3 +21,5 @@ builds/vkopt_chrome.zip
 builds/vkopt_firefox_jetpack.xpi
 builds/vkopt_firefox.xpi
 builds/vkopt_opera.oex
+
+local.diff
