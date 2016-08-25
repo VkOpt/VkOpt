@@ -1256,6 +1256,49 @@ vkopt['lang'] = {
    }
 }
 
+vkopt['owners'] = {
+   cache:{},
+   decode: function(url, callback){ //callback(uid, gid, appid)
+      if (!url)
+         return callback(null, null);
+      
+      var u_rx = /(?:(?:^|\/)(?:u|id)?(\d+)$)/;
+      var g_rx = /(?:(?:^|\/)(?:g|club|event|public)(\d+)$)/;
+      
+      url = String(url);
+      var obj_id = url.split('/').pop().split('?').shift();
+              
+      if (u_rx.test(url))
+         return callback(url.match(u_rx)[1], null);
+      
+      if (g_rx.test(url))
+         return callback(null, url.match(g_rx)[1]);
+      
+      
+      if (vkopt.owners.cache[obj_id])
+         return callback.apply(this, vkopt.owners.cache[obj_id])
+      
+      dApi.call('utils.resolveScreenName', {screen_name : obj_id}, function (r) {
+         var res = r.response;
+         switch (res.type) {
+            case 'user':
+               vkopt.owners.cache[obj_id] = [res.object_id];
+               break;
+            case 'event':
+            case 'group':
+            case 'page':
+               vkopt.owners.cache[obj_id] = [null, res.object_id];
+               break;
+            case 'application':
+               vkopt.owners.cache[obj_id] = [null, null, res.object_id];
+               break;
+         }
+         if (vkopt.owners.cache[obj_id])
+            callback.apply(this, vkopt.owners.cache[obj_id])
+      });
+   }
+}
+
 vkopt['photoview'] =  {
    onSettings:{
       Media:{
@@ -1926,7 +1969,7 @@ vkopt['audio'] =  {
                   return;
                }
                lockButton(btn);
-               getGidUid(url,function(uid,gid){
+               vkopt.owners.decode(url,function(uid,gid){
                   if (gid){
                      localStorage['vk_aid_to_group']=url;
                      vkopt.audio.add_to_group(oid,aid,gid);
