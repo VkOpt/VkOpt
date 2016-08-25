@@ -640,10 +640,10 @@ vkopt['settings'] =  {
          <div class="vk_donations">
             <div class="vk_donations_left fl_l">
                <div>{lng.DevRekv}</div>
-               <div id="vk_purses_list">WMPursesList('wmdonate')</div>
+               <div id="vk_purses_list">vkOptDonate.WMPursesList('wmdonate')</div>
             </div>
             <div class="vk_donations_right fl_l">
-            <div id="wmdonate">WMDonateForm(30,'R255120081922')</div>
+            <div id="wmdonate">vkOptDonate.WMDonateForm(30,'R255120081922')</div>
             </div>
             <div class="clear_fix">
          </div>
@@ -885,8 +885,8 @@ vkopt['settings'] =  {
          val('vkopt_lang_settings', vkopt.lang.choose(true, update_view));
 
          val('vkopt_donate_block', vk_lib.tpl_process(vkopt.settings.tpls['donate_form'], {}));
-         val('vk_purses_list', WMPursesList('wmdonate'));
-         val('wmdonate', WMDonateForm(30,'R255120081922'));
+         val('vk_purses_list', vkOptDonate.WMPursesList('wmdonate'));
+         val('wmdonate', vkOptDonate.WMDonateForm(30,'R255120081922'));
       }
       var p = null;
       if (!in_box || ge('vkopt_settings_block')){ // показ на странице, а не во всплывающем окне
