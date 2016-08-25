@@ -379,6 +379,18 @@ var vk_glue = {
 */
 
 vkopt['res'] = {
+   css: function(){
+      return vk_lib.get_block_comments(function(){
+         /*css:
+         .vk_ldr{
+            display: inline-block;
+            background-image: url(/images/upload_inv_mini.gif) 50% 50% no-repeat;
+            min-width: 16px;
+            min-height: 4px;
+         }
+         */
+      }).css;         
+   },
    img: {
       ldr: '<img src="/images/upload.gif">',
       ldr_mono: '<img src="/images/upload_inv_mono.gif">',
@@ -3750,6 +3762,20 @@ vkopt['profile'] = {
    }
 }
 
+vkopt['groups'] = {
+   tpls:null,
+   onInit: function(){
+      vkopt.groups.tpls = vk_lib.get_block_comments(function(){
+         /*wiki_list_btn:
+         <a id="{vals.id}" onclick="vkWikiPagesList(); return false;">{lng.WikiPagesList}<span class="fl_r vk_ldr" id="vk_wiki_pages_list_loader" style="display:none;">'+vkLdrImg+'</span>'
+         */
+      });      
+   },
+   wiki_list: function(){
+      
+   }
+}
+
 vkopt['wall'] = {
    onSettings:{
       vkInterface:{
@@ -3855,6 +3881,13 @@ vkopt['support'] = {
 
 vkopt['test_module'] =  {
    /*
+   onInit: function(){
+      vkopt.xxx.tpls = vk_lib.get_block_comments(function(){
+         /*tpl:
+         
+         * /
+      });      
+   },   
    onAudioRowMenuItems: function(info){
       return [
          '<div>---</div>',
