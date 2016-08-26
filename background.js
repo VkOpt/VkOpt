@@ -1,33 +1,33 @@
 (function(){
 
 // <filefox_jetpack_init>
-if (typeof require != 'undefined' && typeof module != 'undefined'  && module.id == "vkopt/background"){ 
+if (typeof require != 'undefined' && typeof module != 'undefined'  && module.id == "vkopt/background"){
       this.mozilla_jetpack = true;
       this.jetpack_lib_path = module.uri.match(/^(.+)\//)[1];
       this.window = false;
       this.navigator = false;
-      
+
       this.Chrome  = require("chrome");
       this.Promise = require("./promise").Promise;
       this.pageMod = require("sdk/page-mod");
       this.self = require("sdk/self");
       this.XMLHttpRequest = require("sdk/net/xhr").XMLHttpRequest;
-      
+
       this.Cc=Chrome.Cc;
       this.Ci=Chrome.Ci;
       this.Cu=Chrome.Cu;
       this.scope = {};
-     
+
       Cu.import('resource://gre/modules/devtools/Console.jsm', scope); // console import for Firefox Jetpack
       Cu.import(jetpack_lib_path+'/timer.jsm', scope); // оказывается у некоторых браузеров в этом модуле нет setInterval и т.д, т.ч тянем копию нормального
       Cu.import("resource://gre/modules/Downloads.jsm", scope);
       Cu.import("resource://gre/modules/Task.jsm", scope);
-      
-      
+
+
       this.console = scope.console;
-      this.setTimeout = scope.setTimeout; 
-      this.clearTimeout = scope.clearTimeout; 
-      this.setInterval = scope.setInterval; 
+      this.setTimeout = scope.setTimeout;
+      this.clearTimeout = scope.clearTimeout;
+      this.setInterval = scope.setInterval;
       this.clearInterval = scope.clearInterval;
       this.Task = scope.Task;
       this.Downloads = scope.Downloads;
@@ -45,9 +45,9 @@ if (typeof console == 'undefined' || !(console || {}).log || !(console || {}).in
    };
 }
 
-  
+
 var ex_loader, ext_api;
-    
+
 ex_loader = {
    type:'internal', // internal|beta|online
    base_path: 'http://vkopt.net/upd/',
@@ -73,7 +73,7 @@ ex_loader = {
          "files":["vk_lib.js"],
          "domain":"vkontakte\\.ru|vk\\.com|vk\\.me|userapi\\.com",
          "exclude":"|notifier\\.php|im_frame\\.php|about:blank|i"
-      }      
+      }
    ],
    config:[ //Default config; example; overwritten;
       {
@@ -86,7 +86,7 @@ ex_loader = {
          "domain":"example\\.com",
          "exclude":"|notifier\.php|im_frame\.php|about:blank|i", // RegEx "|pattern|flags" for excluding urls
          "api_enabled":true
-      }    
+      }
    ],
    update_time: 10*60*1000, //update scripts each 4 hours
    moz_strorage_id:"http://vkopt.loader.storage",
@@ -124,34 +124,34 @@ ex_loader = {
       return spath;
       //var src=(filename.match(/https?:\/\//))?filename:spath+filename;
       //filename:ex_loader.base_path+ex_loader.scripts_path+filename
-      
+
    },
    init:function(){
-      var b = ex_loader.browsers;   
-      
+      var b = ex_loader.browsers;
+
       if (b.mozilla_jetpack){
          console.log('vkopt init, is mozilla: ',b.mozilla,', is mozilla_jetpack:',b.mozilla_jetpack);
       }
-      
+
       if (ex_loader.type=='internal' && b.maxthon){         // MAXTHON
          ex_loader.type='online';        // Maxthon 4 doesn't support inject scripts from internal resources
       }
-      
+
       ex_loader.init_config();
-      
+
       if (b.opera){                                   // OPERA
          opera.extension.onconnect = function(event)  {
             ext_api.ready=true;
-            event.source.postMessage({act:'connected'}); 
+            event.source.postMessage({act:'connected'});
          };
          opera.extension.onmessage = function(event) {
            var data = event.data;
            if (data.act=='get_scripts'){
                ex_loader.get_scripts(data.url,function(files,api_allowed){
                   event.source.postMessage({files:files, api_enabled:api_allowed, __key:data.__key});
-               },data.in_frame);           
+               },data.in_frame);
            }
-           
+
             var SendResponse=function(msg){
                   msg.__key = data.__key;
                   msg._req=data._req;
@@ -159,8 +159,8 @@ ex_loader = {
             };
             ext_api.message_handler(data,SendResponse);
          };
-         
-      } else if (b.chrome){                          // CHROME         
+
+      } else if (b.chrome){                          // CHROME
          ext_api.ready=true;
          chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
             // request.url - contain url
@@ -168,7 +168,7 @@ ex_loader = {
                ex_loader.get_scripts(request.url,function(files,api_allowed){
                   //console.log({url: request.url, inframe: request.in_frame, files:files});
                   sendResponse({files:files, api_enabled:api_allowed, __key:request.__key});
-               },request.in_frame);           
+               },request.in_frame);
                return;
             }
             // FOR API
@@ -177,9 +177,9 @@ ex_loader = {
                data._req= request._req;
                sendResponse(data);
             };
-            ext_api.message_handler(request,SendResp);            
-            
-         });         
+            ext_api.message_handler(request,SendResp);
+
+         });
       } else if(b.safari){                         // SAFARI
          safari.application.addEventListener("message", function(e) {
             // e.message.url - contain url
@@ -187,7 +187,7 @@ ex_loader = {
                ex_loader.get_scripts(e.message.url,function(files,api_allowed){
                   e.target.page.dispatchMessage("scripts", {files:files, api_enabled:api_allowed, __key:e.message.__key});
                },e.message.in_frame);
-               
+
             }
 
             var SendResponse=function(msg){
@@ -196,18 +196,18 @@ ex_loader = {
                   e.target.page.dispatchMessage('extension_api',msg);
             };
             ext_api.message_handler(e.message,SendResponse);
-            
+
          }, false);
          ext_api.ready=true;
-         
+
       } else if (b.maxthon){         // MAXTHON
-            var rt = window.external.mxGetRuntime();            
+            var rt = window.external.mxGetRuntime();
             rt.listen('get_scripts', function(data){
                ex_loader.get_scripts(data.url,function(files,api_allowed){
                   rt.post('scripts',{files:files, api_enabled:api_allowed, __key:data.__key});
-               },data.in_frame);               
+               },data.in_frame);
             });
-            
+
             //console.log('Init api listeners');
             rt = window.external.mxGetRuntime();
             rt.listen('extension_bg_api', function(data){
@@ -217,9 +217,9 @@ ex_loader = {
                   rt.post('extension_api',msg);
                };
                ext_api.message_handler(data,SendResponse);
-            });     
-            ext_api.ready=true;   
-            
+            });
+            ext_api.ready=true;
+
       } else if (b.mozilla_jetpack){                // MOZILLA JETPACK
          console.log('init pageMod');
          pageMod.PageMod({
@@ -237,8 +237,8 @@ ex_loader = {
                      console.log('send get_scripts response');
                      worker.port.emit("scripts", {files:files, api_enabled:api_allowed, __key:data.__key});
                   },data.in_frame);
-               }); 
-               
+               });
+
                worker.port.on('extension_bg_api', function(data){
                   var SendResponse=function(msg){
                      msg.__key = data.__key;
@@ -246,11 +246,11 @@ ex_loader = {
                      worker.port.emit('extension_api',msg);
                   };
                   ext_api.message_handler(data,SendResponse);
-               });     
+               });
                ext_api.ready=true;
             }
-         });         
-      } else if (b.mozilla){                // MOZILLA 
+         });
+      } else if (b.mozilla){                // MOZILLA
          ex_loader.moz_ldr(function(doc,win){
                var bg={
                   get_scripts:ex_loader.get_scripts,
@@ -268,7 +268,7 @@ ex_loader = {
       }
       ex_loader._upd_interval = setInterval(function(){ //Run update checker
          //ex_loader.update_config();
-         ex_loader.init_config();      
+         ex_loader.init_config();
       },ex_loader.update_time);
    },
    deinit:function(){
@@ -302,25 +302,25 @@ ex_loader = {
       in_frames = in_frames || 0;
       var inframe=(in_frame!=null)?in_frame:((doc || document).defaultView.parent != (doc || document).defaultView);
       switch (in_frames){ // 0 or null - execute in all; 1 - exclude frames; 2 - only in frames; 3 - disable scripts
-         case 0: 
+         case 0:
             return true; // include all
-         case 1: 
+         case 1:
             return inframe?false:true; // exclude frames
          case 2:
             return inframe?true:false; // only in frames
          case 3:
             return false;  // disable scripts
       }
-      return true;      
+      return true;
    },
    update_all:function(callback){
       ex_loader.set('scripts_config_hash',Math.random());
-      ex_loader.update_config(function(){ex_loader.init_config(callback);},true);   
+      ex_loader.update_config(function(){ex_loader.init_config(callback);},true);
    },
    get_scripts:function(url,callback,in_frame){
       var api_allowed = false;
       var domain=url;
-      if (url=='about:blank'){ 
+      if (url=='about:blank'){
          callback([]);
          return;
       }
@@ -334,7 +334,7 @@ ex_loader = {
          if (x){
             rx=new RegExp(x[1],x[2]);
          }
-         
+
          var allow=true;
          var exclude_rx=data[i].exclude;
          if (exclude_rx){
@@ -344,9 +344,9 @@ ex_loader = {
             }
             if (url.match(exclude_rx))
                allow=false;
-            
+
          }
-         
+
          if (allow && in_frame!=null) allow=ex_loader.is_allow_run(data[i].in_frames,null,in_frame);
 
          if (url.match(rx) && allow)
@@ -364,12 +364,12 @@ ex_loader = {
                      }
                   }
                }
-                  
+
                if (add)
                   scripts.push([src,data[i].in_frames,data[i].files[j], (data[i].run_at || 0),0]);
             }
       }
-      
+
       if (scripts.length>1) console.info('ext_bg: get_scripts scr:',scripts,' url:'+url);
       //console.log('scripts:',scripts);
       var result=[];
@@ -381,7 +381,7 @@ ex_loader = {
             callback(result, api_allowed);
             return;
          }
-         
+
          ex_loader.get_script_content(scripts[idx][0],function(script){
             scripts[idx][4]=(script==scripts[idx][0]);
             scripts[idx][0]=script;
@@ -393,7 +393,7 @@ ex_loader = {
       load_next();
    },
    update_config:function(callback,clear){
-      if (ex_loader.type=='internal'){ 
+      if (ex_loader.type=='internal'){
          callback();
          return;
       }
@@ -401,14 +401,14 @@ ex_loader = {
          if (!script) return;
          if (clear) ex_loader.clear();
          var ts=ex_loader.time();
-         ex_loader.set('scripts_config',ts+script);//store script and timesamp        
+         ex_loader.set('scripts_config',ts+script);//store script and timesamp
          callback();
       });
    },
    init_config:function(callback){
       var cur_ts=ex_loader.time();
-      var ts=0; 
-      if (ex_loader.type=='internal'){ 
+      var ts=0;
+      if (ex_loader.type=='internal'){
          ex_loader.config=ex_loader.packed_scripts;
          return;
       }
@@ -431,7 +431,7 @@ ex_loader = {
             },ex_loader.update_time);
             return;
          }
-         
+
          if (old_hash!=hash){
             setTimeout(function(){
                var scripts=[];
@@ -443,22 +443,22 @@ ex_loader = {
 
                var idx=0;
                var load_next=function(){
-                  if (idx>=scripts.length){ 
+                  if (idx>=scripts.length){
                      if (callback) callback();
                      return;
                   }
                   ex_loader.update_script(scripts[idx++],load_next);
                };
-               load_next(); 
+               load_next();
             },5);
          }
-         if (cur_ts - ts > ex_loader.update_time) setTimeout(function(){ex_loader.update_config(ex_loader.init_config);},10);// update if script date expired           
+         if (cur_ts - ts > ex_loader.update_time) setTimeout(function(){ex_loader.update_config(ex_loader.init_config);},10);// update if script date expired
       } else {
          ex_loader.update_config(function(){ex_loader.init_config(callback)});
-      } 
+      }
    },
    time:function() { return Math.round(new Date().getTime());},
-   error:function(s){console.log(s);},  
+   error:function(s){console.log(s);},
    load:function(path,callback){
       var req = new XMLHttpRequest();
       req.open('GET', path, true);
@@ -484,7 +484,7 @@ ex_loader = {
       ext_api.utils.ls.setItem(key, value);
    },
    clear:function(){
-      ext_api.utils.ls.clear();    
+      ext_api.utils.ls.clear();
    },
    update_script:function(name,callback){
       ex_loader.load(name+'?rand='+Math.random(),function(script){
@@ -499,10 +499,10 @@ ex_loader = {
    get_script_content:function(name,callback){
       //console.log('get_script_content:',name);
       var cur_ts=ex_loader.time();
-      var ts=0; 
+      var ts=0;
       var key=name.split('/').pop();
       var content=ex_loader.get(key);
-      
+
       if (content && name.match(/https?:\/\//)){
          content=String(content);
          ts=parseInt(content.substr(0,String(cur_ts).length));//parse script download time
@@ -513,8 +513,8 @@ ex_loader = {
             ex_loader.update_script(name,function(){
                ex_loader.get_script_content(name,function(content){
                   callback(content);
-               }); 
-            });         
+               });
+            });
          } else {
             if (window.opera && opera.extension){
                if (!ex_loader.scripts_cache[key]){
@@ -531,7 +531,7 @@ ex_loader = {
          }
          return;
       }
-      callback(content);    
+      callback(content);
    }
 };
 
@@ -577,7 +577,7 @@ ext_api={
             ext_api.get(data.url,function(t,status){
                send_response({act:'GET_response', response:t});
             });
-            break;         
+            break;
          case 'post':
             ext_api.post(data.url,data.params,function(t,status){
                send_response({act:'POST_response', response:t});
@@ -596,25 +596,25 @@ ext_api={
                   r.status    is xhr.status;
                      OR
                   r.error
-               */ 
+               */
                send_response({act:'AJAX_response', response:r});
             });
-            break;         
-         
+            break;
+
          case 'storage_get':
             var prefix = data.reserved_access_allowed ? '' : ext_api.store_val_prefix;
             if (data.keys){
                var vals={};
                for (var i=0; i<data.keys.length; i++){
-                  if (!ext_api.storage_is_allowed_key(data.keys[i]) && !data.reserved_access_allowed){ 
+                  if (!ext_api.storage_is_allowed_key(data.keys[i]) && !data.reserved_access_allowed){
                      console.log('access to key ' + data.keys[i] + ' not allowed');
                      continue;
-                  }                  
+                  }
                   console.log('key: ', data.keys[i], ex_loader.get(prefix+data.keys[i]));
                   vals[data.keys[i]] = ex_loader.get(prefix+data.keys[i]) || null;
                }
                send_response({act:'storage_value',values:vals});
-            } else if(data.key){  
+            } else if(data.key){
                if (ext_api.storage_is_allowed_key(data.key) || data.reserved_access_allowed){
                   send_response({act:'storage_value', key:data.key, value: ex_loader.get(prefix+data.key) || null  });
                } else {
@@ -632,7 +632,7 @@ ext_api={
                   }
                   ex_loader.set(prefix+key, data.values[key]);
                }
-            } else if(data.value && data.key){  
+            } else if(data.value && data.key){
                if (ext_api.storage_is_allowed_key(data.key) || data.reserved_access_allowed){
                   ex_loader.set(prefix+data.key, data.value);
                } else {
@@ -652,14 +652,14 @@ ext_api={
             if (data.keys){
                var vals={};
                for (var i=0; i<data.keys.length; i++){
-                  if (!ext_api.storage_is_allowed_key(data.keys[i]) || data.reserved_access_allowed){ 
+                  if (!ext_api.storage_is_allowed_key(data.keys[i]) || data.reserved_access_allowed){
                      console.log('access to key ' + data.keys[i] + ' not allowed');
                      continue;
                   }
                   ext_api.utils.ls.removeItem(data.keys[i]);
                }
                send_response({act:'storage_delete_keys'});
-            } else if(data.key){  
+            } else if(data.key){
                if (ext_api.storage_is_allowed_key(data.key)  || data.reserved_access_allowed){
                   ext_api.utils.ls.removeItem(data.key);
                   send_response({act:'storage_delete_key'});
@@ -667,19 +667,19 @@ ext_api={
                   console.log('write access to key ' + data.key + ' not allowed');
                }
             }
-            break;   
+            break;
          case 'storage_clear':
             var i, keys = Object.keys(ext_api.utils.ls);
             for (i = 0; i < keys.length; i++ )
                if (ext_api.storage_is_allowed_key(keys[i]) || data.reserved_access_allowed) // не нужно удалять закэшированные скрипты
-                  ext_api.utils.ls.removeItem(keys[i]);  
+                  ext_api.utils.ls.removeItem(keys[i]);
             break;
-         
+
          case 'update_scripts':
             ex_loader.update_all(function(){
                send_response({act:'scripts_updated'});
             });
-            break;         
+            break;
          case 'download':
             /*
             if (browser.chrome){
@@ -688,12 +688,12 @@ ext_api={
                })
             } else */
             ext_api.download(data.url,data.name,obj.win);
-            break;         
+            break;
          default: if (send_response) send_response({act:'extension bg default response',msg:data, __key:data.__key});
       }
    },
    storage_is_allowed_key:function(key){
-      if (['scripts_config','scripts_config_hash'].indexOf(key)>-1) 
+      if (['scripts_config','scripts_config_hash'].indexOf(key)>-1)
          return false;
       if (/\.(js|css)$/.test(key))
          return false;
@@ -786,14 +786,14 @@ ext_api={
           }
    },
    get:function(url,params,callback){
-      if (!callback){ 
+      if (!callback){
          callback=params;
          params=null;
       }
       ext_api.ajax({url:url, params:params, method:'GET'},function(r){
          callback(r.text,r.status);
       })
-   },   
+   },
    post:function(url,params,callback){
       ext_api.ajax({url:url, data:params, method:'POST'},function(r){
          callback(r.text,r.status);
@@ -809,11 +809,11 @@ ext_api={
       req.open("GET", url, true);
       req.responseType = "blob";
       req.onprogress=function(evt){
-            if (evt.lengthComputable){  
+            if (evt.lengthComputable){
               if (progress_callback)
                progress_callback(evt.loaded,evt.total)
                //var percentComplete = (evt.loaded / evt.total)*100;
-            } 
+            }
          };
 
       req.onload = function(oEvent) {
@@ -863,12 +863,12 @@ ext_api={
                   dl.start();
                   return dl;
                 });
-               
-               
+
+
                ///////////////////////
-               
-              /* 
-               
+
+              /*
+
                try {
       				let list = yield Downloads.getList(Downloads.ALL);
       				let download = yield Downloads.createDownload({
@@ -884,7 +884,7 @@ ext_api={
          }
       } else {
            function getDownloadFile(defaultString, fileType) {
-               
+
                var nsIFilePicker = Ci.nsIFilePicker//Components.interfaces.nsIFilePicker;
 
                var fp = /*Components.classes*/Cc["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
@@ -949,7 +949,7 @@ ext_api={
    utils:{
       ls:null,
       init_ls:function(){
-         
+
          if (ex_loader.browsers.mozilla || ex_loader.browsers.mozilla_jetpack){
             var url = ex_loader.moz_strorage_id;
             if (ex_loader.browsers.mozilla_jetpack){
@@ -965,14 +965,14 @@ ext_api={
                var ssm = Components.classes["@mozilla.org/scriptsecuritymanager;1"]
                          .getService(Components.interfaces.nsIScriptSecurityManager);
                var dsm = Components.classes["@mozilla.org/dom/storagemanager;1"]
-                         .getService(Components.interfaces.nsIDOMStorageManager);               
+                         .getService(Components.interfaces.nsIDOMStorageManager);
             }
             var uri = ios.newURI(url, "", null);
             var principal = ssm.getCodebasePrincipal(uri);
             var storage = dsm.getLocalStorageForPrincipal(principal, "");
-            
+
             ext_api.utils.ls = storage;
-         } else 
+         } else
             ext_api.utils.ls = localStorage;
       },
       chrome_init: function(){
@@ -987,10 +987,10 @@ ext_api={
                   download_file_names['name'+details.requestId]=decodeURIComponent(url[2]);
                   return {redirectUrl: url[1]};
                }
-            }, 
+            },
             {urls: ["*://*.vk.me/*","*://*.userapi.me/*","*://*.vk-cdn.net/*"]},["blocking"]
          );
-                 
+
          chrome.webRequest.onHeadersReceived.addListener(
             function(details) {
                //console.log('onHeadersReceived:',details);
@@ -1011,7 +1011,7 @@ ext_api={
                      responseHeaders: details.responseHeaders
                   };
                }
-            }, 
+            },
             {urls: ["*://*.vk.me/*","*://*.userapi.me/*","*://*.vk-cdn.net/*"]}, ["responseHeaders","blocking"]
          );
       }
