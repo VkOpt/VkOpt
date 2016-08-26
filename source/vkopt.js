@@ -390,7 +390,7 @@ vkopt['res'] = {
             min-height: 4px;
          }
          */
-      }).css;         
+      }).css;
    },
    img: {
       ldr: '<img src="/images/upload.gif">',
@@ -1274,23 +1274,23 @@ vkopt['owners'] = {
    decode: function(url, callback){ //callback(uid, gid, appid)
       if (!url)
          return callback(null, null);
-      
+
       var u_rx = /(?:(?:^|\/)(?:u|id)?(\d+)$)/;
       var g_rx = /(?:(?:^|\/)(?:g|club|event|public)(\d+)$)/;
-      
+
       url = String(url);
       var obj_id = url.split('/').pop().split('?').shift();
-              
+
       if (u_rx.test(url))
          return callback(url.match(u_rx)[1], null);
-      
+
       if (g_rx.test(url))
          return callback(null, url.match(g_rx)[1]);
-      
-      
+
+
       if (vkopt.owners.cache[obj_id])
          return callback.apply(this, vkopt.owners.cache[obj_id])
-      
+
       dApi.call('utils.resolveScreenName', {screen_name : obj_id}, function (r) {
          var res = r.response;
          switch (res.type) {
@@ -3770,10 +3770,10 @@ vkopt['groups'] = {
          /*wiki_list_btn:
          <a id="{vals.id}" onclick="vkWikiPagesList(); return false;">{lng.WikiPagesList}<span class="fl_r vk_ldr" id="vk_wiki_pages_list_loader" style="display:none;">'+vkLdrImg+'</span>'
          */
-      });      
+      });
    },
    wiki_list: function(){
-      
+
    }
 }
 
@@ -3880,15 +3880,15 @@ vkopt['support'] = {
    }
 }
 
-vkopt['test_module'] =  {
-   /*
+/*
+vkopt['test_module'] = {
    onInit: function(){
       vkopt.xxx.tpls = vk_lib.get_block_comments(function(){
          /*tpl:
-         
+
          * /
-      });      
-   },   
+      });
+   },
    onAudioRowMenuItems: function(info){
        console.log(arguments);
       return [
@@ -3915,8 +3915,45 @@ vkopt['test_module'] =  {
    processLinks:     function(link_el, params){
       //console.log('test processLinks:',link_el, params)
    },
-   //*/
 }
+//*/
 
+/*
+vkopt['test_module'] =  {
+   id: 'test_module',
+   // <core>
+   onInit:                 '', //function(){},
+   onLibFiles:             '', //function(file_name){},
+   onLocation:             '', //function(nav_obj,cur_module_name){},
+   onRequestQuery:         '', //function(url, query, options){}
+   onResponseAnswer:       '', //function(answer,url,params){},
+   onStorage :             '', //function(command_id,command_obj){},
+   processNode:            '', //function(node, params){}
+   processLinks:           '', //function(link, params){},
+   onModuleDelayedInit:    '', //function(plugin_id){},
+   onElementTooltipFirstTimeShow: '', //function(ett, ett_options)
+
+   // <settings>
+   onSettings:             '', //function(){} || {}
+   onOptionChanged:        '', //function(option_id, val, option_data){},
+   firstRun:               '', //function(){}
+
+   // <audio>
+   onAudioRowMenuItems: '', //function(audio_info_obj){},
+
+   // <wall>
+   onDatepickerCreate: '' //function(args){}
+};
+
+for (var call in vkopt.test_module) {
+    if (vkopt.test_module.hasOwnProperty(call)) {
+        vkopt.test_module[call] = function() {
+            console.error(arguments.callee);
+            console.log([...arguments]);
+        }
+        vkopt.test_module[call].displayName = call;
+    }
+}
+// */
 
 vkopt_core.init();
