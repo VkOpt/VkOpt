@@ -1,16 +1,16 @@
 // ==UserScript==
 // @include       *.*
 // ==/UserScript==
-(function(){ 
+(function() {
 
-var ext_browser={
-   mozilla:(function(){try{return Components.interfaces.nsIObserverService!=null} catch(e){return false} })(),
-   mozilla_jetpack: typeof self != 'undefined' && self.port && self.port.emit && self.port.on,
-   opera: window.opera && opera.extension,
-   chrome: window.chrome && chrome.extension,
-   safari: window.safari   && safari.self,
-   maxthon: (function(){try{return window.external.mxGetRuntime!=null} catch(e){return false} })() //without try{}catch it fail script on Firefox
-};
+  var ext_browser = {
+    mozilla: (function() { try { return !chrome && !!Components.interfaces.nsIObserverService } catch (e) {return false} })(),
+    opera  : !!window.opera && !!opera.extension,
+    webext : (function() { try { return !!chrome && !!chrome.extension } catch (e) {return false} })(),
+    safari : !!window.safari && !!safari.self,
+    maxthon: !!window.external && !!window.external.mxGetRuntime,
+    mozilla_jetpack: typeof self != 'undefined' && self.port && self.port.emit && self.port.on
+  };
 
 function init_content_script(win,doc,bg){
 win = win || window;
@@ -77,8 +77,8 @@ var ex_ldr={
                return msg;
             }
          },false);
-      } else if (ext_browser.chrome){                                              // CHROMIUM
-         chrome.extension.sendRequest({act:'get_scripts', url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc), __key:ex_ldr.__key}, function(data) {
+     } else if (ext_browser.webext){                                              // CHROMIUM
+         chrome.runtime.sendMessage({act:'get_scripts', url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc), __key:ex_ldr.__key}, function(data) {
             if (data.__key==ex_ldr.__key && data.files && data.files.length>0){
                if (data.api_enabled) 
                   api_enabled = true;
@@ -90,7 +90,7 @@ var ex_ldr={
 
          ex_api.post_message=function(msg){
             msg=ex_api.prepare_data(msg);
-            chrome.extension.sendRequest(msg, function(data) {
+            chrome.runtime.sendMessage(msg, function(data) {
                if (data.__key==ex_ldr.__key){
                   ex_api.message_handler(data);
                } 
@@ -424,7 +424,7 @@ ex_api.init(win);
 }
 
 
-if (ext_browser.opera || ext_browser.chrome || ext_browser.safari || ext_browser.maxthon || ext_browser.mozilla_jetpack){
+if (ext_browser.opera || ext_browser.webext || ext_browser.safari || ext_browser.maxthon || ext_browser.mozilla_jetpack){
       init_content_script(window, document);
 }
 

@@ -280,7 +280,7 @@ if (!window.Audio){
 
 var vkMozExtension = {
    callbacks: [],
-   send_request: function (data, callback) { // analogue of chrome.extension.sendRequest
+   send_request: function (data, callback) { // analogue of chrome.runtime.sendMessage
       var set_data = function (el, field, data) {
          if(el.dataset) {
             el.dataset[field] = JSON.stringify(data);
