@@ -290,19 +290,20 @@ var vk_glue = {
 
          // Перехватываем результат ajax-запросов с возможностью модификации перед колбеком
          Inj.Start('ajax._post',
-            // ARG0 - url; ARG1 - query object; ARG2 - options
-            function(){
-               // Mod callback:
-               if (__ARG2__.onDone){
-                  var onDoneOrig = __ARG2__.onDone;
-                  __ARG2__.onDone = function(){
-                     vk_glue.response_handler(arguments, __ARG0__, __ARG1__);
-                     onDoneOrig.apply(window, arguments);
-                  }
-               }
-               // End of callback mod
-            }
-         );
+         // ARG0 - url; ARG1 - query object; ARG2 - options
+         function(){
+             // Mod callback:
+             if (__ARG2__.onDone){
+                 var onDoneOrig = __ARG2__.onDone;
+                 __ARG2__.onDone = function(){
+                     var argarr = Array.prototype.slice.call(arguments);
+                     vk_glue.response_handler(argarr, __ARG0__, __ARG1__);
+                     onDoneOrig.apply(window, argarr);
+                 }
+             }
+             // End of callback mod
+         }
+     );
          // айфремовая загрузка выглядит так - загрузили каркас с частью данных, дальше по ходу загрузки айфреймовой страницы выполняются куски заполнения элементов карскаса.
          // эти кучки тоже надо перехватывать.
          Inj.Start('ajax.framegot','if (#ARG1#) #ARG1#=vk_glue.process_on_framegot(#ARG1#);');
@@ -389,7 +390,7 @@ vkopt['res'] = {
             min-height: 4px;
          }
          */
-      }).css;         
+      }).css;
    },
    img: {
       ldr: '<img src="/images/upload.gif">',
@@ -1273,23 +1274,23 @@ vkopt['owners'] = {
    decode: function(url, callback){ //callback(uid, gid, appid)
       if (!url)
          return callback(null, null);
-      
+
       var u_rx = /(?:(?:^|\/)(?:u|id)?(\d+)$)/;
       var g_rx = /(?:(?:^|\/)(?:g|club|event|public)(\d+)$)/;
-      
+
       url = String(url);
       var obj_id = url.split('/').pop().split('?').shift();
-              
+
       if (u_rx.test(url))
          return callback(url.match(u_rx)[1], null);
-      
+
       if (g_rx.test(url))
          return callback(null, url.match(g_rx)[1]);
-      
-      
+
+
       if (vkopt.owners.cache[obj_id])
          return callback.apply(this, vkopt.owners.cache[obj_id])
-      
+
       dApi.call('utils.resolveScreenName', {screen_name : obj_id}, function (r) {
          var res = r.response;
          switch (res.type) {
@@ -3281,10 +3282,10 @@ vkopt['audioplayer'] = {
       }
    },
    onLibFiles: function(file_name){
-      
-      if (file_name != 'audioplayer.js') 
-         return;   
-      // багфикс: при добавлении инфы об аудио в виде объекта в плейлист, оно не добавляется. впихиваем костыль для конверта объекта в массив. 
+
+      if (file_name != 'audioplayer.js')
+         return;
+      // багфикс: при добавлении инфы об аудио в виде объекта в плейлист, оно не добавляется. впихиваем костыль для конверта объекта в массив.
       if (vkopt.settings.get('add_to_next_fix'))
          Inj.Replace('AudioPlaylist.prototype.addAudio',/(([a-z_0-9]+)\.length)(\s*&&\s*([a-z_0-9]+)\(\2\))/,'($1$3) || ($2.fullId && $4(vkopt.audioplayer.audioObjToArr($2)))')
 
@@ -3308,7 +3309,7 @@ vkopt['audioplayer'] = {
             AudioUtils.toggleAudioHQBodyClass(),
             cur_pl.updateCurrentPlaying()
          })
-      }      
+      }
    }
 }
 
@@ -3769,10 +3770,10 @@ vkopt['groups'] = {
          /*wiki_list_btn:
          <a id="{vals.id}" onclick="vkWikiPagesList(); return false;">{lng.WikiPagesList}<span class="fl_r vk_ldr" id="vk_wiki_pages_list_loader" style="display:none;">'+vkLdrImg+'</span>'
          */
-      });      
+      });
    },
    wiki_list: function(){
-      
+
    }
 }
 
@@ -3879,16 +3880,17 @@ vkopt['support'] = {
    }
 }
 
-vkopt['test_module'] =  {
-   /*
+/*
+vkopt['test_module'] = {
    onInit: function(){
       vkopt.xxx.tpls = vk_lib.get_block_comments(function(){
          /*tpl:
-         
+
          * /
-      });      
-   },   
+      });
+   },
    onAudioRowMenuItems: function(info){
+       console.log(arguments);
       return [
          '<div>---</div>',
          '<div>'+info.fullId+'</div>',
@@ -3913,8 +3915,45 @@ vkopt['test_module'] =  {
    processLinks:     function(link_el, params){
       //console.log('test processLinks:',link_el, params)
    },
-   //*/
 }
+//*/
 
+/*
+vkopt['test_module'] =  {
+   id: 'test_module',
+   // <core>
+   onInit:                 '', //function(){},
+   onLibFiles:             '', //function(file_name){},
+   onLocation:             '', //function(nav_obj,cur_module_name){},
+   onRequestQuery:         '', //function(url, query, options){}
+   onResponseAnswer:       '', //function(answer,url,params){},
+   onStorage :             '', //function(command_id,command_obj){},
+   processNode:            '', //function(node, params){}
+   processLinks:           '', //function(link, params){},
+   onModuleDelayedInit:    '', //function(plugin_id){},
+   onElementTooltipFirstTimeShow: '', //function(ett, ett_options)
+
+   // <settings>
+   onSettings:             '', //function(){} || {}
+   onOptionChanged:        '', //function(option_id, val, option_data){},
+   firstRun:               '', //function(){}
+
+   // <audio>
+   onAudioRowMenuItems: '', //function(audio_info_obj){},
+
+   // <wall>
+   onDatepickerCreate: '' //function(args){}
+};
+
+for (var call in vkopt.test_module) {
+    if (vkopt.test_module.hasOwnProperty(call)) {
+        vkopt.test_module[call] = function() {
+            console.error(arguments.callee);
+            console.log([...arguments]);
+        }
+        vkopt.test_module[call].displayName = call;
+    }
+}
+// */
 
 vkopt_core.init();

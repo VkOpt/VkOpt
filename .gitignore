@@ -20,6 +20,8 @@ builds/vkopt.safariextension/content_script.js
 builds/vkopt_chrome.zip
 builds/vkopt_firefox_jetpack.xpi
 builds/vkopt_firefox.xpi
+builds/vkopt_firefox_webext.xpi
 builds/vkopt_opera.oex
+builds/vkopt_maxthon.mxaddon
 
 local.diff
