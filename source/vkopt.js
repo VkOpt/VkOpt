@@ -379,6 +379,11 @@ var vk_glue = {
 })();
 */
 
+vkopt.log = function(){
+   var args = Array.prototype.slice.call(arguments);
+   console.log.apply(this, args);
+}
+
 vkopt['res'] = {
    css: function(){
       return vk_lib.get_block_comments(function(){
@@ -2686,7 +2691,7 @@ vkopt['scrobbler'] = {
       }, error: function(code, message){
          if (code==4 || code==9) fm.auth();
          fm.set_icon(audio_info,'scrobled_fail');
-         vklog('scrobbler_error ['+code+']:'+message);
+         vkopt.log('scrobbler_error ['+code+']:'+message);
       }});
       fm.scrobled = true;
       fm.s_timer.kill();
@@ -2732,7 +2737,7 @@ vkopt['scrobbler'] = {
             //console.log('love done');
          }, error: function(code, message){
             if (code==4 || code==9) fm.auth();
-            vklog('last.fm error ['+code+']:'+message);
+            vkopt.log('last.fm error ['+code+']:'+message);
       }});
 
    },
@@ -2752,7 +2757,7 @@ vkopt['scrobbler'] = {
             },
             error: function(code, message){
                if (code==4 || code==9) fm.auth();
-               vklog('last.fm error ['+code+']:'+message);
+               vkopt.log('last.fm error ['+code+']:'+message);
             }
       });
    },
