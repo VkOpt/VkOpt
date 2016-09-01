@@ -1,0 +1,61 @@
+{
+    "author": "VkOpt",
+    "background": {
+        "page": "background.html",
+        "persistent": true
+    },
+    "content_scripts": [
+        {
+            "js": [
+                "content_script.js"
+            ],
+            "run_at": "document_start",
+            "matches": [
+                "<all_urls>"
+            ],
+            "all_frames": true
+        }
+    ],
+    "default_locale": "ru",
+    "description": "Добавление множества функций, упрощающих жизнь ВКонтакте (vk.com). Official site and support: http://vkopt.net/",
+    "homepage_url": "http://vkopt.net/",
+    "icons": {
+        "32": "img/icon32.png",
+        "48": "img/icon48.png",
+        "128": "img/icon128.png"
+    },
+    "manifest_version": 2,
+    "name": "VkOpt",
+    "permissions": [
+        "http://*/*",
+        "*://vk.com/*",
+        "*://*.vk.com/*",
+        "*://userapi.com/*",
+        "*://*.userapi.com/*",
+        "*://vk.me/*",
+        "*://*.vk.me/*",
+        "unlimitedStorage",
+        "webRequest",
+        "webRequestBlocking"
+    ],
+    "version": "3.0.0.0",
+    "web_accessible_resources": [
+        "scripts/*",
+        "scripts/vkopt.js",
+        "scripts/vk_face.js",
+        "scripts/vk_lib.js",
+        "scripts/vk_main.js",
+        "scripts/vk_media.js",
+        "scripts/vk_page.js",
+        "scripts/vk_resources.js",
+        "scripts/vk_settings.js",
+        "scripts/vk_skinman.js",
+        "scripts/vk_txtedit.js",
+        "scripts/vk_users.js",
+        "scripts/vklang.js"
+    ],
+    "-ms-preload": {
+        "backgroundScript": "backgroundScriptsAPIBridge.js",
+        "contentScript": "contentScriptsAPIBridge.js"
+    }
+}

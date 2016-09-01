@@ -2,6 +2,8 @@
 
 del /Q builds\chrome\background.js
 del /Q builds\chrome\content_script.js
+del /Q builds\edge\background.js
+del /Q builds\edge\content_script.js
 del /Q builds\firefox\resources\vkopt\data\content_script.js
 del /Q builds\firefox\resources\vkopt\lib\background.js
 del /Q builds\firefoxJetpack\resources\vkopt\data\background.js
@@ -14,6 +16,7 @@ del /Q builds\vkopt.safariextension\background.js
 del /Q builds\vkopt.safariextension\content_script.js
 
 del /Q builds\chrome\scripts\vk*
+del /Q builds\edge\scripts\vk*
 del /Q builds\firefox\scripts\vk*
 del /Q builds\firefoxJetpack\resources\vkopt\data\scripts\vk*
 del /Q builds\vkopt.safariextension\scripts\vk*

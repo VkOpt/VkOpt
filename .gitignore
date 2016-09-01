@@ -1,4 +1,5 @@
 builds/chrome/scripts/vk*
+builds/edge/scripts/vk*
 builds/firefox/scripts/vk*
 builds/opera.extension/scripts/vk*
 builds/vkopt.safariextension/scripts/vk*
@@ -6,6 +7,8 @@ builds/firefoxJetpack/resources/vkopt/data/scripts/vk*
 
 builds/chrome/background.js
 builds/chrome/content_script.js
+builds/edge/background.js
+builds/edge/content_script.js
 builds/firefox/resources/vkopt/data/content_script.js
 builds/firefox/resources/vkopt/lib/background.js
 builds/firefoxJetpack/resources/vkopt/data/background.js
