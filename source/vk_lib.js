@@ -2735,9 +2735,11 @@ vkLdr={
 	box:null,
 	show:function(){
 		vkLdr.box=new MessageBox({title:''});
-		vkLdr.box.setOptions({title: false, hideButtons: true,onHide:__bq.hideLast}).show();
+		vkLdr.box.setOptions({title: false, hideButtons: true}).show();
 		hide(vkLdr.box.bodyNode);
 		show(boxLoader);
+      hide(boxLayerBG);
+      removeClass(bodyNode, 'layers_shown');
 		boxRefreshCoords(boxLoader);
 	},
 	hide:function(){
@@ -2747,7 +2749,7 @@ vkLdr={
 };
 
 function vkAlertBox(title, text, callback, confirm, minimizable) {// [callback] - "Yes" or "Close" button / onShow() for "minimizable"; [confirm] - "No" button
-  if (minimizable && getSet(98)=='y') {    // вывод контента в видеоплеере, который можно сворачивать
+  if (minimizable && vkopt.settings.get('minimizable_boxes')) {    // вывод контента в видеоплеере, который можно сворачивать
       var vp = vkCe('div', {'id': 'video_player', 'class': 'popup_box_container box_dark', 'style': 'overflow:auto'});
       var box_body = (typeof text == 'string' ? vkCe('div', {'class': 'box_body'}, text) : text);
       vp.appendChild(box_body);
