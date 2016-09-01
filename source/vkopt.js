@@ -20,6 +20,7 @@ var vkopt_defaults = {
    config: {
       scroll_to_next: false,
       ad_block: true,
+      skip_away: true,
       compact_audio: false,
       audio_full_title: false,
       disable_border_radius: false,
@@ -1308,6 +1309,35 @@ vkopt['owners'] = {
          if (vkopt.owners.cache[obj_id])
             callback.apply(this, vkopt.owners.cache[obj_id])
       });
+   }
+}
+
+vkopt['away'] = {
+   onSettings: {
+      Others: {
+         skip_away: {
+            title: 'seOnAway'
+         }
+      }
+   },
+   processLinks:  function(link){
+      if (vkopt.settings.get('skip_away'))
+         vkopt.away.process_link(link);
+   },
+   process_link: function(node){
+      var href = node.getAttribute('href');
+      
+      if (!href || (href+'').indexOf('away.php?') == -1) // нас не интересуют ссылки без away.php
+         return;  
+      var params = q2ajx(href.split('?')[1]); // декодируем GET-параметры в объект
+      if (!params.to) // не нашли целевую ссылку
+         return;
+      
+      var new_lnk = vkUnescapeCyrLink(params.to);
+
+      if (!new_lnk)
+         return;
+      node.setAttribute('href', new_lnk);
    }
 }
 
