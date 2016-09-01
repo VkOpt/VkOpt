@@ -2,6 +2,7 @@ find ./builds/ -name background.js -delete
 find ./builds/ -name content_script.js -delete
 
 rm builds/chrome/scripts/vk*
+rm builds/edge/scripts/vk*
 rm builds/firefox/scripts/vk*
 rm builds/firefoxJetpack/resources/vkopt/data/scripts/vk*
 rm builds/vkopt.safariextension/scripts/vk*
