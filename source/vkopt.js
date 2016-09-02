@@ -3663,6 +3663,19 @@ vkopt['face'] =  {
       var progress_bar = vk_lib.get_block_comments(vkProgressBar).css;
 
       return codes.main + progress_bar;
+   },
+   onResponseAnswer: function(answer, url, q){
+      // запихиваем свой обработчик в момент получения данных о видео.
+      if (url == '/al_video.php' && q.act == 'show')
+         answer[2] = answer[2].replace(/(var\s*isInline)/,'\n   vkopt.face.ad_block.video(vars);\n $1')
+   },
+   ad_block: {
+      video: function(vars){
+         if (vkopt.settings.get('ad_block')){
+            vars['no_ads'] = 1;
+            vkopt.log('vid ad_block info:', vars);
+         }
+      }
    }
 }
 
