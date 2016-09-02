@@ -782,7 +782,7 @@ var vkMozExtension = {
 			// определение распарсить переданную функцию или же найти по имени функции.
 			var fn = isFunction(func) ? func : eval('window.' + func);
 			if (!fn)
-				vklog('Inj_Error: "' + func + '" not found', 1);
+				vkopt.log('Inj_Error: "' + func + '" not found', 1);
 			var res = fn ? String(fn).match(Inj.FRegEx) : ['', '', ''];
 			if (Inj.need_porno()) {
 				res[2] = res[2].replace(/\r?\n/g, " ");

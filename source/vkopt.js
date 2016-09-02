@@ -126,7 +126,7 @@ var vkopt_core = {
       vkopt.lang.override(); // TODO: убрать этот костыль при удалении скриптов для старого дизайна
 
       for (var key in StaticFiles)
-         if (StaticFiles[key].t == 'js')
+         if (StaticFiles[key].t == 'js' && StaticFiles[key].l)
             vk_glue.inj_to_file(key);
       //vkBroadcast.Init(vkOnStorage);
       vkopt_core.plugins.on_init();
@@ -252,6 +252,12 @@ var vkopt_core = {
       },
       eltt_first_show: function(ett){
          vkopt_core.plugins.call_modules('onElementTooltipFirstTimeShow', ett, ett._opts);
+      },
+      inline_dd_create: function(el, opts){
+         vkopt_core.plugins.call_modules('onInlineDropdownCreate', el, opts);
+      },
+      datepicker_create: function(){
+         vkopt_core.plugins.call_modules('onDatepickerCreate', Array.prototype.slice.call(arguments));
       }
    }
 }
@@ -272,7 +278,9 @@ var vk_glue = {
    inj_to_file: function(file_name){
       switch (file_name){
          case 'common.js':       vk_glue.inj.common();  break;
-         case 'auto_list.js':       vk_glue.inj.auto_list();  break;
+         case 'auto_list.js':    vk_glue.inj.auto_list();  break;
+         case 'ui_controls.js':  vk_glue.inj.ui_controls();  break; 
+         case 'datepicker.js':  vk_glue.inj.datepicker();  break; 
       }
       vkopt_core.plugins.on_js_file(file_name);
    },
@@ -321,6 +329,23 @@ var vk_glue = {
             Inj.Replace('AutoList.prototype._drawRows',/\.appendChild\(([A-Za-z_0-9]+)\)/,'$&; vkopt_core.plugins.process_node($1);');
          }
          // Inj.End('AutoList.prototype._drawRows', '; vkopt_core.plugins.process_node(this._containerEl);'); // Другой вариант. Меньше шансов того, что отвалится, но тут выходит повторная обработка ранее выведенного.
+      },
+      ui_controls: function(){
+         Inj.Start('InlineDropdown','vkopt_core.plugins.inline_dd_create(#ARG0#, #ARG1#);');
+      },
+      datepicker: function(){
+         if (!vkopt.settings.get('datepicker_inj')) 
+            return;
+         // передаём в наш перехватчик id элемента в котором указана дата.
+         if (!window.vkorigDatepicker ||  (window.Datepicker  && Datepicker.toString().indexOf('onDatepickerCreate') == -1)){
+            window.vkorigDatepicker = window.Datepicker;
+            window.Datepicker = function(el, options){
+               // moved from vkopt.wall.onLibFiles mod. Attach to this by event onDatepickerCreate
+               var args = Array.prototype.slice.call(arguments);
+               vkopt_core.plugins.datepicker_create.apply(this, args);
+               vkorigDatepicker.apply(this, args);
+            }
+         }
       }
    },
    nav_handler: function(){
@@ -357,8 +382,10 @@ var vk_glue = {
       processNode:            function(node, params){}                     // обработка элемента
       processLinks:           function(link, params){},                    // обработка ссылки
       onModuleDelayedInit:    function(plugin_id){},                       // реакция на подключение модуля, опоздавшего к загрузке страницы.
-      onElementTooltipFirstTimeShow: function(ett, ett_options)            // реакция на первый показ ElementTooltip, при создании его контента. На момент вызова в элементе ett._ttel уже есть контент. По ett._opts.id можно определить к чему тултип относится.
-
+      onElementTooltipFirstTimeShow: function(ett, ett_options),           // реакция на первый показ ElementTooltip, при создании его контента. На момент вызова в элементе ett._ttel уже есть контент. По ett._opts.id можно определить к чему тултип относится.
+      onInlineDropdownCreate: function(el, options),                       // реакция на создание контрола InlineDropdown. Можно использовать для добавления своих пунктов в options.items для меню элемента el                       
+      onDatepickerCreate: function(args){},                                // вызывается при создании селектора даты new Datepicker(), args - массив аргументов переданных в конструктор
+      
       // <settings>
       onSettings:             function(){} || {}                           // возвращаем объект с перечисленными по категориям настройками этого модуля
       onOptionChanged:        function(option_id, val, option_data){},     // реакция на изменение опции
@@ -369,9 +396,7 @@ var vk_glue = {
 
       // <audio>
       onAudioRowMenuItems: function(audio_info_obj){},                     // вернуть массив из строк с пунктами-ссылками "<a>..</a>"
-
-      // <wall>
-      onDatepickerCreate: function(args){},                                // вызывается при создании селектора даты new Datepicker(), args - массив аргументов переданных в конструктор
+      
    };
    window.vkopt = (window.vkopt || {});
    window.vkopt[m.id] = m;
@@ -4094,19 +4119,6 @@ vkopt['wall'] = {
       Но если обновить страницу, на которой стена, то фикс не применится, т.к медиаселектор создаёт свой экземпляр раньше, чем вкопт изменит его код.
       Поэтому будем править время уже в самом datepicker'е
       */
-     if (file_name == 'datepicker.js' && vkopt.settings.get('datepicker_inj')){ // передаём в наш перехватчик id элемента в котром указана дата.
-         //Inj.Start('Datepicker','vkopt.wall.postponed.datepicker(#ARG0#);'); // обломс. невозможно пересоздать так.
-         if (!window.vkorigDatepicker ||  (window.Datepicker  && Datepicker.toString().indexOf('onDatepickerCreate') == -1)){
-            window.vkorigDatepicker = window.Datepicker;
-            window.Datepicker = function(el, options){
-               // vkopt.wall.onLibFiles mod. Attach to this by event onDatepickerCreate
-               var args = Array.prototype.slice.call(arguments);
-               vkopt_core.plugins.call_modules('onDatepickerCreate', args);
-               vkorigDatepicker.apply(this, args);
-            }
-         }
-     }
-
    },
    onDatepickerCreate: function(args){
       // args[0] - element_id
