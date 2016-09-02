@@ -409,7 +409,7 @@ var vk_glue = {
 
 vkopt.log = function(){
    var args = Array.prototype.slice.call(arguments);
-   console.log.apply(this, args);
+   console.log.apply(console, args);
 }
 
 vkopt['res'] = {
