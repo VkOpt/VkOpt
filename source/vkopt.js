@@ -31,7 +31,7 @@ var vkopt_defaults = {
       size_info_on_ctrl: true,
       scrobbler: true,
       im_dialogs_right: false,
-      cut_bracket: false,
+      dont_cut_bracket: false,
       postpone_custom_interval: true,
       pv_comm_move_down: false,
       calc_age: true,
@@ -1128,7 +1128,7 @@ vkopt['lang'] = {
    __callbacks: [function(){}],
    onSettings:{
       Others:{
-         cut_bracket:{
+         dont_cut_bracket:{
             title: 'seCutBracket'
          }
       }
@@ -1212,14 +1212,14 @@ vkopt['lang'] = {
          });
          return str;
       }
-      else if (options)
+      else if (str && (options || !vkopt.settings.get('dont_cut_bracket')))
          return vkopt.lang.cut_bracket(str, options);
       else
          return str;
    },
    cut_bracket: function(s,bracket){ // bracket = 2 - remove [], other  - add []
       if (isArray(s)) return s;
-      if (vkopt.settings.get('cut_bracket') || bracket==2) s=(s.substr(0,1)=='[')?s.substr(1,s.length-2):s;
+      if (!vkopt.settings.get('dont_cut_bracket') || bracket==2) s=(s.substr(0,1)=='[')?s.substr(1,s.length-2):s;
       else if (bracket &&  bracket!=2) s='[ '+s+' ]';
 		return s;
 	},
