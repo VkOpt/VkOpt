@@ -331,7 +331,10 @@ var vk_glue = {
          // Inj.End('AutoList.prototype._drawRows', '; vkopt_core.plugins.process_node(this._containerEl);'); // Другой вариант. Меньше шансов того, что отвалится, но тут выходит повторная обработка ранее выведенного.
       },
       ui_controls: function(){
+         var orig = InlineDropdown; // бекап
          Inj.Start('InlineDropdown','vkopt_core.plugins.inline_dd_create(#ARG0#, #ARG1#);');
+         for (var method in orig.prototype) //восстанавливаем методы из бекапа
+            InlineDropdown.prototype[method] = orig.prototype[method];
       },
       datepicker: function(){
          if (!vkopt.settings.get('datepicker_inj')) 
