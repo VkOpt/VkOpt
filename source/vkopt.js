@@ -2725,7 +2725,7 @@ vkopt['scrobbler'] = {
          vkopt.log('scrobbler_error ['+code+']:'+message);
       }});
       fm.scrobled = true;
-      fm.s_timer.kill();
+      fm.s_timer && fm.s_timer.kill();
       // show scrobble ok
    },
    now_playing: function(audio_info){
@@ -2939,7 +2939,7 @@ vkopt['scrobbler'] = {
                fm.auth();
             }
             removeClass(el,'disabled');
-            fm.s_timer.reset();
+            fm.s_timer && fm.s_timer.reset();
          }
 
       }
@@ -3059,7 +3059,7 @@ vkopt['scrobbler'] = {
              if (!fm.scrobled){
                 if (!fm.s_timer)
                    fm.scrobble_timer(info);
-                fm.s_timer.resume();
+                fm.s_timer && fm.s_timer.resume();
                 fm.set_icon(info,'playing');          // animate scrobbler icon track
              }
             break;
@@ -3067,7 +3067,7 @@ vkopt['scrobbler'] = {
             if (!fm.scrobled){
                if (!fm.s_timer)
                    fm.scrobble_timer(info);
-               fm.s_timer.pause();
+               fm.s_timer && fm.s_timer.pause();
                fm.set_icon(info,'paused'); // pause scrobbler icon track (stop animate);
             }
             break;
