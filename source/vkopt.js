@@ -3379,6 +3379,125 @@ vkopt['audioplayer'] = {
    }
 }
 
+vkopt['videoview'] = {
+   css: function(){
+      return vk_lib.get_block_comments(function(){
+      /*css:
+      .vk_mv_down_icon {
+         background: url(/images/icons/video_icon.png?3) no-repeat;
+         background-position: 0 -52px;
+         height: 19px;
+         width: 20px;
+         transform: rotate(90deg);
+      }
+      #vk_mv_down_links_tt {
+         background: rgba(0,0,0,0.6);
+         border: 1px solid rgba(255,255,255,0.4);
+      }
+      
+      #vk_mv_down_links_tt.eltt.eltt_bottom:before {
+         border-bottom-color: transparent;
+      }
+      #vk_mv_down_links_tt.eltt.eltt_bottom:after {
+         border-bottom-color: rgba(255, 255, 255, 0.4);
+         margin-bottom: 1px;
+      }
+      #vk_mv_down_links_tt a {
+         display: block;
+         padding: 3px 10px;
+         color: #FFF;
+         white-space: nowrap;
+      }
+      #mv_top_controls{
+         z-index: 1000;
+      }
+      */
+      }).css
+   },
+   onInit: function(){
+      vkopt.videoview.tpls = vk_lib.get_block_comments(function(){
+         /*dl_btn:
+         <div class="mv_top_button" id="vk_mv_down_icon" role="button" tabindex="0" aria-label="{lng.ToggleLinksView}">
+         <div class="vk_mv_down_icon"></div>
+         </div>         
+         */
+         /*dl_link:
+         <a href="{vals.url}" download="{vals.name}">{vals.caption}</a>
+         */
+         
+      });
+   },
+   onResponseAnswer: function(answer, url, q){
+      // запихиваем свой обработчик в момент получения данных о видео.
+      if (url == '/al_video.php' && q.act == 'show'){
+         if (answer[2])
+            answer[2] = answer[2].replace(/(var\s*isInline)/,'\n   vkopt.videoview.on_player_data(vars);\n $1');
+         else
+            vkopt.videoview.on_player_data(null);
+      }
+   },
+   _cur_mv_data: null,
+   on_player_data: function(vars){
+      vkopt.log('Video data:', vars);
+      vkopt.videoview._cur_mv_data = vars;
+      re('vk_mv_down_icon'); // убиваем кнопку, т.к не выходит убить тултип таким образом: data(ge('vk_mv_down_icon'), 'ett').destroy(); 
+      if (!vars) return; // нет данных - выходим.
+      
+      if (!ge('vk_mv_down_icon') && ge('mv_top_controls')){
+         var btn = se(vk_lib.tpl_process(vkopt.videoview.tpls['dl_btn'], {}));
+         ge('mv_top_controls').appendChild(btn);
+      }
+      
+      var links = vkopt.videoview.get_video_links(vars);
+      var filename = vkCleanFileName(vars.md_title);
+      html = '';
+      for (var i = 0; i < links.length; i++){
+         html += vk_lib.tpl_process(vkopt.videoview.tpls['dl_link'], {
+            url: links[i].url,
+            name: filename + '_' + links[i].quality + '.mp4',
+            caption: links[i].quality
+         })
+      }
+
+      var btn = ge('vk_mv_down_icon');
+      if (!btn) return;
+      
+      // убиваем тултип-меню
+      if (data(btn, 'ett'))
+         data(btn, 'ett').destroy();
+      
+      // создаём новое тултип-меню
+      vkopt.videoview._links_tt = new ElementTooltip(btn,{
+                 id: "vk_mv_down_links_tt",
+                 forceSide: "bottom",
+                 elClassWhenTooltip: "vk_mv_down_links_shown",
+                 content: html,
+                 offset: [-3, 0]
+         })
+      
+   },
+   get_video_url: function(vars, q) {
+      return vars.live_mp4 ? vars.live_mp4 : vars.extra_data ? vars.extra_data : vars["cache" + q] || vars["url" + q]
+   },
+   get_video_links: function(vars){
+      var list = [];
+      
+      if (vars.live_mp4)
+         list.push({url: vars.live_mp4, quality: 'live_mp4'});
+      
+      if (vars.extra_data)
+         list.push({url: vars.extra_data, quality: 'extra'});
+      
+      var q = [240, 360, 480, 720, 1080];
+      for (var i = 0; i <= vars.hd; i++){
+         var qname = q[i] || 0;
+         vars["url" + qname] && list.push({url: vars["url" + qname], quality: qname+'p'})
+         vars["cache" + qname] &&  list.push({url: vars["cache" + qname], quality: qname+'p_alt'})
+      }
+      return list;
+   }
+}
+
 vkopt['messages'] = {
    css: function(){
       return vk_lib.get_block_comments(function(){
