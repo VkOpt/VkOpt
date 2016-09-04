@@ -2209,6 +2209,7 @@ vkopt['audio'] =  {
              acts.firstChild ? acts.insertBefore(acts_btn, acts.firstChild) : acts.appendChild(acts_btn);
       }
 
+      // TODO: грузить инфу только при наведении на иконку меню/скачивания
       if (vkopt.settings.get('audio_size_info') || vkopt.settings.get('audio_dl')) // URL'ы нужны только для этих опций
          vkopt.audio.load_audio_urls(); // запускаем процесс загрузки инфы об аудио из очереди
    },
@@ -3484,7 +3485,7 @@ vkopt['attacher'] = {
    onResponseAnswer: function(answer, url, q){
       if (!vkopt.settings.get('attach_media_by_id'))
             return;
-      if (url == '/audio' && q.act == 'a_choose_audio_box' && !q.q && (answer[2] || null).replace){
+      if (url == '/audio' && q.act == 'a_choose_audio_box' && !q.q && answer[2] && answer[2].replace){
          if (answer[2].indexOf('vkopt.attacher.audio.check_query') == -1)
             answer[2] = answer[2].replace(/(cur\.onChangeAudioQuery\s*=\s*function[^\{]+\{([\r\n\s]*))/,'$1vkopt.attacher.audio.check_query(arguments[0]);$2');
             answer[2] = answer[2].replace(/(box\.hideCloseProgress\(\);)/,'$1\n   vkopt.attacher.audio.check_query(cur.chooseAudioQuery);');
@@ -3666,7 +3667,7 @@ vkopt['face'] =  {
    },
    onResponseAnswer: function(answer, url, q){
       // запихиваем свой обработчик в момент получения данных о видео.
-      if (url == '/al_video.php' && q.act == 'show')
+      if (url == '/al_video.php' && q.act == 'show' && answer[2])
          answer[2] = answer[2].replace(/(var\s*isInline)/,'\n   vkopt.face.ad_block.video(vars);\n $1')
    },
    ad_block: {
