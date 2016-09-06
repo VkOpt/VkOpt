@@ -3430,19 +3430,29 @@ vkopt['videoview'] = {
    onResponseAnswer: function(answer, url, q){
       // запихиваем свой обработчик в момент получения данных о видео.
       if (url == '/al_video.php' && q.act == 'show'){
-         if (answer[2])
-            answer[2] = answer[2].replace(/(var\s*isInline)/,'\n   vkopt.videoview.on_player_data(vars);\n $1');
-         else
+         var rx = /(var\s*isInline)/;
+         if (answer[2] && rx.test(answer[2])){
+            //vkopt.log('video data:', answer[2]);
+            answer[2] = answer[2].replace(rx, '\n   vkopt.videoview.on_player_data(vars);\n $1');
+         } else
             vkopt.videoview.on_player_data(null);
       }
    },
    _cur_mv_data: null,
    on_player_data: function(vars){
-      vkopt.log('Video data:', vars);
+      //vkopt.log('Video data:', vars);
       vkopt.videoview._cur_mv_data = vars;
       re('vk_mv_down_icon'); // убиваем кнопку, т.к не выходит убить тултип таким образом: data(ge('vk_mv_down_icon'), 'ett').destroy(); 
-      if (!vars) return; // нет данных - выходим.
-      
+      if (!vars){
+         setTimeout(function(){
+            var p, ifr;
+            p = ge('mv_player_box');
+            p && (ifr = geByTag1('iframe', p));
+            if (ifr)
+               vkopt.videoview.on_iframe_player(ifr.src);
+         }, 300);
+         return; // нет данных - выходим.
+      }
       if (!ge('vk_mv_down_icon') && ge('mv_top_controls')){
          var btn = se(vk_lib.tpl_process(vkopt.videoview.tpls['dl_btn'], {}));
          ge('mv_top_controls').appendChild(btn);
@@ -3475,6 +3485,9 @@ vkopt['videoview'] = {
                  offset: [-3, 0]
          })
       
+   },
+   on_iframe_player: function(url){
+      vkopt.log('External player:', url);
    },
    get_video_url: function(vars, q) {
       return vars.live_mp4 ? vars.live_mp4 : vars.extra_data ? vars.extra_data : vars["cache" + q] || vars["url" + q]
