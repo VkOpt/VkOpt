@@ -1,4 +1,4 @@
-printf "cleaning..."
+printf "cleaning...\n"
 ./_clean.sh
 printf "ok.\n"
 

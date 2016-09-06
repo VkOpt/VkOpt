@@ -299,19 +299,20 @@ var vk_glue = {
 
          // Перехватываем результат ajax-запросов с возможностью модификации перед колбеком
          Inj.Start('ajax._post',
-            // ARG0 - url; ARG1 - query object; ARG2 - options
-            function(){
-               // Mod callback:
-               if (__ARG2__.onDone){
-                  var onDoneOrig = __ARG2__.onDone;
-                  __ARG2__.onDone = function(){
-                     vk_glue.response_handler(arguments, __ARG0__, __ARG1__);
-                     onDoneOrig.apply(window, arguments);
-                  }
-               }
-               // End of callback mod
-            }
-         );
+         // ARG0 - url; ARG1 - query object; ARG2 - options
+         function(){
+             // Mod callback:
+             if (__ARG2__.onDone){
+                 var onDoneOrig = __ARG2__.onDone;
+                 __ARG2__.onDone = function(){
+                     var argarr = Array.prototype.slice.call(arguments);
+                     vk_glue.response_handler(argarr, __ARG0__, __ARG1__);
+                     onDoneOrig.apply(window, argarr);
+                 }
+             }
+             // End of callback mod
+         }
+     );
          // айфремовая загрузка выглядит так - загрузили каркас с частью данных, дальше по ходу загрузки айфреймовой страницы выполняются куски заполнения элементов карскаса.
          // эти кучки тоже надо перехватывать.
          Inj.Start('ajax.framegot','if (#ARG1#) #ARG1#=vk_glue.process_on_framegot(#ARG1#);');
@@ -3348,10 +3349,10 @@ vkopt['audioplayer'] = {
       }
    },
    onLibFiles: function(file_name){
-      
-      if (file_name != 'audioplayer.js') 
-         return;   
-      // багфикс: при добавлении инфы об аудио в виде объекта в плейлист, оно не добавляется. впихиваем костыль для конверта объекта в массив. 
+
+      if (file_name != 'audioplayer.js')
+         return;
+      // багфикс: при добавлении инфы об аудио в виде объекта в плейлист, оно не добавляется. впихиваем костыль для конверта объекта в массив.
       if (vkopt.settings.get('add_to_next_fix'))
          Inj.Replace('AudioPlaylist.prototype.addAudio',/(([a-z_0-9]+)\.length)(\s*&&\s*([a-z_0-9]+)\(\2\))/,'($1$3) || ($2.fullId && $4(vkopt.audioplayer.audioObjToArr($2)))')
 
@@ -3375,7 +3376,7 @@ vkopt['audioplayer'] = {
             AudioUtils.toggleAudioHQBodyClass(),
             cur_pl.updateCurrentPlaying()
          })
-      }      
+      }
    }
 }
 
@@ -4351,6 +4352,7 @@ vkopt['test_module'] =  {
       });      
    },   
    onAudioRowMenuItems: function(info){
+       console.log(arguments);
       return [
          '<div>---</div>',
          '<div>'+info.fullId+'</div>',
