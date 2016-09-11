@@ -3629,22 +3629,49 @@ vkopt['videoview'] = {
       },
       get_links : function (url, callback) {
       	var vid = String(url).split('?')[0].split('/').pop();
-      	var req_url = (vk_ext_api.ready ? 'http:' : location.protocol) + '//www.youtube.com/get_video_info?video_id=' + vid +
-                        '&asv=3&eurl=' +
-                        encodeURIComponent(location.href) + '&el=embedded';
+      	var req_url = (vk_ext_api.ready ? 'http:' : location.protocol) + '//www.youtube.com/get_video_info?video_id=' + vid;
 
       	XFR.post(req_url, {}, function (t) {
-      		var obj = vkopt.videoview.yt.decode_data(t);
-      		var map = (obj.fmt_url_map || obj.url_encoded_fmt_stream_map);
+            /*
+            var decode_s = function (a) {
+               var mod = {
+                  del_left : function (a, b) {
+                     a.splice(0, b)
+                  },
+                  calc : function (a, b) {
+                     var c = a[0];
+                     a[0] = a[b % a.length];
+                     a[b] = c
+                  },
+                  reverse : function (a) {
+                     a.reverse()
+                  }
+               };
+               a = a.split("");
+               mod.calc(a, 19);
+               mod.reverse(a);
+               mod.del_left(a, 1);
+               mod.reverse(a);
+               mod.del_left(a, 1);
+               mod.calc(a, 7);
+               mod.reverse(a);
+               mod.calc(a, 38);
+               mod.del_left(a, 3);
+               return a.join("")
+            };
+            */
+            var obj = vkopt.videoview.yt.decode_data(t);
+            vkopt.log('YT raw data:', obj);
+      		var map = (obj.fmt_url_map || obj.url_encoded_fmt_stream_map  || obj.adaptive_fmts);
       		if (!map) {
       			callback([], vid);
       			return;
       		}
       		var links = [];
       		for (var i = 0; i < map.length; i++) {
-      			var sig = map[i].sig;
-      			if (!map[i].sig && map[i].s)
-      				continue;
+
+               if (!map[i].sig && map[i].s)
+                  continue; //map[i].sig = decode_s(map[i].s);
 
       			var format = vkopt.videoview.yt.video_itag_formats[map[i].itag];
       			var info = (map[i].type + '').split(';')[0] + ' ' + (obj.fmt_list[i] + '').split('/')[1];
@@ -3652,11 +3679,16 @@ vkopt['videoview'] = {
       				vkopt.log('YT ' + map[i].itag + ': \n' + (map[i].stereo3d ? '3D/' : '') + info, 1);
       			format = (map[i].stereo3d ? '3D/' : '') + (format || info);
       			obj.title = isArray(obj.title) ? obj.title.join('') : obj.title;
-      			links.push({
-      				url : map[i].url + '&signature=' + sig + '&quality=' + map[i].quality + (obj.title ? '&title=' + encodeURIComponent(obj.title.replace(/\+/g, ' ')) : ''),
+      			var url = map[i].url;
+               if (url.indexOf('&signature=') == -1 && map[i].sig)
+                  url += '&signature=' + map[i].sig;
+               url += '&quality=' + map[i].quality + (obj.title ? '&title=' + encodeURIComponent(obj.title.replace(/\+/g, ' ')) : '');
+               links.push({
+      				url : url,
       				quality : format,
       				info : info
       			});
+               // adaptive_fmts
       		}
       		callback(links, vid);
       	});
