@@ -3425,7 +3425,9 @@ vkopt['videoview'] = {
          /*dl_link:
          <a href="{vals.url}" download="{vals.name}">{vals.caption}</a>
          */
-         
+         /*ext_link:
+         <a class="vk_vid_external_view" href="{vals.url}">{vals.source_name}</a>
+         */
       });
    },
    onResponseAnswer: function(answer, url, q){
@@ -3440,10 +3442,27 @@ vkopt['videoview'] = {
       }
    },
    _cur_mv_data: null,
+   update_dl_btn: function(html){
+     re('vk_mv_down_icon'); // убиваем кнопку, т.к не выходит убить тултип таким образом: data(ge('vk_mv_down_icon'), 'ett').destroy(); 
+     if (!html) 
+        return null;
+      if (!ge('vk_mv_down_icon') && ge('mv_top_controls')){
+         var btn = se(vk_lib.tpl_process(vkopt.videoview.tpls['dl_btn'], {}));
+         ge('mv_top_controls').appendChild(btn);
+      }
+      // создаём новое тултип-меню
+      vkopt.videoview._links_tt = new ElementTooltip(btn,{
+                 id: "vk_mv_down_links_tt",
+                 forceSide: "bottom",
+                 elClassWhenTooltip: "vk_mv_down_links_shown",
+                 content: html,
+                 offset: [-3, 0]
+      });  
+   },
    on_player_data: function(vars){
       //vkopt.log('Video data:', vars);
       vkopt.videoview._cur_mv_data = vars;
-      re('vk_mv_down_icon'); // убиваем кнопку, т.к не выходит убить тултип таким образом: data(ge('vk_mv_down_icon'), 'ett').destroy(); 
+      vkopt.videoview.update_dl_btn();
       if (!vars){
          setTimeout(function(){
             var p, ifr;
@@ -3454,11 +3473,7 @@ vkopt['videoview'] = {
          }, 300);
          return; // нет данных - выходим.
       }
-      if (!ge('vk_mv_down_icon') && ge('mv_top_controls')){
-         var btn = se(vk_lib.tpl_process(vkopt.videoview.tpls['dl_btn'], {}));
-         ge('mv_top_controls').appendChild(btn);
-      }
-      
+
       var links = vkopt.videoview.get_video_links(vars);
       var filename = vkCleanFileName(vars.md_title);
       html = '';
@@ -3470,25 +3485,48 @@ vkopt['videoview'] = {
          })
       }
 
-      var btn = ge('vk_mv_down_icon');
-      if (!btn) return;
-      
-      // убиваем тултип-меню
-      if (data(btn, 'ett'))
-         data(btn, 'ett').destroy();
-      
-      // создаём новое тултип-меню
-      vkopt.videoview._links_tt = new ElementTooltip(btn,{
-                 id: "vk_mv_down_links_tt",
-                 forceSide: "bottom",
-                 elClassWhenTooltip: "vk_mv_down_links_shown",
-                 content: html,
-                 offset: [-3, 0]
-         })
-      
+      vkopt.videoview.update_dl_btn(html);      
    },
    on_iframe_player: function(url){
       vkopt.log('External player:', url);
+      if (url.indexOf('ivi.ru') > -1){
+         vkopt.videoview.get_ivi_links(url, function(links, vid){
+               html = '';
+               var filename = vkCleanFileName(mvcur.mvData.title);
+               html += vk_lib.tpl_process(vkopt.videoview.tpls['source_name'], {
+                  url: 'http://www.ivi.ru/watch/' + vid, 
+                  source_name:'ivi.ru'
+               });
+               
+               for (var i = 0; i < links.length; i++){
+                  html += vk_lib.tpl_process(vkopt.videoview.tpls['dl_link'], {
+                     url: links[i].url,
+                     name: filename + '_' + links[i].quality + '.mp4',
+                     caption: links[i].quality
+                  })
+               }
+               vkopt.videoview.update_dl_btn(html);   
+         })
+      }
+      if (url.indexOf('youtube.com') > -1){
+         vkopt.videoview.yt.get_links(url, function(links, vid){
+               html = '';
+               var filename = vkCleanFileName(mvcur.mvData.title);
+               html += vk_lib.tpl_process(vkopt.videoview.tpls['ext_link'], {
+                  url: 'http://youtube.com/watch?v=' + vid,
+                  source_name: 'YouTube'
+               });
+               for (var i = 0; i < links.length; i++){
+                  html += vk_lib.tpl_process(vkopt.videoview.tpls['dl_link'], {
+                     url: links[i].url,
+                     name: filename + '_' + links[i].quality + '.mp4',
+                     caption: links[i].quality
+                  })
+               }
+               vkopt.videoview.update_dl_btn(html);   
+         })
+      }      
+      
    },
    get_video_url: function(vars, q) {
       return vars.live_mp4 ? vars.live_mp4 : vars.extra_data ? vars.extra_data : vars["cache" + q] || vars["url" + q]
@@ -3509,7 +3547,177 @@ vkopt['videoview'] = {
          vars["cache" + qname] &&  list.push({url: vars["cache" + qname], quality: qname+'p_alt'})
       }
       return list;
-   }
+   },
+   yt: {
+      decode_data : function (qa) { // декодирование URL-encoded объектов
+      	if (!qa)
+      		return {};
+      	var exclude = {
+      		'url' : 1,
+      		'type' : 1,
+      		'ttsurl' : 1
+      	};
+      	var query = {},
+      	dec = function (str) {
+      		try {
+      			return decodeURIComponent(str);
+      		} catch (e) {
+      			return str;
+      		}
+      	};
+      	qa = qa.split('&');
+      	for (var i = 0; i < qa.length; i++) {
+      		var a = qa[i];
+      		var t = a.split('=');
+      		if (t[0]) {
+      			var key = dec(t[0]);
+      			var v = exclude[key] ? [dec(t[1] + '')] : dec(t[1] + '').split(',');
+      			query[key] = [];
+      			for (var j = 0; j < v.length; j++) {
+      				if (v[j].indexOf('&') != -1 && v[j].indexOf('=') != -1 && !exclude[key])
+      					v[j] = vkopt.videoview.yt.decode_data(v[j]);
+      				query[key].push(v[j]);
+      			}
+      			if (query[key].length == 1)
+      				query[key] = query[key][0];
+      		}
+      	}
+      	return query;
+      },
+      video_itag_formats: { //YouTube formats list
+         '0': '240p.flv',
+         '5': '240p.flv',
+         '6': '360p.flv',
+         '34': '360p.flv',
+         '35': '480p.flv',
+         
+         '13': '144p.3gp (small)',
+         '17': '144p.3gp (medium)',
+         '36': '240p.3gp',
+         
+         '160': '240p.mp4 (no audio)',
+         '18': '360p.mp4',
+         '135': '480p.mp4 (no audio)',
+         '22': '720p.mp4',
+         '37': '1080p.mp4',
+         '137': '1080p.mp4 (no audio)',
+         '38': '4k.mp4',
+         '82': '360p.mp4',//3d?
+         //'83': '480p.mp4',//3d?
+         '84': '720p.mp4',//3d?
+         //'85': '1080p.mp4',//3d?
+         
+         '242': '240p.WebM (no audio)',
+         '43': '360p.WebM',
+         '44': '480p.WebM',
+         '244': '480p.WebM (low, no audio)',
+         '45': '720p.WebM',
+         '247': '720p.WebM (no audio)',
+         '46': '1080p.WebM',
+         '248': '1080p.WebM (no audio)',
+         '100':'360p.WebM',//3d?
+         //'101':'480p.WebM',//3d?
+         '102':'720p.WebM',//3d?
+         //'103':'1080p.WebM',//3d?
+         
+         '139': '48kbs.aac',
+         '140': '128kbs.aac',
+         '141': '256kbs.aac',
+         
+         '171': '128kbs.ogg',
+         '172': '172kbs.ogg'
+      },
+      get_links : function (url, callback) {
+      	var vid = String(url).split('?')[0].split('/').pop();
+      	var req_url = (vk_ext_api.ready ? 'http:' : location.protocol) + '//www.youtube.com/get_video_info?video_id=' + vid +
+                        '&asv=3&eurl=' +
+                        encodeURIComponent(location.href) + '&el=embedded';
+
+      	XFR.post(req_url, {}, function (t) {
+      		var obj = vkopt.videoview.yt.decode_data(t);
+      		var map = (obj.fmt_url_map || obj.url_encoded_fmt_stream_map);
+      		if (!map) {
+      			callback([], vid);
+      			return;
+      		}
+      		var links = [];
+      		for (var i = 0; i < map.length; i++) {
+      			var sig = map[i].sig;
+      			if (!map[i].sig && map[i].s)
+      				continue;
+
+      			var format = vkopt.videoview.yt.video_itag_formats[map[i].itag];
+      			var info = (map[i].type + '').split(';')[0] + ' ' + (obj.fmt_list[i] + '').split('/')[1];
+      			if (!format)
+      				vkopt.log('YT ' + map[i].itag + ': \n' + (map[i].stereo3d ? '3D/' : '') + info, 1);
+      			format = (map[i].stereo3d ? '3D/' : '') + (format || info);
+      			obj.title = isArray(obj.title) ? obj.title.join('') : obj.title;
+      			links.push({
+      				url : map[i].url + '&signature=' + sig + '&quality=' + map[i].quality + (obj.title ? '&title=' + encodeURIComponent(obj.title.replace(/\+/g, ' ')) : ''),
+      				quality : format,
+      				info : info
+      			});
+      		}
+      		callback(links, vid);
+      	});
+      }
+   },   
+   get_ivi_links:function(url,callback){
+      var vid = isNumeric(url) ? url : (url.match(/(?:videoId|id)=(\d+)/) || [])[1];
+      if (!vid)
+         return;
+      // 'http://www.ivi.ru/watch/'+vid
+      //  https://www.ivi.ru/embeds/video/?id=126872&app_version=340&autostart=1
+      var app_ver = 340;
+      var rnd=Math.random()*1000000000000;
+      var data={
+         "method" : "da.content.get",
+         "params" : [
+            vid, 
+            {
+               "sourceid" : "",
+               "utmfullinfo" : "",
+               "_domain" : "www.ivi.ru",
+               "app_version" : app_ver,
+               "_url" : "https://www.ivi.ru/embeds/video/?id="+vid+"&app_version="+app_ver+"&autostart=1",
+               "site" : "s132",
+               "campaignid" : "",
+               "uid" : rnd+""
+            }
+         ]
+      };
+      
+
+      
+      var ondone=function(r) {
+         var vars=JSON.parse(r);
+         var links=vars.result.files;
+         if (!links){ 
+            callback([]);
+            return;
+         }
+         var res=[];
+         for (var i=0; i<links.length; i++){
+            if (links[i].content_format!='Flash-Access')
+               res.push({
+                  url: links[i].url, 
+                  quality: links[i].content_format
+               });
+         }
+         callback(res, vid);
+         //console.log(r);
+      };
+      // old: https://api.digitalaccess.ru/api/json/
+      // new: https://api.ivi.ru/light/?r=266.3667255532756&app_version=340
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', 'https://api.ivi.ru/light/?r='+Math.random()*1000+'6&app_version='+app_ver, true);
+      xhr.onreadystatechange = function(){         
+         if (xhr.readyState == 4) {
+            ondone(xhr.responseText);
+         }
+      };
+      xhr.send(JSON.stringify(data));
+   }   
 }
 
 vkopt['messages'] = {
