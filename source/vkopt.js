@@ -4283,10 +4283,15 @@ vkopt['groups'] = {
          /*view_wiki_source:
          <h2>{vals.title}</h2><textarea id="vk_wikicode_area">{vals.code}</textarea>
          */
+         
+         /*stat_btn:
+         <a class="page_actions_item" id="vk_gr_stat_btn" href="/stats?gid={vals.gid}">{lng.Stats}</a>
+         */
       });      
    },
    onLocation: function(){
-      //if (cur.module != 'groups') return;
+      if (!/groups|public/.test(cur.module+'')) 
+         return;
       if (ge('vk_wiki_links'))
          return;
       // Добавляем кнопку для просмотра созданных из под текущего аккаунта страниц
@@ -4295,21 +4300,25 @@ vkopt['groups'] = {
       }      
       
       // На странице группы добавляем кнопку
-      if (ge('group')){
+      if (ge('group') || ge('public')){
          vkopt.groups.wiki_list.btn();
+         vkopt.groups.stat_btn();
       }
+   },
+   append_extra_action_btn: function(btn){         // добавляем в выпадающем меню доп. действий группы под аватаркой свою кнопку
+      var p = geByClass1('page_extra_actions_wrap');
+      if (!p) return false;
+      var wrap = geByClass1('page_actions_inner', p);
+      if (!wrap) return false;
+      wrap.appendChild(btn);   
+      return true;
    },
    wiki_list:{ 
       btn:function(){
-         var p = geByClass1('page_extra_actions_wrap');
-         if (!p) return;
-         var wrap = geByClass1('page_actions_inner', p);
-         if (!wrap) return;
-         
          var btn = se(
             vk_lib.tpl_process(vkopt.groups.tpls['wiki_list_btn'], {})
          );
-         wrap.appendChild(btn);
+         vkopt.groups.append_extra_action_btn(btn);
       },
       owner_pages_btn:function(){
          var p = ge('ui_rmenu_all');
@@ -4497,6 +4506,16 @@ vkopt['groups'] = {
               dlpages(anchors_length - 1);                // Запуск рекурсии с последней ссылки
           });
       }      
+   },
+   stat_btn: function(){
+      if (/stats\?gid=/.test(val('page_actions')))
+         return; // нам не нужен дубль ссылки на статистику
+      var btn = se(
+         vk_lib.tpl_process(vkopt.groups.tpls['stat_btn'], {
+            gid: Math.abs(cur.oid)
+         })
+      );
+      vkopt.groups.append_extra_action_btn(btn);      
    }
 }
 
