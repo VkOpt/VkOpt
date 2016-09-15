@@ -278,6 +278,8 @@ var vk_glue = {
    inj_to_file: function(file_name){
       switch (file_name){
          case 'common.js':       vk_glue.inj.common();  break;
+         case 'groups.js':       vk_glue.inj.groups();  break;
+         case 'public.js':       vk_glue.inj.publics();  break;
          case 'auto_list.js':    vk_glue.inj.auto_list();  break;
          case 'ui_controls.js':  vk_glue.inj.ui_controls();  break; 
          case 'datepicker.js':  vk_glue.inj.datepicker();  break; 
@@ -312,7 +314,7 @@ var vk_glue = {
              }
              // End of callback mod
          }
-     );
+         );
          // айфремовая загрузка выглядит так - загрузили каркас с частью данных, дальше по ходу загрузки айфреймовой страницы выполняются куски заполнения элементов карскаса.
          // эти кучки тоже надо перехватывать.
          Inj.Start('ajax.framegot','if (#ARG1#) #ARG1#=vk_glue.process_on_framegot(#ARG1#);');
@@ -324,6 +326,12 @@ var vk_glue = {
          */
          // перехват тултипов при создании их контента. например для перехвата создания меню "Ещё" перед его показом в просмотрщике фото
          Inj.After('ElementTooltip.prototype.show',/this\._opts.onFirstTimeShow[^;]+;/,'vkopt_core.plugins.eltt_first_show(this);');
+      },
+      groups: function(){
+         Inj.End('Groups.init',' ; setTimeout(vk_glue.nav_handler,2);');
+      },
+      publics: function(){
+         Inj.End('Public.init',' ; setTimeout(vk_glue.nav_handler,2);');
       },
       auto_list: function(){
          if (vkopt_defaults.config.AUTO_LIST_DRAW_ROWS_INJ){
