@@ -91,12 +91,12 @@ ex_loader = {
    update_time: 10*60*1000, //update scripts each 4 hours
    moz_strorage_id:"http://vkopt.loader.storage",
    browsers:{
-      mozilla:(function(){try{return Components.interfaces.nsIObserverService!=null} catch(e){return false} })(),
+      mozilla:(function() { try { return !chrome && !!Components.interfaces.nsIObserverService } catch (e) {return false} })(),
       mozilla_jetpack: (typeof require != 'undefined' && typeof module != 'undefined'  && module.id == "vkopt/background"),
       opera:  window && window.opera && opera.extension,
-      chrome: window && window.chrome && chrome.extension,
+      chrome : (function() { try { return !!chrome && !!chrome.extension } catch (e) {return false} })(),
       safari: window && window.safari && safari.extension,
-      maxthon: (function(){try{return window.external.mxGetRuntime!=null} catch(e){return false} })() //without try{}catch it fail script on Firefox
+      maxthon:window && !!window.external && !!window.external.mxGetRuntime,
    },
    get_script_path:function(filename){
       var spath='';
@@ -1025,7 +1025,7 @@ ext_api.utils.init_ls.apply(this);
 ex_loader.init.apply(this);
 
 
-if (browser.chrome && !(window.external && window.external.mxGetRuntime))
+if (ex_loader.browsers.chrome && !ex_loader.browsers.maxthon)
    ext_api.utils.chrome_init()
 
 })();
