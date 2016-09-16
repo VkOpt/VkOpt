@@ -51,6 +51,8 @@ var vkopt_defaults = {
       photo_search_copy: true,
       ph_download_with_name: false,
       stealth_addons: true, // прикидываемся перед ТП, что у нас не стоит расширение для скачивания.
+      im_block_typing: false,
+      im_block_mark_read: false,
 
       lastfm_enable_scrobbling: false,
       lastfm_token: '',
@@ -3806,12 +3808,21 @@ vkopt['messages'] = {
          }
       },
       Extra: {
-         im_hide_dialogs:{
-            class_toggler: true
-         }
+        im_hide_dialogs: { class_toggler: true },
+        im_block_typing: {},
+        im_block_mark_read: {}
       }
    },
-
+   onRequestQuery: function(url, query, options) {
+       if (url === 'al_im.php') {
+           if (query.act === 'a_typing' && vkopt.settings.get('im_block_typing')) {
+               return false;
+           }
+           if (query.act === 'a_mark_read' && vkopt.settings.get('im_block_mark_read')) {
+               return false;
+           }
+        }
+   },
    onOptionChanged: function(option_id, val, option_data){
       if (option_id == 'im_hide_dialogs'){
          if (!val)
