@@ -216,7 +216,7 @@ var vkopt_core = {
       },
       on_ajax_post: function(url, query, options){
          var res = vkopt_core.plugins.call_modules('onRequestQuery', url, query, options);
-         for (var i = 0; i < res.length; i++)
+         for (var i in res)
             if (res[i] === false)
                return false;
          return true;
