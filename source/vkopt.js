@@ -3501,8 +3501,8 @@ vkopt['videoview'] = {
          vkopt.videoview.get_ivi_links(url, function(links, vid){
                html = '';
                var filename = vkCleanFileName(mvcur.mvData.title);
-               html += vk_lib.tpl_process(vkopt.videoview.tpls['source_name'], {
-                  url: 'http://www.ivi.ru/watch/' + vid, 
+               html += vk_lib.tpl_process(vkopt.videoview.tpls['ext_link'], {
+                  url: 'http://www.ivi.ru/watch/' + vid,
                   source_name:'ivi.ru'
                });
                
