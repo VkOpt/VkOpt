@@ -238,7 +238,6 @@ var vkopt_core = {
              answer[0].history = vkopt_core.mod_str_as_node(answer[0].history, vkopt_core.plugins.process_node, {source:'process_response_im_a_start', url:url, q:q});
          }
          vkopt_core.plugins.call_modules('onResponseAnswer', answer,url,q);
-         if (url === '/al_im.php' && q.act === 'a_send') vkopt_core.plugins.call_modules('onImReceive', answer, q);
       },
       process_node: function(node, params){
          node = node || ge('content');
@@ -409,7 +408,7 @@ var vk_glue = {
 
       // <im>
       onImSend:               function(query){}                            // вызывается перед отправкой личного сообщения. Если функция вернёт false, то сообщение не отправится.
-      onImReceive:            function(answer, query){}                    // текст сообщения в query.msg
+      onImReceive:            <not implemented yet>
 
       // <audio>
       onAudioRowMenuItems:    function(audio_info_obj){},                  // вернуть массив из строк с пунктами-ссылками "<a>..</a>"
