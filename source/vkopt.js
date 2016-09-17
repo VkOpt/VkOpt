@@ -217,6 +217,9 @@ var vkopt_core = {
       },
       on_ajax_post: function(url, query, options){
          var res = vkopt_core.plugins.call_modules('onRequestQuery', url, query, options);
+         if (url === 'al_im.php' && query.act === 'a_send') {
+            res = extend(res, vkopt_core.plugins.call_modules('onImSend', query));
+         }
          for (var i in res)
             if (res[i] === false)
                return false;
@@ -231,14 +234,11 @@ var vkopt_core = {
             }
          }
          // для случаев, когда тело html'а передано не отдельным аргументом, а внутри какого-то JSON'а:
-         switch (url){
-            case '/al_im.php':
-               if (q.act == 'a_start' && answer[0] && answer[0].history){ // открытие диалога
-                  answer[0].history = vkopt_core.mod_str_as_node(answer[0].history, vkopt_core.plugins.process_node, {source:'process_response_im_a_start', url:url, q:q});
-               }
-               break;
+         if (url === '/al_im.php' && q.act == 'a_start' && answer[0] && answer[0].history){ // открытие диалога
+             answer[0].history = vkopt_core.mod_str_as_node(answer[0].history, vkopt_core.plugins.process_node, {source:'process_response_im_a_start', url:url, q:q});
          }
          vkopt_core.plugins.call_modules('onResponseAnswer', answer,url,q);
+         if (url === '/al_im.php' && q.act === 'a_send') vkopt_core.plugins.call_modules('onImReceive', answer, q);
       },
       process_node: function(node, params){
          node = node || ge('content');
@@ -407,9 +407,13 @@ var vk_glue = {
                                                                            // тогда это первым запуском не считается, но в локальном хранилище могут отсутствовать данные от других модулей,
                                                                            // хранящих инфу не через vkopt.settings.get | vkopt.settings.set
 
+      // <im>
+      onImSend:               function(query){}                            // вызывается перед отправкой личного сообщения. Если функция вернёт false, то сообщение не отправится.
+      onImReceive:            function(answer, query){}                    // текст сообщения в query.msg
+
       // <audio>
-      onAudioRowMenuItems: function(audio_info_obj){},                     // вернуть массив из строк с пунктами-ссылками "<a>..</a>"
-      
+      onAudioRowMenuItems:    function(audio_info_obj){},                  // вернуть массив из строк с пунктами-ссылками "<a>..</a>"
+
    };
    window.vkopt = (window.vkopt || {});
    window.vkopt[m.id] = m;
