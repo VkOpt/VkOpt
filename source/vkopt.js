@@ -178,14 +178,13 @@ var vkopt_core = {
          var field = vkopt[plug_id][method];
          if (field) // TODO: && isModuleEnabled(plug_id)
             return isFunction(field) ? field.apply(this, args) : field;
-         return null;
       },
       call_modules: function(){ // (method, arg1, arg2 ...)
          var args = Array.prototype.slice.call(arguments);
          var results = {};
          for (var plug_id in vkopt){
             var res = vkopt_core.plugins.call_method.apply({plugin_id:plug_id}, [plug_id].concat(args));
-            if (res) results[plug_id] = res;
+            if (res != undefined) results[plug_id] = res;
          }
          return results;
       },
