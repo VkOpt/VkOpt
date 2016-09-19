@@ -51,6 +51,8 @@ var vkopt_defaults = {
       photo_search_copy: true,
       ph_download_with_name: false,
       stealth_addons: true, // прикидываемся перед ТП, что у нас не стоит расширение для скачивания.
+      im_block_typing: false,
+      im_block_mark_read: false,
 
       lastfm_enable_scrobbling: false,
       lastfm_token: '',
@@ -176,14 +178,13 @@ var vkopt_core = {
          var field = vkopt[plug_id][method];
          if (field) // TODO: && isModuleEnabled(plug_id)
             return isFunction(field) ? field.apply(this, args) : field;
-         return null;
       },
       call_modules: function(){ // (method, arg1, arg2 ...)
          var args = Array.prototype.slice.call(arguments);
          var results = {};
          for (var plug_id in vkopt){
             var res = vkopt_core.plugins.call_method.apply({plugin_id:plug_id}, [plug_id].concat(args));
-            if (res) results[plug_id] = res;
+            if (res != undefined) results[plug_id] = res;
          }
          return results;
       },
@@ -216,7 +217,10 @@ var vkopt_core = {
       },
       on_ajax_post: function(url, query, options){
          var res = vkopt_core.plugins.call_modules('onRequestQuery', url, query, options);
-         for (var i = 0; i < res.length; i++)
+         if (url === 'al_im.php' && query.act === 'a_send') {
+            res = extend(res, vkopt_core.plugins.call_modules('onImSend', query));
+         }
+         for (var i in res)
             if (res[i] === false)
                return false;
          return true;
@@ -224,18 +228,14 @@ var vkopt_core = {
       process_response: function(answer, url, q){
          // answer - массив, элементы которого в последствии становятся аргументами вызываемых колбеков. можно править его элементы
          var _rx = /^\s*<(div|table|input|a)/i;
-         for (var i=0;i<answer.length;i++){
+         for (var i=0; i < answer.length; i++){
             if (typeof answer[i]=='string' && _rx.test(answer[i]) ){
                answer[i] = vkopt_core.mod_str_as_node(answer[i], vkopt_core.plugins.process_node, {source:'process_response', url:url, q:q});
             }
          }
          // для случаев, когда тело html'а передано не отдельным аргументом, а внутри какого-то JSON'а:
-         switch (url){
-            case '/al_im.php':
-               if (q.act == 'a_start' && answer[0] && answer[0].history){ // открытие диалога
-                  answer[0].history = vkopt_core.mod_str_as_node(answer[0].history, vkopt_core.plugins.process_node, {source:'process_response_im_a_start', url:url, q:q});
-               }
-               break;
+         if (url === '/al_im.php' && q.act == 'a_start' && answer[0] && answer[0].history){ // открытие диалога
+             answer[0].history = vkopt_core.mod_str_as_node(answer[0].history, vkopt_core.plugins.process_node, {source:'process_response_im_a_start', url:url, q:q});
          }
          vkopt_core.plugins.call_modules('onResponseAnswer', answer,url,q);
       },
@@ -281,8 +281,8 @@ var vk_glue = {
          case 'groups.js':       vk_glue.inj.groups();  break;
          case 'public.js':       vk_glue.inj.publics();  break;
          case 'auto_list.js':    vk_glue.inj.auto_list();  break;
-         case 'ui_controls.js':  vk_glue.inj.ui_controls();  break; 
-         case 'datepicker.js':  vk_glue.inj.datepicker();  break; 
+         case 'ui_controls.js':  vk_glue.inj.ui_controls();  break;
+         case 'datepicker.js':  vk_glue.inj.datepicker();  break;
       }
       vkopt_core.plugins.on_js_file(file_name);
    },
@@ -346,7 +346,7 @@ var vk_glue = {
             InlineDropdown.prototype[method] = orig.prototype[method];
       },
       datepicker: function(){
-         if (!vkopt.settings.get('datepicker_inj')) 
+         if (!vkopt.settings.get('datepicker_inj'))
             return;
          // передаём в наш перехватчик id элемента в котором указана дата.
          if (!window.vkorigDatepicker ||  (window.Datepicker  && Datepicker.toString().indexOf('onDatepickerCreate') == -1)){
@@ -388,16 +388,16 @@ var vk_glue = {
       onInit:                 function(){},                                // выполняется один раз после загрузки стрницы
       onLibFiles:             function(file_name){},                       // место для инъекций = срабатывает при подключении нового js-файла движком контакта.
       onLocation:             function(nav_obj,cur_module_name){},         // вызывается при переходе между страницами
-      onRequestQuery:         function(url, query, options){}              // вызывается перед выполнением ajax.post метода. если функция вернёт false, то запрос выполнен не будет.
+      onRequestQuery:         function(url, query, options){}              // вызывается перед выполнением ajax.post метода. Если функция вернёт false, то запрос выполнен не будет.
       onResponseAnswer:       function(answer,url,params){},               // answer - массив, изменять только его элементы
       onStorage :             function(command_id,command_obj){},          // слушает сообщения отосланные из других вкладок вк через vkCmd(command_id,command_obj)
       processNode:            function(node, params){}                     // обработка элемента
       processLinks:           function(link, params){},                    // обработка ссылки
       onModuleDelayedInit:    function(plugin_id){},                       // реакция на подключение модуля, опоздавшего к загрузке страницы.
       onElementTooltipFirstTimeShow: function(ett, ett_options),           // реакция на первый показ ElementTooltip, при создании его контента. На момент вызова в элементе ett._ttel уже есть контент. По ett._opts.id можно определить к чему тултип относится.
-      onInlineDropdownCreate: function(el, options),                       // реакция на создание контрола InlineDropdown. Можно использовать для добавления своих пунктов в options.items для меню элемента el                       
+      onInlineDropdownCreate: function(el, options),                       // реакция на создание контрола InlineDropdown. Можно использовать для добавления своих пунктов в options.items для меню элемента el
       onDatepickerCreate: function(args){},                                // вызывается при создании селектора даты new Datepicker(), args - массив аргументов переданных в конструктор
-      
+
       // <settings>
       onSettings:             function(){} || {}                           // возвращаем объект с перечисленными по категориям настройками этого модуля
       onOptionChanged:        function(option_id, val, option_data){},     // реакция на изменение опции
@@ -406,9 +406,13 @@ var vk_glue = {
                                                                            // тогда это первым запуском не считается, но в локальном хранилище могут отсутствовать данные от других модулей,
                                                                            // хранящих инфу не через vkopt.settings.get | vkopt.settings.set
 
+      // <im>
+      onImSend:               function(query){}                            // вызывается перед отправкой личного сообщения. Если функция вернёт false, то сообщение не отправится.
+      onImReceive:            <not implemented yet>
+
       // <audio>
-      onAudioRowMenuItems: function(audio_info_obj){},                     // вернуть массив из строк с пунктами-ссылками "<a>..</a>"
-      
+      onAudioRowMenuItems:    function(audio_info_obj){},                  // вернуть массив из строк с пунктами-ссылками "<a>..</a>"
+
    };
    window.vkopt = (window.vkopt || {});
    window.vkopt[m.id] = m;
@@ -432,7 +436,7 @@ vkopt['res'] = {
             min-height: 4px;
          }
          */
-      }).css;         
+      }).css;
    },
    img: {
       ldr: '<img src="/images/upload.gif">',
@@ -1316,23 +1320,23 @@ vkopt['owners'] = {
    decode: function(url, callback){ //callback(uid, gid, appid)
       if (!url)
          return callback(null, null);
-      
+
       var u_rx = /(?:(?:^|\/)(?:u|id)?(\d+)$)/;
       var g_rx = /(?:(?:^|\/)(?:g|club|event|public)(\d+)$)/;
-      
+
       url = String(url);
       var obj_id = url.split('/').pop().split('?').shift();
-              
+
       if (u_rx.test(url))
          return callback(url.match(u_rx)[1], null);
-      
+
       if (g_rx.test(url))
          return callback(null, url.match(g_rx)[1]);
-      
-      
+
+
       if (vkopt.owners.cache[obj_id])
          return callback.apply(this, vkopt.owners.cache[obj_id])
-      
+
       dApi.call('utils.resolveScreenName', {screen_name : obj_id}, function (r) {
          var res = r.response;
          switch (res.type) {
@@ -1368,13 +1372,13 @@ vkopt['away'] = {
    },
    process_link: function(node){
       var href = node.getAttribute('href');
-      
+
       if (!href || (href+'').indexOf('away.php?') == -1) // нас не интересуют ссылки без away.php
-         return;  
+         return;
       var params = q2ajx(href.split('?')[1]); // декодируем GET-параметры в объект
       if (!params.to) // не нашли целевую ссылку
          return;
-      
+
       var new_lnk = vkUnescapeCyrLink(params.to);
 
       if (!new_lnk)
@@ -3403,7 +3407,7 @@ vkopt['videoview'] = {
          background: rgba(0,0,0,0.6);
          border: 1px solid rgba(255,255,255,0.4);
       }
-      
+
       #vk_mv_down_links_tt.eltt.eltt_bottom:before {
          border-bottom-color: transparent;
       }
@@ -3428,7 +3432,7 @@ vkopt['videoview'] = {
          /*dl_btn:
          <div class="mv_top_button" id="vk_mv_down_icon" role="button" tabindex="0" aria-label="{lng.ToggleLinksView}">
          <div class="vk_mv_down_icon"></div>
-         </div>         
+         </div>
          */
          /*dl_link:
          <a href="{vals.url}" download="{vals.name}">{vals.caption}</a>
@@ -3451,8 +3455,8 @@ vkopt['videoview'] = {
    },
    _cur_mv_data: null,
    update_dl_btn: function(html){
-     re('vk_mv_down_icon'); // убиваем кнопку, т.к не выходит убить тултип таким образом: data(ge('vk_mv_down_icon'), 'ett').destroy(); 
-     if (!html) 
+     re('vk_mv_down_icon'); // убиваем кнопку, т.к не выходит убить тултип таким образом: data(ge('vk_mv_down_icon'), 'ett').destroy();
+     if (!html)
         return null;
       if (!ge('vk_mv_down_icon') && ge('mv_top_controls')){
          var btn = se(vk_lib.tpl_process(vkopt.videoview.tpls['dl_btn'], {}));
@@ -3465,7 +3469,7 @@ vkopt['videoview'] = {
                  elClassWhenTooltip: "vk_mv_down_links_shown",
                  content: html,
                  offset: [-3, 0]
-      });  
+      });
    },
    on_player_data: function(vars){
       //vkopt.log('Video data:', vars);
@@ -3493,7 +3497,7 @@ vkopt['videoview'] = {
          })
       }
 
-      vkopt.videoview.update_dl_btn(html);      
+      vkopt.videoview.update_dl_btn(html);
    },
    on_iframe_player: function(url){
       vkopt.log('External player:', url);
@@ -3501,11 +3505,11 @@ vkopt['videoview'] = {
          vkopt.videoview.get_ivi_links(url, function(links, vid){
                html = '';
                var filename = vkCleanFileName(mvcur.mvData.title);
-               html += vk_lib.tpl_process(vkopt.videoview.tpls['source_name'], {
-                  url: 'http://www.ivi.ru/watch/' + vid, 
+               html += vk_lib.tpl_process(vkopt.videoview.tpls['ext_link'], {
+                  url: 'http://www.ivi.ru/watch/' + vid,
                   source_name:'ivi.ru'
                });
-               
+
                for (var i = 0; i < links.length; i++){
                   html += vk_lib.tpl_process(vkopt.videoview.tpls['dl_link'], {
                      url: links[i].url,
@@ -3513,7 +3517,7 @@ vkopt['videoview'] = {
                      caption: links[i].quality
                   })
                }
-               vkopt.videoview.update_dl_btn(html);   
+               vkopt.videoview.update_dl_btn(html);
          })
       }
       if (url.indexOf('youtube.com') > -1){
@@ -3531,23 +3535,23 @@ vkopt['videoview'] = {
                      caption: links[i].quality
                   })
                }
-               vkopt.videoview.update_dl_btn(html);   
+               vkopt.videoview.update_dl_btn(html);
          })
-      }      
-      
+      }
+
    },
    get_video_url: function(vars, q) {
       return vars.live_mp4 ? vars.live_mp4 : vars.extra_data ? vars.extra_data : vars["cache" + q] || vars["url" + q]
    },
    get_video_links: function(vars){
       var list = [];
-      
+
       if (vars.live_mp4)
          list.push({url: vars.live_mp4, quality: 'live_mp4'});
-      
+
       if (vars.extra_data)
          list.push({url: vars.extra_data, quality: 'extra'});
-      
+
       var q = [240, 360, 480, 720, 1080];
       for (var i = 0; i <= vars.hd; i++){
          var qname = q[i] || 0;
@@ -3598,11 +3602,11 @@ vkopt['videoview'] = {
          '6': '360p.flv',
          '34': '360p.flv',
          '35': '480p.flv',
-         
+
          '13': '144p.3gp (small)',
          '17': '144p.3gp (medium)',
          '36': '240p.3gp',
-         
+
          '160': '240p.mp4 (no audio)',
          '18': '360p.mp4',
          '135': '480p.mp4 (no audio)',
@@ -3614,7 +3618,7 @@ vkopt['videoview'] = {
          //'83': '480p.mp4',//3d?
          '84': '720p.mp4',//3d?
          //'85': '1080p.mp4',//3d?
-         
+
          '242': '240p.WebM (no audio)',
          '43': '360p.WebM',
          '44': '480p.WebM',
@@ -3627,11 +3631,11 @@ vkopt['videoview'] = {
          //'101':'480p.WebM',//3d?
          '102':'720p.WebM',//3d?
          //'103':'1080p.WebM',//3d?
-         
+
          '139': '48kbs.aac',
          '140': '128kbs.aac',
          '141': '256kbs.aac',
-         
+
          '171': '128kbs.ogg',
          '172': '172kbs.ogg'
       },
@@ -3701,7 +3705,7 @@ vkopt['videoview'] = {
       		callback(links, vid);
       	});
       }
-   },   
+   },
    get_ivi_links:function(url,callback){
       var vid = isNumeric(url) ? url : (url.match(/(?:videoId|id)=(\d+)/) || [])[1];
       if (!vid)
@@ -3713,7 +3717,7 @@ vkopt['videoview'] = {
       var data={
          "method" : "da.content.get",
          "params" : [
-            vid, 
+            vid,
             {
                "sourceid" : "",
                "utmfullinfo" : "",
@@ -3726,13 +3730,13 @@ vkopt['videoview'] = {
             }
          ]
       };
-      
 
-      
+
+
       var ondone=function(r) {
          var vars=JSON.parse(r);
          var links=vars.result.files;
-         if (!links){ 
+         if (!links){
             callback([]);
             return;
          }
@@ -3740,7 +3744,7 @@ vkopt['videoview'] = {
          for (var i=0; i<links.length; i++){
             if (links[i].content_format!='Flash-Access')
                res.push({
-                  url: links[i].url, 
+                  url: links[i].url,
                   quality: links[i].content_format
                });
          }
@@ -3751,13 +3755,13 @@ vkopt['videoview'] = {
       // new: https://api.ivi.ru/light/?r=266.3667255532756&app_version=340
       var xhr = new XMLHttpRequest();
       xhr.open('POST', 'https://api.ivi.ru/light/?r='+Math.random()*1000+'6&app_version='+app_ver, true);
-      xhr.onreadystatechange = function(){         
+      xhr.onreadystatechange = function(){
          if (xhr.readyState == 4) {
             ondone(xhr.responseText);
          }
       };
       xhr.send(JSON.stringify(data));
-   }   
+   }
 }
 
 vkopt['messages'] = {
@@ -3806,12 +3810,21 @@ vkopt['messages'] = {
          }
       },
       Extra: {
-         im_hide_dialogs:{
-            class_toggler: true
-         }
+        im_hide_dialogs: { class_toggler: true },
+        im_block_typing: {},
+        im_block_mark_read: {}
       }
    },
-
+   onRequestQuery: function(url, query, options) {
+       if (url === 'al_im.php') {
+           if (query.act === 'a_typing' && vkopt.settings.get('im_block_typing')) {
+               return false;
+           }
+           if (query.act === 'a_mark_read' && vkopt.settings.get('im_block_mark_read')) {
+               return false;
+           }
+        }
+   },
    onOptionChanged: function(option_id, val, option_data){
       if (option_id == 'im_hide_dialogs'){
          if (!val)
@@ -4229,7 +4242,7 @@ vkopt['groups'] = {
       return vk_lib.get_block_comments(function(){
          /*css:
          #vk_wikicode_area{
-            width:100%; 
+            width:100%;
             height:300px;
          }
          */
@@ -4240,12 +4253,12 @@ vkopt['groups'] = {
          /*wiki_list_btn:
          <a class="page_actions_item" id="vk_wiki_links" href="#" onclick="vkopt.groups.wiki_list.show(cur.oid); return false;">{lng.WikiPagesList}</a>
          */
-         
+
          /*wiki_owner_list_btn:
          <a id="vk_wiki_links" href="#" onclick="vkopt.groups.wiki_list.show(cur.oid); return false;" class="ui_rmenu_item _ui_item_search groups_section_search" role="listitem">
            <span>{lng.WikiPagesList}</span>
          </a>
-         */         
+         */
          /*list_header:
          <h3>Owner: {vals.oid_caption}
             <a class="fl_r {vals.new_page_lnk_class}" id="vk_add_wiki_page" href="#" onclick="vkopt.groups.wiki_list.new_page(); return false;">{lng.Add}</a>
@@ -4262,9 +4275,9 @@ vkopt['groups'] = {
                <th><a title="{lng.sortByDate}" onclick="vkopt.groups.wiki_list.sort_column(4, this)">{lng.Date} &#9650;<a></th>
             </tr>
             {vals.content}
-          </table>   
+          </table>
          */
-         
+
          /*list_item:
          <tr>
              <td>
@@ -4279,26 +4292,26 @@ vkopt['groups'] = {
              <td>{vals.created_date}</td>
          </tr>
          */
-         
+
          /*view_wiki_source:
          <h2>{vals.title}</h2><textarea id="vk_wikicode_area">{vals.code}</textarea>
          */
-         
+
          /*stat_btn:
          <a class="page_actions_item" id="vk_gr_stat_btn" href="/stats?gid={vals.gid}">{lng.Stats}</a>
          */
-      });      
+      });
    },
    onLocation: function(){
-      if (!/groups|public/.test(cur.module+'')) 
+      if (!/groups|public/.test(cur.module+''))
          return;
       if (ge('vk_wiki_links'))
          return;
       // Добавляем кнопку для просмотра созданных из под текущего аккаунта страниц
       if (nav.objLoc[0] == 'groups' && ge('ui_rmenu_all')){
          vkopt.groups.wiki_list.owner_pages_btn();
-      }      
-      
+      }
+
       // На странице группы добавляем кнопку
       if (ge('group') || ge('public')){
          vkopt.groups.wiki_list.btn();
@@ -4310,10 +4323,10 @@ vkopt['groups'] = {
       if (!p) return false;
       var wrap = geByClass1('page_actions_inner', p);
       if (!wrap) return false;
-      wrap.appendChild(btn);   
+      wrap.appendChild(btn);
       return true;
    },
-   wiki_list:{ 
+   wiki_list:{
       btn:function(){
          var btn = se(
             vk_lib.tpl_process(vkopt.groups.tpls['wiki_list_btn'], {})
@@ -4330,17 +4343,17 @@ vkopt['groups'] = {
       },
       show: function(oid){
          vkLdr.show();
-         
+
          var gid=Math.abs(oid);
          //if (gid==1) gid=-1;
          stManager.add('wk.css');
          var params = {v:'5.53'};
          if (oid < 0)
             params.group_id = gid;
-         
+
          dApi.call('pages.getTitles', params, function(r){
             vkLdr.hide();
-            
+
             var items = [];
             (r.response || []).map(function(obj){
                obj = extend({
@@ -4355,17 +4368,17 @@ vkopt['groups'] = {
                //obj.creator_id = obj.creator_id || 0;
                items.push(vk_lib.tpl_process(vkopt.groups.tpls['list_item'], obj));
             });
-            
-            
+
+
             var t=vk_lib.tpl_process(vkopt.groups.tpls['list_header'], {
                oid_caption: (oid && oid < 0 ? 'club' : 'id') + Math.abs(oid || vk.id),
                oid: oid,
                new_page_lnk_class: oid > 0 ? 'unshown' : '',
                content: items.join('\n')
-            });            
+            });
             var box=vkAlertBox('Wiki Pages',t,null,null,true);
             box.setOptions({width:'680px'});
-         }); 
+         });
       },
       new_page: function(){
          var title=prompt(IDL("Title"));
@@ -4380,7 +4393,7 @@ vkopt['groups'] = {
           rows.sort(function (a, b) {
               var a_val = trim(val(geByTag('td',a)[index]).toUpperCase());
               var b_val = trim(val(geByTag('td',b)[index]).toUpperCase());
-              if (a_val == b_val) 
+              if (a_val == b_val)
                  return 0;
               return a_val < b_val ? descending : -descending;
           });
@@ -4495,7 +4508,7 @@ vkopt['groups'] = {
                   }, 100);
               }
           };
-          var Progress = function (c, f) {                // обновление прогрессбара        
+          var Progress = function (c, f) {                // обновление прогрессбара
               box.content(vkProgressBar(c, f || 1, 350));
           };
           JsZipConnect(function () {
@@ -4505,7 +4518,7 @@ vkopt['groups'] = {
               box = vkAlertBox(IDL('Loading'));
               dlpages(anchors_length - 1);                // Запуск рекурсии с последней ссылки
           });
-      }      
+      }
    },
    stat_btn: function(){
       if (/stats\?gid=/.test(val('page_actions')))
@@ -4515,7 +4528,7 @@ vkopt['groups'] = {
             gid: Math.abs(cur.oid)
          })
       );
-      vkopt.groups.append_extra_action_btn(btn);      
+      vkopt.groups.append_extra_action_btn(btn);
    }
 }
 
@@ -4614,10 +4627,10 @@ vkopt['test_module'] =  {
    onInit: function(){
       vkopt.xxx.tpls = vk_lib.get_block_comments(function(){
          /*tpl:
-         
+
          * /
-      });      
-   },   
+      });
+   },
    onAudioRowMenuItems: function(info){
        console.log(arguments);
       return [
