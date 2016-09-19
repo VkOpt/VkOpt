@@ -27,7 +27,4 @@ builds/vkopt_firefox_webext.xpi
 builds/vkopt_opera.oex
 builds/vkopt_maxthon.mxaddon
 
-vk/*
-!vk/.gitignore
-
 local.diff
