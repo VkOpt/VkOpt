@@ -1647,6 +1647,19 @@ vkopt['photos'] =  {
          photo_replacer:{}
       }
    },
+   tpls:{},
+   onInit: function(){
+      vkopt.photos.tpls = vk_lib.get_block_comments(function(){
+      /*photos_comments_link:
+      <span class="photos_comments_link">
+         <a href="/photos{vals.oid}?act=comments" onclick="return nav.go(this, event)">{lng.mPhC}</a>
+      </span>
+      */
+      });
+   },
+   onLocation: function(){
+      vkopt.photos.browse_comments_btn();
+   },
    onResponseAnswer: function(answer,url,q){
       if (url == '/al_photos.php' && q.act == 'edit_photo' && (vkopt.settings.get('photo_replacer'))){
          answer[1] = vkopt_core.mod_str_as_node(answer[1], vkopt.photos.update_photo_btn, {source:'process_edit_photo_response', url:url, q:q});
@@ -1713,6 +1726,18 @@ vkopt['photos'] =  {
       if (!p) return;
       var btn = se('<div class="button_gray fl_r" id="vk_ph_upd_btn"><button onclick=" vkopt.photos.update_photo(cur.filterPhoto);">'+IDL('Update',2)+'</button></div>');
       p.appendChild(btn);
+   },
+   browse_comments_btn: function(){ // добавляем кнопку на обзор комментариев к фото, если она отсутствует
+      var p = ge('photos_all_block');
+      if (!p) return;
+      var h = geByClass1('page_block_header_extra', p);
+      if (!h || geByClass1('photos_comments_link', h)) return;
+      var btn = se(
+            vk_lib.tpl_process(vkopt.photos.tpls['photos_comments_link'], {
+               oid: cur.oid
+            })
+         );
+      h.appendChild(btn);
    }
 }
 
