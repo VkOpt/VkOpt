@@ -4099,7 +4099,19 @@ vkopt['profile'] = {
             </a>
          </span>
          */
+         /*middle_name_field:
+         <div class="pedit_row clear_fix">
+           <div class="pedit_label">{lng.Middle_name}</div>
+           <div class="pedit_labeled">
+             <input type="text" value="" id="pedit_middle_name" class="dark" autocomplete="off">
+           </div>
+         </div>
+         */
       });
+   },
+   onLocation: function(){
+      if (nav.objLoc[0] == 'edit')
+         vkopt.profile.editor.middle_name_field();
    },
    processNode: function(node, params){
          if (!vkopt.settings.get('calc_age'))
@@ -4233,6 +4245,16 @@ vkopt['profile'] = {
          fid=r.response[0];
          scan();
       })
+   },
+   editor: {
+      middle_name_field: function(){
+         if (!ge('pedit_middle_name')){
+            var p=ge('pedit_maiden_row');
+            if (!p) return;
+            var field = se(vk_lib.tpl_process(vkopt.profile.tpls['middle_name_field'], {}));
+            p.parentNode.insertBefore(field, p);
+         }
+      }
    }
 }
 
