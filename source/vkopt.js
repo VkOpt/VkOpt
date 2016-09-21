@@ -4292,6 +4292,12 @@ vkopt['groups'] = {
             width:100%;
             height:300px;
          }
+         .vk_wiki_page_code{
+            opacity: 0.3;
+         }
+         .vk_wiki_page_code:hover{
+            opacity: 1;
+         }
          */
       }).css
    },
@@ -4331,7 +4337,7 @@ vkopt['groups'] = {
                <div>
                   <a class="vk_wiki_link" pid="{vals.id}" href="/{vals.page}">{vals.title}</a>
                </div>
-               <div>[[{vals.page}]]</div>
+               <di class="vk_wiki_page_code">[[{vals.page}]]</div>
              </td>
              <td><a href="/pages.php?oid={vals.oid}&p={vals.enc_title}&act=history" target="_blank">{lng.History}</a></td>
              <td><a href="#" onclick="return vkopt.groups.wiki_list.view_code({vals.id}, {vals.group_id});">{lng.Code}</a></td>
