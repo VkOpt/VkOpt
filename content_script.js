@@ -17,266 +17,265 @@ win = win || window;
 doc = doc || document;
 bg  = bg  || {};
 var api_enabled = false;
-var ex_ldr={
-   mark:'vkopt_loader',
-   __key:(Math.round(Math.random()*10000000)).toString(35),
-   init:function(){
-      ex_ldr.get_scripts(function(data){
-         var obj=JSON.parse(win.localStorage['ldr_disabled_libs'] || "{}");
-         var run_at_start=[];
-         var run_content_loaded=[];
-         if (data.length){
-            ex_ldr.inj_script("window._ext_ldr_"+ex_ldr.mark+"=true;");
-         }
-         for (var i=0; i<data.length; i++){
-            var file=data[i];  //file[3] - run_at
-            (file[3]?run_content_loaded:run_at_start).push(file);
-         }
-
-         var inj=function(data){
-            for (var i=0; i<data.length; i++){
-               var file=data[i];
-               if (!ex_ldr.is_allow_run(file[1],doc)) continue;
-               if (obj[file[2]]) continue;
-               ex_ldr.inj_script(file[0],file[2],file[4]);//file[3] - run_at
-               //console.log('inj:'+file[2]);
+var ex_ldr = {
+    mark: 'vkopt_loader',
+    __key: (Math.round(Math.random() * 10000000)).toString(35),
+    init: function () {
+        ex_ldr.get_scripts(function (data) {
+            var obj = JSON.parse(win.localStorage['ldr_disabled_libs'] || '{}');
+            var run_at_start = [];
+            var run_content_loaded = [];
+            if (data.length) {
+                ex_ldr.inj_script('window._ext_ldr_' + ex_ldr.mark + '=true;');
             }
-         };
-         //console.log('inj at start',run_at_start.length);
-         inj(run_at_start);
-         doc.addEventListener("DOMContentLoaded", function(){
-            //console.log('inj after content loaded',run_content_loaded.length);
-            inj(run_content_loaded);
-         }, false );
-      })
-   },
-   get_scripts:function(callback){
-      if (ext_browser.opera){                                                      // OPERA
-
-         opera.extension.addEventListener('message',function(event){
-            var data = event.data || {};
-            /*if (data.__key==ex_ldr.__key)
-               console.error('ext_content: ON_MESSAGE',data, data.files && data.files.length);*/
-
-            if (data.__key==ex_ldr.__key && data.files && data.files.length>0){
-               callback(data.files);
+            for (var i = 0; i < data.length; i++) {
+                var file = data[i]; //file[3] - run_at
+                (file[3] ? run_content_loaded : run_at_start).push(file);
             }
-            if (data.act=='connected'){
-               opera.extension.postMessage({act:'get_scripts', url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc), __key:ex_ldr.__key});
-               console.log('ext_content: opera.extension.postMessage get_scripts');
-            }
-            if (data.api_enabled) api_enabled = true;
-
-            ex_api.ready=true;
-            if (data.__key==ex_ldr.__key){
-               ex_api.message_handler(data);
-            }
-            ex_api.post_message=function(msg){
-               msg=ex_api.prepare_data(msg);
-               opera.extension.postMessage(msg);
-               return msg;
-            }
-         },false);
-      } else if (ext_browser.chrome){                                              // CHROMIUM
-         chrome.extension.sendRequest({act:'get_scripts', url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc), __key:ex_ldr.__key}, function(data) {
-            if (data.__key==ex_ldr.__key && data.files && data.files.length>0){
-               if (data.api_enabled)
-                  api_enabled = true;
-               callback(data.files);
-            }
-         });
-         //*
-         ex_api.ready=true;
-
-         ex_api.post_message=function(msg){
-            msg=ex_api.prepare_data(msg);
-            chrome.extension.sendRequest(msg, function(data) {
-               if (data.__key==ex_ldr.__key){
-                  ex_api.message_handler(data);
-               }
+            var inj = function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var file = data[i];
+                    if (!ex_ldr.is_allow_run(file[1], doc)) continue;
+                    if (obj[file[2]]) continue;
+                    ex_ldr.inj_script(file[0], file[2], file[4]); //file[3] - run_at
+                    //console.log('inj:'+file[2]);
+                }
+            };
+            //console.log('inj at start',run_at_start.length);
+            inj(run_at_start);
+            doc.addEventListener('DOMContentLoaded', function () {
+                //console.log('inj after content loaded',run_content_loaded.length);
+                inj(run_content_loaded);
+            }, false);
+        })
+    },
+    get_scripts: function (callback) {
+        if (ext_browser.opera) {                                                   // OPERA
+            opera.extension.addEventListener('message', function (event) {
+                var data = event.data || {};
+                /*if (data.__key==ex_ldr.__key)
+                console.error('ext_content: ON_MESSAGE',data, data.files && data.files.length);*/
+                if (data.__key == ex_ldr.__key && data.files && data.files.length > 0) {
+                    callback(data.files);
+                }
+                if (data.act == 'connected') {
+                    opera.extension.postMessage({
+                        act: 'get_scripts',
+                        url: doc.location.href,
+                        in_frame: ex_ldr.is_in_frame(doc),
+                        __key: ex_ldr.__key
+                    });
+                    console.log('ext_content: opera.extension.postMessage get_scripts');
+                }
+                if (data.api_enabled) api_enabled = true;
+                ex_api.ready = true;
+                if (data.__key == ex_ldr.__key) {
+                    ex_api.message_handler(data);
+                }
+                ex_api.post_message = function (msg) {
+                    msg = ex_api.prepare_data(msg);
+                    opera.extension.postMessage(msg);
+                    return msg;
+                }
+            }, false);
+        } else if (ext_browser.chrome) {                                           // CHROMIUM
+            chrome.runtime.sendMessage({
+                act: 'get_scripts',
+                url: doc.location.href,
+                in_frame: ex_ldr.is_in_frame(doc),
+                __key: ex_ldr.__key
+            }, function (data) {
+                if (data.__key == ex_ldr.__key && data.files && data.files.length > 0) {
+                    if (data.api_enabled)
+                    api_enabled = true;
+                    callback(data.files);
+                }
             });
-            return msg;
-         }
-      } else if (ext_browser.safari){
-         ex_api.ready=true;
-         safari.self.addEventListener("message", function(e) {                                    // SAFARI
-            if (e.message.__key==ex_ldr.__key && e.message.files && e.message.files.length>0){
-               if (e.message.api_enabled)
-                  api_enabled = true;
-               callback(e.message.files);
+
+            ex_api.post_message = function (msg) {
+                msg = ex_api.prepare_data(msg);
+                chrome.runtime.sendMessage(msg, function (data) {
+                    if (data.__key == ex_ldr.__key) {
+                        ex_api.message_handler(data);
+                    }
+                });
+                return msg;
             }
-            if (e.message.__key==ex_ldr.__key){
-               ex_api.message_handler(e.message);
+            ex_api.ready = true;
+        } else if (ext_browser.safari) {
+            ex_api.ready = true;
+            safari.self.addEventListener('message', function (e) {                 // SAFARI
+                if (e.message.__key == ex_ldr.__key && e.message.files && e.message.files.length > 0) {
+                    if (e.message.api_enabled)
+                    api_enabled = true;
+                    callback(e.message.files);
+                }
+                if (e.message.__key == ex_ldr.__key) {
+                    ex_api.message_handler(e.message);
+                }
+            }, false);
+            safari.self.tab.dispatchMessage('get_scripts', {
+                url: doc.location.href,
+                in_frame: ex_ldr.is_in_frame(doc),
+                __key: ex_ldr.__key
+            });
+            ex_api.post_message = function (msg) {
+                msg = ex_api.prepare_data(msg);
+                safari.self.tab.dispatchMessage('extension_api', msg);
+                return msg;
             }
-         }, false);
-         safari.self.tab.dispatchMessage("get_scripts",{url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc), __key:ex_ldr.__key});
+        } else if (ext_browser.maxthon) {                                          // MAXTHON
+            var rt = window.external.mxGetRuntime();
+            rt.post('get_scripts', {
+                url: doc.location.href,
+                in_frame: ex_ldr.is_in_frame(doc),
+                __key: ex_ldr.__key
+            });
+            rt.listen('scripts', function (data) {
+                if (data.__key == ex_ldr.__key && data.files && data.files.length > 0) {
+                    //console.log('scripts on '+doc.location.href,data.files);
+                    if (data.api_enabled)
+                    api_enabled = true;
+                    callback(data.files);
+                }
+            });
+            ex_api.post_message = function (msg) {
+                msg = ex_api.prepare_data(msg);
+                rt.post('extension_bg_api', msg);
+                return msg;
+            };
+            rt.listen('extension_api', function (data) {
+                if (data.__key == ex_ldr.__key)
+                ex_api.message_handler(data);
+            });
+            ex_api.ready = true;
+        } else if (ext_browser.mozilla_jetpack) {                                  // MOZILLA_JETPACK
+            self.port.on('scripts', function (data) {
+                //alert('on content script\n'+data.__key+'\n'+ex_ldr.__key+'\n'+data.files.length);
+                if (data.__key == ex_ldr.__key && data.files && data.files.length > 0) {
+                    if (data.api_enabled)
+                        api_enabled = true;
+                    callback(data.files);
+                }
+            });
+            self.port.emit('get_scripts', {
+                url: doc.location.href,
+                in_frame: ex_ldr.is_in_frame(doc),
+                __key: ex_ldr.__key
+            });
+            ex_api.post_message = function (msg) {
+                msg = ex_api.prepare_data(msg);
+                self.port.emit('extension_bg_api', msg);
+                return msg;
+            };
+            self.port.on('extension_api', function (data) {
+                if (data.__key == ex_ldr.__key) {
+                    ex_api.message_handler(data);
+                }
+            });
+            ex_api.ready = true;
 
-         ex_api.post_message=function(msg){
-               msg=ex_api.prepare_data(msg);
-               safari.self.tab.dispatchMessage('extension_api',msg);
-               return msg;
-         }
-      } else if (ext_browser.maxthon){                                 // MAXTHON
-         var rt = window.external.mxGetRuntime();
-         rt.post('get_scripts',{url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc), __key:ex_ldr.__key});
-         rt.listen('scripts', function(data){
-            if (data.__key==ex_ldr.__key && data.files && data.files.length>0){
-               //console.log('scripts on '+doc.location.href,data.files);
-               if (data.api_enabled)
-                  api_enabled = true;
-               callback(data.files);
+        } else { //if (ext_browser.mozilla)                                        // MOZILLA
+            bg.get_scripts(doc.location.href, function (files, api_allowed) {
+                if (files && files.length > 0) {
+                    //console.log('scripts on '+doc.location.href,data.files);
+                    if (api_allowed)
+                    api_enabled = true;
+                    callback(files);
+                }
+            }, ex_ldr.is_in_frame(doc));
+            ex_api.post_message = function (msg) {
+                msg = ex_api.prepare_data(msg);
+                setTimeout(function () {
+                    bg.postMessage(msg, function (data) {
+                        if (data.__key == ex_ldr.__key) {
+                            ex_api.message_handler(data);
+                        }
+                    });
+                }, 1);
+                return msg;
             }
-         });
-
-         ex_api.post_message=function(msg){
-            msg=ex_api.prepare_data(msg);
-            rt.post('extension_bg_api',msg);
-            return msg;
-         };
-         rt.listen('extension_api', function(data){
-            if (data.__key==ex_ldr.__key){
-               ex_api.message_handler(data);
+        }
+    },
+    is_in_frame: function (doc) { // doc.defaultView !== null &&
+        // почему не window.parent !== window ?
+        return doc.defaultView.parent != doc.defaultView;
+    },
+    is_allow_run: function (in_frames, doc) {
+        in_frames = in_frames || 0;
+        var inframe = ex_ldr.is_in_frame(doc);
+        switch (in_frames) { // 0 or null - execute in all; 1 - exclude frames; 2 - only in frames; 3 - disable scripts
+            case 0:
+                return true; // include all
+            case 1:
+                return !inframe; // exclude frames
+            case 2:
+                return !!inframe; // only in frames
+            case 3:
+                return false; // disable scripts
+        }
+        return true;
+    },
+    inj_script: function (source, info, by_src) {
+        var ext = (info || '.js').split('.').pop();
+        switch (ext) {
+            case 'js':
+                if (ext_browser.opera) {
+                    win.eval(source);
+                } else { /*if (ext_browser.chrome || ext_browser.safari || ext_browser.maxthon)*/
+                    var js = doc.createElement('script');
+                    js.type = 'text/javascript';
+                    js.charset = 'UTF-8';
+                    if (!by_src)
+                        js.innerHTML = source;
+                    else
+                        js.src = source;
+                    js.setAttribute(ex_ldr.mark, info);
+                    doc.head.appendChild(js);
+                }
+                break;
+            case 'css':
+                var cssNode;
+                if (by_src) {
+                    cssNode = document.createElement('link');
+                    cssNode.rel = 'stylesheet';
+                    cssNode.href = source;
+                } else {
+                    cssNode = doc.createElement('style');
+                    cssNode.appendChild(doc.createTextNode(source));
+                }
+                cssNode.type = 'text/css';
+                cssNode.setAttribute(ex_ldr.mark, info);
+                doc.head.appendChild(cssNode);
+                break;
+        }
+    },
+    init_keys: function () {
+        var done = function () {
+            informer.show(ex_ldr.mark + ' scripts updated', 2000, doc);
+        };
+        var keyhandler = function (e) {
+            if (!e) { e = event; }
+            if (e.altKey && e.ctrlKey) {
+                switch (e.keyCode) {
+                    case 85: /*case 1075: case 1043: case 117://alert("Alt+Ctrl+U"); */
+                    ex_api.req({ act: 'update_scripts' }, function () {
+                        done();
+                    });
+                    informer.show(ex_ldr.mark + ' run update scripts<br/>(Alt+Ctrl+U)', 2000, doc);
+                    ex_ldr.inj_script('console.log(\'' + ex_ldr.mark + ' run update scripts (Alt+Ctrl+U)\');');
+                    break;
+                }
             }
-         });
-         ex_api.ready=true;
-      } else if (ext_browser.mozilla_jetpack){
-
-         self.port.on("scripts",function (data) {
-            //alert('on content script\n'+data.__key+'\n'+ex_ldr.__key+'\n'+data.files.length);
-            if (data.__key==ex_ldr.__key && data.files && data.files.length>0){
-               if (data.api_enabled)
-                  api_enabled = true;
-               callback(data.files);
-            }
-         });
-
-         var get_scr = function(data) {
-            self.port.emit("get_scripts", {url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc), __key:ex_ldr.__key});
-         }
-
-         get_scr();
-         // изначально первое сообщение не доходило в background, из-за этого 'init' запрос был добавлен
-         // (вероятно глюк ночной сборки, либо onAttach срабатывал после отсылки сообщения).
-         //self.port.on("init",get_scr);
-
-         ex_api.post_message=function(msg){
-            msg=ex_api.prepare_data(msg);
-            self.port.emit('extension_bg_api',msg);
-            return msg;
-         };
-         self.port.on('extension_api', function(data){
-            if (data.__key==ex_ldr.__key){
-               ex_api.message_handler(data);
-            }
-         });
-         ex_api.ready=true;
-
-      } else { //if (ext_browser.mozilla)                  // MOZILLA
-
-         bg.get_scripts(doc.location.href,function(files, api_allowed){
-            if (files && files.length>0){
-               //console.log('scripts on '+doc.location.href,data.files);
-               if (api_allowed)
-                  api_enabled = true;
-               callback(files);
-            }
-         },ex_ldr.is_in_frame(doc));
-
-         ex_api.post_message=function(msg){
-            msg=ex_api.prepare_data(msg);
-            setTimeout(function(){
-               bg.postMessage(msg,function(data){
-                  if (data.__key==ex_ldr.__key){
-                     ex_api.message_handler(data);
-                  }
-               });
-            },1);
-            return msg;
-         }
-
-      }
-   },
-   is_in_frame:function(doc){
-      return ((doc || document).defaultView.parent != (doc || document).defaultView);
-   },
-   is_allow_run:function(in_frames,doc){
-      in_frames = in_frames || 0;
-      var inframe=((doc || document).defaultView.parent != (doc || document).defaultView);
-      switch (in_frames){ // 0 or null - execute in all; 1 - exclude frames; 2 - only in frames; 3 - disable scripts
-         case 0:
-            return true; // include all
-         case 1:
-            return !inframe; // exclude frames
-         case 2:
-            return !!inframe; // only in frames
-         case 3:
-            return false;  // disable scripts
-      }
-      return true;
-   },
-   inj_script:function(script,info,by_src){
-      var ext=(info || ".js").split('.').pop();
-      switch(ext){
-         case 'js':
-            if (ext_browser.opera) win.eval(script);
-            else {   /*if (ext_browser.chrome || ext_browser.safari || ext_browser.maxthon)*/
-               var js = doc.createElement('script');
-               js.type = 'text/javascript';
-               js.charset = 'UTF-8';
-               if (!by_src)
-                  js.innerHTML=script;
-               else
-                  js.src=script;
-               js.setAttribute(ex_ldr.mark,info);
-               doc.getElementsByTagName('head')[0].appendChild(js);
-            }
-            break;
-         case 'css':
-            if (by_src){
-               var cssNode = document.createElement('link');
-               cssNode.type = 'text/css';
-               cssNode.rel = 'stylesheet';
-               cssNode.setAttribute(ex_ldr.mark,info);
-               cssNode.href = script;
-               doc.getElementsByTagName("head")[0].appendChild(cssNode);
-            } else {
-               var styleElement = doc.createElement("style");
-               styleElement.type = "text/css";
-               styleElement.setAttribute(ex_ldr.mark,info);
-               styleElement.appendChild(doc.createTextNode(script));
-               doc.getElementsByTagName("head")[0].appendChild(styleElement);
-            }
-            break;
-      }
-   },
-   init_keys:function(){
-      var done=function(){
-         informer.show(ex_ldr.mark+" scripts updated",2000,doc);
-      };
-      var keyhandler = function(e){
-         if (!e){  e = event; }
-         if (e.altKey && e.ctrlKey){
-            switch (e.keyCode){
-               case 85: /*case 1075: case 1043: case 117://alert("Alt+Ctrl+U"); */
-                  ex_api.req({act:'update_scripts'},function(){
-                     done();
-                  });
-                  informer.show(ex_ldr.mark+" run update scripts<br/>(Alt+Ctrl+U)",2000,doc);
-                  ex_ldr.inj_script("console.log('"+ex_ldr.mark+" run update scripts (Alt+Ctrl+U)');");
-
-                  break;
-            }
-         }
-      };
-      if (doc.addEventListener){
-         doc.addEventListener('keydown', keyhandler, false);
-      } else if (doc.attachEvent){
-         doc.attachEvent('keydown', keyhandler);
-      } else {
-         doc.onkeydown = keyhandler;
-      }
-   }
-
+        };
+        if (doc.addEventListener) {
+            doc.addEventListener('keydown', keyhandler, false);
+        } else if (doc.attachEvent) {
+            doc.attachEvent('keydown', keyhandler);
+        } else {
+            doc.onkeydown = keyhandler;
+        }
+    }
 };
 
 var informer={
@@ -311,38 +310,37 @@ var informer={
 };
 
 //  win.postMessage({act:'get',url:'http://vkopt.net/download'},"*")
-var ex_msg={
-   init:function(handler){
-      if (!doc.head){
-         setTimeout(function(){
-           ex_msg.init(handler);
-         },10)
-         return;
-      }
-      if (typeof CustomEvent != 'undefined'){
-         win.addEventListener('vkopt_messaging_request', function(e) {
-            handler(e.detail,function(data){
-               var data_obj = {data:data}
-               var response = new CustomEvent("vkopt_messaging_response",{detail:JSON.stringify(data_obj)});
-               win.dispatchEvent(response);
+var ex_msg = {
+    init: function (handler) {
+        if (!doc.head) {
+            setTimeout(function () {
+                ex_msg.init(handler);
+            }, 10)
+            return;
+        }
+        if (typeof CustomEvent != 'undefined') {
+            win.addEventListener('vkopt_messaging_request', function (e) {
+                handler(e.detail, function (data) {
+                    var data_obj = { data: data };
+                    var response = new CustomEvent('vkopt_messaging_response', { detail: JSON.stringify(data_obj) });
+                    win.dispatchEvent(response);
+                });
             });
-         });
-      } else {
-          doc.addEventListener("vkopt_messaging_request", function(event) {
-            var node = event.target;
-            if (!node || node.nodeType != Node.TEXT_NODE)
-              return;
-
-            var _doc = node.ownerDocument;
-            handler(JSON.parse(node.nodeValue), function(response) {
-              node.nodeValue = JSON.stringify(response);
-              var event = _doc.createEvent("HTMLEvents");
-              event.initEvent("vkopt_messaging_response", true, false);
-              return node.dispatchEvent(event);
-            });
-          }, false, true);
-      }
-   }
+        } else {
+            doc.addEventListener('vkopt_messaging_request', function (event) {
+                var node = event.target;
+                if (!node || node.nodeType != Node.TEXT_NODE)
+                    return;
+                var _doc = node.ownerDocument;
+                handler(JSON.parse(node.nodeValue), function (response) {
+                    node.nodeValue = JSON.stringify(response);
+                    var event = _doc.createEvent('HTMLEvents');
+                    event.initEvent('vkopt_messaging_response', true, false);
+                    return node.dispatchEvent(event);
+                });
+            }, false, true);
+        }
+    }
 }
 
 var ex_api={
@@ -357,11 +355,8 @@ var ex_api={
       return msg
    },
    post_message:function(data){console.log("can't post message to bg process",data)},
-   init:function(win){
-      win = win || window;
-
+   init: function() {
       ex_msg.init(ex_api.on_message);
-      //win.addEventListener("message", ex_api.on_message,false);
    },
    message_handler:function(data){
       data = data || {};
@@ -419,13 +414,13 @@ var ex_api={
 
 ex_ldr.init();
 ex_ldr.init_keys(); // TODO: disable if no need
-ex_api.init(win);
+ex_api.init();
 //win.ex_api=ex_api;
 }
 
 
 if (ext_browser.opera || ext_browser.chrome || ext_browser.safari || ext_browser.maxthon || ext_browser.mozilla_jetpack){
-      init_content_script(window, document);
+    init_content_script(window, document);
 }
 
 // in Mozilla browsers "init_content_script" called from background.js

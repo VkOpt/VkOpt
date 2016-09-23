@@ -1,8 +1,6 @@
 (function(){
-
 // <filefox_jetpack_init>
 if (typeof require != 'undefined' && typeof module != 'undefined'  && module.id == "vkopt/background"){
-      this.mozilla_jetpack = true;
       this.jetpack_lib_path = module.uri.match(/^(.+)\//)[1];
       this.window = false;
       this.navigator = false;
@@ -45,10 +43,7 @@ if (typeof console == 'undefined' || !(console || {}).log || !(console || {}).in
    };
 }
 
-
-var ex_loader, ext_api;
-
-ex_loader = {
+var ex_loader = {
    type:'internal', // internal|beta|online
    base_path: 'http://vkopt.net/upd/',
    config_url:'http://vkopt.net/upd/upd/config.json',
@@ -162,7 +157,7 @@ ex_loader = {
 
       } else if (b.chrome){                          // CHROME
          ext_api.ready=true;
-         chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+         chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             // request.url - contain url
             if (request.act=='get_scripts' && request.url){
                ex_loader.get_scripts(request.url,function(files,api_allowed){
@@ -226,7 +221,6 @@ ex_loader = {
             include: /.*/,
             exclude: /.*notifier\.php|.*im_frame\.php/,
             contentScriptFile: [self.data.url("content_script.js")],
-            contentScriptOptions: {qwe:123},
             contentScriptWhen: "start",
             onAttach: function (worker) {
                //worker.port.emit("init", {});
@@ -266,34 +260,27 @@ ex_loader = {
                vkopt_ldr_init_content_script(win, doc, bg);
          });
       }
-      ex_loader._upd_interval = setInterval(function(){ //Run update checker
-         //ex_loader.update_config();
-         ex_loader.init_config();
-      },ex_loader.update_time);
+      ex_loader._upd_interval = setInterval(ex_loader.init_config, ex_loader.update_time); // Run update checker
    },
    deinit:function(){
       clearInterval(_upd_interval);
    },
-   moz_ldr:function(callback){
-       if (ex_loader.browsers.mozilla_jetpack) // Firefox Jetpack
-           callback(document, document.defaultView);
-       else {
-           var srv = {
-               observe: function (aSubject, aTopic, aData) {
-                   switch (aTopic) {
-                       case 'document-element-inserted':
-                           var doc = aSubject;
-                           if (null === doc.location) break;
-                           var win = doc.defaultView;
-                           callback(doc, win);
-                           break;
-                   }
+   moz_ldr:function (callback) {
+       var srv = {
+           observe: function (aSubject, aTopic, aData) {
+               switch (aTopic) {
+                   case 'document-element-inserted':
+                       var doc = aSubject;
+                       if (null === doc.location) break;
+                       var win = doc.defaultView;
+                       callback(doc, win);
+                       break;
                }
-           };
-           var observerService = Components.classes['@mozilla.org/observer-service;1']
-               .getService(Components.interfaces.nsIObserverService);
-           observerService.addObserver(srv, 'document-element-inserted', false);
-       }
+           }
+       };
+       var observerService = Components.classes['@mozilla.org/observer-service;1']
+           .getService(Components.interfaces.nsIObserverService);
+       observerService.addObserver(srv, 'document-element-inserted', false);
    },
    is_packed_available:function(){
       return !((window.external && window.external.mxGetRuntime) || ex_loader.online_update);         // MAXTHON
@@ -563,12 +550,12 @@ var browser = {
   mac: /mac/i.test(_ua)
 };
 
-ext_api={
+var ext_api={
    ready:false,
    store_val_prefix: 'custval_',
    message_handler:function(data,send_response,obj){
       obj = obj || {};
-      console.log('BG_GET:',data,send_response);
+      //console.log('BG_GET:',data,send_response);
       switch(data.act){
          case 'check_ext':
             send_response({act:'get_response'});
@@ -742,8 +729,12 @@ ext_api={
           if (!headers['Content-type'])
               headers['Content-type'] = contentType;
 
-          if (data && (typeof data == 'object') && isEmptyObject(data)) data = null;
-          if (data && (typeof data == 'object') && Object.prototype.toString.call(data) !== '[object Array]') data = serialize(data);
+          if (typeof data == 'object') {
+              if (isEmptyObject(data)) {
+                  data = null;
+              } else if (!Array.isArray(data)) // Почему?
+                  data = serialize(data);
+          }
 
           if (~contentType.indexOf('multipart/form-data') && method == 'POST' && data && data.length) {
               var buffer = new Uint8Array(data.length);
@@ -1025,7 +1016,7 @@ ext_api.utils.init_ls.apply(this);
 ex_loader.init.apply(this);
 
 
-if (browser.chrome && !(window.external && window.external.mxGetRuntime))
+if (ex_loader.browsers.chrome && !ex_loader.browsers.maxthon)
    ext_api.utils.chrome_init()
 
 })();
