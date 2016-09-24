@@ -3389,9 +3389,9 @@ vkopt['audioplayer'] = {
 
       if (file_name != 'audioplayer.js')
          return;
-      // багфикс: при добавлении инфы об аудио в виде объекта в плейлист, оно не добавляется. впихиваем костыль для конверта объекта в массив.
+      // багфикс: на Opera с включенной блокировкой рекламы треки не добавляются в очередь кнопкой "Воспроизвести следующей"
       if (vkopt.settings.get('add_to_next_fix'))
-         Inj.Replace('AudioPlaylist.prototype.addAudio',/(([a-z_0-9]+)\.length)(\s*&&\s*([a-z_0-9]+)\(\2\))/,'($1$3) || ($2.fullId && $4(vkopt.audioplayer.audioObjToArr($2)))')
+         Inj.Replace('AudioPlaylist.prototype._unref',/^([\s\S]+params)/,'if (typeof params == "undefined") var params = {};\n$1');
 
       // У меня HTML5 плеер аудио глючит, вызывая артефакты со случайными перескакиваниями проигрываемой позиции по хронометражу.
       if (vkopt.settings.get('audio_force_flash')){
