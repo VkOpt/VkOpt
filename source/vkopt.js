@@ -25,6 +25,7 @@ var vkopt_defaults = {
       audio_full_title: false,
       disable_border_radius: false,
       audio_dl: true,
+      vid_dl: true,
       audio_size_info: false,
       audio_clean_titles: false,
       audio_album_info: true,
@@ -3418,6 +3419,13 @@ vkopt['audioplayer'] = {
 }
 
 vkopt['videoview'] = {
+   onSettings:{
+      Media:{
+         vid_dl: {
+            title: 'seLinkVi'
+         }
+      }
+   },
    css: function(){
       return vk_lib.get_block_comments(function(){
       /*css:
@@ -3498,6 +3506,7 @@ vkopt['videoview'] = {
    },
    on_player_data: function(vars){
       //vkopt.log('Video data:', vars);
+      if (!vkopt.settings.get('vid_dl')) return;
       vkopt.videoview._cur_mv_data = vars;
       vkopt.videoview.update_dl_btn();
       if (!vars){
