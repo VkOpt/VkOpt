@@ -2950,7 +2950,7 @@ var vkOptDonate = {
     },
     /* Yandex Money */
     YMDonateForm: function YMDonateForm(Amount,purse_id,submit_text){
-        if(ge('purse_ad_link')) show('purse_ad_link');
+        //if(ge('purse_ad_link')) show('purse_ad_link');
         submit_text=submit_text || IDL('Donate');
         return '<div style="margin:0 auto; display: table;">\
         <form style="margin: 0; padding: 0;" action="https://money.yandex.ru/charity.xml" method="post">\
@@ -2983,7 +2983,7 @@ var vkOptDonate = {
     		else
     			html+='<a href=# class="purse_yad_link" onclick="ge(\''+result_el+'\').innerHTML=vkOptDonate.YMDonateForm('+purses[i][1]+',\''+yad+'\'); return false"><div class="purse_yad_link_img" ></div>'+yad+'<span style="float:right">\u042f\u043d\u0434\u0435\u043a\u0441.\u0414\u0435\u043d\u044c\u0433\u0438</span></a>';
     	}
-       html+='<a href=# class="purse_ad_link" id="purse_ad_link" style="display:none;" onclick="ge(\''+result_el+'\').innerHTML=vkOptDonate.AdDonateForm(); return false"><div class="purse_ad_link_img" ></div>\u0420\u0435\u043a\u043b\u0430\u043c\u0430</a>';
+       //html+='<a href=# class="purse_ad_link" id="purse_ad_link" style="display:none;" onclick="ge(\''+result_el+'\').innerHTML=vkOptDonate.AdDonateForm(); return false"><div class="purse_ad_link_img" ></div>\u0420\u0435\u043a\u043b\u0430\u043c\u0430</a>';
     	html+='</div>';
     	return html;
     },
