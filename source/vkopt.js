@@ -4670,7 +4670,7 @@ vkopt['support'] = {
    },
    onRequestQuery: function(url, q, options){
       if (!vkopt.settings.get('stealth_addons')) return;
-      if (q.act == "save" && q.audio_orig && q.audio_html)
+      if (q.audio_orig && q.audio_html)
          q.audio_html = q.audio_orig;
    }
 }
