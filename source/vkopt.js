@@ -3833,6 +3833,32 @@ vkopt['messages'] = {
          .vk_im_hide_dialogs .im-mess-stack .im-mess-stack--content .im-mess-stack--lnk{
             max-width: auto;
          }
+         .vk_msg_info_icon{
+            width: 18px;
+            height: 18px;
+            display: block;
+            float: right;
+            margin: 14px;
+         }
+         a.vk_msg_info_icon:hover{
+            text-decoration: none;
+         }
+         .vk_msg_info_icon:before {
+            content: '!';
+            font-weight: bold;
+            border: 2px solid #93a3bc;
+            color: #93a3bc;
+            width: 15px;
+            height: 15px;
+            line-height: 16px;
+            display: block;
+            text-align: center;
+            border-radius: 50%;
+         }
+         .im-page.im-page_classic .vk_msg_info_icon{
+            margin-top: -3px;
+            margin-right: 0;
+         }
          */
       }).css
    },
@@ -3848,6 +3874,18 @@ vkopt['messages'] = {
         im_block_typing: {},
         im_block_mark_read: {}
       }
+   },
+   onInit: function(){
+      vkopt.messages.tpls = vk_lib.get_block_comments(function(){
+         /*info_btn:
+            <a href="#" class="vk_msg_info_icon" id="vk_msg_info_btn" onmouseover="vkopt.messages.show_info(this);" onclick="return false;"></a>
+         */
+         /*info_content:
+         <div>{lng.mMaI}: {vals.in_count}</div>
+         <div>{lng.mMaO}: {vals.out_count}</div>
+         <div>{lng.mDialogsMessages}: {vals.dialogs_count}</div>
+         */
+      });
    },
    onRequestQuery: function(url, query, options) {
        if (url === 'al_im.php') {
@@ -3869,13 +3907,35 @@ vkopt['messages'] = {
       }
    },
    onLocation: function(nav_obj, cur_module_name){
-      if (!vkopt.settings.get('im_hide_dialogs'))
-         return;
-      vkopt.messages.dialogs_hide_init();
-   },
-   dialogs_hide_init: function(){
       if (nav.objLoc[0] != 'im')
          return;
+      vkopt.messages.info_icon();
+      if (vkopt.settings.get('im_hide_dialogs'))
+         vkopt.messages.dialogs_hide_init();
+   },
+   info_icon: function(){
+      var p = geByClass1('_im_dialogs_settings');
+      if (!p || ge('vk_msg_info_btn')) return;
+      p.insertBefore(se(vkopt.messages.tpls['info_btn']), p.firstChild);
+   },
+   show_info: function(el){ // показываем количество сообщений и диалогов
+      var code_body = 'return {';
+      code_body += '"in_count": API.messages.get({"count":1,"offset":0,"out":0,"preview_length":2}).count,' +
+                   '"out_count": API.messages.get({"count":1,"offset":0,"out":1,"preview_length":2}).count,' +
+                   '"dialogs_count": API.messages.getDialogs({"count":0,"unread":0}).count';
+      code_body += '};';
+
+      dApi.call('execute',{v:'5.53', code:code_body},function(r){
+         var html = vk_lib.tpl_process(vkopt.messages.tpls['info_content'], r.response)
+         showTooltip(el, {
+            text: html,
+            black: 1,
+            zIndex: 1,
+            toup: true
+         });
+      });
+   },
+   dialogs_hide_init: function(){
       var dialogs  = geByClass1('im-page--dialogs');
 
       if (geByClass1('im-page--history_empty'))
@@ -3890,7 +3950,31 @@ vkopt['messages'] = {
          if (domClosest('im-page--header-chat',e.target))
             toggle(dialogs)
       });
-   }
+   },
+   get: function(out, offset, count, onDone) {
+		var code_body='';
+		var code_r=[];
+		var steps=Math.ceil(count/100);
+		for (var i=0; i<steps;i++){
+			var obj={count:count>100?100:count, offset:offset,out:out,preview_length:0};
+			code_body+='var x'+i+'=API.messages.get('+JSON.stringify(obj)+');\n';
+			code_r.push('x'+i);
+			count-=100;
+			offset+=100;
+		}
+		code_body+='\nreturn ['+code_r.join(',')+'];';
+		dApi.call('execute',{v:'5.53', code:code_body},function(r){
+			var res=[];
+         var count = 0;
+			var m=r.response;
+			for (var i=0;i<m.length;i++){
+				count = m[i].count || count;
+            if (m[i].items && m[i].items.length>0)
+					res = res.concat(m[i].items)
+			}
+			onDone({response:{count: count, items: res}});
+		});
+	}
 }
 
 vkopt['attacher'] = {
