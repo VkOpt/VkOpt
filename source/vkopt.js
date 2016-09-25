@@ -1444,7 +1444,9 @@ vkopt['photoview'] =  {
             background-image: none;
             height: auto;
          }
-
+         .vk_pv_comm_move_down .pv_cont .pv_close_btn{
+            right: 34px;
+         }
          .vk_pv_comm_move_down .pe_editor,
          .vk_pv_comm_move_down .pe_sticker_pack_list{
             width: auto !important;
