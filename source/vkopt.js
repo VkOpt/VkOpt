@@ -3861,6 +3861,18 @@ vkopt['messages'] = {
             margin-top: -3px;
             margin-right: 0;
          }
+		 .vk_old_unread_msg .nim-dialog.nim-dialog_unread-out:not(.nim-dialog_failed) .nim-dialog--text-preview {
+			background: #edf0f5;
+		 }
+		 .vk_old_unread_msg .nim-dialog.nim-dialog_unread-out:not(.nim-dialog_failed) .nim-dialog--unread {
+			display: none;
+		 }
+		 .vk_old_unread_msg .nim-dialog_selected.nim-dialog.nim-dialog_unread-out:not(.nim-dialog_failed) .nim-dialog--text-preview {
+			background: #8ea8c4;
+		 }
+		 .vk_old_unread_msg .nim-dialog.nim-dialog_unread   {
+			background: #edf0f5;
+		 }
          */
       }).css
    },
@@ -3869,7 +3881,11 @@ vkopt['messages'] = {
          im_dialogs_right:{
             title: 'seDialogsListToRight',
             class_toggler: true
-         }
+         },
+		 old_unread_msg:{
+			title: 'oldUnreadViewOfMsg',
+            class_toggler: true
+		 }
       },
       Extra: {
         im_hide_dialogs: { class_toggler: true },
