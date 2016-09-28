@@ -758,7 +758,7 @@ vkopt['settings'] =  {
          <div id="dev_height_row_bg" class="row" style="padding-top: 10px">
 			<div class="dev_label" style="width:130px; padding:0 10px 0 0">{vals.caption}</div>
 			<div class="dev_labeled" style="width:130px;">
-			  # <input type="text" onchange="vkopt.settings.set('{vals.id}', this.value)" class="text dev_constructor_input" id="widget_color1" value="{vals.curColorNoSharp}" style="width: 50px;" onkeyup="cur.soonUpdatePreview();"> <span onmouseover="Dev.showColorBox(this, 1, event);" class="dev_colorbox_cont"><span class="dev_colorbox" id="dev_colorbox1" style="background-color: #{vals.curColorNoSharp};">&nbsp;</span></span>
+			  # <input type="text" onchange="vkopt.settings.set('{vals.id}', this.value); setStyle(ge('dev_colorbox1'),{backgroundColor: '#'+this.value});" class="text dev_constructor_input" id="widget_color1" value="{vals.curColorNoSharp}" style="width: 50px;" onkeyup="cur.soonUpdatePreview();"> <span onmouseover="Dev.showColorBox(this, 1, event);" class="dev_colorbox_cont"><span class="dev_colorbox" id="dev_colorbox1" style="background-color: #{vals.curColorNoSharp};">&nbsp;</span></span>
 			</div>
 		  </div>
          */
@@ -1127,8 +1127,64 @@ vkopt['settings'] =  {
          }
       } else { // radio group (тут пока ничего нет поэтому пусть будет тут) COLOR_PICKER
 			if (option_data.color_picker) {
-				stManager.add(['dev.js']);
-				stManager.add(['dev.css']);
+				stManager.add(['dev.js','dev.css','tooltips.css']);
+				//какие-то функции, чтобы заработало
+				!cur.soonUpdate && (cur.soonUpdate = 0);
+				!cur.soonUpdatePreview && (cur.soonUpdatePreview=function(){
+					clearTimeout(cur.soonUpdate);
+					cur.soonUpdate = setTimeout(cur.updatePreview, 400);
+				});
+				!cur.updatePreview && (cur.updatePreview=function(){
+					var params = {};
+				  var width = intval(ge('groups_width').value),
+					  height = intval(ge('groups_height').value),
+					  mode = parseInt(ge('community_layout').value || 0),
+					  wide = mode == 2 || mode == 4 ? isChecked('dev_community_wide') : '';
+
+				  var gid = -parseInt(ge('groups_group_id').value);
+
+				  if (!window.updatedPreview) {
+					window.updatedPreview = true;
+				  } else {
+					nav.setLoc(extend(nav.objLoc, {mode: mode, wide: wide, width: width, height: height, oid: -gid, link: ge('groups_link').value}));
+				  }
+
+				  if (mode == 0 || mode == 2 || mode == 4) {
+					show('dev_height_row');
+				  } else {
+					hide('dev_height_row');
+				  }
+
+				  if (mode == 2) {
+					hide('dev_height_row_bg');
+				  } else {
+					show('dev_height_row_bg');
+				  }
+
+				  if (mode == 2 || mode == 4) {
+					show('dev_community_wide_cont');
+				  } else {
+					hide('dev_community_wide_cont');
+				  }
+				  if (!gid) gid = 20003922;
+				  var wideStr = wide ? ', wide: '+wide : '';
+				  var color1 = val(ge('widget_color1'));
+				  console.log(color1);
+				  vkopt.settings.set('old_unread_msg_bg', color1);
+				  var color2 = val(ge('widget_color2'));
+				  var color3 = val(ge('widget_color3'));
+				  setStyle(ge('dev_colorbox1'), {backgroundColor: '#'+color1});
+				  setStyle(ge('dev_colorbox2'), {backgroundColor: '#'+color2});
+				  setStyle(ge('dev_colorbox3'), {backgroundColor: '#'+color3});
+				  var colorsStr = ', color1: \''+color1+'\', color2: \''+color2+'\', color3: \''+color3+'\'';
+				  ge('code').value = commentsCode.replace('{mode}', mode).replace('{width}', width ? ', width: "' + width + '"' : '').replace('{height}', height ? ', height: "' + height + '"' : '').replace('{group}', gid).replace('{wide}', wideStr).replace('{colors}', colorsStr);
+
+				  ge('dev_widget_preview').innerHTML = '';
+
+				  VK.Widgets.Group('dev_widget_preview', {mode: mode, wide: wide, width: width, height: mode == 0 || mode == 2 || mode == 4 ? height : void 0, color1: color1, color2: color2, color3: color3}, gid);
+
+				})
+				// конец каких-то левых функций
 				html = vk_lib.tpl_process(vkopt.settings.tpls['color_picker'], {
 					id: option_data.id,
 					curColorNoSharp: vkopt.settings.get(option_data.id),
