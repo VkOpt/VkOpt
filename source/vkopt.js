@@ -4326,8 +4326,7 @@ vkopt['profile'] = {
       if (!ops.el) box.content(html).show();
       else ge(ops.el).innerHTML=vkopt.res.img.ldr;
 
-      var fid=0;
-      var scan=function(){
+      var scan=function(fid){
          ge(ops.el || 'vk_scan_bar').innerHTML=vkProgressBar(++step,8,(ops.width || 310),' %');
          mid = first + Math.floor( (last - first) / 2 );
          //callback(first + ';' + last + '-' + mid);
@@ -4349,22 +4348,33 @@ vkopt['profile'] = {
                 if (first>last || first==80){
                 	callback(null);
                 } else {
-                	vkopt_core.timeout(scan,300);
+                	vkopt_core.timeout(scan.pbind(fid),300);
                 }
 
             }
          });
       };
-      dApi.call('friends.get',{uid:target_uid,count:10},function(r){
-         if (!r.response || !r.response[0]){
-            alert('Sorry... Mission impossible...');
-            if (!ops.el) box.hide();
-            return;
-         }
-         if (vk_DEBUG) console.log('fid',r.response[0]);
-         fid=r.response[0];
-         scan();
-      })
+      dApi.call('friends.get',{
+            user_id: target_uid,
+            fields: 'first_name',
+            count: 20, //надеемся, что среди первых 20 будет хоть один незаблокированный акк
+            v:'5.53'
+         }, function(r){
+            if (!r.response || !r.response.count){
+               alert('Sorry... Mission impossible...');
+               if (!ops.el) box.hide();
+               return;
+            }
+            var fid = 0;
+            // игнорим DELETED друзей, т.к невозможно использовать их список друзей
+            for (var i in r.response.items)
+               if (!r.response.items[i].deactivated){
+                  fid = r.response.items[i].id;
+                  break;
+               }
+            vkopt.log('fid',fid);
+            scan(fid);
+      });
    },
    editor: {
       middle_name_field: function(){
