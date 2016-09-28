@@ -4119,6 +4119,10 @@ vkopt['face'] =  {
             title: 'seDisableBorderRadius',
             class_toggler: true
          },
+		 old_white_background:{
+			title: 'oldWhiteBackground',
+            class_toggler: true
+		 }
       }
    },
    css: function(){
@@ -4173,6 +4177,24 @@ vkopt['face'] =  {
             height: 13px;
             width: 17px;
          }
+		 .vk_old_white_background body{
+			background: #fff;
+		 }
+		 .vk_old_white_background .im-page.im-page_classic .im-page--header-chat {
+			border-top: solid 17px #fff;
+			border-left: solid 1px #fff;
+			border-right: solid 1px #fff;
+		 }
+		 .vk_old_white_background .im-page.im-page_classic .im-page--chat-input {
+			border-bottom: solid 15px #fff;
+			border-left: solid 1px #fff;
+			border-right: solid 2px #fff;
+		 }
+		 .vk_old_white_background .im-page.im-page_classic .im-page--header {
+			border-top: solid 15px #fff;
+			border-left: solid 1px #fff;
+			border-right: solid 1px #fff;
+		 }
          */
       });
       var progress_bar = vk_lib.get_block_comments(vkProgressBar).css;
