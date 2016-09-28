@@ -2447,6 +2447,8 @@ vkopt['audio'] =  {
             dir: "down",
             shift : [14, 5, 0],
             hasover: true,
+            showdt: 400,
+            hidedt: 300,
             onCreate: function(){
                addClass(btn.tt.container, 'vk_acts_menu_block');
                addEvent(btn.tt.container, 'click', vkopt.audio.prevent_play);
