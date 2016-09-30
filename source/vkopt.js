@@ -3927,13 +3927,13 @@ vkopt['messages'] = {
 		 .vk_old_unread_msg .im-mess.im-mess_unread {
 			background: #{colorWithoutSharp};
 		 }
-		 .vk_old_unread_msg .im-mess.im-mess_selected+.im-mess:before, .im-mess.im-mess_unread+.im-mess:before {
+		 .vk_old_unread_msg .im-mess.im-mess_selected+.im-mess:before, .vk_old_unread_msg .im-mess.im-mess_unread+.im-mess:before {
 			background: #{colorWithoutSharp};
 		 }
-		 .vk_old_unread_msg .im-mess.im-mess_selected:last-child:before, .im-mess.im-mess_unread:last-child:before {
+		 .vk_old_unread_msg .im-mess.im-mess_selected:last-child:before, .vk_old_unread_msg .im-mess.im-mess_unread:last-child:before {
 			background: #{colorWithoutSharp};
 		 }
-		 .vk_old_unread_msg .im-mess.im-mess_selected, .im-mess.im-mess_selected:hover {
+		 .vk_old_unread_msg .im-mess.im-mess_selected, .vk_old_unread_msg .im-mess.im-mess_selected:hover {
 			background: #{colorWithoutSharp};
 		 }
          */
