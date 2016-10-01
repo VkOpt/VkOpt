@@ -1396,8 +1396,6 @@ vkopt['lang'] = {
          items: html.join(''),
          about: about.join('<br>')
       });
-
-      return html;
    }
 }
 
@@ -2605,7 +2603,6 @@ vkopt['scrobbler'] = {
       }
    },
    debug:false,
-   get_time:null,
    lastfm:null,
    session_key:null,
    username:null,
@@ -3626,7 +3623,7 @@ vkopt['videoview'] = {
       vkopt.log('External player:', url);
       if (url.indexOf('ivi.ru') > -1){
          vkopt.videoview.get_ivi_links(url, function(links, vid){
-               html = '';
+               var html = '';
                var filename = vkCleanFileName(mvcur.mvData.title);
                html += vk_lib.tpl_process(vkopt.videoview.tpls['ext_link'], {
                   url: 'http://www.ivi.ru/watch/' + vid,
@@ -3645,7 +3642,7 @@ vkopt['videoview'] = {
       }
       if (url.indexOf('youtube.com') > -1){
          vkopt.videoview.yt.get_links(url, function(links, vid){
-               html = '';
+               var html = '';
                var filename = vkCleanFileName(mvcur.mvData.title);
                html += vk_lib.tpl_process(vkopt.videoview.tpls['ext_link'], {
                   url: 'http://youtube.com/watch?v=' + vid,
@@ -4479,7 +4476,7 @@ vkopt['profile'] = {
          //callback(first + ';' + last + '-' + mid);
          ajax.post('/friends',{act:'filter_friends',al:1,city:0,sex:0,age_from:first,age_to:mid,uid:fid},{
             onDone:function(uids){
-               x=inArr(uids,target_uid);
+               var x =inArr(uids,target_uid);
                if (x) {
                   last = mid;
                } else {
