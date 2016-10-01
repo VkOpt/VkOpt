@@ -4270,7 +4270,7 @@ vkopt['face'] =  {
             border-radius: 0px !important;
          }
          .vk_compact_audio .audio_row{
-            padding: 1px;
+            padding: 1px 8px;
          }
          .vk_compact_audio .audio_row .audio_play {
             width: 18px;
