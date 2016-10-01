@@ -4253,6 +4253,10 @@ vkopt['face'] =  {
             title: 'seDisableBorderRadius',
             class_toggler: true
          },
+		 old_white_background:{
+			title: 'oldWhiteBackground',
+            class_toggler: true
+		 }
       }
    },
    css: function(){
@@ -4306,6 +4310,15 @@ vkopt['face'] =  {
             background: url(/images/icons/profile_dots.png) no-repeat 0 4px;
             height: 13px;
             width: 17px;
+         }
+         .vk_old_white_background body{
+            background: #fff;
+         }
+         .vk_old_white_background .im-page.im-page_classic .im-page--header-chat,
+         .vk_old_white_background .im-page.im-page_classic .im-page--header,
+         .vk_old_white_background .im-page.im-page_classic .im-page--chat-input
+         {
+            border-color: #fff;
          }
          */
       });
