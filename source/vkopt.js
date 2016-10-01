@@ -36,6 +36,8 @@ var vkopt_defaults = {
       postpone_custom_interval: true,
       pv_comm_move_down: false,
       calc_age: true,
+      old_unread_msg: false,
+      old_unread_msg_bg: 'c5d9e7',
 
       //Extra:
       vkopt_guide: true,   // показываем, где находится кнопка настроек, до тех пор, пока в настройки всё же не зайдут
@@ -160,7 +162,7 @@ var vkopt_core = {
       delayed_run: function(plug_id){ //функция для пуска отдельного плагина, который не был подключен до основного запуска вкопта
          var css = vkopt_core.plugins.get_css(plug_id);
          if (css != '')
-            vkaddcss(code);
+            vkaddcss(css);
 
          vkopt_core.plugins.call_method(plug_id, 'onInit');
          vkopt_core.plugins.call_modules('onModuleDelayedInit', plug_id); // сообщаем всем модулям о подключении опоздавшего
@@ -507,6 +509,15 @@ vkopt['settings'] =  {
          .vk_settings_block .checkbox .vk_checkbox_caption{
             padding-left:20px;
          }
+         .vk_settings_block #dev_colorpicker{
+            margin-left: 107px;
+         }
+         .vk_settings_block .dev_labeled{
+            width: 107px;
+         }
+         .vk_settings_block .vk_color_switcher{
+            padding-left: 3px;
+         }
          .vk_sub_options{padding-left:20px; margin-top:5px;}
 
          #vk_setts_Extra{
@@ -736,6 +747,36 @@ vkopt['settings'] =  {
             </div>
          </div>
          */
+
+		 /*color_picker:
+		  <div id = "dev_widget_colors">
+        <div id="dev_colorpicker" class="ttb dev_tt_to_left" style="display: none;">
+			<div class="toup1">
+			  <div class="ttb_cont"><div class="tt_text">
+				<div class="dev_colorpicker">
+				  <div class="dev_colorpicker_title">{lng.ColorSelector}</div>
+				  <div id="dev_colors" onmousedown="return Dev.colorsDown(event, true);"><img class="dev_colors_grad" src="/images/colorpicker_bg.png" width="176" height="176"></div>
+				  <canvas id="dev_palette" onmousedown="return Dev.paletteDown(event, true);" width="20" height="176"></canvas>
+				  <div id="dev_picker1"></div>
+				  <div id="dev_picker2"></div>
+				</div>
+			  </div></div>
+			  <div class="bottom_pointer"></div>
+			</div>
+		  </div>
+		  </div>
+      */
+      /*color_input:
+      <div id="vk_color_input_{vals.id}" class="vk_color_switcher clear">
+			<div class="vk_color_label">{vals.caption}</div>
+			<div class="dev_labeled">
+			  # <input type="text" onchange="vkopt.settings.set('{vals.id}', this.value); setStyle(ge('dev_colorbox{vals.id}'),{backgroundColor: '#'+this.value});" class="text dev_constructor_input" id="widget_color{vals.id}" value="{vals.curColorNoSharp}" style="width: 50px;" onkeyup="cur.soonUpdatePreview();">
+           <span onmouseover="vkopt.settings.colorbox_show(this, '{vals.id}', event);" class="dev_colorbox_cont">
+            <span class="dev_colorbox" id="dev_colorbox{vals.id}" style="background-color: #{vals.curColorNoSharp};">&nbsp;</span>
+           </span>
+			</div>
+      </div>
+      */
       });
       // Подставляем локализацию в шаблон:
       for (var key in vkopt.settings.tpls)
@@ -751,6 +792,36 @@ vkopt['settings'] =  {
       setTimeout(function(){
          vkopt.settings.first_launch();
       },0);
+   },
+   colorbox_show: function(el,id,ev){
+      stManager.add(['dev.js','dev.css','tooltips.css'], function(){
+         var updatePreview = function(){
+           var color = val(ge('widget_color'+id));
+           if (!color) return;
+           vkopt.log(color);
+           vkopt.settings.set('old_unread_msg_bg', color);
+           setStyle(ge('dev_colorbox'+id), {backgroundColor: '#'+color});
+         }
+
+         !cur.soonUpdate && (cur.soonUpdate = 0);
+         // бекапим оригинал функции если он есть
+         if (cur.soonUpdatePreview && cur.soonUpdatePreview.toString().indexOf('orig_soonUpdatePreview') == -1)
+            cur.orig_soonUpdatePreview =  cur.soonUpdatePreview;
+         cur.soonUpdatePreview = function(){
+            clearTimeout(cur.soonUpdate);
+            cur.soonUpdate = setTimeout(function(){
+               updatePreview();
+               cur.orig_soonUpdatePreview  && cur.orig_soonUpdatePreview();
+            }, 400);
+         };
+         if (!ge('dev_widget_colors')){
+            geByTag1('body').appendChild(se(vkopt.settings.tpls['color_picker']));
+            cur.colorInited = false;
+         }
+         var p = ge('widget_color'+id).parentNode;
+         p.insertBefore(ge('dev_widget_colors'),p.firstChild);
+         Dev.showColorBox(el, id, ev);
+      });
    },
    onLocation: function(nav_obj,cur_module_name){
       if (vkopt.settings.__last_user_id == 0 && vk.id > 0){
@@ -945,7 +1016,7 @@ vkopt['settings'] =  {
          p.innerHTML = vkopt.settings.tpls['main'];
          update_view();
       } else {
-         stManager.add('settings.css',function(){
+         stManager.add(['settings.css','dev.css'],function(){
             html = vk_lib.tpl_process(vkopt.settings.tpls['search_block'], {content: ''});
             vkopt.settings.__box = new MessageBox({title:vkopt.settings.__full_title, width: 650 ,hideButtons:true, bodyStyle: 'padding:0px;'}).content(html).show();
             update_view();
@@ -1086,10 +1157,10 @@ vkopt['settings'] =  {
       // чекбоксы
       //
       var html = '';
-      if (!option_data.options){ // checkbox
+      if (!option_data.options && !option_data.color_picker){ // checkbox
          html = vk_lib.tpl_process(vkopt.settings.tpls['checkbox'], {
                id: option_data.id,
-               caption: IDL(option_data.title || option_data.plug_id+'.'+option_data.id, 2),
+               caption: IDL(trim(option_data.title || option_data.plug_id+'.'+option_data.id), 2),
                on_class: vkopt.settings.get(option_data.id) ? 'on': ''
             });
          if (option_data.sub){
@@ -1099,8 +1170,22 @@ vkopt['settings'] =  {
             }
             html += vk_lib.tpl_process(vkopt.settings.tpls['sub_block'], {content: content});
          }
-      } else { // radio group
-
+      } else { // radio group (тут пока ничего нет поэтому пусть будет тут) COLOR_PICKER
+			if (option_data.color_picker) {
+				// конец каких-то левых функций
+				html = vk_lib.tpl_process(vkopt.settings.tpls['color_input'], {
+					id: option_data.id,
+					curColorNoSharp: vkopt.settings.get(option_data.id),
+					caption: IDL(trim(option_data.title || option_data.plug_id+'.'+option_data.id), 2)
+				});
+				if (option_data.sub){
+					var content = '';
+					for (var option_id in option_data.sub){
+					   content += vkopt.settings.get_switcher_code(option_data.sub[option_id]);
+					}
+					html += vk_lib.tpl_process(vkopt.settings.tpls['sub_block'], {content: content});
+				}
+			}
       }
       return html;
    },
@@ -1311,8 +1396,6 @@ vkopt['lang'] = {
          items: html.join(''),
          about: about.join('<br>')
       });
-
-      return html;
    }
 }
 
@@ -2447,6 +2530,8 @@ vkopt['audio'] =  {
             dir: "down",
             shift : [14, 5, 0],
             hasover: true,
+            showdt: 400,
+            hidedt: 300,
             onCreate: function(){
                addClass(btn.tt.container, 'vk_acts_menu_block');
                addEvent(btn.tt.container, 'click', vkopt.audio.prevent_play);
@@ -2518,7 +2603,6 @@ vkopt['scrobbler'] = {
       }
    },
    debug:false,
-   get_time:null,
    lastfm:null,
    session_key:null,
    username:null,
@@ -3539,7 +3623,7 @@ vkopt['videoview'] = {
       vkopt.log('External player:', url);
       if (url.indexOf('ivi.ru') > -1){
          vkopt.videoview.get_ivi_links(url, function(links, vid){
-               html = '';
+               var html = '';
                var filename = vkCleanFileName(mvcur.mvData.title);
                html += vk_lib.tpl_process(vkopt.videoview.tpls['ext_link'], {
                   url: 'http://www.ivi.ru/watch/' + vid,
@@ -3558,7 +3642,7 @@ vkopt['videoview'] = {
       }
       if (url.indexOf('youtube.com') > -1){
          vkopt.videoview.yt.get_links(url, function(links, vid){
-               html = '';
+               var html = '';
                var filename = vkCleanFileName(mvcur.mvData.title);
                html += vk_lib.tpl_process(vkopt.videoview.tpls['ext_link'], {
                   url: 'http://youtube.com/watch?v=' + vid,
@@ -3862,14 +3946,43 @@ vkopt['messages'] = {
             margin-right: 0;
          }
          */
-      }).css
+      }).css + vkopt.messages.css_msg_bg(vkopt.settings.get('old_unread_msg_bg'))
+   },
+   css_msg_bg: function(color){
+      return vk_lib.get_block_comments(function(){
+         /*css:
+         .vk_old_unread_msg .nim-dialog.nim-dialog_unread-out:not(.nim-dialog_failed):not(.nim-dialog_selected) .nim-dialog--text-preview,
+         .vk_old_unread_msg .nim-dialog:not(.nim-dialog_deleted).nim-dialog_unread,
+         ._vk_old_unread_msg .nim-dialog.nim-dialog_unread-out,
+         .vk_old_unread_msg .im-mess.im-mess_unread,
+         .vk_old_unread_msg .im-mess.im-mess_unread+.im-mess:before,
+         .vk_old_unread_msg .im-mess.im-mess_unread:last-child:before,
+         .vk_old_unread_msg .im-mess.im-mess_selected:hover,
+         .vk_old_unread_msg .fc_msgs_unread{
+            background: #{colorMsgBgUnread};
+         }
+         .vk_old_unread_msg .nim-dialog.nim-dialog_unread-out:not(.nim-dialog_failed) .nim-dialog--unread {
+            display: none;
+         }
+         */
+      }).css.replace(new RegExp("{colorMsgBgUnread}", 'g'), color);
    },
    onSettings:{
       Messages: {
          im_dialogs_right:{
             title: 'seDialogsListToRight',
             class_toggler: true
-         }
+         },
+		 old_unread_msg:{
+			title: 'seHLMail',
+            class_toggler: true,
+			sub: {
+				old_unread_msg_bg:{
+					title: ' ',
+					color_picker: true
+				}
+			}
+		 }
       },
       Extra: {
         im_hide_dialogs: { class_toggler: true },
@@ -3894,6 +4007,11 @@ vkopt['messages'] = {
            if (query.act === 'a_typing' && vkopt.settings.get('im_block_typing')) {
                return false;
            }
+           /* something interesting:
+           a_mark_answered
+           a_mark
+           a_restore_dialog
+           */
            if (query.act === 'a_mark_read' && vkopt.settings.get('im_block_mark_read')) {
                return false;
            }
@@ -3907,6 +4025,19 @@ vkopt['messages'] = {
             vkopt.messages.dialogs_hide_init();
 
       }
+
+      if (option_id == 'old_unread_msg_bg' && vkopt.settings.get('old_unread_msg')){
+         clearTimeout(vkopt.messages._chbg_to);
+         vkopt.messages._chbg_to = setTimeout(function(){
+            var code = vkopt.messages.css_msg_bg(val);
+            var st = ge('vk_unread_msg_preview');
+            if (!st)
+               vkaddcss(code, 'vk_unread_msg_preview');
+            else
+               val('vk_unread_msg_preview', code);
+         },200)
+      }
+
    },
    onLocation: function(nav_obj, cur_module_name){
       if (nav.objLoc[0] != 'im')
@@ -4119,6 +4250,10 @@ vkopt['face'] =  {
             title: 'seDisableBorderRadius',
             class_toggler: true
          },
+		 old_white_background:{
+			title: 'oldWhiteBackground',
+            class_toggler: true
+		 }
       }
    },
    css: function(){
@@ -4172,6 +4307,15 @@ vkopt['face'] =  {
             background: url(/images/icons/profile_dots.png) no-repeat 0 4px;
             height: 13px;
             width: 17px;
+         }
+         .vk_old_white_background body{
+            background: #fff;
+         }
+         .vk_old_white_background .im-page.im-page_classic .im-page--header-chat,
+         .vk_old_white_background .im-page.im-page_classic .im-page--header,
+         .vk_old_white_background .im-page.im-page_classic .im-page--chat-input
+         {
+            border-color: #fff;
          }
          */
       });
@@ -4326,14 +4470,13 @@ vkopt['profile'] = {
       if (!ops.el) box.content(html).show();
       else ge(ops.el).innerHTML=vkopt.res.img.ldr;
 
-      var fid=0;
-      var scan=function(){
+      var scan=function(fid){
          ge(ops.el || 'vk_scan_bar').innerHTML=vkProgressBar(++step,8,(ops.width || 310),' %');
          mid = first + Math.floor( (last - first) / 2 );
          //callback(first + ';' + last + '-' + mid);
          ajax.post('/friends',{act:'filter_friends',al:1,city:0,sex:0,age_from:first,age_to:mid,uid:fid},{
             onDone:function(uids){
-               x=inArr(uids,target_uid);
+               var x =inArr(uids,target_uid);
                if (x) {
                   last = mid;
                } else {
@@ -4349,22 +4492,33 @@ vkopt['profile'] = {
                 if (first>last || first==80){
                 	callback(null);
                 } else {
-                	vkopt_core.timeout(scan,300);
+                	vkopt_core.timeout(scan.pbind(fid),300);
                 }
 
             }
          });
       };
-      dApi.call('friends.get',{uid:target_uid,count:10},function(r){
-         if (!r.response || !r.response[0]){
-            alert('Sorry... Mission impossible...');
-            if (!ops.el) box.hide();
-            return;
-         }
-         if (vk_DEBUG) console.log('fid',r.response[0]);
-         fid=r.response[0];
-         scan();
-      })
+      dApi.call('friends.get',{
+            user_id: target_uid,
+            fields: 'first_name',
+            count: 20, //надеемся, что среди первых 20 будет хоть один незаблокированный акк
+            v:'5.53'
+         }, function(r){
+            if (!r.response || !r.response.count){
+               alert('Sorry... Mission impossible...');
+               if (!ops.el) box.hide();
+               return;
+            }
+            var fid = 0;
+            // игнорим DELETED друзей, т.к невозможно использовать их список друзей
+            for (var i in r.response.items)
+               if (!r.response.items[i].deactivated){
+                  fid = r.response.items[i].id;
+                  break;
+               }
+            vkopt.log('fid',fid);
+            scan(fid);
+      });
    },
    editor: {
       middle_name_field: function(){
