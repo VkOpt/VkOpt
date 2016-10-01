@@ -3957,7 +3957,6 @@ vkopt['messages'] = {
          .vk_old_unread_msg .im-mess.im-mess_unread,
          .vk_old_unread_msg .im-mess.im-mess_unread+.im-mess:before,
          .vk_old_unread_msg .im-mess.im-mess_unread:last-child:before,
-         .vk_old_unread_msg .im-mess.im-mess_selected:hover,
          .vk_old_unread_msg .fc_msgs_unread{
             background: #{colorMsgBgUnread};
          }
