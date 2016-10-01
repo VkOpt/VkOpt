@@ -4303,8 +4303,12 @@ vkopt['face'] =  {
          .vk_compact_audio .page_preview_audio_wrap .page_media_x_wrap {
             top: 0px;
          }
-         .vk_audio_full_title .audio_row .audio_title_wrap {
+         .vk_audio_full_title .audio_row .audio_title_wrap,
+         .vk_audio_full_title .audio_row .audio_performer{
             white-space: normal;
+         }
+         .vk_audio_full_title .audio_row .audio_performer{
+            display: inline;
          }
          .vk_more_acts_icon{
             background: url(/images/icons/profile_dots.png) no-repeat 0 4px;
