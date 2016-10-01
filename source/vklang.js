@@ -760,6 +760,7 @@ vk_lang_ru={
    ,"PopularOptions":"\u041f\u043e\u043f\u0443\u043b\u044f\u0440\u043d\u044b\u0435 \u043d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 \u0440\u0430\u0441\u0448\u0438\u0440\u0435\u043d\u0438\u044f"
    ,"ShowAllOptions":"\u041f\u043e\u043a\u0430\u0437\u0430\u0442\u044c \u0432\u0441\u0435 \u043d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438"
    ,"ColorSelector":"\u0412\u044b\u0431\u043e\u0440 \u0446\u0432\u0435\u0442\u0430"
+   ,"oldWhiteBackground":"\u0411\u0435\u043B\u044B\u0439 \u0444\u043E\u043D"
 };
 
 vk_lang_en={//by Hzy
@@ -1675,6 +1676,7 @@ vk_lang_en={//by Hzy
   ,"PopularOptions":"Popular extension settings"
   ,"ShowAllOptions":"Show all options"
   ,"ColorSelector":"Color selector"
+  ,"oldWhiteBackground":"White background"
 };
 
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
