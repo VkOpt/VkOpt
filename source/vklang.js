@@ -759,6 +759,9 @@ vk_lang_ru={
    ,"sePvCommMoveDown":"\u041f\u0435\u0440\u0435\u043d\u0435\u0441\u0442\u0438 \u0431\u043b\u043e\u043a \u043a\u043e\u043c\u043c\u0435\u043d\u0442\u0430\u0440\u0438\u0435\u0432 \u043f\u043e\u0434 \u0444\u043e\u0442\u043e"
    ,"PopularOptions":"\u041f\u043e\u043f\u0443\u043b\u044f\u0440\u043d\u044b\u0435 \u043d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 \u0440\u0430\u0441\u0448\u0438\u0440\u0435\u043d\u0438\u044f"
    ,"ShowAllOptions":"\u041f\u043e\u043a\u0430\u0437\u0430\u0442\u044c \u0432\u0441\u0435 \u043d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438"
+   ,"ColorSelector":"\u0412\u044b\u0431\u043e\u0440 \u0446\u0432\u0435\u0442\u0430"
+   ,"oldWhiteBackground":"\u0411\u0435\u043B\u044B\u0439 \u0444\u043E\u043D"
+   ,"oldRusLogo":"\u0420\u0443\u0441\u0441\u043A\u0438\u0439 \u043B\u043E\u0433\u043E\u0442\u0438\u043F"
 };
 
 vk_lang_en={//by Hzy
@@ -1673,8 +1676,11 @@ vk_lang_en={//by Hzy
   ,"sePvCommMoveDown":"Move comments block under the photo"
   ,"PopularOptions":"Popular extension settings"
   ,"ShowAllOptions":"Show all options"
+  ,"ColorSelector":"Color selector"
+  ,"oldWhiteBackground":"White background"
+  ,"oldRusLogo":"Old russian logo"
 };
- 
+
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
 'LangAuthor':'<a href="/id3476823">by Vall</a> & <a href="/vall_gorr">Vall_gorr</a>',
 'LangTite':'\u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0430 \u043c\u043e\u0432\u0430',
