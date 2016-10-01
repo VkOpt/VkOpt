@@ -36,7 +36,8 @@ var vkopt_defaults = {
       postpone_custom_interval: true,
       pv_comm_move_down: false,
       calc_age: true,
-	  old_unread_msg_bg: 'c9ff8b',
+      old_unread_msg: false,
+      old_unread_msg_bg: 'c5d9e7',
 
       //Extra:
       vkopt_guide: true,   // показываем, где находится кнопка настроек, до тех пор, пока в настройки всё же не зайдут
@@ -161,7 +162,7 @@ var vkopt_core = {
       delayed_run: function(plug_id){ //функция для пуска отдельного плагина, который не был подключен до основного запуска вкопта
          var css = vkopt_core.plugins.get_css(plug_id);
          if (css != '')
-            vkaddcss(code);
+            vkaddcss(css);
 
          vkopt_core.plugins.call_method(plug_id, 'onInit');
          vkopt_core.plugins.call_modules('onModuleDelayedInit', plug_id); // сообщаем всем модулям о подключении опоздавшего
@@ -508,6 +509,15 @@ vkopt['settings'] =  {
          .vk_settings_block .checkbox .vk_checkbox_caption{
             padding-left:20px;
          }
+         .vk_settings_block #dev_colorpicker{
+            margin-left: 107px;
+         }
+         .vk_settings_block .dev_labeled{
+            width: 107px;
+         }
+         .vk_settings_block .vk_color_switcher{
+            padding-left: 3px;
+         }
          .vk_sub_options{padding-left:20px; margin-top:5px;}
 
          #vk_setts_Extra{
@@ -737,31 +747,36 @@ vkopt['settings'] =  {
             </div>
          </div>
          */
-		 
+
 		 /*color_picker:
-		 <div id="dev_widget_colors" class="clear">
-		  <div id="dev_colorpicker" class="ttb dev_tt_to_left" style="opacity: 1; margin-top: -168px; margin-left:250px; display: none;">
+		  <div id = "dev_widget_colors">
+        <div id="dev_colorpicker" class="ttb dev_tt_to_left" style="display: none;">
 			<div class="toup1">
 			  <div class="ttb_cont"><div class="tt_text">
 				<div class="dev_colorpicker">
-				  <div class="dev_colorpicker_title">Выберите цвет</div>
-				  <div id="dev_colors" onmousedown="return Dev.colorsDown(event, true);" style="background: rgb(255, 0, 0);"><img class="dev_colors_grad" src="/images/colorpicker_bg.png" width="176" height="176"></div>
+				  <div class="dev_colorpicker_title">{lng.ColorSelector}</div>
+				  <div id="dev_colors" onmousedown="return Dev.colorsDown(event, true);"><img class="dev_colors_grad" src="/images/colorpicker_bg.png" width="176" height="176"></div>
 				  <canvas id="dev_palette" onmousedown="return Dev.paletteDown(event, true);" width="20" height="176"></canvas>
-				  <div id="dev_picker1" style="margin-top: 175px;"></div>
-				  <div id="dev_picker2" style="margin-top: 41.52px; margin-left: 35.24px;"></div>
+				  <div id="dev_picker1"></div>
+				  <div id="dev_picker2"></div>
 				</div>
 			  </div></div>
 			  <div class="bottom_pointer"></div>
 			</div>
 		  </div>
-
-         <div id="dev_height_row_bg" class="row" style="padding-top: 10px">
-			<div class="dev_label" style="width:130px; padding:0 10px 0 0">{vals.caption}</div>
-			<div class="dev_labeled" style="width:130px;">
-			  # <input type="text" onchange="vkopt.settings.set('{vals.id}', this.value); setStyle(ge('dev_colorbox1'),{backgroundColor: '#'+this.value});" class="text dev_constructor_input" id="widget_color1" value="{vals.curColorNoSharp}" style="width: 50px;" onkeyup="cur.soonUpdatePreview();"> <span onmouseover="Dev.showColorBox(this, 1, event);" class="dev_colorbox_cont"><span class="dev_colorbox" id="dev_colorbox1" style="background-color: #{vals.curColorNoSharp};">&nbsp;</span></span>
-			</div>
 		  </div>
-         */
+      */
+      /*color_input:
+      <div id="vk_color_input_{vals.id}" class="vk_color_switcher clear">
+			<div class="vk_color_label">{vals.caption}</div>
+			<div class="dev_labeled">
+			  # <input type="text" onchange="vkopt.settings.set('{vals.id}', this.value); setStyle(ge('dev_colorbox{vals.id}'),{backgroundColor: '#'+this.value});" class="text dev_constructor_input" id="widget_color{vals.id}" value="{vals.curColorNoSharp}" style="width: 50px;" onkeyup="cur.soonUpdatePreview();">
+           <span onmouseover="vkopt.settings.colorbox_show(this, '{vals.id}', event);" class="dev_colorbox_cont">
+            <span class="dev_colorbox" id="dev_colorbox{vals.id}" style="background-color: #{vals.curColorNoSharp};">&nbsp;</span>
+           </span>
+			</div>
+      </div>
+      */
       });
       // Подставляем локализацию в шаблон:
       for (var key in vkopt.settings.tpls)
@@ -777,6 +792,36 @@ vkopt['settings'] =  {
       setTimeout(function(){
          vkopt.settings.first_launch();
       },0);
+   },
+   colorbox_show: function(el,id,ev){
+      stManager.add(['dev.js','dev.css','tooltips.css'], function(){
+         var updatePreview = function(){
+           var color = val(ge('widget_color'+id));
+           if (!color) return;
+           vkopt.log(color);
+           vkopt.settings.set('old_unread_msg_bg', color);
+           setStyle(ge('dev_colorbox'+id), {backgroundColor: '#'+color});
+         }
+
+         !cur.soonUpdate && (cur.soonUpdate = 0);
+         // бекапим оригинал функции если он есть
+         if (cur.soonUpdatePreview && cur.soonUpdatePreview.toString().indexOf('orig_soonUpdatePreview') == -1)
+            cur.orig_soonUpdatePreview =  cur.soonUpdatePreview;
+         cur.soonUpdatePreview = function(){
+            clearTimeout(cur.soonUpdate);
+            cur.soonUpdate = setTimeout(function(){
+               updatePreview();
+               cur.orig_soonUpdatePreview  && cur.orig_soonUpdatePreview();
+            }, 400);
+         };
+         if (!ge('dev_widget_colors')){
+            geByTag1('body').appendChild(se(vkopt.settings.tpls['color_picker']));
+            cur.colorInited = false;
+         }
+         var p = ge('widget_color'+id).parentNode;
+         p.insertBefore(ge('dev_widget_colors'),p.firstChild);
+         Dev.showColorBox(el, id, ev);
+      });
    },
    onLocation: function(nav_obj,cur_module_name){
       if (vkopt.settings.__last_user_id == 0 && vk.id > 0){
@@ -971,7 +1016,7 @@ vkopt['settings'] =  {
          p.innerHTML = vkopt.settings.tpls['main'];
          update_view();
       } else {
-         stManager.add('settings.css',function(){
+         stManager.add(['settings.css','dev.css'],function(){
             html = vk_lib.tpl_process(vkopt.settings.tpls['search_block'], {content: ''});
             vkopt.settings.__box = new MessageBox({title:vkopt.settings.__full_title, width: 650 ,hideButtons:true, bodyStyle: 'padding:0px;'}).content(html).show();
             update_view();
@@ -1115,7 +1160,7 @@ vkopt['settings'] =  {
       if (!option_data.options && !option_data.color_picker){ // checkbox
          html = vk_lib.tpl_process(vkopt.settings.tpls['checkbox'], {
                id: option_data.id,
-               caption: IDL(option_data.title || option_data.plug_id+'.'+option_data.id, 2),
+               caption: IDL(trim(option_data.title || option_data.plug_id+'.'+option_data.id), 2),
                on_class: vkopt.settings.get(option_data.id) ? 'on': ''
             });
          if (option_data.sub){
@@ -1127,24 +1172,11 @@ vkopt['settings'] =  {
          }
       } else { // radio group (тут пока ничего нет поэтому пусть будет тут) COLOR_PICKER
 			if (option_data.color_picker) {
-				stManager.add(['dev.js','dev.css','tooltips.css']);
-				//какие-то функции, чтобы заработало
-				!cur.soonUpdate && (cur.soonUpdate = 0);
-				!cur.soonUpdatePreview && (cur.soonUpdatePreview=function(){
-					clearTimeout(cur.soonUpdate);
-					cur.soonUpdate = setTimeout(cur.updatePreview, 400);
-				});
-				!cur.updatePreview && (cur.updatePreview=function(){
-				  var color1 = val(ge('widget_color1'));
-				  console.log(color1);
-				  vkopt.settings.set('old_unread_msg_bg', color1);
-				  setStyle(ge('dev_colorbox1'), {backgroundColor: '#'+color1});
-				})
 				// конец каких-то левых функций
-				html = vk_lib.tpl_process(vkopt.settings.tpls['color_picker'], {
+				html = vk_lib.tpl_process(vkopt.settings.tpls['color_input'], {
 					id: option_data.id,
 					curColorNoSharp: vkopt.settings.get(option_data.id),
-					caption: IDL(option_data.title || option_data.plug_id+'.'+option_data.id, 2)
+					caption: IDL(trim(option_data.title || option_data.plug_id+'.'+option_data.id), 2)
 				});
 				if (option_data.sub){
 					var content = '';
@@ -3916,30 +3948,27 @@ vkopt['messages'] = {
             margin-top: -3px;
             margin-right: 0;
          }
-		 
-		 .vk_old_unread_msg .nim-dialog.nim-dialog_unread-out:not(.nim-dialog_failed) .nim-dialog--text-preview {
-			background: #{colorWithoutSharp};
-		 }
-		 .vk_old_unread_msg .nim-dialog.nim-dialog_unread-out:not(.nim-dialog_failed) .nim-dialog--unread {
-			display: none;
-		 }
-		 .vk_old_unread_msg .nim-dialog:not(.nim-dialog_deleted).nim-dialog_unread.nim-dialog_classic {
-			background: #{colorWithoutSharp};
-		 }
-		 .vk_old_unread_msg .im-mess.im-mess_unread {
-			background: #{colorWithoutSharp};
-		 }
-		 .vk_old_unread_msg .im-mess.im-mess_selected+.im-mess:before, .im-mess.im-mess_unread+.im-mess:before {
-			background: #{colorWithoutSharp};
-		 }
-		 .vk_old_unread_msg .im-mess.im-mess_selected:last-child:before, .im-mess.im-mess_unread:last-child:before {
-			background: #{colorWithoutSharp};
-		 }
-		 .vk_old_unread_msg .im-mess.im-mess_selected, .im-mess.im-mess_selected:hover {
-			background: #{colorWithoutSharp};
-		 }
          */
-      }).css.replace(new RegExp("{colorWithoutSharp}", 'g'), vkopt.settings.get('old_unread_msg_bg'));
+      }).css + vkopt.messages.css_msg_bg(vkopt.settings.get('old_unread_msg_bg'))
+   },
+   css_msg_bg: function(color){
+      return vk_lib.get_block_comments(function(){
+         /*css:
+         .vk_old_unread_msg .nim-dialog.nim-dialog_unread-out:not(.nim-dialog_failed):not(.nim-dialog_selected) .nim-dialog--text-preview,
+         .vk_old_unread_msg .nim-dialog:not(.nim-dialog_deleted).nim-dialog_unread,
+         ._vk_old_unread_msg .nim-dialog.nim-dialog_unread-out,
+         .vk_old_unread_msg .im-mess.im-mess_unread,
+         .vk_old_unread_msg .im-mess.im-mess_unread+.im-mess:before,
+         .vk_old_unread_msg .im-mess.im-mess_unread:last-child:before,
+         .vk_old_unread_msg .im-mess.im-mess_selected:hover,
+         .vk_old_unread_msg .fc_msgs_unread{
+            background: #{colorMsgBgUnread};
+         }
+         .vk_old_unread_msg .nim-dialog.nim-dialog_unread-out:not(.nim-dialog_failed) .nim-dialog--unread {
+            display: none;
+         }
+         */
+      }).css.replace(new RegExp("{colorMsgBgUnread}", 'g'), color);
    },
    onSettings:{
       Messages: {
@@ -3948,11 +3977,11 @@ vkopt['messages'] = {
             class_toggler: true
          },
 		 old_unread_msg:{
-			title: 'oldUnreadViewOfMsg',
+			title: 'seHLMail',
             class_toggler: true,
 			sub: {
 				old_unread_msg_bg:{
-					title: 'unreadMsgBackground',
+					title: ' ',
 					color_picker: true
 				}
 			}
@@ -3981,6 +4010,11 @@ vkopt['messages'] = {
            if (query.act === 'a_typing' && vkopt.settings.get('im_block_typing')) {
                return false;
            }
+           /* something interesting:
+           a_mark_answered
+           a_mark
+           a_restore_dialog
+           */
            if (query.act === 'a_mark_read' && vkopt.settings.get('im_block_mark_read')) {
                return false;
            }
@@ -3994,6 +4028,19 @@ vkopt['messages'] = {
             vkopt.messages.dialogs_hide_init();
 
       }
+
+      if (option_id == 'old_unread_msg_bg' && vkopt.settings.get('old_unread_msg')){
+         clearTimeout(vkopt.messages._chbg_to);
+         vkopt.messages._chbg_to = setTimeout(function(){
+            var code = vkopt.messages.css_msg_bg(val);
+            var st = ge('vk_unread_msg_preview');
+            if (!st)
+               vkaddcss(code, 'vk_unread_msg_preview');
+            else
+               val('vk_unread_msg_preview', code);
+         },200)
+      }
+
    },
    onLocation: function(nav_obj, cur_module_name){
       if (nav.objLoc[0] != 'im')
