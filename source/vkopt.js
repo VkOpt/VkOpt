@@ -73,7 +73,7 @@ var vkopt_defaults = {
       'pv_comm_move_down',
       'disable_border_radius'
    ]
-}
+};
 
 var vkopt_core = {
    disallow_location: /\/m\.vk\.com|login\.vk\.com|oauth\.vk\.com|al_index\.php|frame\.php|widget_.+php|notifier\.php|audio\?act=done_add/i,
@@ -264,13 +264,13 @@ var vkopt_core = {
          vkopt_core.plugins.call_modules('onDatepickerCreate', Array.prototype.slice.call(arguments));
       }
    }
-}
+};
 
 var vk_glue = {
    inj_handler: function(files){ // call from stManager.add(files, callback, async)  ->   vk_glue.inj_handler(files)
       return function(no_pending){
          if (no_pending)
-            console.log('no need inject?', files)
+            console.log('no need inject?', files);
 
          if (!isArray(files)) files = [files];
          for (var i in files){
@@ -382,7 +382,7 @@ var vk_glue = {
       //    vkopt_core.ping_stat({type: 'fail', source: 'response_handler', url: url, q: q ? q.act : ''})
       // }
    }
-}
+};
 
 /*
 (function(){
@@ -427,7 +427,7 @@ var vk_glue = {
 vkopt.log = function(){
    var args = Array.prototype.slice.call(arguments);
    console.log.apply(console, args);
-}
+};
 vkopt.save_file = function(data, filename){
    vkLdr.show();
    FileSaverConnect(function() {
@@ -474,7 +474,7 @@ vkopt['res'] = {
       ldr_mini: '<img src="/images/upload_inv_mini.gif">',
       ldr_big: '<center><img src="/images/progress7.gif"></center>'
    }
-}
+};
 
 vkopt['settings'] =  {
    backup_key_prefix: 'vkopt_settings_backup_',
@@ -911,7 +911,7 @@ vkopt['settings'] =  {
                //welcome_html += '<br><br>' + vkopt.lang.choose(true, box_content);
                var settings =  {
                   PopularOptions:{}
-               }
+               };
                var list = vkopt.settings.get_options_list();
                for (var cat in list){
                       i = 0;
@@ -939,14 +939,14 @@ vkopt['settings'] =  {
                });
                box.content(welcome_html);
                box.setOptions({title: IDL('THFI')});
-            }
+            };
             stManager.add(['settings.css']);
             box_content();
             box.show();
 
          }
 
-      }
+      };
       if (vk.id == 0){
          vkopt.settings.__last_user_id = 0;
          return;
@@ -974,7 +974,7 @@ vkopt['settings'] =  {
                each_in_opts(list[option_id].sub);
          }
          return null;
-      }
+      };
       for (var cat in list){
          each_in_opts(list[cat]);
       }
@@ -1033,18 +1033,17 @@ vkopt['settings'] =  {
          val('vkopt_donate_block', vk_lib.tpl_process(vkopt.settings.tpls['donate_form'], {}));
          val('vk_purses_list', vkOptDonate.WMPursesList('wmdonate'));
          val('wmdonate', vkOptDonate.WMDonateForm(30,'R255120081922'));
-      }
-      var p = null;
+      };
       if (!in_box || ge('vkopt_settings_block')){ // показ на странице, а не во всплывающем окне
          el = el || ge('ui_rmenu_vkopt');
          el && uiRightMenu.switchMenu(el);
-         p = ge('wide_column');
+         var p = ge('wide_column');
          vkopt_core.setLoc('settings?act=vkopt'); // вместо nav.setLoc для избежания рекурсии, обход реакции на смену URL'а
          p.innerHTML = vkopt.settings.tpls['main'];
          update_view();
       } else {
          stManager.add(['settings.css','dev.css'],function(){
-            html = vk_lib.tpl_process(vkopt.settings.tpls['search_block'], {content: ''});
+            var html = vk_lib.tpl_process(vkopt.settings.tpls['search_block'], {content: ''});
             vkopt.settings.__box = new MessageBox({title:vkopt.settings.__full_title, width: 650 ,hideButtons:true, bodyStyle: 'padding:0px;'}).content(html).show();
             update_view();
          })
@@ -1115,7 +1114,7 @@ vkopt['settings'] =  {
             }
          }
          return null;
-      }
+      };
       for (var cat in list){
          var option_data = each_in_opts(list[cat]);
          if (option_data)
@@ -1150,14 +1149,14 @@ vkopt['settings'] =  {
 
                // <conflicts>
                if (!options_id[option_id]) // собираем инфу, чтоб потом проверить, нет ли повторов ID опций в других плагинах
-                  options_id[option_id] = []
+                  options_id[option_id] = [];
                options_id[option_id].push(plug_id);
                // </conflicts>
                if (option_data.sub){
                   each_in_cat(plug_id, option_data.sub);
                }
             }
-      }
+      };
       for (var plug_id in raw_list){
          var setts = raw_list[plug_id];
          for (var cat in setts){
@@ -1226,8 +1225,8 @@ vkopt['settings'] =  {
    },
    backup:function(callback){
       var full_config = {
-         config: vkopt.settings.config(),
-      }
+         config: vkopt.settings.config()
+      };
       vk_ext_api.storage.set('vkopt_cfg_backup_'+vk.id, JSON.stringify(full_config), function(){
          console.log('config '+vk.id+' copied to bg ok');
          callback && callback();
@@ -1250,7 +1249,7 @@ vkopt['settings'] =  {
          callback && callback();
       });
    }
-}
+};
 
 vkopt['lang'] = {
    tpls: null,
@@ -1359,7 +1358,7 @@ vkopt['lang'] = {
       	} catch (e) {}
       	return val;
       };
-      var raw = vk_lang[id] || vk_lang_ru[id] || (window.vk_lang_add && vk_lang_add[id])
+      var raw = vk_lang[id] || vk_lang_ru[id] || (window.vk_lang_add && vk_lang_add[id]);
       return raw ? dec(raw) : id;
    },
    get: function(){
@@ -1424,7 +1423,7 @@ vkopt['lang'] = {
          about: about.join('<br>')
       });
    }
-}
+};
 
 vkopt['owners'] = {
    cache:{},
@@ -1446,7 +1445,7 @@ vkopt['owners'] = {
 
 
       if (vkopt.owners.cache[obj_id])
-         return callback.apply(this, vkopt.owners.cache[obj_id])
+         return callback.apply(this, vkopt.owners.cache[obj_id]);
 
       dApi.call('utils.resolveScreenName', {screen_name : obj_id}, function (r) {
          var res = r.response;
@@ -1467,7 +1466,7 @@ vkopt['owners'] = {
             callback.apply(this, vkopt.owners.cache[obj_id])
       });
    }
-}
+};
 
 vkopt['away'] = {
    onSettings: {
@@ -1496,7 +1495,7 @@ vkopt['away'] = {
          return;
       node.setAttribute('href', new_lnk);
    }
-}
+};
 
 vkopt['photoview'] =  {
    onSettings:{
@@ -1652,7 +1651,7 @@ vkopt['photoview'] =  {
          return;
       var append_menu = function(content){
          ett._ttel.appendChild(se(trim(content)));
-      }
+      };
 
       // Поиск копий
       if (vkopt.settings.get('photo_search_copy')){
@@ -1740,7 +1739,7 @@ vkopt['photoview'] =  {
             Inj.Replace('Photoview.updateVerticalPosition', /Math\.round/g, 'vkopt.photoview.move_comments_block.mod');
             Inj.Replace('Photoview.doShow', /new uiScroll\(/i, "(vkopt.settings.get('pv_comm_move_down') ? function(){} : new uiScroll)("); // вырубаем подмену скролла для блока комментов
             if (!vkopt.photoview._SIDE_COLUMN_WIDTH_BKP && Photoview.SIDE_COLUMN_WIDTH)
-               vkopt.photoview._SIDE_COLUMN_WIDTH_BKP = Photoview.SIDE_COLUMN_WIDTH
+               vkopt.photoview._SIDE_COLUMN_WIDTH_BKP = Photoview.SIDE_COLUMN_WIDTH;
             Photoview.SIDE_COLUMN_WIDTH = 0;
          }
       },
@@ -1748,7 +1747,7 @@ vkopt['photoview'] =  {
          return vkopt.settings.get('pv_comm_move_down') ? Math.max(Math.round(t),10) : Math.round(t);
       }
    }
-}
+};
 
 vkopt['photos'] =  {
    css: '\
@@ -1852,7 +1851,7 @@ vkopt['photos'] =  {
          );
       h.appendChild(btn);
    }
-}
+};
 
 vkopt['audio'] =  {
    css: function(){
@@ -2053,7 +2052,7 @@ vkopt['audio'] =  {
       var oid=parseInt(x[0]);
       var aid=parseInt(x[1]);
 
-      var info = AudioUtils.getAudioFromEl(ge('audio_'+full_aid))
+      var info = AudioUtils.getAudioFromEl(ge('audio_'+full_aid));
       var def_aid = info[AudioUtils.AUDIO_ITEM_INDEX_ALBUM_ID];
 
       var cur_offset=0;
@@ -2114,7 +2113,7 @@ vkopt['audio'] =  {
                      if(r.response==1){
                         // TODO: допилить. ибо в закэшированных плейлистах не изменяется до перезагрузки страницы
                         var u = {};
-                        u[AudioUtils.AUDIO_ITEM_INDEX_ALBUM_ID] = to_album,
+                        u[AudioUtils.AUDIO_ITEM_INDEX_ALBUM_ID] = to_album;
                         getAudioPlayer().updateAudio(info, u);
 
                         hide('vk_au_alb_ldr');
@@ -2146,7 +2145,7 @@ vkopt['audio'] =  {
                 return showDoneBox(t),
                 !0
             }
-      })
+      });
       return false;
    },
    search_track:function(event, ref, name){
@@ -2279,7 +2278,7 @@ vkopt['audio'] =  {
 
       var audios = geByClass('audio_row',node);
       if (!audios.length && hasClass(node, 'audio_row')) // если вызов из AutoList.prototype._drawRows, то на входе уже элемент audio_row
-         audios = [node]
+         audios = [node];
 
       for (var i = 0; i < audios.length; i++){
          var row = audios[i];
@@ -2499,7 +2498,7 @@ vkopt['audio'] =  {
                      vkopt.audio.load_audio_urls();
                }
             }
-         })
+         });
          vkopt.audio.__load_req_num++;
       };
 
@@ -2544,7 +2543,7 @@ vkopt['audio'] =  {
          var audioRow = gpeByClass('_audio_row', btn);
          var info = AudioUtils.getAudioFromEl(audioRow);
          var info_obj = AudioUtils.asObject(info);
-         var menu_code = vk_lib.tpl_process(vkopt.audio.tpls['acts_menu'], info_obj)
+         var menu_code = vk_lib.tpl_process(vkopt.audio.tpls['acts_menu'], info_obj);
 
          var raw_list = vkopt_core.plugins.call_modules('onAudioRowMenuItems',info_obj); // собираем доп. пункты со всех плагинов в один список
          var additional_items = [];
@@ -2583,7 +2582,7 @@ vkopt['audio'] =  {
       }
    }
 
-}
+};
 
 // Scrobbling API documentation: http://users.last.fm/~tims/scrobbling/scrobbling2.html
 vkopt['scrobbler'] = {
@@ -2763,7 +2762,7 @@ vkopt['scrobbler'] = {
                } else if (typeof(callbacks.success) != 'undefined') {
                   callbacks.success(data)
                }
-            }
+            };
             if (requestMethod != 'POST'){
                var hash = auth.getApiSignature(params);
                if (typeof(cache) != 'undefined' && cache.contains(hash) && !cache.isExpired(hash)) {
@@ -2776,7 +2775,7 @@ vkopt['scrobbler'] = {
             var data = urlEncData(params);
             var url = apiUrl;
             if (requestMethod == 'GET')
-               url += '?'+data.replace(/%20/g, '+')
+               url += '?'+data.replace(/%20/g, '+');
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function(){
                if (xhr.readyState == 4){
@@ -3237,7 +3236,7 @@ vkopt['scrobbler'] = {
             break;
       }
    }
-}
+};
 
 vkopt['audio_info'] = {
    onSettings:{
@@ -3476,7 +3475,7 @@ vkopt['audio_info'] = {
          );
    }
 
-}
+};
 
 vkopt['audioplayer'] = {
    onSettings:{
@@ -3526,13 +3525,13 @@ vkopt['audioplayer'] = {
          cur_pl._initEvents();
          cur_pl._restoreVolumeState();
          setTimeout(function() {
-            cur_pl._restoreState(),
-            AudioUtils.toggleAudioHQBodyClass(),
-            cur_pl.updateCurrentPlaying()
-         })
+            cur_pl._restoreState();
+            AudioUtils.toggleAudioHQBodyClass();
+            cur_pl.updateCurrentPlaying();
+         }, 0)
       }
    }
-}
+};
 
 vkopt['videoview'] = {
    onSettings:{
@@ -3705,7 +3704,7 @@ vkopt['videoview'] = {
       var q = [240, 360, 480, 720, 1080];
       for (var i = 0; i <= vars.hd; i++){
          var qname = q[i] || 0;
-         vars["url" + qname] && list.push({url: vars["url" + qname], quality: qname+'p'})
+         vars["url" + qname] && list.push({url: vars["url" + qname], quality: qname+'p'});
          vars["cache" + qname] &&  list.push({url: vars["cache" + qname], quality: qname+'p_alt'})
       }
       return list;
@@ -3912,7 +3911,7 @@ vkopt['videoview'] = {
       };
       xhr.send(JSON.stringify(data));
    }
-}
+};
 
 vkopt['messages'] = {
    css: function(){
@@ -4151,7 +4150,7 @@ vkopt['messages'] = {
       code_body += '};';
 
       dApi.call('execute',{v:'5.53', code:code_body},function(r){
-         var html = vk_lib.tpl_process(vkopt.messages.tpls['info_content'], r.response)
+         var html = vk_lib.tpl_process(vkopt.messages.tpls['info_content'], r.response);
          showTooltip(el, {
             text: html,
             black: 1,
@@ -4188,7 +4187,7 @@ vkopt['messages'] = {
             return;
          addClass('im--page','vk_hide_dialogs_toggler');
          if (domClosest('im-page--chat-body',e.target) || domClosest('im-page--chat-input',e.target))
-            hide(dialogs)
+            hide(dialogs);
          if (domClosest('im-page--header-chat',e.target))
             toggle(dialogs)
       });
@@ -4653,8 +4652,7 @@ vkopt['messages'] = {
          autosizeSetup('vk_msg_date_fmt',{});
       } else run();
    }
-
-}
+};
 
 vkopt['attacher'] = {
    tpls: null,
@@ -4763,15 +4761,15 @@ vkopt['attacher'] = {
                   el.selected = cur.lastAddMedia.chosenMedias.length - 1;
                   addClass(domPN(el), 'audio_selected');
                   el.innerHTML = IDL('Cancel');
-               };
+               }
             }
-         };
+         }
          window.event = undefined;
          return false;
       }
    }
 
-}
+};
 
 vkopt['face'] =  {
    onSettings:{
@@ -4896,7 +4894,7 @@ vkopt['face'] =  {
          }
       }
    }
-}
+};
 
 vkopt['profile'] = {
    tpls: null,
@@ -4906,7 +4904,7 @@ vkopt['profile'] = {
    onSettings:{
       Users: {
          calc_age:{
-            title: 'seCalcAge',
+            title: 'seCalcAge'
          }
       },
       Extra: {
@@ -5090,7 +5088,7 @@ vkopt['profile'] = {
          }
       }
    }
-}
+};
 
 vkopt['groups'] = {
    tpls:null,
@@ -5392,7 +5390,7 @@ vkopt['groups'] = {
       );
       vkopt.groups.append_extra_action_btn(btn);
    }
-}
+};
 
 vkopt['wall'] = {
    onSettings:{
@@ -5454,7 +5452,7 @@ vkopt['wall'] = {
 
          var pp_last_dt = intval(cur.postponedLastDate);
          // Считаем интервал между последним отложенным и создаваемым
-         var interval = new_time - (pp_last_dt && (pp_last_dt > cur_dt) ? pp_last_dt : cur_dt)
+         var interval = new_time - (pp_last_dt && (pp_last_dt > cur_dt) ? pp_last_dt : cur_dt);
 
          if (interval){
 
@@ -5469,7 +5467,7 @@ vkopt['wall'] = {
       }
    }
 
-}
+};
 
 vkopt['support'] = {
    onSettings:{
@@ -5482,7 +5480,7 @@ vkopt['support'] = {
       if (q.audio_orig && q.audio_html)
          q.audio_html = q.audio_orig;
    }
-}
+};
 
 vkopt['test_module'] =  {
    /*
@@ -5520,7 +5518,7 @@ vkopt['test_module'] =  {
       //console.log('test processLinks:',link_el, params)
    },
    //*/
-}
+};
 
 
 vkopt_core.init();
