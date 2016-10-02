@@ -3958,7 +3958,7 @@ vkopt['messages'] = {
          .vk_old_unread_msg .im-mess.im-mess_unread+.im-mess:before,
          .vk_old_unread_msg .im-mess.im-mess_unread:last-child:before,
          .vk_old_unread_msg .fc_msgs_unread{
-            background: #{colorMsgBgUnread};
+            background: #{colorMsgBgUnread} !important;
          }
          .vk_old_unread_msg .nim-dialog.nim-dialog_unread-out:not(.nim-dialog_failed) .nim-dialog--unread {
             display: none;
