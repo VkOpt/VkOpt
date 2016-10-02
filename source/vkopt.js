@@ -1053,21 +1053,10 @@ vkopt['settings'] =  {
    },
    filter: function(val){
       ge('vkopt_settings').innerHTML = vkopt.settings.render_options(val);
-      (trim(val).toLowerCase() == 'extra' ? show : hide)('vk_setts_Extra');
-      (trim(val) == '' ? show : hide)('vkopt_lang_settings');
+      (val.toLowerCase() == 'extra' ? show : hide)('vk_setts_Extra');
+      (val == '' ? show : hide)('vkopt_lang_settings');
    },
-   _vk_inp_to:{'__cnt_id':0},
-   filter_change: function(obj,callback){
-      //var val=trim(obj.value);
-      if (!obj.id){
-         obj.id='vkobjid_'+vkopt.settings._vk_inp_to['__cnt_id'];
-         vkopt.settings._vk_inp_to['__cnt_id']= vkopt.settings._vk_inp_to['__cnt_id']+1;
-      }
-      if (vkopt.settings._vk_inp_to[obj.id]) clearTimeout(vkopt.settings._vk_inp_to[obj.id]);
-      vkopt.settings._vk_inp_to[obj.id]=setTimeout(function(){
-         callback(trim(obj.value));
-      },50);
-   },
+   filter_change: debounce (function(obj,callback){ callback(trim(obj.value)); }, 300),
    config: function(new_config){
       if (new_config){
          localStorage['vkopt_config'] = JSON.stringify(new_config);
