@@ -224,9 +224,8 @@ if (window.opera) {vkbrowser.mozilla=false; vkbrowser.opera=true;}
 
 
 
-if (vkbrowser.mozilla){
-	if (window.Node)
-	{
+
+	if (!document.head.innerText) {
 	  Node.prototype.__defineGetter__('innerText', function() {
 		if (this.nodeType == 3)
 		  return this.nodeValue;
@@ -239,7 +238,7 @@ if (vkbrowser.mozilla){
 		}
 	  });
 	}
-	if (typeof(HTMLElement) != "undefined") {
+	if ((typeof HTMLElement) == "undefined") {
 		var _emptyTags = {
 		   "IMG": true,
 		   "BR": true,
@@ -269,7 +268,7 @@ if (vkbrowser.mozilla){
 		   this.parentNode.replaceChild(df, this);
 		});
 	}
-}
+
 
 if (!window.Audio){
   Audio= function(){
