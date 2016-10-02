@@ -1090,7 +1090,6 @@ vkopt['settings'] =  {
 
    get_option_data: function(option_id){
       var list = vkopt.settings.get_options_list();
-      var option_data = null;
       var each_in_opts = function(list){
          for (var opt_id in list){
             if (opt_id == option_id)
@@ -1658,9 +1657,7 @@ vkopt['photoview'] =  {
          return ' onclick="return vkDownloadFile(this);" download="photo'+p.id+pfx+'.jpg" ';
       };
 
-      var html='',
-          max_size
-          links=[],
+      var links=[],
           hd_links=[],
           ph = cur.pvCurPhoto;
 
@@ -2045,7 +2042,6 @@ vkopt['audio'] =  {
       var def_aid = info[AudioUtils.AUDIO_ITEM_INDEX_ALBUM_ID];
 
       var cur_offset=0;
-      var alb_count=100;
       var albums=[];
       var get_albums=function(callback){
          if (vkopt.audio.album_cache[''+oid]) {
@@ -2056,7 +2052,6 @@ vkopt['audio'] =  {
          params[oid<0?'gid':'uid']=Math.abs(oid);
          dApi.call('audio.getAlbums',params,function(r){
             var _albums=r.response;
-            alb_count=_albums.shift();
 
             albums=albums.concat(_albums);
             if (_albums.length<100){
@@ -2131,8 +2126,8 @@ vkopt['audio'] =  {
       }, {
             stat: ["page.js", "page.css", "wide_dd.js", "wide_dd.css", "sharebox.js"],
             onFail: function(t) {
-                return showDoneBox(t),
-                !0
+               showDoneBox(t);
+                return true; // BUG ?
             }
       });
       return false;
@@ -2682,7 +2677,7 @@ vkopt['scrobbler'] = {
 
    timer:function(callback, delay) {
       var timerId, start, remaining = delay;
-      var paused=false;
+      var paused = true;
       this.pause = function() {
         window.clearTimeout(timerId);
         remaining -= new Date() - start;
@@ -2707,7 +2702,6 @@ vkopt['scrobbler'] = {
          window.clearTimeout(timerId);
          callback=null;
       };
-      paused=true;
       this.resume();
    },
    get_time:function(){
@@ -2879,7 +2873,6 @@ vkopt['scrobbler'] = {
          fm.auth(function(){fm.now_playing(audio_info)});
          return;
       }
-      var fm=vkopt.scrobbler;
       fm.lastfm.track.updateNowPlaying({
          artist: audio_info.artist,
          track: audio_info.title,
@@ -3037,17 +3030,17 @@ vkopt['scrobbler'] = {
             <div class="fl_r lastfm_fav_icon" onclick="vkopt.scrobbler.on_love_btn(this); cancelEvent(event); return false;"></div>\
          </div>';
 
-     var wraps = geByClass('audio_page_player_volume_wrap');
-     for (var i = 0; i < wraps.length; i++){
-        var ap = wraps[i].firstChild;
+     var volume_wraps = geByClass('audio_page_player_volume_wrap');
+     for (var i = 0; i < volume_wraps.length; i++){
+        var ap = volume_wraps[i].firstChild;
         if (ap && !geByClass('lastfm_status',ap.parentNode)[0]){
             ap.parentNode.insertBefore(vkCe('div',{'class':'fl_r lastfm_audio_page'},controls),ap);
         }
      }
 
-     var wraps = geByClass('top_audio_player_title_wrap');
-     for (var i = 0; i < wraps.length; i++){
-        var ap = wraps[i].firstChild;
+     var top_ap_wraps = geByClass('top_audio_player_title_wrap');
+     for (var i = 0; i < top_ap_wraps.length; i++){
+        var ap = top_ap_wraps[i].firstChild;
         if (ap && !geByClass('lastfm_status',ap.parentNode)[0]){
             ap.parentNode.insertBefore(vkCe('div',{'class':'fl_r lastfm_white'},controls),ap);
         }
@@ -3626,7 +3619,7 @@ vkopt['videoview'] = {
 
       var links = vkopt.videoview.get_video_links(vars);
       var filename = vkCleanFileName(vars.md_title);
-      html = '';
+      var html = '';
       for (var i = 0; i < links.length; i++){
          html += vk_lib.tpl_process(vkopt.videoview.tpls['dl_link'], {
             url: links[i].url,
@@ -5009,9 +5002,9 @@ vkopt['profile'] = {
       var last = max;
       var step = 0;
       if (!ops.el){
-         box=new MessageBox({title: IDL('Scaning'),closeButton:true,width:"350px"});
+         var box = new MessageBox({title: IDL('Scaning'),closeButton:true,width:"350px"});
          box.removeButtons();
-         box.addButton(IDL('Cancel'),function(r){abort=true; box.hide();},'no');
+         box.addButton(IDL('Cancel'), function(){ var abort = true; box.hide();}, 'no');
       }
       var html='<div id="vk_scan_bar" style="padding-bottom:10px;">'+vkopt.res.img.ldr_big+'</div>';
       if (!ops.el) box.content(html).show();

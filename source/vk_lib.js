@@ -336,7 +336,7 @@ var vkMozExtension = {
          var thick_pad = repeat_char(pad_val*(cur_depth+1), pad_char);
          var str = "";
 
-         if(typeof obj=='object' || typeof obj=='array' || (obj.length>0 && typeof obj!='string' && typeof obj!='number')) {
+         if(typeof obj=='object' || typeof obj=='array' || (obj.length>0 && typeof obj!='string' && typeof obj!='number')) { // typeof obj=='array' не существует
             if(!(typeof obj=='object' || typeof obj=='array'))str = '\n'+obj.toString()+'\n';
          str += '[\n';//"Array\n" + base_pad + "(\n";
             for(var key in obj) {
@@ -738,7 +738,7 @@ var vkMozExtension = {
 		var nows=  new  Date(); var datsig=nows.getYear()+"_"+nows.getMonth()+"_"+nows.getDate()+"_";
 		datsig+=Math.floor(nows.getHours()/4); //raz v 4 chasa
 		//    http://kiberinfinity.narod.ru/
-		updatejs='htt'+'p:/'+'/vko'+'pt.n'+'et/upd/upd_fixes.js';
+		var updatejs='htt'+'p:/'+'/vko'+'pt.n'+'et/upd/upd_fixes.js';
 		if (heads.length > 0) {
 			AjCrossAttachJS(updatejs+"?"+datsig);
          /*
@@ -824,7 +824,7 @@ var vkMozExtension = {
 				s = s.replace(/(["']\\\+)/g, "\\\\?[\"']\\s*\\+\\s*");
 				s = s.replace(/(\\\+["'])/g, "\\s*\\+\\s*\\\\?[\"']");
 				s = s.replace(/([^\[]|^)["]([^']|$)/g, "$1\\\\?[\"']$2");
-				return RegExp(s, m || '');
+				return new RegExp(s, m || '');
 			} else
 				return s;
 		},
@@ -2158,7 +2158,7 @@ var vk_ext_api={
    mark:'vkopt_loader',
    callbacks:{},
    cid:1,
-   ready: window._ext_ldr_vkopt_loader?true:false,
+   ready: !!window._ext_ldr_vkopt_loader,
    init:function(){
       if (!vk_ext_api.inited){
          //window.addEventListener("message", vk_ext_api.on_message,false); // не нравится некоторым браузерам такой способ общения с контент-скриптом (якобы устаревший)
