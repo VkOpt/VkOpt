@@ -4026,9 +4026,9 @@ vkopt['messages'] = {
             <a href="#" class="vk_msg_info_icon" id="vk_msg_info_btn" onmouseover="vkopt.messages.show_info(this);" onclick="return false;"></a>
          */
          /*info_content:
-         <div>{lng.mMaI}: {vals.in_count}</div>
-         <div>{lng.mMaO}: {vals.out_count}</div>
-         <div>{lng.mDialogsMessages}: {vals.dialogs_count}</div>
+         <h4>{lng.mMaI}: {vals.in_count}</h4>
+         <h4>{lng.mMaO}: {vals.out_count}</h4>
+         <h4>{lng.mDialogsMessages}: {vals.dialogs_count}</h4>
          */
          /*menu_separator:
          <div class="ui_actions_menu_sep" id="vk_im_acts_sep"></div>
@@ -4036,13 +4036,16 @@ vkopt['messages'] = {
          /*history_html:
          <!DOCTYPE html>
          <html>
-            <head><meta charset="utf-8"/><link rel="shortcut icon" href="http://vk.com/images/fav_chat.ico"/><link rel="stylesheet" type="text/css" href="http://vk.com/css/al/common.css" /><title>%title</title><style>
-            body{text-align:center;font:12px/16px Verdana;margin:5px;}
-            hr{border-color:#C3D1E0;}
-            .messages{width:950px;margin:0 auto;text-align:left;} .msg_item {overflow:hidden} .from,.msg_body,.att_head,.attacments,.attacment,.fwd{margin-left:80px;}
-            .upic{float:left} .upic img{vertical-align:top;width:70px;padding:5px;height:70px;}
-            a,a:visited{text-decoration:none;color:#2B587A} a:hover{text-decoration:underline} .att_head{color:#777;}
-            .att_ico{float:left;width:11px;height:11px;margin: 3px 3px 2px; background-image:url(\'http://vk.com/images/icons/mono_iconset.gif\');}
+            <head><meta charset="utf-8"/><link rel="shortcut icon" href="http://vk.com/images/fav_chat.ico"/><!--<link rel="stylesheet" type="text/css" href="http://vk.com/css/al/common.css" />--><title>%title</title><style>
+            h4{font-family: inherit;font-weight: 500;line-height: 1.1;color: inherit;margin-top: 10px;margin-bottom: 10px;font-size: 18px;}
+            body{    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;font-size: 14px;line-height: 1.42857143;color: #333;background-color: #fff;margin:0;}
+            hr{height: 0;margin-top: 20px;margin-bottom: 20px;border: 0;border-top: 1px solid #eee;}
+            .messages{width:1170px;margin:0 auto;text-align:left;} .msg_item {overflow:hidden} .from,.msg_body,.att_head,.attacments,.attacment,.fwd{margin-left:60px;min-height: 1px;padding-right: 15px;padding-left: 15px;}
+            .msg_item{margin-top:5px;}
+            .upic{float:left} .upic img{vertical-align:top;padding:5px;width: 50px;height: 50px;border-radius: 50%;}
+            a {color: #337ab7;text-decoration: none;} a:active, a:hover {outline: 0;} a:focus, a:hover {color: #23527c;text-decoration: underline;}
+            .att_head{color:#777;}
+            .att_ico{float:left;width:11px;height:11px;margin: 3px 3px 2px; background-image:url('http://vk.com/images/icons/mono_iconset.gif');}
             .att_photo{background-position: 0 -30px;} .att_audio{background-position: 0 -222px;} .att_video{background-position: 0 -75px;}
             .att_doc{background-position: 0 -280px;} .att_wall,.att_fwd{background-position: 0 -194px;} .att_gift{background-position: 0 -105px;}
             .att_sticker{background-position: 0 -362px; width: 12px; height: 12px;}
@@ -4300,9 +4303,8 @@ vkopt['messages'] = {
 		};
 
       // write data
-      html+='<hr>';
-      html+='<div> '+IDL('HistMsgDates').replace(/%start/g,t2d(msg[0].date)).replace(/%end/g,t2d(msg[msg.length-1].date))+' </div>';
-      html+='<div> '+IDL('HistMsgCount').replace(/%count/g,msg.length)+' </div>';
+      html+='<h4> '+IDL('HistMsgDates').replace(/%start/g,t2d(msg[0].date)).replace(/%end/g,t2d(msg[msg.length-1].date))+' </h4>';
+      html+='<h4> '+IDL('HistMsgCount').replace(/%count/g,msg.length)+' </h4>';
       html+='<hr>';
 
       // icons
@@ -4320,7 +4322,7 @@ vkopt['messages'] = {
          html+='<div class="upic"><img src="'+
 		 u.photo_100+
 		 '" alt="[photo_100]"></div>';
-         html+='<div class="from"> <b> <a href="http://vk.com/id'+msg[i].from_id+'" target="_blank">'+u.first_name+' '+u.last_name+'</a></b> @ <a href="#msg'+msg[i].id+'">'+t2d(msg[i].date)+'</a></div>';
+         html+='<div class="from"> <b>'+u.first_name+' '+u.last_name+'</b> <a href="http://vk.com/id'+msg[i].from_id+'" target="_blank">@'+u.domain+'</a> <a href="#msg'+msg[i].id+'">'+t2d(msg[i].date)+'</a></div>';
          if(msg[i].body != ""){
                html+='<div class="msg_body">'+t2m(msg[i].body)+'</div>';
          }
@@ -4359,7 +4361,7 @@ vkopt['messages'] = {
             html+='<div class="upic"><img src="'+
 			u.photo_100+
 			'" alt="[photo_100]"></div>';
-            html+='<div class="from"> <b> <a href="http://vk.com/id'+msgfwd[k].user_id+'" target="_blank">'+u.first_name+' '+u.last_name+'</a></b> @ '+t2d(msgfwd[k].date)+'</div>';
+            html+='<div class="from"> <b>'+u.first_name+' '+u.last_name+'</b> <a href="http://vk.com/id'+msgfwd[k].user_id+'" target="_blank">@'+u.domain+'</a> '+t2d(msgfwd[k].date)+'</div>';
             html+='<div class="msg_body"> '+t2m(msgfwd[k].body)+'</div>';
             if(msgfwd[k].attachments !== undefined){
                html+='<div class="attacments"> <b>'+IDL('HistMsgAttachments')+'</b> </div>';
@@ -4402,7 +4404,7 @@ vkopt['messages'] = {
          var w=getSize(ge('saveldr'),true)[0];
          ldr.innerHTML=vkProgressBar(0,100,w,'Users data... %');
       }
-      dApi.call('users.get',{user_ids:users_ids.join(','),fields:'photo_100',v:'5.5'},function(r){
+      dApi.call('users.get',{user_ids:users_ids.join(','),fields:'photo_100,domain',v:'5.5'},function(r){
          ldr && (ldr.innerHTML = vkProgressBar(90,100,w,'Users data... %'));
          var usrs=r.response;
          var users={};
@@ -4419,6 +4421,7 @@ vkopt['messages'] = {
 
          var html=vkopt.messages.make_html(messages, users);
          html=vkopt.messages.tpls['history_html'].replace(/%messages_body/g,html);
+         if (vkopt.settings.get('disable_border_radius')) html = html.replace(new RegExp("border-radius: 50%;", 'g'),'border-radius: 0%;');
          ldr && (ldr.innerHTML=vkProgressBar(100,100,w,'Users data... %'));
          show('save_btn_text');
          hide('saveldr');
@@ -4769,10 +4772,10 @@ vkopt['face'] =  {
             title: 'seDisableBorderRadius',
             class_toggler: true
          },
-		 old_white_background:{
-			title: 'oldWhiteBackground',
+		   old_white_background:{
+			   title: 'oldWhiteBackground',
             class_toggler: true
-		 }
+		   }
       }
    },
    css: function(){
