@@ -38,6 +38,7 @@ var vkopt_defaults = {
       calc_age: true,
       old_unread_msg: false,
       old_unread_msg_bg: 'c5d9e7',
+      ru_vk_logo: false,
 
       //Extra:
       vkopt_guide: true,   // показываем, где находится кнопка настроек, до тех пор, пока в настройки всё же не зайдут
@@ -2299,7 +2300,10 @@ vkopt['audio'] =  {
                if (vkopt.audio.__load_queue.indexOf(info_obj.fullId) == -1 && vkopt.audio.__loading_queue.indexOf(info_obj.fullId) == -1)
                   vkopt.audio.__load_queue.push(info_obj.fullId);
          }
-         var name = vkCleanFileName(info[4]+' - '+info[3]);
+
+         var name = unclean(info[4]+' - '+info[3]).replace(/<em>|<\/em>/g, ''); // зачищаем от тегов.
+         name = vkCleanFileName(name);
+
          var btn = se(
             vk_lib.tpl_process(vkopt.audio.tpls['dl_button'], {
                id: info_obj.fullId,
@@ -4036,20 +4040,41 @@ vkopt['messages'] = {
          /*history_html:
          <!DOCTYPE html>
          <html>
-            <head><meta charset="utf-8"/><link rel="shortcut icon" href="http://vk.com/images/fav_chat.ico"/><link rel="stylesheet" type="text/css" href="http://vk.com/css/al/common.css" /><title>%title</title><style>
-            body{text-align:center;font:12px/16px Verdana;margin:5px;}
-            hr{border-color:#C3D1E0;}
-            .messages{width:950px;margin:0 auto;text-align:left;} .msg_item {overflow:hidden} .from,.msg_body,.att_head,.attacments,.attacment,.fwd{margin-left:80px;}
-            .upic{float:left} .upic img{vertical-align:top;width:70px;padding:5px;height:70px;}
-            a,a:visited{text-decoration:none;color:#2B587A} a:hover{text-decoration:underline} .att_head{color:#777;}
-            .att_ico{float:left;width:11px;height:11px;margin: 3px 3px 2px; background-image:url(\'http://vk.com/images/icons/mono_iconset.gif\');}
-            .att_photo{background-position: 0 -30px;} .att_audio{background-position: 0 -222px;} .att_video{background-position: 0 -75px;}
-            .att_doc{background-position: 0 -280px;} .att_wall,.att_fwd{background-position: 0 -194px;} .att_gift{background-position: 0 -105px;}
-            .att_sticker{background-position: 0 -362px; width: 12px; height: 12px;}
-            .att_link{background-position: 0 -237px;} .attb_link a span{color:#777777 !important;} .att_geo{background-position: 0 -165px;}
-            .fwd{border:2px solid #C3D1E0;border-width: 0 0 0 2px;margin-left:85px;}
-            </style></head>
-            <body><div class="messages">%messages_body</div></body>
+            <head>
+               <meta charset="utf-8"/>
+               <link rel="shortcut icon" href="http://vk.com/images/fav_chat.ico"/>
+               <!--<link rel="stylesheet" type="text/css" href="http://vk.com/css/al/common.css" />-->
+               <title>%title</title>
+               <style>
+                  h4{font-family: inherit;font-weight: 500;line-height: 1.1;color: inherit;margin-top: 10px;margin-bottom: 10px;font-size: 18px;}
+                  body{font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;font-size: 14px;line-height: 1.42857143;color: #333;background-color: #fff;margin:0;}
+                  hr{height: 0;margin-top: 20px;margin-bottom: 20px;border: 0;border-top: 1px solid #eee;}
+                  .messages{width:1170px;margin:0 auto;text-align:left;}
+                  .msg_item {overflow:hidden}
+                  .from,.msg_body,.att_head,.attacments,.attacment,.fwd{margin-left:60px;min-height: 1px;padding-right: 15px;padding-left: 15px;}
+                  .msg_item{margin-top:5px;}
+                  .upic{float:left}
+                  .upic img{vertical-align:top;padding:5px;width: 50px;height: 50px;}
+                  .round_upic .upic img{border-radius: 50%;}
+                  a {color: #337ab7;text-decoration: none;}
+                  a:active, a:hover {outline: 0;}
+                  a:focus, a:hover {color: #23527c;text-decoration: underline;}
+                  .att_head{color:#777;}
+                  .att_ico{float:left;width:11px;height:11px;margin: 3px 3px 2px; background-image:url('http://vk.com/images/icons/mono_iconset.gif');}
+                  .att_photo{background-position: 0 -30px;}
+                  .att_audio{background-position: 0 -222px;}
+                  .att_video{background-position: 0 -75px;}
+                  .att_doc{background-position: 0 -280px;}
+                  .att_wall,.att_fwd{background-position: 0 -194px;}
+                  .att_gift{background-position: 0 -105px;}
+                  .att_sticker{background-position: 0 -362px; width: 12px; height: 12px;}
+                  .att_link{background-position: 0 -237px;}
+                  .attb_link a span{color:#777777 !important;}
+                  .att_geo{background-position: 0 -165px;}
+                  .fwd{border:2px solid #C3D1E0;border-width: 0 0 0 2px;margin-left:85px;}
+               </style>
+            </head>
+            <body><div class="messages {vals.body_class}">{vals.messages_body}</div></body>
          </html>
          */
          /*export_box:
@@ -4300,9 +4325,8 @@ vkopt['messages'] = {
 		};
 
       // write data
-      html+='<hr>';
-      html+='<div> '+IDL('HistMsgDates').replace(/%start/g,t2d(msg[0].date)).replace(/%end/g,t2d(msg[msg.length-1].date))+' </div>';
-      html+='<div> '+IDL('HistMsgCount').replace(/%count/g,msg.length)+' </div>';
+      html+='<h4> '+IDL('HistMsgDates').replace(/%start/g,t2d(msg[0].date)).replace(/%end/g,t2d(msg[msg.length-1].date))+' </h4>';
+      html+='<h4> '+IDL('HistMsgCount').replace(/%count/g,msg.length)+' </h4>';
       html+='<hr>';
 
       // icons
@@ -4310,17 +4334,17 @@ vkopt['messages'] = {
 
       // build
       for(var i=0,j=msg.length;i<j;i++){
-         var u=(user[msg[i].user_id] || {
-                           id: msg[i].user_id,
+         var from_id = msg[i].from_id || msg[i].user_id;
+         var u=(user[from_id] || {
+                           id: from_id,
                            first_name: 'DELETED',
                            last_name: '',
                            photo_100: 'http://vk.com/images/deactivated_c.gif'
                         } );
-		 html+='<div id="msg'+msg[i].id+'" class="msg_item">';
-         html+='<div class="upic"><img src="'+
-		 u.photo_100+
-		 '" alt="[photo_100]"></div>';
-         html+='<div class="from"> <b> <a href="http://vk.com/id'+msg[i].user_id+'" target="_blank">'+u.first_name+' '+u.last_name+'</a></b> @ <a href="#msg'+msg[i].id+'">'+t2d(msg[i].date)+'</a></div>';
+         html+='<div id="msg'+msg[i].id+'" class="msg_item">';
+         html+='<div class="upic"><img src="'+u.photo_100+'" alt="[photo_100]"></div>';
+         html+='<div class="from"> <b>'+u.first_name+' '+u.last_name+'</b> <a href="http://vk.com/id'+from_id+'" target="_blank">@'+u.domain+'</a> <a href="#msg'+msg[i].id+'">'+t2d(msg[i].date)+'</a></div>';
+
          if(msg[i].body != ""){
                html+='<div class="msg_body">'+t2m(msg[i].body)+'</div>';
          }
@@ -4359,7 +4383,7 @@ vkopt['messages'] = {
             html+='<div class="upic"><img src="'+
 			u.photo_100+
 			'" alt="[photo_100]"></div>';
-            html+='<div class="from"> <b> <a href="http://vk.com/id'+msgfwd[k].user_id+'" target="_blank">'+u.first_name+' '+u.last_name+'</a></b> @ '+t2d(msgfwd[k].date)+'</div>';
+            html+='<div class="from"> <b>'+u.first_name+' '+u.last_name+'</b> <a href="http://vk.com/id'+msgfwd[k].user_id+'" target="_blank">@'+u.domain+'</a> '+t2d(msgfwd[k].date)+'</div>';
             html+='<div class="msg_body"> '+t2m(msgfwd[k].body)+'</div>';
             if(msgfwd[k].attachments !== undefined){
                html+='<div class="attacments"> <b>'+IDL('HistMsgAttachments')+'</b> </div>';
@@ -4402,7 +4426,7 @@ vkopt['messages'] = {
          var w=getSize(ge('saveldr'),true)[0];
          ldr.innerHTML=vkProgressBar(0,100,w,'Users data... %');
       }
-      dApi.call('users.get',{user_ids:users_ids.join(','),fields:'photo_100',v:'5.5'},function(r){
+      dApi.call('users.get',{user_ids:users_ids.join(','),fields:'photo_100,domain',v:'5.5'},function(r){
          ldr && (ldr.innerHTML = vkProgressBar(90,100,w,'Users data... %'));
          var usrs=r.response;
          var users={};
@@ -4418,7 +4442,10 @@ vkopt['messages'] = {
                };
 
          var html=vkopt.messages.make_html(messages, users);
-         html=vkopt.messages.tpls['history_html'].replace(/%messages_body/g,html);
+         html = vk_lib.tpl_process(vkopt.messages.tpls['history_html'], {
+               body_class: !vkopt.settings.get('disable_border_radius') ? 'round_upic' : ' ',
+               messages_body: html
+            });
          ldr && (ldr.innerHTML=vkProgressBar(100,100,w,'Users data... %'));
          show('save_btn_text');
          hide('saveldr');
@@ -4769,14 +4796,14 @@ vkopt['face'] =  {
             title: 'seDisableBorderRadius',
             class_toggler: true
          },
-		 old_white_background:{
-			title: 'oldWhiteBackground',
+         old_white_background:{
+            title: 'oldWhiteBackground',
             class_toggler: true
-		 },
-		 old_rus_logo:{
-			title: 'oldRusLogo',
+         },
+         ru_vk_logo:{
+            title: 'seVkontakteLogo',
             class_toggler: true
-		 }
+         }
       }
    },
    css: function(){
@@ -4844,10 +4871,10 @@ vkopt['face'] =  {
          {
             border-color: #fff;
          }
-		 .vk_old_rus_logo .top_home_link .top_home_logo {
+         .vk_ru_vk_logo .top_home_link .top_home_logo {
             background: url("/images/logo.png") no-repeat;
             height: 25px;
-            width: 124px;
+            width: 135px;
             margin: 8px 10px 0 0;
          }
          */

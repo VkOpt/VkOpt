@@ -701,8 +701,8 @@ vk_lang_ru={
    "NewList": "\u041d\u043e\u0432\u044b\u0439 \u0441\u043f\u0438\u0441\u043e\u043a",
    "ListTitle": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0441\u043f\u0438\u0441\u043a\u0430",
    "LinkToUserOrGroup": "\u0421\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f \u0438\u043b\u0438 \u0433\u0440\u0443\u043f\u043f\u0443",
-   "HistMsgDates": "<b>\u0414\u0430\u0442\u044b \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0439:</b> \u0441 %start \u043f\u043e %end",
-   "HistMsgCount": "<b>\u0412\u0441\u0435\u0433\u043e \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0439:</b> %count",
+   "HistMsgDates": "\u0414\u0430\u0442\u044b \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0439: \u0441 %start \u043f\u043e %end",
+   "HistMsgCount": "\u0412\u0441\u0435\u0433\u043e \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0439: %count",
    "HistMsgAttachments": "\u041c\u0430\u0442\u0435\u0440\u0438\u0430\u043b\u044b:",
    "HistMsgGeoAttach": "\u041c\u0435\u0441\u0442\u043e:",
    "HistMsgFwd": "\u041f\u0435\u0440\u0435\u0441\u043b\u0430\u043d\u043d\u044b\u0435 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u044f:",
@@ -761,7 +761,7 @@ vk_lang_ru={
    ,"ShowAllOptions":"\u041f\u043e\u043a\u0430\u0437\u0430\u0442\u044c \u0432\u0441\u0435 \u043d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438"
    ,"ColorSelector":"\u0412\u044b\u0431\u043e\u0440 \u0446\u0432\u0435\u0442\u0430"
    ,"oldWhiteBackground":"\u0411\u0435\u043B\u044B\u0439 \u0444\u043E\u043D"
-	 ,"oldRusLogo":"\u0420\u0443\u0441\u0441\u043A\u0438\u0439 \u043B\u043E\u0433\u043E\u0442\u0438\u043F"
+   ,"seVkontakteLogo":"\u0417\u0430\u043c\u0435\u043d\u0438\u0442\u044c \u043b\u043e\u0433\u043e VK \u043d\u0430 \u0412\u043a\u043e\u043d\u0442\u0430\u043a\u0442\u0435"
 };
 
 vk_lang_en={//by Hzy
@@ -1616,8 +1616,8 @@ vk_lang_en={//by Hzy
    "ListTitle": "Title of the list",
    "LinkToUser": "Link to user",
    "LinkToUserOrGroup": "Link to user or community",
-   "HistMsgDates": "<b>Messages dates:</b> from %start to %end",
-   "HistMsgCount": "<b>Total messages:</b> %count",
+   "HistMsgDates": "Messages dates: from %start to %end",
+   "HistMsgCount": "Total messages: %count",
    "HistMsgAttachments": "Attachments:",
    "HistMsgGeoAttach": "Location:",
    "HistMsgFwd": "Forwarded messages:",
@@ -1678,7 +1678,7 @@ vk_lang_en={//by Hzy
   ,"ShowAllOptions":"Show all options"
   ,"ColorSelector":"Color selector"
   ,"oldWhiteBackground":"White background"
-	,"oldRusLogo":"Old russian logo"
+  ,"seVkontakteLogo":"Replace VK logo to \u0412\u043a\u043e\u043d\u0442\u0430\u043a\u0442\u0435"
 };
 
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
@@ -2519,8 +2519,8 @@ vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
    "ListTitle": "\u041d\u0430\u0437\u0432\u0430 \u0441\u043f\u0438\u0441\u043a\u0443",
    "LinkToUser": "\u041f\u043e\u0441\u0438\u043b\u0430\u043d\u043d\u044f \u043d\u0430 \u043a\u043e\u0440\u0438\u0441\u0442\u0443\u0432\u0430\u0447\u0430",
    "LinkToUserOrGroup": "\u041f\u043e\u0441\u0438\u043b\u0430\u043d\u043d\u044f \u043d\u0430 \u043a\u043e\u0440\u0438\u0441\u0442\u0443\u0432\u0430\u0447\u0430 \u0430\u0431\u043e \u0433\u0440\u0443\u043f\u0443",
-   "HistMsgDates": "<b>\u0414\u0430\u0442\u0438 \u043f\u043e\u0432\u0456\u0434\u043e\u043c\u043b\u0435\u043d\u044c:</b> \u0432\u0456\u0434 %start \u043f\u043e %end",
-   "HistMsgCount": "<b>\u0412\u0441\u044c\u043e\u0433\u043e \u043f\u043e\u0432\u0456\u0434\u043e\u043c\u043b\u0435\u043d\u044c:</b> %count",
+   "HistMsgDates": "\u0414\u0430\u0442\u0438 \u043f\u043e\u0432\u0456\u0434\u043e\u043c\u043b\u0435\u043d\u044c: \u0432\u0456\u0434 %start \u043f\u043e %end",
+   "HistMsgCount": "\u0412\u0441\u044c\u043e\u0433\u043e \u043f\u043e\u0432\u0456\u0434\u043e\u043c\u043b\u0435\u043d\u044c: %count",
    "HistMsgAttachments": "\u041c\u0430\u0442\u0435\u0440\u0456\u0430\u043b\u0438:",
    "HistMsgGeoAttach": "\u041c\u0456\u0441\u0446\u0435:",
    "HistMsgFwd": "\u041f\u0435\u0440\u0435\u0441\u043b\u0430\u043d\u0456 \u043f\u043e\u0432\u0456\u0434\u043e\u043c\u043b\u0435\u043d\u043d\u044f:",
