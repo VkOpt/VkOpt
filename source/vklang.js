@@ -761,6 +761,7 @@ vk_lang_ru={
    ,"ShowAllOptions":"\u041f\u043e\u043a\u0430\u0437\u0430\u0442\u044c \u0432\u0441\u0435 \u043d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438"
    ,"ColorSelector":"\u0412\u044b\u0431\u043e\u0440 \u0446\u0432\u0435\u0442\u0430"
    ,"oldWhiteBackground":"\u0411\u0435\u043B\u044B\u0439 \u0444\u043E\u043D"
+   ,"seVkontakteLogo":"\u0417\u0430\u043c\u0435\u043d\u0438\u0442\u044c \u043b\u043e\u0433\u043e VK \u043d\u0430 \u0412\u043a\u043e\u043d\u0442\u0430\u043a\u0442\u0435"
 };
 
 vk_lang_en={//by Hzy
@@ -1677,6 +1678,7 @@ vk_lang_en={//by Hzy
   ,"ShowAllOptions":"Show all options"
   ,"ColorSelector":"Color selector"
   ,"oldWhiteBackground":"White background"
+  ,"seVkontakteLogo":"Replace VK logo to \u0412\u043a\u043e\u043d\u0442\u0430\u043a\u0442\u0435"
 };
 
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
