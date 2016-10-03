@@ -4026,9 +4026,9 @@ vkopt['messages'] = {
             <a href="#" class="vk_msg_info_icon" id="vk_msg_info_btn" onmouseover="vkopt.messages.show_info(this);" onclick="return false;"></a>
          */
          /*info_content:
-         <h4>{lng.mMaI}: {vals.in_count}</h4>
-         <h4>{lng.mMaO}: {vals.out_count}</h4>
-         <h4>{lng.mDialogsMessages}: {vals.dialogs_count}</h4>
+         <div>{lng.mMaI}: {vals.in_count}</div>
+         <div>{lng.mMaO}: {vals.out_count}</div>
+         <div>{lng.mDialogsMessages}: {vals.dialogs_count}</div>
          */
          /*menu_separator:
          <div class="ui_actions_menu_sep" id="vk_im_acts_sep"></div>
