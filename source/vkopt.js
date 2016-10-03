@@ -2299,7 +2299,10 @@ vkopt['audio'] =  {
                if (vkopt.audio.__load_queue.indexOf(info_obj.fullId) == -1 && vkopt.audio.__loading_queue.indexOf(info_obj.fullId) == -1)
                   vkopt.audio.__load_queue.push(info_obj.fullId);
          }
-         var name = vkCleanFileName(info[4]+' - '+info[3]);
+
+         var name = unclean(info[4]+' - '+info[3]).replace(/<em>|<\/em>/g, ''); // зачищаем от тегов.
+         name = vkCleanFileName(name);
+
          var btn = se(
             vk_lib.tpl_process(vkopt.audio.tpls['dl_button'], {
                id: info_obj.fullId,
