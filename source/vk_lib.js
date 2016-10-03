@@ -225,7 +225,7 @@ if (window.opera) {vkbrowser.mozilla=false; vkbrowser.opera=true;}
 
 
 
-	if (!document.head.innerText) {
+	if ( !('innerText' in HTMLElement.prototype) ) {
 	  Node.prototype.__defineGetter__('innerText', function() {
 		if (this.nodeType == 3)
 		  return this.nodeValue;
@@ -238,7 +238,7 @@ if (window.opera) {vkbrowser.mozilla=false; vkbrowser.opera=true;}
 		}
 	  });
 	}
-	if ((typeof HTMLElement) == "undefined") {
+	if ( !('outerHTML' in HTMLElement.prototype) ) {
 		var _emptyTags = {
 		   "IMG": true,
 		   "BR": true,
@@ -361,8 +361,8 @@ var vkMozExtension = {
 
       return formatArray(array, 0, pad_val, pad_char);
    }
-   function isArray(obj) { return Object.prototype.toString.call(obj) === '[object Array]'; }
-   function isFunction(obj) {return Object.prototype.toString.call(obj) === '[object Function]'; }
+   function isArray(obj) { return Array.isArray(obj); }
+   function isFunction(obj) { return typeof obj === 'function'; }
 	function vkCutBracket(s,bracket){
       if (isArray(s)) return s;
       if (CUT_VKOPT_BRACKET || bracket==2) s=(s.substr(0,1)=='[')?s.substr(1,s.length-2):s;
