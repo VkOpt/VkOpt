@@ -4026,9 +4026,9 @@ vkopt['messages'] = {
             <a href="#" class="vk_msg_info_icon" id="vk_msg_info_btn" onmouseover="vkopt.messages.show_info(this);" onclick="return false;"></a>
          */
          /*info_content:
-         <div>{lng.mMaI}: {vals.in_count}</div>
-         <div>{lng.mMaO}: {vals.out_count}</div>
-         <div>{lng.mDialogsMessages}: {vals.dialogs_count}</div>
+         <h4>{lng.mMaI}: {vals.in_count}</h4>
+         <h4>{lng.mMaO}: {vals.out_count}</h4>
+         <h4>{lng.mDialogsMessages}: {vals.dialogs_count}</h4>
          */
          /*menu_separator:
          <div class="ui_actions_menu_sep" id="vk_im_acts_sep"></div>
@@ -4775,7 +4775,11 @@ vkopt['face'] =  {
 		   old_white_background:{
 			   title: 'oldWhiteBackground',
             class_toggler: true
-		   }
+		   },
+   		old_rus_logo:{
+   			title: 'oldRusLogo',
+            class_toggler: true
+  		   }
       }
    },
    css: function(){
@@ -4842,6 +4846,12 @@ vkopt['face'] =  {
          .vk_old_white_background .im-page.im-page_classic .im-page--chat-input
          {
             border-color: #fff;
+         }
+         .vk_old_rus_logo .top_home_link .top_home_logo {
+            background: url("/images/logo.png") no-repeat;
+            height: 25px;
+            width: 124px;
+            margin: 8px 10px 0 0;
          }
          */
       });
