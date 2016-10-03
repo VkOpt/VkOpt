@@ -4804,6 +4804,13 @@ vkopt['face'] =  {
             title: 'seVkontakteLogo',
             class_toggler: true
          }
+      },
+      
+      Users:{
+         show_online_status:{
+            title:"showOnlineStatus",
+            class_toggler: true
+         }
       }
    },
    css: function(){
@@ -4877,6 +4884,12 @@ vkopt['face'] =  {
             width: 135px;
             margin: 8px 10px 0 0;
          }
+         #vk_online_status .vkUOnline,#vk_online_status .vkUOffline,#vk_online_status .vkUUndef{padding:4px; border:1px solid; opacity: 0.5;}
+         #vk_online_status .vkUOnline{background:#CCFF99; color:#009900; border-color:#009900;}
+         #vk_online_status .vkUOffline{background:#FFDCAD; color:#C00000; border-color:#C00000;}
+         #vk_online_status .vkUUndef{background:#DCDCDC; color:#555; border-color:#888; padding-left:14px; padding-right:14px;}
+         #vk_online_status {display:none;}
+         .vk_show_online_status #vk_online_status {display:block;}
          */
       });
       var progress_bar = vk_lib.get_block_comments(vkProgressBar).css;
@@ -4895,6 +4908,9 @@ vkopt['face'] =  {
             vkopt.log('vid ad_block info:', vars);
          }
       }
+   },
+   onInit: function() {
+      UserOnlineStatus();
    }
 }
 

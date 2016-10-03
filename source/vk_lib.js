@@ -26,6 +26,7 @@ var SetsOnLocalStore={
   'dapi_sid':'c',
   'dapi_secret':'c',
 };
+var vk_upd_menu_timeout=20000;
 
 /*!
  * Date Format 1.2.3
@@ -2832,6 +2833,116 @@ function vkDownloadFile(el,ignore) {
    else
       vkMozExtension.send_request({download:1,url:url,name:name});
    return false;
+}
+
+function vkOnlineInfo(p){
+   /*
+   online: 1
+   online_app: "2274003"// android
+   online_mobile: 1
+   */
+   var html='';
+   if (p.online!=1) return '';
+   html=IDL('Online');
+   if (p.online_mobile){
+      var link='http://m.vk.com/';
+      var title="";
+      if (p.online_app){ 
+         link="/app"+p.online_app;
+         switch (p.online_app){
+            case '2274003':
+               title='Android';
+               break; 
+            case '3136529':
+            case '3140623':
+            case '2847524':
+            case '1998533':
+            case '3087106':
+               title='iPhone';         //vk.com/app2753935  iPhone || FAKE?
+               break; 
+            case '3145329':
+            case '3682744':
+            case '3133286':
+               title='iPad';
+               break;  
+            case '2424737':
+            case '3502561':
+            case '3502557'://3.x
+               title='Windows Phone';
+               break; 
+            case '3136627':
+               title='Twitter';
+               break;
+            case '3226016':
+               title='vk master';
+               break;
+            default:
+               title='Mobile [app'+p.online_app+']';
+               break;
+         }
+         // vk.com/app3226016 - vk master
+      }
+      if (title!='') html=title;
+      html+='<a class="vk_mob_ico" href="'+link+'" title="Online"></a>';
+   } else if (p.online_app){
+      html+=' [app'+p.online_app+']';
+   }
+   return html;  
+}
+
+function UserOnlineStatus(status) {// ADD LAST STATUS
+	if (window.vk_check_online_timeout) clearTimeout(vk_check_online_timeout);
+	if (ge('vk_online_status')){
+		val(ge('vk_online_status'), '<div class="vkUUndef">...</div>');
+	}
+	
+	var show_status=function(stat){
+		//if (!window.vk_last_uonline_status || vk_last_uonline_status!=stat){
+			//vk_last_uonline_status=stat;
+         var text=(stat ? "Online" : "Offline");
+			var online = (text && text!='') ? '<div class="vkUOnline">'+text+'</div>': '<div class="vkUOffline">Offline</div>';
+			if (!ge('vk_online_status')){
+			  var div = document.createElement('div');
+			  var body = document.getElementsByTagName('body')[0];
+			  div.id = 'vk_online_status';
+			  div.style.position = "fixed";
+			  div.style.bottom="0px";
+			  div.style.left = "0px";
+			  div.setAttribute('onclick','UserOnlineStatus();');
+			  
+			  val(div, online);
+			  body.appendChild(div);
+			} else {
+			  val(ge('vk_online_status'), online);
+			}
+		//}
+		/* vkGenDelay() -random для рассинхронизации запросов разных вкладок, иначе запросы со всех вкладок будут одновременно слаться. */
+		vk_check_online_timeout=setTimeout(function(){UserOnlineStatus();},vkGenDelay(vk_upd_menu_timeout,status!=null));
+	};
+	if (status!=null){
+		show_status(status);
+		//vklog('[onStorage] Online status');
+	} else {
+		dApi.call("getProfiles",{ uid: remixmid(), fields:'online'},function(res) {	
+			if (res.response){
+				//res.response[0].online_mobile
+            //res.response[0].online_app
+            //var st=res.response?res.response[0].online:null;
+            var p=res.response[0];
+            var st={
+                  online:p.online,
+                  online_app: p.online_app,
+                  online_mobile: p.online_mobile
+             };
+            
+				show_status(st);
+				vkCmd('user_online_status',st);// /*res.response[0].online*/ шлём полученный статус в остальные вкладки
+				//vklog('Online status >> [onStorage] ');
+			} else {
+				vk_check_online_timeout=setTimeout(function(){UserOnlineStatus();},vkGenDelay(vk_upd_menu_timeout));
+			}
+		});
+	}
 }
 
 /* NOTIFY TOOLS */
