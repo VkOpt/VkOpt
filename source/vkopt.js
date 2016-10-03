@@ -4310,8 +4310,8 @@ vkopt['messages'] = {
 
       // build
       for(var i=0,j=msg.length;i<j;i++){
-         var u=(user[msg[i].user_id] || {
-                           id: msg[i].user_id,
+         var u=(user[msg[i].from_id] || {
+                           id: msg[i].from_id,
                            first_name: 'DELETED',
                            last_name: '',
                            photo_100: 'http://vk.com/images/deactivated_c.gif'
@@ -4320,7 +4320,7 @@ vkopt['messages'] = {
          html+='<div class="upic"><img src="'+
 		 u.photo_100+
 		 '" alt="[photo_100]"></div>';
-         html+='<div class="from"> <b> <a href="http://vk.com/id'+msg[i].user_id+'" target="_blank">'+u.first_name+' '+u.last_name+'</a></b> @ <a href="#msg'+msg[i].id+'">'+t2d(msg[i].date)+'</a></div>';
+         html+='<div class="from"> <b> <a href="http://vk.com/id'+msg[i].from_id+'" target="_blank">'+u.first_name+' '+u.last_name+'</a></b> @ <a href="#msg'+msg[i].id+'">'+t2d(msg[i].date)+'</a></div>';
          if(msg[i].body != ""){
                html+='<div class="msg_body">'+t2m(msg[i].body)+'</div>';
          }
