@@ -2836,7 +2836,6 @@ function vkDownloadFile(el,ignore) {
 
 
 var vk_upd_menu_timeout = 20000;
-
 function UserOnlineStatus(status) {// ADD LAST STATUS
 	if (window.vk_check_online_timeout) clearTimeout(vk_check_online_timeout);
 	if (ge('vk_online_status')){
@@ -2846,15 +2845,8 @@ function UserOnlineStatus(status) {// ADD LAST STATUS
 	var show_status=function(stat){
 			var online = (stat) ? '<div class="vkUOnline">Online</div>': '<div class="vkUOffline">Offline</div>';
 			if (!ge('vk_online_status')){
-			  var div = document.createElement('div');
+			  var div = se('<div id="vk_online_status" onclick="UserOnlineStatus();">'+online+'</div>');
 			  var body = document.getElementsByTagName('body')[0];
-			  div.id = 'vk_online_status';
-			  div.style.position = "fixed";
-			  div.style.bottom="0px";
-			  div.style.left = "0px";
-			  div.setAttribute('onclick','UserOnlineStatus();');
-			  
-			  val(div, online);
 			  body.appendChild(div);
 			} else {
 			  val(ge('vk_online_status'), online);
@@ -2865,13 +2857,9 @@ function UserOnlineStatus(status) {// ADD LAST STATUS
 	};
 	if (status!=null){
 		show_status(status);
-		//vklog('[onStorage] Online status');
 	} else {
 		dApi.call("getProfiles",{ uid: remixmid(), fields:'online'},function(res) {	
 			if (res.response){
-				//res.response[0].online_mobile
-            //res.response[0].online_app
-            //var st=res.response?res.response[0].online:null;
             var p=res.response[0];
             var st={
                   online:p.online,
@@ -2879,8 +2867,8 @@ function UserOnlineStatus(status) {// ADD LAST STATUS
                   online_mobile: p.online_mobile
              };
             
-				show_status(st);
-				vkCmd('user_online_status',st);// /*res.response[0].online*/ шлём полученный статус в остальные вкладки
+				show_status(st.online);
+				vkCmd('user_online_status',st.online);// /*res.response[0].online*/ шлём полученный статус в остальные вкладки
 				//vklog('Online status >> [onStorage] ');
 			} else {
 				vk_check_online_timeout=setTimeout(function(){UserOnlineStatus();},vkGenDelay(vk_upd_menu_timeout));
