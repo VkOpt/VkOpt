@@ -38,6 +38,7 @@ var vkopt_defaults = {
       calc_age: true,
       old_unread_msg: false,
       old_unread_msg_bg: 'c5d9e7',
+      ru_vk_logo: false,
 
       //Extra:
       vkopt_guide: true,   // показываем, где находится кнопка настроек, до тех пор, пока в настройки всё же не зайдут
@@ -4775,6 +4776,10 @@ vkopt['face'] =  {
 		 old_white_background:{
 			title: 'oldWhiteBackground',
             class_toggler: true
+		 },
+		 ru_vk_logo:{
+			title: 'seVkontakteLogo',
+            class_toggler: true
 		 }
       }
    },
@@ -4842,6 +4847,12 @@ vkopt['face'] =  {
          .vk_old_white_background .im-page.im-page_classic .im-page--chat-input
          {
             border-color: #fff;
+         }
+         .vk_ru_vk_logo .top_home_link .top_home_logo {
+            background: url("/images/logo.png") no-repeat;
+            height: 25px;
+            width: 135px;
+            margin: 8px 10px 0 0;
          }
          */
       });
