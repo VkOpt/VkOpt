@@ -4772,6 +4772,10 @@ vkopt['face'] =  {
 		 old_white_background:{
 			title: 'oldWhiteBackground',
             class_toggler: true
+		 },
+		 old_rus_logo:{
+			title: 'oldRusLogo',
+            class_toggler: true
 		 }
       }
    },
@@ -4839,6 +4843,12 @@ vkopt['face'] =  {
          .vk_old_white_background .im-page.im-page_classic .im-page--chat-input
          {
             border-color: #fff;
+         }
+		 .vk_old_rus_logo .top_home_link .top_home_logo {
+            background: url("/images/logo.png") no-repeat;
+            height: 25px;
+            width: 124px;
+            margin: 8px 10px 0 0;
          }
          */
       });
