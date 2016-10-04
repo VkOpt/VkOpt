@@ -762,7 +762,7 @@ vk_lang_ru={
    ,"ColorSelector":"\u0412\u044b\u0431\u043e\u0440 \u0446\u0432\u0435\u0442\u0430"
    ,"oldWhiteBackground":"\u0411\u0435\u043B\u044B\u0439 \u0444\u043E\u043D"
    ,"seVkontakteLogo":"\u0417\u0430\u043c\u0435\u043d\u0438\u0442\u044c \u043b\u043e\u0433\u043e VK \u043d\u0430 \u0412\u043a\u043e\u043d\u0442\u0430\u043a\u0442\u0435"
-   ,"showOnlineStatus":"\u041E\u0442\u043E\u0431\u0440\u0430\u0436\u0430\u0442\u044C \u0442\u0435\u043A\u0443\u0449\u0438\u0439 \u043E\u043D\u043B\u0430\u0439\u043D \u0441\u0442\u0430\u0442\u0443\u0441"
+   ,"seShowOnlineStatus":"\u041E\u0442\u043E\u0431\u0440\u0430\u0436\u0430\u0442\u044C \u0442\u0435\u043A\u0443\u0449\u0438\u0439 \u043E\u043D\u043B\u0430\u0439\u043D \u0441\u0442\u0430\u0442\u0443\u0441"
 };
 
 vk_lang_en={//by Hzy
@@ -1680,7 +1680,7 @@ vk_lang_en={//by Hzy
   ,"ColorSelector":"Color selector"
   ,"oldWhiteBackground":"White background"
   ,"seVkontakteLogo":"Replace VK logo to \u0412\u043a\u043e\u043d\u0442\u0430\u043a\u0442\u0435"
-  ,"showOnlineStatus":"Show current online status"
+  ,"seShowOnlineStatus":"Show current online status"
 };
 
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)

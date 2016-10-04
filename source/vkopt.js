@@ -39,6 +39,7 @@ var vkopt_defaults = {
       old_unread_msg: false,
       old_unread_msg_bg: 'c5d9e7',
       ru_vk_logo: false,
+      show_online_status: false,
 
       //Extra:
       vkopt_guide: true,   // показываем, где находится кнопка настроек, до тех пор, пока в настройки всё же не зайдут
@@ -4788,7 +4789,7 @@ vkopt['face'] =  {
       
       Users:{
          show_online_status:{
-            title:"showOnlineStatus",
+            title:"seShowOnlineStatus",
             class_toggler: true
          }
       }
@@ -4890,7 +4891,7 @@ vkopt['face'] =  {
       }
    },
    onInit: function() {
-      vkopt.face.userOnlineStatus();
+      if (vkopt.settings.get('show_online_status')) vkopt.face.userOnlineStatus();
    },
    userOnlineStatus: function(status) {
       if (window.vk_check_online_timeout) clearTimeout(vk_check_online_timeout);
