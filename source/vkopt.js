@@ -815,6 +815,7 @@ vkopt['settings'] =  {
       // vkopt.settings.left_menu_item(); // пока непонятно как избавиться от добавления класса ui_rmenu_item_sel при клике по пункту меню
       // </UI>
 
+      vkopt.settings.filter_change = debounce (function(obj,callback){ callback(trim(obj.value)); }, 300);
       // Инит фич настроек плагинов
       var list = vkopt.settings.get_options_list();
       vkopt.settings.init_features(list);
@@ -1058,7 +1059,7 @@ vkopt['settings'] =  {
       (val.toLowerCase() == 'extra' ? show : hide)('vk_setts_Extra');
       (val == '' ? show : hide)('vkopt_lang_settings');
    },
-   filter_change: debounce (function(obj,callback){ callback(trim(obj.value)); }, 300),
+   filter_change: function(){}, //onInit: filter_change = debounce (function(obj,callback){ callback(trim(obj.value)); }, 300),
    config: function(new_config){
       if (new_config){
          localStorage['vkopt_config'] = JSON.stringify(new_config);
