@@ -64,6 +64,8 @@ var vkopt_defaults = {
       lastfm_session_key: '',
 
       //Consts:
+      SAVE_MSG_HISTORY_PATTERN: "%username% (%date%):\r\n%message%\r\n%attachments%\r\n\r\n",
+      SAVE_MSG_HISTORY_DATE_FORMAT: "HH:MM:ss  dd/mm/yyyy",      
       AUDIO_INFO_LOAD_THREADS_COUNT: 5,
       AUTO_LIST_DRAW_ROWS_INJ: true, // На случай, если инъекция будет убивать редер автоподгружаемых списков
       MAX_CACHE_AUDIO_SIZE_ITEMS: 10000 // максимальное количество запомненных размеров аудио в локальном хранилище
@@ -3980,6 +3982,9 @@ vkopt['messages'] = {
             background: url("data:image/svg+xml,%3Csvg%20version%3D%221.1%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2216%22%20height%3D%2216%22%09%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20fill%3D%22%237D9AB7%22%20d%3D%22M204.1%2C66l-25.3%2C30.4c-14.1-25-44.3-37.6-72.7-28.5%09c-32.5%2C10.4-50.5%2C45.2-40%2C77.8c6.2%2C19.4%2C21.2%2C33.6%2C39.1%2C39.7c7.4%2C14%2C15.4%2C31.9%2C21.1%2C46c-7.5%2C7.8-12.1%2C19.6-12.1%2C19.6l-30.9-6.7%09l3.5-26.3c-4.8-2-9.5-4.4-13.9-7.2L53.6%2C229l-23.4-21.3l16.2-21c-3.1-4.1-6-8.5-8.5-13.2l-25.8%2C6l-9.7-30.1l24.5-10.1%09c-0.7-5.3-0.9-10.5-0.8-15.7L0.8%2C116l6.7-30.9l26.3%2C3.5c2-4.8%2C4.4-9.5%2C7.2-13.9L22.8%2C55.3l21.3-23.4l21%2C16.2c4.1-3.1%2C8.5-6%2C13.2-8.5%09l-6-25.8l30.1-9.7l10.1%2C24.5c5.3-0.7%2C10.5-0.9%2C15.7-0.8l7.7-25.4l30.9%2C6.7l-3.5%2C26.3c4.8%2C2%2C9.5%2C4.4%2C13.9%2C7.2l19.3-18.2l23.4%2C21.3%09l-15.4%2C20L204.1%2C66z%20M79%2C106.3l49.8-18.1l44.6%2C87.8l31.7-95.6l50%2C18.1c-11%2C24.1-21%2C48.8-30.1%2C74c-9.1%2C25.2-17.2%2C50.9-24.4%2C77h-50.9%09c-9.5-22.9-20.2-46.3-32-70.2C105.8%2C155.3%2C92.9%2C131%2C79%2C106.3z%22/%3E%3C/svg%3E") 9px 0px no-repeat;
             height: 17px;
          }
+         .vk_save_hist_cfg textarea{
+            width:370px;
+         }
          */
       }).css + vkopt.messages.css_msg_bg(vkopt.settings.get('old_unread_msg_bg'))
    },
@@ -4080,14 +4085,29 @@ vkopt['messages'] = {
          /*export_box:
          <div id="saveldr" style="display:none; padding:8px; padding-top: 14px; text-align:center; width:360px;"><img src="/images/upload.gif"></div>
          <div id="save_btn_text" style="text-align:center">
-            <div class="button_blue"><button href="#" onclick="vkopt.messages.get_history({vals.peer}); return false;">{lng.SaveHistory} *.html</button></div><br>
-            <small><a href="#" onclick="toggle(\'msg_save_more\'); return false;">(.txt)</a></small>
+            <div class="button_blue"><button onclick="vkopt.messages.get_history({vals.peer}); return false;">{lng.SaveHistory} *.html</button></div><br>
+            <div class="button_gray"><button onclick="toggle('msg_save_more'); return false;">(*.txt)</button></div>
             <div id="msg_save_more" style="display:none;">
-            <div class="button_gray"><button href="#" onclick="vkopt.messages.get_history_txt({vals.peer}); return false;">{lng.SaveHistory}</button></div>
-            <div class="button_gray"><button href="#" onclick="vkopt.messages.get_history_txt({vals.peer},true); return false;">{lng.SaveHistoryCfg}</button></div>
+            <div class="button_gray"><button onclick="vkopt.messages.get_history_txt({vals.peer}); return false;">{lng.SaveHistory}</button></div>
+            <div class="button_gray"><button onclick="vkopt.messages.get_history_txt({vals.peer},true); return false;">{lng.SaveHistoryCfg}</button></div>
             </div>
          </div>
          */
+         /*msg_exp_txt_cfg:
+         <div class="vk_save_hist_cfg">
+            <h4>{lng.SaveMsgFormat}
+               <a class="fl_r" onclick="ge('vk_msg_fmt').value=vkopt_defaults.config.SAVE_MSG_HISTORY_PATTERN;">{lng.Reset}</a>
+            </h4>
+            <textarea id="vk_msg_fmt">{vals.msg_pattern}</textarea>
+            <br><br>
+            <h4>{lng.SaveMsgDateFormat}
+               <a class="fl_r" onclick="ge('vk_msg_date_fmt').value=vkopt_defaults.config.SAVE_MSG_HISTORY_DATE_FORMAT;">{lng.Reset}</a>
+            </h4>
+            <textarea id="vk_msg_date_fmt">{vals.date_fmt}</textarea>
+            <br>
+         </div>       
+         */
+         
          /*acts_export_history_item:
          <a tabindex="0" role="link" class="ui_actions_menu_item _im_action im-action vk_acts_item_icon" onclick="return vkopt.messages.export_box()">{lng.SaveHistory}</a>
          */
@@ -4458,7 +4478,6 @@ vkopt['messages'] = {
 
          html=html.replace(/%title/g,'VK Messages: '+file_name.join(','));
          vkopt.save_file(html,"messages_"+vkCleanFileName(file_name.join(',')).substr(0,250)+".html");
-         //vkSaveText();
       });
    },
    load_dump: function(callback){
@@ -4500,13 +4519,12 @@ vkopt['messages'] = {
       scan();
    },
    get_history_txt: function(uid,show_format){
-      //vkInitDataSaver();
       if (!uid) uid=cur.thread.id;
       var offset=0;
       var result='';
       var user1='user1';
-      var msg_pattern=vkGetVal('VK_SAVE_MSG_HISTORY_PATTERN') || SAVE_MSG_HISTORY_PATTERN;
-      var date_fmt=vkGetVal('VK_SAVE_MSG_HISTORY_DATE_FORMAT') || SAVE_MSG_HISTORY_DATE_FORMAT;
+      var msg_pattern = vkopt.settings.get('msg_exp_pattern')  ||  vkopt_defaults.config.SAVE_MSG_HISTORY_PATTERN;
+      var date_fmt = vkopt.settings.get('msg_exp_date_fmt') || vkopt_defaults.config.SAVE_MSG_HISTORY_DATE_FORMAT;
       msg_pattern=msg_pattern.replace(/\r?\n/g,'\r\n');
       date_fmt=date_fmt.replace(/\r?\n/g,'\r\n');
       var users={};
@@ -4515,7 +4533,6 @@ vkopt['messages'] = {
       var collect=function(callback){
          hide('save_btn_text');
          show('saveldr');
-         //document.title='offset:'+offset;
          var w=getSize(ge('saveldr'),true)[0];
          if (offset==0) ge('saveldr').innerHTML=vkProgressBar(offset,10,w);
          dApi.call('messages.getHistory',{uid:uid,offset:offset,count:100},function(r){
@@ -4620,7 +4637,7 @@ vkopt['messages'] = {
                   show('save_btn_text');
                   hide('saveldr');
                   //alert(t);
-                  vkSaveText(t,"messages_"+vkCleanFileName(file_name.join(',')).substr(0,250)+".txt");
+                  vkopt.save_file(t,"messages_"+vkCleanFileName(file_name.join(',')).substr(0,250)+".txt");
 
                });
             });
@@ -4636,21 +4653,18 @@ vkopt['messages'] = {
             date_fmt=ge('vk_msg_date_fmt').value;
             msg_pattern=msg_pattern.replace(/\r?\n/g,'\r\n');
             date_fmt=date_fmt.replace(/\r?\n/g,'\r\n');
-            vkSetVal('VK_SAVE_MSG_HISTORY_PATTERN',msg_pattern);
-            vkSetVal('VK_SAVE_MSG_HISTORY_DATE_FORMAT',date_fmt);
+            vkopt.settings.set('msg_exp_pattern', msg_pattern);
+            vkopt.settings.set('msg_exp_date_fmt', date_fmt);
             aBox.hide();
             run();
          },'yes');
-         vkaddcss('.vk_save_hist_cfg textarea{width:370px;}');
-         var html ='<h4>'+IDL('SaveMsgFormat')+'<a class="fl_r" onclick="ge(\'vk_msg_fmt\').value=SAVE_MSG_HISTORY_PATTERN;">'+
-                  IDL('Reset')+'</a></h4><textarea id="vk_msg_fmt" onfocus="autosizeSetup(this,{});">'+msg_pattern+'</textarea><br><br>';
-
-         html+='<h4>'+IDL('SaveMsgDateFormat')+'<a class="fl_r" onclick="ge(\'vk_msg_date_fmt\').value=SAVE_MSG_HISTORY_DATE_FORMAT;">'+
-                  IDL('Reset')+'</a></h4><textarea id="vk_msg_date_fmt" onfocus="autosizeSetup(this,{});">'+date_fmt+'</textarea><br>';
-         aBox.content('<div class="vk_save_hist_cfg">'+html+'</div>');
+         
+         var html = vk_lib.tpl_process(vkopt.messages.tpls['msg_exp_txt_cfg'],{
+            msg_pattern: msg_pattern,
+            date_fmt: date_fmt
+         })
+         aBox.content(html);
          aBox.show();
-         autosizeSetup('vk_msg_fmt',{});
-         autosizeSetup('vk_msg_date_fmt',{});
       } else run();
    }
 
