@@ -39,6 +39,7 @@ var vkopt_defaults = {
       old_unread_msg: false,
       old_unread_msg_bg: 'c5d9e7',
       ru_vk_logo: false,
+      switch_kbd_lay: true,
 
       //Extra:
       vkopt_guide: true,   // показываем, где находится кнопка настроек, до тех пор, пока в настройки всё же не зайдут
@@ -1247,9 +1248,8 @@ vkopt['lang'] = {
    __callbacks: [function(){}],
    onSettings:{
       Others:{
-         dont_cut_bracket:{
-            title: 'seCutBracket'
-         }
+         dont_cut_bracket:{ title: 'seCutBracket' },
+         switch_kbd_lay: { title: 'seSwitchKbdLay' }
       }
    },
    css: function(){
@@ -1302,6 +1302,9 @@ vkopt['lang'] = {
       }).css;
    },
    onInit: function(){
+      if (vkopt.settings.get('switch_kbd_lay')) {
+         vkopt.lang.inputListener(true);
+      }
       vkopt.lang.tpls = vk_lib.get_block_comments(function(){
          /*lang_item:
          <a href="#" class="vk_lang_item {vals.subclass}" onclick="vkopt.lang.set({vals.lang_idx},{vals.no_reload}); vkopt.lang.__callbacks[{vals.after_lang_set}](); return false;"><div class="vk_lang_icon vk_lang_icon_{vals.lang_id}"/></div>{vals.lang_name}
@@ -1312,6 +1315,33 @@ vkopt['lang'] = {
          <div class="vk_lang_about"><b><a href="javascript: toggle('vklang_author')">{lng.About_languages}</a></b><div id="vklang_author" style="display:none">{vals.about}</div></div>
          */
       });
+   },
+   inputListener: function (on) {
+      if (on) {
+         document.addEventListener('keyup', vkopt.lang.ctrlQListner);
+      } else {
+         document.removeEventListener('keyup', vkopt.lang.ctrlQListner);
+      }
+   },
+   ctrlQListner: function (ev) {
+      ev = ev || window.event;
+      if (ev.ctrlKey && (ev.keyCode == 81 || ev.keyCode == 221)) {
+         ev.preventDefault();
+         var ae = document.activeElement;
+         if (ae.value) ae.value = vkopt.lang.switchKeybTxt(ae.value);
+         else if (ae.contentEditable == "true" && ae.innerText) {
+            ae.innerText = vkopt.lang.switchKeybTxt(ae.innerText);
+         }
+      }
+   },
+   switchKeybTxt: function switchKeybTxt(text) {
+      var dict = vk_lang['keyboard_lang'] || vk_lang_ru['keyboard_lang'];
+      return text.split('').reduce(function (acc, val) {
+         return acc + dict.get(val);
+      }, '');
+   },
+   onOptionChanged: function (option_id, val/*, option_data*/) {
+      if (option_id === 'switch_kbd_lay') vkopt.lang.inputListener(val);
    },
    override: function(){
       vkLangGet = vkopt.lang.get;
