@@ -2653,6 +2653,9 @@ vkopt['scrobbler'] = {
          fm.token=nav.objLoc['token'];
          fm.auth(function(){
             vkAlertBox(IDL('AuthBoxTitle'), IDL('AuthDone').replace(/<username>/g, vkopt.settings.get('lastfm_username')));
+            setTimeout(function(){
+               vkopt.cmd({act: 'scrobbler_auth'});
+            },500);
          });
       }
       //vkopt.scrobbler.on_location();
@@ -2794,6 +2797,17 @@ vkopt['scrobbler'] = {
 				});
       // fm.listen_storage();
    },
+   onCmd: function(data){
+      vkopt.log('cmd:', data);
+      if (data && data.act == 'scrobbler_auth'){
+         var fm=vkopt.scrobbler;
+         fm.token = vkopt.settings.get('lastfm_token');
+         fm.username = vkopt.settings.get('lastfm_username');
+         fm.session_key = vkopt.settings.get('lastfm_session_key');
+         fm.enable_scrobbling = vkopt.settings.get('lastfm_enable_scrobbling');
+         vkopt.log('scrobbler auth');
+      }
+   },
    /* TODO: сделать отсылку события о новом токене во все вкладки
    listen_storage:function(){
       var fm=vkopt.scrobbler;
@@ -2848,6 +2862,7 @@ vkopt['scrobbler'] = {
          //fm.enable_scrobbling=parseInt(localStorage['lastfm_enable_scrobbling']);
          //location.href = url;
       }, true);
+      return false;
    },
    scrobble:function(audio_info,ts){
       var fm=vkopt.scrobbler;
@@ -3030,6 +3045,7 @@ vkopt['scrobbler'] = {
             black: 1,
             shift: [4 + intval(dx), 13 + intval(dy1), 16 + intval(dy2)],
             showdt:300,
+            hidedt:300,
             onHide:opts.onHide,
             onShowStart:opts.onShowStart
          });
@@ -3065,8 +3081,8 @@ vkopt['scrobbler'] = {
          (function(z){
             return function(){
                var text=IDL(fm.enable_scrobbling?'ScrobblingOn':'ScrobblingOff').replace(/<username>/g,fm.username);
-               text+=' <a href="#" onclick="vkopt.scrobbler.logout();">'+IDL('Logout')+'</a>';
-               if (!fm.username) text=IDL('AuthNeeded');
+               text+=' <a href="#" onclick="return vkopt.scrobbler.logout();">'+IDL('Logout')+'</a>';
+               if (!fm.username || fm.username == 'NO_AUTH') text=IDL('AuthNeeded');
                fm.tip(els[z],text);
             }
          })(i);
