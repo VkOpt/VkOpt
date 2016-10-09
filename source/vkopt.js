@@ -136,7 +136,6 @@ var vkopt_core = {
       for (var key in StaticFiles)
          if (StaticFiles[key].t == 'js' && StaticFiles[key].l)
             vk_glue.inj_to_file(key);
-      //vkBroadcast.Init(vkOnStorage);
       vkopt_core.plugins.on_init();
       vk_glue.nav_handler();
       window.vkopt_core_ready = true;
@@ -218,9 +217,6 @@ var vkopt_core = {
          //console.log('on nav: ', cur.module, ' obj: ', JSON.stringify(nav.objLoc));
          vkopt_core.plugins.call_modules('onLocation', nav.objLoc, cur.module);
       },
-      on_storage: function(id, cmd){ // listen messages for communicate between tabs
-         vkopt_core.plugins.call_modules('onStorage', id, cmd);
-      },
       on_ajax_post: function(url, query, options){
          var res = vkopt_core.plugins.call_modules('onRequestQuery', url, query, options);
          if (url === 'al_im.php' && query.act === 'a_send') {
@@ -256,6 +252,9 @@ var vkopt_core = {
       process_links:function(link_el, params){
          vkopt_core.plugins.call_modules('processLinks', link_el, params);
       },
+      on_cmd: function(data){ // listen messages for communicate between tabs
+         vkopt_core.plugins.call_modules('onCmd', data);
+      },
       eltt_first_show: function(ett){
          vkopt_core.plugins.call_modules('onElementTooltipFirstTimeShow', ett, ett._opts);
       },
@@ -289,6 +288,7 @@ var vk_glue = {
          case 'auto_list.js':    vk_glue.inj.auto_list();  break;
          case 'ui_controls.js':  vk_glue.inj.ui_controls();  break;
          case 'datepicker.js':  vk_glue.inj.datepicker();  break;
+         case 'notifier.js':  vk_glue.inj.notifier();  break;
       }
       vkopt_core.plugins.on_js_file(file_name);
    },
@@ -332,6 +332,11 @@ var vk_glue = {
          */
          // перехват тултипов при создании их контента. например для перехвата создания меню "Ещё" перед его показом в просмотрщике фото
          Inj.After('ElementTooltip.prototype.show',/this\._opts.onFirstTimeShow[^;]+;/,'vkopt_core.plugins.eltt_first_show(this);');
+      },
+      notifier: function(){
+         Notifier.addRecvClbk('vkcmd', 0, function(data){
+            vkopt_core.plugins.on_cmd(data);
+         }, true);
       },
       groups: function(){
          Inj.End('Groups.init',' ; setTimeout(vk_glue.nav_handler,2);');
@@ -396,7 +401,7 @@ var vk_glue = {
       onLocation:             function(nav_obj,cur_module_name){},         // вызывается при переходе между страницами
       onRequestQuery:         function(url, query, options){}              // вызывается перед выполнением ajax.post метода. Если функция вернёт false, то запрос выполнен не будет.
       onResponseAnswer:       function(answer,url,params){},               // answer - массив, изменять только его элементы
-      onStorage :             function(command_id,command_obj){},          // слушает сообщения отосланные из других вкладок вк через vkCmd(command_id,command_obj)
+      onCmd:                  function(command_obj){},                     // слушает сообщения отосланные из других вкладок вк через vkopt.cmd(command_obj)
       processNode:            function(node, params){}                     // обработка элемента
       processLinks:           function(link, params){},                    // обработка ссылки
       onModuleDelayedInit:    function(plugin_id){},                       // реакция на подключение модуля, опоздавшего к загрузке страницы.
@@ -430,6 +435,11 @@ vkopt.log = function(){
    var args = Array.prototype.slice.call(arguments);
    console.log.apply(console, args);
 };
+vkopt.cmd = function(msg){ // при вызове сразу из onInit, сообщение не доходит в другие вкладки.
+   stManager.add('notifier.js',function(){
+      Notifier.lcSend('vkcmd', msg);      
+   })
+}
 vkopt.save_file = function(data, filename){
    vkLdr.show();
    FileSaverConnect(function() {
