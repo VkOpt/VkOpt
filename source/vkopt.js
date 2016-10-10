@@ -25,6 +25,7 @@ var vkopt_defaults = {
       audio_full_title: false,
       disable_border_radius: false,
       audio_dl: true,
+      audio_wait_hover: true,
       vid_dl: true,
       audio_size_info: false,
       audio_clean_titles: false,
@@ -2016,6 +2017,9 @@ vkopt['audio'] =  {
             title: 'seAudioSizeAuto',
             info: 'infoUseNetTrafic',
             sub: {
+               audio_wait_hover:{
+                  title: 'seAudioSizeHover'
+               },
                size_info_on_ctrl: {
                   title: 'seAudioSizeShowOnCtrl',
                   class_toggler: true
@@ -2278,6 +2282,23 @@ vkopt['audio'] =  {
             }
          }
          wait_and_set_url();
+         if (vkopt.settings.get('audio_wait_hover')){
+            var info = vkopt.audio.__full_audio_info_cache[id];
+            // если не в загруженной инфе и очередях загрузки
+            var hq = vkopt.audio.__hover_load_queue;
+            if (!info && vkopt.audio.__loading_queue.indexOf(id) == -1 &&  vkopt.audio.__load_queue.indexOf(id) == -1){
+               var idx = hq.indexOf(id);
+               if (idx == -1){ // не знаю возможно ли, но лучше добавлю проверку.
+                  hq.push(id);
+                  idx = hq.length - 1;
+               }
+               var start = Math.max(0, idx - 2);
+               var end = Math.min(start + 5, hq.length - 1) - start;
+               var to_load = hq.splice(start, end);
+               vkopt.audio.__load_queue = vkopt.audio.__load_queue.concat(to_load);
+               vkopt.audio.load_audio_urls(); // запускаем процесс загрузки инфы об аудио из очереди
+            }
+         }
       }
    },
    make_dl_url: function(url, name){
@@ -2326,9 +2347,11 @@ vkopt['audio'] =  {
          if (info_obj.url==""){                    // собираем очередь из аудио, которым требуется подгрузка инфы
             if (cache[info_obj.fullId])
                info_obj = cache[info_obj.fullId];
-            else
-               if (vkopt.audio.__load_queue.indexOf(info_obj.fullId) == -1 && vkopt.audio.__loading_queue.indexOf(info_obj.fullId) == -1)
-                  vkopt.audio.__load_queue.push(info_obj.fullId);
+            else {
+               var queue = vkopt.settings.get('audio_wait_hover') ? vkopt.audio.__hover_load_queue : vkopt.audio.__load_queue;
+               if (queue.indexOf(info_obj.fullId) == -1 && vkopt.audio.__loading_queue.indexOf(info_obj.fullId) == -1)
+                  queue.push(info_obj.fullId);
+            }
          }
 
          var name = unclean(info[4]+' - '+info[3]).replace(/<em>|<\/em>/g, ''); // зачищаем от тегов.
@@ -2369,7 +2392,7 @@ vkopt['audio'] =  {
 
          // Инфа о размере/битрейте
          if (vkopt.settings.get('audio_size_info')){
-            if (info_obj.url)
+            if (!vkopt.settings.get('audio_wait_hover') && info_obj.url)
                vkopt_core.timeout( //setTimeout
                   (function(id, url){
                      return function(){
@@ -2394,7 +2417,7 @@ vkopt['audio'] =  {
       }
 
       // TODO: грузить инфу только при наведении на иконку меню/скачивания
-      if (vkopt.settings.get('audio_size_info') || vkopt.settings.get('audio_dl')) // URL'ы нужны только для этих опций
+      if (!vkopt.settings.get('audio_wait_hover') && (vkopt.settings.get('audio_size_info') || vkopt.settings.get('audio_dl'))) // URL'ы нужны только для этих опций
          vkopt.audio.load_audio_urls(); // запускаем процесс загрузки инфы об аудио из очереди
    },
    _sizes_cache: {}, // надо бы его загонять в локальное хранилище, но например кэш размеров со списка в ~500 аудио занимает около 10кб. т.е его нужно будет как-то по умному чистить.
@@ -2494,8 +2517,9 @@ vkopt['audio'] =  {
          }, true);
       }
    },
-   __load_queue:[],
-   __loading_queue:[],
+   __load_queue:[], // очередь загрузки инфы
+   __hover_load_queue:[], // очередь, из которой будут аудио перемещаться в __load_queue, при наведении на иконку загрузки.
+   __loading_queue:[], // очередь текущих аудио, по которым в данный момент грузится инфа
    __load_req_num: 1,
    load_audio_urls: function(){
       if (vkopt.audio.__load_queue.length == 0 || vkopt.audio.__loading_queue.length > 0) // если нет списка на подгрузку, или что-то уже грузится - игнорим вызов
