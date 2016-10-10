@@ -1346,6 +1346,10 @@ vkopt['lang'] = {
    },
    switchKeybTxt: function switchKeybTxt(text) {
       var dict = vk_lang['keyboard_lang'] || vk_lang_ru['keyboard_lang'];
+      if (dict.constructor != TwoWayMap){
+         dict = new TwoWayMap(dict);
+         vk_lang['keyboard_lang'] = dict;
+      }
       return text.split('').reduce(function (acc, val) {
          return acc + dict.get(val);
       }, '');
