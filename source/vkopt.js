@@ -47,6 +47,7 @@ var vkopt_defaults = {
       photo_replacer: true,
       add_to_next_fix: true, // кнопка "Воспроизвести следующей" теперь добавляет в текущий список воспроизведения из посторонних
       audio_more_acts: true, // доп. менюшка для каждой аудиозаписи
+      vk_audio_icon_dots: false, // иконка аудио "действия/скачать" в виде трех точек
       audio_dl_acts_2_btns: false, // разделить на аудио кнопки скачивания и меню доп.действий
       audio_edit_box_album_selector: true, // поле выбора альбома в окне редактирования названия аудио
       audio_force_flash: false, // принудительно использовать Flash для аудио-плеера
@@ -1907,22 +1908,22 @@ vkopt['audio'] =  {
          margin-left: -2px;
       }
 
-      .audio_row .audio_acts .audio_act.vk_audio_acts{
+      .vk_audio_icon_dots .audio_row .audio_acts .audio_act.vk_audio_acts{
          display:block;
       }
-      .audio_row .audio_acts .audio_act.vk_audio_acts>div {
+      .vk_audio_icon_dots .audio_row .audio_acts .audio_act.vk_audio_acts>div {
          background: url(/images/icons/profile_dots.png) no-repeat 0 5px;
          height: 13px;
          width: 18px;
       }
 
-      .audio_row .audio_acts .audio_act.vk_audio_dl_btn.vk_audio_acts>div{
+      .vk_audio_icon_dots .audio_row .audio_acts .audio_act.vk_audio_dl_btn.vk_audio_acts>div{
          background: url(/images/icons/profile_dots.png) no-repeat 0 5px;
          height: 13px;
          width: 18px;
          transition: none;
       }
-      .audio_row .audio_acts .audio_act.vk_audio_dl_btn.vk_audio_acts:hover>div{
+      .vk_audio_icon_dots .audio_row .audio_acts .audio_act.vk_audio_dl_btn.vk_audio_acts:hover>div{
          background-image: url(/images/blog/about_icons.png);
          width: 12px;
          height: 14px;
@@ -2033,6 +2034,7 @@ vkopt['audio'] =  {
       Extra:{
          audio_more_acts:{
             sub:{
+               vk_audio_icon_dots:{class_toggler: true},
                audio_dl_acts_2_btns:{}
             }
          },
