@@ -4968,7 +4968,7 @@ vkopt['face'] =  {
          #vk_online_status > * {
             margin-top: 15px;
             border-radius: 50%;
-            border: 2px solid #fff;
+            border: 1px solid rgba(255,255,255,0.5);
             height: 8px;
             width: 8px;
             display:none;
@@ -5003,28 +5003,42 @@ vkopt['face'] =  {
       }
    },
    onInit: function() {
-      if (vkopt.settings.get('show_online_status')) vkopt.face.userOnlineStatus();
+      vkopt.face.user_online_status();
    },
-   userOnlineStatus: function(status) {
-      if (window.vk_check_online_timeout) clearTimeout(vk_check_online_timeout);
-      if (ge('vk_online_status')){
-         val(ge('vk_online_status'), '<div class="vkUUndef"></div>');
+   onCmd: function(data){
+      if (data.act == 'user_online_status')
+         vkopt.face.user_online_status(data.status);      
+   },
+   onOptionChanged: function(option_id, val, option_data){
+      if (option_id == 'show_online_status')
+         vkopt.face.user_online_status();
+   },
+   user_online_status: function(status) {
+      if (vkopt.face.check_online_timeout) clearTimeout(vkopt.face.check_online_timeout);
+      if (!vkopt.settings.get('show_online_status')){
+         re('vk_online_status');
+         return;
       }
-      
+      var set_status = function(cl){
+         var p = ge('vk_online_status');
+         if (p){
+            p = geByTag1('div',p);
+            if (p)
+               p.className = cl;
+         }
+      }
       var show_status=function(stat){
-            var online = (stat) ? '<div class="vkUOnline"></div>': '<div class="vkUOffline"></div>';
             if (!ge('vk_online_status')){
-              var div = se('<div id="vk_online_status" class="fl_r">'+online+'</div>');
+              var div = se('<div id="vk_online_status" class="fl_r"><div></div></div>');
               var top_nav_list = ge('top_nav');
               var top_music_player = geByClass1('head_nav_item_player',top_nav_list);
-              top_nav_list.insertBefore(div,top_music_player);
-            } else {
-              val(ge('vk_online_status'), online);
+              top_nav_list && top_nav_list.insertBefore(div,top_music_player);
             }
-         //}
+            set_status(stat ? 'vkUOnline': 'vkUOffline');
          /* vkGenDelay() -random для рассинхронизации запросов разных вкладок, иначе запросы со всех вкладок будут одновременно слаться. */
-         vk_check_online_timeout=setTimeout(function(){vkopt.face.userOnlineStatus();},vkGenDelay(20000,status!=null));
+         vkopt.face.check_online_timeout=setTimeout(function(){vkopt.face.user_online_status();},vkGenDelay(20000,status!=null));
       };
+      set_status('vkUUndef');
       if (status!=null){
          show_status(status);
       } else {
@@ -5038,10 +5052,9 @@ vkopt['face'] =  {
                 };
                
                show_status(st.online);
-               vkCmd('user_online_status',st.online);// /*res.response[0].online*/ шлём полученный статус в остальные вкладки
-               //vklog('Online status >> [onStorage] ');
+               vkopt.cmd({act:'user_online_status', status:st.online}); // шлём полученный статус в остальные вкладки
             } else {
-               vk_check_online_timeout=setTimeout(function(){vkopt.face.userOnlineStatus();},vkGenDelay(20000));
+               vkopt.face.check_online_timeout = setTimeout(function(){vkopt.face.user_online_status();},vkGenDelay(20000));
             }
        });
       }
