@@ -4658,13 +4658,12 @@ vkopt['messages'] = {
                //console.log(msg);
                var date=(new Date(msg.date*1000)).format(date_fmt);
                var user='%'+from_id+'%';//(msg.from_id==mid?user2:user1);
-               var text=vkCe('div',{},(msg.body || '').replace(/<br>/g,"%{br}%")).innerText.replace(/%{br}%/g,'\r\n');// no comments....
-               //text=text.replace(/\n/g,'\r\n');
+               var msgBody = msg.body.replace(/<br>/g, '\r\n');
 
                var ret=msg_pattern
                     .replace(/%username%/g,user) //msg.from_id
                     .replace(/%date%/g,    date)
-                    .replace(/%message%/g, text)
+                    .replace(/%message%/g, msgBody)
                     .replace(/%attachments%/g, (attach_text!=""?"Attachments:[\r\n"+attach_text+"]":""));
                var tab='\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t';
                ret=ret.replace(/^.+$/mg,tab.substr(0,level)+"$&");
