@@ -5017,7 +5017,8 @@ vkopt['face'] =  {
             if (!ge('vk_online_status')){
               var div = se('<div id="vk_online_status" class="fl_r">'+online+'</div>');
               var top_nav_list = ge('top_nav');
-              top_nav_list.appendChild(div);
+              var top_music_player = geByClass1('head_nav_item_player',top_nav_list);
+              top_nav_list.insertBefore(div,top_music_player);
             } else {
               val(ge('vk_online_status'), online);
             }
