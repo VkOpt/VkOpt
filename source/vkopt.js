@@ -25,6 +25,7 @@ var vkopt_defaults = {
       audio_full_title: false,
       disable_border_radius: false,
       audio_dl: true,
+      audio_wait_hover: true,
       vid_dl: true,
       audio_size_info: false,
       audio_clean_titles: false,
@@ -39,12 +40,14 @@ var vkopt_defaults = {
       old_unread_msg: false,
       old_unread_msg_bg: 'c5d9e7',
       ru_vk_logo: false,
+      switch_kbd_lay: true,
 
       //Extra:
       vkopt_guide: true,   // показываем, где находится кнопка настроек, до тех пор, пока в настройки всё же не зайдут
       photo_replacer: true,
       add_to_next_fix: true, // кнопка "Воспроизвести следующей" теперь добавляет в текущий список воспроизведения из посторонних
       audio_more_acts: true, // доп. менюшка для каждой аудиозаписи
+      vk_audio_icon_dots: false, // иконка аудио "действия/скачать" в виде трех точек
       audio_dl_acts_2_btns: false, // разделить на аудио кнопки скачивания и меню доп.действий
       audio_edit_box_album_selector: true, // поле выбора альбома в окне редактирования названия аудио
       audio_force_flash: false, // принудительно использовать Flash для аудио-плеера
@@ -64,6 +67,8 @@ var vkopt_defaults = {
       lastfm_session_key: '',
 
       //Consts:
+      SAVE_MSG_HISTORY_PATTERN: "%username% (%date%):\r\n%message%\r\n%attachments%\r\n\r\n",
+      SAVE_MSG_HISTORY_DATE_FORMAT: "HH:MM:ss  dd/mm/yyyy",      
       AUDIO_INFO_LOAD_THREADS_COUNT: 5,
       AUTO_LIST_DRAW_ROWS_INJ: true, // На случай, если инъекция будет убивать редер автоподгружаемых списков
       MAX_CACHE_AUDIO_SIZE_ITEMS: 10000 // максимальное количество запомненных размеров аудио в локальном хранилище
@@ -134,7 +139,6 @@ var vkopt_core = {
       for (var key in StaticFiles)
          if (StaticFiles[key].t == 'js' && StaticFiles[key].l)
             vk_glue.inj_to_file(key);
-      //vkBroadcast.Init(vkOnStorage);
       vkopt_core.plugins.on_init();
       vk_glue.nav_handler();
       window.vkopt_core_ready = true;
@@ -216,9 +220,6 @@ var vkopt_core = {
          //console.log('on nav: ', cur.module, ' obj: ', JSON.stringify(nav.objLoc));
          vkopt_core.plugins.call_modules('onLocation', nav.objLoc, cur.module);
       },
-      on_storage: function(id, cmd){ // listen messages for communicate between tabs
-         vkopt_core.plugins.call_modules('onStorage', id, cmd);
-      },
       on_ajax_post: function(url, query, options){
          var res = vkopt_core.plugins.call_modules('onRequestQuery', url, query, options);
          if (url === 'al_im.php' && query.act === 'a_send') {
@@ -254,6 +255,9 @@ var vkopt_core = {
       process_links:function(link_el, params){
          vkopt_core.plugins.call_modules('processLinks', link_el, params);
       },
+      on_cmd: function(data){ // listen messages for communicate between tabs
+         vkopt_core.plugins.call_modules('onCmd', data);
+      },
       eltt_first_show: function(ett){
          vkopt_core.plugins.call_modules('onElementTooltipFirstTimeShow', ett, ett._opts);
       },
@@ -287,6 +291,7 @@ var vk_glue = {
          case 'auto_list.js':    vk_glue.inj.auto_list();  break;
          case 'ui_controls.js':  vk_glue.inj.ui_controls();  break;
          case 'datepicker.js':  vk_glue.inj.datepicker();  break;
+         case 'notifier.js':  vk_glue.inj.notifier();  break;
       }
       vkopt_core.plugins.on_js_file(file_name);
    },
@@ -330,6 +335,11 @@ var vk_glue = {
          */
          // перехват тултипов при создании их контента. например для перехвата создания меню "Ещё" перед его показом в просмотрщике фото
          Inj.After('ElementTooltip.prototype.show',/this\._opts.onFirstTimeShow[^;]+;/,'vkopt_core.plugins.eltt_first_show(this);');
+      },
+      notifier: function(){
+         Notifier.addRecvClbk('vkcmd', 0, function(data){
+            vkopt_core.plugins.on_cmd(data);
+         }, true);
       },
       groups: function(){
          Inj.End('Groups.init',' ; setTimeout(vk_glue.nav_handler,2);');
@@ -394,7 +404,7 @@ var vk_glue = {
       onLocation:             function(nav_obj,cur_module_name){},         // вызывается при переходе между страницами
       onRequestQuery:         function(url, query, options){}              // вызывается перед выполнением ajax.post метода. Если функция вернёт false, то запрос выполнен не будет.
       onResponseAnswer:       function(answer,url,params){},               // answer - массив, изменять только его элементы
-      onStorage :             function(command_id,command_obj){},          // слушает сообщения отосланные из других вкладок вк через vkCmd(command_id,command_obj)
+      onCmd:                  function(command_obj){},                     // слушает сообщения отосланные из других вкладок вк через vkopt.cmd(command_obj)
       processNode:            function(node, params){}                     // обработка элемента
       processLinks:           function(link, params){},                    // обработка ссылки
       onModuleDelayedInit:    function(plugin_id){},                       // реакция на подключение модуля, опоздавшего к загрузке страницы.
@@ -428,6 +438,11 @@ vkopt.log = function(){
    var args = Array.prototype.slice.call(arguments);
    console.log.apply(console, args);
 };
+vkopt.cmd = function(msg){ // при вызове сразу из onInit, сообщение не доходит в другие вкладки.
+   stManager.add('notifier.js',function(){
+      Notifier.lcSend('vkcmd', msg);      
+   })
+}
 vkopt.save_file = function(data, filename){
    vkLdr.show();
    FileSaverConnect(function() {
@@ -813,6 +828,7 @@ vkopt['settings'] =  {
       // vkopt.settings.left_menu_item(); // пока непонятно как избавиться от добавления класса ui_rmenu_item_sel при клике по пункту меню
       // </UI>
 
+      vkopt.settings.filter_change = debounce (function(obj,callback){ callback(trim(obj.value)); }, 300);
       // Инит фич настроек плагинов
       var list = vkopt.settings.get_options_list();
       vkopt.settings.init_features(list);
@@ -1056,7 +1072,7 @@ vkopt['settings'] =  {
       (val.toLowerCase() == 'extra' ? show : hide)('vk_setts_Extra');
       (val == '' ? show : hide)('vkopt_lang_settings');
    },
-   filter_change: debounce (function(obj,callback){ callback(trim(obj.value)); }, 300),
+   filter_change: function(){}, //onInit: filter_change = debounce (function(obj,callback){ callback(trim(obj.value)); }, 300),
    config: function(new_config){
       if (new_config){
          localStorage['vkopt_config'] = JSON.stringify(new_config);
@@ -1244,9 +1260,8 @@ vkopt['lang'] = {
    __callbacks: [function(){}],
    onSettings:{
       Others:{
-         dont_cut_bracket:{
-            title: 'seCutBracket'
-         }
+         dont_cut_bracket:{ title: 'seCutBracket' },
+         switch_kbd_lay: { title: 'seSwitchKbdLay' }
       }
    },
    css: function(){
@@ -1299,6 +1314,9 @@ vkopt['lang'] = {
       }).css;
    },
    onInit: function(){
+      if (vkopt.settings.get('switch_kbd_lay')) {
+         vkopt.lang.inputListener(true);
+      }
       vkopt.lang.tpls = vk_lib.get_block_comments(function(){
          /*lang_item:
          <a href="#" class="vk_lang_item {vals.subclass}" onclick="vkopt.lang.set({vals.lang_idx},{vals.no_reload}); vkopt.lang.__callbacks[{vals.after_lang_set}](); return false;"><div class="vk_lang_icon vk_lang_icon_{vals.lang_id}"/></div>{vals.lang_name}
@@ -1309,6 +1327,37 @@ vkopt['lang'] = {
          <div class="vk_lang_about"><b><a href="javascript: toggle('vklang_author')">{lng.About_languages}</a></b><div id="vklang_author" style="display:none">{vals.about}</div></div>
          */
       });
+   },
+   inputListener: function (on) {
+      if (on) {
+         document.addEventListener('keyup', vkopt.lang.ctrlQListner);
+      } else {
+         document.removeEventListener('keyup', vkopt.lang.ctrlQListner);
+      }
+   },
+   ctrlQListner: function (ev) {
+      ev = ev || window.event;
+      if (ev.ctrlKey && (ev.keyCode == 81 || ev.keyCode == 221)) {
+         ev.preventDefault();
+         var ae = document.activeElement;
+         if (ae.value) ae.value = vkopt.lang.switchKeybTxt(ae.value);
+         else if (ae.contentEditable == "true" && ae.innerText) {
+            ae.innerText = vkopt.lang.switchKeybTxt(ae.innerText);
+         }
+      }
+   },
+   switchKeybTxt: function switchKeybTxt(text) {
+      var dict = vk_lang['keyboard_lang'] || vk_lang_ru['keyboard_lang'];
+      if (dict.constructor != TwoWayMap){
+         dict = new TwoWayMap(dict);
+         vk_lang['keyboard_lang'] = dict;
+      }
+      return text.split('').reduce(function (acc, val) {
+         return acc + dict.get(val);
+      }, '');
+   },
+   onOptionChanged: function (option_id, val/*, option_data*/) {
+      if (option_id === 'switch_kbd_lay') vkopt.lang.inputListener(val);
    },
    override: function(){
       vkLangGet = vkopt.lang.get;
@@ -1859,22 +1908,22 @@ vkopt['audio'] =  {
          margin-left: -2px;
       }
 
-      .audio_row .audio_acts .audio_act.vk_audio_acts{
+      .vk_audio_icon_dots .audio_row .audio_acts .audio_act.vk_audio_acts{
          display:block;
       }
-      .audio_row .audio_acts .audio_act.vk_audio_acts>div {
+      .vk_audio_icon_dots .audio_row .audio_acts .audio_act.vk_audio_acts>div {
          background: url(/images/icons/profile_dots.png) no-repeat 0 5px;
          height: 13px;
          width: 18px;
       }
 
-      .audio_row .audio_acts .audio_act.vk_audio_dl_btn.vk_audio_acts>div{
+      .vk_audio_icon_dots .audio_row .audio_acts .audio_act.vk_audio_dl_btn.vk_audio_acts>div{
          background: url(/images/icons/profile_dots.png) no-repeat 0 5px;
          height: 13px;
          width: 18px;
          transition: none;
       }
-      .audio_row .audio_acts .audio_act.vk_audio_dl_btn.vk_audio_acts:hover>div{
+      .vk_audio_icon_dots .audio_row .audio_acts .audio_act.vk_audio_dl_btn.vk_audio_acts:hover>div{
          background-image: url(/images/blog/about_icons.png);
          width: 12px;
          height: 14px;
@@ -1969,6 +2018,9 @@ vkopt['audio'] =  {
             title: 'seAudioSizeAuto',
             info: 'infoUseNetTrafic',
             sub: {
+               audio_wait_hover:{
+                  title: 'seAudioSizeHover'
+               },
                size_info_on_ctrl: {
                   title: 'seAudioSizeShowOnCtrl',
                   class_toggler: true
@@ -1982,6 +2034,7 @@ vkopt['audio'] =  {
       Extra:{
          audio_more_acts:{
             sub:{
+               vk_audio_icon_dots:{class_toggler: true},
                audio_dl_acts_2_btns:{}
             }
          },
@@ -2231,6 +2284,23 @@ vkopt['audio'] =  {
             }
          }
          wait_and_set_url();
+         if (vkopt.settings.get('audio_wait_hover')){
+            var info = vkopt.audio.__full_audio_info_cache[id];
+            // если не в загруженной инфе и очередях загрузки
+            var hq = vkopt.audio.__hover_load_queue;
+            if (!info && vkopt.audio.__loading_queue.indexOf(id) == -1 &&  vkopt.audio.__load_queue.indexOf(id) == -1){
+               var idx = hq.indexOf(id);
+               if (idx == -1){ // не знаю возможно ли, но лучше добавлю проверку.
+                  hq.push(id);
+                  idx = hq.length - 1;
+               }
+               var start = Math.max(0, idx - 2);
+               var end = Math.min(start + 5, hq.length - 1) - start;
+               var to_load = hq.splice(start, end);
+               vkopt.audio.__load_queue = vkopt.audio.__load_queue.concat(to_load);
+               vkopt.audio.load_audio_urls(); // запускаем процесс загрузки инфы об аудио из очереди
+            }
+         }
       }
    },
    make_dl_url: function(url, name){
@@ -2279,9 +2349,11 @@ vkopt['audio'] =  {
          if (info_obj.url==""){                    // собираем очередь из аудио, которым требуется подгрузка инфы
             if (cache[info_obj.fullId])
                info_obj = cache[info_obj.fullId];
-            else
-               if (vkopt.audio.__load_queue.indexOf(info_obj.fullId) == -1 && vkopt.audio.__loading_queue.indexOf(info_obj.fullId) == -1)
-                  vkopt.audio.__load_queue.push(info_obj.fullId);
+            else {
+               var queue = vkopt.settings.get('audio_wait_hover') ? vkopt.audio.__hover_load_queue : vkopt.audio.__load_queue;
+               if (queue.indexOf(info_obj.fullId) == -1 && vkopt.audio.__loading_queue.indexOf(info_obj.fullId) == -1)
+                  queue.push(info_obj.fullId);
+            }
          }
 
          var name = unclean(info[4]+' - '+info[3]).replace(/<em>|<\/em>/g, ''); // зачищаем от тегов.
@@ -2322,7 +2394,7 @@ vkopt['audio'] =  {
 
          // Инфа о размере/битрейте
          if (vkopt.settings.get('audio_size_info')){
-            if (info_obj.url)
+            if (!vkopt.settings.get('audio_wait_hover') && info_obj.url)
                vkopt_core.timeout( //setTimeout
                   (function(id, url){
                      return function(){
@@ -2347,7 +2419,7 @@ vkopt['audio'] =  {
       }
 
       // TODO: грузить инфу только при наведении на иконку меню/скачивания
-      if (vkopt.settings.get('audio_size_info') || vkopt.settings.get('audio_dl')) // URL'ы нужны только для этих опций
+      if (!vkopt.settings.get('audio_wait_hover') && (vkopt.settings.get('audio_size_info') || vkopt.settings.get('audio_dl'))) // URL'ы нужны только для этих опций
          vkopt.audio.load_audio_urls(); // запускаем процесс загрузки инфы об аудио из очереди
    },
    _sizes_cache: {}, // надо бы его загонять в локальное хранилище, но например кэш размеров со списка в ~500 аудио занимает около 10кб. т.е его нужно будет как-то по умному чистить.
@@ -2447,8 +2519,9 @@ vkopt['audio'] =  {
          }, true);
       }
    },
-   __load_queue:[],
-   __loading_queue:[],
+   __load_queue:[], // очередь загрузки инфы
+   __hover_load_queue:[], // очередь, из которой будут аудио перемещаться в __load_queue, при наведении на иконку загрузки.
+   __loading_queue:[], // очередь текущих аудио, по которым в данный момент грузится инфа
    __load_req_num: 1,
    load_audio_urls: function(){
       if (vkopt.audio.__load_queue.length == 0 || vkopt.audio.__loading_queue.length > 0) // если нет списка на подгрузку, или что-то уже грузится - игнорим вызов
@@ -2640,6 +2713,9 @@ vkopt['scrobbler'] = {
          fm.token=nav.objLoc['token'];
          fm.auth(function(){
             vkAlertBox(IDL('AuthBoxTitle'), IDL('AuthDone').replace(/<username>/g, vkopt.settings.get('lastfm_username')));
+            setTimeout(function(){
+               vkopt.cmd({act: 'scrobbler_auth'});
+            },500);
          });
       }
       //vkopt.scrobbler.on_location();
@@ -2781,6 +2857,17 @@ vkopt['scrobbler'] = {
 				});
       // fm.listen_storage();
    },
+   onCmd: function(data){
+      vkopt.log('cmd:', data);
+      if (data && data.act == 'scrobbler_auth'){
+         var fm=vkopt.scrobbler;
+         fm.token = vkopt.settings.get('lastfm_token');
+         fm.username = vkopt.settings.get('lastfm_username');
+         fm.session_key = vkopt.settings.get('lastfm_session_key');
+         fm.enable_scrobbling = vkopt.settings.get('lastfm_enable_scrobbling');
+         vkopt.log('scrobbler auth');
+      }
+   },
    /* TODO: сделать отсылку события о новом токене во все вкладки
    listen_storage:function(){
       var fm=vkopt.scrobbler;
@@ -2835,6 +2922,7 @@ vkopt['scrobbler'] = {
          //fm.enable_scrobbling=parseInt(localStorage['lastfm_enable_scrobbling']);
          //location.href = url;
       }, true);
+      return false;
    },
    scrobble:function(audio_info,ts){
       var fm=vkopt.scrobbler;
@@ -3017,6 +3105,7 @@ vkopt['scrobbler'] = {
             black: 1,
             shift: [4 + intval(dx), 13 + intval(dy1), 16 + intval(dy2)],
             showdt:300,
+            hidedt:300,
             onHide:opts.onHide,
             onShowStart:opts.onShowStart
          });
@@ -3052,8 +3141,8 @@ vkopt['scrobbler'] = {
          (function(z){
             return function(){
                var text=IDL(fm.enable_scrobbling?'ScrobblingOn':'ScrobblingOff').replace(/<username>/g,fm.username);
-               text+=' <a href="#" onclick="vkopt.scrobbler.logout();">'+IDL('Logout')+'</a>';
-               if (!fm.username) text=IDL('AuthNeeded');
+               text+=' <a href="#" onclick="return vkopt.scrobbler.logout();">'+IDL('Logout')+'</a>';
+               if (!fm.username || fm.username == 'NO_AUTH') text=IDL('AuthNeeded');
                fm.tip(els[z],text);
             }
          })(i);
@@ -3961,6 +4050,9 @@ vkopt['messages'] = {
             background: url("data:image/svg+xml,%3Csvg%20version%3D%221.1%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2216%22%20height%3D%2216%22%09%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20fill%3D%22%237D9AB7%22%20d%3D%22M204.1%2C66l-25.3%2C30.4c-14.1-25-44.3-37.6-72.7-28.5%09c-32.5%2C10.4-50.5%2C45.2-40%2C77.8c6.2%2C19.4%2C21.2%2C33.6%2C39.1%2C39.7c7.4%2C14%2C15.4%2C31.9%2C21.1%2C46c-7.5%2C7.8-12.1%2C19.6-12.1%2C19.6l-30.9-6.7%09l3.5-26.3c-4.8-2-9.5-4.4-13.9-7.2L53.6%2C229l-23.4-21.3l16.2-21c-3.1-4.1-6-8.5-8.5-13.2l-25.8%2C6l-9.7-30.1l24.5-10.1%09c-0.7-5.3-0.9-10.5-0.8-15.7L0.8%2C116l6.7-30.9l26.3%2C3.5c2-4.8%2C4.4-9.5%2C7.2-13.9L22.8%2C55.3l21.3-23.4l21%2C16.2c4.1-3.1%2C8.5-6%2C13.2-8.5%09l-6-25.8l30.1-9.7l10.1%2C24.5c5.3-0.7%2C10.5-0.9%2C15.7-0.8l7.7-25.4l30.9%2C6.7l-3.5%2C26.3c4.8%2C2%2C9.5%2C4.4%2C13.9%2C7.2l19.3-18.2l23.4%2C21.3%09l-15.4%2C20L204.1%2C66z%20M79%2C106.3l49.8-18.1l44.6%2C87.8l31.7-95.6l50%2C18.1c-11%2C24.1-21%2C48.8-30.1%2C74c-9.1%2C25.2-17.2%2C50.9-24.4%2C77h-50.9%09c-9.5-22.9-20.2-46.3-32-70.2C105.8%2C155.3%2C92.9%2C131%2C79%2C106.3z%22/%3E%3C/svg%3E") 9px 0px no-repeat;
             height: 17px;
          }
+         .vk_save_hist_cfg textarea{
+            width:370px;
+         }
          */
       }).css + vkopt.messages.css_msg_bg(vkopt.settings.get('old_unread_msg_bg'))
    },
@@ -4061,14 +4153,29 @@ vkopt['messages'] = {
          /*export_box:
          <div id="saveldr" style="display:none; padding:8px; padding-top: 14px; text-align:center; width:360px;"><img src="/images/upload.gif"></div>
          <div id="save_btn_text" style="text-align:center">
-            <div class="button_blue"><button href="#" onclick="vkopt.messages.get_history({vals.peer}); return false;">{lng.SaveHistory} *.html</button></div><br>
-            <small><a href="#" onclick="toggle(\'msg_save_more\'); return false;">(.txt)</a></small>
+            <div class="button_blue"><button onclick="vkopt.messages.get_history({vals.peer}); return false;">{lng.SaveHistory} *.html</button></div><br>
+            <div class="button_gray"><button onclick="toggle('msg_save_more'); return false;">(*.txt)</button></div>
             <div id="msg_save_more" style="display:none;">
-            <div class="button_gray"><button href="#" onclick="vkopt.messages.get_history_txt({vals.peer}); return false;">{lng.SaveHistory}</button></div>
-            <div class="button_gray"><button href="#" onclick="vkopt.messages.get_history_txt({vals.peer},true); return false;">{lng.SaveHistoryCfg}</button></div>
+            <div class="button_gray"><button onclick="vkopt.messages.get_history_txt({vals.peer}); return false;">{lng.SaveHistory}</button></div>
+            <div class="button_gray"><button onclick="vkopt.messages.get_history_txt({vals.peer},true); return false;">{lng.SaveHistoryCfg}</button></div>
             </div>
          </div>
          */
+         /*msg_exp_txt_cfg:
+         <div class="vk_save_hist_cfg">
+            <h4>{lng.SaveMsgFormat}
+               <a class="fl_r" onclick="ge('vk_msg_fmt').value=vkopt_defaults.config.SAVE_MSG_HISTORY_PATTERN;">{lng.Reset}</a>
+            </h4>
+            <textarea id="vk_msg_fmt">{vals.msg_pattern}</textarea>
+            <br><br>
+            <h4>{lng.SaveMsgDateFormat}
+               <a class="fl_r" onclick="ge('vk_msg_date_fmt').value=vkopt_defaults.config.SAVE_MSG_HISTORY_DATE_FORMAT;">{lng.Reset}</a>
+            </h4>
+            <textarea id="vk_msg_date_fmt">{vals.date_fmt}</textarea>
+            <br>
+         </div>       
+         */
+         
          /*acts_export_history_item:
          <a tabindex="0" role="link" class="ui_actions_menu_item _im_action im-action vk_acts_item_icon" onclick="return vkopt.messages.export_box()">{lng.SaveHistory}</a>
          */
@@ -4439,7 +4546,6 @@ vkopt['messages'] = {
 
          html=html.replace(/%title/g,'VK Messages: '+file_name.join(','));
          vkopt.save_file(html,"messages_"+vkCleanFileName(file_name.join(',')).substr(0,250)+".html");
-         //vkSaveText();
       });
    },
    load_dump: function(callback){
@@ -4481,13 +4587,12 @@ vkopt['messages'] = {
       scan();
    },
    get_history_txt: function(uid,show_format){
-      //vkInitDataSaver();
       if (!uid) uid=cur.thread.id;
       var offset=0;
       var result='';
       var user1='user1';
-      var msg_pattern=vkGetVal('VK_SAVE_MSG_HISTORY_PATTERN') || SAVE_MSG_HISTORY_PATTERN;
-      var date_fmt=vkGetVal('VK_SAVE_MSG_HISTORY_DATE_FORMAT') || SAVE_MSG_HISTORY_DATE_FORMAT;
+      var msg_pattern = vkopt.settings.get('msg_exp_pattern')  ||  vkopt_defaults.config.SAVE_MSG_HISTORY_PATTERN;
+      var date_fmt = vkopt.settings.get('msg_exp_date_fmt') || vkopt_defaults.config.SAVE_MSG_HISTORY_DATE_FORMAT;
       msg_pattern=msg_pattern.replace(/\r?\n/g,'\r\n');
       date_fmt=date_fmt.replace(/\r?\n/g,'\r\n');
       var users={};
@@ -4496,7 +4601,6 @@ vkopt['messages'] = {
       var collect=function(callback){
          hide('save_btn_text');
          show('saveldr');
-         //document.title='offset:'+offset;
          var w=getSize(ge('saveldr'),true)[0];
          if (offset==0) ge('saveldr').innerHTML=vkProgressBar(offset,10,w);
          dApi.call('messages.getHistory',{uid:uid,offset:offset,count:100},function(r){
@@ -4601,7 +4705,7 @@ vkopt['messages'] = {
                   show('save_btn_text');
                   hide('saveldr');
                   //alert(t);
-                  vkSaveText(t,"messages_"+vkCleanFileName(file_name.join(',')).substr(0,250)+".txt");
+                  vkopt.save_file(t,"messages_"+vkCleanFileName(file_name.join(',')).substr(0,250)+".txt");
 
                });
             });
@@ -4617,21 +4721,18 @@ vkopt['messages'] = {
             date_fmt=ge('vk_msg_date_fmt').value;
             msg_pattern=msg_pattern.replace(/\r?\n/g,'\r\n');
             date_fmt=date_fmt.replace(/\r?\n/g,'\r\n');
-            vkSetVal('VK_SAVE_MSG_HISTORY_PATTERN',msg_pattern);
-            vkSetVal('VK_SAVE_MSG_HISTORY_DATE_FORMAT',date_fmt);
+            vkopt.settings.set('msg_exp_pattern', msg_pattern);
+            vkopt.settings.set('msg_exp_date_fmt', date_fmt);
             aBox.hide();
             run();
          },'yes');
-         vkaddcss('.vk_save_hist_cfg textarea{width:370px;}');
-         var html ='<h4>'+IDL('SaveMsgFormat')+'<a class="fl_r" onclick="ge(\'vk_msg_fmt\').value=SAVE_MSG_HISTORY_PATTERN;">'+
-                  IDL('Reset')+'</a></h4><textarea id="vk_msg_fmt" onfocus="autosizeSetup(this,{});">'+msg_pattern+'</textarea><br><br>';
-
-         html+='<h4>'+IDL('SaveMsgDateFormat')+'<a class="fl_r" onclick="ge(\'vk_msg_date_fmt\').value=SAVE_MSG_HISTORY_DATE_FORMAT;">'+
-                  IDL('Reset')+'</a></h4><textarea id="vk_msg_date_fmt" onfocus="autosizeSetup(this,{});">'+date_fmt+'</textarea><br>';
-         aBox.content('<div class="vk_save_hist_cfg">'+html+'</div>');
+         
+         var html = vk_lib.tpl_process(vkopt.messages.tpls['msg_exp_txt_cfg'],{
+            msg_pattern: msg_pattern,
+            date_fmt: date_fmt
+         })
+         aBox.content(html);
          aBox.show();
-         autosizeSetup('vk_msg_fmt',{});
-         autosizeSetup('vk_msg_date_fmt',{});
       } else run();
    }
 };
