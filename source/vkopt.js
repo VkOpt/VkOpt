@@ -41,6 +41,7 @@ var vkopt_defaults = {
       old_unread_msg_bg: 'c5d9e7',
       ru_vk_logo: false,
       switch_kbd_lay: true,
+      show_online_status: false,
 
       //Extra:
       vkopt_guide: true,   // показываем, где находится кнопка настроек, до тех пор, пока в настройки всё же не зайдут
@@ -4885,6 +4886,13 @@ vkopt['face'] =  {
             title: 'seVkontakteLogo',
             class_toggler: true
          }
+      },
+      
+      Users:{
+         show_online_status:{
+            title:"seShowOnlineStatus",
+            class_toggler: true
+         }
       }
    },
    css: function(){
@@ -4958,6 +4966,24 @@ vkopt['face'] =  {
             width: 135px;
             margin: 8px 10px 0 0;
          }
+         #vk_online_status > * {
+            margin-top: 15px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            height: 8px;
+            width: 8px;
+            display:none;
+         }
+         .vkUOnline {
+            background-color: #8ac176;
+         }
+         .vkUOffline {
+            background-color: #d65e5e;
+         }
+         .vkUUndef {
+            background-color: #9b9b9b;
+         }
+         .vk_show_online_status #vk_online_status > * {display:block;}
          */
       });
       var progress_bar = vk_lib.get_block_comments(vkProgressBar).css;
@@ -4975,6 +5001,49 @@ vkopt['face'] =  {
             vars['no_ads'] = 1;
             vkopt.log('vid ad_block info:', vars);
          }
+      }
+   },
+   onInit: function() {
+      if (vkopt.settings.get('show_online_status')) vkopt.face.userOnlineStatus();
+   },
+   userOnlineStatus: function(status) {
+      if (window.vk_check_online_timeout) clearTimeout(vk_check_online_timeout);
+      if (ge('vk_online_status')){
+         val(ge('vk_online_status'), '<div class="vkUUndef"></div>');
+      }
+      
+      var show_status=function(stat){
+            var online = (stat) ? '<div class="vkUOnline"></div>': '<div class="vkUOffline"></div>';
+            if (!ge('vk_online_status')){
+              var div = se('<div id="vk_online_status" class="fl_r">'+online+'</div>');
+              var top_nav_list = ge('top_nav');
+              top_nav_list.appendChild(div);
+            } else {
+              val(ge('vk_online_status'), online);
+            }
+         //}
+         /* vkGenDelay() -random для рассинхронизации запросов разных вкладок, иначе запросы со всех вкладок будут одновременно слаться. */
+         vk_check_online_timeout=setTimeout(function(){vkopt.face.userOnlineStatus();},vkGenDelay(20000,status!=null));
+      };
+      if (status!=null){
+         show_status(status);
+      } else {
+         dApi.call("getProfiles",{ uid: remixmid(), fields:'online'},function(res) {	
+            if (res.response){
+               var p=res.response[0];
+               var st={
+                     online:p.online,
+                     online_app: p.online_app,
+                     online_mobile: p.online_mobile
+                };
+               
+               show_status(st.online);
+               vkCmd('user_online_status',st.online);// /*res.response[0].online*/ шлём полученный статус в остальные вкладки
+               //vklog('Online status >> [onStorage] ');
+            } else {
+               vk_check_online_timeout=setTimeout(function(){vkopt.face.userOnlineStatus();},vkGenDelay(20000));
+            }
+       });
       }
    }
 };
