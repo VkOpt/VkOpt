@@ -2860,7 +2860,6 @@ vkopt['scrobbler'] = {
       // fm.listen_storage();
    },
    onCmd: function(data){
-      vkopt.log('cmd:', data);
       if (data && data.act == 'scrobbler_auth'){
          var fm=vkopt.scrobbler;
          fm.token = vkopt.settings.get('lastfm_token');
