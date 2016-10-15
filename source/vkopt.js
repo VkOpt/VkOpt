@@ -843,7 +843,7 @@ vkopt['settings'] =  {
            var color = val(ge('widget_color'+id));
            if (!color) return;
            vkopt.log(color);
-           vkopt.settings.set('old_unread_msg_bg', color);
+           vkopt.settings.set(id, color);
            setStyle(ge('dev_colorbox'+id), {backgroundColor: '#'+color});
          }
 
@@ -1052,6 +1052,7 @@ vkopt['settings'] =  {
          val('wmdonate', vkOptDonate.WMDonateForm(30,'R255120081922'));
       };
       if (!in_box || ge('vkopt_settings_block')){ // показ на странице, а не во всплывающем окне
+         stManager.add(['dev.css']);
          el = el || ge('ui_rmenu_vkopt');
          el && uiRightMenu.switchMenu(el);
          var p = ge('wide_column');
