@@ -61,6 +61,7 @@ var vkopt_defaults = {
       stealth_addons: true, // прикидываемся перед ТП, что у нас не стоит расширение для скачивания.
       im_block_typing: false,
       im_block_mark_read: false,
+      accept_more_cats: true,
 
       lastfm_enable_scrobbling: false,
       lastfm_token: '',
@@ -5634,6 +5635,28 @@ vkopt['wall'] = {
 
 };
 
+vkopt['friends'] = {
+   onSettings:{
+      Extra:{
+         accept_more_cats:{}
+      }
+   },
+   onLibFiles: function(fn){
+      if (fn != 'friends.js') return;
+      if (vkopt.settings.get('accept_more_cats'))
+         Inj.Replace('Friends.acceptRequest',/(\.innerHTML)\s*=\s*([^,'\(\)\s])/,'$1 = vkopt.friends.accept_more_cats($2,#ARG0#)')
+   },
+   accept_more_cats: function(html, mid){
+      if (vkopt.settings.get('accept_more_cats')){
+         html += '<div class="friends_added">';
+         html += '<div class="friends_added_text box_controls_text">'+IDL('AddFrToList')+'</div>';
+         for (var key in cur.userLists) 
+            html += '<div class="checkbox" onclick="return Friends.checkCat(this, '+mid+', '+key+', 1);"><div></div>'+cur.userLists[key]+'</div>'; 
+         html += '</div>';
+      }
+      return html;
+   }
+}
 vkopt['support'] = {
    onSettings:{
       Extra: {
