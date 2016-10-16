@@ -1076,14 +1076,24 @@ vkopt['settings'] =  {
       (val == '' ? show : hide)('vkopt_lang_settings');
    },
    filter_change: function(){}, //onInit: filter_change = debounce (function(obj,callback){ callback(trim(obj.value)); }, 300),
+   onCmd: function(data){
+      if (data && data.act == 'config_updated')
+         vkopt.settings.config_cached = null;
+   },
+   config_cached: null,
    config: function(new_config){
       if (new_config){
          localStorage['vkopt_config'] = JSON.stringify(new_config);
+         vkopt.settings.config_cached = new_config;
+         vkopt.cmd({act: 'config_updated'});
          return new_config;
       }
+      if (vkopt.settings.config_cached)
+         return vkopt.settings.config_cached;
       var config = vkopt_defaults.config;
       try {
          config = JSON.parse(localStorage['vkopt_config'] || '{}')
+         vkopt.settings.config_cached = config;
       } catch(e) {
          new MessageBox({title:'Vkopt error',hideButtons:true}).content('Config parse error. Use default config').show();
          localStorage['vkopt_config'] = JSON.stringify(config);
