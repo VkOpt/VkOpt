@@ -5733,7 +5733,6 @@ vkopt['test_module'] =  {
    //*/
 };
 
-window.vkopt = (window.vkopt || {});
 vkopt['left_settings'] =  {
    onSettings:{
       vkInterface:{
@@ -5774,7 +5773,5 @@ vkopt['left_settings'] =  {
       }
    }
 }
-if (window.vkopt_core_ready) vkopt_core.plugins.delayed_run('left_settings');
-
 
 vkopt_core.init();
