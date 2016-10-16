@@ -1253,9 +1253,15 @@ vkopt['settings'] =  {
    restore:function(callback){
       vk_ext_api.storage.get('vkopt_cfg_backup_'+vk.id,function(value){
          var cfg = JSON.parse(value || '{}');
-         if (cfg.config)
+         if (cfg.config){
             vkopt.settings.config(cfg.config);
-
+            for (var option_id in cfg.config){
+               var option_data = vkopt.settings.get_option_data(option_id);
+               if (!option_data) continue;
+               vkopt.settings.set_feature(option_data, cfg.config[option_id]);
+               vkopt_core.plugins.call_modules('onOptionChanged', option_id, cfg.config[option_id], option_data);
+            }
+         }
          console.log('config '+vk.id+' restored from bg ok');
          callback && callback();
       })
