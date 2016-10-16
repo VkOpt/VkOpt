@@ -5011,12 +5011,20 @@ vkopt['face'] =  {
       if (url == '/al_video.php' && q.act == 'show' && answer[2])
          answer[2] = answer[2].replace(/(var\s*isInline)/,'\n   vkopt.face.ad_block.video(vars);\n $1')
    },
+   onLibFiles: function(fn){
+      if (fn == 'audioplayer.js')
+         vkopt.face.ad_block.audio();
+   },
    ad_block: {
       video: function(vars){
          if (vkopt.settings.get('ad_block')){
             vars['no_ads'] = 1;
             vkopt.log('vid ad_block info:', vars);
          }
+      },
+      audio: function(){
+         if (vkopt.settings.get('ad_block'))
+            Inj.Start('AudioPlayer.prototype._adsPrepareAd','if (vkopt.settings.get("ad_block")) return;');
       }
    },
    onInit: function() {
