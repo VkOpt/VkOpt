@@ -4902,6 +4902,10 @@ vkopt['face'] =  {
             title: 'seVkontakteLogo',
             class_toggler: true
          },
+         hide_big_like:{
+            title: 'hideBigLike',
+            class_toggler: true
+         },
          hide_left_set:{
             title: 'hideLeftSettings',
             class_toggler: true
@@ -4989,6 +4993,9 @@ vkopt['face'] =  {
             height: 25px;
             width: 135px;
             margin: 8px 10px 0 0;
+         }
+         .vk_hide_big_like .pv_hh_like {
+            display: none;
          }
          .vk_hide_left_set .left_settings {
             display: none;
