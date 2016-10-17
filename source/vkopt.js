@@ -4906,15 +4906,15 @@ vkopt['face'] =  {
             class_toggler: true
          },
          hide_big_like:{
-            title: 'hideBigLike',
+            title: 'seHideBigLike',
             class_toggler: true
          },
          hide_left_set:{
-            title: 'hideLeftSettings',
+            title: 'seHideLeftSettings',
             class_toggler: true
          },
          hide_recommendations:{
-            title:"hideRecommendations",
+            title:"seHideRecomendations",
             class_toggler: true
          }
       },
@@ -4922,6 +4922,10 @@ vkopt['face'] =  {
       Users:{
          show_online_status:{
             title:"seShowOnlineStatus",
+            class_toggler: true
+         },
+         show_full_user_info:{
+            title:"seExplandProfileInfo",
             class_toggler: true
          }
       }
@@ -5025,6 +5029,12 @@ vkopt['face'] =  {
             background-color: #9b9b9b;
          }
          .vk_show_online_status #vk_online_status > * {display:block;}
+         .vk_show_full_user_info #profile_full {
+            display: block;
+         }
+         .vk_show_full_user_info .profile_more_info {
+            display: none;
+         }
          */
       });
       var progress_bar = vk_lib.get_block_comments(vkProgressBar).css;
@@ -5117,6 +5127,11 @@ vkopt['profile'] = {
    rx_lnk_year:/c(?:%5B|\[)byear(?:%5D|\])=(\d+)/,
 
    onSettings:{
+      Media: {
+         audio_pos: {
+            title: 'seProfileMoveAudioBlock'
+         }
+      },
       Users: {
          calc_age:{
             title: 'seCalcAge'
@@ -5149,6 +5164,13 @@ vkopt['profile'] = {
    onLocation: function(){
       if (nav.objLoc[0] == 'edit')
          vkopt.profile.editor.middle_name_field();
+      
+      if (vkopt.settings.get('audio_pos')) {
+         clearTimeout(vkopt.profile.audelay);
+         vkopt.profile.audelay = setTimeout(function() {
+            vkopt.profile.moveAudio(vkopt.settings.get('audio_pos'));
+         },200);
+      }
    },
    processNode: function(node, params){
          if (!vkopt.settings.get('calc_age'))
@@ -5301,6 +5323,29 @@ vkopt['profile'] = {
             var field = se(vk_lib.tpl_process(vkopt.profile.tpls['middle_name_field'], {}));
             p.parentNode.insertBefore(field, p);
          }
+      }
+   },
+   moveAudio: function(flag) {
+      var audios = document.getElementById("profile_audios");
+      if (audios == null) return;
+		
+      var pageblock = document.createElement('div');
+      pageblock.className = "page_block";
+      pageblock.appendChild(audios);
+		
+      if (flag) { //сдвиг вправо
+         var newplace = document.getElementById("wide_column");
+         newplace.insertBefore(pageblock, newplace.children[2]);
+      } else { //влево (отключение)
+         var newplace = document.getElementById("narrow_column");
+         newplace = newplace.getElementsByClassName("page_block");
+         var len = newplace.length - 1;
+         newplace[len].appendChild(pageblock.children[0]);
+      }
+   },
+   onOptionChanged: function(option_id, val, option_data) {
+      if (option_id == 'audio_pos') {
+         vkopt.profile.moveAudio(val);
       }
    }
 };
@@ -5758,44 +5803,5 @@ vkopt['test_module'] =  {
    //*/
 };
 
-vkopt['audio_pos'] =  {
-	onSettings: {
-		Media: {
-			audio_pos: {
-				title: 'AudiosOnRight'
-			}
-		}
-	},
-	moveAudio: function(flag) {
-		var audios = document.getElementById("profile_audios");
-		if (audios == null) return;
-		
-		var pageblock = document.createElement('div');
-		pageblock.className = "page_block";
-		pageblock.appendChild(audios);
-		
-		if (flag) { //сдвиг вправо
-			var newplace = document.getElementById("wide_column");
-			newplace.insertBefore(pageblock, newplace.children[2]);
-		} else { //влево (отключение)
-			var newplace = document.getElementById("narrow_column");
-			newplace = newplace.getElementsByClassName("page_block");
-			var len = newplace.length - 1;
-			newplace[len].appendChild(pageblock.children[0]);
-		}
-	},
-	onLocation: function() {
-		if (!vkopt.settings.get('audio_pos')) return;
-		clearTimeout(vkopt.audio_pos.delay);
-		vkopt.audio_pos.delay = setTimeout(function() {
-			vkopt.audio_pos.moveAudio(vkopt.settings.get('audio_pos'));
-		},200);
-	},
-	onOptionChanged: function(option_id, val, option_data) {
-		if (option_id == 'audio_pos') {
-			vkopt.audio_pos.moveAudio(val);
-		}
-	}
-}
 
 vkopt_core.init();
