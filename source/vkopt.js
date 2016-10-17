@@ -5748,4 +5748,44 @@ vkopt['test_module'] =  {
    //*/
 };
 
+vkopt['audio_pos'] =  {
+	onSettings: {
+		Media: {
+			audio_pos: {
+				title: 'AudiosOnRight'
+			}
+		}
+	},
+	moveAudio: function(flag) {
+		var audios = document.getElementById("profile_audios");
+		if (audios == null) return;
+		
+		var pageblock = document.createElement('div');
+		pageblock.className = "page_block";
+		pageblock.appendChild(audios);
+		
+		if (flag) { //сдвиг вправо
+			var newplace = document.getElementById("wide_column");
+			newplace.insertBefore(pageblock, newplace.children[2]);
+		} else { //влево (отключение)
+			var newplace = document.getElementById("narrow_column");
+			newplace = newplace.getElementsByClassName("page_block");
+			var len = newplace.length - 1;
+			newplace[len].appendChild(pageblock.children[0]);
+		}
+	},
+	onLocation: function() {
+		if (!vkopt.settings.get('audio_pos')) return;
+		clearTimeout(vkopt.audio_pos.delay);
+		vkopt.audio_pos.delay = setTimeout(function() {
+			vkopt.audio_pos.moveAudio(vkopt.settings.get('audio_pos'));
+		},200);
+	},
+	onOptionChanged: function(option_id, val, option_data) {
+		if (option_id == 'audio_pos') {
+			vkopt.audio_pos.moveAudio(val);
+		}
+	}
+}
+
 vkopt_core.init();
