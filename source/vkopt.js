@@ -1593,6 +1593,9 @@ vkopt['photoview'] =  {
          .vk_pv_comm_move_down .pv_narrow_column_cont .ui_scroll_blocker{
             padding-right: 0px !important;
          }
+         .vk_pv_comm_move_down .pv_cont{
+            margin: 0px auto 100px;
+         }
          .vk_pv_comm_move_down .pv_cont .pv_photo_wrap .pv_narrow_column_wrap{
             display:block;
             float: none;
