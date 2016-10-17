@@ -4901,6 +4901,14 @@ vkopt['face'] =  {
          ru_vk_logo:{
             title: 'seVkontakteLogo',
             class_toggler: true
+         },
+         hide_left_set:{
+            title: 'hideLeftSettings',
+            class_toggler: true
+         },
+         hide_recommendations:{
+            title:"hideRecommendations",
+            class_toggler: true
          }
       },
       
@@ -4981,6 +4989,13 @@ vkopt['face'] =  {
             height: 25px;
             width: 135px;
             margin: 8px 10px 0 0;
+         }
+         .vk_hide_left_set .left_settings {
+            display: none;
+         }
+         .vk_hide_recommendations #friends_possible_block,
+         .vk_hide_recommendations #groups_filters_wrap {
+            display: none;
          }
          #vk_online_status > * {
             margin-top: 15px;
@@ -5732,46 +5747,5 @@ vkopt['test_module'] =  {
    },
    //*/
 };
-
-vkopt['left_settings'] =  {
-   onSettings:{
-      vkInterface:{
-         left_set:{
-            title: 'Скрыть шестеренку в левом меню',
-            class_toggler: true
-         },
-      }
-   },
-   css_left_set: function(val){
-   if (val) return vk_lib.get_block_comments(function(){
-         /*css:
-         .vk_left_set .left_settings {
-            display: none;
-         }
-         */
-      }).css;
-    else return vk_lib.get_block_comments(function(){
-         /*css:
-         .vk_left_set .left_settings {
-            display: inline;
-         }
-         */
-      }).css;
-   },
-   css: function(){
-      return vkopt.left_settings.css_left_set(vkopt.settings.get('left_set'));
-   },
-   onOptionChanged: function(option_id, val, option_data){
-      if (option_id == 'left_set' && vkopt.settings.get('left_set')){
-         clearTimeout(vkopt.left_settings._chbg_to);
-         vkopt.left_settings._chbg_to = setTimeout(function(){
-            var code = vkopt.left_settings.css_left_set(val);
-            var st = ge('vk_left_set_preview');
-            if (!st) vkaddcss(code, 'vk_left_set_preview');
-            else val('vk_left_set_preview', code);
-         },200);
-      }
-   }
-}
 
 vkopt_core.init();
