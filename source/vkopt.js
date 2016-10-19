@@ -10,9 +10,9 @@
 // (c) All Rights Reserved. VkOpt.
 //
 /* VERSION INFO */
-var vVersion	= 300;
-var vBuild = 160819;
-var vPostfix = ' beta';
+var vVersion	= 301;
+var vBuild = 161016;
+var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
 
@@ -41,6 +41,7 @@ var vkopt_defaults = {
       old_unread_msg_bg: 'c5d9e7',
       ru_vk_logo: false,
       switch_kbd_lay: true,
+      show_online_status: false,
 
       //Extra:
       vkopt_guide: true,   // показываем, где находится кнопка настроек, до тех пор, пока в настройки всё же не зайдут
@@ -60,6 +61,7 @@ var vkopt_defaults = {
       stealth_addons: true, // прикидываемся перед ТП, что у нас не стоит расширение для скачивания.
       im_block_typing: false,
       im_block_mark_read: false,
+      accept_more_cats: true,
 
       lastfm_enable_scrobbling: false,
       lastfm_token: '',
@@ -842,7 +844,7 @@ vkopt['settings'] =  {
            var color = val(ge('widget_color'+id));
            if (!color) return;
            vkopt.log(color);
-           vkopt.settings.set('old_unread_msg_bg', color);
+           vkopt.settings.set(id, color);
            setStyle(ge('dev_colorbox'+id), {backgroundColor: '#'+color});
          }
 
@@ -1051,6 +1053,7 @@ vkopt['settings'] =  {
          val('wmdonate', vkOptDonate.WMDonateForm(30,'R255120081922'));
       };
       if (!in_box || ge('vkopt_settings_block')){ // показ на странице, а не во всплывающем окне
+         stManager.add(['dev.css']);
          el = el || ge('ui_rmenu_vkopt');
          el && uiRightMenu.switchMenu(el);
          var p = ge('wide_column');
@@ -1073,14 +1076,24 @@ vkopt['settings'] =  {
       (val == '' ? show : hide)('vkopt_lang_settings');
    },
    filter_change: function(){}, //onInit: filter_change = debounce (function(obj,callback){ callback(trim(obj.value)); }, 300),
+   onCmd: function(data){
+      if (data && data.act == 'config_updated')
+         vkopt.settings.config_cached = null;
+   },
+   config_cached: null,
    config: function(new_config){
       if (new_config){
          localStorage['vkopt_config'] = JSON.stringify(new_config);
+         vkopt.settings.config_cached = new_config;
+         vkopt.cmd({act: 'config_updated'});
          return new_config;
       }
+      if (vkopt.settings.config_cached)
+         return vkopt.settings.config_cached;
       var config = vkopt_defaults.config;
       try {
          config = JSON.parse(localStorage['vkopt_config'] || '{}')
+         vkopt.settings.config_cached = config;
       } catch(e) {
          new MessageBox({title:'Vkopt error',hideButtons:true}).content('Config parse error. Use default config').show();
          localStorage['vkopt_config'] = JSON.stringify(config);
@@ -1240,9 +1253,15 @@ vkopt['settings'] =  {
    restore:function(callback){
       vk_ext_api.storage.get('vkopt_cfg_backup_'+vk.id,function(value){
          var cfg = JSON.parse(value || '{}');
-         if (cfg.config)
+         if (cfg.config){
             vkopt.settings.config(cfg.config);
-
+            for (var option_id in cfg.config){
+               var option_data = vkopt.settings.get_option_data(option_id);
+               if (!option_data) continue;
+               vkopt.settings.set_feature(option_data, cfg.config[option_id]);
+               vkopt_core.plugins.call_modules('onOptionChanged', option_id, cfg.config[option_id], option_data);
+            }
+         }
          console.log('config '+vk.id+' restored from bg ok');
          callback && callback();
       })
@@ -2858,7 +2877,6 @@ vkopt['scrobbler'] = {
       // fm.listen_storage();
    },
    onCmd: function(data){
-      vkopt.log('cmd:', data);
       if (data && data.act == 'scrobbler_auth'){
          var fm=vkopt.scrobbler;
          fm.token = vkopt.settings.get('lastfm_token');
@@ -4658,13 +4676,12 @@ vkopt['messages'] = {
                //console.log(msg);
                var date=(new Date(msg.date*1000)).format(date_fmt);
                var user='%'+from_id+'%';//(msg.from_id==mid?user2:user1);
-               var text=vkCe('div',{},(msg.body || '').replace(/<br>/g,"%{br}%")).innerText.replace(/%{br}%/g,'\r\n');// no comments....
-               //text=text.replace(/\n/g,'\r\n');
+               var msgBody = msg.body.replace(/<br>/g, '\r\n');
 
                var ret=msg_pattern
                     .replace(/%username%/g,user) //msg.from_id
                     .replace(/%date%/g,    date)
-                    .replace(/%message%/g, text)
+                    .replace(/%message%/g, msgBody)
                     .replace(/%attachments%/g, (attach_text!=""?"Attachments:[\r\n"+attach_text+"]":""));
                var tab='\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t';
                ret=ret.replace(/^.+$/mg,tab.substr(0,level)+"$&");
@@ -4885,6 +4902,13 @@ vkopt['face'] =  {
             title: 'seVkontakteLogo',
             class_toggler: true
          }
+      },
+      
+      Users:{
+         show_online_status:{
+            title:"seShowOnlineStatus",
+            class_toggler: true
+         }
       }
    },
    css: function(){
@@ -4958,6 +4982,24 @@ vkopt['face'] =  {
             width: 135px;
             margin: 8px 10px 0 0;
          }
+         #vk_online_status > * {
+            margin-top: 15px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.5);
+            height: 8px;
+            width: 8px;
+            display:none;
+         }
+         .vkUOnline {
+            background-color: #8ac176;
+         }
+         .vkUOffline {
+            background-color: #d65e5e;
+         }
+         .vkUUndef {
+            background-color: #9b9b9b;
+         }
+         .vk_show_online_status #vk_online_status > * {display:block;}
          */
       });
       var progress_bar = vk_lib.get_block_comments(vkProgressBar).css;
@@ -4969,12 +5011,77 @@ vkopt['face'] =  {
       if (url == '/al_video.php' && q.act == 'show' && answer[2])
          answer[2] = answer[2].replace(/(var\s*isInline)/,'\n   vkopt.face.ad_block.video(vars);\n $1')
    },
+   onLibFiles: function(fn){
+      if (fn == 'audioplayer.js')
+         vkopt.face.ad_block.audio();
+   },
    ad_block: {
       video: function(vars){
          if (vkopt.settings.get('ad_block')){
             vars['no_ads'] = 1;
             vkopt.log('vid ad_block info:', vars);
          }
+      },
+      audio: function(){
+         if (vkopt.settings.get('ad_block'))
+            Inj.Start('AudioPlayer.prototype._adsPrepareAd','if (vkopt.settings.get("ad_block")) return;');
+      }
+   },
+   onInit: function() {
+      vkopt.face.user_online_status();
+   },
+   onCmd: function(data){
+      if (data.act == 'user_online_status')
+         vkopt.face.user_online_status(data.status);      
+   },
+   onOptionChanged: function(option_id, val, option_data){
+      if (option_id == 'show_online_status')
+         vkopt.face.user_online_status();
+   },
+   user_online_status: function(status) {
+      if (vkopt.face.check_online_timeout) clearTimeout(vkopt.face.check_online_timeout);
+      if (!vkopt.settings.get('show_online_status')){
+         re('vk_online_status');
+         return;
+      }
+      var set_status = function(cl){
+         var p = ge('vk_online_status');
+         if (p){
+            p = geByTag1('div',p);
+            if (p)
+               p.className = cl;
+         }
+      }
+      var show_status=function(stat){
+            if (!ge('vk_online_status')){
+              var div = se('<div id="vk_online_status" class="fl_r"><div></div></div>');
+              var top_nav_list = ge('top_nav');
+              var top_music_player = geByClass1('head_nav_item_player',top_nav_list);
+              top_nav_list && top_nav_list.insertBefore(div,top_music_player);
+            }
+            set_status(stat ? 'vkUOnline': 'vkUOffline');
+         /* vkGenDelay() -random для рассинхронизации запросов разных вкладок, иначе запросы со всех вкладок будут одновременно слаться. */
+         vkopt.face.check_online_timeout=setTimeout(function(){vkopt.face.user_online_status();},vkGenDelay(20000,status!=null));
+      };
+      set_status('vkUUndef');
+      if (status!=null){
+         show_status(status);
+      } else {
+         dApi.call("getProfiles",{ uid: remixmid(), fields:'online'},function(res) {	
+            if (res.response){
+               var p=res.response[0];
+               var st={
+                     online:p.online,
+                     online_app: p.online_app,
+                     online_mobile: p.online_mobile
+                };
+               
+               show_status(st.online);
+               vkopt.cmd({act:'user_online_status', status:st.online}); // шлём полученный статус в остальные вкладки
+            } else {
+               vkopt.face.check_online_timeout = setTimeout(function(){vkopt.face.user_online_status();},vkGenDelay(20000));
+            }
+       });
       }
    }
 };
@@ -5552,6 +5659,28 @@ vkopt['wall'] = {
 
 };
 
+vkopt['friends'] = {
+   onSettings:{
+      Extra:{
+         accept_more_cats:{}
+      }
+   },
+   onLibFiles: function(fn){
+      if (fn != 'friends.js') return;
+      if (vkopt.settings.get('accept_more_cats'))
+         Inj.Replace('Friends.acceptRequest',/(\.innerHTML)\s*=\s*([^,'\(\)\s])/,'$1 = vkopt.friends.accept_more_cats($2,#ARG0#)')
+   },
+   accept_more_cats: function(html, mid){
+      if (vkopt.settings.get('accept_more_cats')){
+         html += '<div class="friends_added">';
+         html += '<div class="friends_added_text box_controls_text">'+IDL('AddFrToList')+'</div>';
+         for (var key in cur.userLists) 
+            html += '<div class="checkbox" onclick="return Friends.checkCat(this, '+mid+', '+key+', 1);"><div></div>'+cur.userLists[key]+'</div>'; 
+         html += '</div>';
+      }
+      return html;
+   }
+}
 vkopt['support'] = {
    onSettings:{
       Extra: {
