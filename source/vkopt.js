@@ -5733,5 +5733,119 @@ vkopt['test_module'] =  {
    //*/
 };
 
+vkopt['turn_blocks'] = {
+   onSettings:{
+      vkInterface:{
+         turn_blocks:{
+            title: 'seShutProfilesBlock'
+         }
+      }
+   },
+   addIcons: function() {
+      var blocks = document.getElementsByClassName("header_top clear_fix");
+      for (i = 0; i < blocks.length; i++) {
+         var btnid = blocks[i].parentNode.parentNode.id+"_i"; //id дива с кнопкой
+         if (blocks[i].children[2] == undefined || blocks[i].children[2].id !== btnid) {
+            var icon = document.createElement("img");
+            icon.src = "/images/icons/menu_arrow.png";
+            icon.style.verticalAlign = "middle";
+            icon.style.transform = "rotate(180deg)";
+            
+            var btn = document.createElement("a");
+            btn.className = "header_count fl_l";
+            btn.style.display = "inline-block";
+            btn.id = btnid;
+            btn.href = "#";
+            btn.onclick = function(e) {
+               e.preventDefault(); //не открывает ссылку блока
+               e.stopPropagation(); //не открываем окно блока
+               var icon = this.children[0]; //div иконки в кнопке
+               if (icon.style.transform == "rotate(180deg)") icon.style.transform = "";
+               else icon.style.transform = "rotate(180deg)";
+               vkopt.turn_blocks.turnBlock(this);
+            };
+            btn.appendChild(icon);
+            blocks[i].style.paddingRight = "0px";
+            blocks[i].appendChild(btn);
+         }
+      }
+      //сворачиваем те, которые были сохранены
+      var len = vkopt.turn_blocks.arrset.length;
+      for (var i = 0; i < len; i++) {
+         var hblock = document.getElementById(vkopt.turn_blocks.arrset[i]+"_i");
+         if (hblock !== null) {
+            hblock.children[0].style.transform = "";
+            vkopt.turn_blocks.turnBlock(hblock, "none");
+         }
+      }
+   },
+   delIcons: function() { //отключение модуля
+      var blocks = document.getElementsByClassName("header_top clear_fix");
+      for (var i = 0; i < blocks.length; i++) {
+         var id = blocks[i].parentNode.parentNode.id+"_i";
+         var block = document.getElementById(id);
+         if (block !== "null") {
+            vkopt.turn_blocks.turnBlock(block, "");
+            block.remove();
+         }
+      }
+   },
+   turnBlock: function(icon, setstate) {
+      var block = icon.parentNode.parentNode.parentNode;
+      if (block.children.length < 3) return;
+      var arrset = vkopt.turn_blocks.arrset;
+      var newstate = setstate;
+      if (newstate === undefined) {
+         if (block.children[2].style.display == "none") newstate = "";
+         else newstate = "none";
+      }
+      
+      if (newstate == "") { //отображение
+         var blockname = icon.parentNode;
+         blockname.style.paddingTop = "4px";
+         blockname.style.height = "32px";
+         for (var i = 2; i < block.children.length; i++) {
+            block.children[i].style.display = newstate;
+         }
+         if (setstate === undefined) { //кастомные вызовы не сейвим
+            var index = arrset.indexOf(block.id);
+            if (index > -1) arrset.splice(index, 1);
+         }
+         
+      } else { //скрытие
+         var blockname = icon.parentNode;
+         blockname.style.paddingTop = "0px";
+         blockname.style.height = "40px";
+         for (var i = 2; i < block.children.length; i++) {
+            block.children[i].style.display = newstate;
+         }
+         if (setstate === undefined) arrset.push(block.id);
+      }
+      
+      if (setstate === undefined) {
+         vkopt.settings.set('turn_blocks_arr',arrset);
+      }
+      //console.log(vkopt.turn_blocks.arrset);
+   },
+   onLocation: function() {
+      if (vkopt.settings.get('turn_blocks')) {
+         vkopt.turn_blocks.arrset = vkopt.settings.get('turn_blocks_arr') || [];
+         clearTimeout(vkopt.turn_blocks.delay);
+         vkopt.turn_blocks.delay = setTimeout(function() {
+            vkopt.turn_blocks.addIcons();
+         },200);
+      }
+   },
+   onOptionChanged: function(option_id, val, option_data) {
+      if (option_id == 'turn_blocks') {
+         clearTimeout(vkopt.turn_blocks.delay);
+         vkopt.turn_blocks.delay = setTimeout(function() {
+            vkopt.turn_blocks.arrset = vkopt.settings.get('turn_blocks_arr') || [];
+            if (val) vkopt.turn_blocks.addIcons();
+            else vkopt.turn_blocks.delIcons();
+         },200);
+      }
+   }
+}
 
 vkopt_core.init();
