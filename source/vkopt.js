@@ -4077,13 +4077,14 @@ vkopt['messages'] = {
    css_msg_bg: function(color){
       return vk_lib.get_block_comments(function(){
          /*css:
-         .vk_old_unread_msg .nim-dialog.nim-dialog_unread-out:not(.nim-dialog_failed):not(.nim-dialog_selected) .nim-dialog--text-preview,
+         .vk_old_unread_msg .nim-dialog.nim-dialog_classic.nim-dialog_unread-out .nim-dialog--inner-text,
+         .vk_old_unread_msg .nim-dialog.nim-dialog_classic.nim-dialog_unread-out.nim-dialog_muted .nim-dialog--inner-text,
          .vk_old_unread_msg .nim-dialog:not(.nim-dialog_deleted).nim-dialog_unread,
          ._vk_old_unread_msg .nim-dialog.nim-dialog_unread-out,
          .vk_old_unread_msg .im-mess.im-mess_unread,
          .vk_old_unread_msg .im-mess.im-mess_unread+.im-mess:before,
          .vk_old_unread_msg .im-mess.im-mess_unread:last-child:before,
-         .vk_old_unread_msg .fc_msgs_unread{
+         .vk_old_unread_msg .fc_msgs_unread {
             background: #{colorMsgBgUnread} !important;
          }
          .vk_old_unread_msg .nim-dialog.nim-dialog_unread-out:not(.nim-dialog_failed) .nim-dialog--unread {
