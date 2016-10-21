@@ -11,7 +11,7 @@
 //
 /* VERSION INFO */
 var vVersion	= 301;
-var vBuild = 161016;
+var vBuild = 161021;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -37,9 +37,14 @@ var vkopt_defaults = {
       postpone_custom_interval: true,
       pv_comm_move_down: false,
       calc_age: true,
+      audio_pos: false?
       old_unread_msg: false,
       old_unread_msg_bg: 'c5d9e7',
       ru_vk_logo: false,
+      hide_big_like: false,
+      hide_left_set: false,
+      hide_recommendations: false,
+      show_full_user_info: false,
       switch_kbd_lay: true,
       show_online_status: false,
 
