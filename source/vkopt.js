@@ -295,6 +295,7 @@ var vk_glue = {
          case 'common.js':       vk_glue.inj.common();  break;
          case 'groups.js':       vk_glue.inj.groups();  break;
          case 'public.js':       vk_glue.inj.publics();  break;
+         case 'profile.js':       vk_glue.inj.profile();  break;
          case 'auto_list.js':    vk_glue.inj.auto_list();  break;
          case 'ui_controls.js':  vk_glue.inj.ui_controls();  break;
          case 'datepicker.js':  vk_glue.inj.datepicker();  break;
@@ -353,6 +354,9 @@ var vk_glue = {
       },
       publics: function(){
          Inj.End('Public.init',' ; setTimeout(vk_glue.nav_handler,2);');
+      },
+      profile: function(){
+         Inj.End('Profile.init',' ; setTimeout(vk_glue.nav_handler,2);');
       },
       auto_list: function(){
          if (vkopt_defaults.config.AUTO_LIST_DRAW_ROWS_INJ){
