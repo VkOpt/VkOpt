@@ -5153,11 +5153,11 @@ vkopt['profile'] = {
                class_toggler: true,
             sub: {
                common_group_color:{
-					   title: ' ',
-					   color_picker: true
-				   }
-			   }
-		   }
+                  title: ' ',
+                  color_picker: true
+               }
+            }
+         }
       },
       Extra: {
          zodiak_ophiuchus:{}
@@ -5207,14 +5207,37 @@ vkopt['profile'] = {
             vkopt.profile.moveAudio(vkopt.settings.get('audio_pos'));
          },200);
       }
-      if (vkopt.settings.get('show_common_group') && cur.module == 'profile') 
+      var odomen = ge('top_profile_link').href.replace(new RegExp("/",'g'),"");
+      if (nav.objLoc[0] != odomen) { // обновим кеш групп, если зашли на свою страницу
+         dApi.call("groups.get",{ user_id: remixmid(), extended: '1', filter: 'groups,publics', v: '5.59'},function(r) {
+         if (r.error) return;
+         localStorage['list_of_owner_groups'] = JSON.stringify(r.response.items);
+      });
+      }
+      if (vkopt.settings.get('show_common_group') && cur.module == 'profile' && nav.objLoc[0] != odomen) 
          vkopt.profile.fshow_common_group();
    },
    fshow_common_group: function() {
-      dApi.call("groups.get",{ user_id: remixmid(), extended: '1', filter: 'groups,publics', v: '5.59'},function(r) {
-         if (r.error) return;
-         var cnt = r.response.count;
-         var groups = r.response.items;
+      if (!localStorage['list_of_owner_groups']) {
+         dApi.call("groups.get",{ user_id: remixmid(), extended: '1', filter: 'groups,publics', v: '5.59'},function(r) {
+            if (r.error) return;
+            var cnt = r.response.count;
+            var groups = r.response.items;
+            localStorage['list_of_owner_groups'] = JSON.stringify(groups);
+            localStorage['cnt_of_owner_groups'] = cnt;
+            for (var i=0;i<cnt;i++) {
+               var nodes = ge('page_body').getElementsByTagName('a');
+               for (var j=0;j<nodes.length;j++) {
+                  if (nodes[j].href == "https://vk.com/" + groups[i].screen_name) {
+                     nodes[j].className += " vkopt_com_gr";
+                  }
+               }
+            }
+         });
+      }
+      else {
+         var cnt = JSON.parse(localStorage['cnt_of_owner_groups']);
+         var groups = JSON.parse(localStorage['list_of_owner_groups']);
          for (var i=0;i<cnt;i++) {
             var nodes = ge('page_body').getElementsByTagName('a');
             for (var j=0;j<nodes.length;j++) {
@@ -5223,7 +5246,7 @@ vkopt['profile'] = {
                }
             }
          }
-      });
+      }
    },
    processNode: function(node, params){
          if (!vkopt.settings.get('calc_age'))
