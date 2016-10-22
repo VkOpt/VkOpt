@@ -11,7 +11,7 @@
 //
 /* VERSION INFO */
 var vVersion	= 301;
-var vBuild = 161016;
+var vBuild = 161021;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -37,9 +37,14 @@ var vkopt_defaults = {
       postpone_custom_interval: true,
       pv_comm_move_down: false,
       calc_age: true,
+      audio_pos: false?
       old_unread_msg: false,
       old_unread_msg_bg: 'c5d9e7',
       ru_vk_logo: false,
+      hide_big_like: false,
+      hide_left_set: false,
+      hide_recommendations: false,
+      show_full_user_info: false,
       switch_kbd_lay: true,
       show_online_status: false,
 
@@ -290,6 +295,7 @@ var vk_glue = {
          case 'common.js':       vk_glue.inj.common();  break;
          case 'groups.js':       vk_glue.inj.groups();  break;
          case 'public.js':       vk_glue.inj.publics();  break;
+         case 'profile.js':       vk_glue.inj.profile();  break;
          case 'auto_list.js':    vk_glue.inj.auto_list();  break;
          case 'ui_controls.js':  vk_glue.inj.ui_controls();  break;
          case 'datepicker.js':  vk_glue.inj.datepicker();  break;
@@ -348,6 +354,9 @@ var vk_glue = {
       },
       publics: function(){
          Inj.End('Public.init',' ; setTimeout(vk_glue.nav_handler,2);');
+      },
+      profile: function(){
+         Inj.End('Profile.init',' ; setTimeout(vk_glue.nav_handler,2);');
       },
       auto_list: function(){
          if (vkopt_defaults.config.AUTO_LIST_DRAW_ROWS_INJ){
@@ -1592,6 +1601,9 @@ vkopt['photoview'] =  {
          }
          .vk_pv_comm_move_down .pv_narrow_column_cont .ui_scroll_blocker{
             padding-right: 0px !important;
+         }
+         .vk_pv_comm_move_down .pv_cont{
+            margin: 0px auto 100px;
          }
          .vk_pv_comm_move_down .pv_cont .pv_photo_wrap .pv_narrow_column_wrap{
             display:block;
@@ -4077,13 +4089,14 @@ vkopt['messages'] = {
    css_msg_bg: function(color){
       return vk_lib.get_block_comments(function(){
          /*css:
-         .vk_old_unread_msg .nim-dialog.nim-dialog_unread-out:not(.nim-dialog_failed):not(.nim-dialog_selected) .nim-dialog--text-preview,
+         .vk_old_unread_msg .nim-dialog.nim-dialog_classic.nim-dialog_unread-out .nim-dialog--inner-text,
+         .vk_old_unread_msg .nim-dialog.nim-dialog_classic.nim-dialog_unread-out.nim-dialog_muted .nim-dialog--inner-text,
          .vk_old_unread_msg .nim-dialog:not(.nim-dialog_deleted).nim-dialog_unread,
          ._vk_old_unread_msg .nim-dialog.nim-dialog_unread-out,
          .vk_old_unread_msg .im-mess.im-mess_unread,
          .vk_old_unread_msg .im-mess.im-mess_unread+.im-mess:before,
          .vk_old_unread_msg .im-mess.im-mess_unread:last-child:before,
-         .vk_old_unread_msg .fc_msgs_unread{
+         .vk_old_unread_msg .fc_msgs_unread {
             background: #{colorMsgBgUnread} !important;
          }
          .vk_old_unread_msg .nim-dialog.nim-dialog_unread-out:not(.nim-dialog_failed) .nim-dialog--unread {
@@ -4901,12 +4914,28 @@ vkopt['face'] =  {
          ru_vk_logo:{
             title: 'seVkontakteLogo',
             class_toggler: true
+         },
+         hide_big_like:{
+            title: 'seHideBigLike',
+            class_toggler: true
+         },
+         hide_left_set:{
+            title: 'seHideLeftSettings',
+            class_toggler: true
+         },
+         hide_recommendations:{
+            title:"seHideRecomendations",
+            class_toggler: true
          }
       },
       
       Users:{
          show_online_status:{
             title:"seShowOnlineStatus",
+            class_toggler: true
+         },
+         show_full_user_info:{
+            title:"seExplandProfileInfo",
             class_toggler: true
          }
       }
@@ -4982,6 +5011,16 @@ vkopt['face'] =  {
             width: 135px;
             margin: 8px 10px 0 0;
          }
+         .vk_hide_big_like .pv_hh_like {
+            display: none;
+         }
+         .vk_hide_left_set .left_settings {
+            display: none;
+         }
+         .vk_hide_recommendations #friends_possible_block,
+         .vk_hide_recommendations #groups_filters_wrap {
+            display: none;
+         }
          #vk_online_status > * {
             margin-top: 15px;
             border-radius: 50%;
@@ -5000,6 +5039,12 @@ vkopt['face'] =  {
             background-color: #9b9b9b;
          }
          .vk_show_online_status #vk_online_status > * {display:block;}
+         .vk_show_full_user_info #profile_full {
+            display: block;
+         }
+         .vk_show_full_user_info .profile_more_info {
+            display: none;
+         }
          */
       });
       var progress_bar = vk_lib.get_block_comments(vkProgressBar).css;
@@ -5092,6 +5137,11 @@ vkopt['profile'] = {
    rx_lnk_year:/c(?:%5B|\[)byear(?:%5D|\])=(\d+)/,
 
    onSettings:{
+      Media: {
+         audio_pos: {
+            title: 'seProfileMoveAudioBlock'
+         }
+      },
       Users: {
          calc_age:{
             title: 'seCalcAge'
@@ -5124,6 +5174,13 @@ vkopt['profile'] = {
    onLocation: function(){
       if (nav.objLoc[0] == 'edit')
          vkopt.profile.editor.middle_name_field();
+      
+      if (vkopt.settings.get('audio_pos')) {
+         clearTimeout(vkopt.profile.audelay);
+         vkopt.profile.audelay = setTimeout(function() {
+            vkopt.profile.moveAudio(vkopt.settings.get('audio_pos'));
+         },200);
+      }
    },
    processNode: function(node, params){
          if (!vkopt.settings.get('calc_age'))
@@ -5276,6 +5333,29 @@ vkopt['profile'] = {
             var field = se(vk_lib.tpl_process(vkopt.profile.tpls['middle_name_field'], {}));
             p.parentNode.insertBefore(field, p);
          }
+      }
+   },
+   moveAudio: function(flag) {
+      var audios = document.getElementById("profile_audios");
+      if (audios == null) return;
+		
+      var pageblock = document.createElement('div');
+      pageblock.className = "page_block";
+      pageblock.appendChild(audios);
+		
+      if (flag) { //сдвиг вправо
+         var newplace = document.getElementById("wide_column");
+         newplace.insertBefore(pageblock, newplace.children[2]);
+      } else { //влево (отключение)
+         var newplace = document.getElementById("narrow_column");
+         newplace = newplace.getElementsByClassName("page_block");
+         var len = newplace.length - 1;
+         newplace[len].appendChild(pageblock.children[0]);
+      }
+   },
+   onOptionChanged: function(option_id, val, option_data) {
+      if (option_id == 'audio_pos') {
+         vkopt.profile.moveAudio(val);
       }
    }
 };
