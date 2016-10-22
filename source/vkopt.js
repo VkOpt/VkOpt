@@ -47,6 +47,8 @@ var vkopt_defaults = {
       show_full_user_info: false,
       switch_kbd_lay: true,
       show_online_status: false,
+      show_common_group: false,
+      common_group_color: '90ee90',
 
       //Extra:
       vkopt_guide: true,   // показываем, где находится кнопка настроек, до тех пор, пока в настройки всё же не зайдут
@@ -5145,11 +5147,35 @@ vkopt['profile'] = {
       Users: {
          calc_age:{
             title: 'seCalcAge'
-         }
+         },
+         show_common_group:{
+            title: 'seShowCommonGroup',
+               class_toggler: true,
+            sub: {
+               common_group_color:{
+					   title: ' ',
+					   color_picker: true
+				   }
+			   }
+		   }
       },
       Extra: {
          zodiak_ophiuchus:{}
       }
+   },
+   
+   css: function() {
+      return vkopt.profile.css_common_group(vkopt.settings.get('common_group_color'));
+   },
+   
+   css_common_group: function(color){
+      return vk_lib.get_block_comments(function(){
+         /*css:
+         .vk_show_common_group .vkopt_com_gr {
+            background: #{colorCommonGroup} !important;
+         }
+         */
+      }).css.replace(new RegExp("{colorCommonGroup}", 'g'), color);
    },
 
    onInit: function(){
@@ -5181,6 +5207,23 @@ vkopt['profile'] = {
             vkopt.profile.moveAudio(vkopt.settings.get('audio_pos'));
          },200);
       }
+      if (vkopt.settings.get('show_common_group') && cur.module == 'profile') 
+         vkopt.profile.fshow_common_group();
+   },
+   fshow_common_group: function() {
+      dApi.call("groups.get",{ user_id: remixmid(), extended: '1', filter: 'groups,publics', v: '5.59'},function(r) {
+         if (r.error) return;
+         var cnt = r.response.count;
+         var groups = r.response.items;
+         for (var i=0;i<cnt;i++) {
+            var nodes = ge('page_body').getElementsByTagName('a');
+            for (var j=0;j<nodes.length;j++) {
+               if (nodes[j].href == "https://vk.com/" + groups[i].screen_name) {
+                  nodes[j].className += " vkopt_com_gr";
+               }
+            }
+         }
+      });
    },
    processNode: function(node, params){
          if (!vkopt.settings.get('calc_age'))

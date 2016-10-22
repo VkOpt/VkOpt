@@ -766,6 +766,7 @@ vk_lang_ru={
    ,"seVkontakteLogo":"\u0417\u0430\u043c\u0435\u043d\u0438\u0442\u044c \u043b\u043e\u0433\u043e VK \u043d\u0430 \u0412\u043a\u043e\u043d\u0442\u0430\u043a\u0442\u0435"
    ,"seAudioSizeHover":"\u043f\u0440\u0438 \u043d\u0430\u0432\u0435\u0434\u0435\u043d\u0438\u0438 \u043d\u0430 \u0438\u043a\u043e\u043d\u043a\u0443 \u0441\u043a\u0430\u0447\u0438\u0432\u0430\u043d\u0438\u044f"
    ,"seShowOnlineStatus":"\u041F\u043E\u043A\u0430\u0437\u044B\u0432\u0430\u0442\u044C \u0442\u0435\u043A\u0443\u0449\u0438\u0439 \u043E\u043D\u043B\u0430\u0439\u043D"
+   ,"seShowCommonGroup":"\u041F\u043E\u0434\u0441\u0432\u0435\u0442\u043A\u0430 \u043E\u0431\u0449\u0438\u0445 \u0433\u0440\u0443\u043F\u043F \u043D\u0430 \u043F\u0440\u043E\u0444\u0438\u043B\u044F\u0445"
 };
 
 vk_lang_en={//by Hzy
@@ -1685,6 +1686,7 @@ vk_lang_en={//by Hzy
   ,"seVkontakteLogo":"Replace VK logo to \u0412\u043a\u043e\u043d\u0442\u0430\u043a\u0442\u0435"
   ,'seAudioSizeHover':'show when mouse over on download icon'
   ,"seShowOnlineStatus":"Show current online status"
+  ,"seShowCommonGroup":"Backlighting common groups in the profiles"
 };
 
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
