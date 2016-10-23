@@ -5207,25 +5207,31 @@ vkopt['profile'] = {
             vkopt.profile.moveAudio(vkopt.settings.get('audio_pos'));
          },200);
       }
-      var odomen = ge('top_profile_link').href.replace(new RegExp("/",'g'),"");
-      if (nav.objLoc[0] != odomen) { // обновим кеш групп, если зашли на свою страницу
-         dApi.call("groups.get",{ user_id: remixmid(), extended: '1', filter: 'groups,publics', v: '5.59'},function(r) {
+      if (vk.id == cur.oid) { // обновим кеш групп, если зашли на свою страницу
+         dApi.call("groups.get",{ user_id: vk.id, extended: '1', filter: 'groups,publics', v: '5.59'},function(r) {
          if (r.error) return;
-         localStorage['list_of_owner_groups'] = JSON.stringify(r.response.items);
+         var cnt = r.response.count;
+         var groups = r.response.items;
+         var groups_screen_name = [];
+         for (var i=0;i<cnt;i++) {
+            groups_screen_name.push(groups[i].screen_name);
+         }
+         localStorage['cnt_of_owner_groups'] = cnt;
+         localStorage['list_of_owner_groups'] = JSON.stringify(groups_screen_name);
       });
       }
-      if (vkopt.settings.get('show_common_group') && cur.module == 'profile' && nav.objLoc[0] != odomen) 
+      if (vkopt.settings.get('show_common_group') && cur.module == 'profile' && vk.id != cur.oid) 
          vkopt.profile.fshow_common_group();
    },
    fshow_common_group: function() {
       if (!localStorage['list_of_owner_groups']) {
-         dApi.call("groups.get",{ user_id: remixmid(), extended: '1', filter: 'groups,publics', v: '5.59'},function(r) {
+         dApi.call("groups.get",{ user_id: vk.id, extended: '1', filter: 'groups,publics', v: '5.59'},function(r) {
             if (r.error) return;
             var cnt = r.response.count;
             var groups = r.response.items;
-            localStorage['list_of_owner_groups'] = JSON.stringify(groups);
-            localStorage['cnt_of_owner_groups'] = cnt;
+            var groups_screen_name = [];
             for (var i=0;i<cnt;i++) {
+               groups_screen_name.push(groups[i].screen_name);
                var nodes = ge('page_body').getElementsByTagName('a');
                for (var j=0;j<nodes.length;j++) {
                   if (nodes[j].href == "https://vk.com/" + groups[i].screen_name) {
@@ -5233,15 +5239,17 @@ vkopt['profile'] = {
                   }
                }
             }
+            localStorage['cnt_of_owner_groups'] = cnt;
+            localStorage['list_of_owner_groups'] = JSON.stringify(groups_screen_name);
          });
       }
       else {
          var cnt = JSON.parse(localStorage['cnt_of_owner_groups']);
-         var groups = JSON.parse(localStorage['list_of_owner_groups']);
+         var groups_sn = JSON.parse(localStorage['list_of_owner_groups']);
          for (var i=0;i<cnt;i++) {
             var nodes = ge('page_body').getElementsByTagName('a');
             for (var j=0;j<nodes.length;j++) {
-               if (nodes[j].href == "https://vk.com/" + groups[i].screen_name) {
+               if (nodes[j].href == "https://vk.com/" + groups_sn[i]) {
                   nodes[j].className += " vkopt_com_gr";
                }
             }
