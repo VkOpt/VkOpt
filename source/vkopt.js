@@ -5744,37 +5744,56 @@ vkopt['wall'] = {
          var c=geByClass('page_poll_total',p)[0];//'page_poll_bottom'
          
          if (!el && c){
-            var m=p.innerHTML.match(/id="post_poll_raw-?\d+_\d+[^>]+value="(-?\d+)_(\d+)"/);
-            if (c.innerHTML.indexOf('vkPollCancelAnswer')!=-1) continue;
+            var m=p.innerHTML.match(/id="post_poll_raw(-?\d+)_(\d+)[^>]+value="(-?\d+)_(\d+)"/);
+            console.log(m);
+            if (c.innerHTML.indexOf('poll_cancel_answer')!=-1) continue;
             c.insertBefore(vkCe('span',{"class":"divider fl_r"},"|"),c.firstChild);
             var PollCancelEl = vkCe('a',{
                "class":"fl_r",
                "href":"#"
             },IDL('CancelAnswer'));
-            PollCancelEl.setAttribute('onclick',"return vkopt.wall.vkPollCancelAnswer('"+m[1]+"','"+m[2]+"');");
+            PollCancelEl.setAttribute('onclick',"return vkopt.wall.poll_cancel_answer('"+m[3]+"','"+m[4]+"','"+m[2]+"');");
             c.insertBefore(PollCancelEl,c.firstChild);
          }
          
          if (el) {
             var m=p.innerHTML.match(/id="post_poll_id(-?\d+)_(\d+)+[^>]+value="(\d+)"/);
-            if (c.innerHTML.indexOf('vkPollResults')!=-1) continue;
+            if (c.innerHTML.indexOf('poll_results')!=-1) continue;
             c.insertBefore(vkCe('span',{"class":"divider fl_r"},"|"),c.firstChild);
             c.insertBefore(vkCe('a',{
                                      "class":"fl_r",
                                      "href":"#",
-                                     "onclick":"return vkopt.wall.vkPollResults('"+m[1]+"','"+m[3]+"');"
+                                     "onclick":"return vkopt.wall.poll_results('"+m[1]+"','"+m[3]+"');"
                                     },IDL('ViewResults')),c.firstChild);   
          }                                 
       }
    },
-   vkPollCancelAnswer: function (post_id,pid){
+   poll_cancel_answer: function (post_id,pid,param2){
       var cancel = function(data){
          if (data.answer_id==0){
             alert(IDL('CancelAnswerError'));
             return;
          }
          dApi.call('polls.deleteVote',{owner_id: data.owner_id, poll_id: data.id, answer_id: data.answer_id, v: '5.59'},function(r){
-            alert(r.response==1?IDL('CancelAnswerSuccess'):IDL('CancelAnswerFail'));
+            if (r.response==1) {
+               ajax.post('/al_wall.php',{
+                  act: 'post_tt',
+                  post: post_id+'_'+param2,
+                  self:1
+                  }, {
+                     onDone:function(data,js){
+                        var poll = geByClass1('page_media_poll_wrap',se(data));
+                        var pollOnPage = geByClass1('page_media_poll_wrap',ge('wpt'+post_id+'_'+param2));
+                        pollOnPage.innerHTML = poll.innerHTML;
+                     },
+                     onFail:function(msg){
+                        return true;
+                     }
+                  }
+               );
+            }
+            else 
+               alert(IDL('CancelAnswerFail'));
          });
       };
       
@@ -5812,7 +5831,7 @@ vkopt['wall'] = {
       }
       return false;
    },
-   vkPollResults: function(post_id,pid){
+   poll_results: function(post_id,pid){
       var tpl_old='\
           <tr>\
             <td colspan="2" class="page_poll_text">%TEXT</td>\
@@ -5862,7 +5881,7 @@ vkopt['wall'] = {
          </div>';   
          
          vkAlertBox(IDL('ViewResults'),html);
-         vkopt.wall.vkPollVoters(data.owner_id,data.id);
+         vkopt.wall.poll_voters(data.owner_id,data.id);
       };
       
       var code='\
@@ -5899,7 +5918,7 @@ vkopt['wall'] = {
       }
       return false;
    },
-   vkPollVoters: function(oid,poll_id){
+   poll_voters: function(oid,poll_id){
       var code='\
         var oid='+oid+';\
         var poll_id='+poll_id+';\
