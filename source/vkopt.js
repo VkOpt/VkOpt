@@ -5414,7 +5414,7 @@ vkopt['groups'] = {
          */
 
          /*wiki_owner_list_btn:
-         <a id="vk_wiki_links" href="#" onclick="vkopt.groups.wiki_list.show(cur.oid); return false;" class="ui_rmenu_item _ui_item_search groups_section_search" role="listitem">
+         <a id="vk_wiki_links" href="#" onclick="vkopt.groups.wiki_list.show(cur.oid); return false;" class="ui_rmenu_item" role="listitem">
            <span>{lng.WikiPagesList}</span>
          </a>
          */
