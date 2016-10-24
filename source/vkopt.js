@@ -84,6 +84,32 @@ var vkopt_defaults = {
       'scroll_to_next',
       'pv_comm_move_down',
       'disable_border_radius'
+   ],
+   disabled_modules: [
+      /*
+      "res",
+      "settings",
+      "lang",
+      "owners",
+      "away",
+      "photoview",
+      "photos",
+      "audio",
+      "scrobbler",
+      "audio_info",
+      "audioplayer",
+      "videoview",
+      "messages",
+      "attacher",
+      "face",
+      "profile",
+      "groups",
+      "wall",
+      "friends",
+      "support",
+      "test_module",
+      "turn_blocks"
+      */
    ]
 };
 
@@ -190,6 +216,9 @@ var vkopt_core = {
          var args = Array.prototype.slice.call(arguments);
          var plug_id = args.shift();
          var method = args.shift();
+         //Предотвращаем вызов обработчиков у отключенных модулей
+         if (vkopt_defaults.disabled_modules.indexOf(plug_id) > -1)
+            return;
          var field = vkopt[plug_id][method];
          if (field) // TODO: && isModuleEnabled(plug_id)
             return isFunction(field) ? field.apply(this, args) : field;
