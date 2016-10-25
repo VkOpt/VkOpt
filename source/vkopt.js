@@ -75,7 +75,7 @@ var vkopt_defaults = {
 
       //Consts:
       SAVE_MSG_HISTORY_PATTERN: "%username% (%date%):\r\n%message%\r\n%attachments%\r\n\r\n",
-      SAVE_MSG_HISTORY_DATE_FORMAT: "HH:MM:ss  dd/mm/yyyy",      
+      SAVE_MSG_HISTORY_DATE_FORMAT: "HH:MM:ss  dd/mm/yyyy",
       AUDIO_INFO_LOAD_THREADS_COUNT: 5,
       AUTO_LIST_DRAW_ROWS_INJ: true, // На случай, если инъекция будет убивать редер автоподгружаемых списков
       MAX_CACHE_AUDIO_SIZE_ITEMS: 10000 // максимальное количество запомненных размеров аудио в локальном хранилище
@@ -84,6 +84,32 @@ var vkopt_defaults = {
       'scroll_to_next',
       'pv_comm_move_down',
       'disable_border_radius'
+   ],
+   disabled_modules: [
+      /*
+      "res",
+      "settings",
+      "lang",
+      "owners",
+      "away",
+      "photoview",
+      "photos",
+      "audio",
+      "scrobbler",
+      "audio_info",
+      "audioplayer",
+      "videoview",
+      "messages",
+      "attacher",
+      "face",
+      "profile",
+      "groups",
+      "wall",
+      "friends",
+      "support",
+      "test_module",
+      "turn_blocks"
+      */
    ]
 };
 
@@ -190,6 +216,9 @@ var vkopt_core = {
          var args = Array.prototype.slice.call(arguments);
          var plug_id = args.shift();
          var method = args.shift();
+         //Предотвращаем вызов обработчиков у отключенных модулей
+         if (vkopt_defaults.disabled_modules.indexOf(plug_id) > -1)
+            return;
          var field = vkopt[plug_id][method];
          if (field) // TODO: && isModuleEnabled(plug_id)
             return isFunction(field) ? field.apply(this, args) : field;
@@ -451,7 +480,7 @@ vkopt.log = function(){
 };
 vkopt.cmd = function(msg){ // при вызове сразу из onInit, сообщение не доходит в другие вкладки.
    stManager.add('notifier.js',function(){
-      Notifier.lcSend('vkcmd', msg);      
+      Notifier.lcSend('vkcmd', msg);
    })
 }
 vkopt.save_file = function(data, filename){
@@ -4204,9 +4233,9 @@ vkopt['messages'] = {
             </h4>
             <textarea id="vk_msg_date_fmt">{vals.date_fmt}</textarea>
             <br>
-         </div>       
+         </div>
          */
-         
+
          /*acts_export_history_item:
          <a tabindex="0" role="link" class="ui_actions_menu_item _im_action im-action vk_acts_item_icon" onclick="return vkopt.messages.export_box()">{lng.SaveHistory}</a>
          */
@@ -4756,7 +4785,7 @@ vkopt['messages'] = {
             aBox.hide();
             run();
          },'yes');
-         
+
          var html = vk_lib.tpl_process(vkopt.messages.tpls['msg_exp_txt_cfg'],{
             msg_pattern: msg_pattern,
             date_fmt: date_fmt
@@ -4928,7 +4957,7 @@ vkopt['face'] =  {
             class_toggler: true
          }
       },
-      
+
       Users:{
          show_online_status:{
             title:"seShowOnlineStatus",
@@ -5077,7 +5106,7 @@ vkopt['face'] =  {
    },
    onCmd: function(data){
       if (data.act == 'user_online_status')
-         vkopt.face.user_online_status(data.status);      
+         vkopt.face.user_online_status(data.status);
    },
    onOptionChanged: function(option_id, val, option_data){
       if (option_id == 'show_online_status')
@@ -5112,7 +5141,7 @@ vkopt['face'] =  {
       if (status!=null){
          show_status(status);
       } else {
-         dApi.call("getProfiles",{ uid: remixmid(), fields:'online'},function(res) {	
+         dApi.call("getProfiles",{ uid: remixmid(), fields:'online'},function(res) {
             if (res.response){
                var p=res.response[0];
                var st={
@@ -5120,7 +5149,7 @@ vkopt['face'] =  {
                      online_app: p.online_app,
                      online_mobile: p.online_mobile
                 };
-               
+
                show_status(st.online);
                vkopt.cmd({act:'user_online_status', status:st.online}); // шлём полученный статус в остальные вкладки
             } else {
@@ -5174,7 +5203,11 @@ vkopt['profile'] = {
    onLocation: function(){
       if (nav.objLoc[0] == 'edit')
          vkopt.profile.editor.middle_name_field();
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> VkOpt/master
       if (vkopt.settings.get('audio_pos')) {
          clearTimeout(vkopt.profile.audelay);
          vkopt.profile.audelay = setTimeout(function() {
@@ -5338,11 +5371,19 @@ vkopt['profile'] = {
    moveAudio: function(flag) {
       var audios = document.getElementById("profile_audios");
       if (audios == null) return;
+<<<<<<< HEAD
 		
       var pageblock = document.createElement('div');
       pageblock.className = "page_block";
       pageblock.appendChild(audios);
 		
+=======
+
+      var pageblock = document.createElement('div');
+      pageblock.className = "page_block";
+      pageblock.appendChild(audios);
+
+>>>>>>> VkOpt/master
       if (flag) { //сдвиг вправо
          var newplace = document.getElementById("wide_column");
          newplace.insertBefore(pageblock, newplace.children[2]);
@@ -5385,7 +5426,7 @@ vkopt['groups'] = {
          */
 
          /*wiki_owner_list_btn:
-         <a id="vk_wiki_links" href="#" onclick="vkopt.groups.wiki_list.show(cur.oid); return false;" class="ui_rmenu_item _ui_item_search groups_section_search" role="listitem">
+         <a id="vk_wiki_links" href="#" onclick="vkopt.groups.wiki_list.show(cur.oid); return false;" class="ui_rmenu_item" role="listitem">
            <span>{lng.WikiPagesList}</span>
          </a>
          */
@@ -5754,8 +5795,8 @@ vkopt['friends'] = {
       if (vkopt.settings.get('accept_more_cats')){
          html += '<div class="friends_added">';
          html += '<div class="friends_added_text box_controls_text">'+IDL('AddFrToList')+'</div>';
-         for (var key in cur.userLists) 
-            html += '<div class="checkbox" onclick="return Friends.checkCat(this, '+mid+', '+key+', 1);"><div></div>'+cur.userLists[key]+'</div>'; 
+         for (var key in cur.userLists)
+            html += '<div class="checkbox" onclick="return Friends.checkCat(this, '+mid+', '+key+', 1);"><div></div>'+cur.userLists[key]+'</div>';
          html += '</div>';
       }
       return html;
