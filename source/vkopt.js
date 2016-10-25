@@ -11,7 +11,7 @@
 //
 /* VERSION INFO */
 var vVersion	= 301;
-var vBuild = 161016;
+var vBuild = 161021;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -37,9 +37,14 @@ var vkopt_defaults = {
       postpone_custom_interval: true,
       pv_comm_move_down: false,
       calc_age: true,
+      audio_pos: false?
       old_unread_msg: false,
       old_unread_msg_bg: 'c5d9e7',
       ru_vk_logo: false,
+      hide_big_like: false,
+      hide_left_set: false,
+      hide_recommendations: false,
+      show_full_user_info: false,
       switch_kbd_lay: true,
       show_online_status: false,
 
@@ -290,6 +295,7 @@ var vk_glue = {
          case 'common.js':       vk_glue.inj.common();  break;
          case 'groups.js':       vk_glue.inj.groups();  break;
          case 'public.js':       vk_glue.inj.publics();  break;
+         case 'profile.js':       vk_glue.inj.profile();  break;
          case 'auto_list.js':    vk_glue.inj.auto_list();  break;
          case 'ui_controls.js':  vk_glue.inj.ui_controls();  break;
          case 'datepicker.js':  vk_glue.inj.datepicker();  break;
@@ -348,6 +354,9 @@ var vk_glue = {
       },
       publics: function(){
          Inj.End('Public.init',' ; setTimeout(vk_glue.nav_handler,2);');
+      },
+      profile: function(){
+         Inj.End('Profile.init',' ; setTimeout(vk_glue.nav_handler,2);');
       },
       auto_list: function(){
          if (vkopt_defaults.config.AUTO_LIST_DRAW_ROWS_INJ){
@@ -1592,6 +1601,9 @@ vkopt['photoview'] =  {
          }
          .vk_pv_comm_move_down .pv_narrow_column_cont .ui_scroll_blocker{
             padding-right: 0px !important;
+         }
+         .vk_pv_comm_move_down .pv_cont{
+            margin: 0px auto 100px;
          }
          .vk_pv_comm_move_down .pv_cont .pv_photo_wrap .pv_narrow_column_wrap{
             display:block;
@@ -4077,13 +4089,14 @@ vkopt['messages'] = {
    css_msg_bg: function(color){
       return vk_lib.get_block_comments(function(){
          /*css:
-         .vk_old_unread_msg .nim-dialog.nim-dialog_unread-out:not(.nim-dialog_failed):not(.nim-dialog_selected) .nim-dialog--text-preview,
+         .vk_old_unread_msg .nim-dialog.nim-dialog_classic.nim-dialog_unread-out .nim-dialog--inner-text,
+         .vk_old_unread_msg .nim-dialog.nim-dialog_classic.nim-dialog_unread-out.nim-dialog_muted .nim-dialog--inner-text,
          .vk_old_unread_msg .nim-dialog:not(.nim-dialog_deleted).nim-dialog_unread,
          ._vk_old_unread_msg .nim-dialog.nim-dialog_unread-out,
          .vk_old_unread_msg .im-mess.im-mess_unread,
          .vk_old_unread_msg .im-mess.im-mess_unread+.im-mess:before,
          .vk_old_unread_msg .im-mess.im-mess_unread:last-child:before,
-         .vk_old_unread_msg .fc_msgs_unread{
+         .vk_old_unread_msg .fc_msgs_unread {
             background: #{colorMsgBgUnread} !important;
          }
          .vk_old_unread_msg .nim-dialog.nim-dialog_unread-out:not(.nim-dialog_failed) .nim-dialog--unread {
@@ -4901,12 +4914,28 @@ vkopt['face'] =  {
          ru_vk_logo:{
             title: 'seVkontakteLogo',
             class_toggler: true
+         },
+         hide_big_like:{
+            title: 'seHideBigLike',
+            class_toggler: true
+         },
+         hide_left_set:{
+            title: 'seHideLeftSettings',
+            class_toggler: true
+         },
+         hide_recommendations:{
+            title:"seHideRecomendations",
+            class_toggler: true
          }
       },
       
       Users:{
          show_online_status:{
             title:"seShowOnlineStatus",
+            class_toggler: true
+         },
+         show_full_user_info:{
+            title:"seExplandProfileInfo",
             class_toggler: true
          }
       }
@@ -4982,6 +5011,16 @@ vkopt['face'] =  {
             width: 135px;
             margin: 8px 10px 0 0;
          }
+         .vk_hide_big_like .pv_hh_like {
+            display: none;
+         }
+         .vk_hide_left_set .left_settings {
+            display: none;
+         }
+         .vk_hide_recommendations #friends_possible_block,
+         .vk_hide_recommendations #groups_filters_wrap {
+            display: none;
+         }
          #vk_online_status > * {
             margin-top: 15px;
             border-radius: 50%;
@@ -5000,6 +5039,12 @@ vkopt['face'] =  {
             background-color: #9b9b9b;
          }
          .vk_show_online_status #vk_online_status > * {display:block;}
+         .vk_show_full_user_info #profile_full {
+            display: block;
+         }
+         .vk_show_full_user_info .profile_more_info {
+            display: none;
+         }
          */
       });
       var progress_bar = vk_lib.get_block_comments(vkProgressBar).css;
@@ -5092,6 +5137,11 @@ vkopt['profile'] = {
    rx_lnk_year:/c(?:%5B|\[)byear(?:%5D|\])=(\d+)/,
 
    onSettings:{
+      Media: {
+         audio_pos: {
+            title: 'seProfileMoveAudioBlock'
+         }
+      },
       Users: {
          calc_age:{
             title: 'seCalcAge'
@@ -5124,6 +5174,13 @@ vkopt['profile'] = {
    onLocation: function(){
       if (nav.objLoc[0] == 'edit')
          vkopt.profile.editor.middle_name_field();
+      
+      if (vkopt.settings.get('audio_pos')) {
+         clearTimeout(vkopt.profile.audelay);
+         vkopt.profile.audelay = setTimeout(function() {
+            vkopt.profile.moveAudio(vkopt.settings.get('audio_pos'));
+         },200);
+      }
    },
    processNode: function(node, params){
          if (!vkopt.settings.get('calc_age'))
@@ -5276,6 +5333,29 @@ vkopt['profile'] = {
             var field = se(vk_lib.tpl_process(vkopt.profile.tpls['middle_name_field'], {}));
             p.parentNode.insertBefore(field, p);
          }
+      }
+   },
+   moveAudio: function(flag) {
+      var audios = document.getElementById("profile_audios");
+      if (audios == null) return;
+		
+      var pageblock = document.createElement('div');
+      pageblock.className = "page_block";
+      pageblock.appendChild(audios);
+		
+      if (flag) { //сдвиг вправо
+         var newplace = document.getElementById("wide_column");
+         newplace.insertBefore(pageblock, newplace.children[2]);
+      } else { //влево (отключение)
+         var newplace = document.getElementById("narrow_column");
+         newplace = newplace.getElementsByClassName("page_block");
+         var len = newplace.length - 1;
+         newplace[len].appendChild(pageblock.children[0]);
+      }
+   },
+   onOptionChanged: function(option_id, val, option_data) {
+      if (option_id == 'audio_pos') {
+         vkopt.profile.moveAudio(val);
       }
    }
 };
@@ -5737,95 +5817,101 @@ vkopt['turn_blocks'] = {
    onSettings:{
       vkInterface:{
          turn_blocks:{
-            title: 'seShutProfilesBlock'
+            title: 'seShutProfilesBlock',
+            class_toggler: true
          }
       }
    },
+   css: function() {
+      return vk_lib.get_block_comments(function() {
+            /*css:
+            .vk_turn_blocks .module_header .header_top{
+                padding-right: 0px;
+            }
+            .vk_turn_blocks .shut_block .module_header .header_top{
+                padding-top: 0px;
+                height: 40px;
+            }
+            .vk_turn_blocks .shut_icon_wrap{
+                padding-right: 10px;
+                height: 40px;
+            }
+            .vk_turn_blocks .shut_icon{
+                background: url(/images/icons/menu_arrow.png) no-repeat 50% 50%;
+                width: 10px;
+                height: 40px;
+                margin-left: -6px;
+                -webkit-transform: rotate(180deg);
+                transform: rotate(180deg);
+            }
+            .vk_turn_blocks .shut_block .shut_icon{
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+            .vk_turn_blocks .shut_block .module_body,
+            .vk_turn_blocks .shut_block .page_photos_module {
+               display:none;
+            }
+            */
+         }).css;
+   },
    addIcons: function() {
-      var blocks = document.getElementsByClassName("header_top clear_fix");
+      var blocks = geByClass('header_top clear_fix');
       for (i = 0; i < blocks.length; i++) {
-         var btnid = blocks[i].parentNode.parentNode.id+"_i"; //id дива с кнопкой
-         if (blocks[i].children[2] == undefined || blocks[i].children[2].id !== btnid) {
-            var icon = document.createElement("img");
-            icon.src = "/images/icons/menu_arrow.png";
-            icon.style.verticalAlign = "middle";
-            icon.style.transform = "rotate(180deg)";
-            
-            var btn = document.createElement("a");
-            btn.className = "header_count fl_l";
-            btn.style.display = "inline-block";
+         var btnid = blocks[i].parentNode.parentNode.id+'_i'; //id дива с кнопкой
+         if (blocks[i].children[0] == undefined || blocks[i].children[0].id !== btnid) {
+            var icon = document.createElement('div');
+            icon.className = 'shut_icon';
+            var btn = document.createElement('div'); //a
+            btn.className = 'fl_l shut_icon_wrap';
             btn.id = btnid;
-            btn.href = "#";
+            btn.href = '#';
             btn.onclick = function(e) {
-               e.preventDefault(); //не открывает ссылку блока
+               e.preventDefault(); //не открываем ссылку блока
                e.stopPropagation(); //не открываем окно блока
-               var icon = this.children[0]; //div иконки в кнопке
-               if (icon.style.transform == "rotate(180deg)") icon.style.transform = "";
-               else icon.style.transform = "rotate(180deg)";
                vkopt.turn_blocks.turnBlock(this);
             };
             btn.appendChild(icon);
-            blocks[i].style.paddingRight = "0px";
-            blocks[i].appendChild(btn);
+            blocks[i].insertBefore(btn, blocks[i].firstChild);
          }
       }
       //сворачиваем те, которые были сохранены
       var len = vkopt.turn_blocks.arrset.length;
       for (var i = 0; i < len; i++) {
-         var hblock = document.getElementById(vkopt.turn_blocks.arrset[i]+"_i");
-         if (hblock !== null) {
-            hblock.children[0].style.transform = "";
-            vkopt.turn_blocks.turnBlock(hblock, "none");
+         var icon = ge(vkopt.turn_blocks.arrset[i]+'_i');
+         if (icon !== null) {
+            var block = icon.parentNode.parentNode.parentNode;
+            addClass(block, 'shut_block');
          }
       }
    },
-   delIcons: function() { //отключение модуля
-      var blocks = document.getElementsByClassName("header_top clear_fix");
+   delIcons: function() { //отключение
+      var blocks = geByClass('header_top clear_fix');
       for (var i = 0; i < blocks.length; i++) {
-         var id = blocks[i].parentNode.parentNode.id+"_i";
-         var block = document.getElementById(id);
-         if (block !== "null") {
-            vkopt.turn_blocks.turnBlock(block, "");
-            block.remove();
+         var id = blocks[i].parentNode.parentNode.id+'_i';
+         var icon = ge(id);
+         if (icon !== null) {
+            icon.remove();
          }
       }
    },
-   turnBlock: function(icon, setstate) {
+   turnBlock: function(icon) {
       var block = icon.parentNode.parentNode.parentNode;
-      if (block.children.length < 3) return;
+      var blockname = icon.parentNode;
       var arrset = vkopt.turn_blocks.arrset;
-      var newstate = setstate;
-      if (newstate === undefined) {
-         if (block.children[2].style.display == "none") newstate = "";
-         else newstate = "none";
-      }
       
-      if (newstate == "") { //отображение
-         var blockname = icon.parentNode;
-         blockname.style.paddingTop = "4px";
-         blockname.style.height = "32px";
-         for (var i = 2; i < block.children.length; i++) {
-            block.children[i].style.display = newstate;
-         }
-         if (setstate === undefined) { //кастомные вызовы не сейвим
-            var index = arrset.indexOf(block.id);
-            if (index > -1) arrset.splice(index, 1);
-         }
-         
-      } else { //скрытие
-         var blockname = icon.parentNode;
-         blockname.style.paddingTop = "0px";
-         blockname.style.height = "40px";
-         for (var i = 2; i < block.children.length; i++) {
-            block.children[i].style.display = newstate;
-         }
-         if (setstate === undefined) arrset.push(block.id);
+      if (hasClass(block, 'shut_block')) {
+         var index = arrset.indexOf(block.id);
+         if (index > -1) arrset.splice(index, 1);
+         removeClass(block, 'shut_block');
+      } else {
+         arrset.push(block.id);
+         addClass(block, 'shut_block');
       }
-      
-      if (setstate === undefined) {
-         vkopt.settings.set('turn_blocks_arr',arrset);
-      }
-      //console.log(vkopt.turn_blocks.arrset);
+      vkopt.settings.set('turn_blocks_arr', arrset);
+   },
+   reset: function() {
+      vkopt.settings.set('turn_blocks_arr', []);
    },
    onLocation: function() {
       if (vkopt.settings.get('turn_blocks')) {
@@ -5833,17 +5919,17 @@ vkopt['turn_blocks'] = {
          clearTimeout(vkopt.turn_blocks.delay);
          vkopt.turn_blocks.delay = setTimeout(function() {
             vkopt.turn_blocks.addIcons();
-         },200);
+         }, 200);
       }
    },
-   onOptionChanged: function(option_id, val, option_data) {
+   onOptionChanged: function(option_id, val, option_data){
       if (option_id == 'turn_blocks') {
          clearTimeout(vkopt.turn_blocks.delay);
          vkopt.turn_blocks.delay = setTimeout(function() {
             vkopt.turn_blocks.arrset = vkopt.settings.get('turn_blocks_arr') || [];
             if (val) vkopt.turn_blocks.addIcons();
             else vkopt.turn_blocks.delIcons();
-         },200);
+         }, 200);
       }
    }
 }
