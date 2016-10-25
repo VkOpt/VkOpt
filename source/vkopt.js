@@ -510,6 +510,18 @@ vkopt.load_file = function(callback){
      inp_el.addEventListener('change', load_file, false);
 }
 
+vkopt.set_css = function(code, id){
+   var st = ge(id);
+   if (!id || !st) {
+   	st = document.createElement("style");
+   	st.type = "text/css";
+   	st.setAttribute('id', id);
+   	st.appendChild(document.createTextNode(code));
+   	document.getElementsByTagName("head")[0].appendChild(st);
+   } else
+   	val(id, code);
+}
+
 vkopt['res'] = {
    css: function(){
       return vk_lib.get_block_comments(function(){
