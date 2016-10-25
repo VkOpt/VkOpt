@@ -11,7 +11,7 @@
 //
 /* VERSION INFO */
 var vVersion	= 301;
-var vBuild = 161021;
+var vBuild = 161025;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -3724,7 +3724,28 @@ vkopt['videoview'] = {
       // запихиваем свой обработчик в момент получения данных о видео.
       if (url == '/al_video.php' && q.act == 'show'){
          var rx = /(var\s*isInline)/;
-         if (answer[2] && rx.test(answer[2])){
+         if (answer[5] && answer[5].player){// новый формат ответа, JSON с данными о плеере находится в 6-ом аргументе.
+            var vars = null;
+            var params_arr = answer[5].player.params;
+            if (params_arr){
+               vars = params_arr[0]; // засовываем данные о первом попавшемся видео
+               var full_vid = function(vars){
+                  return vars.oid+'_'+vars.vid
+               };
+               if (params_arr.length > 1 && full_vid(vars) != q.video){
+                  vkopt.log('wrong video data. search other...');
+                  for (var i = 0; i < params_arr.length; i++){ // да, тут лишняя итерация
+                     if (full_vid(params_arr[i]) == q.video){ // нашли данные о нужном видео
+                        vars = params_arr[i];
+                        break;
+                     }
+                  }
+               }
+
+            }
+            vkopt.videoview.on_player_data(vars);
+         }
+         else if (answer[2] && rx.test(answer[2])){ // старый формат ответа, vars находится в третьем аргументе.
             //vkopt.log('video data:', answer[2]);
             answer[2] = answer[2].replace(rx, '\n   vkopt.videoview.on_player_data(vars);\n $1');
          } else
