@@ -5739,14 +5739,23 @@ vkopt['wall'] = {
    processNode: function(node, params) {
       var els=geByClass('page_media_poll',node);
       for (var i=0; i<els.length; i++){
-         var p=els[i];
-         var el=geByClass('page_poll_options',p)[0];
-         var c=geByClass('page_poll_total',p)[0];//'page_poll_bottom'
-         
-         if (!el && c){
-            var m=p.innerHTML.match(/id="post_poll_raw(-?\d+)_(\d+)[^>]+value="(-?\d+)_(\d+)"/);
-            console.log(m);
-            if (c.innerHTML.indexOf('poll_cancel_answer')!=-1) continue;
+         vkopt.wall.poll_cancel_btn(els[i]);
+      }
+   },
+   onResponseAnswer: function(answer,url,q){
+      if (url == '/widget_poll.php' && q.act == 'a_vote'){
+         var p = se('<div>' + answer[0] + '</div>');
+         vkopt.wall.poll_cancel_btn(p);
+         answer[0] = p.innerHTML;
+      }
+   },
+   poll_cancel_btn: function(p) {
+      var el=geByClass('page_poll_options',p)[0];
+      var c=geByClass('page_poll_total',p)[0];//'page_poll_bottom'
+      
+      if (!el && c){
+         var m=p.innerHTML.match(/id="post_poll_raw(-?\d+)_(\d+)[^>]+value="(-?\d+)_(\d+)"/);
+         if (c.innerHTML.indexOf('poll_cancel_answer')==-1) {
             c.insertBefore(vkCe('span',{"class":"divider fl_r"},"|"),c.firstChild);
             var PollCancelEl = vkCe('a',{
                "class":"fl_r",
@@ -5755,17 +5764,18 @@ vkopt['wall'] = {
             PollCancelEl.setAttribute('onclick',"return vkopt.wall.poll_cancel_answer('"+m[3]+"','"+m[4]+"','"+m[2]+"');");
             c.insertBefore(PollCancelEl,c.firstChild);
          }
-         
-         if (el) {
-            var m=p.innerHTML.match(/id="post_poll_id(-?\d+)_(\d+)+[^>]+value="(\d+)"/);
-            if (c.innerHTML.indexOf('poll_results')!=-1) continue;
+      }
+        
+      if (el) {
+         var m=p.innerHTML.match(/id="post_poll_id(-?\d+)_(\d+)+[^>]+value="(\d+)"/);
+         if (c.innerHTML.indexOf('poll_results')==-1) {
             c.insertBefore(vkCe('span',{"class":"divider fl_r"},"|"),c.firstChild);
             c.insertBefore(vkCe('a',{
                                      "class":"fl_r",
                                      "href":"#",
                                      "onclick":"return vkopt.wall.poll_results('"+m[1]+"','"+m[3]+"');"
-                                    },IDL('ViewResults')),c.firstChild);   
-         }                                 
+                                    },IDL('ViewResults')),c.firstChild);
+         }
       }
    },
    poll_cancel_answer: function (post_id,pid,param2){
