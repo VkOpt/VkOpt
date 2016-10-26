@@ -5882,18 +5882,21 @@ vkopt['turn_blocks'] = {
                display:none;
             }
             */
-         }).css;
+         }).css + vkopt.turn_blocks.getShutCss();
    },
    addIcons: function() {
+      vkopt.set_css('','vk_turn_blocks_state');
+      var code = vkopt.turn_blocks.getShutCss();
+      vkopt.set_css(code, 'vk_closed_blocks_temp');
+      
       var blocks = geByClass('header_top clear_fix');
       for (i = 0; i < blocks.length; i++) {
-         var btnid = blocks[i].parentNode.parentNode.id+'_i'; //id дива с кнопкой
-         if (blocks[i].children[0] == undefined || blocks[i].children[0].id !== btnid) {
+         if (!geByClass1('shut_icon',blocks[i])) {
             var icon = document.createElement('div');
             icon.className = 'shut_icon';
-            var btn = document.createElement('div'); //a
+            var btn = document.createElement('a');
             btn.className = 'fl_l shut_icon_wrap';
-            btn.id = btnid;
+            btn.id = blocks[i].parentNode.parentNode.id+'_i';
             btn.href = '#';
             btn.onclick = function(e) {
                e.preventDefault(); //не открываем ссылку блока
@@ -5915,14 +5918,8 @@ vkopt['turn_blocks'] = {
       }
    },
    delIcons: function() { //отключение
-      var blocks = geByClass('header_top clear_fix');
-      for (var i = 0; i < blocks.length; i++) {
-         var id = blocks[i].parentNode.parentNode.id+'_i';
-         var icon = ge(id);
-         if (icon !== null) {
-            icon.remove();
-         }
-      }
+      vkopt.set_css('.shut_icon{display:none}','vk_turn_blocks_state');
+      vkopt.set_css('', 'vk_closed_blocks_temp');
    },
    turnBlock: function(icon) {
       var block = icon.parentNode.parentNode.parentNode;
@@ -5937,7 +5934,20 @@ vkopt['turn_blocks'] = {
          arrset.push(block.id);
          addClass(block, 'shut_block');
       }
+      var code = vkopt.turn_blocks.getShutCss();
+      vkopt.set_css(code, 'vk_closed_blocks_temp');
       vkopt.settings.set('turn_blocks_arr', arrset);
+   },
+   getShutCss: function() {
+      if (vkopt.turn_blocks.arrset.length<1) return '';
+      var selectors = [];
+      for (var i in vkopt.turn_blocks.arrset) {
+         if (vkopt.turn_blocks.arrset[i] == 'profile_photos_module')
+            selectors.push('#profile_photos_module .page_photos_module'); //костыль
+         else selectors.push('#' + vkopt.turn_blocks.arrset[i] + ' .module_body');
+      }
+      var code = selectors.join(',\n') + '{ display: none }';
+      return code;
    },
    reset: function() {
       vkopt.settings.set('turn_blocks_arr', []);
