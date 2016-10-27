@@ -5885,6 +5885,7 @@ vkopt['turn_blocks'] = {
       }
    },
    css: function() {
+      vkopt.turn_blocks.arrset = vkopt.settings.get('turn_blocks_arr') || [];
       return vk_lib.get_block_comments(function() {
             /*css:
             .vk_turn_blocks .module_header .header_top{
