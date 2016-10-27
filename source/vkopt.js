@@ -5875,5 +5875,42 @@ vkopt['test_module'] =  {
    //*/
 };
 
+vkopt['backup_set'] = {
+   onSettings:{
+      Others:{
+         export_set:{
+            title: 'ExportSettings',
+            sub: {
+               import_set:{
+                  title: 'ImportSettings'
+               }
+            }
+         }
+      }
+   },
+   exportSettings: function() {
+      var data = JSON.stringify(localStorage['vkopt_config']);
+      vkopt.save_file(data, 'vkopt_config.json');
+   },
+   importSettings: function() {
+      vkopt.load_file(function(data) {
+         try{
+            var newset = JSON.parse(data);
+            localStorage['vkopt_config'] = newset;
+            alert(IDL('ConfigLoaded'));
+         } catch(e) {
+            alert(IDL('ConfigError'));
+         }
+      });
+   },
+   onOptionChanged: function(option_id, val, option_data){
+      if (option_id == 'export_set') {
+         if (val) vkopt.backup_set.exportSettings();
+      } else if (option_id == 'import_set') {
+         if (val) vkopt.backup_set.importSettings();
+      }
+   }
+}
+
 
 vkopt_core.init();
