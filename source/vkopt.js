@@ -4303,10 +4303,7 @@ vkopt['messages'] = {
          vkopt.messages._chbg_to = setTimeout(function(){
             var code = vkopt.messages.css_msg_bg(val);
             var st = ge('vk_unread_msg_preview');
-            if (!st)
-               vkaddcss(code, 'vk_unread_msg_preview');
-            else
-               val('vk_unread_msg_preview', code);
+            vkopt.set_css(code, 'vk_unread_msg_preview');
          },200)
       }
 
