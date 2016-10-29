@@ -5794,6 +5794,226 @@ vkopt['wall'] = {
          //var hours = 3; // нужна опция выбора величины интервала между постами.
          return vkopt.wall.postponed.additional_interval;//hours * 60*60;
       }
+   },
+   processNode: function(node, params) {
+      var els=geByClass('page_media_poll',node);
+      for (var i=0; i<els.length; i++){
+         vkopt.wall.poll_cancel_btn(els[i]);
+      }
+   },
+   onResponseAnswer: function(answer,url,q){
+      if (url == '/widget_poll.php' && q.act == 'a_vote'){
+         var p = se('<div>' + answer[0] + '</div>');
+         vkopt.wall.poll_cancel_btn(p);
+         answer[0] = p.innerHTML;
+      }
+   },
+   poll_cancel_btn: function(p) {
+      var el=geByClass('page_poll_options',p)[0];
+      var c=geByClass('page_poll_total',p)[0];//'page_poll_bottom'
+      
+      if (!el && c){
+         var m=p.innerHTML.match(/id="post_poll_raw(-?\d+)_(\d+)[^>]+value="(-?\d+)_(\d+)"/);
+         if (c.innerHTML.indexOf('poll_cancel_answer')==-1) {
+            c.insertBefore(vkCe('span',{"class":"divider fl_r"},"|"),c.firstChild);
+            var PollCancelEl = vkCe('a',{
+               "class":"fl_r",
+               "href":"#"
+            },IDL('CancelAnswer'));
+            PollCancelEl.setAttribute('onclick',"return vkopt.wall.poll_cancel_answer('"+m[3]+"','"+m[4]+"','"+m[2]+"');");
+            c.insertBefore(PollCancelEl,c.firstChild);
+         }
+      }
+        
+      if (el) {
+         var m=p.innerHTML.match(/id="post_poll_id(-?\d+)_(\d+)+[^>]+value="(\d+)"/);
+         if (c.innerHTML.indexOf('poll_results')==-1) {
+            c.insertBefore(vkCe('span',{"class":"divider fl_r"},"|"),c.firstChild);
+            c.insertBefore(vkCe('a',{
+                                     "class":"fl_r",
+                                     "href":"#",
+                                     "onclick":"return vkopt.wall.poll_results('"+m[1]+"','"+m[3]+"');"
+                                    },IDL('ViewResults')),c.firstChild);
+         }
+      }
+   },
+   poll_cancel_answer: function (post_id,pid,param2){
+      var cancel = function(data){
+         if (data.answer_id==0){
+            alert(IDL('CancelAnswerError'));
+            return;
+         }
+         dApi.call('polls.deleteVote',{owner_id: data.owner_id, poll_id: data.id, answer_id: data.answer_id, v: '5.59'},function(r){
+            if (r.response==1) {
+               ajax.post('/al_wall.php',{
+                  act: 'post_tt',
+                  post: post_id+'_'+param2,
+                  self:1
+                  }, {
+                     onDone:function(data,js){
+                        var poll = geByClass1('page_media_poll_wrap',se(data));
+                        var pollOnPage = geByClass1('page_media_poll_wrap',ge('wpt'+post_id+'_'+param2));
+                        pollOnPage.innerHTML = poll.innerHTML;
+                     },
+                     onFail:function(msg){
+                        return true;
+                     }
+                  }
+               );
+            }
+            else 
+               alert(IDL('CancelAnswerFail'));
+         });
+      };
+      
+      var code='\
+         var post=API.wall.getById({posts:"'+post_id+'"})[0];\
+         var attachments=post.attachments;\
+         var i=0;\
+         var b=attachments[i];\
+         var pid = 0;\
+         var oid = 0;\
+         var oid2 = 0;\
+         while(i<attachments.length){\
+            if (b.type=="poll"){\
+               pid=b.poll.poll_id;\
+               oid=post.copy_owner_id;\
+               oid2=post.to_id;\
+            };\
+            i = i + 1;\
+            b=attachments[i]; \
+         }\
+         return {oid:oid,oid2:oid2,pid:pid,p:post,poll1:API.polls.getById({owner_id:oid,poll_id:pid}),poll2:API.polls.getById({owner_id:oid2,poll_id:pid})};\
+         ';
+         
+      if (post_id && pid){
+         dApi.call('polls.getById',{owner_id:post_id, poll_id:pid, v: '5.59'},function(r){
+            var data = r.response;
+            cancel(data);
+         });
+      } else {
+         dApi.call('execute',{code:code, v: '5.59'},function(r){
+            var data = r.response;
+            if (vk_DEBUG) console.log(data);
+            cancel(data.poll1 || data.poll2);
+         });   
+      }
+      return false;
+   },
+   poll_results: function(post_id,pid){
+      var tpl_old='\
+          <tr>\
+            <td colspan="2" class="page_poll_text">%TEXT</td>\
+          </tr><tr onmouseover="Wall.pollOver(this, \'%POLL_ID\', %ANSWER_ID)">\
+            <td class="page_poll_row">\
+            <div class="page_poll_percent" style="width: %WIDTH%"></div><div class="page_poll_row_count">%COUNT</div>\
+            </td><td class="page_poll_row_percent ta_r"><nobr><b>%RATE%</b></nobr></td>\
+          </tr>\
+          <tr><td colspan="2"><div id="vk_poll_usrs%ANSWER_ID" class="wk_poll_usrs"></div></td></tr>\
+      '; 
+      var tpl='\
+      <div class="page_poll_stat" onmouseover="Wall.pollOver(this, \'%POLL_ID\', %ANSWER_ID)">\
+         <div class="page_poll_text">%TEXT</div>\
+         <div class="page_poll_row_wrap">\
+            <div class="page_poll_row_percent">%RATE%</div>\
+            <div class="page_poll_row">\
+               <div class="page_poll_percent" style="width: %WIDTH%"></div>\
+               <div class="page_poll_row_count">%COUNT</div>\
+            </div>\
+         </div>\
+      </div>\
+      ';
+
+      var view=function(data){
+         var answer=data.answers; //answer[i].rate=12.9; answer[i].text="...."; answer[i].votes=150
+         var max=0;
+         for (var i=0; i<answer.length; i++){
+            max=Math.max(max,answer[i].rate);
+         }
+         
+         var html="";
+         for (var i=0; i<answer.length; i++){
+            var width=Math.round(answer[i].rate*100/max);
+            html+=tpl.replace(/%RATE/g,answer[i].rate)
+                     .replace(/%TEXT/g,answer[i].text)
+                     .replace(/%POLL_ID/g,post_id)
+                     .replace(/%ANSWER_ID/g,answer[i].id)
+                     .replace(/%WIDTH/g,width)
+                     .replace(/%COUNT/g,answer[i].votes);
+         }   
+         html='<div class="page_media_poll">'+html+'</div>';
+         
+         html='\
+         <div class="page_media_poll_title_wrap clear_fix">\
+            <div class="page_media_poll_title">'+data.question+'</div>\
+            '+html+'\
+         </div>';   
+         
+         vkAlertBox(IDL('ViewResults'),html);
+         vkopt.wall.poll_voters(data.owner_id,data.id);
+      };
+      
+      var code='\
+         var post=API.wall.getById({posts:"'+post_id+'"})[0];\
+         var attachments=post.attachments;\
+         var i=0;\
+         var b=attachments[i];\
+         var pid = 0;\
+         var oid = 0;\
+         var oid2 = 0;\
+         while(i<attachments.length){\
+            if (b.type=="poll"){\
+               pid=b.poll.poll_id;\
+               oid=post.copy_owner_id;\
+               oid2=post.to_id;\
+            };\
+            i = i + 1;\
+            b=attachments[i]; \
+         }\
+         return {oid:oid,oid2:oid2,pid:pid,p:post,poll1:API.polls.getById({owner_id:oid,poll_id:pid}),poll2:API.polls.getById({owner_id:oid2,poll_id:pid})};\
+         ';
+         
+      if (post_id && pid){
+         dApi.call('polls.getById',{owner_id:post_id, poll_id:pid, v: '5.59'},function(r){
+            var data=r.response;
+            view(data);
+         });
+      } else {
+         dApi.call('execute',{code:code, v: '5.59'},function(r){
+            var data=r.response;
+            if (vk_DEBUG) console.log(data);
+            view(data.poll1 || data.poll2);
+         });   
+      }
+      return false;
+   },
+   poll_voters: function(oid,poll_id){
+      var code='\
+        var oid='+oid+';\
+        var poll_id='+poll_id+';\
+        var poll=API.polls.getById({owner_id:oid,poll_id:poll_id});\
+        var voters=API.polls.getVoters({owner_id:oid,poll_id:poll_id,answer_ids:poll.answers@.id,fields:"first_name,last_name,online,photo_rec",offset:0,count:9});\
+        return {poll:poll,voters:voters,anwers_ids:poll.answers@.id};\
+      ';
+      dApi.call('execute',{code:code, v: '5.59'},function(r){
+            var data=r.response;
+            if (vk_DEBUG) console.log(data);
+            if (data.voters){
+               stManager.add('wk.css');
+               var voters=data.voters;
+               for (var j=0; j<voters.length; j++){
+                  var el=ge('vk_poll_usrs'+voters[j].answer_id);
+                  var users=voters[j].users;
+                  var html='';
+                  for (var i=0; i<users.length; i++){
+                     if (!users[i].uid) continue;
+                     html+='<a class="wk_poll_usr inl_bl" title="'+users[i].first_name+' '+users[i].last_name+'" href="/id'+users[i].uid+'"><img class="wk_poll_usr_photo" src="'+users[i].photo_rec+'" width="30" height="30"></a>'; 
+                  }
+                  val(el, html);
+               }
+            }
+      }); 
+      // ge('vk_poll_usrs'+voters[i].answer_id)
    }
 
 };
