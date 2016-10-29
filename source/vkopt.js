@@ -5897,6 +5897,8 @@ vkopt['backup_set'] = {
          try{
             var newset = JSON.parse(data);
             localStorage['vkopt_config'] = newset;
+            vkopt.settings.config_cached = null;
+            vkopt.cmd({act: 'config_updated'});
             alert(IDL('ConfigLoaded'));
          } catch(e) {
             alert(IDL('ConfigError'));
@@ -5905,9 +5907,9 @@ vkopt['backup_set'] = {
    },
    onOptionChanged: function(option_id, val, option_data){
       if (option_id == 'export_set') {
-         if (val) vkopt.backup_set.exportSettings();
+         vkopt.backup_set.exportSettings();
       } else if (option_id == 'import_set') {
-         if (val) vkopt.backup_set.importSettings();
+         vkopt.backup_set.importSettings();
       }
    }
 }
