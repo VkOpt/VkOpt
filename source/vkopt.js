@@ -6006,5 +6006,106 @@ vkopt['turn_blocks'] = {
    }
 }
 
+vkopt['full_delete'] = {
+   onSettings:{
+      vkInterface:{
+         full_delete:{
+            title: 'seBatchCleaners' //or seMasDelPMsg
+         }
+      }
+   },
+   addBtns: function() {
+      vkopt.set_css('','vk_full_delete_state');
+      if (nav.objLoc[0] == "groups") {
+         var menu = geByClass1("page_block ui_rmenu ui_rmenu_pr _ui_rmenu_auto_expand");
+         var sep = geByClass1("ui_rmenu_sep", menu);
+         if (sep == null) return;
+         
+         var btn = document.createElement("a");
+         btn.className = "ui_rmenu_item full_delete_btn";
+         btn.innerHTML=IDL("LeaveAll"); //or LeaveGroups
+         btn.onclick = function() {
+            vkopt.full_delete.leaveGroups();
+         };
+         menu.insertBefore(btn, sep);
+         
+      } else if (nav.objLoc[0].substring(0, 6) == "audios") {
+         var menu = geByClass1("page_block ui_rmenu ui_rmenu_pr");
+         var albums = ge("ui_rmenu_audio_albums");
+         if (albums == null) return; //только на своей странице
+         
+         var btn = document.createElement("a");
+         btn.className = "ui_rmenu_item full_delete_btn";
+         btn.innerHTML=IDL("DelAudios");
+         btn.onclick = function() {
+            vkopt.full_delete.delAudios();
+         };
+         menu.insertBefore(btn, albums);
+      }
+   },
+   leaveGroups: function() {
+      if (!confirm(IDL("LeaveAllGroupsConfirm"))) return;
+      var code = '\
+      var groups = API.groups.get();\
+      var count = groups.items.length;\
+      var i = 0;\
+      while (i < count) {\
+         API.groups.leave({group_id: groups.items[i]});\
+         i=i+1;\
+      };\
+      return i;\
+      ';
+      dApi.call('execute', {code: code, v: '5.59'}, function(r) {
+         var data = r.response;
+         console.log(data);
+         if (data != null) alert("Успешно покинуто "+data+" групп. Обновите страницу.");
+         else alert(IDL("Error"));
+      });
+   },
+   delAudios: function() {
+      if (!confirm(IDL("DelAllAutiosConfirm"))) return;
+      var code = '\
+      var user = API.users.get();\
+      var id = user[0].id;\
+      var audios = API.audio.get();\
+      var count = audios.items.length;\
+      var i = 0;\
+      while (i < count) {\
+         API.audio.delete({audio_id: audios.items[i].id, owner_id: id});\
+         i=i+1;\
+      };\
+      return count;\
+      ';
+      dApi.call('execute', {code: code, v: '5.59',"count": 24}, function(r) {
+         var data = r.response;
+         console.log(data);
+         if (data != null) alert("Успешно удалено "+data+" аудиозаписей. Обновите страницу.");
+         else alert(IDL("Error"));
+      });
+   },
+   delBtns: function() {
+      vkopt.set_css('.full_delete_btn{display:none}','vk_full_delete_state');
+      //var blocks = geByClass("full_delete_btn");
+      //for (var i = 0; i < blocks.length; i++) blocks[i].remove();
+   },
+   onLocation: function() {
+      if (vkopt.settings.get('full_delete')) {
+         clearTimeout(vkopt.full_delete.delay);
+         vkopt.full_delete.delay = setTimeout(function() {
+            vkopt.full_delete.addBtns();
+         }, 200);
+      }
+   },
+   onOptionChanged: function(option_id, val, option_data){
+      if (option_id == 'full_delete') {
+         clearTimeout(vkopt.full_delete.delay);
+         vkopt.full_delete.delay = setTimeout(function(){
+            if (val) vkopt.full_delete.addBtns();
+            else vkopt.full_delete.delBtns();
+         }, 200);
+      }
+   }
+}
+
 
 vkopt_core.init();
