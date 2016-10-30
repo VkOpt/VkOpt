@@ -5229,29 +5229,25 @@ vkopt['profile'] = {
             if (r.error) return;
             var cnt = r.response.count;
             var groups = r.response.items;
-            var groups_screen_name = [];
-            for (var i=0;i<cnt;i++) {
-               groups_screen_name.push(groups[i].screen_name);
-               var nodes = ge('page_body').getElementsByTagName('a');
-               for (var j=0;j<nodes.length;j++) {
-                  if (nodes[j].href == "https://vk.com/" + groups[i].screen_name) {
-                     nodes[j].className += " vkopt_com_gr";
-                  }
-               }
-            }
+            var groups_sn = [];
+            for (var i=0;i<cnt;i++) groups_sn.push(groups[i].screen_name);
+            vkopt.profile.add_color_to_link(groups_sn, cnt);
             localStorage['cnt_of_owner_groups'] = cnt;
-            localStorage['list_of_owner_groups'] = JSON.stringify(groups_screen_name);
+            localStorage['list_of_owner_groups'] = JSON.stringify(groups_sn);
          });
       }
       else {
          var cnt = JSON.parse(localStorage['cnt_of_owner_groups']);
          var groups_sn = JSON.parse(localStorage['list_of_owner_groups']);
-         for (var i=0;i<cnt;i++) {
-            var nodes = ge('page_body').getElementsByTagName('a');
-            for (var j=0;j<nodes.length;j++) {
-               if (nodes[j].href == "https://vk.com/" + groups_sn[i]) {
-                  nodes[j].className += " vkopt_com_gr";
-               }
+         vkopt.profile.add_color_to_link(groups_sn, cnt);
+      }
+   },
+   add_color_to_link: function(groups_sn, cnt) {
+      for (var i=0;i<cnt;i++) {
+         var nodes = ge('page_body').getElementsByTagName('a');
+         for (var j=0;j<nodes.length;j++) {
+            if (nodes[j].href == "https://vk.com/" + groups_sn[i]) {
+               nodes[j].className += " vkopt_com_gr";
             }
          }
       }
