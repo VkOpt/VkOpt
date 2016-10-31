@@ -5732,6 +5732,15 @@ vkopt['wall'] = {
          datepicker_inj:{}
       }
    },
+   css: function(){
+      return vk_lib.get_block_comments(function(){
+         /*css:
+         .vk_poll_info_btn{
+            color: #939393;
+         }
+         */
+      }).css;
+   },
    onLibFiles: function(file_name){
 
       /* Задача - хотим менять дефолтный интервал между создаваемыми отложенными постами.
@@ -5741,6 +5750,17 @@ vkopt['wall'] = {
       Но если обновить страницу, на которой стена, то фикс не применится, т.к медиаселектор создаёт свой экземпляр раньше, чем вкопт изменит его код.
       Поэтому будем править время уже в самом datepicker'е
       */
+   },
+   tpls:{},
+   onInit: function(){
+      vkopt.wall.tpls = vk_lib.get_block_comments(function(){
+         /*cancel_btn:
+         <a class="vk_poll_info_btn fl_r" href="#" onclick="return vkopt.wall.poll_cancel_answer('{vals.owner_id}','{vals.poll_id}','{vals.post_id}');">{lng.CancelAnswer}</a>
+         */
+         /*results_btn:
+         <a class="vk_poll_info_btn fl_r" href="#" onclick="return vkopt.wall.poll_results('{vals.owner_id}','{vals.poll_id}','{vals.post_id}');">{lng.ViewResults}</a>
+         */
+      });
    },
    onDatepickerCreate: function(args){
       // args[0] - element_id
@@ -5798,46 +5818,37 @@ vkopt['wall'] = {
    processNode: function(node, params) {
       var els=geByClass('page_media_poll',node);
       for (var i=0; i<els.length; i++){
-         vkopt.wall.poll_cancel_btn(els[i]);
+         vkopt.wall.poll_btns(els[i]);
       }
+
+      if (!els.length && params && params.q && params.url == '/widget_poll.php' && params.q.act == 'a_vote')
+         vkopt.wall.poll_btns(node);
    },
-   onResponseAnswer: function(answer,url,q){
-      if (url == '/widget_poll.php' && q.act == 'a_vote'){
-         var p = se('<div>' + answer[0] + '</div>');
-         vkopt.wall.poll_cancel_btn(p);
-         answer[0] = p.innerHTML;
-      }
-   },
-   poll_cancel_btn: function(p) {
+   poll_btns: function(p){
       var el=geByClass('page_poll_options',p)[0];
       var c=geByClass('page_poll_total',p)[0];//'page_poll_bottom'
-      
-      if (!el && c){
-         var m=p.innerHTML.match(/id="post_poll_raw(-?\d+)_(\d+)[^>]+value="(-?\d+)_(\d+)"/);
-         if (c.innerHTML.indexOf('poll_cancel_answer')==-1) {
-            c.insertBefore(vkCe('span',{"class":"divider fl_r"},"|"),c.firstChild);
-            var PollCancelEl = vkCe('a',{
-               "class":"fl_r",
-               "href":"#"
-            },IDL('CancelAnswer'));
-            PollCancelEl.setAttribute('onclick',"return vkopt.wall.poll_cancel_answer('"+m[3]+"','"+m[4]+"','"+m[2]+"');");
-            c.insertBefore(PollCancelEl,c.firstChild);
-         }
-      }
-        
-      if (el) {
-         var m=p.innerHTML.match(/id="post_poll_id(-?\d+)_(\d+)+[^>]+value="(\d+)"/);
-         if (c.innerHTML.indexOf('poll_results')==-1) {
-            c.insertBefore(vkCe('span',{"class":"divider fl_r"},"|"),c.firstChild);
-            c.insertBefore(vkCe('a',{
-                                     "class":"fl_r",
-                                     "href":"#",
-                                     "onclick":"return vkopt.wall.poll_results('"+m[1]+"','"+m[3]+"');"
-                                    },IDL('ViewResults')),c.firstChild);
-         }
+      if (!c || geByClass1('vk_poll_info_btn', c)) return;
+      if (!el){ //проголосовали, но хотим отменить голос
+         var m = val(p).match(/id="post_poll_raw(-?\d+)_(\d+)[^>]+value="(-?\d+)_(\d+)"/);
+         c.insertBefore(vkCe('span',{"class":"divider fl_r"},""),c.firstChild);
+         var cancel_btn = se(vk_lib.tpl_process(vkopt.wall.tpls['cancel_btn'],{
+            owner_id: m[3], // or m[1]
+            poll_id:  m[4],
+            post_id:  m[2]
+         }));
+         c.insertBefore(cancel_btn,c.firstChild);
+      } else { // не голосовали, но можем подсмотреть результаты
+         var m = val(p).match(/id="post_poll_id(-?\d+)_(\d+)+[^>]+value="(\d+)"/);
+         c.insertBefore(vkCe('span',{"class":"divider fl_r"},""), c.firstChild);
+         var res_btn =  se(vk_lib.tpl_process(vkopt.wall.tpls['results_btn'],{
+            owner_id: m[1],
+            poll_id:  m[3],
+            post_id:  m[2]
+         }));
+         c.insertBefore(res_btn, c.firstChild);
       }
    },
-   poll_cancel_answer: function (post_id,pid,param2){
+   poll_cancel_answer: function (owner_id, poll_id, post_id){
       var cancel = function(data){
          if (data.answer_id==0){
             alert(IDL('CancelAnswerError'));
@@ -5847,12 +5858,12 @@ vkopt['wall'] = {
             if (r.response==1) {
                ajax.post('/al_wall.php',{
                   act: 'post_tt',
-                  post: post_id+'_'+param2,
+                  post: owner_id+'_'+post_id,
                   self:1
                   }, {
                      onDone:function(data,js){
                         var poll = geByClass1('page_media_poll_wrap',se(data));
-                        var pollOnPage = geByClass1('page_media_poll_wrap',ge('wpt'+post_id+'_'+param2));
+                        var pollOnPage = geByClass1('page_media_poll_wrap',ge('wpt'+owner_id+'_'+post_id));
                         pollOnPage.innerHTML = poll.innerHTML;
                      },
                      onFail:function(msg){
@@ -5861,13 +5872,13 @@ vkopt['wall'] = {
                   }
                );
             }
-            else 
+            else
                alert(IDL('CancelAnswerFail'));
          });
       };
-      
+
       var code='\
-         var post=API.wall.getById({posts:"'+post_id+'"})[0];\
+         var post=API.wall.getById({posts:"'+owner_id+'_'+post_id+'"})[0];\
          var attachments=post.attachments;\
          var i=0;\
          var b=attachments[i];\
@@ -5885,9 +5896,9 @@ vkopt['wall'] = {
          }\
          return {oid:oid,oid2:oid2,pid:pid,p:post,poll1:API.polls.getById({owner_id:oid,poll_id:pid}),poll2:API.polls.getById({owner_id:oid2,poll_id:pid})};\
          ';
-         
-      if (post_id && pid){
-         dApi.call('polls.getById',{owner_id:post_id, poll_id:pid, v: '5.59'},function(r){
+
+      if (owner_id && poll_id){
+         dApi.call('polls.getById',{owner_id:owner_id, poll_id:poll_id, v: '5.59'},function(r){
             var data = r.response;
             cancel(data);
          });
@@ -5896,23 +5907,23 @@ vkopt['wall'] = {
             var data = r.response;
             if (vk_DEBUG) console.log(data);
             cancel(data.poll1 || data.poll2);
-         });   
+         });
       }
       return false;
    },
-   poll_results: function(post_id,pid){
+   poll_results: function(owner_id, poll_id, post_id){
       var tpl_old='\
           <tr>\
             <td colspan="2" class="page_poll_text">%TEXT</td>\
-          </tr><tr onmouseover="Wall.pollOver(this, \'%POLL_ID\', %ANSWER_ID)">\
+          </tr><tr onmouseover="Wall.pollOver(this, \'%FULL_POST_ID\', %ANSWER_ID)">\
             <td class="page_poll_row">\
             <div class="page_poll_percent" style="width: %WIDTH%"></div><div class="page_poll_row_count">%COUNT</div>\
             </td><td class="page_poll_row_percent ta_r"><nobr><b>%RATE%</b></nobr></td>\
           </tr>\
           <tr><td colspan="2"><div id="vk_poll_usrs%ANSWER_ID" class="wk_poll_usrs"></div></td></tr>\
-      '; 
+      ';
       var tpl='\
-      <div class="page_poll_stat" onmouseover="Wall.pollOver(this, \'%POLL_ID\', %ANSWER_ID)">\
+      <div class="page_poll_stat" onmouseover="Wall.pollOver(this, \'%FULL_POST_ID\', %ANSWER_ID)">\
          <div class="page_poll_text">%TEXT</div>\
          <div class="page_poll_row_wrap">\
             <div class="page_poll_row_percent">%RATE%</div>\
@@ -5923,38 +5934,38 @@ vkopt['wall'] = {
          </div>\
       </div>\
       ';
-
+      var full_post_id = owner_id + '_' + post_id;
       var view=function(data){
          var answer=data.answers; //answer[i].rate=12.9; answer[i].text="...."; answer[i].votes=150
          var max=0;
          for (var i=0; i<answer.length; i++){
             max=Math.max(max,answer[i].rate);
          }
-         
+
          var html="";
          for (var i=0; i<answer.length; i++){
             var width=Math.round(answer[i].rate*100/max);
             html+=tpl.replace(/%RATE/g,answer[i].rate)
                      .replace(/%TEXT/g,answer[i].text)
-                     .replace(/%POLL_ID/g,post_id)
+                     .replace(/%FULL_POST_ID/g,full_post_id)
                      .replace(/%ANSWER_ID/g,answer[i].id)
                      .replace(/%WIDTH/g,width)
                      .replace(/%COUNT/g,answer[i].votes);
-         }   
+         }
          html='<div class="page_media_poll">'+html+'</div>';
-         
+
          html='\
          <div class="page_media_poll_title_wrap clear_fix">\
             <div class="page_media_poll_title">'+data.question+'</div>\
             '+html+'\
-         </div>';   
-         
+         </div>';
+
          vkAlertBox(IDL('ViewResults'),html);
          vkopt.wall.poll_voters(data.owner_id,data.id);
       };
-      
+
       var code='\
-         var post=API.wall.getById({posts:"'+post_id+'"})[0];\
+         var post=API.wall.getById({posts:"'+full_post_id+'"})[0];\
          var attachments=post.attachments;\
          var i=0;\
          var b=attachments[i];\
@@ -5972,9 +5983,9 @@ vkopt['wall'] = {
          }\
          return {oid:oid,oid2:oid2,pid:pid,p:post,poll1:API.polls.getById({owner_id:oid,poll_id:pid}),poll2:API.polls.getById({owner_id:oid2,poll_id:pid})};\
          ';
-         
-      if (post_id && pid){
-         dApi.call('polls.getById',{owner_id:post_id, poll_id:pid, v: '5.59'},function(r){
+
+      if (owner_id && poll_id){
+         dApi.call('polls.getById',{owner_id:owner_id, poll_id:poll_id, v: '5.59'},function(r){
             var data=r.response;
             view(data);
          });
@@ -5983,7 +5994,7 @@ vkopt['wall'] = {
             var data=r.response;
             if (vk_DEBUG) console.log(data);
             view(data.poll1 || data.poll2);
-         });   
+         });
       }
       return false;
    },
@@ -6007,12 +6018,12 @@ vkopt['wall'] = {
                   var html='';
                   for (var i=0; i<users.length; i++){
                      if (!users[i].uid) continue;
-                     html+='<a class="wk_poll_usr inl_bl" title="'+users[i].first_name+' '+users[i].last_name+'" href="/id'+users[i].uid+'"><img class="wk_poll_usr_photo" src="'+users[i].photo_rec+'" width="30" height="30"></a>'; 
+                     html+='<a class="wk_poll_usr inl_bl" title="'+users[i].first_name+' '+users[i].last_name+'" href="/id'+users[i].uid+'"><img class="wk_poll_usr_photo" src="'+users[i].photo_rec+'" width="30" height="30"></a>';
                   }
                   val(el, html);
                }
             }
-      }); 
+      });
       // ge('vk_poll_usrs'+voters[i].answer_id)
    }
 
@@ -6105,7 +6116,7 @@ vkopt['turn_blocks'] = {
       vkopt.turn_blocks.arrset = vkopt.settings.get('turn_blocks_arr') || [];
       var code = vkopt.turn_blocks.getShutCss();
       vkopt.set_css(code, 'vk_closed_blocks_temp');
-      
+
       return vk_lib.get_block_comments(function() {
             /*css:
             .vk_turn_blocks .module_header .header_top{
@@ -6143,7 +6154,7 @@ vkopt['turn_blocks'] = {
       vkopt.set_css('','vk_turn_blocks_state');
       var code = vkopt.turn_blocks.getShutCss();
       vkopt.set_css(code, 'vk_closed_blocks_temp');
-      
+
       var blocks = geByClass('header_top clear_fix');
       for (i = 0; i < blocks.length; i++) {
          if (!geByClass1('shut_icon',blocks[i])) {
@@ -6180,7 +6191,7 @@ vkopt['turn_blocks'] = {
       var block = icon.parentNode.parentNode.parentNode;
       var blockname = icon.parentNode;
       var arrset = vkopt.turn_blocks.arrset;
-      
+
       if (hasClass(block, 'shut_block')) {
          var index = arrset.indexOf(block.id);
          if (index > -1) arrset.splice(index, 1);
