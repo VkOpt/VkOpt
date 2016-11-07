@@ -47,6 +47,8 @@ var vkopt_defaults = {
       show_full_user_info: false,
       switch_kbd_lay: true,
       show_online_status: false,
+      show_common_group: false,
+      common_group_color: '90ee90',
 
       //Extra:
       vkopt_guide: true,   // показываем, где находится кнопка настроек, до тех пор, пока в настройки всё же не зайдут
@@ -5204,11 +5206,35 @@ vkopt['profile'] = {
       Users: {
          calc_age:{
             title: 'seCalcAge'
+         },
+         show_common_group:{
+            title: 'seShowCommonGroup',
+               class_toggler: true,
+            sub: {
+               common_group_color:{
+                  title: ' ',
+                  color_picker: true
+               }
+            }
          }
       },
       Extra: {
          zodiak_ophiuchus:{}
       }
+   },
+   
+   css: function() {
+      return vkopt.profile.css_common_group(vkopt.settings.get('common_group_color'));
+   },
+   
+   css_common_group: function(color){
+      return vk_lib.get_block_comments(function(){
+         /*css:
+         .vk_show_common_group .vkopt_com_gr {
+            background: #{colorCommonGroup} !important;
+         }
+         */
+      }).css.replace(new RegExp("{colorCommonGroup}", 'g'), color);
    },
 
    onInit: function(){
@@ -5239,6 +5265,50 @@ vkopt['profile'] = {
          vkopt.profile.audelay = setTimeout(function() {
             vkopt.profile.moveAudio(vkopt.settings.get('audio_pos'));
          },200);
+      }
+      if (vk.id == cur.oid) { // обновим кеш групп, если зашли на свою страницу
+         dApi.call("groups.get",{ user_id: vk.id, extended: '1', filter: 'groups,publics', v: '5.59'},function(r) {
+         if (r.error) return;
+         var cnt = r.response.count;
+         var groups = r.response.items;
+         var groups_screen_name = [];
+         for (var i=0;i<cnt;i++) {
+            groups_screen_name.push(groups[i].screen_name);
+         }
+         localStorage['cnt_of_owner_groups'] = cnt;
+         localStorage['list_of_owner_groups'] = JSON.stringify(groups_screen_name);
+      });
+      }
+      if (vkopt.settings.get('show_common_group') && cur.module == 'profile' && vk.id != cur.oid) 
+         vkopt.profile.fshow_common_group();
+   },
+   fshow_common_group: function() {
+      if (!localStorage['list_of_owner_groups']) {
+         dApi.call("groups.get",{ user_id: vk.id, extended: '1', filter: 'groups,publics', v: '5.59'},function(r) {
+            if (r.error) return;
+            var cnt = r.response.count;
+            var groups = r.response.items;
+            var groups_sn = [];
+            for (var i=0;i<cnt;i++) groups_sn.push(groups[i].screen_name);
+            vkopt.profile.add_color_to_link(groups_sn, cnt);
+            localStorage['cnt_of_owner_groups'] = cnt;
+            localStorage['list_of_owner_groups'] = JSON.stringify(groups_sn);
+         });
+      }
+      else {
+         var cnt = JSON.parse(localStorage['cnt_of_owner_groups']);
+         var groups_sn = JSON.parse(localStorage['list_of_owner_groups']);
+         vkopt.profile.add_color_to_link(groups_sn, cnt);
+      }
+   },
+   add_color_to_link: function(groups_sn, cnt) {
+      for (var i=0;i<cnt;i++) {
+         var nodes = ge('page_body').getElementsByTagName('a');
+         for (var j=0;j<nodes.length;j++) {
+            if (nodes[j].href == "https://vk.com/" + groups_sn[i]) {
+               nodes[j].className += " vkopt_com_gr";
+            }
+         }
       }
    },
    processNode: function(node, params){
