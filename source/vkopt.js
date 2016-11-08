@@ -47,6 +47,8 @@ var vkopt_defaults = {
       show_full_user_info: false,
       switch_kbd_lay: true,
       show_online_status: false,
+      show_common_group: false,
+      common_group_color: '90ee90',
 
       //Extra:
       vkopt_guide: true,   // показываем, где находится кнопка настроек, до тех пор, пока в настройки всё же не зайдут
@@ -5204,11 +5206,35 @@ vkopt['profile'] = {
       Users: {
          calc_age:{
             title: 'seCalcAge'
+         },
+         show_common_group:{
+            title: 'seShowCommonGroup',
+            class_toggler: true,
+            sub: {
+               common_group_color:{
+                  title: ' ',
+                  color_picker: true
+               }
+            }
          }
       },
       Extra: {
          zodiak_ophiuchus:{}
       }
+   },
+
+   css: function() {
+      return vkopt.profile.css_common_group(vkopt.settings.get('common_group_color'));
+   },
+
+   css_common_group: function(color){
+      return vk_lib.get_block_comments(function(){
+         /*css:
+         .vk_show_common_group .vkopt_com_gr {
+            background: #{colorCommonGroup} !important;
+         }
+         */
+      }).css.replace(new RegExp("{colorCommonGroup}", 'g'), color);
    },
 
    onInit: function(){
@@ -5240,8 +5266,68 @@ vkopt['profile'] = {
             vkopt.profile.moveAudio(vkopt.settings.get('audio_pos'));
          },200);
       }
+      if (vk.id == cur.oid) // обновим кеш групп, если зашли на свою страницу
+         vkopt.profile.fshow_common_group(true);
+
+      if (vkopt.settings.get('show_common_group') && cur.module == 'profile' && vk.id != cur.oid)
+         vkopt.profile.fshow_common_group();
+   },
+   onLibFiles: function(fn){
+      if (fn == 'fansbox.js' && vkopt.settings.get('show_common_group')){
+         Inj.Replace('FansBox.genIdolRow', /return\s*([\s\S]+)/i, function(s,p1){ // вклиниваемся в рендеринг списка интересных страниц в боксе
+            return 'var tmp_html = '+p1+'; return vkopt_core.mod_str_as_node(tmp_html, vkopt.profile.highlight_groups, {source:"FansBox.genIdolRow"});';
+         })
+      }
+   },
+   groups_cache:{},
+   fshow_common_group: function(update) {
+      var store_key = 'user_groups_' + vk.id; // чтоб при входе на другой аккаунт не подсвечивались группы предыдущего.
+      var stored_list = localStorage[store_key];
+      if (!stored_list || update) {
+         dApi.call("groups.get",{ user_id: vk.id, extended: '1', filter: 'groups,publics,events', v: '5.59'},function(r) {
+            if (r.error) return;
+            var groups = r.response.items;
+            var cnt = groups.length;
+            var groups_sn = [];
+            for (var i = 0; i < groups.length; i++) groups_sn.push(groups[i].screen_name);
+            vkopt.profile.groups_cache[store_key] = groups_sn;
+            if (!update)
+               vkopt.profile.highlight_groups();
+            localStorage[store_key] = JSON.stringify(groups_sn);
+         });
+      } else {
+         try {
+            var groups_sn = JSON.parse(stored_list);
+            vkopt.profile.groups_cache[store_key] = groups_sn;
+            vkopt.profile.highlight_groups();
+         } catch(e){
+            localStorage[store_key] = '';
+            setTimeout(function(){
+               vkopt.profile.fshow_common_group();
+            },300)
+         }
+
+      }
+   },
+   link_rx: /^(https:\/\/[^\/]+\/|\/)([^\/\?#&]+)/i, // выдёргиваем из ссылки адрес модуля (screen_name)
+   highlight_groups: function(node) {
+      var groups_sn = vkopt.profile.groups_cache['user_groups_' + vk.id];
+      if (!groups_sn) return;
+      var rx = vkopt.profile.link_rx;
+      node = node || ge('page_info_wrap');
+      if (!node) return;
+      var nodes = geByTag('a', node);
+      for (var j=0;j<nodes.length;j++) {
+         if ((m = (nodes[j].href || '').match(rx)) && m && groups_sn.indexOf(m[2]) > -1){
+            addClass(nodes[j], "vkopt_com_gr");
+         }
+      }
    },
    processNode: function(node, params){
+         if (vkopt.settings.get('show_common_group') && params && params.url == '/al_fans.php' && params.q && params.q.oid != vk.id){
+            vkopt.profile.highlight_groups(node);
+         }
+
          if (!vkopt.settings.get('calc_age'))
              return;
          var nodes = geByClass('profile_info_row');
