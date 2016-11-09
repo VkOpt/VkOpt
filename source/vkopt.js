@@ -643,6 +643,10 @@ vkopt['settings'] =  {
             font-weight:bold;
             color:#F00;
          }
+         #vkopt_export_settings{
+            text-align: center;
+            padding: 10px 0px;
+         }
          .box_body #vkopt_donate_block{
             margin-left: 50px;
          }
@@ -776,8 +780,7 @@ vkopt['settings'] =  {
                   <!--CODE--!>
                 </div>
              </div>
-             <div id="vkopt_lang_settings"></div>
-             <div id="vkopt_donate_block"></div>
+             {vals.bottom_block}
          </div>
          */
          /*search_block:
@@ -787,8 +790,15 @@ vkopt['settings'] =  {
            </div>
          </div>
          <div class="vk_setts_wrap" id="vkopt_settings">{vals.content}</div>
-         <div id="vkopt_lang_settings"></div>
-         <div id="vkopt_donate_block"></div>
+         {vals.bottom_block}
+         */
+         /*bottom_block:
+             <div id="vkopt_export_settings">
+               <button class="flat_button" onclick="vkopt.settings.export_cfg();">{lng.ExportSettings}</button>
+               <button class="flat_button" onclick="vkopt.settings.import_cfg();">{lng.ImportSettings}</button>
+             </div>
+             <div id="vkopt_lang_settings"></div>
+             <div id="vkopt_donate_block"></div>
          */
          /*donate_form:
          <div>{lng.Donations}</div>
@@ -1104,17 +1114,19 @@ vkopt['settings'] =  {
          val('vk_purses_list', vkOptDonate.WMPursesList('wmdonate'));
          val('wmdonate', vkOptDonate.WMDonateForm(30,'R255120081922'));
       };
+      var bottom_block = vk_lib.tpl_process(vkopt.settings.tpls['bottom_block'], {});
+
       if (!in_box || ge('vkopt_settings_block')){ // показ на странице, а не во всплывающем окне
          stManager.add(['dev.css']);
          el = el || ge('ui_rmenu_vkopt');
          el && uiRightMenu.switchMenu(el);
          var p = ge('wide_column');
          vkopt_core.setLoc('settings?act=vkopt'); // вместо nav.setLoc для избежания рекурсии, обход реакции на смену URL'а
-         p.innerHTML = vkopt.settings.tpls['main'];
+         p.innerHTML = vk_lib.tpl_process(vkopt.settings.tpls['main'],{bottom_block: bottom_block});
          update_view();
       } else {
          stManager.add(['settings.css','dev.css'],function(){
-            var html = vk_lib.tpl_process(vkopt.settings.tpls['search_block'], {content: ''});
+            var html = vk_lib.tpl_process(vkopt.settings.tpls['search_block'], {content: '', bottom_block: bottom_block});
             vkopt.settings.__box = new MessageBox({title:vkopt.settings.__full_title, width: 650 ,hideButtons:true, bodyStyle: 'padding:0px;'}).content(html).show();
             update_view();
          })
@@ -1322,6 +1334,22 @@ vkopt['settings'] =  {
       vk_ext_api.storage.set('vkopt_cfg_backup_'+vk.id, '{}', function(){
          console.log('empty config copied to bg ok');
          callback && callback();
+      });
+   },
+   export_cfg: function() {
+      var data = JSON.stringify(vkopt.settings.config(), '', '   ');
+      vkopt.save_file(data, 'vkopt_config.json');
+   },
+   import_cfg: function() {
+      vkopt.load_file(function(data) {
+         try{
+            var newset = JSON.parse(data);
+            vkopt.settings.config(newset);
+            vkopt.settings.config_cached = null;
+            alert(IDL('ConfigLoaded'));
+         } catch(e) {
+            alert(IDL('ConfigError'));
+         }
       });
    }
 };
