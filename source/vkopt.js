@@ -5978,9 +5978,13 @@ vkopt['wall'] = {
                      onDone:function(data,js){
                         var poll = geByClass1('page_media_poll_wrap',se(data));
                         var pollOnPage = geByClass1('page_media_poll_wrap',ge('wpt'+owner_id+'_'+post_id));
-                        pollOnPage.innerHTML = poll.innerHTML;
+                        if (poll && pollOnPage)
+                           pollOnPage.innerHTML = poll.innerHTML;
+                        else
+                           vkMsg(IDL('CancelAnswerSuccess'));
                      },
                      onFail:function(msg){
+                        vkMsg(IDL('CancelAnswerSuccess'));
                         return true;
                      }
                   }
@@ -6050,6 +6054,10 @@ vkopt['wall'] = {
       ';
       var full_post_id = owner_id + '_' + post_id;
       var view=function(data){
+         if(!data){
+            vkAlertBox(IDL('Error'),'poll data: <br>'+[owner_id, poll_id, post_id].join('<br>'));
+            return;
+         }
          var answer=data.answers; //answer[i].rate=12.9; answer[i].text="...."; answer[i].votes=150
          var max=0;
          for (var i=0; i<answer.length; i++){
@@ -6078,36 +6086,33 @@ vkopt['wall'] = {
          vkopt.wall.poll_voters(data.owner_id,data.id);
       };
 
-      var code='\
-         var post=API.wall.getById({posts:"'+full_post_id+'"})[0];\
-         var attachments=post.attachments;\
-         var i=0;\
-         var b=attachments[i];\
-         var pid = 0;\
-         var oid = 0;\
-         var oid2 = 0;\
-         while(i<attachments.length){\
-            if (b.type=="poll"){\
-               pid=b.poll.poll_id;\
-               oid=post.copy_owner_id;\
-               oid2=post.to_id;\
-            };\
-            i = i + 1;\
-            b=attachments[i]; \
-         }\
-         return {oid:oid,oid2:oid2,pid:pid,p:post,poll1:API.polls.getById({owner_id:oid,poll_id:pid}),poll2:API.polls.getById({owner_id:oid2,poll_id:pid})};\
-         ';
 
-      if (owner_id && poll_id){
+      var code = 'return {posts: API.wall.getById({posts:"'+full_post_id+'", copy_history_depth: 2}), poll: API.polls.getById({owner_id:'+owner_id+',poll_id:'+poll_id+'})};'
+      if (!post_id && owner_id && poll_id){
          dApi.call('polls.getById',{owner_id:owner_id, poll_id:poll_id, v: '5.59'},function(r){
             var data=r.response;
             view(data);
          });
       } else {
          dApi.call('execute',{code:code, v: '5.59'},function(r){
-            var data=r.response;
-            if (vk_DEBUG) console.log(data);
-            view(data.poll1 || data.poll2);
+         var post = ((r.response || {}).posts || [])[0] || {};
+            var scan = function(list){
+               if (!list)
+                  return null;
+               for (var i = 0; i < list.length; i++)
+                  if (list[i].type == 'poll' && list[i].poll.id == poll_id)
+                     return list[i].poll;
+               return null;
+            }
+            var poll = scan(post.attachments);
+            if (!poll && post.copy_history)
+               for (var i = 0; i < post.copy_history.length; i++){
+                  poll = scan(post.copy_history[i].attachments);
+                  if (poll)
+                     break;
+               }
+            vkopt.log(poll);
+            view(poll);
          });
       }
       return false;
