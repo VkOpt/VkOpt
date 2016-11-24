@@ -369,6 +369,9 @@ var vk_glue = {
 
          // Можем модифицировать поля запроса перед отсылкой ajax-запроса, либо заблокировать его
          Inj.Start('ajax.post','if (vk_glue.process_on_post(#ARG0#, #ARG1#, #ARG2#) === false) return;');//(url, query, options)
+
+         // цепляемся к возвращению обработанного шаблона из getTemplate
+         Inj.Replace('getTemplate', /return\s+([^;]+);/,'return vk_glue.tpl_hook($1, #ARG0#, #ARG1#)');
          /*
          Inj.Start('renderFlash','vkOnRenderFlashVars(vars);');
          */
@@ -433,6 +436,10 @@ var vk_glue = {
       // catch(e){
       //    vkopt_core.ping_stat({type: 'fail', source: 'response_handler', url: url, q: q ? q.act : ''})
       // }
+   },
+   tpl_hook: function(html, tpl_name, state){
+      // Сообщаем модулям, что нужно как элемент обработать содержимое возвращаемое функцией getTemplate
+      return vkopt_core.mod_str_as_node(html, vkopt_core.plugins.process_node, {source:"getTemplate", tpl_name: tpl_name, state: state})
    }
 };
 
@@ -4175,6 +4182,24 @@ vkopt['messages'] = {
          .vk_save_hist_cfg textarea{
             width:370px;
          }
+         .vk_audio_msg_btns{
+            padding: 0px 10px;
+         }
+         .vk_au_msg_dl{
+            font-size: 10px;
+            padding-right: 10px;
+         }
+         .vk_au_msg_dl div{
+            background-image: url(/images/blog/about_icons.png);
+            background-repeat: no-repeat;
+            width: 12px;
+            height: 14px;
+            background-position: 0px -309px;
+            padding-right: 5px;
+            display: inline-block;
+            margin-top: -5px;
+            margin-bottom: -5px;
+         }
          */
       }).css + vkopt.messages.css_msg_bg(vkopt.settings.get('old_unread_msg_bg'))
    },
@@ -4302,6 +4327,12 @@ vkopt['messages'] = {
          /*acts_export_history_item:
          <a tabindex="0" role="link" class="ui_actions_menu_item _im_action im-action vk_acts_item_icon" onclick="return vkopt.messages.export_box()">{lng.SaveHistory}</a>
          */
+         /*audio_msg_btns:
+         <div class="vk_audio_msg_btns">
+           <a class="vk_au_msg_dl" href="{vals.url_mp3}"><div></div>mp3</a>
+           <a class="vk_au_msg_dl" href="{vals.url_ogg}"><div></div>ogg</a>
+         </div>
+         */
       });
    },
    onRequestQuery: function(url, query, options) {
@@ -4345,6 +4376,26 @@ vkopt['messages'] = {
       vkopt_core.timeout(vkopt.messages.acts_menu, 500);
       if (vkopt.settings.get('im_hide_dialogs'))
          vkopt.messages.dialogs_hide_init();
+   },
+   processNode: function(node, params){
+      if (!vkopt.settings.get('audio_dl') || !node || (params && params.source == "getTemplate" && params.tpl_name!="im_msg_row")) return;
+      var amsg = geByClass('audio-msg-track', node);
+      for (var i = 0; i < amsg.length; i++){
+         var msg = amsg[i];
+         if (!msg || !msg.parentNode || geByClass1('vk_audio_msg_btns', msg.parentNode)) // чтоб повторно не добавить кнопки
+            continue;
+         // выдираем ссылки на аудио
+         var url_mp3 = attr(msg,'data-mp3'),
+             url_ogg = attr(msg,'data-ogg');
+         if (!url_mp3 && !url_ogg)
+            continue;
+         // создаём блок с кнопками по шаблону и добавляем после аудио-сообщения
+         var dl_block = se(vk_lib.tpl_process(vkopt.messages.tpls['audio_msg_btns'],{
+            url_mp3: url_mp3,
+            url_ogg: url_ogg
+         }));
+         msg.parentNode.appendChild(dl_block);
+      }
    },
    info_icon: function(){
       var p = geByClass1('_im_dialogs_settings');
