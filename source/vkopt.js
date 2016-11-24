@@ -5078,6 +5078,14 @@ vkopt['face'] =  {
             title:"seExplandProfileInfo",
             class_toggler: true
          }
+      },
+      Extra:{
+         anonimize_btn: {
+            class_toggler: true
+         },
+         anonimize: {
+            class_toggler: true
+         }
       }
    },
    css: function(){
@@ -5185,6 +5193,49 @@ vkopt['face'] =  {
          .vk_show_full_user_info .profile_more_info {
             display: none;
          }
+
+         .vk_anonimize .top_profile_img,
+         .vk_anonimize .people_cell_img,
+         .vk_anonimize .post_field_user_image,
+         .vk_anonimize .post_img,
+         .vk_anonimize .reply_image,
+         .vk_anonimize .like_tt_owner,
+         .vk_anonimize .friends_photo,
+         .vk_anonimize .ow_ava,
+         .vk_anonimize .apps_feed_user_photo,
+         .vk_anonimize .ts_contact_photo,
+         .vk_anonimize .chat_tab_imgcont,
+         .vk_anonimize .fc_contact_photo,
+         .vk_anonimize .fc_msgs_img,
+         .vk_anonimize .nim-peer--photo{
+            -webkit-filter: blur(10px);
+            filter: blur(6px);
+         }
+         .vk_anonimize .page_avatar_img{
+            -webkit-filter: blur(30px);
+            filter: blur(30px);
+         }
+         .vk_anonimize .top_profile_name,
+         .vk_anonimize .ts_contact_title,
+         .vk_anonimize .ts_contact_info,
+         .vk_anonimize .ts_contact_info,
+         .vk_anonimize .people_cell_name a,
+         .vk_anonimize .friends_field_title a,
+         .vk_anonimize .post_author .author,
+         .vk_anonimize #profile h2.page_name,
+         .vk_anonimize .reply_author .author,
+         .vk_anonimize .mem_link,
+         .vk_anonimize .audio_friend_name,
+         .vk_anonimize .apps_feed_info_str b a,
+         .vk_anonimize .wall_signed_by,
+         .vk_anonimize .fc_contact_name,
+         .vk_anonimize .im-mess-stack--lnk,
+         .vk_anonimize ._im_ui_peers_list .im-right-menu--text,
+         .vk_anonimize .im-page--peer{
+            -webkit-filter: blur(4px);
+            filter: blur(4px);
+         }
+
          */
       });
       var progress_bar = vk_lib.get_block_comments(vkProgressBar).css;
@@ -5214,6 +5265,7 @@ vkopt['face'] =  {
    },
    onInit: function() {
       vkopt.face.user_online_status();
+      vkopt.face.anon_top_menu_item();
    },
    onCmd: function(data){
       if (data.act == 'user_online_status')
@@ -5222,6 +5274,15 @@ vkopt['face'] =  {
    onOptionChanged: function(option_id, val, option_data){
       if (option_id == 'show_online_status')
          vkopt.face.user_online_status();
+   },
+   anon_top_menu_item: function(){
+      if (!vkopt.settings.get('anonimize_btn'))
+         return;
+      var ref = ge('top_support_link');
+      var item = se('<a class="top_profile_mrow" id="top_anonimize_link" href="#" onclick="return vkopt.settings.set(\'anonimize\', !vkopt.settings.get(\'anonimize\'));">Anonimize</a>');
+      if (ref && !ge('top_anonimize_link')){
+         ref.parentNode.insertBefore(item, ref);
+      }
    },
    user_online_status: function(status) {
       if (vkopt.face.check_online_timeout) clearTimeout(vkopt.face.check_online_timeout);
