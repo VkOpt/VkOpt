@@ -5842,5 +5842,109 @@ vkopt['test_module'] =  {
    //*/
 };
 
+vkopt['im_form'] = {
+   onSettings:{
+      vkInterface:{
+         im_form:{
+            title: 'seExtendForm',
+            class_toggler: true
+         }
+      }
+   },
+   css: function() {
+      var code = vk_lib.get_block_comments(function() {
+         /*css:
+         .vk_im_form .emoji_scroll .emoji_cat_title_helper:first-child,
+         .vk_im_form .emoji_scroll .emoji_smiles_row:nth-child(2),
+         .vk_im_form .emoji_scroll .emoji_smiles_row:nth-child(3){
+            display: none;
+         }
+         .vk_im_form .emoji_tabs{
+            display: none;
+         }
+         .vk_im_form ._im_media_selector,
+         .vk_im_form .im-send-btn{
+            margin: auto;
+            bottom: 0;
+            top: 0;
+         }
+         .vk_im_form ._im_media_selector{
+            width: 24px;
+            height: 25px;
+         }
+         .vk_im_form .im-chat-input--text{
+            resize: vertical;
+            height: auto;
+         }
+         .vk_im_form .im-chat-input .im-chat-input--txt-wrap{
+            margin-bottom: 0;
+         }
+         */
+      }).css;
+      var h = vkopt.settings.get('im_form_h');
+      if (h) code += '.vk_im_form .im-chat-input--text{height:'+h+';}';
+      return code;
+   },
+   addButtons: function() {
+      if (!ge('im_form_emoji') && geByClass1('im-chat-input--text')) {
+         var emoji = document.createElement('div');
+         emoji.id = 'im_form_emoji';
+         emoji.appendChild(vkopt.im_form.recentEmoji());
+         
+         var tarea = geByClass1('im-chat-input--textarea');
+         tarea.insertBefore(emoji, geByClass1('im-chat-input--scroll',tarea));
+         geByClass1('im-chat-input--text').onmouseup = function () {
+            vkopt.settings.set('im_form_h',this.style.height);
+         };
+      }
+      var h = vkopt.settings.get('im_form_h');
+      if (h) vkopt.set_css('.vk_im_form .im-chat-input--text{height:'+h+';}','im_form_h');
+   },
+   recentEmoji: function() {
+      var optId = (Emoji.last-1) || 0;
+      var emojiList = Emoji.emojiGetRecentFromStorage();
+      if (emojiList) Emoji.setRecentEmojiList(emojiList);
+      var cat = Emoji.getRecentEmojiSorted();
+      var data = document.createElement('div');
+      data.className = 'emoji_smiles_row';
+      data.onmouseover = function() {
+         Emoji.shownId = optId;
+      }
+      data.onmouseout = function() {
+         var opts = Emoji.opts[Emoji.last-1];
+         if (opts && opts.emojiOvered) removeClass(opts.emojiOvered, 'emoji_over');
+         Emoji.shownId = false;
+      }
+      for (var i=0, len = cat.length; i<len; i++) {
+         data.innerHTML += Emoji.emojiWrapItem(optId, cat[i], i);
+      }
+      return data;
+   },
+   delButtons: function() {
+      //vkopt.set_css('#im_form_emoji{display:none}','vk_im_form_state');
+      if (ge('im_form_emoji')) {
+         ge('im_form_emoji').remove();
+         geByClass1('im-chat-input--text').style.height = '';
+      }
+   },
+   onLocation: function() {
+      if (vkopt.settings.get('im_form')) {
+         clearTimeout(vkopt.im_form.delay);
+         vkopt.im_form.delay = setTimeout(function() {
+            vkopt.im_form.addButtons();
+         }, 200);
+      }
+   },
+   onOptionChanged: function(option_id, val, option_data) {
+      if (option_id == 'im_form') {
+         clearTimeout(vkopt.im_form.delay);
+         vkopt.im_form.delay = setTimeout(function() {
+            if (val) vkopt.im_form.addButtons();
+            else vkopt.im_form.delButtons();
+         }, 200);
+      }
+   }
+}
+
 
 vkopt_core.init();
