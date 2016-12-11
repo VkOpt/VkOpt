@@ -40,6 +40,7 @@ var vkopt_defaults = {
       audio_pos: false?
       old_unread_msg: false,
       old_unread_msg_bg: 'c5d9e7',
+      im_recent_emoji: false,
       ru_vk_logo: false,
       hide_big_like: false,
       hide_left_set: false,
@@ -49,6 +50,9 @@ var vkopt_defaults = {
       show_online_status: false,
       show_common_group: false,
       common_group_color: '90ee90',
+
+      //disabled:
+      im_store_h: false,
 
       //Extra:
       vkopt_guide: true,   // показываем, где находится кнопка настроек, до тех пор, пока в настройки всё же не зайдут
@@ -6333,6 +6337,125 @@ vkopt['test_module'] =  {
    },
    //*/
 };
+
+vkopt['im_form'] = {
+   onSettings:{
+      vkInterface:{
+         im_recent_emoji:{
+            title: 'seRecentEmoji',
+            class_toggler: true
+         }/*,
+         im_store_h:{
+            title: 'seStoreHeightImTxt',
+            class_toggler: true
+         }*/
+      }
+   },
+   css: function() {
+      var code = vk_lib.get_block_comments(function() {
+         /*css:
+         .vk_im_recent_emoji ._im_media_selector,
+         .vk_im_recent_emoji .im-send-btn{
+            margin: auto;
+            bottom: 0;
+            top: 0;
+         }
+         .vk_im_recent_emoji ._im_media_selector{
+            width: 24px;
+            height: 25px;
+         }
+         .vk_im_recent_emoji .im-chat-input--text{
+            resize: vertical;
+            height: auto;
+         }
+         .vk_im_recent_emoji .im-chat-input .im-chat-input--txt-wrap{
+            margin-bottom: 0;
+         }
+         */
+      }).css;
+      /*
+      if (vkopt.settings.get('im_store_h')){
+         var h = vkopt.settings.get('im_form_h');//im_store_h
+         if (h) code += '.vk_im_store_h .im-chat-input--text{height:'+h+';}';
+      }*/
+      return code;
+   },
+   add_recent_emoji: function() {
+      if (!ge('im_form_emoji') && window.Emoji && geByClass1('im-chat-input--text')) {
+         var emoji = document.createElement('div');
+         emoji.id = 'im_form_emoji';
+         emoji.appendChild(vkopt.im_form.recent_emoji());
+
+         var tarea = geByClass1('im-chat-input--textarea');
+         tarea.insertBefore(emoji, geByClass1('im-chat-input--scroll',tarea));
+      }
+   },
+   recent_emoji: function() {
+      var optId = (Emoji.last-1) || 0;
+      var emojiList = Emoji.emojiGetRecentFromStorage();
+      if (emojiList) Emoji.setRecentEmojiList(emojiList);
+      var cat = Emoji.getRecentEmojiSorted();
+      var data = document.createElement('div');
+      data.className = 'emoji_smiles_row';
+      data.onmouseover = function() {
+         Emoji.shownId = optId;
+      }
+      data.onmouseout = function() {
+         var opts = Emoji.opts[Emoji.last-1];
+         if (opts && opts.emojiOvered) removeClass(opts.emojiOvered, 'emoji_over');
+         Emoji.shownId = false;
+      }
+      for (var i=0, len = cat.length; i<len; i++) {
+         data.innerHTML += Emoji.emojiWrapItem(optId, cat[i], i);
+      }
+      return data;
+   },
+   del_recent_emoji: function() {
+      if (ge('im_form_emoji')) {
+         re('im_form_emoji')
+      }
+   },
+   debounce: function(cb){
+      clearTimeout(vkopt.im_form.delay);
+      vkopt.im_form.delay = setTimeout(cb,200);
+   },
+   onLocation: function() {
+      if (vkopt.settings.get('im_recent_emoji') || vkopt.settings.get('im_store_h')) {
+         vkopt.im_form.debounce(function() {
+            if (vkopt.settings.get('im_recent_emoji'))
+               vkopt.im_form.add_recent_emoji();
+
+            if (vkopt.settings.get('im_store_h')){
+               var inp = geByClass1('im-chat-input--text')
+               inp.style.height = vkopt.settings.get('im_form_h');
+               inp.onmouseup = function () { //TODO: replace to addEvent
+                  vkopt.settings.set('im_form_h',this.style.height);
+               }
+            }
+         });
+      }
+
+   },
+   onOptionChanged: function(option_id, val, option_data) {
+      if (option_id == 'im_recent_emoji') {
+         vkopt.im_form.debounce(function() {
+            if (val) vkopt.im_form.add_recent_emoji();
+            else vkopt.im_form.del_recent_emoji();
+         });
+      }
+      if (option_id == 'im_store_h') {
+         vkopt.im_form.debounce(function() {
+            if (val){
+               //var h = vkopt.settings.get('im_form_h');
+               //if (h) vkopt.set_css('.vk_im_store_h .im-chat-input--text{height:'+h+';}','im_form_h');
+               geByClass1('im-chat-input--text').style.height = vkopt.settings.get('im_form_h');
+            } else {
+               geByClass1('im-chat-input--text').style.height = '';
+            }
+         })
+      }
+   }
+}
 
 vkopt['turn_blocks'] = {
    onSettings:{
