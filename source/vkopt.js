@@ -5264,7 +5264,7 @@ vkopt['face'] =  {
       },
       audio: function(){
          if (vkopt.settings.get('ad_block'))
-            Inj.Start('AudioPlayer.prototype._adsPrepareAd','if (vkopt.settings.get("ad_block")) return;');
+            Inj.Start('AudioPlayer.prototype._adsIsAllowed','if (vkopt.settings.get("ad_block")) return AudioPlayer.ADS_ALLOW_DISABLED;');
       }
    },
    onInit: function() {
