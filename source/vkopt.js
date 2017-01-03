@@ -5248,12 +5248,25 @@ vkopt['face'] =  {
    },
    onResponseAnswer: function(answer, url, q){
       // запихиваем свой обработчик в момент получения данных о видео.
-      if (url == '/al_video.php' && q.act == 'show' && answer[2])
-         answer[2] = answer[2].replace(/(var\s*isInline)/,'\n   vkopt.face.ad_block.video(vars);\n $1')
+      if (url == '/al_video.php' && q.act == 'show'){
+         if (answer[2])
+            answer[2] = answer[2].replace(/(var\s*isInline)/,'\n   vkopt.face.ad_block.video(vars);\n $1');
+         if (answer[5] && answer[5].mvData && vkopt.settings.get('ad_block'))
+            answer[5]['no_ads'] = 1;
+            answer[5].player && answer[5].player.params && each(
+               answer[5].player.params,
+               function(i,item){
+                  item['no_ads'] = 1;
+               }
+            );
+
+      }
    },
    onLibFiles: function(fn){
       if (fn == 'audioplayer.js')
          vkopt.face.ad_block.audio();
+      if (fn == 'videoplayer.js')
+         vkopt.face.ad_block.videoplayer();
    },
    ad_block: {
       video: function(vars){
@@ -5261,6 +5274,10 @@ vkopt['face'] =  {
             vars['no_ads'] = 1;
             vkopt.log('vid ad_block info:', vars);
          }
+      },
+      videoplayer:function(){
+         if (vkopt.settings.get('ad_block'))
+            Inj.Start('VideoPlayer.prototype.canShowAds','if (vkopt.settings.get("ad_block")) return false;');
       },
       audio: function(){
          if (vkopt.settings.get('ad_block'))
