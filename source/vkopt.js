@@ -3773,38 +3773,19 @@ vkopt['videoview'] = {
          */
       });
    },
+   onLibFiles: function(fn){
+      if (fn == 'videoview.js'){
+         Inj.Start('Videoview.showVideo','vkopt.videoview.on_show(arguments);');
+      }
+   },
+   /*
    onResponseAnswer: function(answer, url, q){
       // запихиваем свой обработчик в момент получения данных о видео.
       if (url == '/al_video.php' && q.act == 'show'){
-         var rx = /(var\s*isInline)/;
-         if (answer[5] && answer[5].player){// новый формат ответа, JSON с данными о плеере находится в 6-ом аргументе.
-            var vars = null;
-            var params_arr = answer[5].player.params;
-            if (params_arr){
-               vars = params_arr[0]; // засовываем данные о первом попавшемся видео
-               var full_vid = function(vars){
-                  return vars.oid+'_'+vars.vid
-               };
-               if (params_arr.length > 1 && full_vid(vars) != q.video){
-                  vkopt.log('wrong video data. search other...');
-                  for (var i = 0; i < params_arr.length; i++){ // да, тут лишняя итерация
-                     if (full_vid(params_arr[i]) == q.video){ // нашли данные о нужном видео
-                        vars = params_arr[i];
-                        break;
-                     }
-                  }
-               }
-
-            }
-            vkopt.videoview.on_player_data(vars);
-         }
-         else if (answer[2] && rx.test(answer[2])){ // старый формат ответа, vars находится в третьем аргументе.
-            //vkopt.log('video data:', answer[2]);
-            answer[2] = answer[2].replace(rx, '\n   vkopt.videoview.on_player_data(vars);\n $1');
-         } else
-            vkopt.videoview.on_player_data(null);
+         vkopt.videoview.check_show_args(answer);
       }
    },
+   */
    _cur_mv_data: null,
    update_dl_btn: function(html){
      re('vk_mv_down_icon'); // убиваем кнопку, т.к не выходит убить тултип таким образом: data(ge('vk_mv_down_icon'), 'ett').destroy();
@@ -3823,18 +3804,57 @@ vkopt['videoview'] = {
                  offset: [-3, 0]
       });
    },
+   check_show_args: function(args){
+      //args = [videoRaw, title, html, js, desc, serviceBtns, opt]
+      var videoRaw = args[0],
+          js = args[3],
+          opt = args[6],
+          rx = /(var\s*isInline)/;
+      if (opt && opt.player){// новый формат ответа, JSON с данными о плеере находится в 6-ом аргументе.
+         var vars = null;
+         var params_arr = opt.player.params;
+         if (params_arr){
+            vars = {};
+            var full_vid = function(vars){
+               return vars.oid+'_'+vars.vid
+            };
+            if (params_arr.length > 0 && full_vid(vars) != videoRaw){ //mvcur.videoRaw
+               vkopt.log('wrong video data. search other...');
+               for (var i = 0; i < params_arr.length; i++){
+                  if (full_vid(params_arr[i]) == videoRaw){ // нашли данные о нужном видео
+                     vars = params_arr[i];
+                     break;
+                  }
+               }
+            }
+
+         }
+         vkopt.videoview.on_player_data(vars);
+      }
+      else if (js && rx.test(args[3])){ // старый формат ответа, vars находится в третьем аргументе.
+         //vkopt.log('video data:', args[3]);
+         args[3] = js.replace(rx, '\n   vkopt.videoview.on_player_data(vars);\n $1');
+      } else
+         vkopt.videoview.on_player_data(null);
+   },
+   on_show: function(args){
+      vkopt.log('vkopt.videoview.on_show', args);
+      vkopt.videoview.check_show_args(args);
+   },
    on_player_data: function(vars){
-      //vkopt.log('Video data:', vars);
+      vkopt.log('Video data:', vars, mvcur.mvData.videoRaw);
       if (!vkopt.settings.get('vid_dl')) return;
       vkopt.videoview._cur_mv_data = vars;
       vkopt.videoview.update_dl_btn();
-      if (!vars){
+      if (!vars || !vars.md_title){
          setTimeout(function(){
             var p, ifr;
             p = ge('mv_player_box');
             p && (ifr = geByTag1('iframe', p));
             if (ifr)
-               vkopt.videoview.on_iframe_player(ifr.src);
+               vkopt.videoview.on_iframe_player(ifr.src)
+            else
+               vkopt.videoview.on_iframe_player(vars)
          }, 300);
          return; // нет данных - выходим.
       }
@@ -3854,44 +3874,45 @@ vkopt['videoview'] = {
    },
    on_iframe_player: function(url){
       vkopt.log('External player:', url);
-      if (url.indexOf('ivi.ru') > -1){
-         vkopt.videoview.get_ivi_links(url, function(links, vid){
-               var html = '';
-               var filename = vkCleanFileName(mvcur.mvData.title);
-               html += vk_lib.tpl_process(vkopt.videoview.tpls['ext_link'], {
-                  url: 'http://www.ivi.ru/watch/' + vid,
-                  source_name:'ivi.ru'
-               });
+      if (isString(url)) {
+         if (url.indexOf('ivi.ru') > -1){
+            vkopt.videoview.get_ivi_links(url, function(links, vid){
+                  var html = '';
+                  var filename = vkCleanFileName(mvcur.mvData.title);
+                  html += vk_lib.tpl_process(vkopt.videoview.tpls['ext_link'], {
+                     url: 'http://www.ivi.ru/watch/' + vid,
+                     source_name:'ivi.ru'
+                  });
 
-               for (var i = 0; i < links.length; i++){
-                  html += vk_lib.tpl_process(vkopt.videoview.tpls['dl_link'], {
-                     url: links[i].url,
-                     name: filename + '_' + links[i].quality + '.mp4',
-                     caption: links[i].quality
-                  })
-               }
-               vkopt.videoview.update_dl_btn(html);
-         })
+                  for (var i = 0; i < links.length; i++){
+                     html += vk_lib.tpl_process(vkopt.videoview.tpls['dl_link'], {
+                        url: links[i].url,
+                        name: filename + '_' + links[i].quality + '.mp4',
+                        caption: links[i].quality
+                     })
+                  }
+                  vkopt.videoview.update_dl_btn(html);
+            })
+         }
+         if (url.indexOf('youtube.com') > -1){
+            vkopt.videoview.yt.get_links(url, function(links, vid){
+                  var html = '';
+                  var filename = vkCleanFileName(mvcur.mvData.title);
+                  html += vk_lib.tpl_process(vkopt.videoview.tpls['ext_link'], {
+                     url: 'http://youtube.com/watch?v=' + vid,
+                     source_name: 'YouTube'
+                  });
+                  for (var i = 0; i < links.length; i++){
+                     html += vk_lib.tpl_process(vkopt.videoview.tpls['dl_link'], {
+                        url: links[i].url,
+                        name: filename + '_' + links[i].quality + '.mp4',
+                        caption: links[i].quality
+                     })
+                  }
+                  vkopt.videoview.update_dl_btn(html);
+            })
+         }
       }
-      if (url.indexOf('youtube.com') > -1){
-         vkopt.videoview.yt.get_links(url, function(links, vid){
-               var html = '';
-               var filename = vkCleanFileName(mvcur.mvData.title);
-               html += vk_lib.tpl_process(vkopt.videoview.tpls['ext_link'], {
-                  url: 'http://youtube.com/watch?v=' + vid,
-                  source_name: 'YouTube'
-               });
-               for (var i = 0; i < links.length; i++){
-                  html += vk_lib.tpl_process(vkopt.videoview.tpls['dl_link'], {
-                     url: links[i].url,
-                     name: filename + '_' + links[i].quality + '.mp4',
-                     caption: links[i].quality
-                  })
-               }
-               vkopt.videoview.update_dl_btn(html);
-         })
-      }
-
    },
    get_video_url: function(vars, q) {
       return vars.live_mp4 ? vars.live_mp4 : vars.extra_data ? vars.extra_data : vars["cache" + q] || vars["url" + q]
