@@ -174,7 +174,7 @@ var vkopt_core = {
    run: function(){
       // Под новый дизайн чуть другие функции работы с локализацией.
       vkopt.lang.override(); // TODO: убрать этот костыль при удалении скриптов для старого дизайна
-
+      vkopt.settings.init_defaults();
       for (var key in StaticFiles)
          if (StaticFiles[key].t == 'js' && StaticFiles[key].l)
             vk_glue.inj_to_file(key);
@@ -204,9 +204,14 @@ var vkopt_core = {
    },
    plugins: {
       delayed_run: function(plug_id){ //функция для пуска отдельного плагина, который не был подключен до основного запуска вкопта
+         // сначала прописываем в vkopt_defaults.config данные о значениях опций по умолчанию
+         var options_list = vkopt_core.plugins.call_method(plug_id, 'onSettings');
+         vkopt.settings.update_defaults(options_list);
+
+         // добавляем стили модуля в страницу
          var css = vkopt_core.plugins.get_css(plug_id);
          if (css != '')
-            vkaddcss(css);
+            vkopt.set_css(css, 'vkopt_'+plug_id+'_styles');
 
          vkopt_core.plugins.call_method(plug_id, 'onInit');
          vkopt_core.plugins.call_modules('onModuleDelayedInit', plug_id); // сообщаем всем модулям о подключении опоздавшего
@@ -1191,7 +1196,25 @@ vkopt['settings'] =  {
       var cfg = vkopt.settings.config();
       return (typeof cfg[option_id] == 'undefined') ? vkopt_defaults.config[option_id] : cfg[option_id];
    },
+   init_defaults: function(){
+      var list = vkopt.settings.get_options_list();
+      vkopt.settings.update_defaults(list);
+   },
+   update_defaults: function(list){ // выдираем значения настроек по умолчанию и прописываем в vkopt_defaults.config;
+      var each_in_opts = function(list){
+         for (var option_id in list){
+            if (typeof list[option_id].default_value != 'undefined')
+               vkopt_defaults.config[option_id] = list[option_id].default_value;
 
+            if (list[option_id].sub){              // ищем среди вложенных опций.
+               each_in_opts(list[option_id].sub);
+            }
+         }
+      };
+      for (var cat in list){
+         each_in_opts(list[cat]);
+      }
+   },
    get_option_data: function(option_id){
       var list = vkopt.settings.get_options_list();
       var each_in_opts = function(list){
