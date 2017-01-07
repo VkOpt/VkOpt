@@ -889,7 +889,7 @@ vkopt['settings'] =  {
 		  </div>
       */
       /*color_input:
-      <div id="vk_color_input_{vals.id}" class="vk_color_switcher clear">
+      <div id="vk_color_input_{vals.id}" class="vk_color_switcher clear_fix">
 			<div class="vk_color_label">{vals.caption}</div>
 			<div class="dev_labeled">
 			  # <input type="text" onchange="vkopt.settings.set('{vals.id}', this.value); setStyle(ge('dev_colorbox{vals.id}'),{backgroundColor: '#'+this.value});" class="text dev_constructor_input" id="widget_color{vals.id}" value="{vals.curColorNoSharp}" style="width: 50px;" onkeyup="cur.soonUpdatePreview();">
