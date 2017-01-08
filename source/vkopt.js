@@ -37,7 +37,7 @@ var vkopt_defaults = {
       postpone_custom_interval: true,
       pv_comm_move_down: false,
       calc_age: true,
-      audio_pos: false?
+      audio_pos: false,
       old_unread_msg: false,
       old_unread_msg_bg: 'c5d9e7',
       im_recent_emoji: false,
@@ -50,6 +50,7 @@ var vkopt_defaults = {
       show_online_status: false,
       show_common_group: false,
       common_group_color: '90ee90',
+      audio_del_button_pl: true,
 
       //disabled:
       im_store_h: false,
@@ -89,7 +90,8 @@ var vkopt_defaults = {
    popular: [
       'scroll_to_next',
       'pv_comm_move_down',
-      'disable_border_radius'
+      'disable_border_radius',
+      'audio_del_button_pl'
    ],
    disabled_modules: [
       /*
@@ -2139,7 +2141,12 @@ vkopt['audio'] =  {
          padding-bottom: 5px;
          padding-top: 5px;
       }
-      */
+
+       .top_audio_layer .audio_row .audio_act#delete_pl{
+       display: block;
+       }
+
+       */
       });
       return codes.dl;
    },
@@ -2165,6 +2172,9 @@ vkopt['audio'] =  {
          },
          audio_clean_titles: {
             title: 'seAudioUntrashTitle'
+         },
+	     audio_del_button_pl: {
+		    title: 'audio_del_button_pl'
          }
       },
       Extra:{
@@ -2177,20 +2187,16 @@ vkopt['audio'] =  {
          audio_edit_box_album_selector:{}
       }
    },
-   onLibFiles: function(file_name){
-      if (file_name == 'audioplayer.js'){
-         if (vkopt.settings.get('audio_dl')){
-            Inj.Start('AudioPlayer.prototype.toggleAudio','if (vkopt.audio.prevent_play_check()) return true;'); // для предотвращения воспроизведения при нажатии на "скачать"
-         }
-      }
-   },
    onInit: function(){
       vkopt.audio.tpls = vk_lib.get_block_comments(function(){
       /*dl_button:
-      <a class="audio_act vk_audio_dl_btn" id="vk_dl_{vals.id}" data-aid="{vals.id}" download="{vals.filename}" href="{vals.url}" onmousedown="vkopt.audio.prevent_play();" onclick="vkopt.audio.prevent_play(); return vkDownloadFile(this);" onmouseover="vkopt.audio.btn_over(this);"><div></div></a>
+      <a class="audio_act vk_audio_dl_btn" data-aid="{vals.id}" download="{vals.filename}" href="{vals.url}" onclick="vkDownloadFile(this);" onmouseover="vkopt.audio.btn_over(this);"><div></div></a>
       */
       /*acts_button:
-      <a class="audio_act vk_audio_acts" id="vk_acts_{vals.id}" data-aid="{vals.id}" onmousedown="vkopt.audio.prevent_play();" onmouseover="vkopt.audio.acts.menu(this);" onclick="vkopt.audio.prevent_play();"><div></div></a>
+      <a class="audio_act vk_audio_acts" data-aid="{vals.id}" onmouseover="vkopt.audio.acts.menu(this);" onclick="cancelEvent(event)"><div></div></a>
+      */
+      /*del_button:
+      <a class="audio_act audio_act_delete_pl" id="delete_pl" onclick="cancelEvent(event);getAudioPlayer().getCurrentPlaylist().removeAudio('{vals.id}');"><div></div></a>
       */
       /*size_info:
       <small class="fl_l vk_audio_size_info_wrap" id="vk_audio_size_info_{vals.id}">
@@ -2398,7 +2404,6 @@ vkopt['audio'] =  {
    },
    btn_over: function(el){
       vkopt.audio.check_dl_url(el);
-      vkDragOutFile(el);
       if (!vkopt.settings.get('audio_dl_acts_2_btns') && vkopt.settings.get('audio_more_acts'))
          vkopt.audio.acts.menu(el);
    },
@@ -2441,8 +2446,7 @@ vkopt['audio'] =  {
    },
    make_dl_url: function(url, name){
       name = vkCleanFileName(name);
-      if (/^https:.+\.vk-cdn\.net\//i.test(url))
-         url = url.replace(/^https:/,'http:');
+      url = url.replace(/^https:/,'http:');
       return url + '#FILENAME/' + vkEncodeFileName(name) + '.mp3';
    },
    processNode: function(node, params){
@@ -2550,8 +2554,13 @@ vkopt['audio'] =  {
             (acts.firstChild && !vkopt.settings.get('audio_dl_acts_2_btns')) ? acts.insertBefore(btn, acts.firstChild) : acts.appendChild(btn);
 
          // Менюшка
-          if ((!vkopt.settings.get('audio_dl') || vkopt.settings.get('audio_dl_acts_2_btns')) && vkopt.settings.get('audio_more_acts'))
+         if ((!vkopt.settings.get('audio_dl') || vkopt.settings.get('audio_dl_acts_2_btns')) && vkopt.settings.get('audio_more_acts'))
              acts.firstChild ? acts.insertBefore(acts_btn, acts.firstChild) : acts.appendChild(acts_btn);
+         // Удалить из списка
+         if (vkopt.settings.get('audio_del_button_pl')){
+	        var del_button = se(vk_lib.tpl_process(vkopt.audio.tpls.del_button, {id: info_obj.fullId}));
+            acts.appendChild(del_button);
+         }
       }
 
       // TODO: грузить инфу только при наведении на иконку меню/скачивания
@@ -2721,16 +2730,6 @@ vkopt['audio'] =  {
          })
       });
    },
-   prevent_play_check: function(){
-      if (vkopt.audio.__play_blocked){
-         vkopt.audio.__play_blocked = false;
-         return true;
-      }
-      return false;
-   },
-   prevent_play: function(){
-      vkopt.audio.__play_blocked = true;
-   },
    acts: {
       menu : function (btn) {
          var audioRow = gpeByClass('_audio_row', btn);
@@ -2756,8 +2755,7 @@ vkopt['audio'] =  {
             hidedt: 300,
             onCreate: function(){
                addClass(btn.tt.container, 'vk_acts_menu_block');
-               addEvent(btn.tt.container, 'click', vkopt.audio.prevent_play);
-               addEvent(btn.tt.container, 'mousedown', vkopt.audio.prevent_play);
+               addEvent(btn.tt.container, 'click', cancelEvent);
                addEvent(btn.tt.container, 'mousedown', cancelEvent); // блочим перетаскивание за меню
             }
          };
