@@ -10,8 +10,8 @@
 // (c) All Rights Reserved. VkOpt.
 //
 /* VERSION INFO */
-var vVersion	= 302;
-var vBuild = 170218;
+var vVersion	= 301;
+var vBuild = 161025;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -539,47 +539,6 @@ vkopt.set_css = function(code, id){
    	document.getElementsByTagName("head")[0].appendChild(st);
    } else
    	val(id, code);
-}
-
-vkopt.permissions = { // for chromium
-   origins_cache:[],
-   update: function(callback){
-      vk_ext_api.req({act:'permissions_get'},function(r){
-         vkopt.permissions.origins_cache = r.permissions.origins;
-         callback && callback(r.permissions);
-      });
-   },
-   check_url: function(url){
-      var masks = vkopt.permissions.origins_cache;
-      for (var i in masks){
-         var rx_pat = '^'+masks[i].replace(/\*$/,'').replace(/\*/g,'[^\/]*').replace(/\//g,'\\/').replace(/\./g,'\\.')+'.*';
-         var rx = new RegExp(rx_pat,'i');
-         if (rx.test(url))
-            return true;
-      }
-      return false;
-   },
-   request: function(url, callback){
-      var m = url.match(/^[^\/]+:\/\/([^\/]+\.)?([^\/]+\.[^\/]+)\//);
-      var mask = "*://" + (m[2] ? "*." : '') + m[2] + "/*";
-      vk_ext_api.req({act:'permissions_request', permissions_query:{origins:[mask]}},function(r){
-         vkopt.permissions.update(function(){
-            callback && callback(r.act == 'permission_granted');
-         });
-      });
-   },
-   check_dl_url: function(el, url){
-      if (!vkbrowser.chrome || vkopt.permissions.check_url(url)){
-         return true;
-      } else {
-         show(boxLayerBG);
-         vkopt.permissions.request(url, function(granted){
-            hide(boxLayerBG);
-            if (granted) el.click();
-         })
-         return false;
-      }
-   }
 }
 
 vkopt['res'] = {
@@ -2203,7 +2162,7 @@ vkopt['audio'] =  {
       .audio_row.audio_added_next.audio_skipped .audio_act.audio_act_rem_from_pl{
          display:block;
       }
-      */
+       */
       });
       return codes.dl;
    },
@@ -2244,7 +2203,7 @@ vkopt['audio'] =  {
    onInit: function(){
       vkopt.audio.tpls = vk_lib.get_block_comments(function(){
       /*dl_button:
-      <a class="audio_act vk_audio_dl_btn" data-aid="{vals.id}" download="{vals.filename}" href="{vals.url}" onclick="return vkopt.audio.download_file(this);" onmouseover="vkopt.audio.btn_over(this);"><div></div></a>
+      <a class="audio_act vk_audio_dl_btn" data-aid="{vals.id}" download="{vals.filename}" href="{vals.url}" onclick="vkDownloadFile(this);" onmouseover="vkopt.audio.btn_over(this);"><div></div></a>
       */
       /*acts_button:
 
@@ -2304,7 +2263,7 @@ vkopt['audio'] =  {
               result.push({album_id: album_id, title: title});
          })
          callback(result)
-         }
+      }
       var p=ge('audio_extra_link');
       if (!p) return;
       var div=vkCe('div',{id:'vk_audio_mover', 'class':'audio_edit_row clear_fix'},'\
@@ -2348,7 +2307,7 @@ vkopt['audio'] =  {
                         getAudioPlayer().updateAudio(info, u);
 
                         hide('vk_au_alb_ldr');
-                     }
+                      }
                    });
                  }
             });
@@ -2459,13 +2418,6 @@ vkopt['audio'] =  {
       if (!vkopt.settings.get('audio_dl_acts_2_btns') && vkopt.settings.get('audio_more_acts'))
          vkopt.audio.acts.menu(el);
    },
-   download_file: function(el){
-     var result = true;
-     if (el.hasAttribute('url_ready'))
-        result = vkopt.permissions.check_dl_url(el, el.href);
-     if (result) result = vkDownloadFile(el);
-     return result;
-   },
    check_dl_url: function(el){   // если на странице не было ссылок на аудио, то при наведении на кнопку загрузки ждём их появления в кэше.
       if (el.getAttribute('href') == ''){
          addClass(el,'dl_url_loading');
@@ -2476,7 +2428,6 @@ vkopt['audio'] =  {
                var name = vkCleanFileName(info.performer + ' - ' + info.title);
                var url = vkopt.audio.make_dl_url(info.url, name);
                el.setAttribute('href', url);
-               el.setAttribute('url_ready','1');
                removeClass(el,'dl_url_loading');
             } else {
                setTimeout(function(){
@@ -2496,7 +2447,7 @@ vkopt['audio'] =  {
                   idx = hq.length - 1;
                }
                var start = Math.max(0, idx - 2);
-               var end = Math.min(start + 5, hq.length) - start;
+               var end = Math.min(start + 5, hq.length - 1) - start;
                var to_load = hq.splice(start, end);
                vkopt.audio.__load_queue = vkopt.audio.__load_queue.concat(to_load);
                vkopt.audio.load_audio_urls(); // запускаем процесс загрузки инфы об аудио из очереди
@@ -2506,13 +2457,10 @@ vkopt['audio'] =  {
    },
    make_dl_url: function(url, name){
       name = vkCleanFileName(name);
-      /*
       // фикс-костыль, т.к для https://*.vk-cdn.net нет разрешений в манифесте.
-      // если исправить в манифесте, то после обновления расширения, оно отключится у всех пользователей хрома)
-      //url = vkopt.audio.decode_url(url);
+      // если исправить в манифесте, то после обновления расширения, оно отключится у всех пользователей хрома
       if (/^https:.+\.vk-cdn\.net\//i.test(url))
          url = url.replace(/^https:/,'http:');
-      */
       return url + '#FILENAME/' + vkEncodeFileName(name) + '.mp3';
    },
    processNode: function(node, params){
@@ -2544,9 +2492,6 @@ vkopt['audio'] =  {
                   queue.push(info_obj.fullId);
             }
          }
-
-         if (info_obj.url)
-            info_obj.url = vkopt.audio.decode_url(info_obj.url);
 
          var name = unclean(info[4]+' - '+info[3]).replace(/<em>|<\/em>/g, ''); // зачищаем от тегов.
          name = vkCleanFileName(name);
@@ -2606,7 +2551,7 @@ vkopt['audio'] =  {
             (acts.firstChild && !vkopt.settings.get('audio_dl_acts_2_btns')) ? acts.insertBefore(btn, acts.firstChild) : acts.appendChild(btn);
 
          // Менюшка
-          if ((!vkopt.settings.get('audio_dl') || vkopt.settings.get('audio_dl_acts_2_btns')) && vkopt.settings.get('audio_more_acts'))
+         if ((!vkopt.settings.get('audio_dl') || vkopt.settings.get('audio_dl_acts_2_btns')) && vkopt.settings.get('audio_more_acts'))
              acts.firstChild ? acts.insertBefore(acts_btn, acts.firstChild) : acts.appendChild(acts_btn);
          // Удалить из списка
          if (vkopt.settings.get('audio_del_button_pl')){
@@ -2648,9 +2593,6 @@ vkopt['audio'] =  {
       } catch(e){}
       vkopt.audio._sizes_cache = sz_cache;
    },
-   clear_sizes_cache:function(){
-      localStorage['vkopt_audio_sizes_cache'] = '{}';
-   },
    size_to_bitrare: function(size, duration){
       var kbit = size / 128;
       var kbps = Math.ceil(Math.round(kbit/duration)/16)*16;
@@ -2691,22 +2633,16 @@ vkopt['audio'] =  {
             el.dataset['kbps'] = sz_info.kbps_raw;
             el.dataset['filesize'] = size;
             addClass(el, 'vk_info_loaded');
-            if (sz_info.kbps_raw > 120 && !vkopt.audio._sizes_cache[aid]){
+            if (sz_info.kbps_raw > 0 && !vkopt.audio._sizes_cache[aid]){
                vkopt.audio._sizes_cache[aid] = size;
                vkopt.audio.save_sizes_cache();
-            } else {
-               vkopt.audio._sizes_cache[aid] = false;
-               vkopt.audio.save_sizes_cache();
-
             }
-            return sz_info.kbps_raw > 120;
          }
       };
-      var need_load = true;
-      if (size)
-         need_load = !set_size_info(size);
-
-      if (need_load && els.length){
+      if (size){
+         set_size_info(size);
+      } else
+      if (els.length){
          var reset=setTimeout(function(){
             vkopt.audio.info_thread_count--;
             rb = false;
@@ -2729,11 +2665,6 @@ vkopt['audio'] =  {
    __hover_load_queue:[], // очередь, из которой будут аудио перемещаться в __load_queue, при наведении на иконку загрузки.
    __loading_queue:[], // очередь текущих аудио, по которым в данный момент грузится инфа
    __load_req_num: 1,
-   decode_url: function(url){
-      var tmp = {};
-      AudioPlayerHTML5.prototype._setAudioNodeUrl(tmp, url);
-      return tmp.src
-   },
    load_audio_urls: function(){
       if (vkopt.audio.__load_queue.length == 0 || vkopt.audio.__loading_queue.length > 0) // если нет списка на подгрузку, или что-то уже грузится - игнорим вызов
          return;
@@ -2757,11 +2688,7 @@ vkopt['audio'] =  {
                   //console.log('on done:', vkopt.audio.__load_req_num, data);
                   vkopt.audio.__loading_queue = [];
                   each(data, function (i, info) {
-
                      info = AudioUtils.asObject(info);
-                     if (info.url)
-                        info.url = vkopt.audio.decode_url(info.url);
-
                      vkopt.audio.__full_audio_info_cache[info.fullId] = info;
                      if (info.url)
                         vkopt.audio.load_size_info(info.fullId, info.url);
@@ -3949,7 +3876,7 @@ vkopt['videoview'] = {
       if (!vkopt.settings.get('vid_dl')) return;
       vkopt.videoview._cur_mv_data = vars;
       vkopt.videoview.update_dl_btn();
-      if (!vars || !vars.md_title || vars.extra){
+      if (!vars || !vars.md_title){
          setTimeout(function(){
             var p, ifr;
             p = ge('mv_player_box');
@@ -4335,7 +4262,6 @@ vkopt['messages'] = {
       return vk_lib.get_block_comments(function(){
          /*css:
          .vk_old_unread_msg .nim-dialog.nim-dialog_classic.nim-dialog_unread-out .nim-dialog--inner-text,
-         .vk_old_unread_msg .ui_scroll_container .nim-dialog.nim-dialog_unread-out .nim-dialog--text-preview,
          .vk_old_unread_msg .nim-dialog.nim-dialog_classic.nim-dialog_unread-out.nim-dialog_muted .nim-dialog--inner-text,
          .vk_old_unread_msg .nim-dialog:not(.nim-dialog_deleted).nim-dialog_unread,
          ._vk_old_unread_msg .nim-dialog.nim-dialog_unread-out,
@@ -5276,7 +5202,7 @@ vkopt['face'] =  {
          .vk_old_white_background body{
             background: #fff;
          }
-         .vk_old_white_background .im-page.im-page_classic .im-page--chat-header,
+         .vk_old_white_background .im-page.im-page_classic .im-page--header-chat,
          .vk_old_white_background .im-page.im-page_classic .im-page--header,
          .vk_old_white_background .im-page.im-page_classic .im-page--chat-input
          {
@@ -6755,8 +6681,10 @@ vkopt['audio_clean_titles'] = {
 		}
 	}
 }
+
 vkopt['attachments_and_link'] = {
     module_id: 'attachments_and_link',
+    dialogsFilter: 7, // показываем все, 1 -линки 2 - форварды 4 записи со стен.
     COUNT_ROW: 8,
     cursor: 0,
     _timer: null,
@@ -6768,7 +6696,7 @@ vkopt['attachments_and_link'] = {
 
         //инициализируем шаблон
         self.template = self.template();
-        ['addBottom', 'clickMenu', 'getAttach', 'getHistoryAttr', 'tplProcess', 'pasteHTML', 'scrolling', 'processResponse',
+        ['addBottom', 'clickMenu', 'getAttach', 'getHistoryAttr', 'tplProcess', 'pasteHTML', 'processResponse',
             'callEvent', 'normalazeMessage'].reduce(function (func, value) {
                 func[value] = func[value].bind(func);
                 return func;
@@ -6776,25 +6704,139 @@ vkopt['attachments_and_link'] = {
             self);
 
 
-        self.getAttach = self.debounce(self.getAttach, 500); // тормозим функцию
+        self.getAttach = self.debounce(self.getAttach); // тормозим функцию
 
-        var menuClick = (function (e) {
-            var target = e.target;
-            if (target.matches && target.matches('.ui_actions_menu > [data-action="photos"]')) {
-                this._timer = setTimeout(this.addBottom, 20);
-            } else if (target.closest('.ui_tabs_box')) setTimeout(this.addBottom, 20); //щелкнули на одну из вкладок
-            else if (this._timer) {
-                clearTimeout(this._timer);
-                //document.removeEventListener('scroll', this.scrolling, true);
-            } // нажали сразу в другом месте, окно не успело прогрузится либо закрылось. убираем таймер и обработчики
-        }).bind(vkopt[this.plugin_id]);
-        document.addEventListener('click', menuClick, true);
+        self.eventHandlers();// регистрируем обработчики событий
 
-        /*обработчики */
-        window.addEventListener("my_ready", self.onready);
+    },
+    onRequestQuery: function (url, query, options) {
+        if (url == 'wkview.php') {
+            var self = vkopt[this.plugin_id];
+            setTimeout(self.addBottom);
+        }
+    },
+    eventHandlers: function () {
+        var self = this,
+            fragment = [],
+            objmess = [],
+            inStock = 0;
 
 
-        document.addEventListener('scroll', self.scrolling, true);
+        window.addEventListener('vkopt_attachments_and_link', function (event) {
+            var dataItem = event.detail, strongId = self.local.strongIdMessages;
+            switch (dataItem.name) {
+                case 'getAttach': // вызов по клику на кнопке меню
+                    if (dataItem.status == 'ok' || dataItem.status == 'scrolling') { //история уже в хранилище , получаем сообщения по ид
+                        self.getById(self.cursor);
+                        break;
+                    } else if (dataItem.status == 'start') {
+                        self.getHistoryAttr(self.local.lastid == 0 ? dataItem.item.rangeStart : self.local.lastid, 0, strongId); //
+                    }
+                    else if (dataItem.status == 'segment') { //первый вызов для этого диалога либо между вызовами появились новые сообщения в истории
+                        self.getHistoryAttr(dataItem.item.rangeStart, dataItem.item.rangeEnd);
+                        // debugger;
+                    }
+                    self.local.firstid = dataItem.item.rangeStart; // обновляем первое сообщение (будет помещено в localStorage)
+                    break;
+                case 'getHistoryAttr': //результат поиска по истории
+                    inStock += dataItem.item.data.length;
+                    if (dataItem.status == 'ok') {
+                        self.local.lastid = dataItem.item.last;
+                        //Array.prototype.push.apply(strongId, dataItem.item.IdMassage); // пердаем getHistoryAttrstrongIdMessages в getHistoryAttr параметрах при вызовах
+
+
+                    } else if (dataItem.status == 'segment') {
+                        if (dataItem.item.fullsegment) { // был просканирован весь сегмент
+                            Array.prototype.unshift.apply(strongId, dataItem.item.IdMassage);
+
+                        } else { // была просканирована часть сегмента необходимо продолжить
+                            setTimeout(function () {
+                                self.getHistoryAttr(dataItem.item.last, self.local.lastid, dataItem.item.IdMassage, dataItem.item.data)
+                            }, 20); //передаем возвращенные массивы, функция корретно допишит в них данные
+                            break;
+                        }
+
+                    }
+
+                    Array.prototype.push.apply(objmess, dataItem.item.data);
+                    if (objmess.length < self.COUNT_ROW && self.local.lastid != 'eof') {
+                        setTimeout(function () {
+                            self.getHistoryAttr(dataItem.item.last, 0, strongId, objmess);
+                        });
+                        break;
+                    }
+
+
+                    self.normalazeMessage(objmess);
+                    objmess = [];
+
+                    self.setlocalStorage(self._uid); // сохраняем прогресс
+                    break;
+                case 'getById':
+                    if (dataItem.status == 'ok') {
+                        Array.prototype.push.apply(objmess, dataItem.item.data);
+                        inStock = dataItem.item.sCursor - self.cursor; //доступно для вывода
+                        if (inStock < self.COUNT_ROW && self.local.lastid != 'eof') {
+                            setTimeout(function () {
+                                self.getById(dataItem.item.sCursor);
+                            });
+                            break;
+                        } else if (objmess.length) {
+                            self.normalazeMessage(objmess);
+                        }
+                    }
+                    else if (dataItem.status == 'overlimit') {
+                        setTimeout(function () {
+                            self.getHistoryAttr(self.local.lastid, 0, strongId, objmess);
+                        });
+                        break;
+                    }
+                    ;
+
+
+                    if (objmess.length) {
+                        objmess = [];
+                        break;
+                    }
+                case 'normalazeMessage':
+                    var count = Math.min(strongId.length, inStock + self.cursor), fragment = [];
+
+                    for (; self.cursor < count && fragment.length < self.COUNT_ROW; self.cursor++) {
+                        var mess = strongId[self.cursor];
+                        if (!(mess.type & self.dialogsFilter)) {
+                            continue;
+                        }
+                        ;
+                        if (!self.itemMessage[mess.id]) {
+                            console.log('сообщение не найдено в itemMessage по id. ' + mess.id);
+                            continue;
+                        }
+
+                        fragment.push(self.itemMessage[mess.id]);
+
+                    }
+                    self.loader();
+                    self.processResponse(fragment);
+                    // fragment = [];
+                    self.state = null;
+                    inStock = 0;
+
+                    break;
+
+            }
+        });
+
+
+        document.addEventListener('scroll', function (e) {
+            if (!self._content) return;
+            if (!(e.currentTarget.location && e.currentTarget.location.search.match(/_document$/))) return;
+            if (self.cursor == self.local.strongIdMessages.length - 1 && self.local.lastid == 'eof') return; //достигли конца ленты
+            var coords = self._content.getBoundingClientRect();
+
+            if (coords.height - document.documentElement.clientHeight + coords.top < 0) {
+                self.getAttach(true);
+            }
+        }, true);
 
     },
     css: function () {
@@ -6802,6 +6844,41 @@ vkopt['attachments_and_link'] = {
             /*css:
              .no_link{
              pointer-events: none;
+
+             }
+             .media_position {
+             display : inline-block;
+             float: left;
+             margin : 1px;
+             vertical-align : top;
+             line-height : normal;
+             width: auto;
+             height: 150px;
+             }
+             .history_im_fwd {
+             margin-left: 14%;
+             border-left: 2px solid #dee6ee;
+             }
+             .history_im_media_fwd {
+             margin-left: -15%
+             }
+             .history_message {
+             border-bottom: 1px dotted #ecf1f5;
+             padding-bottom: 10px;
+             }
+             #history_list {
+             position:absolute;
+             left: 100%;
+             margin-left: 0;
+             padding-left: 0;
+             background-color: #ffffff;
+             z-index: 900;
+             border: 2px solid #f7f7f7;
+             border-left: 1px solid rgba(0,0,0,.1);
+             width: 25%;
+             }
+             #history_list  li {
+             list-style-type: none;
              }
              */
         }).css;
@@ -6821,9 +6898,18 @@ vkopt['attachments_and_link'] = {
             }
         }
     })(),
-    tplProcess: function (template) { //применяет к шаблону весь массив аргументов
-        for (var i = 1; i < arguments.length; i++) {
-            template = vk_lib.tpl_process(template, arguments[i]);
+    tplProcess: function tplProcess(template, options) { //применяет к шаблону весь массив аргументов
+        if (isObject(options)) {
+            template = vk_lib.tpl_process(template, options);
+        } else {
+            for (var i = 0; i < options.length; i++) {
+                if (isArray(options[i])) {
+                    options[i].unshift(template);
+                    template = tplProcess.apply(this, options[i]);
+                    continue;
+                }
+                template = vk_lib.tpl_process(template, options[i]);
+            }
         }
         return template;
     },
@@ -6831,7 +6917,9 @@ vkopt['attachments_and_link'] = {
         var tabsBox = geByClass1('ui_tabs_box', null, '#wk_history_wrap ');// ищем нужный див
         if (tabsBox && !tabsBox.querySelector('.my_link_repost')) {
             this._timer = null;
-            tabsBox.lastElementChild.insertAdjacentHTML('afterEnd', vk_lib.tpl_process(this.template.menu_button, {module_id: this.module_id}));
+            tabsBox.lastElementChild.insertAdjacentHTML('afterEnd', vk_lib.tpl_process(this.template.menu_button, {
+                module_id: this.module_id
+            }));
 
         } else   this._timer = setTimeout(this.addBottom, 20); // похоже страница не прогрузилась, ждем еще
 
@@ -6846,74 +6934,93 @@ vkopt['attachments_and_link'] = {
         menu.classList.toggle('ui_tab_sel');
         ge('wk_history_more_link').remove(); //удаляем скролл
         content.innerHTML = '';//'<span style="height:'+document.documentElement.clientHeight+'px"></span>';
-        this.state = 0;
+
+        document.querySelector('#wk_history_wrap > div.wk_history_tabs.tb_tabs_wrap').insertAdjacentHTML('afterEnd', this.tplProcess(this.template.menu_right, {
+            module_id: this.module_id
+        }));
+
+        // this.state = 0;
         if (uid != this._uid || !this.itemMessage) this.itemMessage = {};
         this._uid = uid;
         this.cursor = 0;
-        history.pushState(null, null, location.search.replace(/(=history.*_)(.*$)/, '$1document'));
+	this.start=true;
+        this.dialogsFilter = 7;
+        nav.objLoc.w = 'history' + nav.objLoc.sel + '_document';
+        wkcur.wkRaw = nav.objLoc.w;
+        nav.setLoc(nav.objLoc);
+        //history.pushState(null, null, location.search.replace(/(=history.*_)(.*$)/, '$1document'));
 
         this.getlocalStorage(uid);
-        this.getAttach({uid: uid}, this.processResponse);
+        this.getAttach();
 
     },
+    clickList: function (el) {
+        var target = event.target.closest('.ui_rmenu_item');
+        event.currentTarget.querySelector('.ui_rmenu_item_sel').classList.remove('ui_rmenu_item_sel');
+        target.classList.add('ui_rmenu_item_sel');
+        this.cursor = 0;
+        this._content.innerHTML = '';
+        this.dialogsFilter = +target.dataset.type;
+        this.getAttach();
 
 
-    scrolling: function (e) {
-        if (!this._content) return;
-        if (!(e.currentTarget.location && e.currentTarget.location.search.match(/_document$/))) return;
-        var coords = this._content.getBoundingClientRect();
-
-        if (coords.height - document.documentElement.clientHeight + coords.top < 0) {
-            this.getAttach({uid: this._uid, scroll: true}, this.processResponse);
-        }
+        //slideToggle('vk_album_full_info'); //показывает скрывает меню
     },
     pasteHTML: function pasteHTML(node, options, position) {
+        var lastdiv;
         var qlast = function (select) {
             return (node = node.querySelectorAll(select)) && node[node.length - 1] || node;
         };
 
         switch (position) {
             case 'begin':
-                node.insertAdjacentHTML('beforeEnd', this.tplProcess.apply(null, Array.prototype.concat.apply([this.template.content_row], options)));
-                lastdiv = node;
+                node.classList.add('history_message');
+                node.insertAdjacentHTML('beforeEnd', this.tplProcess(this.template.content_row, options));
+                pasteHTML.lastdiv = node;
+                pasteHTML.typePaste = {};
                 break;
 
             case 'repost':
             case 'forward':
                 var div = document.createElement('div');
                 options[0].no_link = options[0].location ? '' : 'no_link';
-                if (position == 'forward') {
-                    node = lastdiv && lastdiv.querySelector('[data-deep="' + (options[0].depth || 0) + '"]:last-child') || qlast('[name=content_repost]');
+                if (position == 'forward' && (lastdiv = pasteHTML.lastdiv.querySelector('[data-deep="' + (options[0].depth || 0) + '"]:last-child'))) {
+                    node = lastdiv.children[0];
+                    div.insertAdjacentHTML('beforeEnd', this.template.content_repost_deep);
                 } else {
                     node = qlast('[name=content_repost]');
-                }
+
                 div.insertAdjacentHTML('beforeEnd', this.template.content_repost);
-                geByClass1('im-mess-stack_fwd', div).insertAdjacentHTML('afterEnd', this.tplProcess.apply(null, Array.prototype.concat.apply([this.template.content_row], options)));
-                div.querySelector('[data-deep]').setAttribute('data-deep', options[0].depth || 0);
-                if (position == 'forward') node.parentNode.appendChild(div); else  node.appendChild(div);
+                    div.querySelector('[data-deep]').setAttribute('data-deep', options[0].depth || 0);
+                }
+
+                geByClass1('im-mess-stack_fwd', div).insertAdjacentHTML('afterEnd', this.tplProcess(this.template.content_row, options));
+                node.appendChild(div);
                 node = div;
                 if (options[0].nocontent) break;
             case 'content':
+                node.querySelector('[name=content]').insertAdjacentHTML('beforeEnd',
+                    this.tplProcess(this.template.content_message, options));
+                break;
             case 'repost_link':
             case 'repost_link_no_photo':
-                node.querySelector('[name=content]').insertAdjacentHTML('beforeEnd',
-                    this.tplProcess.apply(null, Array.prototype.concat.apply([this.template.content_message], options)));
-                if (position == 'repost_link' || position == 'repost_link_no_photo') {
                     node.querySelector('[name=content_repost]').insertAdjacentHTML('beforeEnd',
-                        this.tplProcess.apply(null, Array.prototype.concat.apply([position == 'repost_link' ? this.template.content_link : this.template.content_link_no_photo], options)));
-                }
+                        this.tplProcess(position == 'repost_link' ? this.template.content_link : this.template.content_link_no_photo, options));
                 break;
             case 'photo':
             case 'gif':
+            case 'doc':
             case 'audio':
             case 'poll':
-                div = document.createElement('div');
-                div.insertAdjacentHTML('beforeEnd', this.tplProcess.apply(null, Array.prototype.concat.apply([this.template[position]], options)));
+            case 'video':
+            case 'page':
+                div = pasteHTML.typePaste[position] || ( pasteHTML.typePaste[position] = document.createElement('div') ) && position == 'photo' ? (pasteHTML.typePaste[position].setAttribute('style', 'display: inline-block;'), pasteHTML.typePaste[position]) : pasteHTML.typePaste[position];
+                div.insertAdjacentHTML('beforeEnd', this.tplProcess(this.template[position], options));
                 qlast('[name=content_repost]').appendChild(div);
                 break;
             case 'poll_answers':
                 div = document.createElement('div');
-                div.insertAdjacentHTML('afterBegin', this.tplProcess.apply(null, Array.prototype.concat.apply([this.template.poll_answers], options)));
+                div.insertAdjacentHTML('afterBegin', this.tplProcess(this.template.poll_answers, options));
                 qlast('.page_poll_stats').appendChild(div);
                 break;
             case 'json':
@@ -6929,14 +7036,12 @@ vkopt['attachments_and_link'] = {
     },
 
     debounce: function (f) {
-        var start_form = 0;
+        //var start_form = 0;
         this.state = null;
 
         return function () {
             if (this.state) return;
-            /* start_form = arguments[0].start_from;
-             uid = arguments[0].uid;*!/*/
-            //console.log(start_form);
+
             this.state = 1;
             this.loader();
             //try {
@@ -6960,33 +7065,23 @@ vkopt['attachments_and_link'] = {
             if (arr[i].id == id) return arr[i];
         }
     },
-
-
-    onready: (function () {
-        var func, self;
-        return function (e) {
-            if (isFunction(e)) {
-                func = e;
-                self = this;
-            } else {
-                func(e.detail);
-            }
-        }
-
-    })(),
-    callEvent: function (name, obj) {
-        obj = obj || {};
-        obj.name = name;
-        obj.uid = self._uid;
-        var widgetEvent = new CustomEvent("my_ready", {
+    callEvent: function (name, item, status='ok') {
+        window.dispatchEvent(new CustomEvent("vkopt_attachments_and_link", {
             bubbles: true,
-            // detail - стандартное свойство CustomEvent для произвольных данных
-            detail: obj
-        });
-        window.dispatchEvent(widgetEvent);
+            detail: {
+                name: name,
+                item: item || [],
+                status: status
+            }
+        }));
     },
 
-
+    errorProcessing: function (r) {
+        if (!r.response) {// ошибка
+            this.loader();
+            new Error(r.error.error_msg);
+        }
+    },
     getlocalStorage: function (uid) {
         this.local = JSON.parse(localStorage.getItem('vkopt_' + this.module_id + '_' + uid) || '{}');
         this.local.strongIdMessages = this.local.strongIdMessages || [];
@@ -7025,10 +7120,20 @@ vkopt['attachments_and_link'] = {
         var parseHash = function (url) {
             return /hash=(.+?)\&/.exec(url)[1];
         };
+        var linkIt = function (text) {
+            text = text.replace(/(^|[\n ])([\w]*?)((ht|f)tp(s)?:\/\/[\w]+[^ \,\"\n\r\t<]*)/ig, '$1$2<a href=\"$3\" target="_blank">$3</a>');
+
+            text = text.replace(/(^|[\n ])([\w]*?)((www|ftp)\.[^ \,\"\t\n\r<]*)/ig, '$1$2<a href=\"http://$3\" target="_blank">$3</a>');
+
+            text = text.replace(/(^|[\n ])([a-z0-9&\-_\.]+?)@([\w\-]+\.([\w\-\.]+)+)/i, '$1<a href=\"mailto:$2@$3\">$2@$3</a>');
+
+            text = text.replace(/\[((?:club|id)\d+)\|(.+?)]/ig, '<a href="\$1" target="_blank">$2</a>');
+
+
+            return (text);
+        };
         items.forEach(function (item) {
             var attNames = ['fwd_messages', 'attachments'];
-            //if (self.loaded[uid][item.id]) return; //дополнительная проверка. на случай сбоя таймера
-            //  if(item.fwd_messages)  item.fwd_messages
 
             var el = self.pasteHTML(document.createElement('div'), [{
                 name: getName(item.user),
@@ -7038,7 +7143,7 @@ vkopt['attachments_and_link'] = {
             fragment.appendChild(el);
             // content.appendChild(el);
 
-            self.pasteHTML(el, [{text_content: item.body, time: self.TimeStamp(item.date)}], 'content');
+            self.pasteHTML(el, [{text_content: linkIt(item.body), time: self.TimeStamp(item.date)}], 'content');
 
 
             attNames.forEach(function (attName) {
@@ -7052,7 +7157,7 @@ vkopt['attachments_and_link'] = {
                         /* репост */
                         if (type == 'wall' || type == 'fwd') {
                             self.pasteHTML(el, [{
-                                text_content: att.body || att.text || '',
+                                text_content: linkIt(att.body || att.text || ''),
                                 time: self.TimeStamp(att.date),
                                 name: getName(att.sender),
                                 location: getLocation(att, type),
@@ -7073,16 +7178,32 @@ vkopt['attachments_and_link'] = {
                         else if (type == 'photo') {
                             self.pasteHTML(el, [att], 'photo');
                         }
-                        else if (type == 'doc' && att.type == 3) {
+                        else if (type == 'video') {
+                            self.pasteHTML(el, [{
+                                photo_320: att.photo_320
+                            }, att], 'video');
+                        }
+                        else if (type == 'doc') {
+                            if (att.type == 3) {
                             self.pasteHTML(el, [{
                                 photo_size_src_o: att.preview.photo.sizes[2].src,
                                 url_parse_hash: parseHash(att.url),
-                                width: att.preview.video.width,
-                                height: att.preview.video.height
+                                width: att.preview.photo.sizes[0].width + 100,//att.preview.video.width,
+                                height: att.preview.photo.sizes[0].height + 100, //att.preview.video.height
+                                dataWidth: att.preview.video.width,
+                                dataHeight: att.preview.video.height
                             }, att], 'gif');
+                            } else {
+                                self.pasteHTML(el, [{
+                                    size: Math.round(att.size / 1000)
+                                }, att], 'doc');
+                            }
                         }
                         else if (type == 'link') {
-                            self.pasteHTML(el, [{text_content: att.description}, att, att.photo], att.photo ? 'repost_link' : 'repost_link_no_photo');
+                            self.pasteHTML(el, [{
+                                text_content: '',
+                                caption: att.caption || ''
+                            }, att, att.photo], att.photo ? 'repost_link' : 'repost_link_no_photo');
                         }
                         else if (type == 'sticker') {
                             self.pasteHTML(el, [{photo_604: att['photo_' + att.width]}], 'photo');
@@ -7098,6 +7219,8 @@ vkopt['attachments_and_link'] = {
                             for (var i = att.answers.length - 1; i >= 0; i--) {
                                 self.pasteHTML(el, [att.answers[i]], 'poll_answers');
                             }
+                        } else if (type == 'page') {
+                            self.pasteHTML(el, [att], 'page');
                         }
                         else {// не ясно что это отправляем в json
                             self.pasteHTML(el, ['\n' + JSON.stringify(att)], 'json');
@@ -7107,127 +7230,160 @@ vkopt['attachments_and_link'] = {
                     }
                 });
             });
-            self.cursor++;
+            //  self.cursor++;
         });
         content.appendChild(fragment);
-        self.state = null;
-        self.loader();
-        self.setlocalStorage(uid);
-        //  content.lastElementChild.insertAdjacentHTML('afterEnd',self.template.menu_button);
-        //  content.innerHTML =vk_lib.tpl_process(self.template.content_row, {{user{domain:geId(response.users,''}});
+        // self.state = null;
+        //self.loader();
+        //self.setlocalStorage(uid);
+
+
     },
-    getAttach: function (options, func) {
-        var self = this, opt = Object.create(options), uid = opt.uid;
-        var count = opt.count || 8;
-        var offset = PER_REQ = 100;// сколько выбираем за раз и смешение относительно id_massage
+    getAttach: function (scrolling) {
+        var self = this;
 
-
-        if (opt.scroll) self.getById(self.cursor);// скроллинг
-        else {// проверяем был ли диалог с нашего последнего посещения
+        if (scrolling) {
+            self.callEvent('getAttach', [], 'scrolling');
+            return;
+        }
+        // проверяем был ли диалог с нашего последнего посещения
             dApi.call('messages.getHistory', {
-                'user_id': uid,
+                'user_id': self._uid,
                 'count': 1,
                 'offset': 0,
                 'v': '5.60'
             }, function (r) {
-                if (self.local.firstid < Math.max(r.response.in_read, r.response.out_read)) {
-                    self.getHistoryAttr(Math.max(r.response.in_read, r.response.out_read), self.local.firstid);
-                } else {
-                    self.getById(self.cursor);
-                }
-                self.local.firstid = Math.max(r.response.in_read, r.response.out_read);
-            });
-        }
-        // ждем окончания события
-        self.onready(function (detail) {
-            var strongId = self.local.strongIdMessages,
-                fragment = [], count = Math.min(Object.keys(self.itemMessage).length - self.cursor - 1, self.COUNT_ROW);
+                self.errorProcessing(r);
 
-            for (var i = 0; i < count; i++) {
-                if (!self.itemMessage[strongId[i + self.cursor]]) {
-                    console.log('сообщение не найдено в itemMessage по id. ' + strongId[i + self.cursor]);
-                    continue;
-                }
-                fragment.push(self.itemMessage[strongId[i + self.cursor]]);
-            }
-            func(fragment);
-        });
+                var idMax = Math.max(r.response.in_read, r.response.out_read),
+                    status = self.local.firstid == 0 ? 'start' : self.local.firstid < idMax ? 'segment' : 'ok';
+
+                self.callEvent('getAttach', {
+                    rangeStart: idMax,
+                    rangeEnd: self.local.firstid
+                }, status);
+
+            });
+
 
     },
     getById: function (sCursor) {
-        /*формируем очередь по count штук и отправляем ее на вывод
+        /*Получает сообщения по их адресам, в качестве параметра принимает индес начала
+         по завершению вызывает событие со своим именем
          strongIdMessages - адреса сообщений с вложениями
          itemMessage полученные сообщения методом getHistoryAttr или методом getById
          sCursor копия курсора self.cursor
          значение курсора изменяется только при окончательном выводе
          */
-        var param = [];
+        var param = [],
+            inStock = 0; // сколько обошли, уже в itemMessage + обработанные этим методом
         var self = this, strongId = self.local.strongIdMessages;
-        var count = Math.min(sCursor + self.COUNT_ROW, strongId.length - 1); // предотвращаем выход за границу массива
+        var count = strongId.length - 1;
         /* если вышли за границу и не eof запускаем поиск по истории*/
-        if (count <= sCursor && self.local.lastid != 'eof') {
-            self.getHistoryAttr(self.local.lastid);
+        if (count <= sCursor && self.local.lastid != 'eof') { //!
+            self.callEvent('getById', self.local.lastid, 'overlimit');
             return;
         }
 
         for (; sCursor <= count; sCursor++) {
-            var id = strongId[sCursor];
+            var id = strongId[sCursor].id, type = strongId[sCursor].type;
+            if (!(type & self.dialogsFilter)) continue;
             self.itemMessage[id] || param.push(id + '_' + self._uid);
+            inStock++;
+            if (param.length >= 100) break;
         }
         if (param.length) {
             dApi.call('messages.getById', {
                 'message_ids': param.join(','),
                 'v': '5.60'
             }, function (r) {
+                self.errorProcessing(r);
                 if (r.response.items.length != param.length) console.log('API не вернул одно из сообщений? сообщение удалено?');
-                self.normalazeMessage(r.response.items);
+
+                self.callEvent('getById', {
+                    data: r.response.items.filter(function (value) {
+                    return !value.deleted;
+                    }), inStock: inStock,
+                    sCursor: sCursor
+                });
+
             });
-        } else  self.callEvent('my_ready'); // раз не нужен normalazeMessage вызываем событие.
-        return self;
+        } else  self.callEvent('getById', {
+            data: [],
+            inStock: inStock,
+            sCursor: sCursor
+        });
+
     },
-    getHistoryAttr: function getHistoryAttr(first, last) {
-        if (first == 'eof')return; // нечего искать
+    getHistoryAttr: function (first, last, IdMassage, objMess) {
+        // перебирает count сообщений  вызывает событие в котором передает  вложения не включая last
+        // найденное дописывается в конец IdMassage, objMess
+        if (first == 'eof') {
+            self.callEvent('getHistoryAttr', null, 'eof');
+            return;
+        } // нечего искать
         var self = this;
+        objMess = objMess || [];
+        IdMassage = IdMassage || [];
         var count = 100;
-        var correctType = function (att) {
-            for (var i = 0; i < att.length; i++) {
-                if (att[i].type == 'wall' || att[i].type == 'link')  return att[i].type;
+
+        var correctType = function (val) {
+            var type = 0;
+            if (/\w{2,6}?:\/\//ig.test(val.body)) type = type | 1;
+            if (val.fwd_messages && val.fwd_messages.length) type = type | 2;
+
+            if (val.attachments) {
+                for (var i = 0; i < val.attachments.length; i++) {
+                    if (val.attachments[i].type == 'wall') type = type | 4;
+                    else if (val.attachments[i].type == 'link') type = type | 1;
             }
-            return false;
+            }
+
+            return type;
         };
+
+
         var code = {
             'user_id': self._uid,
             'start_message_id': first,
             'count': count,
-            'offset': 0,
+            'offset': last || self.start ? 0 : 1,
             'v': '5.60'
         };
         dApi.call('messages.getHistory', code, function (r) {
-            var obj = [];
+            self.errorProcessing(r);
+
             for (i = 0; i < r.response.items.length; i++) {
-                var value = r.response.items[i];
-                if (last == value.id) break;
-                if (value.fwd_messages && value.fwd_messages.length || value.attachments && correctType(value.attachments)) {
-                    self.local.strongIdMessages[last ? 'unshift' : 'push'](value.id);
-                    obj.push(value);
+                var value = r.response.items[i], type = 0;
+                if (last && value.id <= last) break;
+                if (type = correctType(value)) {
+                    var idMess = {
+                        id: value.id,
+                        type: type
+                    };
+
+                    IdMassage.push(idMess);
+
+                    if (idMess.type & self.dialogsFilter) objMess.push(value); //сохраняем объект только если хотим его показать, в локальном хранилище (strongIdMessages) данные сохраняются всегда, не зависимо от того, хотим ли мы их показывать.
                 }
             }
 
-            if (r.response.items < count) self.local.lastid = 'eof';// достигнут конец истории
-            else self.local.lastid = r.response.items[r.response.items.length - 1].id;
-            if (obj.length) {
-                self.normalazeMessage(obj);
-            } else if (last) { // искали в приделах отрезка, (появились новые сообщения в диалоге, но без вложений
-                self.getById(obj.length);
-            }
-            else {
-                getHistoryAttr(self.local.lastid);
-            }
+            var dataHistory = {
+                IdMassage: IdMassage,
+                first: first,
+                last: r.response.items.length < count ? 'eof' : r.response.items[Math.min(i, r.response.items.length - 1)].id,
+                data: objMess,
+                segment: Boolean(last),
+                fullsegment: i != r.response.items.length && i > 0
+            };
+
+            self.callEvent('getHistoryAttr', dataHistory, dataHistory.segment ? 'segment' : 'ok');
 
         });
+	self.start=null;
         return self;
     },
-    normalazeMessage: function (obj, func) {
+    normalazeMessage: function (obj) {
         var self = this;
         var response = {idGroup: [vk.id], senders: []};
 
@@ -7266,7 +7422,7 @@ vkopt['attachments_and_link'] = {
             if (param) code.push(' API.users.get({user_ids:"' + param + '",fields:"domain,name,photo_50"})'); // могут быть репосты от других пользователей
             if (code.length) {
                 dApi.call('execute', {code: 'return ' + code.join('+') + ';', v: '5.60'}, function (b) {
-                    if (b.error) new Error(b.error.error_code, b.error.error_msg);
+                    self.errorProcessing(b);
                     b.response.forEach(function (value) {
                         /* if (value.type='users'){
                          response.users.push.apply( response.users, value.resp );
@@ -7283,10 +7439,6 @@ vkopt['attachments_and_link'] = {
             }
         }
 
-        /* var users = response.users;
-         response.items.forEach(function (item){
-
-         });*/
 
         function rearrange() {
 
@@ -7320,20 +7472,40 @@ vkopt['attachments_and_link'] = {
                 self.itemMessage[value.id] = value;
             });
 
-            self.callEvent('my_ready');
+            self.callEvent('normalazeMessage', self.itemMessage);
+
+
         }
-
-
     },
 
     template: function () {
         return vk_lib.get_block_comments(function () {/*menu_button:
          <li>
          <div class="ui_tab my_link_repost" onclick="vkopt['{vals.module_id}'].clickMenu(cur.peer)">
-         Ссылки и репосты
+         {lng.LinksAndRepost}
          </div>
          </li>
          */
+            /*menu_right:
+             <ul id="history_list"  onclick="vkopt['{vals.module_id}'].clickList(event)">
+             <li><a  href="#" class="ui_rmenu_item ui_rmenu_item_sel" data-type="7">
+             <span>{lng.LinksAndRepost_all}</span>
+             </a>
+             </li>
+             <li><a href="#" class="ui_rmenu_item" data-type="2">
+             <span>{lng.LinksAndRepost_forward}</span>
+             </a>
+             </li>
+             <li><a  href="#" class="ui_rmenu_item " data-type="4">
+             <span>{lng.LinksAndRepost_post}</span>
+             </a>
+             </li>
+             <li><a  href="#" class="ui_rmenu_item" data-type="1">
+             <span>{lng.LinksAndRepost_link}</span>
+             </a>
+             </li>
+             </ul>
+             */
             /*content_row:
              <div class="im-mess-stack _im_mess_stack " style="margin-left: -7%;">
              <div class="im-mess-stack--photo">
@@ -7369,9 +7541,13 @@ vkopt['attachments_and_link'] = {
              </div>
              */
             /*content_repost:
-             <div class="media_desc im-mess--inline-fwd" style="margin-left: -15%" data-deep="0">
-             <div class="im_fwd_log_wrap" style="margin-left: 50px;"><div class="im-mess-stack _im_mess_stack im-mess-stack_fwd">
+             <div class="media_desc im-mess--inline-fwd history_im_media_fwd" data-deep="0">
+             <div class="history_im_fwd"><div class="im-mess-stack _im_mess_stack im-mess-stack_fwd">
              </div>
+             </div>
+             */
+            /*content_repost_deep:
+             <div class="im-mess-stack _im_mess_stack im-mess-stack_fwd">
              </div>
              */
             /*content_link:
@@ -7402,12 +7578,25 @@ vkopt['attachments_and_link'] = {
              </div>
              </div>
              */
+            /*page:
+             <div class="media_desc media_desc__">
+             <a class="lnk"  href="/page-{vals.group_id}_{vals.id}"   target="_blank"  onclick="window.open(this.href); cancelEvent(event);" >
+             <b class="fl_l "></b>
+             <span class="a">{vals.title}&nbsp;</span>
+             </a>
+             <a href="/page-{vals.group_id}_{vals.id}"   target="_blank" onclick="window.open(this.href); cancelEvent(event);" class="post_media_link_preview_wrap inl_bl">
+             <button class="flat_button">
+             <span class="wall_postlink_preview_btn_label">Просмотреть</span>
+             </button>
+             </a>
+             </div>
+             */
             /*photo:
-             <img data-width="537" data-height="240"  class="page_media_link_img" src="{vals.photo_604}">
+             <img data-width="537" data-height="240"  class="page_media_link_img media_position" src="{vals.photo_604}"  onclick="showPhoto('{vals.owner_id}_{vals.id}',null,{img:this, queue: 1 }, event)">
              */
             /*gif:
              <div class="clear_fix page_gif_large">
-             <a class="photo page_doc_photo_href" href="{vals.url}" onclick="return Page.showGif(this, event)" data-doc="{vals.owner_id}_{vals.id}" data-hash="{vals.url_parse_hash}"  data-add-txt="Скопировать в мои документы" data-share-txt="Поделиться" data-preview="1" data-thumb="{vals.photo_size_src_o}" data-width="{vals.width}" data-height="{vals.height}" style="width: {vals.width}px; height: {vals.height}px; display: block;">
+             <a class="photo page_doc_photo_href" href="{vals.url}" onclick="return Page.showGif(this, event)" data-doc="{vals.owner_id}_{vals.id}" data-hash="{vals.url_parse_hash}"  data-add-txt="Скопировать в мои документы" data-share-txt="Поделиться" data-preview="1" data-thumb="{vals.photo_size_src_o}" data-width="{vals.dataWidth}" data-height="{vals.dataHeight}" style="width:{vals.width}px; height:{vals.height}px; display: block;">
              <div class="page_doc_photo" style="background-image: url({vals.photo_size_src_o});width:{vals.width}px;height:{vals.height}px;background-size:cover;"></div>
              <div class="page_gif_label">gif</div>
              <div class="page_gif_play_icon"></div>
@@ -7417,6 +7606,15 @@ vkopt['attachments_and_link'] = {
              </div>
              </div>
              </a>
+             </div>
+             */
+            /*doc:
+             <div class="media_desc media_desc__doc ">
+             <div class="page_doc_row" id="post_media_lnk{vals.owner_id}_{vals.id}">
+             <a class="page_doc_icon page_doc_icon1" href="{vals.url}" target="_blank"></a>
+             <a class="page_doc_title" href="{vals.url}" target="_blank">{vals.title}</a>
+             <div class="page_doc_size">{vals.size} КБ</div>
+             </div>
              </div>
              */
             /*audio:
@@ -7436,6 +7634,16 @@ vkopt['attachments_and_link'] = {
              <div class="_audio_lyrics_wrap audio_lyrics" data-nodrag="1"></div>
              </div>
              </div>
+             */
+            /*video:
+             <div class="page_post_sized_thumbs  clear_fix" style="width:320px; height:240px;">
+             <a href="/video{vals.owner_id}_{vals.id}?list={vals.access_key}" data-video="{vals.owner_id}_{vals.id}" data-list="{vals.access_key}" data-duration="{vals.duration}" aria-label="{vals.title}&amp;#33;" onclick="return showInlineVideo('{vals.owner_id}_{vals.id}', '{vals.access_key}', {autoplay: 1, addParams: { post_id: '{vals.owner_id}_{vals.id}' }}, event, this);" style="width:320px; height:240px; background-image: url({vals.photo_320})" class="page_post_thumb_wrap image_cover  page_post_thumb_video page_post_thumb_last_column page_post_thumb_last_row">
+             <div class="page_post_video_play_inline"></div>
+             <div class="page_wm"></div>
+             <div class="page_post_video_duration_single">{vals.duration}</div>
+             </a>
+             </div>
+             <div class="a post_video_title" onclick="return showVideo('{vals.owner_id}_{vals.id}', '{vals.access_key}', {autoplay: 1, queue: 1, addParams: { post_id: '{vals.owner_id}_{vals.id}' }}, event);" style="width: 320px;">{vals.title}</div>
              */
             /*poll:
              <div class="page_media_poll_wrap">
