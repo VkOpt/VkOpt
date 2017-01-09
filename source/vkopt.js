@@ -2203,7 +2203,7 @@ vkopt['audio'] =  {
       .audio_row.audio_added_next.audio_skipped .audio_act.audio_act_rem_from_pl{
          display:block;
       }
-       */
+      */
       });
       return codes.dl;
    },
@@ -2304,7 +2304,7 @@ vkopt['audio'] =  {
               result.push({album_id: album_id, title: title});
          })
          callback(result)
-      }
+         }
       var p=ge('audio_extra_link');
       if (!p) return;
       var div=vkCe('div',{id:'vk_audio_mover', 'class':'audio_edit_row clear_fix'},'\
@@ -2348,7 +2348,7 @@ vkopt['audio'] =  {
                         getAudioPlayer().updateAudio(info, u);
 
                         hide('vk_au_alb_ldr');
-                      }
+                     }
                    });
                  }
             });
@@ -2606,7 +2606,7 @@ vkopt['audio'] =  {
             (acts.firstChild && !vkopt.settings.get('audio_dl_acts_2_btns')) ? acts.insertBefore(btn, acts.firstChild) : acts.appendChild(btn);
 
          // Менюшка
-         if ((!vkopt.settings.get('audio_dl') || vkopt.settings.get('audio_dl_acts_2_btns')) && vkopt.settings.get('audio_more_acts'))
+          if ((!vkopt.settings.get('audio_dl') || vkopt.settings.get('audio_dl_acts_2_btns')) && vkopt.settings.get('audio_more_acts'))
              acts.firstChild ? acts.insertBefore(acts_btn, acts.firstChild) : acts.appendChild(acts_btn);
          // Удалить из списка
          if (vkopt.settings.get('audio_del_button_pl')){
@@ -6755,5 +6755,718 @@ vkopt['audio_clean_titles'] = {
 		}
 	}
 }
+vkopt['attachments_and_link'] = {
+    module_id: 'attachments_and_link',
+    COUNT_ROW: 8,
+    cursor: 0,
+    _timer: null,
+    _content: null,
+    _uid: null,
+    /* первое выполнение сразу, последующее с указанной задержкой*/
+    onInit: function () {
+        var self = vkopt[this.plugin_id];
+
+        //инициализируем шаблон
+        self.template = self.template();
+        ['addBottom', 'clickMenu', 'getAttach', 'getHistoryAttr', 'tplProcess', 'pasteHTML', 'scrolling', 'processResponse',
+            'callEvent', 'normalazeMessage'].reduce(function (func, value) {
+                func[value] = func[value].bind(func);
+                return func;
+            },
+            self);
+
+
+        self.getAttach = self.debounce(self.getAttach, 500); // тормозим функцию
+
+        var menuClick = (function (e) {
+            var target = e.target;
+            if (target.matches && target.matches('.ui_actions_menu > [data-action="photos"]')) {
+                this._timer = setTimeout(this.addBottom, 20);
+            } else if (target.closest('.ui_tabs_box')) setTimeout(this.addBottom, 20); //щелкнули на одну из вкладок
+            else if (this._timer) {
+                clearTimeout(this._timer);
+                //document.removeEventListener('scroll', this.scrolling, true);
+            } // нажали сразу в другом месте, окно не успело прогрузится либо закрылось. убираем таймер и обработчики
+        }).bind(vkopt[this.plugin_id]);
+        document.addEventListener('click', menuClick, true);
+
+        /*обработчики */
+        window.addEventListener("my_ready", self.onready);
+
+
+        document.addEventListener('scroll', self.scrolling, true);
+
+    },
+    css: function () {
+        return vk_lib.get_block_comments(function () {
+            /*css:
+             .no_link{
+             pointer-events: none;
+             }
+             */
+        }).css;
+    },
+    loader: (function () {
+        var displayed;
+        return function () {
+            if (vk_DEBUG) return; //не показывать окно при включенной отладке
+            if (displayed) {
+                hide(boxLoader);
+                hide(boxLayerWrap);
+                displayed = null;
+            } else {
+                show(boxLoader);
+                show(boxLayerWrap);
+                displayed = true;
+            }
+        }
+    })(),
+    tplProcess: function (template) { //применяет к шаблону весь массив аргументов
+        for (var i = 1; i < arguments.length; i++) {
+            template = vk_lib.tpl_process(template, arguments[i]);
+        }
+        return template;
+    },
+    addBottom: function () {
+        var tabsBox = geByClass1('ui_tabs_box', null, '#wk_history_wrap ');// ищем нужный див
+        if (tabsBox && !tabsBox.querySelector('.my_link_repost')) {
+            this._timer = null;
+            tabsBox.lastElementChild.insertAdjacentHTML('afterEnd', vk_lib.tpl_process(this.template.menu_button, {module_id: this.module_id}));
+
+        } else   this._timer = setTimeout(this.addBottom, 20); // похоже страница не прогрузилась, ждем еще
+
+    },
+    clickMenu: function (uid) {
+        var content = ge('wk_history_rows'), menu = document.querySelector('#wk_history_wrap  .my_link_repost');
+        this._content = content;
+        if (menu.classList.contains('ui_tab_sel')) return; // повторный клик
+        document.querySelectorAll('#wk_history_wrap  .ui_tab_sel').forEach(function (value) {
+            value.classList.remove('ui_tab_sel');
+        });
+        menu.classList.toggle('ui_tab_sel');
+        ge('wk_history_more_link').remove(); //удаляем скролл
+        content.innerHTML = '';//'<span style="height:'+document.documentElement.clientHeight+'px"></span>';
+        this.state = 0;
+        if (uid != this._uid || !this.itemMessage) this.itemMessage = {};
+        this._uid = uid;
+        this.cursor = 0;
+        history.pushState(null, null, location.search.replace(/(=history.*_)(.*$)/, '$1document'));
+
+        this.getlocalStorage(uid);
+        this.getAttach({uid: uid}, this.processResponse);
+
+    },
+
+
+    scrolling: function (e) {
+        if (!this._content) return;
+        if (!(e.currentTarget.location && e.currentTarget.location.search.match(/_document$/))) return;
+        var coords = this._content.getBoundingClientRect();
+
+        if (coords.height - document.documentElement.clientHeight + coords.top < 0) {
+            this.getAttach({uid: this._uid, scroll: true}, this.processResponse);
+        }
+    },
+    pasteHTML: function pasteHTML(node, options, position) {
+        var qlast = function (select) {
+            return (node = node.querySelectorAll(select)) && node[node.length - 1] || node;
+        };
+
+        switch (position) {
+            case 'begin':
+                node.insertAdjacentHTML('beforeEnd', this.tplProcess.apply(null, Array.prototype.concat.apply([this.template.content_row], options)));
+                lastdiv = node;
+                break;
+
+            case 'repost':
+            case 'forward':
+                var div = document.createElement('div');
+                options[0].no_link = options[0].location ? '' : 'no_link';
+                if (position == 'forward') {
+                    node = lastdiv && lastdiv.querySelector('[data-deep="' + (options[0].depth || 0) + '"]:last-child') || qlast('[name=content_repost]');
+                } else {
+                    node = qlast('[name=content_repost]');
+                }
+                div.insertAdjacentHTML('beforeEnd', this.template.content_repost);
+                geByClass1('im-mess-stack_fwd', div).insertAdjacentHTML('afterEnd', this.tplProcess.apply(null, Array.prototype.concat.apply([this.template.content_row], options)));
+                div.querySelector('[data-deep]').setAttribute('data-deep', options[0].depth || 0);
+                if (position == 'forward') node.parentNode.appendChild(div); else  node.appendChild(div);
+                node = div;
+                if (options[0].nocontent) break;
+            case 'content':
+            case 'repost_link':
+            case 'repost_link_no_photo':
+                node.querySelector('[name=content]').insertAdjacentHTML('beforeEnd',
+                    this.tplProcess.apply(null, Array.prototype.concat.apply([this.template.content_message], options)));
+                if (position == 'repost_link' || position == 'repost_link_no_photo') {
+                    node.querySelector('[name=content_repost]').insertAdjacentHTML('beforeEnd',
+                        this.tplProcess.apply(null, Array.prototype.concat.apply([position == 'repost_link' ? this.template.content_link : this.template.content_link_no_photo], options)));
+                }
+                break;
+            case 'photo':
+            case 'gif':
+            case 'audio':
+            case 'poll':
+                div = document.createElement('div');
+                div.insertAdjacentHTML('beforeEnd', this.tplProcess.apply(null, Array.prototype.concat.apply([this.template[position]], options)));
+                qlast('[name=content_repost]').appendChild(div);
+                break;
+            case 'poll_answers':
+                div = document.createElement('div');
+                div.insertAdjacentHTML('afterBegin', this.tplProcess.apply(null, Array.prototype.concat.apply([this.template.poll_answers], options)));
+                qlast('.page_poll_stats').appendChild(div);
+                break;
+            case 'json':
+                div = document.createElement('div');
+                div.textContent = options[0];
+                qlast('[name=content_repost]').appendChild(div);
+                node = div;
+                break;
+
+
+        }
+        return node;
+    },
+
+    debounce: function (f) {
+        var start_form = 0;
+        this.state = null;
+
+        return function () {
+            if (this.state) return;
+            /* start_form = arguments[0].start_from;
+             uid = arguments[0].uid;*!/*/
+            //console.log(start_form);
+            this.state = 1;
+            this.loader();
+            //try {
+            f.apply(this, arguments);
+            //}
+            /// catch (e) {
+            //   self.state = null;
+            // }
+
+            /* setTimeout(function() {
+             self.state = null;
+             }, ms);*/
+        }
+
+    },
+    TimeStamp: function (timeStamp) {
+        return new Date(timeStamp * 1000).toLocaleString();
+    },
+    geId: function (arr, id) {
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i].id == id) return arr[i];
+        }
+    },
+
+
+    onready: (function () {
+        var func, self;
+        return function (e) {
+            if (isFunction(e)) {
+                func = e;
+                self = this;
+            } else {
+                func(e.detail);
+            }
+        }
+
+    })(),
+    callEvent: function (name, obj) {
+        obj = obj || {};
+        obj.name = name;
+        obj.uid = self._uid;
+        var widgetEvent = new CustomEvent("my_ready", {
+            bubbles: true,
+            // detail - стандартное свойство CustomEvent для произвольных данных
+            detail: obj
+        });
+        window.dispatchEvent(widgetEvent);
+    },
+
+
+    getlocalStorage: function (uid) {
+        this.local = JSON.parse(localStorage.getItem('vkopt_' + this.module_id + '_' + uid) || '{}');
+        this.local.strongIdMessages = this.local.strongIdMessages || [];
+        this.local.firstid = this.local.firstid || 0;
+        this.local.lastid = this.local.lastid || 0;
+
+    },
+    setlocalStorage: function (uid) {
+        localStorage.setItem('vkopt_' + this.module_id + '_' + uid, JSON.stringify({
+            strongIdMessages: this.local.strongIdMessages,
+            firstid: this.local.firstid,
+            lastid: this.local.lastid
+        }));
+    },
+    clearSetLocal: function (uid) {
+        localStorage.clear('vkopt_' + this.module_id + '_' + uid);
+    },
+
+
+    processResponse: function (items) {
+        var self = this, uid = self._uid, content = self._content;
+        var content_row = self.template.content_row, content_message = self.template.content_message, content_repost = self.template.content_repost;
+        var fragment = document.createDocumentFragment();
+        var getName = function (item) {
+            return item.first_name && item.first_name + ' ' + item.last_name;
+        };
+        var getLocation = function (item, type) {
+            type = type || 'fwd';
+            if (type == 'wall') {
+                return item.id ? 'wall-' + item.sender.id + '_' + item.id : '';
+            } else {
+                return item.id ? 'im?msgid=' + item.id + '&sel=' + uid : '';
+            }
+
+        };
+        var parseHash = function (url) {
+            return /hash=(.+?)\&/.exec(url)[1];
+        };
+        items.forEach(function (item) {
+            var attNames = ['fwd_messages', 'attachments'];
+            //if (self.loaded[uid][item.id]) return; //дополнительная проверка. на случай сбоя таймера
+            //  if(item.fwd_messages)  item.fwd_messages
+
+            var el = self.pasteHTML(document.createElement('div'), [{
+                name: getName(item.user),
+                time: self.TimeStamp(item.date),
+                location: getLocation(item)
+            }, item.user], 'begin');
+            fragment.appendChild(el);
+            // content.appendChild(el);
+
+            self.pasteHTML(el, [{text_content: item.body, time: self.TimeStamp(item.date)}], 'content');
+
+
+            attNames.forEach(function (attName) {
+                if (!item[attName]) return;
+                item[attName].forEach(function (att) {
+
+                    repost(att[att.type] || att, att.type || 'fwd', 0, att.id);
+                    function repost(att, type, depth, parentid) {
+                        depth = depth || 0;
+                        if (att.id == 0) return; // нет доступа, удалено.
+                        /* репост */
+                        if (type == 'wall' || type == 'fwd') {
+                            self.pasteHTML(el, [{
+                                text_content: att.body || att.text || '',
+                                time: self.TimeStamp(att.date),
+                                name: getName(att.sender),
+                                location: getLocation(att, type),
+                                domain: att.sender.screen_name || att.sender.domain,
+                                depth: depth
+                            }, att.sender], type == 'wall' ? 'repost' : 'forward');
+                            if (att.fwd_messages) att.fwd_messages.forEach(function (wall) {
+                                repost(wall, 'fwd', depth + 1);
+                            });
+                            if (att.copy_history) att.copy_history.forEach(function (wall) {
+                                repost(wall.wall || wall[wall.type] || wall, wall.type || 'wall', 0, att.id)
+                            });
+                            if (att.attachments) att.attachments.forEach(function (wall) {
+                                repost(wall.wall || wall[wall.type] || wall, wall.type || 'wall', 0, att.id);
+                            });
+
+                        }
+                        else if (type == 'photo') {
+                            self.pasteHTML(el, [att], 'photo');
+                        }
+                        else if (type == 'doc' && att.type == 3) {
+                            self.pasteHTML(el, [{
+                                photo_size_src_o: att.preview.photo.sizes[2].src,
+                                url_parse_hash: parseHash(att.url),
+                                width: att.preview.video.width,
+                                height: att.preview.video.height
+                            }, att], 'gif');
+                        }
+                        else if (type == 'link') {
+                            self.pasteHTML(el, [{text_content: att.description}, att, att.photo], att.photo ? 'repost_link' : 'repost_link_no_photo');
+                        }
+                        else if (type == 'sticker') {
+                            self.pasteHTML(el, [{photo_604: att['photo_' + att.width]}], 'photo');
+                        }
+                        else if (type == 'audio') {
+                            self.pasteHTML(el, [{artist_encode: encodeURI(att.artist)}, att], 'audio');
+                        }
+                        else if (type == 'poll') {
+                            self.pasteHTML(el, [{
+                                state: att.anonymous ? 'Открытый' : 'Анонимный',
+                                postId: att.owner_id + '_' + parentid
+                            }, att], 'poll');
+                            for (var i = att.answers.length - 1; i >= 0; i--) {
+                                self.pasteHTML(el, [att.answers[i]], 'poll_answers');
+                            }
+                        }
+                        else {// не ясно что это отправляем в json
+                            self.pasteHTML(el, ['\n' + JSON.stringify(att)], 'json');
+                        }
+
+
+                    }
+                });
+            });
+            self.cursor++;
+        });
+        content.appendChild(fragment);
+        self.state = null;
+        self.loader();
+        self.setlocalStorage(uid);
+        //  content.lastElementChild.insertAdjacentHTML('afterEnd',self.template.menu_button);
+        //  content.innerHTML =vk_lib.tpl_process(self.template.content_row, {{user{domain:geId(response.users,''}});
+    },
+    getAttach: function (options, func) {
+        var self = this, opt = Object.create(options), uid = opt.uid;
+        var count = opt.count || 8;
+        var offset = PER_REQ = 100;// сколько выбираем за раз и смешение относительно id_massage
+
+
+        if (opt.scroll) self.getById(self.cursor);// скроллинг
+        else {// проверяем был ли диалог с нашего последнего посещения
+            dApi.call('messages.getHistory', {
+                'user_id': uid,
+                'count': 1,
+                'offset': 0,
+                'v': '5.60'
+            }, function (r) {
+                if (self.local.firstid < Math.max(r.response.in_read, r.response.out_read)) {
+                    self.getHistoryAttr(Math.max(r.response.in_read, r.response.out_read), self.local.firstid);
+                } else {
+                    self.getById(self.cursor);
+                }
+                self.local.firstid = Math.max(r.response.in_read, r.response.out_read);
+            });
+        }
+        // ждем окончания события
+        self.onready(function (detail) {
+            var strongId = self.local.strongIdMessages,
+                fragment = [], count = Math.min(Object.keys(self.itemMessage).length - self.cursor - 1, self.COUNT_ROW);
+
+            for (var i = 0; i < count; i++) {
+                if (!self.itemMessage[strongId[i + self.cursor]]) {
+                    console.log('сообщение не найдено в itemMessage по id. ' + strongId[i + self.cursor]);
+                    continue;
+                }
+                fragment.push(self.itemMessage[strongId[i + self.cursor]]);
+            }
+            func(fragment);
+        });
+
+    },
+    getById: function (sCursor) {
+        /*формируем очередь по count штук и отправляем ее на вывод
+         strongIdMessages - адреса сообщений с вложениями
+         itemMessage полученные сообщения методом getHistoryAttr или методом getById
+         sCursor копия курсора self.cursor
+         значение курсора изменяется только при окончательном выводе
+         */
+        var param = [];
+        var self = this, strongId = self.local.strongIdMessages;
+        var count = Math.min(sCursor + self.COUNT_ROW, strongId.length - 1); // предотвращаем выход за границу массива
+        /* если вышли за границу и не eof запускаем поиск по истории*/
+        if (count <= sCursor && self.local.lastid != 'eof') {
+            self.getHistoryAttr(self.local.lastid);
+            return;
+        }
+
+        for (; sCursor <= count; sCursor++) {
+            var id = strongId[sCursor];
+            self.itemMessage[id] || param.push(id + '_' + self._uid);
+        }
+        if (param.length) {
+            dApi.call('messages.getById', {
+                'message_ids': param.join(','),
+                'v': '5.60'
+            }, function (r) {
+                if (r.response.items.length != param.length) console.log('API не вернул одно из сообщений? сообщение удалено?');
+                self.normalazeMessage(r.response.items);
+            });
+        } else  self.callEvent('my_ready'); // раз не нужен normalazeMessage вызываем событие.
+        return self;
+    },
+    getHistoryAttr: function getHistoryAttr(first, last) {
+        if (first == 'eof')return; // нечего искать
+        var self = this;
+        var count = 100;
+        var correctType = function (att) {
+            for (var i = 0; i < att.length; i++) {
+                if (att[i].type == 'wall' || att[i].type == 'link')  return att[i].type;
+            }
+            return false;
+        };
+        var code = {
+            'user_id': self._uid,
+            'start_message_id': first,
+            'count': count,
+            'offset': 0,
+            'v': '5.60'
+        };
+        dApi.call('messages.getHistory', code, function (r) {
+            var obj = [];
+            for (i = 0; i < r.response.items.length; i++) {
+                var value = r.response.items[i];
+                if (last == value.id) break;
+                if (value.fwd_messages && value.fwd_messages.length || value.attachments && correctType(value.attachments)) {
+                    self.local.strongIdMessages[last ? 'unshift' : 'push'](value.id);
+                    obj.push(value);
+                }
+            }
+
+            if (r.response.items < count) self.local.lastid = 'eof';// достигнут конец истории
+            else self.local.lastid = r.response.items[r.response.items.length - 1].id;
+            if (obj.length) {
+                self.normalazeMessage(obj);
+            } else if (last) { // искали в приделах отрезка, (появились новые сообщения в диалоге, но без вложений
+                self.getById(obj.length);
+            }
+            else {
+                getHistoryAttr(self.local.lastid);
+            }
+
+        });
+        return self;
+    },
+    normalazeMessage: function (obj, func) {
+        var self = this;
+        var response = {idGroup: [vk.id], senders: []};
+
+
+        scan(obj);
+        getGoupsUsers();
+
+        function fscan(att) {
+            if (att.wall || att.link) {
+                fscan(att.wall || att.link);
+                return;
+            } else if (att.fwd_messages) scan(att.fwd_messages); //внутри может быть еще
+            if (att.to_id) response.idGroup.push(att.to_id);
+            else if (att.from_id) response.idGroup.push(att.from_id);
+            if (att.user_id) response.idGroup.push(att.user_id);
+            if (att.copy_history) scan(att.copy_history);
+            if (att.attachments) scan(att.attachments);
+        }
+
+        function scan(arr) {
+            Array.isArray(arr) ? arr.forEach(fscan) : fscan(arr);
+        }// так как @ в execute не работает должным образом прийдется делать несколько запросов
+
+
+        function getGoupsUsers() {
+            var code = [];
+            var param = response.idGroup.filter(function (value) {
+                if (value && value < 0) return true;
+            }).map(function (value) {
+                return -value;
+            }).join(',');
+            if (param) code.push(' API.groups.getById({group_ids:"' + param + '"})');
+            param = response.idGroup.filter(function (value) {
+                if (value && value > 0) return true;
+            }).join(',');
+            if (param) code.push(' API.users.get({user_ids:"' + param + '",fields:"domain,name,photo_50"})'); // могут быть репосты от других пользователей
+            if (code.length) {
+                dApi.call('execute', {code: 'return ' + code.join('+') + ';', v: '5.60'}, function (b) {
+                    if (b.error) new Error(b.error.error_code, b.error.error_msg);
+                    b.response.forEach(function (value) {
+                        /* if (value.type='users'){
+                         response.users.push.apply( response.users, value.resp );
+                         } else {*/
+                        if (!response.senders) response.senders = b.response;
+                        else response.senders.push.apply(response.senders, b.response);
+                        //  }
+                        // });
+                    });
+                    rearrange();
+                });
+            } else {
+                rearrange();
+            }
+        }
+
+        /* var users = response.users;
+         response.items.forEach(function (item){
+
+         });*/
+
+        function rearrange() {
+
+            function append(value) {
+                if (value.attachments) {
+                    value.attachments.forEach(function (att) {
+                        if (att.type == 'wall') {
+                            att.wall.sender = self.geId(response.senders, Math.abs(att.wall.to_id));
+                            if (att.wall.attachments || att.wall.copy_history) append(att.wall);
+                        }
+                    });
+                }
+
+                if (value.copy_history) value.copy_history.forEach(function (wall) {
+                    wall.sender = self.geId(response.senders, Math.abs(wall.from_id));
+                    if (wall.attachments || wall.copy_history) append(wall);
+                });
+
+                if (value.fwd_messages) {
+                    value.fwd_messages.forEach(function (att) {
+                        att.sender = self.geId(response.senders, Math.abs(att.user_id));
+                        append(att);
+                    });
+
+                }
+            }
+
+            obj.forEach(function (value) {
+                value.user = self.geId(response.senders, value.out ? vk.id : value.user_id);
+                append(value);
+                self.itemMessage[value.id] = value;
+            });
+
+            self.callEvent('my_ready');
+        }
+
+
+    },
+
+    template: function () {
+        return vk_lib.get_block_comments(function () {/*menu_button:
+         <li>
+         <div class="ui_tab my_link_repost" onclick="vkopt['{vals.module_id}'].clickMenu(cur.peer)">
+         Ссылки и репосты
+         </div>
+         </li>
+         */
+            /*content_row:
+             <div class="im-mess-stack _im_mess_stack " style="margin-left: -7%;">
+             <div class="im-mess-stack--photo">
+             <div class="nim-peer nim-peer_small fl_l">
+             <div class="nim-peer--photo-w">
+             <div class="nim-peer--photo">
+             <a target="_blank" class="im_grid" href="/{vals.domain}"  onclick="nav.setLoc(this.getAttribute('href'));  nav.reload();"><img alt="{vals.name}" src="{vals.photo_50}"></a>
+             </div>
+             </div>
+             </div>
+             </div>
+             <div class="im-mess-stack--content">
+             <div class="im-mess-stack--info">
+             <div class="im-mess-stack--pname">
+             <a href="/{vals.domain}" class="im-mess-stack--lnk" title="" target="_blank">{vals.name}</a>
+             <span class="im-mess-stack--tools">
+             <a href="/{vals.location}" class="_im_mess_link {vals.no_link}" onclick="nav.setLoc(this.getAttribute('href'));  nav.reload();">{vals.time}</a>    <!--a href="/im?sel=c25&amp;msgid=868870" relocation  -->
+             </span>
+             </div>
+             </div>
+             <span name="content"><span><!-- контент -->
+             </div>
+             </div>
+             */
+            /*content_message:
+             <ul class="ui_clean_list im-mess-stack--mess _im_stack_messages">
+             <li class="im-mess im_in" style="padding-right: 8px;"> <!-- im-mess_selected выделяет-->
+             <div class="im-mess--text wall_module _im_log_body">
+             <div class="im_msg_text" name="content_repost"><div style="margin-top: 2px;">{vals.text_content}</div></div>
+             </li>
+             </ul>
+             </div>
+             </div>
+             */
+            /*content_repost:
+             <div class="media_desc im-mess--inline-fwd" style="margin-left: -15%" data-deep="0">
+             <div class="im_fwd_log_wrap" style="margin-left: 50px;"><div class="im-mess-stack _im_mess_stack im-mess-stack_fwd">
+             </div>
+             </div>
+             */
+            /*content_link:
+             <div class="_im_msg_media"><div class="im_msg_media im_msg_media_link"><div class="page_media_thumbed_link page_media_thumbed_link_big ">
+             <div class="page_media_link_photo"><a href="{vals.url}" target="_blank" class="page_media_link_img_wrap">
+             <img data-width="537" data-height="240" width="391" height="175" class="page_media_link_img" src="{vals.photo_604}"></a>
+             </div>
+             <div class="page_media_link_desc_wrap ">
+             <div class="page_media_link_desc_block">
+             <div class="page_media_link_title"><a href="{vals.url}" target="_blank">{vals.title}</a>
+             </div>
+
+             <a href="{vals.url}" target="_blank" class="page_media_link_url page_market_owner_link"><div class="page_media_link_text">{vals.caption}
+             </div></a>
+             </div>
+
+             </div>
+             */
+            /*content_link_no_photo:
+             <div class="im_msg_media im_msg_media_link">
+             <div class="media_desc">
+             <a class="lnk lnk_mail clear_fix" href="{vals.url}" target="_blank">
+             <span class="lnk_mail_title a clear_fix">{vals.title}</span>
+
+             <span class="lnk_mail_domain clear_fix">{vals.caption}</span>
+
+             </a>
+             </div>
+             </div>
+             */
+            /*photo:
+             <img data-width="537" data-height="240"  class="page_media_link_img" src="{vals.photo_604}">
+             */
+            /*gif:
+             <div class="clear_fix page_gif_large">
+             <a class="photo page_doc_photo_href" href="{vals.url}" onclick="return Page.showGif(this, event)" data-doc="{vals.owner_id}_{vals.id}" data-hash="{vals.url_parse_hash}"  data-add-txt="Скопировать в мои документы" data-share-txt="Поделиться" data-preview="1" data-thumb="{vals.photo_size_src_o}" data-width="{vals.width}" data-height="{vals.height}" style="width: {vals.width}px; height: {vals.height}px; display: block;">
+             <div class="page_doc_photo" style="background-image: url({vals.photo_size_src_o});width:{vals.width}px;height:{vals.height}px;background-size:cover;"></div>
+             <div class="page_gif_label">gif</div>
+             <div class="page_gif_play_icon"></div>
+             <div class="page_gif_actions">
+             <div class="page_gif_share" onmouseover="showTooltip(this, {text: 'Поделиться', black: 1, shift: [7, 6, 6], toup: 0, needLeft: 1})" onclick="return 0 ? false : Page.shareGif(this, '{vals.owner_id}_{vals.id}', '{vals.url_parse_hash}', event)">
+             <div class="page_gif_share_icon"></div>
+             </div>
+             </div>
+             </a>
+             </div>
+             */
+            /*audio:
+             <div class="wall_audio_rows _wall_audio_rows">
+             <div class="audio_row _audio_row _audio_row_{vals.owner_id}_{vals.id} inlined canadd lpb clear_fix" onclick="return getAudioPlayer().toggleAudio(this, event)" data-audio="[&quot;{vals.id}&quot;,&quot;{vals.owner_id}&quot;,&quot;&quot;,&quot;{vals.title}&quot;,&quot;{vals.artist}&quot;,145,0,0,&quot;&quot;,0,16393,&quot;post-114356242_181&quot;,&quot;[]&quot;,&quot;abd77f44bf2391e1f4\/\/b8d78debc3b4fafcf6&quot;]" data-full-id="{vals.owner_id}_{vals.id}" id="audio_{vals.owner_id}_{vals.id}">
+             <div class="audio_play_wrap" data-nodrag="1"><button class="audio_play _audio_play" id="play_{vals.owner_id}_{vals.id}" aria-label="Воспроизвести "></button></div>
+             <div class="audio_info">
+             <div class="audio_duration_wrap _audio_duration_wrap">
+             <div class="audio_hq_label"></div>
+             <div class="audio_duration _audio_duration">{vals.duration}</div>
+             </div>
+             <div class="audio_title_wrap"><a href="/search?c[section]=audio&amp;c[q]={vals.artist_encode}&amp;c[performer]=1" onmouseover="setTitle(this)" nodrag="1" onclick="return audioSearchPerformer(this, event)" class="audio_performer">{vals.artist}</a><span class="audio_info_divider">–</span><span class="audio_title _audio_title" onmouseover="setTitle(this, domPN(this))"><span class="audio_title_inner" tabindex="0" nodrag="1" aria-label="{vals.title}" onclick="return toggleAudioLyrics(event, this, '{vals.owner_id}_{vals.id}', '0')">{vals.title}</span>
+             <span class="audio_author" onclick="cur.cancelClick=true"></span>
+             </span></div>
+             </div>
+             <div class="_audio_player_wrap"></div>
+             <div class="_audio_lyrics_wrap audio_lyrics" data-nodrag="1"></div>
+             </div>
+             </div>
+             */
+            /*poll:
+             <div class="page_media_poll_wrap">
+             <div class="page_media_poll_title_wrap clear_fix">
+             <div class="page_media_poll_desc">{vals.state}</div>
+             <div class="page_media_poll_title">{vals.question}</div>
+             </div>
+             <div class="page_media_poll" id="post_poll{vals.postId}"><div class="page_poll_stats" onclick="Wall.pollFull(false, '{vals.postId}', event);">
+
+             <input type="hidden" id="post_poll_raw{vals.postId}" value="{vals.owner_id}_{vals.id}" class="user_revote"><input type="hidden" id="post_poll_open{vals.postId}" value="1"><div class="page_poll_bottom">
+             <div class="page_poll_total">
+             <span class="divider fl_r"></span>
+             <div class="page_poll_total_count">Неравнодушны <b>{vals.votes}</b> граждан.</div>
+             </div>
+             </div></div>
+             </div>
+             */
+            /*poll_answers:
+             <div class="page_poll_stat" onmouseover="Wall.pollOver(this, '{vals.postId}', {vals.id})">
+             <div class="page_poll_text">{vals.text}</div>
+             <div class="page_poll_row_wrap">
+             <div class="page_poll_row_percent">{vals.rate}%</div>
+             <div class="page_poll_row page_poll_voted">
+             <div class="page_poll_percent" style="width: 49%"></div>
+             <div class="page_poll_row_count">{vals.votes}</div>
+             </div>
+             </div>
+             </div>
+             */
+        })
+    }
+};
 
 vkopt_core.init();
