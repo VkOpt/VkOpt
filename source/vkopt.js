@@ -2229,6 +2229,7 @@ vkopt['audio'] =  {
    },
    album_cache: {},
    edit_box_move: function(full_aid){
+      // "Access denied: audio methods are unavailable": audio.moveToAlbum, audio.getAlbums
       var x=full_aid.split('_');
       var oid=parseInt(x[0]);
       var aid=parseInt(x[1]);
@@ -2239,25 +2240,16 @@ vkopt['audio'] =  {
       var cur_offset=0;
       var albums=[];
       var get_albums=function(callback){
-         if (vkopt.audio.album_cache[''+oid]) {
-            callback(vkopt.audio.album_cache[''+oid]);
-            return;
-         }
-         var params={count:100,offset:cur_offset};
-         params[oid<0?'gid':'uid']=Math.abs(oid);
-         dApi.call('audio.getAlbums',params,function(r){
-            var _albums=r.response;
-
-            albums=albums.concat(_albums);
-            if (_albums.length<100){
-               vkopt.audio.album_cache[''+oid]=albums;
-               callback(albums);
-            } else {
-               cur_offset+=100;
-               get_albums(callback);
-            }
-         });
-      };
+         var result = [];
+         each(geByClass('audio_album_item'),function(i,el){
+           var t_el = geByClass1('audio_album_title',el)
+           var title = t_el.getAttribute('title') || t_el.innerText || t_el.textContent;
+           var album_id = (el.getAttribute('id').match(/(-?\d+)_(\d+)/i) || [])[2];
+           if (title && album_id)
+              result.push({album_id: album_id, title: title});
+         })
+         callback(result)
+      }
       var p=ge('audio_extra_link');
       if (!p) return;
       var div=vkCe('div',{id:'vk_audio_mover', 'class':'audio_edit_row clear_fix'},'\
@@ -2286,17 +2278,22 @@ vkopt['audio'] =  {
                    show('vk_au_alb_ldr');
 
                    //*
-                   var params={aids:aid,album_id:to_album};
-                   if (oid<0) params['gid']=Math.abs(oid);
-                   dApi.call('audio.moveToAlbum',params,function(r){
-                     if(r.response==1){
+                   var options = cur.audioPage.options;
+                   ajax.post("al_audio.php", {
+                       act: "a_move_to_album",
+                       album_id: to_album,
+                       audio_id: aid,
+                       hash: options.moveHash,
+                       gid: options.oid < 0 ? -options.oid : null
+                   },{
+                      onDone: function(){
                         // TODO: допилить. ибо в закэшированных плейлистах не изменяется до перезагрузки страницы
                         var u = {};
                         u[AudioUtils.AUDIO_ITEM_INDEX_ALBUM_ID] = to_album;
                         getAudioPlayer().updateAudio(info, u);
 
                         hide('vk_au_alb_ldr');
-                     }
+                      }
                    });
                  }
             });
