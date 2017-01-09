@@ -90,8 +90,7 @@ var vkopt_defaults = {
    popular: [
       'scroll_to_next',
       'pv_comm_move_down',
-      'disable_border_radius',
-      'audio_del_button_pl'
+      'disable_border_radius'
    ],
    disabled_modules: [
       /*
@@ -2443,7 +2442,10 @@ vkopt['audio'] =  {
    },
    make_dl_url: function(url, name){
       name = vkCleanFileName(name);
-      url = url.replace(/^https:/,'http:');
+      // фикс-костыль, т.к для https://*.vk-cdn.net нет разрешений в манифесте.
+      // если исправить в манифесте, то после обновления расширения, оно отключится у всех пользователей хрома
+      if (/^https:.+\.vk-cdn\.net\//i.test(url))
+         url = url.replace(/^https:/,'http:');
       return url + '#FILENAME/' + vkEncodeFileName(name) + '.mp3';
    },
    processNode: function(node, params){
