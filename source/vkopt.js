@@ -6699,21 +6699,37 @@ vkopt['calendar'] = {
         }
     },
     onclick: function (event) {
-        if (event.target.classList.contains('right')) {
-            vkopt.calendar.calMon++;
-            if (vkopt.calendar.calMon > 12) {
+        var currentTarget = event.currentTarget.childNodes[0].children[0];
+        if (vkopt.calendar.hat || (vkopt.calendar.hat = currentTarget.classList.contains('unshown'))) {//клик на шапку
+            if (event.target.classList.contains('right')) {
                 vkopt.calendar.calYear++;
-                vkopt.calendar.calMon = 1;
-            }
-            vkopt.calendar.generateCalEvents(vkopt.calendar.calendar);
-
-        } else if (event.target.classList.contains('left')) {
-            vkopt.calendar.calMon--;
-            if (vkopt.calendar.calMon < 1) {
+            } else if (event.target.classList.contains('left')) {
                 vkopt.calendar.calYear--;
-                vkopt.calendar.calMon = 12;
+            } else if (event.target.classList.contains('day')) {
+                vkopt.calendar.calMon = event.target.id.match(/\d+/)[0];// напрямую указали месяц
+                vkopt.calendar.generateCalEvents(vkopt.calendar.calendar);
             }
-            vkopt.calendar.generateCalEvents(vkopt.calendar.calendar);
+            if (!currentTarget.classList.contains('unshown')) {
+                vkopt.calendar.hat = false;// кликнули на шапке еще раз
+                vkopt.calendar.generateCalEvents(vkopt.calendar.calendar);
+            }
+        } else {
+            if (event.target.classList.contains('right')) {
+                vkopt.calendar.calMon++;
+                if (vkopt.calendar.calMon > 12) {
+                    vkopt.calendar.calYear++;
+                    vkopt.calendar.calMon = 1;
+                }
+                vkopt.calendar.generateCalEvents(vkopt.calendar.calendar);
+
+            } else if (event.target.classList.contains('left')) {
+                vkopt.calendar.calMon--;
+                if (vkopt.calendar.calMon < 1) {
+                    vkopt.calendar.calYear--;
+                    vkopt.calendar.calMon = 12;
+                }
+                vkopt.calendar.generateCalEvents(vkopt.calendar.calendar);
+            }
         }
     },
     call_onDone: function (title, html, options, script) {
