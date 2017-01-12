@@ -6653,4 +6653,250 @@ vkopt['turn_blocks'] = {
 }
 
 
+vkopt['calendar'] = {
+    calendar: null,
+    calEvents: {},
+    calEventsById: {},
+    calMon: 0,
+    calYear: 0,
+    calEventMon: {},
+    onInit: function () {
+        if (!vkopt.settings.get('showCalendar')) return;
+        ge('vk_style_calendar') && vkaddcss(vkopt.calendar.css(), 'vk_style_calendar'); // добавляем стили
+
+        var cal = vkopt.calendar.calendar = document.createElement('div');
+        cal.id = 'vkopt_history_cal';
+        cal.className = 'cal_div';
+        cal.onclick = vkopt.calendar.onclick;
+        cal.onmouseover = vkopt.calendar.calTrailOn;
+        cal.onmouseout = vkopt.calendar.calTrainOff;
+        ge('side_bar_inner').appendChild(cal);
+
+        var params = {
+            onDone: vkopt.calendar.call_onDone,
+            onFail: vkopt.calendar.call_onFail,
+            stat: ["wkview.js", "wkview.css", "wk.css", "wk.js"]
+        };
+        ajax.post('wkview.php', {act: "show", loc: "im", w: "calendar"}, params); // долгий запрос, поэтому выполняем его сразу
+
+
+    },
+    onSettings: {
+        vkInterface: {
+            showCalendar: {
+                title: 'Отображать календарь'
+            }
+        }
+    },
+    onOptionChanged: function (option_id, val, option_data) {
+        if (option_id == 'showCalendar') {
+            var cal = ge('vkopt_history_cal');
+            if (cal) {
+                val ? cal.classList.remove('vk_cal_hidden') : cal.classList.add('vk_cal_hidden'); // возможно cal.classList.toggle('.hidden'), но так надежнее
+            } else if (val) {
+                vkopt.calendar.onInit();
+            }
+        }
+    },
+    onclick: function (event) {
+        if (event.target.classList.contains('right')) {
+            vkopt.calendar.calMon++;
+            if (vkopt.calendar.calMon > 12) {
+                vkopt.calendar.calYear++;
+                vkopt.calendar.calMon = 1;
+            }
+            vkopt.calendar.generateCalEvents(vkopt.calendar.calendar);
+
+        } else if (event.target.classList.contains('left')) {
+            vkopt.calendar.calMon--;
+            if (vkopt.calendar.calMon < 1) {
+                vkopt.calendar.calYear--;
+                vkopt.calendar.calMon = 12;
+            }
+            vkopt.calendar.generateCalEvents(vkopt.calendar.calendar);
+        }
+    },
+    call_onDone: function (title, html, options, script) {
+        (new Function(script))();// что бы не парсить
+
+        for (var key in vkopt.calendar) {
+            if (cur[key] && !isFunction(vkopt.calendar[key])) {
+                vkopt.calendar[key] = cur[key];
+            }
+        }
+        vkopt.calendar.getDateCalendar();
+    },
+    call_onFail: function (text) {
+        console.log(text);
+    },
+    getDateCalendar: function () {
+        var date = new Date;
+        var error;
+        (function createCal() {
+            if (!window.DateCalendar) {
+                if (error || location.pathname == '/im') {// в сообщениях он и так есть, видимо не загрузился еще
+                    setTimeout(createCal, 40);
+                    return;
+                }
+
+                try {
+                    headNode.appendChild(ce('link', {
+                        type: 'text/css',
+                        rel: 'stylesheet',
+                        href: '/css/al/datepicker.css'
+                    }));
+                    var script;
+                    headNode.appendChild(script = ce('script', {
+                        type: 'text/javascript',
+                        src: '/js/al/datepicker.js' //?80874108
+                    }));
+                    script.onload = createCal;
+                    return;
+                } catch (e) {
+                    error = e;
+                    console.log(JSON.parse(e));
+                    createCal();
+                    return;
+                }
+            }
+
+            DateCalendar({
+                container: vkopt.calendar.calendar,
+                /*  addRows: '<tr id="im_day_clear"><td class="im_cal_clear" colspan="7"><button type="button" class="im_cal_clear_lnk _im_clear_date">Сбросить фильтрацию по дате</button></td></tr>',
+                 addRowsM: '<tr id="im_month_clear"><td class="im_cal_clear" colspan="7"><button type="button" class="im_cal_clear_lnk _im_clear_date">Сбросить фильтрацию по дате</button></td></tr>',*/
+                hideNextMonth: true,
+                mode: "d",
+                pastActive: false,
+                day: {
+                    d: date.getDay(),
+                    m: date.getMonth() + 1,
+                    y: date.getFullYear()
+                }
+            });
+
+            vkopt.calendar.generateCalEvents(vkopt.calendar.calendar);
+        })();
+    },
+    generateCalEvents: function (cal) {//наполняем календарь событиями предпологаем что calYear и calMon уже выставлены на верный мясец
+        var lastDay = new Date(vkopt.calendar.calYear, vkopt.calendar.calMon, 0).getDate(); // отсчет Date с  0, calMon с единицы
+        var eventcalMon = vkopt.calendar.calEvents[vkopt.calendar.calMon];
+        vkopt.calendar.calEventMon.length = 0;
+        for (var i = 1; i <= lastDay; i++) {
+            var day = cal.querySelector('[id^=day' + i + ']'), birthday = false, groop = false;
+            day.key = i;
+            vkopt.calendar.calEventMon[i] = eventcalMon[i] && eventcalMon[i].filter(function (value) {
+                    var eventYear = new Date(1e3 * value[3]).getFullYear();
+                    if (value[0] > 0 && (vkopt.calendar.calYear >= eventYear) || value[0] < 0 && vkopt.calendar.calYear == eventYear) {
+                        if (value[0] > 0) birthday = true; else groop = true;
+                        return true;
+                    }
+                });
+
+            if (birthday && groop) day.classList.add('vk_cal_merry-making');
+            else if (birthday) day.classList.add('vk_cal_birthday');
+            else if (groop) day.classList.add('vk_cal_event');
+            else  vkopt.calendar.calEventMon[i] = undefined; //  убираем пустые массивы вводящие в заблуждение
+
+        }
+    },
+    calTrailOn: function (event) {
+        if (!~event.target.id.indexOf('day')) return;
+
+
+        var g = function () {
+            var day = vkopt.calendar.calEventMon[event.target.key];
+            if (!day) return;
+
+
+            showTooltip(event.target, {
+                "text": vkopt.calendar.getHTML(day),
+                // "dir": "auto",
+                "className": "vk_cal_tt",
+                "slide": 15,
+                "hasover": 1,
+                "appendParentCls": "box_layout",
+                "shift": [75, 30, 10]
+            });
+        };
+        if (vkopt.calendar.calTO) clearTimeout(vkopt.calendar.calTO);
+        vkopt.calendar.calTO = setTimeout(g, 250);
+
+    },
+    calTrainOff: function (event) {
+        if (!vkopt.calendar.calTO) return;
+        clearTimeout(vkopt.calendar.calTO);
+        vkopt.calendar.calTO = null;
+    },
+
+    getHTML: function (arr) {
+        var html = '';
+        arr.forEach(function (value) {
+            html += vkopt.calendar.tooltip({
+                uid: value[2],
+                photo: value[4],
+                name: value[1],
+                text: value[0] > 0 ? 'день рождение' : ''
+
+            });
+
+        });
+        return html;
+
+    },
+    tooltip: function (opt) {
+        return vk_lib.tpl_process(vk_lib.get_block_comments(function () {
+            /*tooltips:
+             <div style="padding-bottom: 4px;">
+             <a href="{vals.uid}" onclick=\"return nav.go(this, event);\">
+             <img class=\"photo\" src="{vals.photo}"></a>
+             <span class=\"info\">
+             <span class=\"info_inner\">
+             <span class=\"name\"><a href="{vals.uid}" onclick=\"return nav.go(this, event);\">{vals.name}</a></span>
+             <span class=\"text\">{vals.text}</span>
+             </span>
+             </span>
+             </div>
+             */
+
+        }).tooltips, opt);
+    },
+    css: function () {
+        return vk_lib.get_block_comments(function () {
+            /*css:
+             #vkopt_history_cal .cal_table_head,
+             #vkopt_history_cal .cal_table {
+             width: 155px;
+             }
+             #vkopt_history_cal {
+             position: relative;
+             }
+             #vkopt_history_cal .cal_table .day,
+             #vkopt_history_cal .daysofweek {
+             height: 20px;
+             line-height: 10px;
+             }
+
+             .vk_cal_hidden{
+             display: none;
+             }
+             .vk_cal_merry-making {
+             background: linear-gradient(to bottom right, #c5d0db, #abcdef);
+             }
+             .vk_cal_birthday {
+             background-color: #c5d0db;
+             }
+             .vk_cal_event {
+             background-color: #abcdef;
+             }
+             .vk_cal_tt{
+             border: 1px solid #c5d0db;
+             padding: 12px 14px 13px;
+             color: #222;
+             background-color: #e4e6e9;
+             }
+             */
+        }).css;
+    }
+};
+
 vkopt_core.init();
