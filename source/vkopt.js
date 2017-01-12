@@ -6650,7 +6650,7 @@ vkopt['turn_blocks'] = {
          }, 200);
       }
    }
-}
+;
 
 
 vkopt['calendar'] = {
@@ -6764,9 +6764,15 @@ vkopt['calendar'] = {
                     var script;
                     headNode.appendChild(script = ce('script', {
                         type: 'text/javascript',
-                        src: '/js/al/datepicker.js' //?80874108
+                        src: '/js/lib/ui_controls.js'
                     }));
-                    script.onload = createCal;
+                    script.onload = function () {
+                        headNode.appendChild(script = ce('script', {
+                            type: 'text/javascript',
+                            src: '/js/al/datepicker.js' //?80874108
+                        }));
+                        script.onload = createCal;
+                    };
                     return;
                 } catch (e) {
                     error = e;
