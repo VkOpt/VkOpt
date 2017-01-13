@@ -2143,11 +2143,14 @@ vkopt['audio'] =  {
       }
 
       .top_audio_layer .audio_current_rows .audio_row .audio_acts #delete_pl{
-      display: block;
+         display: block;
       }
       .audio_row .audio_acts #delete_pl > div {
-      background-position: 0 -205px;
+         background-position: 0 -205px;
       }
+      .audio_row.audio_skipped .audio_info{
+         opacity: 0.5;
+       }
 
        */
       });
@@ -2196,7 +2199,7 @@ vkopt['audio'] =  {
       <a class="audio_act vk_audio_acts" data-aid="{vals.id}" onmouseover="vkopt.audio.acts.menu(this);" onclick="cancelEvent(event)"><div></div></a>
       */
       /*del_button:
-      <a class="audio_act" id="delete_pl" onmouseover="showTooltip(this,{text:IDL('Skip_pl'),black:1,shift:[7,5,0],needLeft:true})" onclick="vkopt.audio.delete_from_pl_act('{vals.id}')"><div></div></a>
+      <a class="audio_act" id="delete_pl" onmouseover="showTooltip(this,{text:IDL('Skip_pl'),black:1,shift:[7,5,0],needLeft:true})" onclick="vkopt.audio.delete_from_pl_act(event,'{vals.id}')"><div></div></a>
       */
       /*size_info:
       <small class="fl_l vk_audio_size_info_wrap" id="vk_audio_size_info_{vals.id}">
@@ -2756,8 +2759,9 @@ vkopt['audio'] =  {
          vkAlertBox('Wiki-code:',code);
       }
    },
-   delete_from_pl_act: function (id) {
-	   getAudioPlayer().getCurrentPlaylist().removeAudio(id);
+   delete_from_pl_act: function (ev, id) {
+       getAudioPlayer().getCurrentPlaylist().removeAudio(id);
+       addClass(gpeByClass("audio_row", ev.target), "audio_skipped");
    }
 
 };
