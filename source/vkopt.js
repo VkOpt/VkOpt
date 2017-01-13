@@ -6519,139 +6519,138 @@ vkopt['im_form'] = {
 }
 
 vkopt['turn_blocks'] = {
-   onSettings:{
-      vkInterface:{
-         turn_blocks:{
-            title: 'seShutProfilesBlock',
-            class_toggler: true
-         }
-      }
-   },
-   css: function() {
-      vkopt.turn_blocks.arrset = vkopt.settings.get('turn_blocks_arr') || [];
-      var code = vkopt.turn_blocks.getShutCss();
-      vkopt.set_css(code, 'vk_closed_blocks_temp');
+    onSettings: {
+        vkInterface: {
+            turn_blocks: {
+                title: 'seShutProfilesBlock',
+                class_toggler: true
+            }
+        }
+    },
+    css: function () {
+        vkopt.turn_blocks.arrset = vkopt.settings.get('turn_blocks_arr') || [];
+        var code = vkopt.turn_blocks.getShutCss();
+        vkopt.set_css(code, 'vk_closed_blocks_temp');
 
-      return vk_lib.get_block_comments(function() {
+        return vk_lib.get_block_comments(function () {
             /*css:
-            .vk_turn_blocks .module_header .header_top{
-                padding-right: 0px;
-            }
-            .vk_turn_blocks .shut_block .module_header .header_top{
-                padding-top: 0px;
-                height: 40px;
-            }
-            .vk_turn_blocks .shut_icon_wrap{
-                padding-right: 10px;
-                height: 40px;
-            }
-            .vk_turn_blocks .shut_icon{
-                background: url(/images/icons/menu_arrow.png) no-repeat 50% 50%;
-                width: 10px;
-                height: 40px;
-                margin-left: -6px;
-                -webkit-transform: rotate(180deg);
-                transform: rotate(180deg);
-            }
-            .vk_turn_blocks .shut_block .shut_icon{
-                -webkit-transform: rotate(0deg);
-                transform: rotate(0deg);
-            }
-            .vk_turn_blocks .shut_block .module_body,
-            .vk_turn_blocks .shut_block .page_photos_module {
-               display:none;
-            }
-            */
-         }).css;
-   },
-   addIcons: function() {
-      vkopt.turn_blocks.arrset = vkopt.settings.get('turn_blocks_arr') || [];
-      vkopt.set_css('','vk_turn_blocks_state');
-      var code = vkopt.turn_blocks.getShutCss();
-      vkopt.set_css(code, 'vk_closed_blocks_temp');
+             .vk_turn_blocks .module_header .header_top{
+             padding-right: 0px;
+             }
+             .vk_turn_blocks .shut_block .module_header .header_top{
+             padding-top: 0px;
+             height: 40px;
+             }
+             .vk_turn_blocks .shut_icon_wrap{
+             padding-right: 10px;
+             height: 40px;
+             }
+             .vk_turn_blocks .shut_icon{
+             background: url(/images/icons/menu_arrow.png) no-repeat 50% 50%;
+             width: 10px;
+             height: 40px;
+             margin-left: -6px;
+             -webkit-transform: rotate(180deg);
+             transform: rotate(180deg);
+             }
+             .vk_turn_blocks .shut_block .shut_icon{
+             -webkit-transform: rotate(0deg);
+             transform: rotate(0deg);
+             }
+             .vk_turn_blocks .shut_block .module_body,
+             .vk_turn_blocks .shut_block .page_photos_module {
+             display:none;
+             }
+             */
+        }).css;
+    },
+    addIcons: function () {
+        vkopt.turn_blocks.arrset = vkopt.settings.get('turn_blocks_arr') || [];
+        vkopt.set_css('', 'vk_turn_blocks_state');
+        var code = vkopt.turn_blocks.getShutCss();
+        vkopt.set_css(code, 'vk_closed_blocks_temp');
 
-      var blocks = geByClass('header_top clear_fix');
-      for (i = 0; i < blocks.length; i++) {
-         if (!geByClass1('shut_icon',blocks[i])) {
-            var icon = document.createElement('div');
-            icon.className = 'shut_icon';
-            var btn = document.createElement('a');
-            btn.className = 'fl_l shut_icon_wrap';
-            btn.id = blocks[i].parentNode.parentNode.id+'_i';
-            btn.href = '#';
-            btn.onclick = function(e) {
-               e.preventDefault(); //не открываем ссылку блока
-               e.stopPropagation(); //не открываем окно блока
-               vkopt.turn_blocks.turnBlock(this);
-            };
-            btn.appendChild(icon);
-            blocks[i].insertBefore(btn, blocks[i].firstChild);
-         }
-      }
-      //сворачиваем те, которые были сохранены
-      var len = vkopt.turn_blocks.arrset.length;
-      for (var i = 0; i < len; i++) {
-         var icon = ge(vkopt.turn_blocks.arrset[i]+'_i');
-         if (icon !== null) {
-            var block = icon.parentNode.parentNode.parentNode;
+        var blocks = geByClass('header_top clear_fix');
+        for (i = 0; i < blocks.length; i++) {
+            if (!geByClass1('shut_icon', blocks[i])) {
+                var icon = document.createElement('div');
+                icon.className = 'shut_icon';
+                var btn = document.createElement('a');
+                btn.className = 'fl_l shut_icon_wrap';
+                btn.id = blocks[i].parentNode.parentNode.id + '_i';
+                btn.href = '#';
+                btn.onclick = function (e) {
+                    e.preventDefault(); //не открываем ссылку блока
+                    e.stopPropagation(); //не открываем окно блока
+                    vkopt.turn_blocks.turnBlock(this);
+                };
+                btn.appendChild(icon);
+                blocks[i].insertBefore(btn, blocks[i].firstChild);
+            }
+        }
+        //сворачиваем те, которые были сохранены
+        var len = vkopt.turn_blocks.arrset.length;
+        for (var i = 0; i < len; i++) {
+            var icon = ge(vkopt.turn_blocks.arrset[i] + '_i');
+            if (icon !== null) {
+                var block = icon.parentNode.parentNode.parentNode;
+                addClass(block, 'shut_block');
+            }
+        }
+    },
+    delIcons: function () { //отключение
+        vkopt.set_css('.shut_icon{display:none}', 'vk_turn_blocks_state');
+        vkopt.set_css('', 'vk_closed_blocks_temp');
+    },
+    turnBlock: function (icon) {
+        var block = icon.parentNode.parentNode.parentNode;
+        var blockname = icon.parentNode;
+        var arrset = vkopt.turn_blocks.arrset;
+
+        if (hasClass(block, 'shut_block')) {
+            var index = arrset.indexOf(block.id);
+            if (index > -1) arrset.splice(index, 1);
+            removeClass(block, 'shut_block');
+        } else {
+            arrset.push(block.id);
             addClass(block, 'shut_block');
-         }
-      }
-   },
-   delIcons: function() { //отключение
-      vkopt.set_css('.shut_icon{display:none}','vk_turn_blocks_state');
-      vkopt.set_css('', 'vk_closed_blocks_temp');
-   },
-   turnBlock: function(icon) {
-      var block = icon.parentNode.parentNode.parentNode;
-      var blockname = icon.parentNode;
-      var arrset = vkopt.turn_blocks.arrset;
-
-      if (hasClass(block, 'shut_block')) {
-         var index = arrset.indexOf(block.id);
-         if (index > -1) arrset.splice(index, 1);
-         removeClass(block, 'shut_block');
-      } else {
-         arrset.push(block.id);
-         addClass(block, 'shut_block');
-      }
-      var code = vkopt.turn_blocks.getShutCss();
-      vkopt.set_css(code, 'vk_closed_blocks_temp');
-      vkopt.settings.set('turn_blocks_arr', arrset);
-   },
-   getShutCss: function() {
-      if (vkopt.turn_blocks.arrset.length<1) return '';
-      var selectors = [];
-      for (var i in vkopt.turn_blocks.arrset) {
-         if (vkopt.turn_blocks.arrset[i] == 'profile_photos_module')
-            selectors.push('#profile_photos_module .page_photos_module'); //костыль
-         else selectors.push('#' + vkopt.turn_blocks.arrset[i] + ' .module_body');
-      }
-      var code = selectors.join(',\n') + '{ display: none }';
-      return code;
-   },
-   reset: function() {
-      vkopt.settings.set('turn_blocks_arr', []);
-   },
-   onLocation: function() {
-      if (vkopt.settings.get('turn_blocks')) {
-         clearTimeout(vkopt.turn_blocks.delay);
-         vkopt.turn_blocks.delay = setTimeout(function() {
-            vkopt.turn_blocks.addIcons();
-         }, 200);
-      }
-   },
-   onOptionChanged: function(option_id, val, option_data){
-      if (option_id == 'turn_blocks') {
-         clearTimeout(vkopt.turn_blocks.delay);
-         vkopt.turn_blocks.delay = setTimeout(function() {
-            if (val) vkopt.turn_blocks.addIcons();
-            else vkopt.turn_blocks.delIcons();
-         }, 200);
-      }
-   }
-;
-
+        }
+        var code = vkopt.turn_blocks.getShutCss();
+        vkopt.set_css(code, 'vk_closed_blocks_temp');
+        vkopt.settings.set('turn_blocks_arr', arrset);
+    },
+    getShutCss: function () {
+        if (vkopt.turn_blocks.arrset.length < 1) return '';
+        var selectors = [];
+        for (var i in vkopt.turn_blocks.arrset) {
+            if (vkopt.turn_blocks.arrset[i] == 'profile_photos_module')
+                selectors.push('#profile_photos_module .page_photos_module'); //костыль
+            else selectors.push('#' + vkopt.turn_blocks.arrset[i] + ' .module_body');
+        }
+        var code = selectors.join(',\n') + '{ display: none }';
+        return code;
+    },
+    reset: function () {
+        vkopt.settings.set('turn_blocks_arr', []);
+    },
+    onLocation: function () {
+        if (vkopt.settings.get('turn_blocks')) {
+            clearTimeout(vkopt.turn_blocks.delay);
+            vkopt.turn_blocks.delay = setTimeout(function () {
+                vkopt.turn_blocks.addIcons();
+            }, 200);
+        }
+    },
+    onOptionChanged: function (option_id, val, option_data) {
+        if (option_id == 'turn_blocks') {
+            clearTimeout(vkopt.turn_blocks.delay);
+            vkopt.turn_blocks.delay = setTimeout(function () {
+                if (val) vkopt.turn_blocks.addIcons();
+                else vkopt.turn_blocks.delIcons();
+            }, 200);
+        }
+    }
+}
 
 vkopt['calendar'] = {
     calendar: null,
@@ -6662,14 +6661,16 @@ vkopt['calendar'] = {
     calEventMon: {},
     onInit: function () {
         if (!vkopt.settings.get('showCalendar')) return;
-        ge('vk_style_calendar') && vkaddcss(vkopt.calendar.css(), 'vk_style_calendar'); // добавляем стили
+        // ge('vk_style_calendar') && vkaddcss(vkopt.calendar.css(), 'vk_style_calendar'); // добавляем стили
 
         var cal = vkopt.calendar.calendar = document.createElement('div');
         cal.id = 'vkopt_history_cal';
         cal.className = 'cal_div';
         cal.onclick = vkopt.calendar.onclick;
-        cal.onmouseover = vkopt.calendar.calTrailOn;
-        cal.onmouseout = vkopt.calendar.calTrainOff;
+        if (!vkopt.settings.get('tipsOnClick')) {
+            cal.onmouseover = vkopt.calendar.calTrailOn;
+            cal.onmouseout = vkopt.calendar.calTrainOff;
+        }
         ge('side_bar_inner').appendChild(cal);
 
         var params = {
@@ -6684,7 +6685,16 @@ vkopt['calendar'] = {
     onSettings: {
         vkInterface: {
             showCalendar: {
-                title: 'Отображать календарь'
+                title: 'Отображать календарь',
+                sub: {
+                    hideLast: {
+                        title: 'Не отображать прошедшие события'
+                    },
+                    tipsOnClick: {
+                        title: 'Всплывающие подсказки по клику (иначе при наведении)',
+                        need_reload: true
+                    }
+                }
             }
         }
     },
@@ -6729,6 +6739,20 @@ vkopt['calendar'] = {
                     vkopt.calendar.calMon = 12;
                 }
                 vkopt.calendar.generateCalEvents(vkopt.calendar.calendar);
+            } else if (vkopt.settings.get('tipsOnClick') && event.target.classList.contains('day')) {
+                var day = vkopt.calendar.calEventMon[event.target.key];
+                if (!day) return;
+
+
+                showTooltip(event.target, {
+                    "text": vkopt.calendar.getHTML(day),
+                    // "dir": "auto",
+                    "className": "vk_cal_tt",
+                    "slide": 15,
+                    "hasover": 1,
+                    "appendParentCls": "box_layout",
+                    "shift": [75, 30, 10]
+                });
             }
         }
     },
@@ -6802,12 +6826,14 @@ vkopt['calendar'] = {
     generateCalEvents: function (cal) {//наполняем календарь событиями предпологаем что calYear и calMon уже выставлены на верный мясец
         var lastDay = new Date(vkopt.calendar.calYear, vkopt.calendar.calMon, 0).getDate(); // отсчет Date с  0, calMon с единицы
         var eventcalMon = vkopt.calendar.calEvents[vkopt.calendar.calMon];
+        var hideLast = vkopt.settings.get('hideLast'), currentDate = new Date;
         vkopt.calendar.calEventMon.length = 0;
         for (var i = 1; i <= lastDay; i++) {
             var day = cal.querySelector('[id^=day' + i + ']'), birthday = false, groop = false;
             day.key = i;
             vkopt.calendar.calEventMon[i] = eventcalMon[i] && eventcalMon[i].filter(function (value) {
-                    var eventYear = new Date(1e3 * value[3]).getFullYear();
+                    var date = new Date(1e3 * value[3]), eventYear = date.getFullYear();
+                    if (hideLast && (value[0] < 0 && date < currentDate || value[0] > 0 && date.getDate() < currentDate.getDate())) return;
                     if (value[0] > 0 && (vkopt.calendar.calYear >= eventYear) || value[0] < 0 && vkopt.calendar.calYear == eventYear) {
                         if (value[0] > 0) birthday = true; else groop = true;
                         return true;
