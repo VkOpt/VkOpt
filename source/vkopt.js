@@ -2148,9 +2148,9 @@ vkopt['audio'] =  {
          width: 14px;
          background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAMBAMAAACgrpHpAAAAGFBMVEUAAAByk7dyk7Zyk7Zyk7Zyk7ZzlLdyk7aWV8ipAAAAB3RSTlMA7SIuBBjsKPzYuwAAAEFJREFUCNdjEC8HgkIGCF3GgAyKGJgKgOLs5Q7u5UCatby4vBQkzl5eDpZnLi8G6WNwLy93ANJMQPkisDQQwfQDAJLaEk3kz9tlAAAAAElFTkSuQmCC");
       }
-
       .top_audio_layer .audio_row.audio_skipped .audio_act.audio_act_rem_from_pl,
-      .top_audio_layer .audio_row.audio_row_playing .audio_act.audio_act_rem_from_pl{
+      .top_audio_layer .audio_row.audio_row_playing .audio_act.audio_act_rem_from_pl,
+      .top_audio_layer .audio_row.audio_row_playing.audio_added_next.audio_skipped .audio_act.audio_act_rem_from_pl{
          display: none;
       }
       .audio_row.audio_skipped .audio_info{
