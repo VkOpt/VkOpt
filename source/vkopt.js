@@ -2148,7 +2148,9 @@ vkopt['audio'] =  {
          width: 14px;
          background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAMBAMAAACgrpHpAAAAGFBMVEUAAAByk7dyk7Zyk7Zyk7Zyk7ZzlLdyk7aWV8ipAAAAB3RSTlMA7SIuBBjsKPzYuwAAAEFJREFUCNdjEC8HgkIGCF3GgAyKGJgKgOLs5Q7u5UCatby4vBQkzl5eDpZnLi8G6WNwLy93ANJMQPkisDQQwfQDAJLaEk3kz9tlAAAAAElFTkSuQmCC");
       }
-
+      .audio_row.audio_skipped .audio_info{
+         opacity: 0.5;
+       }
        */
       });
       return codes.dl;
@@ -2173,11 +2175,8 @@ vkopt['audio'] =  {
                }
             }
          },
-         audio_clean_titles: {
-            title: 'seAudioUntrashTitle'
-         },
 	     audio_del_button_pl: {
-		    title: 'audio_del_button_pl'
+		    title: 'seAudioDelButtonPl'
          }
       },
       Extra:{
@@ -2196,10 +2195,11 @@ vkopt['audio'] =  {
       <a class="audio_act vk_audio_dl_btn" data-aid="{vals.id}" download="{vals.filename}" href="{vals.url}" onclick="vkDownloadFile(this);" onmouseover="vkopt.audio.btn_over(this);"><div></div></a>
       */
       /*acts_button:
+
       <a class="audio_act vk_audio_acts" data-aid="{vals.id}" onmouseover="vkopt.audio.acts.menu(this);" onclick="cancelEvent(event)"><div></div></a>
       */
       /*del_button:
-      <a class="audio_act audio_act_delete_pl" id="delete_pl" onclick="cancelEvent(event);getAudioPlayer().getCurrentPlaylist().removeAudio('{vals.id}');"><div></div></a>
+      <a class="audio_act audio_act_rem_from_pl" id="vk_delete_pl" onmouseover="showTooltip(this,{text:IDL('Skip_pl'),black:1,shift:[7,5,0],needLeft:true})" onclick="vkopt.audio.delete_from_pl_act(event,'{vals.id}')"><div></div></a>
       */
       /*size_info:
       <small class="fl_l vk_audio_size_info_wrap" id="vk_audio_size_info_{vals.id}">
@@ -2453,21 +2453,6 @@ vkopt['audio'] =  {
       return url + '#FILENAME/' + vkEncodeFileName(name) + '.mp3';
    },
    processNode: function(node, params){
-      if (vkopt.settings.get('audio_clean_titles')){ // clean titles
-         var nodes=geByClass('audio_title_wrap',node);
-         for (var i=0; i<nodes.length; i++){
-            FindAndProcessTextNodes(nodes[i],function(mainNode,childItem){
-               var el = mainNode.childNodes[childItem];
-               if (el.nodeValue && !/^[\u2013\s]+$/.test(el.nodeValue)){
-                  el.nodeValue=vkopt.audio.remove_trash(el.nodeValue);
-               }
-               return childItem;
-            });
-         }
-      }
-
-
-
       if (!vkopt.settings.get('audio_dl') && !vkopt.settings.get('audio_more_acts')) return;
       if (!vkopt.audio.__full_audio_info_cache)
          vkopt.audio.__full_audio_info_cache = {};
@@ -2484,9 +2469,7 @@ vkopt['audio'] =  {
          var info = null;
          try {
             info = JSON.parse(row.dataset["audio"]);
-         } catch(e) {
-
-         }
+         } catch(e) {}
          if (!acts || !info) continue;
          var info_obj = AudioUtils.asObject(info);
          if (info_obj.url==""){                    // собираем очередь из аудио, которым требуется подгрузка инфы
@@ -2774,6 +2757,10 @@ vkopt['audio'] =  {
          });
          vkAlertBox('Wiki-code:',code);
       }
+   },
+   delete_from_pl_act: function (ev, id) {
+       getAudioPlayer().getCurrentPlaylist().removeAudio(id);
+       addClass(gpeByClass("audio_row", ev.target), "audio_skipped");
    }
 
 };
@@ -6653,5 +6640,27 @@ vkopt['turn_blocks'] = {
    }
 }
 
+vkopt['audio_clean_titles'] = {
+	onSettings:{
+		Media:{
+			audio_clean_titles: {
+				title: 'seAudioUntrashTitle'
+			}}
+	},
+	processNode: function (node, params) {
+		if (vkopt.settings.get('audio_clean_titles')){ // clean titles
+			var nodes=geByClass('audio_title_wrap',node);
+			for (var i=0; i<nodes.length; i++){
+				FindAndProcessTextNodes(nodes[i],function(mainNode,childItem){
+					var el = mainNode.childNodes[childItem];
+					if (el.nodeValue && !/^[\u2013\s]+$/.test(el.nodeValue)){
+						el.nodeValue=vkopt.audio.remove_trash(el.nodeValue);
+					}
+					return childItem;
+				});
+			}
+		}
+	}
+}
 
 vkopt_core.init();
