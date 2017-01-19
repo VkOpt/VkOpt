@@ -2148,9 +2148,20 @@ vkopt['audio'] =  {
          width: 14px;
          background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAMBAMAAACgrpHpAAAAGFBMVEUAAAByk7dyk7Zyk7Zyk7Zyk7ZzlLdyk7aWV8ipAAAAB3RSTlMA7SIuBBjsKPzYuwAAAEFJREFUCNdjEC8HgkIGCF3GgAyKGJgKgOLs5Q7u5UCatby4vBQkzl5eDpZnLi8G6WNwLy93ANJMQPkisDQQwfQDAJLaEk3kz9tlAAAAAElFTkSuQmCC");
       }
+
+      .top_audio_layer .audio_row.audio_skipped .audio_act.audio_act_rem_from_pl,
+      .top_audio_layer .audio_row.audio_row_playing .audio_act.audio_act_rem_from_pl{
+         display: none;
+      }
       .audio_row.audio_skipped .audio_info{
          opacity: 0.5;
-       }
+      }
+      .audio_row.audio_added_next.audio_skipped .audio_info{
+         opacity:1
+      }
+      .audio_row.audio_added_next.audio_skipped .audio_act.audio_act_rem_from_pl{
+         display:block;
+      }
        */
       });
       return codes.dl;
@@ -2759,8 +2770,16 @@ vkopt['audio'] =  {
       }
    },
    delete_from_pl_act: function (ev, id) {
-       getAudioPlayer().getCurrentPlaylist().removeAudio(id);
-       addClass(gpeByClass("audio_row", ev.target), "audio_skipped");
+       var row = gpeByClass("audio_row", ev.target);
+       if (hasClass(row, 'audio_added_next') || !hasClass(row, 'audio_skipped')){ // наличие класса .audio_added_next разрешает убрать трек из очереди
+          // при добавлении трека после исключения обратно в очередь следующим,
+          // нужно чтоб класс .audio_added_next перекрывал визуальто стиль от .audio_skipped
+          // т.е тут роль костыля будет играть класс .audio_added_next.audio_skipped{opacity:1}
+          // вместо того, чтоб делать инъекцию в setNext для удаления класса audio_skipped
+          getAudioPlayer().getCurrentPlaylist().removeAudio(id);
+          addClass(row, "audio_skipped");
+          removeClass(row, "audio_added_next"); // чтоб трек можно было вернуть в очередь
+       }
    }
 
 };
