@@ -5202,7 +5202,7 @@ vkopt['face'] =  {
          .vk_old_white_background body{
             background: #fff;
          }
-         .vk_old_white_background .im-page.im-page_classic .im-page--header-chat,
+         .vk_old_white_background .im-page.im-page_classic .im-page--chat-header,
          .vk_old_white_background .im-page.im-page_classic .im-page--header,
          .vk_old_white_background .im-page.im-page_classic .im-page--chat-input
          {
