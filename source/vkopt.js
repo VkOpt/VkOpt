@@ -2458,7 +2458,8 @@ vkopt['audio'] =  {
    make_dl_url: function(url, name){
       name = vkCleanFileName(name);
       // фикс-костыль, т.к для https://*.vk-cdn.net нет разрешений в манифесте.
-      // если исправить в манифесте, то после обновления расширения, оно отключится у всех пользователей хрома
+      // если исправить в манифесте, то после обновления расширения, оно отключится у всех пользователей хрома)
+      //url = vkopt.audio.decode_url(url);
       if (/^https:.+\.vk-cdn\.net\//i.test(url))
          url = url.replace(/^https:/,'http:');
       return url + '#FILENAME/' + vkEncodeFileName(name) + '.mp3';
@@ -2492,6 +2493,9 @@ vkopt['audio'] =  {
                   queue.push(info_obj.fullId);
             }
          }
+
+         if (info_obj.url)
+            info_obj.url = vkopt.audio.decode_url(info_obj.url);
 
          var name = unclean(info[4]+' - '+info[3]).replace(/<em>|<\/em>/g, ''); // зачищаем от тегов.
          name = vkCleanFileName(name);
@@ -2593,6 +2597,9 @@ vkopt['audio'] =  {
       } catch(e){}
       vkopt.audio._sizes_cache = sz_cache;
    },
+   clear_sizes_cache:function(){
+      localStorage['vkopt_audio_sizes_cache'] = '{}';
+   },
    size_to_bitrare: function(size, duration){
       var kbit = size / 128;
       var kbps = Math.ceil(Math.round(kbit/duration)/16)*16;
@@ -2633,16 +2640,22 @@ vkopt['audio'] =  {
             el.dataset['kbps'] = sz_info.kbps_raw;
             el.dataset['filesize'] = size;
             addClass(el, 'vk_info_loaded');
-            if (sz_info.kbps_raw > 0 && !vkopt.audio._sizes_cache[aid]){
+            if (sz_info.kbps_raw > 120 && !vkopt.audio._sizes_cache[aid]){
                vkopt.audio._sizes_cache[aid] = size;
                vkopt.audio.save_sizes_cache();
+            } else {
+               vkopt.audio._sizes_cache[aid] = false;
+               vkopt.audio.save_sizes_cache();
+
             }
+            return sz_info.kbps_raw > 120;
          }
       };
-      if (size){
-         set_size_info(size);
-      } else
-      if (els.length){
+      var need_load = true;
+      if (size)
+         need_load = !set_size_info(size);
+
+      if (need_load && els.length){
          var reset=setTimeout(function(){
             vkopt.audio.info_thread_count--;
             rb = false;
@@ -2665,6 +2678,11 @@ vkopt['audio'] =  {
    __hover_load_queue:[], // очередь, из которой будут аудио перемещаться в __load_queue, при наведении на иконку загрузки.
    __loading_queue:[], // очередь текущих аудио, по которым в данный момент грузится инфа
    __load_req_num: 1,
+   decode_url: function(url){
+      var tmp = {};
+      AudioPlayerHTML5.prototype._setAudioNodeUrl(tmp, url);
+      return tmp.src
+   },
    load_audio_urls: function(){
       if (vkopt.audio.__load_queue.length == 0 || vkopt.audio.__loading_queue.length > 0) // если нет списка на подгрузку, или что-то уже грузится - игнорим вызов
          return;
@@ -2688,7 +2706,11 @@ vkopt['audio'] =  {
                   //console.log('on done:', vkopt.audio.__load_req_num, data);
                   vkopt.audio.__loading_queue = [];
                   each(data, function (i, info) {
+
                      info = AudioUtils.asObject(info);
+                     if (info.url)
+                        info.url = vkopt.audio.decode_url(info.url);
+
                      vkopt.audio.__full_audio_info_cache[info.fullId] = info;
                      if (info.url)
                         vkopt.audio.load_size_info(info.fullId, info.url);
