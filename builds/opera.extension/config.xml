@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<widget xmlns="http://www.w3.org/ns/widgets" version="3.0.1.0" id="http://vkopt.net/">
+<widget xmlns="http://www.w3.org/ns/widgets" version="3.0.2.0" id="http://vkopt.net/">
 	<name short="vkOpt">VkOpt</name>
 	<description>Добавление множества функций, упрощающих жизнь ВКонтакте.ру. Official site and support: http://vkopt.net/</description>
 	<author href="http://vk.com/id13391307">Раевский Михаил</author>

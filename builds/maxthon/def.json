@@ -1,7 +1,7 @@
 ﻿[{
    "type": "extension",
    "frameworkVersion": "1.0.6",
-   "version": "3.0.1.0",
+   "version": "3.0.2.0",
    "guid": "{458D9EF6-7F82-4E4A-9D1C-DCCD956E5583}",
    "name": "VkOpt",
    "title": {

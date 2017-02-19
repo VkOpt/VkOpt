@@ -1,7 +1,7 @@
 ﻿{
   "manifest_version": 2,
   "name": "VkOpt",
-  "version": "3.0.1.0",
+  "version": "3.0.2.0",
   "description": "Добавление множества функций, упрощающих жизнь ВКонтакте (vk.com). Official site and support: http://vkopt.net/",
   "homepage_url": "http://vkopt.net/",
   "default_locale": "ru",

@@ -3,7 +3,7 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. --><RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <Description about="urn:mozilla:install-manifest">
     <em:id>vkopt_moz@vkopt.net.ru</em:id>
-    <em:version>3.0.1.161016</em:version>
+    <em:version>3.0.2.170218</em:version>
     <em:name>VkOpt</em:name>
     <em:description>Добавление множества функций для сайта ВКонтакте</em:description>
     <em:creator>KiberПсих</em:creator>
