@@ -2447,7 +2447,7 @@ vkopt['audio'] =  {
                   idx = hq.length - 1;
                }
                var start = Math.max(0, idx - 2);
-               var end = Math.min(start + 5, hq.length - 1) - start;
+               var end = Math.min(start + 5, hq.length) - start;
                var to_load = hq.splice(start, end);
                vkopt.audio.__load_queue = vkopt.audio.__load_queue.concat(to_load);
                vkopt.audio.load_audio_urls(); // запускаем процесс загрузки инфы об аудио из очереди
