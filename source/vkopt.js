@@ -3898,7 +3898,7 @@ vkopt['videoview'] = {
       if (!vkopt.settings.get('vid_dl')) return;
       vkopt.videoview._cur_mv_data = vars;
       vkopt.videoview.update_dl_btn();
-      if (!vars || !vars.md_title){
+      if (!vars || !vars.md_title || vars.extra){
          setTimeout(function(){
             var p, ifr;
             p = ge('mv_player_box');
