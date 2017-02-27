@@ -6445,9 +6445,8 @@ vkopt['im_form'] = {
    css: function() {
       var code = vk_lib.get_block_comments(function() {
          /*css:
-         .vk_im_form .emoji_scroll .emoji_cat_title_helper:first-child,
-         .vk_im_form .emoji_scroll .emoji_smiles_row:nth-child(2),
-         .vk_im_form .emoji_scroll .emoji_smiles_row:nth-child(3){
+         .vk_im_recent_emoji .emoji_cat_title_helper:first-child,
+         .vk_im_recent_emoji .emoji_smiles_row:nth-child(2){
          display: none;
          }
          .vk_im_recent_emoji ._im_media_selector,
