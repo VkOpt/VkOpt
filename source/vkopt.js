@@ -6445,22 +6445,27 @@ vkopt['im_form'] = {
    css: function() {
       var code = vk_lib.get_block_comments(function() {
          /*css:
+         .vk_im_form .emoji_scroll .emoji_cat_title_helper:first-child,
+         .vk_im_form .emoji_scroll .emoji_smiles_row:nth-child(2),
+         .vk_im_form .emoji_scroll .emoji_smiles_row:nth-child(3){
+         display: none;
+         }
          .vk_im_recent_emoji ._im_media_selector,
          .vk_im_recent_emoji .im-send-btn{
-            margin: auto;
-            bottom: 0;
-            top: 0;
+         margin: auto;
+         bottom: 0;
+         top: 0;
          }
          .vk_im_recent_emoji ._im_media_selector{
-            width: 24px;
-            height: 25px;
+         width: 24px;
+         height: 25px;
          }
          .vk_im_recent_emoji .im-chat-input--text{
-            resize: vertical;
-            height: auto;
+         resize: vertical;
+         height: auto;
          }
          .vk_im_recent_emoji .im-chat-input .im-chat-input--txt-wrap{
-            margin-bottom: 0;
+         margin-bottom: 0;
          }
          */
       }).css;
@@ -6482,25 +6487,27 @@ vkopt['im_form'] = {
       }
    },
    recent_emoji: function() {
-      var optId = (Emoji.last-1) || 0;
       var emojiList = Emoji.emojiGetRecentFromStorage();
       if (emojiList) Emoji.setRecentEmojiList(emojiList);
+      
       var cat = Emoji.getRecentEmojiSorted();
       var data = document.createElement('div');
       data.className = 'emoji_smiles_row';
-      data.onmouseover = function() {
-         Emoji.shownId = optId;
-      }
-      data.onmouseout = function() {
-         var opts = Emoji.opts[Emoji.last-1];
-         if (opts && opts.emojiOvered) removeClass(opts.emojiOvered, 'emoji_over');
-         Emoji.shownId = false;
-      }
+
       for (var i=0, len = cat.length; i<len; i++) {
-         data.innerHTML += Emoji.emojiWrapItem(optId, cat[i], i);
+         data.innerHTML += this.emojiWrapItem(cat[i], i);
       }
       return data;
    },
+
+   emojiWrapItem: function(code, i) {
+      var info = Emoji.cssEmoji[code];
+      if (info) var titleStr = ' title="'+info[1]+'"';
+      else var titleStr = '';
+
+      return '<a class="emoji_smile_cont '+((code != '2764' && i && (i < 54)) ? 'emoji_smile_shadow' : '')+'" '+titleStr+' onmousedown="Emoji.addEmoji(0, \''+code+'\', this); return cancelEvent(event);" onclick="return cancelEvent(event);" onmouseover="addClass(this, \'emoji_over\');" onmouseout="removeClass(this, \'emoji_over\');" ><div class="emoji_bg"></div><div class="emoji_shadow"></div>'+Emoji.getEmojiHTML(code, false, false, true)+'</a>';
+   },
+
    del_recent_emoji: function() {
       if (ge('im_form_emoji')) {
          re('im_form_emoji')
