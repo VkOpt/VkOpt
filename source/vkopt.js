@@ -6504,7 +6504,7 @@ vkopt['im_form'] = {
       if (info) var titleStr = ' title="'+info[1]+'"';
       else var titleStr = '';
 
-      return '<a class="emoji_smile_cont '+((code != '2764' && i && (i < 54)) ? 'emoji_smile_shadow' : '')+'" '+titleStr+' onmousedown="Emoji.addEmoji(0, \''+code+'\', this); return cancelEvent(event);" onclick="return cancelEvent(event);" onmouseover="addClass(this, \'emoji_over\');" onmouseout="removeClass(this, \'emoji_over\');" ><div class="emoji_bg"></div><div class="emoji_shadow"></div>'+Emoji.getEmojiHTML(code, false, false, true)+'</a>';
+      return '<a class="emoji_smile_cont '+((code != '2764' && i && (i < 54)) ? 'emoji_smile_shadow' : '')+'" '+titleStr+' onmousedown="Emoji.addEmoji(Emoji.last-1, \''+code+'\', this); return cancelEvent(event);" onclick="return cancelEvent(event);" onmouseover="addClass(this, \'emoji_over\');" onmouseout="removeClass(this, \'emoji_over\');" ><div class="emoji_bg"></div><div class="emoji_shadow"></div>'+Emoji.getEmojiHTML(code, false, false, true)+'</a>';
    },
 
    del_recent_emoji: function() {
