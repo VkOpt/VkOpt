@@ -389,6 +389,8 @@ var ex_api={
 
          case 'download':
          case 'check_ext':
+         case 'permissions_request':
+         case 'permissions_get':
          //case 'update_scripts':
             ex_api.req(res,function(data, sub){
                //win.postMessage(JSON.parse(JSON.stringify({response:data,sub:sub})),"*");

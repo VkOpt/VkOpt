@@ -689,6 +689,26 @@ ext_api={
             } else */
             ext_api.download(data.url,data.name,obj.win);
             break;
+         case 'permissions_request':
+               chrome.permissions.request(data.permissions_query/*{
+                  permissions : [tabs],
+                  origins : ["*://*.vk-cdn.net/*"]
+               }*/, function (granted) {
+                  // The callback argument will be true if the user granted the permissions.
+                  if (granted) {
+                     send_response({act:'permission_granted'});
+                     ext_api.utils.chrome.update(); // обновим регистрацию обработчиков запросов
+                  } else {
+                     send_response({act:'permission_denied'});
+                  }
+               });
+            break;
+         case 'permissions_get':
+               chrome.permissions.getAll(function(perms){
+                  send_response({permissions:perms});
+               })
+            break;
+
          default: if (send_response) send_response({act:'extension bg default response',msg:data, __key:data.__key});
       }
    },
@@ -975,45 +995,70 @@ ext_api={
          } else
             ext_api.utils.ls = localStorage;
       },
-      chrome_init: function(){
-         var download_file_names={};
-         chrome.webRequest.onBeforeRequest.addListener(
-            function(details) {
-               //console.log('onBeforeRequest:',details);
-               var url=details.url.match(/^(.+)[&\?]\/(.+\.[a-z0-9]+)/);
-               if (!url)
-                  url=details.url.match(/^(.+)#FILENAME\/(.+\.[a-z0-9]+)/);
-               if (url){
-                  download_file_names['name'+details.requestId]=decodeURIComponent(url[2]);
-                  return {redirectUrl: url[1]};
-               }
-            },
-            {urls: ["*://*.vk.me/*","*://*.userapi.me/*","*://*.vk-cdn.net/*"]},["blocking"]
-         );
+      chrome: {
+         init: function(){
+            ext_api.utils.chrome.update();
+         },
+         update: function(){
+             chrome.permissions.getAll(function(perms){
+               var _this = ext_api.utils.chrome;
+               var full_origins = perms.origins;
 
-         chrome.webRequest.onHeadersReceived.addListener(
-            function(details) {
-               //console.log('onHeadersReceived:',details);
-               if (download_file_names['name'+details.requestId]){
-                  var found = false;
-                  for (var i = 0; i < details.responseHeaders.length; ++i) {
-                     if (details.responseHeaders[i].name === 'Content-Disposition') {
-                        details.responseHeaders[i].value = 'attachment; filename="'+download_file_names['name'+details.requestId]+'"';
-                        found = true;
-                        break;
-                     } //Content-Disposition: attachment; filename=\"1.png\""
-                  }
-                  if (!found) details.responseHeaders.push({
-                     name: 'Content-Disposition',
-                     value: 'attachment; filename="'+download_file_names['name'+details.requestId]+'"'
-                  });
-                  return {
-                     responseHeaders: details.responseHeaders
-                  };
+               var origins = full_origins.filter(function(item, idx){
+                 if (!/:\/\/\*\//.test(item) && /:\/\/\*\./.test(item)) // исключаем маску *://*/* и маски без поддоменов
+                    return item;
+               });
+               console.log('Origins for mod requests:', origins);
+               //["*://*.vk.me/*","*://*.userapi.com/*","*://*.vk-cdn.net/*"];
+
+               if(chrome.webRequest.onBeforeRequest.hasListener(_this.on_before_req))
+                  chrome.webRequest.onBeforeRequest.removeListener(_this.on_before_req);
+
+               if(chrome.webRequest.onHeadersReceived.hasListener(_this.on_headers))
+                  chrome.webRequest.onHeadersReceived.removeListener(_this.on_headers);
+
+               chrome.webRequest.onBeforeRequest.addListener(
+                  _this.on_before_req,
+                  {urls: origins}, ["blocking"]
+               );
+
+               chrome.webRequest.onHeadersReceived.addListener(
+                  _this.on_headers,
+                  {urls: origins}, ["responseHeaders","blocking"]
+               );
+            })
+         },
+         download_file_names: {},
+         on_before_req: function(details){
+            //console.log('onBeforeRequest:',details);
+            var url=details.url.match(/^(.+)[&\?]\/(.+\.[a-z0-9]+)/);
+            if (!url)
+               url=details.url.match(/^(.+)#FILENAME\/(.+\.[a-z0-9]+)/);
+            if (url){
+               ext_api.utils.chrome.download_file_names['name'+details.requestId]=decodeURIComponent(url[2]);
+               return {redirectUrl: url[1]};
+            }
+         },
+         on_headers: function(details){
+            //console.log('onHeadersReceived:',details);
+            if (ext_api.utils.chrome.download_file_names['name'+details.requestId]){
+               var found = false;
+               for (var i = 0; i < details.responseHeaders.length; ++i) {
+                  if (details.responseHeaders[i].name === 'Content-Disposition') {
+                     details.responseHeaders[i].value = 'attachment; filename="'+ext_api.utils.chrome.download_file_names['name'+details.requestId]+'"';
+                     found = true;
+                     break;
+                  } //Content-Disposition: attachment; filename=\"1.png\""
                }
-            },
-            {urls: ["*://*.vk.me/*","*://*.userapi.me/*","*://*.vk-cdn.net/*"]}, ["responseHeaders","blocking"]
-         );
+               if (!found) details.responseHeaders.push({
+                  name: 'Content-Disposition',
+                  value: 'attachment; filename="'+ext_api.utils.chrome.download_file_names['name'+details.requestId]+'"'
+               });
+               return {
+                  responseHeaders: details.responseHeaders
+               };
+            }
+         }
       }
    }
 };
@@ -1026,6 +1071,6 @@ ex_loader.init.apply(this);
 
 
 if (browser.chrome && !(window.external && window.external.mxGetRuntime))
-   ext_api.utils.chrome_init()
+   ext_api.utils.chrome.init()
 
 })();

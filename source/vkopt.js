@@ -541,6 +541,47 @@ vkopt.set_css = function(code, id){
    	val(id, code);
 }
 
+vkopt.permissions = { // for chromium
+   origins_cache:[],
+   update: function(callback){
+      vk_ext_api.req({act:'permissions_get'},function(r){
+         vkopt.permissions.origins_cache = r.permissions.origins;
+         callback && callback(r.permissions);
+      });
+   },
+   check_url: function(url){
+      var masks = vkopt.permissions.origins_cache;
+      for (var i in masks){
+         var rx_pat = '^'+masks[i].replace(/\*$/,'').replace(/\*/g,'[^\/]*').replace(/\//g,'\\/').replace(/\./g,'\\.')+'.*';
+         var rx = new RegExp(rx_pat,'i');
+         if (rx.test(url))
+            return true;
+      }
+      return false;
+   },
+   request: function(url, callback){
+      var m = url.match(/^[^\/]+:\/\/([^\/]+\.)?([^\/]+\.[^\/]+)\//);
+      var mask = "*://" + (m[2] ? "*." : '') + m[2] + "/*";
+      vk_ext_api.req({act:'permissions_request', permissions_query:{origins:[mask]}},function(r){
+         vkopt.permissions.update(function(){
+            callback && callback(r.act == 'permission_granted');
+         });
+      });
+   },
+   check_dl_url: function(el, url){
+      if (!vkbrowser.chrome || vkopt.permissions.check_url(url)){
+         return true;
+      } else {
+         show(boxLayerBG);
+         vkopt.permissions.request(url, function(granted){
+            hide(boxLayerBG);
+            if (granted) el.click();
+         })
+         return false;
+      }
+   }
+}
+
 vkopt['res'] = {
    css: function(){
       return vk_lib.get_block_comments(function(){
@@ -2203,7 +2244,7 @@ vkopt['audio'] =  {
    onInit: function(){
       vkopt.audio.tpls = vk_lib.get_block_comments(function(){
       /*dl_button:
-      <a class="audio_act vk_audio_dl_btn" data-aid="{vals.id}" download="{vals.filename}" href="{vals.url}" onclick="vkDownloadFile(this);" onmouseover="vkopt.audio.btn_over(this);"><div></div></a>
+      <a class="audio_act vk_audio_dl_btn" data-aid="{vals.id}" download="{vals.filename}" href="{vals.url}" onclick="return vkopt.audio.download_file(this);" onmouseover="vkopt.audio.btn_over(this);"><div></div></a>
       */
       /*acts_button:
 
@@ -2418,6 +2459,13 @@ vkopt['audio'] =  {
       if (!vkopt.settings.get('audio_dl_acts_2_btns') && vkopt.settings.get('audio_more_acts'))
          vkopt.audio.acts.menu(el);
    },
+   download_file: function(el){
+     var result = true;
+     if (el.hasAttribute('url_ready'))
+        result = vkopt.permissions.check_dl_url(el, el.href);
+     if (result) result = vkDownloadFile(el);
+     return result;
+   },
    check_dl_url: function(el){   // если на странице не было ссылок на аудио, то при наведении на кнопку загрузки ждём их появления в кэше.
       if (el.getAttribute('href') == ''){
          addClass(el,'dl_url_loading');
@@ -2428,6 +2476,7 @@ vkopt['audio'] =  {
                var name = vkCleanFileName(info.performer + ' - ' + info.title);
                var url = vkopt.audio.make_dl_url(info.url, name);
                el.setAttribute('href', url);
+               el.setAttribute('url_ready','1');
                removeClass(el,'dl_url_loading');
             } else {
                setTimeout(function(){
@@ -2457,11 +2506,13 @@ vkopt['audio'] =  {
    },
    make_dl_url: function(url, name){
       name = vkCleanFileName(name);
+      /*
       // фикс-костыль, т.к для https://*.vk-cdn.net нет разрешений в манифесте.
       // если исправить в манифесте, то после обновления расширения, оно отключится у всех пользователей хрома)
       //url = vkopt.audio.decode_url(url);
       if (/^https:.+\.vk-cdn\.net\//i.test(url))
          url = url.replace(/^https:/,'http:');
+      */
       return url + '#FILENAME/' + vkEncodeFileName(name) + '.mp3';
    },
    processNode: function(node, params){
