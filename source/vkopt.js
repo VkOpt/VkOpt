@@ -6761,7 +6761,7 @@ vkopt['attachments_and_link'] = {
                     Array.prototype.push.apply(objmess, dataItem.item.data);
                     if (objmess.length < self.COUNT_ROW && self.local.lastid != 'eof') {
                         setTimeout(function () {
-                            self.getHistoryAttr(dataItem.item.last, 0, strongId, objmess);
+                            self.getHistoryAttr(dataItem.status == 'segment' ? self.local.lastid : dataItem.item.last, 0, strongId, objmess); //в случае если это сегмент dataItem.item.last будет конец сегмента
                         });
                         break;
                     }
@@ -6875,7 +6875,7 @@ vkopt['attachments_and_link'] = {
              z-index: 900;
              border: 2px solid #f7f7f7;
              border-left: 1px solid rgba(0,0,0,.1);
-             width: 25%;
+             width: 30%;
              }
              #history_list  li {
              list-style-type: none;
@@ -7318,6 +7318,7 @@ vkopt['attachments_and_link'] = {
     getHistoryAttr: function (first, last, IdMassage, objMess) {
         // перебирает count сообщений  вызывает событие в котором передает  вложения не включая last
         // найденное дописывается в конец IdMassage, objMess
+        var self = this;
         if (first == 'eof') {
             self.callEvent('getHistoryAttr', null, 'eof');
             return;
