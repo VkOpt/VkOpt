@@ -5302,7 +5302,7 @@ vkopt['face'] =  {
          .vk_hide_recommendations #groups_filters_wrap {
             display: none;
          }
-	 #stories_feed_wrap {
+	 .vk_hide_stories #stories_feed_wrap {
             display: none;
          }
          #vk_online_status > * {
