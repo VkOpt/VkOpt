@@ -5994,7 +5994,7 @@ vkopt['groups'] = {
           var canvas = document.createElement('CANVAS'), ctx = canvas.getContext('2d');// для конвертирования изображений в base64
           var flushPage = function (title, pid, html) {   // Добавление готовой страницы (с картинками) в объект JSZip
               if (html!='') zip.file(vkCleanFileName(title) + ' (' + pid + ').html',
-                  '<!DOCTYPE HTML><html><head><meta charset="utf-8"><title>' + (title || 'Wiki ' + oid + '_' + pid + ' [VkOpt]') + '</title></head><body>' + html + '</body></html>');
+                  '<!DOCTYPE HTML><html><head><meta charset="utf-8"><title>' + (title || 'Wiki ' + oid + '_' + pid + ' [VkOpt]') + '</title><link type="text/css" rel="stylesheet" href="https://vk.com/css/al/wk.css"></head><body>' + html + '</body></html>');
               pages_complete++;
           };
           var dlpages = function (i) {  // рекурсивная функция скачивания страниц. i - номер ссылки в массиве
