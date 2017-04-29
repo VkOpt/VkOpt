@@ -3810,7 +3810,7 @@ vkopt['audioplayer'] = {
          cur_pl._initEvents();
          cur_pl._restoreVolumeState();
          setTimeout(function() {
-            cur_pl._restoreState();
+            cur_pl.restoreState();
             AudioUtils.toggleAudioHQBodyClass();
             cur_pl.updateCurrentPlaying();
          }, 0)
