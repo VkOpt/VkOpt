@@ -167,7 +167,7 @@ var vkopt_core = {
       if (vkopt_core.disallow_location.test(document.location.href)) return;
       //TODO: тут ещё бы дождаться подгрузки vk_lib.js
       vkopt_core.dom_ready(function(){
-         if (!isNewVk()) return;
+         // if (!isNewVk()) return;
          console.log('init vkopt 3.x');
          vkopt_core.run();
       });
