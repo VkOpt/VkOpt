@@ -6494,100 +6494,143 @@ vkopt['im_form'] = {
          im_recent_emoji:{
             title: 'seRecentEmoji',
             class_toggler: true
-         }/*,
+         },
          im_store_h:{
             title: 'seStoreHeightImTxt',
             class_toggler: true
-         }*/
+         }
       }
    },
    css: function() {
       var code = vk_lib.get_block_comments(function() {
          /*css:
-         .vk_im_recent_emoji ._im_media_selector,
-         .vk_im_recent_emoji .im-send-btn{
-            margin: auto;
-            bottom: 0;
-            top: 0;
+         .vk_im_recent_emoji .im-chat-input .im-chat-input--txt-wrap {
+            margin-bottom: 0;
          }
-         .vk_im_recent_emoji ._im_media_selector{
-            width: 24px;
-            height: 25px;
+         .vk_im_recent_emoji #mail_box_controls {
+            padding-top: 0;
          }
-         .vk_im_recent_emoji .im-chat-input--text{
+         .vk_im_store_h .im-chat-input .im-chat-input--text {
             resize: vertical;
             height: auto;
          }
-         .vk_im_recent_emoji .im-chat-input .im-chat-input--txt-wrap{
-            margin-bottom: 0;
+         .vk_im_store_h .im-chat-input .im-chat-input--smile-wrap .emoji_smile {
+            padding: 6px 3px;
+         }
+         .vk_im_store_h .emoji_smile_wrap {
+            right: 11px;
+         }
+         
+         .vk_im_store_h ._im_media_selector,
+         .vk_im_store_h .im-send-btn {
+            margin: auto;
+            padding: 0;
+            bottom: 0;
+            top: 0;
+         }
+         .vk_im_store_h ._im_media_selector {
+            width: 56px;
+            height: 62px;
          }
          */
       }).css;
       /*
-      if (vkopt.settings.get('im_store_h')){
-         var h = vkopt.settings.get('im_form_h');//im_store_h
+      if (vkopt.settings.get('im_store_h')) {
+         var h = vkopt.settings.get('im_form_h');
          if (h) code += '.vk_im_store_h .im-chat-input--text{height:'+h+';}';
       }*/
       return code;
    },
+   
+   onLibFiles: function(file_name) {
+      if (file_name != 'writebox.js') return;
+      
+      window.showWriteMessageBox = function(e, id) {
+         if (cur.onFriendMessage) cur.onFriendMessage();
+         stManager.add(['page.js', 'wide_dd.js']);
+         var box = showBox('al_mail.php', {act: 'write_box', to: id}, {stat: ['writebox.js', 'writebox.css', 'wide_dd.css', 'page.css', 'emoji.js', 'notifier.css'], cache: 1}, e);
+         if (box) cancelEvent(e);
+         //window.WriteBox && WriteBox.extractEmoji();
+         window.WriteBox && vkopt.im_form.debounce(vkopt.im_form.add_recent_emoji);
+         return !box;
+      }
+      
+      vkopt.im_form.debounce(vkopt.im_form.add_recent_emoji);
+   },
+   
    add_recent_emoji: function() {
-      if (!ge('im_form_emoji') && window.Emoji && geByClass1('im-chat-input--text')) {
-         var emoji = document.createElement('div');
-         emoji.id = 'im_form_emoji';
-         emoji.appendChild(vkopt.im_form.recent_emoji());
-
-         var tarea = geByClass1('im-chat-input--textarea');
-         tarea.insertBefore(emoji, geByClass1('im-chat-input--scroll',tarea));
+      if (ge('im_form_emoji') || !window.Emoji) return;
+      if (!geByClass1('im-chat-input--text') && !ge('mail_box_editable')) return;
+      
+      var emoji = document.createElement('div');
+      emoji.id = 'im_form_emoji';
+      emoji.appendChild(vkopt.im_form.recent_emoji());
+      
+      var tarea = geByClass1('im-chat-input--textarea');
+      if (tarea) tarea.insertBefore(emoji, geByClass1('im-chat-input--scroll', tarea));
+      else {
+         tarea = ge('mbe_emoji_wrap');
+         if (tarea) tarea.appendChild(emoji);
       }
    },
    recent_emoji: function() {
-      var optId = (Emoji.last-1) || 0;
       var emojiList = Emoji.emojiGetRecentFromStorage();
       if (emojiList) Emoji.setRecentEmojiList(emojiList);
+      
       var cat = Emoji.getRecentEmojiSorted();
       var data = document.createElement('div');
       data.className = 'emoji_smiles_row';
-      data.onmouseover = function() {
-         Emoji.shownId = optId;
-      }
-      data.onmouseout = function() {
-         var opts = Emoji.opts[Emoji.last-1];
-         if (opts && opts.emojiOvered) removeClass(opts.emojiOvered, 'emoji_over');
-         Emoji.shownId = false;
-      }
       for (var i=0, len = cat.length; i<len; i++) {
-         data.innerHTML += Emoji.emojiWrapItem(optId, cat[i], i);
+         data.innerHTML += this.emojiWrapItem(cat[i], i);
       }
+      
       return data;
    },
+
+   emojiWrapItem: function(code, i) {
+      var info = Emoji.cssEmoji[code];
+      if (info) var titleStr = ' title="'+info[1]+'"';
+      else var titleStr = '';
+      
+      return '<a class="emoji_smile_cont '+((code != '2764' && i && (i < 54)) ? 'emoji_smile_shadow' : '')+'" '+titleStr+' onmousedown="Emoji.addEmoji(Emoji.last-1, \''+code+'\', this); return cancelEvent(event);" onclick="return cancelEvent(event);" onmouseover="addClass(this, \'emoji_over\');" onmouseout="removeClass(this, \'emoji_over\');" ><div class="emoji_bg"></div><div class="emoji_shadow"></div>'+Emoji.getEmojiHTML(code, false, false, true)+'</a>';
+   },
+   
    del_recent_emoji: function() {
       if (ge('im_form_emoji')) {
          re('im_form_emoji')
       }
    },
-   debounce: function(cb){
+   debounce: function(cb) {
       clearTimeout(vkopt.im_form.delay);
-      vkopt.im_form.delay = setTimeout(cb,200);
+      vkopt.im_form.delay = setTimeout(cb, 200);
    },
    onLocation: function() {
-      if (vkopt.settings.get('im_recent_emoji') || vkopt.settings.get('im_store_h')) {
-         vkopt.im_form.debounce(function() {
-            if (vkopt.settings.get('im_recent_emoji'))
-               vkopt.im_form.add_recent_emoji();
-
-            if (vkopt.settings.get('im_store_h')){
-               var inp = geByClass1('im-chat-input--text')
+      if (!vkopt.settings.get('im_recent_emoji') && !vkopt.settings.get('im_store_h')) return;
+      
+      vkopt.im_form.debounce(function() {
+         if (vkopt.settings.get('im_recent_emoji')) vkopt.im_form.add_recent_emoji();
+         
+         if (vkopt.settings.get('im_store_h')) {
+            var inp = geByClass1('im-chat-input--text')
+            if (inp != null) {
                inp.style.height = vkopt.settings.get('im_form_h');
-               inp.onmouseup = function () { //TODO: replace to addEvent
-                  vkopt.settings.set('im_form_h',this.style.height);
-               }
+               addEvent(inp, 'mouseup', function () {
+                  var oldH = parseInt(vkopt.settings.get('im_form_h'));
+                  var newH = parseInt(this.style.height);
+                  if (newH < 36) newH = 36; //min-height: 36px;
+                  vkopt.settings.set('im_form_h', newH + 'px');
+                  
+                  var el = geByClass1('im-page--chat-body-wrap-inner');
+                  var borderH = parseInt(el.style.borderBottomWidth);
+                  el.style.borderBottomWidth = borderH - (oldH - newH) + 'px';
+               });
             }
-         });
-      }
-
+         }
+      });
    },
    onOptionChanged: function(option_id, val, option_data) {
       if (option_id == 'im_recent_emoji') {
+         
          vkopt.im_form.debounce(function() {
             if (val) vkopt.im_form.add_recent_emoji();
             else vkopt.im_form.del_recent_emoji();
@@ -6595,10 +6638,10 @@ vkopt['im_form'] = {
       }
       if (option_id == 'im_store_h') {
          vkopt.im_form.debounce(function() {
-            if (val){
-               //var h = vkopt.settings.get('im_form_h');
+            if (val) {
+               var h = vkopt.settings.get('im_form_h');
                //if (h) vkopt.set_css('.vk_im_store_h .im-chat-input--text{height:'+h+';}','im_form_h');
-               geByClass1('im-chat-input--text').style.height = vkopt.settings.get('im_form_h');
+               geByClass1('im-chat-input--text').style.height = h;
             } else {
                geByClass1('im-chat-input--text').style.height = '';
             }
