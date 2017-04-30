@@ -5162,6 +5162,10 @@ vkopt['face'] =  {
          audio_full_title: {
             title: 'seAudioFullTitles',
             class_toggler: true
+         },
+         old_audio: {
+            title: 'seOldAudioStyle',
+            class_toggler: true
          }
       },
 
@@ -5276,6 +5280,30 @@ vkopt['face'] =  {
          .vk_audio_full_title .audio_row .audio_performer{
             display: inline;
          }
+         
+         .vk_old_audio .audio_row .audio_info {
+            padding-top: 7px;
+         }
+         .vk_old_audio .audio_row .audio_row_cover_wrap {
+            width: 28px;
+            height: 28px;
+            background-image: none;
+         }
+         .vk_old_audio .audio_row .audio_row_cover_play_icon {
+            background-color: #6788AA;
+            width: 28px;
+            height: 28px;
+            opacity: 1;
+         }
+         .vk_old_audio .audio_row .audio_row_cover_play_icon:hover {
+            background-color: #577CA1;
+         }
+         .vk_old_audio .audio_row .audio_row_cover_back,
+         .vk_old_audio .audio_row .audio_row_cover,
+         .vk_old_audio .audio_sound_bars {
+             display: none;
+         }
+         
          .vk_more_acts_icon{
             background: url(/images/icons/profile_dots.png) no-repeat 0 4px;
             height: 13px;
