@@ -5281,6 +5281,9 @@ vkopt['face'] =  {
             display: inline;
          }
          
+         .vk_old_audio .audio_row {
+            padding: 2px 0;
+         }
          .vk_old_audio .audio_row .audio_info {
             padding-top: 7px;
          }
