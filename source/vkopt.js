@@ -6510,7 +6510,7 @@ vkopt['im_form'] = {
          .vk_im_recent_emoji #mail_box_controls {
             padding-top: 0;
          }
-         .vk_im_store_h .im-chat-input .im-chat-input--text {
+         ._vk_im_store_h .im-chat-input .im-chat-input--text {
             resize: vertical;
             height: auto;
          }
@@ -6520,7 +6520,7 @@ vkopt['im_form'] = {
          .vk_im_store_h .emoji_smile_wrap {
             right: 11px;
          }
-         
+
          .vk_im_store_h ._im_media_selector,
          .vk_im_store_h .im-send-btn {
             margin: auto;
@@ -6532,6 +6532,26 @@ vkopt['im_form'] = {
             width: 56px;
             height: 62px;
          }
+
+         #vk_im_form_resizer_wrap{
+            height:10px;
+            _background:#AAA;
+            _display: none;
+             margin-top: -10px;
+             cursor: row-resize;
+         }
+         #vk_im_form_resizer_wrap:before {
+             display: block;
+             content: "";
+             position: absolute;
+             left: 50%;
+             top: 4px;
+             width: 10px;
+             height: 2px;
+             border-top: 1px solid #d4d6da;
+             border-bottom: 1px solid #d4d6da;
+             margin-left: -5px
+         }
          */
       }).css;
       /*
@@ -6541,10 +6561,10 @@ vkopt['im_form'] = {
       }*/
       return code;
    },
-   
+
    onLibFiles: function(file_name) {
       if (file_name != 'writebox.js') return;
-      
+
       window.showWriteMessageBox = function(e, id) {
          if (cur.onFriendMessage) cur.onFriendMessage();
          stManager.add(['page.js', 'wide_dd.js']);
@@ -6554,18 +6574,18 @@ vkopt['im_form'] = {
          window.WriteBox && vkopt.im_form.debounce(vkopt.im_form.add_recent_emoji);
          return !box;
       }
-      
+
       vkopt.im_form.debounce(vkopt.im_form.add_recent_emoji);
    },
-   
+
    add_recent_emoji: function() {
       if (ge('im_form_emoji') || !window.Emoji) return;
       if (!geByClass1('im-chat-input--text') && !ge('mail_box_editable')) return;
-      
+
       var emoji = document.createElement('div');
       emoji.id = 'im_form_emoji';
       emoji.appendChild(vkopt.im_form.recent_emoji());
-      
+
       var tarea = geByClass1('im-chat-input--textarea');
       if (tarea) tarea.insertBefore(emoji, geByClass1('im-chat-input--scroll', tarea));
       else {
@@ -6576,50 +6596,96 @@ vkopt['im_form'] = {
    recent_emoji: function() {
       var emojiList = Emoji.emojiGetRecentFromStorage();
       if (emojiList) Emoji.setRecentEmojiList(emojiList);
-      
+
       var cat = Emoji.getRecentEmojiSorted();
       var data = document.createElement('div');
       data.className = 'emoji_smiles_row';
       for (var i=0, len = cat.length; i<len; i++) {
          data.innerHTML += this.emojiWrapItem(cat[i], i);
       }
-      
+
       return data;
    },
 
-   emojiWrapItem: function(code, i) {
+   emojiWrapItem : function (code, i) {
       var info = Emoji.cssEmoji[code];
-      if (info) var titleStr = ' title="'+info[1]+'"';
-      else var titleStr = '';
-      
-      return '<a class="emoji_smile_cont '+((code != '2764' && i && (i < 54)) ? 'emoji_smile_shadow' : '')+'" '+titleStr+' onmousedown="Emoji.addEmoji(Emoji.last-1, \''+code+'\', this); return cancelEvent(event);" onclick="return cancelEvent(event);" onmouseover="addClass(this, \'emoji_over\');" onmouseout="removeClass(this, \'emoji_over\');" ><div class="emoji_bg"></div><div class="emoji_shadow"></div>'+Emoji.getEmojiHTML(code, false, false, true)+'</a>';
+      if (info)
+         var titleStr = ' title="' + info[1] + '"';
+      else
+         var titleStr = '';
+
+      return '<a class="emoji_smile_cont ' + ((code != '2764' && i && (i < 54)) ? 'emoji_smile_shadow' : '') + '" ' + titleStr + ' onmousedown="Emoji.addEmoji(Emoji.last-1, \'' + code + '\', this); return cancelEvent(event);" onclick="return cancelEvent(event);" onmouseover="addClass(this, \'emoji_over\');" onmouseout="removeClass(this, \'emoji_over\');" ><div class="emoji_bg"></div><div class="emoji_shadow"></div>' + Emoji.getEmojiHTML(code, false, false, true) + '</a>';
    },
-   
-   del_recent_emoji: function() {
+
+   del_recent_emoji : function () {
       if (ge('im_form_emoji')) {
          re('im_form_emoji')
       }
    },
-   debounce: function(cb) {
+
+   add_resizer: function(){
+      if (!ge('vk_im_form_resizer_wrap') && geByClass1('im-chat-input--error')){
+         insertAfter(se('<div id="vk_im_form_resizer_wrap"><div></div></div>'), geByClass1('im-chat-input--error'));
+         addEvent('vk_im_form_resizer_wrap', 'mousedown', vkopt.im_form.on_resize_start);
+      }
+   },
+   on_resize_start: function (e) {
+      cur.resizeStartY = e.clientY;
+      cur.resizeStartH = geByClass1('im_editable').clientHeight; //cur.imEl.resizable.clientHeight;
+      cur.resizeStartScroll = scrollGetY(true);
+      cur.emMove = undefined;
+      var cb = function (e) {
+         setStyle(bodyNode, 'cursor', '');
+         removeEvent(document, 'mouseup', cb);
+         removeEvent(document, 'mousemove', vkopt.im_form.on_resize);
+         removeEvent(document, 'drag', vkopt.im_form.on_resize);
+      };
+      setStyle(bodyNode, 'cursor', 'row-resize');
+      addEvent(document, 'mouseup', cb);
+      addEvent(document, 'mousemove', vkopt.im_form.on_resize);
+      addEvent(document, 'drag', vkopt.im_form.on_resize);
+      return cancelEvent(e);
+   },
+   on_resize : function (e) {
+      var diff = e.clientY - cur.resizeStartY,
+      h = cur.resizeStartH - diff,
+      scroll = !!diff;
+
+      if (h < 20) {
+         h = 0;
+         scroll = false;
+      } else if (h > 0.4 * lastWindowHeight) {
+         h = 0.4 * lastWindowHeight;
+         scroll = false;
+      }
+      setStyle(geByClass1('im_editable'), 'height', h);
+      vkopt.settings.set('im_form_h', h + 'px');
+      cancelEvent(e);
+      return false;
+   },
+
+   debounce : function (cb) {
       clearTimeout(vkopt.im_form.delay);
       vkopt.im_form.delay = setTimeout(cb, 200);
    },
    onLocation: function() {
       if (!vkopt.settings.get('im_recent_emoji') && !vkopt.settings.get('im_store_h')) return;
-      
+
       vkopt.im_form.debounce(function() {
          if (vkopt.settings.get('im_recent_emoji')) vkopt.im_form.add_recent_emoji();
-         
+
          if (vkopt.settings.get('im_store_h')) {
             var inp = geByClass1('im-chat-input--text')
             if (inp != null) {
+               vkopt.im_form.add_resizer();
+
                inp.style.height = vkopt.settings.get('im_form_h');
                addEvent(inp, 'mouseup', function () {
                   var oldH = parseInt(vkopt.settings.get('im_form_h'));
                   var newH = parseInt(this.style.height);
                   if (newH < 36) newH = 36; //min-height: 36px;
                   vkopt.settings.set('im_form_h', newH + 'px');
-                  
+
                   var el = geByClass1('im-page--chat-body-wrap-inner');
                   var borderH = parseInt(el.style.borderBottomWidth);
                   el.style.borderBottomWidth = borderH - (oldH - newH) + 'px';
@@ -6630,7 +6696,7 @@ vkopt['im_form'] = {
    },
    onOptionChanged: function(option_id, val, option_data) {
       if (option_id == 'im_recent_emoji') {
-         
+
          vkopt.im_form.debounce(function() {
             if (val) vkopt.im_form.add_recent_emoji();
             else vkopt.im_form.del_recent_emoji();
