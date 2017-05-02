@@ -78,7 +78,7 @@ var ex_ldr={
             }
          },false);
       } else if (ext_browser.chrome){                                              // CHROMIUM
-         chrome.extension.sendRequest({act:'get_scripts', url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc), __key:ex_ldr.__key}, function(data) {
+         chrome.runtime.sendMessage({act:'get_scripts', url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc), __key:ex_ldr.__key}, function(data) {
             if (data.__key==ex_ldr.__key && data.files && data.files.length>0){
                if (data.api_enabled)
                   api_enabled = true;
@@ -90,7 +90,7 @@ var ex_ldr={
 
          ex_api.post_message=function(msg){
             msg=ex_api.prepare_data(msg);
-            chrome.extension.sendRequest(msg, function(data) {
+            chrome.runtime.sendMessage(msg, function(data) {
                if (data.__key==ex_ldr.__key){
                   ex_api.message_handler(data);
                }
