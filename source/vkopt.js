@@ -5155,6 +5155,10 @@ vkopt['attacher'] = {
 vkopt['face'] =  {
    onSettings:{
       Media:{
+         old_audio_btns: {
+            title: 'seOldAudioButtons',
+            class_toggler: true
+         },
          compact_audio: {
             title: 'seCompactAudio',
             class_toggler: true
@@ -5163,8 +5167,8 @@ vkopt['face'] =  {
             title: 'seAudioFullTitles',
             class_toggler: true
          },
-         old_audio: {
-            title: 'seOldAudioStyle',
+         hide_mplaylists: {
+            title: 'seHideMainPlaylists',
             class_toggler: true
          }
       },
@@ -5234,8 +5238,34 @@ vkopt['face'] =  {
             border-radius: 0px !important;
          }
 
+         .vk_old_audio_btns .audio_row {
+            padding: 2px 0;
+         }
+         .vk_old_audio_btns .audio_row .audio_info {
+            padding-top: 7px;
+         }
+         .vk_old_audio_btns .audio_row .audio_row_cover_wrap {
+            width: 28px;
+            height: 28px;
+            background-image: none;
+         }
+         .vk_old_audio_btns .audio_row .audio_row_cover_play_icon {
+            background-color: #6788AA;
+            width: 28px;
+            height: 28px;
+            opacity: 1;
+         }
+         .vk_old_audio_btns .audio_row .audio_row_cover_play_icon:hover {
+            background-color: #577CA1;
+         }
+         .vk_old_audio_btns .audio_row .audio_row_cover_back,
+         .vk_old_audio_btns .audio_row .audio_row_cover,
+         .vk_old_audio_btns .audio_sound_bars {
+             display: none;
+         }
+
          .vk_compact_audio .audio_row .audio_row_inner{
-           padding:0;
+           padding: 0;
          }
          .vk_compact_audio .audio_row .audio_row_cover_wrap,
          .vk_compact_audio .audio_row .audio_row_cover,
@@ -5254,11 +5284,11 @@ vkopt['face'] =  {
            margin: 4px;
          }
          .vk_compact_audio .audio_pl_edit_box .ape_audio_item_wrap .ape_check{
-          padding: 0px
+          padding: 0;
          }
          .vk_compact_audio .audio_pl_edit_box .ape_audio_item_wrap .ape_check .ape_check_icon{
            background-size:cover;
-           width:20px;
+           width: 20px;
            height: 20px;
          }
          .vk_compact_audio .audio_row .audio_acts #add {
@@ -5280,33 +5310,15 @@ vkopt['face'] =  {
          .vk_audio_full_title .audio_row .audio_performer{
             display: inline;
          }
-         
-         .vk_old_audio .audio_row {
-            padding: 2px 0;
+         .vk_hide_mplaylists .has_friends_block > ._audio_page_titled_block,
+         .vk_hide_mplaylists .audio_page__audio_rows > h2:nth-child(1) {
+            display: none;
          }
-         .vk_old_audio .audio_row .audio_info {
-            padding-top: 7px;
+         .vk_hide_mplaylists .has_friends_block > .audio_page_separator {
+            height: 0;
+            margin: 0;
          }
-         .vk_old_audio .audio_row .audio_row_cover_wrap {
-            width: 28px;
-            height: 28px;
-            background-image: none;
-         }
-         .vk_old_audio .audio_row .audio_row_cover_play_icon {
-            background-color: #6788AA;
-            width: 28px;
-            height: 28px;
-            opacity: 1;
-         }
-         .vk_old_audio .audio_row .audio_row_cover_play_icon:hover {
-            background-color: #577CA1;
-         }
-         .vk_old_audio .audio_row .audio_row_cover_back,
-         .vk_old_audio .audio_row .audio_row_cover,
-         .vk_old_audio .audio_sound_bars {
-             display: none;
-         }
-         
+
          .vk_more_acts_icon{
             background: url(/images/icons/profile_dots.png) no-repeat 0 4px;
             height: 13px;
