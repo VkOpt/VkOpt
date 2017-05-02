@@ -5194,7 +5194,11 @@ vkopt['face'] =  {
          hide_recommendations:{
             title:"seHideRecomendations",
             class_toggler: true
-         }
+         },
+	 hide_stories:{
+            title:"seHideStories",
+            class_toggler: true
+	 }
       },
 
       Users:{
@@ -5304,6 +5308,9 @@ vkopt['face'] =  {
          }
          .vk_hide_recommendations #friends_possible_block,
          .vk_hide_recommendations #groups_filters_wrap {
+            display: none;
+         }
+	 .vk_hide_stories #stories_feed_wrap {
             display: none;
          }
          #vk_online_status > * {
