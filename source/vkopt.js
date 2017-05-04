@@ -5202,6 +5202,10 @@ vkopt['face'] =  {
          hide_recommendations:{
             title:"seHideRecomendations",
             class_toggler: true
+         },
+         hide_stories:{
+            title:"seHideStories",
+            class_toggler: true
          }
       },
 
@@ -5265,14 +5269,15 @@ vkopt['face'] =  {
          }
 
          .vk_compact_audio .audio_row .audio_row_inner{
-           padding: 0;
+           padding:0;
          }
          .vk_compact_audio .audio_row .audio_row_cover_wrap,
          .vk_compact_audio .audio_row .audio_row_cover,
          .vk_compact_audio .audio_row .audio_row_cover_back,
          .vk_compact_audio .audio_row .audio_row_cover_play_icon,
          .vk_compact_audio .audio_row .audio_sound_bars,
-         .vk_compact_audio .audio_row .audio_acts .audio_act{
+         .vk_compact_audio .audio_row .audio_acts .audio_act,
+         .vk_compact_audio .audio_pl_edit_box .ape_audio_item_wrap .ape_check .ape_check_icon{
            width: 20px;
            height: 20px;
            background-size: cover;
@@ -5284,19 +5289,18 @@ vkopt['face'] =  {
            margin: 4px;
          }
          .vk_compact_audio .audio_pl_edit_box .ape_audio_item_wrap .ape_check{
-          padding: 0;
+          padding: 0px
          }
-         .vk_compact_audio .audio_pl_edit_box .ape_audio_item_wrap .ape_check .ape_check_icon{
-           background-size:cover;
-           width: 20px;
-           height: 20px;
-         }
+
          .vk_compact_audio .audio_row .audio_acts #add {
              width: 15px;
              background-position: 0px -18px;
          }
          .vk_compact_audio .audio_row.added .audio_act#add{
            background-position: 0px 4px;
+         }
+         .vk_compact_audio .audio_pl_edit_box .ape_audio_item_wrap .ape_attach{
+            margin-top: 3px;
          }
          .vk_compact_audio .vk_audio_size_info_wrap {
            margin-top: -3px;
@@ -5347,6 +5351,9 @@ vkopt['face'] =  {
          }
          .vk_hide_recommendations #friends_possible_block,
          .vk_hide_recommendations #groups_filters_wrap {
+            display: none;
+         }
+	 .vk_hide_stories #stories_feed_wrap {
             display: none;
          }
          #vk_online_status > * {
