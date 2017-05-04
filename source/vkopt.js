@@ -168,7 +168,8 @@ var vkopt_core = {
       //TODO: тут ещё бы дождаться подгрузки vk_lib.js
       vkopt_core.dom_ready(function(){
          // if (!isNewVk()) return;
-         console.log('init vkopt 3.x');
+         if (vk_DEBUG) console.log('init vkopt 3.x');
+         else window.debugLog = function() {};
          vkopt_core.run();
       });
    },
@@ -1385,7 +1386,7 @@ vkopt['settings'] =  {
          config: vkopt.settings.config()
       };
       vk_ext_api.storage.set('vkopt_cfg_backup_'+vk.id, JSON.stringify(full_config), function(){
-         console.log('config '+vk.id+' copied to bg ok');
+         if (vk_DEBUG) console.log('config '+vk.id+' copied to bg ok');
          callback && callback();
       });
 
@@ -1402,13 +1403,13 @@ vkopt['settings'] =  {
                vkopt_core.plugins.call_modules('onOptionChanged', option_id, cfg.config[option_id], option_data);
             }
          }
-         console.log('config '+vk.id+' restored from bg ok');
+         if (vk_DEBUG) console.log('config '+vk.id+' restored from bg ok');
          callback && callback();
       })
    },
    remove_backup:function(callback){
       vk_ext_api.storage.set('vkopt_cfg_backup_'+vk.id, '{}', function(){
-         console.log('empty config copied to bg ok');
+         if (vk_DEBUG) console.log('empty config copied to bg ok');
          callback && callback();
       });
    },
