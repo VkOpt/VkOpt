@@ -163,7 +163,8 @@ ex_loader = {
       } else if (b.chrome){                          // CHROME
          ext_api.ready=true;
          //chrome.extension.onRequest
-         chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
+         chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+           console.log(1);
             // request.url - contain url
             if (request.act=='get_scripts' && request.url){
                ex_loader.get_scripts(request.url,function(files,api_allowed){
