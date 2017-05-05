@@ -168,8 +168,8 @@ var vkopt_core = {
       //TODO: тут ещё бы дождаться подгрузки vk_lib.js
       vkopt_core.dom_ready(function(){
          // if (!isNewVk()) return;
-         if (vk_DEBUG) console.log('init vkopt 3.x');
-         else window.debugLog = function() {};
+         console.log('init vkopt 3.x');
+         if (!vk_DEBUG)  window.debugLog = function() {};
          vkopt_core.run();
       });
    },
