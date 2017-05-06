@@ -94,7 +94,7 @@ ex_loader = {
       mozilla: (function() { try { return !chrome && !!Components.interfaces.nsIObserverService } catch (e) {return false} })(),
       mozilla_jetpack: (typeof require != 'undefined' && typeof module != 'undefined'  && module.id == "vkopt/background"),
       opera:  window && window.opera && opera.extension,
-      chrome: (function() { try { return !!chrome && !!chrome.extension } catch (e) {return false} })(),
+      chrome: window && window.chrome && chrome.extension,
       safari: window && window.safari && safari.extension,
       maxthon: window && !!window.external && !!window.external.mxGetRuntime
    },
