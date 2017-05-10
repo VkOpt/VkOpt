@@ -2180,29 +2180,28 @@ vkopt['audio'] =  {
          padding-bottom: 5px;
          padding-top: 5px;
       }
-      .top_audio_layer .audio_row .audio_act.audio_act_rem_from_pl{
+
+      #top_audio_layer_place .audio_row .audio_acts #vk_delete_pl {
          display: block;
+	     height: 24px;
+         width: 24px;
+         background: no-repeat url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAMBAMAAACgrpHpAAAAGFBMVEUAAAByk7dyk7Zyk7Zyk7Zyk7ZzlLdyk7aWV8ipAAAAB3RSTlMA7SIuBBjsKPzYuwAAAEFJREFUCNdjEC8HgkIGCF3GgAyKGJgKgOLs5Q7u5UCatby4vBQkzl5eDpZnLi8G6WNwLy93ANJMQPkisDQQwfQDAJLaEk3kz9tlAAAAAElFTkSuQmCC");
       }
-      .top_audio_layer .audio_row .audio_act.audio_act_rem_from_pl>div{
-         height: 12px;
-         width: 14px;
-         background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAMBAMAAACgrpHpAAAAGFBMVEUAAAByk7dyk7Zyk7Zyk7Zyk7ZzlLdyk7aWV8ipAAAAB3RSTlMA7SIuBBjsKPzYuwAAAEFJREFUCNdjEC8HgkIGCF3GgAyKGJgKgOLs5Q7u5UCatby4vBQkzl5eDpZnLi8G6WNwLy93ANJMQPkisDQQwfQDAJLaEk3kz9tlAAAAAElFTkSuQmCC");
-      }
-      .top_audio_layer .audio_row.audio_skipped .audio_act.audio_act_rem_from_pl,
-      .top_audio_layer .audio_row.audio_row_playing .audio_act.audio_act_rem_from_pl,
-      .top_audio_layer .audio_row.audio_row_playing.audio_added_next.audio_skipped .audio_act.audio_act_rem_from_pl{
+      #top_audio_layer_place .audio_row.audio_skipped #vk_delete_pl,
+      #top_audio_layer_place .audio_row.audio_row_playing #vk_delete_pl,
+      #top_audio_layer_place .audio_row.audio_row_playing.audio_added_next.audio_skipped #vk_delete_pl {
          display: none;
       }
-      .audio_row.audio_skipped .audio_info{
+      .audio_row.audio_skipped .audio_info {
          opacity: 0.5;
       }
-      .audio_row.audio_added_next.audio_skipped .audio_info{
-         opacity:1
+      .audio_row.audio_added_next.audio_skipped .audio_info {
+         opacity: 1;
       }
-      .audio_row.audio_added_next.audio_skipped .audio_act.audio_act_rem_from_pl{
-         display:block;
+      .audio_row.audio_added_next.audio_skipped #vk_delete_pl {
+         display: block;
       }
-       */
+      */
       });
       return codes.dl;
    },
@@ -2250,7 +2249,7 @@ vkopt['audio'] =  {
       <a class="audio_act vk_audio_acts" data-aid="{vals.id}" onmouseover="vkopt.audio.acts.menu(this);" onclick="cancelEvent(event)"><div></div></a>
       */
       /*del_button:
-      <a class="audio_act audio_act_rem_from_pl" id="vk_delete_pl" onmouseover="showTooltip(this,{text:IDL('Skip_pl'),black:1,shift:[7,5,0],needLeft:true})" onclick="vkopt.audio.delete_from_pl_act(event,'{vals.id}')"><div></div></a>
+      <div id="vk_delete_pl" class="audio_act" onmouseover="showTooltip(this,{text:IDL('Skip_pl'),black:1,shift:[7,5,0],needLeft:true})" onclick="vkopt.audio.delete_from_pl_act(event,'{vals.id}')"></div>
       */
       /*size_info:
       <small class="fl_l vk_audio_size_info_wrap" id="vk_audio_size_info_{vals.id}">
