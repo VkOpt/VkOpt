@@ -2184,7 +2184,7 @@ vkopt['audio'] =  {
          display: block;
 	     height: 24px;
          width: 24px;
-         background: no-repeat url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAMBAMAAACgrpHpAAAAGFBMVEUAAAByk7dyk7Zyk7Zyk7Zyk7ZzlLdyk7aWV8ipAAAAB3RSTlMA7SIuBBjsKPzYuwAAAEFJREFUCNdjEC8HgkIGCF3GgAyKGJgKgOLs5Q7u5UCatby4vBQkzl5eDpZnLi8G6WNwLy93ANJMQPkisDQQwfQDAJLaEk3kz9tlAAAAAElFTkSuQmCC");
+         background: no-repeat url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAArklEQVRIie2SsRHDIAxFGcEjeNNwovChFOqEO4/gERiBETyCR0gKG0JSYIhpuOPf0eg4PfSEED09bQaQd/WcX7kHkPciQEnzvwDtJ7WDzx2zABoriQZfkxONCtmB5jUJSPkOAM3r4d9skmiQE42AZjtrttKkxnqIb66QXTxVNUhR85wdCHE4Dy+PdF0Ccnbw1RzZxbqqKApqIi1x7TZAafP4/aYnZAE9021ATzt5A6iGBcJNqGUGAAAAAElFTkSuQmCC");
       }
       #top_audio_layer_place .audio_row.audio_skipped #vko_skip,
       #top_audio_layer_place .audio_row.audio_row_playing #vko_skip,
@@ -2249,7 +2249,7 @@ vkopt['audio'] =  {
       <a class="audio_act vk_audio_acts" data-aid="{vals.id}" onmouseover="vkopt.audio.acts.menu(this);" onclick="cancelEvent(event)"><div></div></a>
       */
       /*skip_button:
-      <div id="vko_skip" class="audio_act" onmouseover="showTooltip(this,{text:{lng.Skip_pl},black:1,shift:[7,5,0],needLeft:true})" onclick="vkopt.audio.skip_act(event,'{vals.id}')"></div>
+      <div id="vko_skip" class="audio_act" onmouseover="showTooltip(this,{text:'{lng.Skip_pl}',black:1,shift:[7,5,0],needLeft:true})" onclick="vkopt.audio.skip_act(event,'{vals.id}')"></div>
       */
       /*size_info:
       <small class="fl_l vk_audio_size_info_wrap" id="vk_audio_size_info_{vals.id}">
