@@ -394,13 +394,13 @@ var vk_glue = {
          }, true);
       },
       groups: function(){
-         Inj.End('Groups.init',' ; setTimeout(vk_glue.nav_handler,2);');
+         Inj.Before('Groups.init',' ; setTimeout(vk_glue.nav_handler,2);');
       },
       publics: function(){
-         Inj.End('Public.init',' ; setTimeout(vk_glue.nav_handler,2);');
+         Inj.Before('Public.init',' ; setTimeout(vk_glue.nav_handler,2);');
       },
       profile: function(){
-         Inj.End('Profile.init',' ; setTimeout(vk_glue.nav_handler,2);');
+         Inj.Before('Profile.init',' ; setTimeout(vk_glue.nav_handler,2);');
       },
       auto_list: function(){
          if (vkopt_defaults.config.AUTO_LIST_DRAW_ROWS_INJ){
