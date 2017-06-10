@@ -3021,6 +3021,149 @@ var vkOptDonate = {
     }
 };
 
+function vk_tag_api(section,url,app_id){
+   var t={
+      section:section,
+      page_url:url,
+      app:app_id,
+      widget_req:function(obj_id,like,callback){
+         var app=t.app;
+         var params={
+            "app": app,
+            "url": t.page_url+t.section+'/'+obj_id,
+            "width": "100%",
+            "page": "0",
+            "type": "button",
+            "verb": "0",
+            "title": t.section,
+            "description": t.section,
+            "image": "",
+            "text": "",
+            "h": "22",
+            "_ver": "1",
+            "color": ""
+         };
+     
+         var ret=0;
+         var req=function(){
+            AjPost(location.protocol+'//vk.com/widget_like.php',params,function(t){
+               var _pageQuery=(t.match(/_pageQuery\s*=\s*'([a-f0-9]+)'/) || [])[1];
+               var likeHash=(t.match(/likeHash\s*=\s*'([a-f0-9]+)'/) || [])[1];
+               if (!_pageQuery || !likeHash){
+                  if (ret<5 && /db_err/.test(t)){
+                     ret++;
+                     if (vk_DEBUG) console.log('widget_req error... retry '+ret+'... ');
+                     setTimeout(function(){req();},3000);
+                  } else 
+                     alert('Parse hash error');
+                  return;
+               }
+               var like_params={
+                  value:like?1:0,
+                  act:'a_like',
+                  s:0,
+                  verb:0,
+                  al:1,
+                  hash:likeHash,
+                  pageQuery:_pageQuery,
+                  app:app
+               };
+               ajax.post('widget_like.php',like_params,{
+                  onDone : function (stats) {
+                     if (callback) callback(stats.num);
+                  }, 
+                  onFail : function (text) {}
+               });               
+            });
+         };
+         req();
+      },
+      parse_id:function(obj_id){
+         //console.log('>>>',obj_id);
+         var like_obj=obj_id;
+         if (/^([a-z_]+)(-?\d+)_(\d+)/.test(obj_id)){
+            //console.log('<<<',like_obj);
+            return like_obj;
+         }
+         var m = obj_id.match(/(-?\d+)(_?)(photo|video|note|topic|wall_reply|note_reply|photo_comment|video_comment|topic_comment|)(\d+)/);
+         if (m){
+            like_obj = (m[3] || 'wall') + m[1] + '_' + m[4];
+         }
+         //console.log('<<<',like_obj);
+         return like_obj;
+      },
+      mark:function(obj_id,callback){
+         var like_obj=t.parse_id(obj_id);
+         t.widget_req(like_obj,true,function(){
+            t.get_users(like_obj,0,6,callback);
+         });
+         
+      },
+      unmark:function(obj_id,callback){
+         var like_obj=t.parse_id(obj_id);
+         t.widget_req(like_obj,false,function(){
+            t.get_users(like_obj,0,6,callback);
+         });
+         
+      },
+      get_users:function(obj_id,offset,count,callback){
+         offset = offset || 0;
+         count = count || 6;
+         obj_id=t.parse_id(obj_id);
+         var url=t.page_url+t.section+'/'+obj_id;
+         var code='\
+         var like=API.likes.getList({type:"sitepage",page_url:"'+url+'",owner_id:"'+t.app+'",count:'+count+',offset:'+offset+'});\
+         var users=API.users.get({uids:like.users,fields:"photo_rec"});\
+         return {count:like.count,users:users,uids:like.users};\
+         ';
+         //api_for_dislikes
+         api4dislike.call('execute',{code:code},function(r){
+            if (callback) callback(r.response);
+         });
+         //api4dislike.call('likes.getList',{type:'sitepage', page_url:url,owner_id:t.app},console.log)
+      },
+      get_tags:function(obj_ids,callback){
+         var tmp=[];
+         for (var i=0; i<obj_ids.length; i++){
+            var like_obj=t.parse_id(obj_ids[i]);
+            var url=t.page_url+t.section+'/'+like_obj;
+            tmp.push('"'+obj_ids[i]+'": API.likes.getList({type:"sitepage",page_url:"'+url+'",owner_id:"'+t.app+'",count:1,offset:0}) ');
+         }
+         var code = 'return {'+tmp.join(',')+'};';
+         var retry_count=0;
+         var get=function(){
+            //api_for_dislikes
+            api4dislike.call('execute',{code:code},{
+                  ok:function(r){
+                     var raw = r.response;
+                     var data = {};
+                     for (var key in raw){
+                        if (!raw[key]) continue;
+                        data[key] = {
+                           count: raw[key].count,
+                           my: raw[key].users[0]==vk.id
+                        };
+                     }
+                     if (callback) callback(data);
+                  },
+                  error:function(r,err){
+                     if (vk_DEBUG) console.log('api marks error',obj_ids,err);
+                     retry_count++;
+                     if (retry_count<5){
+                        setTimeout(function(){get();},2000);
+                        if (vk_DEBUG) console.log('api marks error.. wait 2sec and retry.. code:'+err.error_code);
+                     } else { 
+                        if (vk_DEBUG) console.log('api marks error',obj_ids,err)
+                     }
+                  }
+            });
+         };
+         get();
+      }
+   };
+   return t;
+}
+
 if (!window.winToUtf) winToUtf=function(text) {
   text=text.replace(/&#0+(\d+);/g,"&#$1;");
   var m, j, code;  m = text.match(/&#[0-9]{2}[0-9]*;/gi);
