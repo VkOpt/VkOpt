@@ -6881,4 +6881,24 @@ vkopt['audio_clean_titles'] = {
 	}
 }
 
+vkopt['fake_verify'] = {
+	onSettings:{
+		Others:{
+			fake_verify: {
+				title: 'seFakeVerify',
+				default_value: false
+			}
+		}},
+		onLocation: function(nav_obj, cur_module_name){
+			if (window.cur.module == "profile" && window.cur.oid == vk.id
+					&& vkopt.settings.get('fake_verify') && !document.querySelector('.page_verified')) {
+				var vf = document.createElement('a');
+				vf.className = 'page_verified';
+				vf.href= '/verify';
+				vf.setAttribute('onmouseover', 'pageVerifiedTip(this, {mid: ' + vk.id + '})');
+				document.querySelector('.page_name').appendChild(vf);
+			}
+		}
+};
+
 vkopt_core.init();
