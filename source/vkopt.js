@@ -11,7 +11,7 @@
 //
 /* VERSION INFO */
 var vVersion	= 303;
-var vBuild = 170502;
+var vBuild = 170612;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
