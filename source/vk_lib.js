@@ -943,6 +943,12 @@ var vkMozExtension = {
       })
    };
 
+   vk_lib.toDataURI = function(type,svg){
+      for (var key in svg)
+         svg[key] = 'data:' + type + ',' + encodeURIComponent(svg[key])
+      return svg;
+   }
+
 	function TwoWayMap (map) {
 		this.map = map;
 		this.reverseMap = {};
@@ -3043,7 +3049,7 @@ function vk_tag_api(section,url,app_id){
             "_ver": "1",
             "color": ""
          };
-     
+
          var ret=0;
          var req=function(){
             AjPost(location.protocol+'//vk.com/widget_like.php',params,function(t){
@@ -3054,7 +3060,7 @@ function vk_tag_api(section,url,app_id){
                      ret++;
                      if (vk_DEBUG) console.log('widget_req error... retry '+ret+'... ');
                      setTimeout(function(){req();},3000);
-                  } else 
+                  } else
                      alert('Parse hash error');
                   return;
                }
@@ -3071,9 +3077,9 @@ function vk_tag_api(section,url,app_id){
                ajax.post('widget_like.php',like_params,{
                   onDone : function (stats) {
                      if (callback) callback(stats.num);
-                  }, 
+                  },
                   onFail : function (text) {}
-               });               
+               });
             });
          };
          req();
@@ -3097,14 +3103,14 @@ function vk_tag_api(section,url,app_id){
          t.widget_req(like_obj,true,function(){
             t.get_users(like_obj,0,6,callback);
          });
-         
+
       },
       unmark:function(obj_id,callback){
          var like_obj=t.parse_id(obj_id);
          t.widget_req(like_obj,false,function(){
             t.get_users(like_obj,0,6,callback);
          });
-         
+
       },
       get_users:function(obj_id,offset,count,callback){
          offset = offset || 0;
@@ -3152,7 +3158,7 @@ function vk_tag_api(section,url,app_id){
                      if (retry_count<5){
                         setTimeout(function(){get();},2000);
                         if (vk_DEBUG) console.log('api marks error.. wait 2sec and retry.. code:'+err.error_code);
-                     } else { 
+                     } else {
                         if (vk_DEBUG) console.log('api marks error',obj_ids,err)
                      }
                   }
