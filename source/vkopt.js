@@ -51,6 +51,8 @@ var vkopt_defaults = {
       show_common_group: false,
       common_group_color: '90ee90',
       audio_del_button_pl: true,
+      dislikes_enabled: false,
+      dislike_icon_index: 1,
 
       //disabled:
       im_store_h: false,
@@ -88,6 +90,7 @@ var vkopt_defaults = {
       MAX_CACHE_AUDIO_SIZE_ITEMS: 10000 // максимальное количество запомненных размеров аудио в локальном хранилище
    },
    popular: [
+      'dislikes_enabled',
       'scroll_to_next',
       'pv_comm_move_down',
       'disable_border_radius'
@@ -115,7 +118,8 @@ var vkopt_defaults = {
       "friends",
       "support",
       "test_module",
-      "turn_blocks"
+      "turn_blocks",
+      "vk_dislike"
       */
    ]
 };
@@ -1340,7 +1344,7 @@ vkopt['settings'] =  {
       // чекбоксы
       //
       var html = '';
-      if (!option_data.options && !option_data.color_picker){ // checkbox
+      if (!option_data.options && !option_data.color_picker && !option_data.content_func){ // checkbox
          html = vk_lib.tpl_process(vkopt.settings.tpls['checkbox'], {
                id: option_data.id,
                caption: IDL(trim(option_data.title || option_data.plug_id+'.'+option_data.id), 2),
@@ -1369,6 +1373,13 @@ vkopt['settings'] =  {
 					html += vk_lib.tpl_process(vkopt.settings.tpls['sub_block'], {content: content});
 				}
 			}
+         if (option_data.content_func) {
+            if (typeof option_data.content_func == 'string'){
+               var plug_func = vkopt[option_data.plug_id][option_data.content_func];
+               html = plug_func ? plug_func() : option_data.content_func;
+            } else
+               html = option_data.content_func();
+         }
       }
       return html;
    },
@@ -6879,6 +6890,959 @@ vkopt['audio_clean_titles'] = {
 			}
 		}
 	}
+}
+
+vkopt['vk_dislike'] = {
+   app_id:3395854,
+   server:'http://dislike.server/like.php',
+   ls_val:'dislike_auth',
+   ids_per_req:5,//10,//20,
+   delay:1000,
+   cache_time:3 * 60 * 1000,// 3 min
+   is_enabled:function(){
+      return vkopt.settings.get('dislikes_enabled');
+   },
+   tpls:{},
+   icons:[],
+   //0 - striked, 1 - striked empty, 2 - broken, 3 - crossed, 4 - skull, 5 - thumb
+   icons_svg: [
+         '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="14" viewBox="0 0 16 14" style="fill:#3D6899;"><path d="M4.5,10.7l9.9-9.9c-1.9-1.5-5.8-1-6.4,2.4C7.4-0.3,3.2-0.8,1.4,1c-1.9,1.9-1.9,4.8,0,6.7C1.7,8,3.1,9.4,4.5,10.7z"/><path d="M5.4,11.6C6.3,12.4,6.9,13,6.9,13c0.5,0.6,1.6,0.6,2.1,0l5.5-5.3c1.7-1.7,2-4.1,0.7-5.9L5.4,11.6z"/></svg>',
+         '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="14" viewBox="0 0 16 14" style="fill:#3D6899;"><path d="M3.4,10.6l1.1-1.1C3.7,8.7,2.9,7.9,2.8,7.8c-1.5-1.5-1.5-3.8,0-5.3C4.2,1,7.5,1.4,8,4.2 c0.4-2.2,2.5-2.9,4.1-2.4l1.2-1.2c-0.7-0.3-1.4-0.5-2.2-0.5C9.9,0.1,8.9,0.4,8,1.1C7.1,0.4,6,0,4.9,0C3.6,0,2.4,0.5,1.6,1.3 c-2.1,2.1-2.1,5.5,0,7.6C1.8,9.1,2.5,9.8,3.4,10.6z"/><path d="M16,0L16,0L2.1,14h2.1l1.3-1.3C5.7,12.9,5.9,13,6,13.1C6.5,13.7,7.2,14,8,14c0.8,0,1.5-0.3,2-0.9l4.3-4.2 c1.1-1,1.7-2.4,1.7-3.8c0-0.9-0.2-1.7-0.6-2.4L16,2.1V0z M13.2,7.8L8.8,12c-0.4,0.5-1.3,0.5-1.7,0c0,0-0.2-0.2-0.5-0.5l7.6-7.6 C14.7,5.2,14.3,6.7,13.2,7.8z"/></svg>',
+         '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="14" viewBox="0 0 16 14" style="fill:#3D6899;"><path d="M14.6,1.1c-1.4-1.3-4.2-1.4-5.7,0.3l1.6,3.5L8,6.6l1.8,2.8l-1.8,4l0.8-4.2L6.3,6.8l2.4-2.6L6.2,0.6 C4.7-0.3,2.5-0.1,1.4,1.1c-1.9,1.9-1.9,4.8,0,6.7c0.5,0.5,5.5,5.3,5.5,5.3c0.5,0.6,1.6,0.6,2.1,0l5.5-5.3C16.5,5.9,16.5,3,14.6,1.1z"/></svg>',
+         '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="14" viewBox="0 0 16 14" style="fill:#3D6899;"><path d="M7.1,8L0.8,1.7c-1.3,1.9-1.1,4.3,0.6,6c0.3,0.3,1.7,1.7,3.1,3L7.1,8z"/><path d="M8,7.1l6.3-6.3c-1.9-1.5-5.8-1-6.4,2.4C7.4-0.1,3.6-0.7,1.7,0.8L8,7.1z"/><path d="M8,9l-2.6,2.6C6.3,12.4,6.9,13,6.9,13c0.5,0.6,1.6,0.6,2.1,0l1.6-1.5L8,9z"/><path d="M9,8l2.5,2.5l3-2.9c1.7-1.7,2-4.1,0.7-5.9L9,8z"/></svg>',
+         '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="14" viewBox="0 0 16 14" style="fill:#3D6899;"><path d="M8,0C4.9,0,2.3,2.6,2.3,5.7c0,1.6,0.6,3,1.7,4c0.5,0.5,0.8,3.8,1.5,4.1 c0.2,0.1,0.5,0.1,1,0.2v-2.7l1,0V14c0.3,0,0.7,0,1,0v-2.8l1,0v2.7c0.5,0,0.8-0.1,1-0.2c0.7-0.3,1-3.5,1.5-4.1c1-1,1.7-2.5,1.7-4 C13.7,2.6,11.1,0,8,0z M5.7,7.6c-0.9,0-1.6-0.7-1.6-1.6c0-0.9,0.7-1.6,1.6-1.6S7.3,5,7.3,5.9C7.3,6.8,6.6,7.6,5.7,7.6z M7,9.8L8,7 l1,2.9L7,9.8z M10.3,7.6c-0.9,0-1.6-0.7-1.6-1.6c0-0.9,0.7-1.6,1.6-1.6c0.9,0,1.6,0.7,1.6,1.6C11.9,6.8,11.2,7.6,10.3,7.6z"/></svg>',
+         '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="14" viewBox="0 0 16 14" style="fill:#3D6899;"><path d="M15.2,1.6c0-0.1-0.4-1.3-2-1.5C11.9-0.1,8.9,0,8.3,0.3L7.6,0.7c0,0-0.9,0.5-0.9,0.5c-0.1,0-0.6,0.1-1.4,0V0.8H0v7.3h5.2V8 c0.7,0.3,1.6,0.9,2,1.6c0.6,0.9,1.1,2.1,1.4,2.9c0.4,1,0.6,1.4,1,1.5c1.2,0.1,2-0.5,2.2-1.6c0.1-0.3,0.1-0.6,0.1-0.8 c0-1-0.3-1.8-0.6-2.4c0.7,0,1.6,0,1.6,0c1.3,0,2.2-0.6,2.7-1.7C16.5,5.8,15.4,2.1,15.2,1.6z M14.8,7.1c-0.3,0.7-0.9,1.1-1.8,1.1H9.7 l0.5,0.7c0,0,0.8,1.2,0.8,2.6c0,0.2,0,0.4-0.1,0.7C10.8,12.8,10.5,13,10,13c-0.1-0.2-0.4-0.9-0.4-0.9C9.3,11.3,8.8,10.1,8.1,9 C7.4,8,6.1,7.3,5.2,7V2.2c0.8,0,1.4,0,1.7-0.1l1.2-0.6c0,0,0.6-0.4,0.6-0.4C9.1,1,11.7,0.9,13,1.1c1,0.1,1.2,0.8,1.2,0.8 C14.6,3,15.3,5.9,14.8,7.1z"/></svg>'
+   ],
+   icon_index: vkopt.settings.get('dislike_icon_index'),
+   auth_key:'',
+   api_id:'',
+   viewer_id:'',
+   queue:[],
+   last_req_ts:0,
+   cache:{},
+   onSettings: {
+      vkInterface:{
+         dislikes_enabled:{
+            title: 'seDislikeEnable',
+            class_toggler: true,
+            need_reload: true,
+            sub: {
+               dislike_icon_index:{
+                  title: ' ',
+                  content_func: 'dislikes_icons' // vkopt.vk_dislike.dislikes_icons()
+               }
+            }
+         }
+      }
+   },
+   onInit:function(){
+      addClass(geByTag1('html'), 'dislike_icon'+vkopt.settings.get('dislike_icon_index'));
+
+      vkopt.vk_dislike.tpls = vk_lib.get_block_comments(function(){
+         /*tip:
+         <div class="like_tt_header" onclick="vkopt.vk_dislike.show_users('%OBJ_ID%')">
+         <span id="dislike_title_%OBJ_ID%" class="_title">%USERS_DISLIKE%</span>
+         </div>
+         <div class="like_tt_wrap"><div class="like_tt_content">
+             <div class="like_tt_hider disliked_users_loading" id="dislike_utable_%OBJ_ID%">
+               <div id="dislike_table_%OBJ_ID%" class="like_tt_owners _content"></div>
+             </div>
+         </div></div>
+         */
+      });
+     //vkopt.vk_dislike.auth();
+      console.log('vk_dk status :' + (vkopt.vk_dislike.is_enabled()?'1':'0'));
+      if (!vkopt.vk_dislike.is_enabled()) return;
+      vkopt.vk_dislike.storage=new vk_tag_api('dislike','http://vk.dislike.server/',3429306);
+   },
+   auth:function(callback){
+      var auth_data=localStorage[vkopt.vk_dislike.ls_val] || '{}';
+      var auth_obj;
+      try {
+         auth_obj=JSON.parse(auth_data);
+         if (auth_data.auth_key && auth_data.api_id && auth_data.viewer_id){
+            vkopt.vk_dislike.auth_key=auth_data.auth_key;
+            vkopt.vk_dislike.api_id=auth_data.api_id;
+            vkopt.vk_dislike.viewer_id=auth_data.viewer_id;
+            if (callback) callback();
+         } else {
+            auth_obj=null;
+         }
+      } catch (e) {}
+      vkopt.vk_dislike.post('/app'+vkopt.vk_dislike.app_id,{},function(t){
+         var data=(t.match(/var params = (\{[^\}]+\})/)||[])[1]; // parse flash params
+         var obj=JSON.parse(data);
+         var auth_data={
+            auth_key:obj.auth_key,
+            api_id:obj.api_id,
+            viewer_id:obj.viewer_id
+         };
+         vkopt.vk_dislike.auth_key=auth_data.auth_key;
+         vkopt.vk_dislike.api_id=auth_data.api_id;
+         vkopt.vk_dislike.viewer_id=auth_data.viewer_id;
+         localStorage[vkopt.vk_dislike.ls_val]=JSON.stringify(auth_data);
+         if (callback) callback();
+      });
+   },
+
+   post:function(url,params,callback){
+      AjPost(url,params,function(t){
+         if (callback) callback(t);
+      });
+   },
+   users_info:function(uids,callback){
+      var res=[];
+      var scan=function(){
+         var ids=uids.splice(0,1000);// max 1000 uids in one request
+         var params={
+            oauth:1,
+            method:'users.get',
+            uids:ids.join(','),
+            fields:'first_name,last_name,photo_100'
+         };
+         if (ids.length>0)
+            vkopt.vk_dislike.post('/api.php',params,function(t){
+               var r=JSON.parse(t);
+               res=res.concat(r.response);
+               if (uids.length>0)
+                  setTimeout(function(){scan();},340);
+               else
+                  callback(res);
+            });
+         else
+            callback(res);
+      };
+      scan();
+   },
+   req:function(params,callback){
+      if (params.likes!=null){
+         var arr=params.likes.split(',');
+         vkopt.vk_dislike.storage.get_tags(arr,function(r){
+            var data={};
+            for (var key in r){
+               data[key]= r[key].count*(r[key].my==1?-1:1);
+            }
+            callback(data);
+         });
+      }
+      if (params.object!=null){
+        var gu=function(){
+         vkopt.vk_dislike.storage.get_users(params.object,params.offset || 0, params.limit || 6,function(r){
+               callback({"users":r.uids,"count": r.count});
+         });
+        };
+        if (params.action!=null){
+            (params.action==1?vkopt.vk_dislike.storage.mark:vkopt.vk_dislike.storage.unmark)(params.object,gu);
+        } else gu();
+      }
+      /*
+      var ts=Math.round(new Date().getTime());
+      if (ts-vkopt.vk_dislike.last_req_ts<vkopt.vk_dislike.delay){ // проверка времени последнего запроса
+         setTimeout(function(){
+            vkopt.vk_dislike.req(params,callback);
+         },vkopt.vk_dislike.delay);// или может сделать паузу = vkopt.vk_dislike.delay-(ts-vkopt.vk_dislike.last_req_ts)
+         return;
+      }
+      if (!(vkopt.vk_dislike.auth_key && vkopt.vk_dislike.api_id && vkopt.vk_dislike.viewer_id)){ // нужна авторизация
+         vkopt.vk_dislike.auth(function(){
+            setTimeout(function(){
+               vkopt.vk_dislike.req(params,callback);
+            },vkopt.vk_dislike.delay);
+         });
+         return;
+      }
+
+      params = params || {};
+      params.auth=vkopt.vk_dislike.auth_key;
+      params.app=vkopt.vk_dislike.api_id;
+      params.uid=vkopt.vk_dislike.viewer_id;
+      vkopt.vk_dislike.post(vkopt.vk_dislike.server,params,function(t){
+         var obj=JSON.parse(t);
+         if (obj['delay']){ // delay before next query in seconds
+            vkopt.vk_dislike.delay=obj['delay']*1000;
+            delete obj['delay'];
+         }
+         if (obj['status']){
+            if(obj['status'] == -1){  //auth error
+               localStorage[vkopt.vk_dislike.ls_val]='{}';// reset auth settings
+               vkopt.vk_dislike.auth(function(){
+                  setTimeout(function(){
+                     vkopt.vk_dislike.req(params,callback);
+                  },vkopt.vk_dislike.delay);
+               });
+               return;
+            }
+            delete obj['status'];
+         }
+         if (callback){
+            callback(obj);
+         }
+      });
+      */
+   },
+   get_dislikes:function(obj_ids){ // пополнение очереди на обработку
+      var need_run = (vkopt.vk_dislike.queue.length===0); // если очередь была пустая, то нужно запустить получение инфы
+
+      var cached=[];
+      var uncached=[];
+      for (var i=0; i<obj_ids.length;i++){// отделяем кэшированные от новых
+         (vkopt.vk_dislike.in_cache(obj_ids[i])?cached:uncached).push(obj_ids[i]);
+      }
+      //console.log('uncached:',JSON.stringify(uncached));
+      //console.log('cached:',JSON.stringify(cached));
+      setTimeout(function(){
+         for (var i=0; i<cached.length;i++){
+            vkopt.vk_dislike.update_dislike_view(cached[i],vkopt.vk_dislike.cache[cached[i]].value);
+         }
+      },50);
+      //vkopt.vk_dislike.queue=vkopt.vk_dislike.queue.concat(uncached); // новые в конец очереди
+      vkopt.vk_dislike.queue=uncached.concat(vkopt.vk_dislike.queue); //новые в начало очереди
+      if (need_run) {
+         clearTimeout(vkopt.vk_dislike.timeout);
+         vkopt.vk_dislike.timeout=setTimeout(function(){vkopt.vk_dislike.load_dislikes_info();},300);
+      }
+   },
+   in_cache:function(obj_id){
+      if (vkopt.vk_dislike.cache[obj_id]){
+         var ts=Math.round(new Date().getTime());
+         if (ts-vkopt.vk_dislike.cache[obj_id].ts <= vkopt.vk_dislike.cache_time)
+            return true;
+      }
+      return false;
+   },
+   add_to_cache:function(obj_id,val){
+      var item={
+         value:val,
+         ts:Math.round(new Date().getTime())
+      };
+      vkopt.vk_dislike.cache[obj_id]=item;
+   },
+   load_dislikes_info:function(){
+      var load=function(){
+         /* чистим очередь от id, которых нет на странице. Имеет смысл раскомметить, если всегда идёт обработка только реально размещённых элементов страницы
+         for (var i=vkopt.vk_dislike.queue.length-1; i>=0;i--){
+            if (!ge('dislike_count'+vkopt.vk_dislike.queue[i])){
+               var deleted=vkopt.vk_dislike.queue.splice(i,1);
+               console.log('deleted',deleted);
+            }
+         }*/
+         var ids=vkopt.vk_dislike.queue.splice(0,vkopt.vk_dislike.ids_per_req);
+         var need_continue = (vkopt.vk_dislike.queue.length>0); // если очередь не пустая, то после текущей пачки, нужно обработать следущую
+         vkopt.vk_dislike.req({likes:ids.join(',')},function(data){
+            //for (var i=0; i<ids.length;i++) ge('dislike_icon'+ids[i]).style.boxShadow="0 0 5px 2px #F00";
+
+            for (var obj_id in data){
+               vkopt.vk_dislike.add_to_cache(obj_id,data[obj_id]);
+               vkopt.vk_dislike.update_dislike_view(obj_id,data[obj_id]);
+            }
+            if (need_continue){
+               //console.log('continue load info',ids,vkopt.vk_dislike.queue);
+               setTimeout(function(){load();},vkopt.vk_dislike.delay);
+            }
+         });
+      };
+      load();
+   },
+   update_dislike_view:function(obj_id,value,c){
+      //console.log('upd dk view; id: '+obj_id+' val: '+value+' c: '+c);
+      var el=ge('dislike_count'+obj_id);
+      if (!el){
+         //--костыль--// Если всегда обрабатывать только то, что уже выведено на страницу, то он не нужен
+         c = c || 0;
+         if (c<10) setTimeout(function(){ vkopt.vk_dislike.update_dislike_view(obj_id,value,c+1) },300);
+         //-----------
+         return false;
+      }
+      var my = (value<0);
+      value = Math.abs(value);
+      if (value>0)
+         val(ge('dislike_count'+obj_id), value);
+
+      if (obj_id.indexOf('comment') > -1 || obj_id.indexOf('reply') > -1) {
+         (my?addClass:removeClass)(ge('post_dislike' + obj_id),'my_dislike');
+      }
+      else if (obj_id.indexOf('photo') > - 1) {
+         (my?addClass:removeClass)(ge('post_dislike' + obj_id),'pv_liked');
+      } else {
+         (my?addClass:removeClass)(ge('post_dislike' + obj_id),'my_dislike');
+      }
+
+      (value>0?removeClass:addClass)(ge('post_dislike' + obj_id),'no_dislikes');
+      return true;
+   },
+   get_dislike_element:function(obj_id,count, my_dislike){
+      switch(obj_id){
+         case 'video':
+            vkopt.log('try to make video dislike');
+            return se('\
+            <button class="flat_button clear_fix mv_dislike_wrap _like_wrap '+(my_dislike?' '+'my_dislike':'')+'no_dislikes" dislike_id="'+obj_id+'" onclick="vkopt.vk_dislike.dislike(this.getAttribute(\'dislike_id\')); return false;" onmouseover="vkopt.vk_dislike.dislike_over(this.getAttribute(\'dislike_id\'));" id="post_dislike'+obj_id+'">\
+               <div class="mv_dislike_icon _icon" id="dislike_icon'+obj_id+'"></div>\
+               <div class="mv_like_label _link" id="dislike_link'+obj_id+'">'+IDL('dislike')+'</div>\
+               <div class="mv_like_count _count" id="dislike_count'+obj_id+'">'+(count|| '')+'</div>\
+            </button>');
+         case 'wiki':
+            vkopt.log('try to make wiki dislike');
+            return se('\
+            <button class="flat_button wk_dislike_wrap _like_wrap clear_fix '+(my_dislike?' '+'my_dislike':'')+'no_dislikes" dislike_id="'+obj_id+'" onclick="vkopt.vk_dislike.dislike(this.getAttribute(\'dislike_id\')); return false;" onmouseover="vkopt.vk_dislike.dislike_over(this.getAttribute(\'dislike_id\'));" id="post_dislike'+obj_id+'">\
+               <div class="wk_dislike_icon _icon" id="dislike_icon'+obj_id+'"></div>\
+               <div class="wk_like_label _link" id="dislike_link'+obj_id+'">'+IDL('dislike')+'</div>\
+               <div class="wk_like_count _count" id="dislike_count'+obj_id+'">'+(count|| '')+'</div>\
+            </button>');
+         case 'photo':
+            return se('\
+            <div class="pv_like _like_wrap '+(my_dislike?' '+'pv_disliked':'')+' no_dislikes" dislike_id="'+obj_id+'" onclick="vkopt.vk_dislike.dislike(this.getAttribute(\'dislike_id\')); return false;" onmouseover="vkopt.vk_dislike.dislike_over(this.getAttribute(\'dislike_id\'));" id="post_dislike'+obj_id+'">\
+               <i class="pv_dislike_icon no_dislikes" id="dislike_icon'+obj_id+'"></i>\
+               <span class="pv_like_link" id="dislike_link'+obj_id+'">'+IDL('dislike')+'</span>\
+               <span class="pv_like_count fl_l" id="dislike_count'+obj_id+'">'+(count|| '')+'</span>\
+            </div>');
+         default:
+            if (obj_id.indexOf('reply') > -1 || obj_id.indexOf('comment') > -1) {
+               return se('\
+               <a href="#" class="dislike_wrap _like_wrap '+(my_dislike?' '+'my_dislike':'')+' no_dislikes" dislike_id="'+obj_id+'" onclick="vkopt.vk_dislike.dislike(this.getAttribute(\'dislike_id\')); return false;" onmouseover="vkopt.vk_dislike.dislike_over(this.getAttribute(\'dislike_id\'));" id="post_dislike'+obj_id+'">\
+                  <span class="blind_label" id="dislike_link'+obj_id+'">'+IDL('dislike')+'</span>\
+                  <i class="dislike_icon _icon" id="dislike_icon'+obj_id+'"></i>\
+                  <span class="like_count _count" id="dislike_count'+obj_id+'">'+(count|| '')+'</span>\
+               </a>');
+            }
+            return se('\
+            <a href="#" dislike_id="'+obj_id+'" class="post_dislike '+(my_dislike?' '+'pv_disliked':'')+' no_dislikes" onclick="vkopt.vk_dislike.dislike(this.getAttribute(\'dislike_id\')); return false;" onmouseover="vkopt.vk_dislike.dislike_over(this.getAttribute(\'dislike_id\'));" id="post_dislike'+obj_id+'">\
+               <i class="post_dislike_icon" id="dislike_icon'+obj_id+'"></i>\
+               <span class="post_like_link" id="dislike_link'+obj_id+'">'+IDL('dislike')+'</span>\
+               <span class="post_like_count fl_l" id="dislike_count'+obj_id+'">'+(count|| '')+'</span>\
+            </a>');
+      }
+   },
+   types:{ // getting like_id from scripts
+      wiki:function(){return wkcur.like_obj},
+      photo:function(){
+         var listId = cur.pvListId, index = cur.pvIndex, ph = cur.pvData[listId][index];
+         return  'photo' + ph.id
+      },
+      video:function(){
+         var mv = mvcur.mvData;
+         if (mvcur.statusVideo) {
+            var object = 'wall' + mv.videoRaw;
+         } else {
+            var object = 'video' + mv.videoRaw;
+         }
+         return object;
+      }
+   },
+   obj_ids:[],
+   add: function(el,insert_type){
+      var attrs=['onclick','onmouseover','onmouseout'];
+      var types=vkopt.vk_dislike.types;
+
+      if (hasClass(el,'has_dislike')) return;
+      addClass(el,'has_dislike');
+
+      if (el.parentNode.hasAttribute(attrs[0])){ //need move arguments from post_like_wrap  to post_like
+         var p=el.parentNode;
+         for (var j=0; j<attrs.length; j++){
+           var at=p.getAttribute(attrs[j]);
+           p.removeAttribute(attrs[j]);
+           el.setAttribute(attrs[j],at);
+         }
+      }
+
+      var obj_id=null;
+      if (types[insert_type]){
+         obj_id=insert_type;
+         setTimeout(function(){ // а на странице то ещё нет айдишника заныканного в скрипты...
+           var dislike_id=types[insert_type]();
+           var ids=['post_dislike','dislike_link','dislike_icon','dislike_count'];
+           for (var i=0;i<ids.length; i++){
+               var _el=ge(ids[i]+insert_type);
+               if (!_el) continue;
+               if (ids[i]=='post_dislike') _el.setAttribute('dislike_id',dislike_id);
+               if (_el) _el.id=ids[i]+dislike_id;
+           }
+           vkopt.vk_dislike.get_dislikes([dislike_id]);
+         },400)
+      } else {
+         //obj_id=(geByTag('i',el)[0] || {}).id;
+         obj_id = el.outerHTML.split('(this, \'')[1].split('\'')[0];
+         if (!obj_id) return;
+         //obj_id=obj_id.split('like_icon')[1];
+         vkopt.vk_dislike.obj_ids.push(obj_id);
+      }
+
+      //console.log(obj_id);
+
+      var dislike=vkopt.vk_dislike.get_dislike_element(obj_id);
+      switch(insert_type){
+         case 'before':
+            el.parentNode.insertBefore(dislike,el);
+            break;
+         case 'wiki':
+         case 'video':
+            insertAfter(dislike,el);
+            break;
+         case 'photo':
+            el.parentNode.insertBefore(dislike,el);
+            break;
+         default:
+            insertAfter(dislike,el);
+      }
+
+
+   },
+   processNode:function(node){
+      if (!vkopt.vk_dislike.is_enabled()) return;
+      node = node || geByTag('body')[0];
+
+      var els=geByClass('post_like',node);
+      for (var i=0; i<els.length;i++){
+         vkopt.vk_dislike.add(els[i]);
+      }
+      els=geByClass('like_wrap',node);
+      for (var i=0; i<els.length;i++){
+         vkopt.vk_dislike.add(els[i]);
+      }
+      els=geByClass('fw_like_wrap',node);
+      for (var i=0; i<els.length;i++){
+         vkopt.vk_dislike.add(els[i],'before');
+      }
+
+      els=geByClass('wl_post_like_wrap',node);
+      for (var i=0; i<els.length;i++){
+         vkopt.vk_dislike.add(els[i],'wiki');
+      }
+
+
+      //var els=document.evaluate('//div[@id="pv_like_wrap"]', node || document, null, 7, null);// костыль, а не getElementById...
+      //console.log(els,els.length);
+      //if ()
+
+      //*
+     // for (var i=0; i<els.length;i++){
+       //  alert(els[i]);
+      if (ge('pv_like'))
+         vkopt.vk_dislike.add(ge('pv_like'),'photo');
+      if (node.innerHTML.indexOf('mv_like_wrap')>-1 && ge('mv_like_wrap'))
+         vkopt.vk_dislike.add(ge('mv_like_wrap'),'video');
+      if (node.innerHTML.indexOf('wk_like_wrap')>-1 && ge('wk_like_wrap'))
+         vkopt.vk_dislike.add(ge('wk_like_wrap'),'wiki');
+
+      /*if (node.innerHTML.indexOf('mv_like_count')>-1 && ge('mv_like_count'))
+         vkopt.vk_dislike.add(ge('mv_like_count').parentNode.parentNode,'video');*/
+
+      if (vkopt.vk_dislike.obj_ids.length>0)
+         vkopt.vk_dislike.get_dislikes(vkopt.vk_dislike.obj_ids);
+   },
+   dislike:function(obj_id){
+      var pid=obj_id.match(/wall(-?\d+_\d+)/);
+      pid=pid?pid[1]:null;
+
+      var p=ge('post'+obj_id);
+
+      if (!p && pid){ // find repost in wall wiki view
+         p=ge('wpt'+pid);
+         if (p) p=p.parentNode;
+      }
+      var parent_post=null;
+      if (p){
+         var repost=(geByClass('published_by_date',p,'a')[0]||{}).href;
+         if (repost){
+            parent_post=repost.match(/[a-z]+-?\d+_\d+/)[0];
+         }
+      }
+      var post = ge('post_dislike' + obj_id);
+      var icon = ge('dislike_icon' + obj_id);
+      var count = parseInt(trim(ge('dislike_count' + obj_id).innerHTML) || 0);
+
+      //console.log(obj_id);
+
+      if (obj_id.indexOf('reply') >- 1 || obj_id.indexOf('comment') >- 1) {
+         var my = hasClass(post,'my_dislike');
+         (my?removeClass:addClass)(post,'my_dislike');
+      }
+      else if (obj_id.indexOf('photo') >- 1) {
+         var my = hasClass(post,'pv_liked');
+         (my?removeClass:addClass)(post,'pv_liked');
+      } else {
+         var my = hasClass(post,'my_dislike');
+         (my?removeClass:addClass)(post,'my_dislike');
+      }
+
+      // Request moved to function dislike_over
+      //vkopt.vk_dislike.req({object_id:obj_id, act:(my?'undislike':'dislike')},function(t){});
+
+      var new_count=count + ( my ? -1 : 1);
+      animateCount(ge('dislike_count'+obj_id), new_count);
+
+      (new_count>0?removeClass:addClass)(post,'no_dislikes');
+
+      setTimeout(function(){
+         vkopt.vk_dislike.dislike_over(obj_id,parent_post,my?'undislike':'dislike');
+      },400);
+
+   },
+   dislike_over:function(post,parent,act){
+      var icon = ge('dislike_icon' + post),
+         count = ge('dislike_count' + post);
+      var item_tpl='<a class="like_tt_owner" title="%NAME%" href="/id%UID%"><img class="like_tt_image" src="%AVA%" width="30" height="30" /></a>';
+
+      var cnt=parseInt(count.innerHTML) || 0;
+      var html = vkopt.vk_dislike.tpls['tip'].replace(/%OBJ_ID%/g,post)
+                     .replace(/%USERS_DISLIKE%/g,langNumeric(cnt,IDL('users_dislike')));
+
+      var data=null;
+      var tip_ready = (icon.parentNode.tt &&  icon.parentNode.tt!= 'loadingstat');
+
+      var params={object:post, limit:6};
+      if (act){
+         params['action']=(act=='dislike')?1:0;
+         params['parent']=parent;
+      }
+      var load_info = function(){ // Get Who Liked
+         //console.log('load_info',act);
+         vkopt.vk_dislike.req(params,function(info){
+            if (act){
+               var m=(act=='dislike')?-1:1;
+               vkopt.vk_dislike.add_to_cache(post,info.count*m);
+            }
+            animateCount(count, info.count);// UPDATE COUNTER
+            vkopt.vk_dislike.users_info(info.users,function(users){
+               data={users:users,count:info.count};
+               view_info(data);
+            })
+         })
+      };
+      var view_info=function(info){
+         if (!tip_ready) tip_ready=!!ge('dislike_table_'+post);
+         if (!info || !tip_ready) return;
+         removeClass('dislike_utable_'+post, 'disliked_users_loading');
+         var html='';
+         var users=info.users || [];
+         for (var i=0; i<users.length;i++){
+            html+=item_tpl.replace(/%NAME%/g,users[i].first_name+' '+users[i].last_name)
+                          .replace(/%UID%/g,users[i].uid)
+                          .replace(/%AVA%/g,users[i].photo_100);
+         }
+         val(ge('dislike_table_'+post), html);
+         val(ge('dislike_title_'+post), langNumeric(info.count,IDL('users_dislike')));
+         vkopt_core.plugins.process_node(ge('dislike_table_'+post));
+      };
+      if (cnt>0 || act){
+         if (!tip_ready || act) load_info();
+         vkopt.vk_dislike.tip(post,html,function(){
+            tip_ready=true;
+            view_info(data);
+            var tip=icon.parentNode.tt;
+            if (!tip.inited) {
+                tip.onClean = function() {
+                  tip.inited = false;
+                  if (tip.over) removeEvent(tip.container, 'mouseover', tip.over);
+                  if (tip.out) removeEvent(tip.container, 'mouseout', tip.out);
+                };
+                if (tip.over) addEvent(tip.container, 'mouseover', tip.over);
+                if (tip.out) addEvent(tip.container, 'mouseout', tip.out);
+                tip.inited = true;
+            }
+         });
+      }
+      if (cnt==0 && act && icon.parentNode.tt) icon.parentNode.tt.hide();
+   },
+   tip:function(post,content,oncreate){
+      /*Далее куча копипаста с лайков вк*/
+      var icon = ge('dislike_icon' + post),
+         link = ge('dislike_link' + post),
+         count = ge('dislike_count' + post),
+         wrap = icon.parentNode;
+         linkW = link.clientWidth || link.offsetWidth,
+         //leftShift = (link.parentNode == icon.parentNode ? 0 : linkW),
+         pointerShift = false,
+         ttW = 230,
+         x = getXY(icon.parentNode)[0];
+
+      if (x + ttW + 20 > lastWindowWidth) {
+         //leftShift = ttW - (icon.parentNode.clientWidth || icon.parentNode.offsetWidth) + 7;
+         pointerShift = ttW - (count.clientWidth || count.offsetWidth) - 14;
+      } else {
+         //leftShift = (link.parentNode == icon.parentNode ? 0 : linkW);
+         pointerShift = linkW + 8;
+      }
+
+      var tt_offset = 41,
+         wrap_left = getXY(wrap)[0],
+         icon_left = getXY(icon)[0],
+         icon_width = getSize(icon, true)[0],
+         leftShift = icon_left + icon_width / 2 - wrap_left - tt_offset;
+
+      showTooltip(icon.parentNode, {
+         slide: 15,
+         shift: [-leftShift, 7, 7],
+         ajaxdt: 100,
+         showdt: 400,
+         hidedt: 200,
+         dir: 'auto',
+         checkLeft: true,
+         reverseOffset: 80,
+         noZIndex: true,
+         content:content,
+         tip: {
+            over: function() {
+               vkopt.vk_dislike.dislike_over(post);
+            }
+         },
+         typeClass: 'like_tt',
+         onCreate:oncreate,
+         onShowStart: function(tt) {
+            if (!tt.container || pointerShift === false)
+               return;
+            var bp = geByClass1('bottom_pointer', tt.container, 'div');
+            var tp = geByClass1('top_pointer', tt.container, 'div');
+            setStyle(bp, {
+               marginLeft: pointerShift
+            });
+            setStyle(tp, {
+               marginLeft: pointerShift
+            });
+            //vkProcessNode(tt.container);
+         }
+      });
+   },
+   show_users:function(post){
+      var box=showFastBox({title:IDL('who_dislike'),width:'478px',progress:'progress'+post,hideButtons:true},'<div id="dislike_list'+post+'" class="dislike_list"></div>');
+      box.setOptions({bodyStyle: 'padding: 0px;', width: 638});
+      addClass(ge('dislike_list'+post),'disliked_users_big_loader');
+      stManager.add('boxes.css');
+      vkopt.vk_dislike.show_dislikes_page(post,0,box);
+   },
+   show_dislikes_page:function(post,offset){
+      var PER_PAGE=15;
+      var IN_ROW=5;
+
+      var params={object:post, limit:PER_PAGE, offset:offset};
+
+      stManager.add('page_help.css');
+
+      var item_tpl='\
+         <div class="fans_fan_row inl_bl" id="fans_fan_row%UID%" data-id="%UID%">\
+            <div class="fans_fanph_wrap ui_zoom_wrap" onmouseover="uiPhotoZoom.over(this, %UID%, {showOpts: {queue: 1}});">\
+               <a class="ui_zoom_outer ui_zoom_added" href="/albums211858250" aria-label="Увеличить" wotsearchprocessed="true">\
+                  <div class="ui_zoom_inner"><div class="ui_zoom"><div class="ui_zoom_icon"></div></div></div>\
+               </a>\
+               <a class="fans_fan_ph " href="/id%UID%" wotsearchprocessed="true">\
+                  <img class="fans_fan_img" src="%AVA%" alt="%NAME%">\
+               </a>\
+            </div>\
+            <div class="fans_fan_name">\
+               <a class="fans_fan_lnk" href="/id%UID%" wotsearchprocessed="true">%NAME%</a>\
+            </div>\
+         </div>\
+      ';
+
+      var cont_tpl='\
+         <div style="padding: 7px 5px 5px;">\
+           <div class="fl_r" style="padding:0 5px;width:200px;">%PAGE_LIST%</div>\
+           <div id="user_dislike_list_content">%USERS%</div>\
+         </div>\
+      ';
+
+      var page_list=function(cur,end,href,onclick,step,without_ul){
+         var after=2;
+         var before=2;
+         if (!step) step=1;
+         var html=(!without_ul)?'<ul class="page_list fl_r">':'';
+         if (cur>before) html+='<li><a href="'+href.replace(/%%/g,0)+'" onclick="'+onclick.replace(/%%/g,0)+'">&laquo;</a></li>';
+         var from=Math.max(0,cur-before);
+         var to=Math.min(end,cur+after);
+         for (var i=from;i<=to;i++){
+           html+=(i==cur)?'<li class="current">'+(i+1)+'</li>':'<li><a href="'+href.replace(/%%/g,(i*step))+'" onclick="'+onclick.replace(/%%/g,(i*step))+'">'+(i+1)+'</a></li>';
+         }
+         if (end-cur>after) html+='<li><a href="'+href.replace(/%%/g,end*step)+'" onclick="'+onclick.replace(/%%/g,end*step)+'">&raquo;</a></li>';
+         html+=(!without_ul)?'</ul>':'';
+         return html;
+      };
+
+      var data=null;
+      var load_info = function(){ // Get Who Liked
+         show('progress'+post);
+         vkopt.vk_dislike.req(params,function(info){
+            vkopt.vk_dislike.users_info(info.users,function(users){
+               data={users:users,count:info.count};
+               view_info(data);
+            })
+         })
+      };
+      var view_info=function(info){
+         removeClass(ge('dislike_list'+post),'disliked_users_big_loader');
+         hide('progress'+post);
+         var html='';
+         var users=info.users;
+         for (var i=0; i<users.length;i++){
+            html+=item_tpl.replace(/%NAME%/g,users[i].first_name)
+                          .replace(/%UID%/g,users[i].uid)
+                          .replace(/%AVA%/g,users[i].photo_100);
+            html+=((i+1)%IN_ROW==0)?'</tr><tr>':'';
+         }
+         html='<tr>'+html+'</tr>';
+
+         var pg='';
+         if (info.count>PER_PAGE){
+            pg=page_list(Math.ceil(offset/PER_PAGE),Math.ceil(info.count/PER_PAGE)-1,'#',"return vkopt.vk_dislike.show_dislikes_page('"+post+"',%%)",PER_PAGE);
+         }
+
+         html=cont_tpl.replace(/%PAGE_LIST%/g,pg)
+                      .replace(/%TITLE%/g,langNumeric(info.count,IDL('users_dislike')))
+                      .replace(/%USERS%/g,html);
+         val(ge('dislike_list'+post), html);
+         //попробуем поменять тайтл основного бокса
+         geByClass1('box_title',ge('dislike_list'+post).parentNode.parentNode).innerText
+            = langNumeric(info.count,IDL('users_dislike'));
+         vkopt_core.plugins.process_node(ge('dislike_list'+post));
+      };
+      load_info();
+      return false;
+   },
+   dislikes_icons:function(){
+      var dsl = vkopt.vk_dislike;
+      var html = '';
+      for (var i = 0; i < dsl.icons.length; i++){
+         html += '<a class="post_dislike_icon dislike_icon_preview dislike_icon'+i+'_preview" onclick="return vkopt.vk_dislike.dislikes_icons_set('+i+',this);"></a>';
+      }
+      html='\
+      <div class="dislikes_icons">'
+         + html +
+      '</div>';
+
+      /*var icon_index = parseInt(vkopt.settings.get('dislike_icon_index'));
+      if (!icon_index && (icon_index < 0 || icon_index > 3))
+            icon_index=vkopt.vk_dislike.icon_index;*/
+      html = html.replace(/%cur/g, vkopt.vk_dislike.icon_index);
+      return html;
+   },
+   dislikes_icons_set:function(idx,el){
+      vkopt.settings.set('dislike_icon_index',idx);
+      if (el){
+         for (var i = 0; i < vkopt.vk_dislike.icons.length; i++){
+            (i == idx? addClass : removeClass)(geByTag1('html'), 'dislike_icon'+i);
+         }
+      }
+      return false;
+   },
+   css:function(){
+      var code = vk_lib.get_block_comments(function(){
+         /*icon_css_tpl:
+         .dislike_icon{vals.idx} .dislike_icon,
+         .dislike_icon{vals.idx} .pv_dislike_icon,
+         .dislike_icon{vals.idx} .mv_dislike_icon,
+         .dislike_icon{vals.idx} .wk_dislike_icon,
+         .dislike_icon{vals.idx} .post_dislike_icon,
+         .dislikes_icons .dislike_icon_preview.dislike_icon{vals.idx}_preview{
+            background:url('{vals.url}') no-repeat 0 0;
+            background-size: contain;
+         }
+         .dislike_icon{vals.idx} .dislike_icon_preview.dislike_icon{vals.idx}_preview{
+            opacity: 1;
+         }
+         */
+         /*css:
+         .dislike_icon{
+            background-size: contain;
+         }
+         .dislike_icon_preview{
+            opacity: 0.5;
+            margin-right: 10px;
+         }
+
+         .dislikes_icons{padding:1px;}
+         .dislikes_icons a{float:left;opacity:0.5;}
+         .dislikes_icons a:hover{opacity:1;}
+         .post_dislike_icon{
+            display: inline-block;
+            float: left;
+            width: 17px;
+            height: 14px;
+            margin-top: 1px;
+            opacity: 0.35;
+         }
+
+         .antilike, #al_adv_side{display:none !important}
+         .disliked_users_loading{background: url(/images/upload_inv_mono.gif) no-repeat 50% 50%;}
+         .disliked_users_big_loader{background-image: url(/images/progress7.gif); background-repeat:no-repeat; background-position:50% 50%;}
+         .dislike_list{height:100%}
+
+         .post_dislike_icon,.post_dislike_count,.post_dislike_link{
+           -webkit-transition: opacity 200ms linear;
+           -moz-transition: opacity 200ms linear;
+           -o-transition: opacity 200ms linear;
+           transition: opacity 200ms linear;
+         }
+
+         .post_dislike {
+            cursor:pointer;
+            color:#2a5885;
+            white-space:nowrap;
+            overflow:hidden;
+            margin-right:8px;
+            padding:5px 6px 6px;
+            border-radius:3px
+         }
+         .post_dislike:hover {
+            color:#315b8c
+         }
+         .wall_module .post_dislike:hover {
+            background-color:#f5f7fa
+         }
+         .wall_module .post_dislike_link {
+            font-weight:500;
+            -webkit-font-smoothing:subpixel-antialiased;
+            -moz-osx-font-smoothing:auto;
+            margin-left:7px;
+            float:left
+         }
+
+         .vk_dislikes_enabled .wall_module .post_like_count .counter_anim_wrap,
+         .wall_module .post_dislike_count,
+         .wall_module .post_dislike_link {
+            line-height:15px;
+            height:14px
+         }
+         .wall_module .post_dislike_count {
+            margin-left:6px;
+            float:left;
+            font-weight:500;
+            -webkit-font-smoothing:subpixel-antialiased;
+            -moz-osx-font-smoothing:auto
+         }
+         .wall_module .post_dislike_link:empty+.post_dislike_count {
+            margin-left:0
+         }
+         .wall_module .post_dislike:hover .post_dislike_icon {
+            opacity:0.5;
+            filter:alpha(opacity=50)
+         }
+         .wall_module .my_dislike .post_dislike_icon {
+            opacity:1!important;
+            -webkit-filter:none!important;
+            filter:none!important
+         }
+         .post_full_like_wrap .post_dislike {
+            float:left
+         }
+         .post_full_like_wrap .post_dislike:first-child {
+            margin-left:-6px
+         }
+         .wall_module .no_dislikes .dislike_count {
+            margin:0
+         }
+         .wall_module .dislike_icon {
+            width:12px;
+            height:10px;
+            float: left;
+            margin:3px 0 0;
+            opacity:0.4;
+            filter:alpha(opacity=40);
+            -o-transition:opacity 100ms ease;
+            transition:opacity 100ms ease
+         }
+         .wall_module .reply .no_dislikes .dislike_icon {
+            -o-transition:visibility 100ms ease,opacity 100ms ease;
+            transition:visibility 100ms ease,opacity 100ms ease
+         }
+         .wall_module .reply .no_dislikes .dislike_icon {
+            opacity:0.35;
+            filter:alpha(opacity=35)
+         }
+         .wall_module .dislike_wrap:hover .dislike_icon {
+            opacity:0.5;
+            filter:alpha(opacity=50)
+         }
+         .wall_module .dislike_wrap.my_dislike .dislike_icon {
+            opacity:1;
+            -webkit-filter:none;
+            filter:none
+         }
+         .wall_module .no_dislikes .post_dislike_count {
+            display:none
+         }
+         .wall_module .reply .dislike_wrap {
+            float:right;
+            padding:10px;
+            margin:-10px;
+            margin-right: 0;
+         }
+         .wall_module .dislike_wrap {
+            font-size:12.5px;
+            color:#4a7099;
+            cursor:pointer
+         }
+         .wall_module .dislike_link {
+            margin:0 4px 0 0
+         }
+
+         .pv_dislike_icon {
+            display: inline-block;
+            width: 16px;
+            height: 13px;
+            margin: 2px 0 1px;
+            float: left;
+            opacity: 0.4;
+            filter: alpha(opacity=40);
+         }
+         .pv_liked .pv_dislike_icon {
+            opacity: 1;
+            -webkit-filter: none;
+            filter: none;
+         }
+         .mv_dislike_wrap {
+            margin-left: 5px;
+            float: left;
+         }
+         .mv_dislike_icon {
+            float: left;
+            height: 10px;
+            width: 13px;
+            margin: 3px 8px 0 3px;
+            opacity: 0.4;
+            filter: alpha(opacity=40);
+            -o-transition: opacity 0.2s ease;
+            transition: opacity 0.2s ease;
+         }
+         .mv_dislike_wrap:hover .mv_dislike_icon,
+         .mv_dislike_wrap.my_dislike .mv_dislike_icon {
+            opacity: 1;
+            -webkit-filter: none;
+            filter: none;
+         }
+         .wk_dislike_wrap {
+            float: left;
+            margin-right: 10px;
+         }
+         .wk_dislike_icon {
+            float: left;
+            width: 13px;
+            height: 10px;
+            margin: 3px 8px 0 3px;
+            opacity: 0.4;
+            filter: alpha(opacity=40);
+            -o-transition: opacity 0.2s ease;
+            transition: opacity 0.2s ease;
+         }
+         .wk_dislike_wrap:hover .wk_dislike_icon,
+         .wk_dislike_wrap.my_dislike .wk_dislike_icon {
+            opacity: 1;
+            -webkit-filter: none;
+            filter: none;
+         }
+         */
+      });
+      var dsl = vkopt.vk_dislike;
+      // 0 - striked, 1 - striked empty, 2 - broken, 3 - crossed, 4 - skull, 5 - thumb
+      dsl.icons = vk_lib.toDataURI('image/svg+xml', dsl.icons_svg);
+      var icons_css = '';
+      for (var i = 0; i < dsl.icons.length; i++){
+         icons_css += vk_lib.tpl_process(code['icon_css_tpl'],{
+            idx: i,
+            url: dsl.icons[i]
+         })
+      }
+
+      return icons_css + code.css;
+   }
 }
 
 vkopt_core.init();
