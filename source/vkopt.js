@@ -1,4 +1,4 @@
-// ==UserScript==
+﻿// ==UserScript==
 // @name          VKOpt 3.x
 // @author        KiberInfinity( /id13391307 )
 // @namespace     http://vkopt.net/
@@ -7844,5 +7844,1001 @@ vkopt['vk_dislike'] = {
       return icons_css + code.css;
    }
 }
+
+vkopt['attachments_and_link'] = {
+    module_id: 'attachments_and_link',
+    dialogsFilter: 7, // показываем все, 1 -линки 2 - форварды 4 записи со стен.
+    COUNT_ROW: 8,
+    cursor: 0,
+    _timer: null,
+    _content: null,
+    _uid: null,
+    /* первое выполнение сразу, последующее с указанной задержкой*/
+    onInit: function () {
+        var self = vkopt[this.plugin_id];
+
+        //инициализируем шаблон
+        self.template = self.template();
+        ['addBottom', 'clickMenu', 'getAttach', 'getHistoryAttr', 'tplProcess', 'pasteHTML', 'processResponse',
+            'callEvent', 'normalazeMessage'].reduce(function (func, value) {
+                func[value] = func[value].bind(func);
+                return func;
+            },
+            self);
+
+
+        self.getAttach = self.debounce(self.getAttach); // тормозим функцию
+
+        self.eventHandlers();// регистрируем обработчики событий
+
+    },
+    onRequestQuery: function (url, query, options) {
+        if (url == 'wkview.php') {
+            var self = vkopt[this.plugin_id];
+            setTimeout(self.addBottom);
+        }
+    },
+    eventHandlers: function () {
+        var self = this,
+            fragment = [],
+            objmess = [],
+            inStock = 0;
+
+
+        window.addEventListener('vkopt_attachments_and_link', function (event) {
+            var dataItem = event.detail, strongId = self.local.strongIdMessages;
+            switch (dataItem.name) {
+                case 'getAttach': // вызов по клику на кнопке меню
+                    if (dataItem.status == 'ok' || dataItem.status == 'scrolling') { //история уже в хранилище , получаем сообщения по ид
+                        self.getById(self.cursor);
+                        break;
+                    } else if (dataItem.status == 'start') {
+                        self.getHistoryAttr(self.local.lastid == 0 ? dataItem.item.rangeStart : self.local.lastid, 0, strongId); //
+                    }
+                    else if (dataItem.status == 'segment') { //первый вызов для этого диалога либо между вызовами появились новые сообщения в истории
+                        self.getHistoryAttr(dataItem.item.rangeStart, dataItem.item.rangeEnd);
+                        // debugger;
+                    }
+                    self.local.firstid = dataItem.item.rangeStart; // обновляем первое сообщение (будет помещено в localStorage)
+                    break;
+                case 'getHistoryAttr': //результат поиска по истории
+                    inStock += dataItem.item.data.length;
+                    if (dataItem.status == 'ok') {
+                        self.local.lastid = dataItem.item.last;
+                        //Array.prototype.push.apply(strongId, dataItem.item.IdMassage); // пердаем getHistoryAttrstrongIdMessages в getHistoryAttr параметрах при вызовах
+
+
+                    } else if (dataItem.status == 'segment') {
+                        if (dataItem.item.fullsegment) { // был просканирован весь сегмент
+                            Array.prototype.unshift.apply(strongId, dataItem.item.IdMassage);
+
+                        } else { // была просканирована часть сегмента необходимо продолжить
+                            setTimeout(function () {
+                                self.getHistoryAttr(dataItem.item.last, self.local.lastid, dataItem.item.IdMassage, dataItem.item.data)
+                            }, 20); //передаем возвращенные массивы, функция корретно допишит в них данные
+                            break;
+                        }
+
+                    }
+
+                    Array.prototype.push.apply(objmess, dataItem.item.data);
+                    if (objmess.length < self.COUNT_ROW && self.local.lastid != 'eof') {
+                        setTimeout(function () {
+                            self.getHistoryAttr(dataItem.status == 'segment' ? self.local.lastid : dataItem.item.last, 0, strongId, objmess); //в случае если это сегмент dataItem.item.last будет конец сегмента
+                        });
+                        break;
+                    }
+
+
+                    self.normalazeMessage(objmess);
+                    objmess = [];
+
+                    self.setlocalStorage(self._uid); // сохраняем прогресс
+                    break;
+                case 'getById':
+                    if (dataItem.status == 'ok') {
+                        Array.prototype.push.apply(objmess, dataItem.item.data);
+                        inStock = dataItem.item.sCursor - self.cursor; //доступно для вывода
+                        if (inStock < self.COUNT_ROW && self.local.lastid != 'eof') {
+                            setTimeout(function () {
+                                self.getById(dataItem.item.sCursor);
+                            });
+                            break;
+                        } else if (objmess.length) {
+                            self.normalazeMessage(objmess);
+                        }
+                    }
+                    else if (dataItem.status == 'overlimit') {
+                        setTimeout(function () {
+                            self.getHistoryAttr(self.local.lastid, 0, strongId, objmess);
+                        });
+                        break;
+                    }
+                    ;
+
+
+                    if (objmess.length) {
+                        objmess = [];
+                        break;
+                    }
+                case 'normalazeMessage':
+                    var count = Math.min(strongId.length, inStock + self.cursor), fragment = [];
+
+                    for (; self.cursor < count && fragment.length < self.COUNT_ROW; self.cursor++) {
+                        var mess = strongId[self.cursor];
+                        if (!(mess.type & self.dialogsFilter)) {
+                            continue;
+                        }
+                        ;
+                        if (!self.itemMessage[mess.id]) {
+                            console.log('сообщение не найдено в itemMessage по id. ' + mess.id);
+                            continue;
+                        }
+
+                        fragment.push(self.itemMessage[mess.id]);
+
+                    }
+                    self.loader();
+                    self.processResponse(fragment);
+                    // fragment = [];
+                    self.state = null;
+                    inStock = 0;
+
+                    break;
+
+            }
+        });
+
+
+        document.addEventListener('scroll', function (e) {
+            if (!self._content) return;
+            if (!(e.currentTarget.location && e.currentTarget.location.search.match(/_document$/))) return;
+            if (self.cursor == self.local.strongIdMessages.length - 1 && self.local.lastid == 'eof') return; //достигли конца ленты
+            var coords = self._content.getBoundingClientRect();
+
+            if (coords.height - document.documentElement.clientHeight + coords.top < 0) {
+                self.getAttach(true);
+            }
+        }, true);
+
+    },
+    css: function () {
+        return vk_lib.get_block_comments(function () {
+            /*css:
+             .no_link{
+             pointer-events: none;
+
+             }
+             .media_position {
+             display : inline-block;
+             float: left;
+             margin : 1px;
+             vertical-align : top;
+             line-height : normal;
+             width: auto;
+             height: 150px;
+             }
+             .history_im_fwd {
+             margin-left: 14%;
+             border-left: 2px solid #dee6ee;
+             }
+             .history_im_media_fwd {
+             margin-left: -15%
+             }
+             .history_message {
+             border-bottom: 1px dotted #ecf1f5;
+             padding-bottom: 10px;
+             }
+             #history_list {
+             position:absolute;
+             left: 100%;
+             margin-left: 0;
+             padding-left: 0;
+             background-color: #ffffff;
+             z-index: 900;
+             border: 2px solid #f7f7f7;
+             border-left: 1px solid rgba(0,0,0,.1);
+             width: 30%;
+             }
+             #history_list  li {
+             list-style-type: none;
+             }
+             */
+        }).css;
+    },
+    loader: (function () {
+        var displayed;
+        return function () {
+            if (vk_DEBUG) return; //не показывать окно при включенной отладке
+            if (displayed) {
+                hide(boxLoader);
+                hide(boxLayerWrap);
+                displayed = null;
+            } else {
+                show(boxLoader);
+                show(boxLayerWrap);
+                displayed = true;
+            }
+        }
+    })(),
+    tplProcess: function tplProcess(template, options) { //применяет к шаблону весь массив аргументов
+        if (isObject(options)) {
+            template = vk_lib.tpl_process(template, options);
+        } else {
+            for (var i = 0; i < options.length; i++) {
+                if (isArray(options[i])) {
+                    options[i].unshift(template);
+                    template = tplProcess.apply(this, options[i]);
+                    continue;
+                }
+                template = vk_lib.tpl_process(template, options[i]);
+            }
+        }
+        return template;
+    },
+    addBottom: function () {
+        var tabsBox = geByClass1('ui_tabs_box', null, '#wk_history_wrap ');// ищем нужный див
+        if (tabsBox && !tabsBox.querySelector('.my_link_repost')) {
+            this._timer = null;
+            tabsBox.lastElementChild.insertAdjacentHTML('afterEnd', vk_lib.tpl_process(this.template.menu_button, {
+                module_id: this.module_id
+            }));
+
+        } else   this._timer = setTimeout(this.addBottom, 20); // похоже страница не прогрузилась, ждем еще
+
+    },
+    clickMenu: function (uid) {
+        var content = ge('wk_history_rows'), menu = document.querySelector('#wk_history_wrap  .my_link_repost');
+        this._content = content;
+        if (menu.classList.contains('ui_tab_sel')) return; // повторный клик
+        document.querySelectorAll('#wk_history_wrap  .ui_tab_sel').forEach(function (value) {
+            value.classList.remove('ui_tab_sel');
+        });
+        menu.classList.toggle('ui_tab_sel');
+        ge('wk_history_more_link').remove(); //удаляем скролл
+        content.innerHTML = '';//'<span style="height:'+document.documentElement.clientHeight+'px"></span>';
+
+        document.querySelector('#wk_history_wrap > div.wk_history_tabs.tb_tabs_wrap').insertAdjacentHTML('afterEnd', this.tplProcess(this.template.menu_right, {
+            module_id: this.module_id
+        }));
+
+        // this.state = 0;
+        if (uid != this._uid || !this.itemMessage) this.itemMessage = {};
+        this._uid = uid;
+        this.cursor = 0;
+	this.start=true;
+        this.dialogsFilter = 7;
+        nav.objLoc.w = 'history' + nav.objLoc.sel + '_document';
+        wkcur.wkRaw = nav.objLoc.w;
+        nav.setLoc(nav.objLoc);
+        //history.pushState(null, null, location.search.replace(/(=history.*_)(.*$)/, '$1document'));
+
+        this.getlocalStorage(uid);
+        this.getAttach();
+
+    },
+    clickList: function (el) {
+        var target = event.target.closest('.ui_rmenu_item');
+        event.currentTarget.querySelector('.ui_rmenu_item_sel').classList.remove('ui_rmenu_item_sel');
+        target.classList.add('ui_rmenu_item_sel');
+        this.cursor = 0;
+        this._content.innerHTML = '';
+        this.dialogsFilter = +target.dataset.type;
+        this.getAttach();
+
+
+        //slideToggle('vk_album_full_info'); //показывает скрывает меню
+    },
+    pasteHTML: function pasteHTML(node, options, position) {
+        var lastdiv;
+        var qlast = function (select) {
+            return (node = node.querySelectorAll(select)) && node[node.length - 1] || node;
+        };
+
+        switch (position) {
+            case 'begin':
+                node.classList.add('history_message');
+                node.insertAdjacentHTML('beforeEnd', this.tplProcess(this.template.content_row, options));
+                pasteHTML.lastdiv = node;
+                pasteHTML.typePaste = {};
+                break;
+
+            case 'repost':
+            case 'forward':
+                var div = document.createElement('div');
+                options[0].no_link = options[0].location ? '' : 'no_link';
+                if (position == 'forward' && (lastdiv = pasteHTML.lastdiv.querySelector('[data-deep="' + (options[0].depth || 0) + '"]:last-child'))) {
+                    node = lastdiv.children[0];
+                    div.insertAdjacentHTML('beforeEnd', this.template.content_repost_deep);
+                } else {
+                    node = qlast('[name=content_repost]');
+
+                div.insertAdjacentHTML('beforeEnd', this.template.content_repost);
+                    div.querySelector('[data-deep]').setAttribute('data-deep', options[0].depth || 0);
+                }
+
+                geByClass1('im-mess-stack_fwd', div).insertAdjacentHTML('afterEnd', this.tplProcess(this.template.content_row, options));
+                node.appendChild(div);
+                node = div;
+                if (options[0].nocontent) break;
+            case 'content':
+                node.querySelector('[name=content]').insertAdjacentHTML('beforeEnd',
+                    this.tplProcess(this.template.content_message, options));
+                break;
+            case 'repost_link':
+            case 'repost_link_no_photo':
+                    node.querySelector('[name=content_repost]').insertAdjacentHTML('beforeEnd',
+                        this.tplProcess(position == 'repost_link' ? this.template.content_link : this.template.content_link_no_photo, options));
+                break;
+            case 'photo':
+            case 'gif':
+            case 'doc':
+            case 'audio':
+            case 'poll':
+            case 'video':
+            case 'page':
+                div = pasteHTML.typePaste[position] || ( pasteHTML.typePaste[position] = document.createElement('div') ) && position == 'photo' ? (pasteHTML.typePaste[position].setAttribute('style', 'display: inline-block;'), pasteHTML.typePaste[position]) : pasteHTML.typePaste[position];
+                div.insertAdjacentHTML('beforeEnd', this.tplProcess(this.template[position], options));
+                qlast('[name=content_repost]').appendChild(div);
+                break;
+            case 'poll_answers':
+                div = document.createElement('div');
+                div.insertAdjacentHTML('afterBegin', this.tplProcess(this.template.poll_answers, options));
+                qlast('.page_poll_stats').appendChild(div);
+                break;
+            case 'json':
+                div = document.createElement('div');
+                div.textContent = options[0];
+                qlast('[name=content_repost]').appendChild(div);
+                node = div;
+                break;
+
+
+        }
+        return node;
+    },
+
+    debounce: function (f) {
+        //var start_form = 0;
+        this.state = null;
+
+        return function () {
+            if (this.state) return;
+
+            this.state = 1;
+            this.loader();
+            //try {
+            f.apply(this, arguments);
+            //}
+            /// catch (e) {
+            //   self.state = null;
+            // }
+
+            /* setTimeout(function() {
+             self.state = null;
+             }, ms);*/
+        }
+
+    },
+    TimeStamp: function (timeStamp) {
+        return new Date(timeStamp * 1000).toLocaleString();
+    },
+    geId: function (arr, id) {
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i].id == id) return arr[i];
+        }
+    },
+    callEvent: function (name, item, status='ok') {
+        window.dispatchEvent(new CustomEvent("vkopt_attachments_and_link", {
+            bubbles: true,
+            detail: {
+                name: name,
+                item: item || [],
+                status: status
+            }
+        }));
+    },
+
+    errorProcessing: function (r) {
+        if (!r.response) {// ошибка
+            this.loader();
+            new Error(r.error.error_msg);
+        }
+    },
+    getlocalStorage: function (uid) {
+        this.local = JSON.parse(localStorage.getItem('vkopt_' + this.module_id + '_' + uid) || '{}');
+        this.local.strongIdMessages = this.local.strongIdMessages || [];
+        this.local.firstid = this.local.firstid || 0;
+        this.local.lastid = this.local.lastid || 0;
+
+    },
+    setlocalStorage: function (uid) {
+        localStorage.setItem('vkopt_' + this.module_id + '_' + uid, JSON.stringify({
+            strongIdMessages: this.local.strongIdMessages,
+            firstid: this.local.firstid,
+            lastid: this.local.lastid
+        }));
+    },
+    clearSetLocal: function (uid) {
+        localStorage.clear('vkopt_' + this.module_id + '_' + uid);
+    },
+
+
+    processResponse: function (items) {
+        var self = this, uid = self._uid, content = self._content;
+        var content_row = self.template.content_row, content_message = self.template.content_message, content_repost = self.template.content_repost;
+        var fragment = document.createDocumentFragment();
+        var getName = function (item) {
+            return item.first_name && item.first_name + ' ' + item.last_name;
+        };
+        var getLocation = function (item, type) {
+            type = type || 'fwd';
+            if (type == 'wall') {
+                return item.id ? 'wall-' + item.sender.id + '_' + item.id : '';
+            } else {
+                return item.id ? 'im?msgid=' + item.id + '&sel=' + uid : '';
+            }
+
+        };
+        var parseHash = function (url) {
+            return /hash=(.+?)\&/.exec(url)[1];
+        };
+        var linkIt = function (text) {
+            text = text.replace(/(^|[\n ])([\w]*?)((ht|f)tp(s)?:\/\/[\w]+[^ \,\"\n\r\t<]*)/ig, '$1$2<a href=\"$3\" target="_blank">$3</a>');
+
+            text = text.replace(/(^|[\n ])([\w]*?)((www|ftp)\.[^ \,\"\t\n\r<]*)/ig, '$1$2<a href=\"http://$3\" target="_blank">$3</a>');
+
+            text = text.replace(/(^|[\n ])([a-z0-9&\-_\.]+?)@([\w\-]+\.([\w\-\.]+)+)/i, '$1<a href=\"mailto:$2@$3\">$2@$3</a>');
+
+            text = text.replace(/\[((?:club|id)\d+)\|(.+?)]/ig, '<a href="\$1" target="_blank">$2</a>');
+
+
+            return (text);
+        };
+        items.forEach(function (item) {
+            var attNames = ['fwd_messages', 'attachments'];
+
+            var el = self.pasteHTML(document.createElement('div'), [{
+                name: getName(item.user),
+                time: self.TimeStamp(item.date),
+                location: getLocation(item)
+            }, item.user], 'begin');
+            fragment.appendChild(el);
+            // content.appendChild(el);
+
+            self.pasteHTML(el, [{text_content: linkIt(item.body), time: self.TimeStamp(item.date)}], 'content');
+
+
+            attNames.forEach(function (attName) {
+                if (!item[attName]) return;
+                item[attName].forEach(function (att) {
+
+                    repost(att[att.type] || att, att.type || 'fwd', 0, att.id);
+                    function repost(att, type, depth, parentid) {
+                        depth = depth || 0;
+                        if (att.id == 0) return; // нет доступа, удалено.
+                        /* репост */
+                        if (type == 'wall' || type == 'fwd') {
+                            self.pasteHTML(el, [{
+                                text_content: linkIt(att.body || att.text || ''),
+                                time: self.TimeStamp(att.date),
+                                name: getName(att.sender),
+                                location: getLocation(att, type),
+                                domain: att.sender.screen_name || att.sender.domain,
+                                depth: depth
+                            }, att.sender], type == 'wall' ? 'repost' : 'forward');
+                            if (att.fwd_messages) att.fwd_messages.forEach(function (wall) {
+                                repost(wall, 'fwd', depth + 1);
+                            });
+                            if (att.copy_history) att.copy_history.forEach(function (wall) {
+                                repost(wall.wall || wall[wall.type] || wall, wall.type || 'wall', 0, att.id)
+                            });
+                            if (att.attachments) att.attachments.forEach(function (wall) {
+                                repost(wall.wall || wall[wall.type] || wall, wall.type || 'wall', 0, att.id);
+                            });
+
+                        }
+                        else if (type == 'photo') {
+                            self.pasteHTML(el, [att], 'photo');
+                        }
+                        else if (type == 'video') {
+                            self.pasteHTML(el, [{
+                                photo_320: att.photo_320
+                            }, att], 'video');
+                        }
+                        else if (type == 'doc') {
+                            if (att.type == 3) {
+                            self.pasteHTML(el, [{
+                                photo_size_src_o: att.preview.photo.sizes[2].src,
+                                url_parse_hash: parseHash(att.url),
+                                width: att.preview.photo.sizes[0].width + 100,//att.preview.video.width,
+                                height: att.preview.photo.sizes[0].height + 100, //att.preview.video.height
+                                dataWidth: att.preview.video.width,
+                                dataHeight: att.preview.video.height
+                            }, att], 'gif');
+                            } else {
+                                self.pasteHTML(el, [{
+                                    size: Math.round(att.size / 1000)
+                                }, att], 'doc');
+                            }
+                        }
+                        else if (type == 'link') {
+                            self.pasteHTML(el, [{
+                                text_content: '',
+                                caption: att.caption || ''
+                            }, att, att.photo], att.photo ? 'repost_link' : 'repost_link_no_photo');
+                        }
+                        else if (type == 'sticker') {
+                            self.pasteHTML(el, [{photo_604: att['photo_' + att.width]}], 'photo');
+                        }
+                        else if (type == 'audio') {
+                            self.pasteHTML(el, [{artist_encode: encodeURI(att.artist)}, att], 'audio');
+                        }
+                        else if (type == 'poll') {
+                            self.pasteHTML(el, [{
+                                state: att.anonymous ? 'Открытый' : 'Анонимный',
+                                postId: att.owner_id + '_' + parentid
+                            }, att], 'poll');
+                            for (var i = att.answers.length - 1; i >= 0; i--) {
+                                self.pasteHTML(el, [att.answers[i]], 'poll_answers');
+                            }
+                        } else if (type == 'page') {
+                            self.pasteHTML(el, [att], 'page');
+                        }
+                        else {// не ясно что это отправляем в json
+                            self.pasteHTML(el, ['\n' + JSON.stringify(att)], 'json');
+                        }
+
+
+                    }
+                });
+            });
+            //  self.cursor++;
+        });
+        content.appendChild(fragment);
+        // self.state = null;
+        //self.loader();
+        //self.setlocalStorage(uid);
+
+
+    },
+    getAttach: function (scrolling) {
+        var self = this;
+
+        if (scrolling) {
+            self.callEvent('getAttach', [], 'scrolling');
+            return;
+        }
+        // проверяем был ли диалог с нашего последнего посещения
+            dApi.call('messages.getHistory', {
+                'user_id': self._uid,
+                'count': 1,
+                'offset': 0,
+                'v': '5.60'
+            }, function (r) {
+                self.errorProcessing(r);
+
+                var idMax = Math.max(r.response.in_read, r.response.out_read),
+                    status = self.local.firstid == 0 ? 'start' : self.local.firstid < idMax ? 'segment' : 'ok';
+
+                self.callEvent('getAttach', {
+                    rangeStart: idMax,
+                    rangeEnd: self.local.firstid
+                }, status);
+
+            });
+
+
+    },
+    getById: function (sCursor) {
+        /*Получает сообщения по их адресам, в качестве параметра принимает индес начала
+         по завершению вызывает событие со своим именем
+         strongIdMessages - адреса сообщений с вложениями
+         itemMessage полученные сообщения методом getHistoryAttr или методом getById
+         sCursor копия курсора self.cursor
+         значение курсора изменяется только при окончательном выводе
+         */
+        var param = [],
+            inStock = 0; // сколько обошли, уже в itemMessage + обработанные этим методом
+        var self = this, strongId = self.local.strongIdMessages;
+        var count = strongId.length - 1;
+        /* если вышли за границу и не eof запускаем поиск по истории*/
+        if (count <= sCursor && self.local.lastid != 'eof') { //!
+            self.callEvent('getById', self.local.lastid, 'overlimit');
+            return;
+        }
+
+        for (; sCursor <= count; sCursor++) {
+            var id = strongId[sCursor].id, type = strongId[sCursor].type;
+            if (!(type & self.dialogsFilter)) continue;
+            self.itemMessage[id] || param.push(id + '_' + self._uid);
+            inStock++;
+            if (param.length >= 100) break;
+        }
+        if (param.length) {
+            dApi.call('messages.getById', {
+                'message_ids': param.join(','),
+                'v': '5.60'
+            }, function (r) {
+                self.errorProcessing(r);
+                if (r.response.items.length != param.length) console.log('API не вернул одно из сообщений? сообщение удалено?');
+
+                self.callEvent('getById', {
+                    data: r.response.items.filter(function (value) {
+                    return !value.deleted;
+                    }), inStock: inStock,
+                    sCursor: sCursor
+                });
+
+            });
+        } else  self.callEvent('getById', {
+            data: [],
+            inStock: inStock,
+            sCursor: sCursor
+        });
+
+    },
+    getHistoryAttr: function (first, last, IdMassage, objMess) {
+        // перебирает count сообщений  вызывает событие в котором передает  вложения не включая last
+        // найденное дописывается в конец IdMassage, objMess
+        var self = this;
+        if (first == 'eof') {
+            self.callEvent('getHistoryAttr', null, 'eof');
+            return;
+        } // нечего искать
+        var self = this;
+        objMess = objMess || [];
+        IdMassage = IdMassage || [];
+        var count = 100;
+
+        var correctType = function (val) {
+            var type = 0;
+            if (/\w{2,6}?:\/\//ig.test(val.body)) type = type | 1;
+            if (val.fwd_messages && val.fwd_messages.length) type = type | 2;
+
+            if (val.attachments) {
+                for (var i = 0; i < val.attachments.length; i++) {
+                    if (val.attachments[i].type == 'wall') type = type | 4;
+                    else if (val.attachments[i].type == 'link') type = type | 1;
+            }
+            }
+
+            return type;
+        };
+
+
+        var code = {
+            'user_id': self._uid,
+            'start_message_id': first,
+            'count': count,
+            'offset': last || self.start ? 0 : 1,
+            'v': '5.60'
+        };
+        dApi.call('messages.getHistory', code, function (r) {
+            self.errorProcessing(r);
+
+            for (i = 0; i < r.response.items.length; i++) {
+                var value = r.response.items[i], type = 0;
+                if (last && value.id <= last) break;
+                if (type = correctType(value)) {
+                    var idMess = {
+                        id: value.id,
+                        type: type
+                    };
+
+                    IdMassage.push(idMess);
+
+                    if (idMess.type & self.dialogsFilter) objMess.push(value); //сохраняем объект только если хотим его показать, в локальном хранилище (strongIdMessages) данные сохраняются всегда, не зависимо от того, хотим ли мы их показывать.
+                }
+            }
+
+            var dataHistory = {
+                IdMassage: IdMassage,
+                first: first,
+                last: r.response.items.length < count ? 'eof' : r.response.items[Math.min(i, r.response.items.length - 1)].id,
+                data: objMess,
+                segment: Boolean(last),
+                fullsegment: i != r.response.items.length && i > 0
+            };
+
+            self.callEvent('getHistoryAttr', dataHistory, dataHistory.segment ? 'segment' : 'ok');
+
+        });
+	self.start=null;
+        return self;
+    },
+    normalazeMessage: function (obj) {
+        var self = this;
+        var response = {idGroup: [vk.id], senders: []};
+
+
+        scan(obj);
+        getGoupsUsers();
+
+        function fscan(att) {
+            if (att.wall || att.link) {
+                fscan(att.wall || att.link);
+                return;
+            } else if (att.fwd_messages) scan(att.fwd_messages); //внутри может быть еще
+            if (att.to_id) response.idGroup.push(att.to_id);
+            else if (att.from_id) response.idGroup.push(att.from_id);
+            if (att.user_id) response.idGroup.push(att.user_id);
+            if (att.copy_history) scan(att.copy_history);
+            if (att.attachments) scan(att.attachments);
+        }
+
+        function scan(arr) {
+            Array.isArray(arr) ? arr.forEach(fscan) : fscan(arr);
+        }// так как @ в execute не работает должным образом прийдется делать несколько запросов
+
+
+        function getGoupsUsers() {
+            var code = [];
+            var param = response.idGroup.filter(function (value) {
+                if (value && value < 0) return true;
+            }).map(function (value) {
+                return -value;
+            }).join(',');
+            if (param) code.push(' API.groups.getById({group_ids:"' + param + '"})');
+            param = response.idGroup.filter(function (value) {
+                if (value && value > 0) return true;
+            }).join(',');
+            if (param) code.push(' API.users.get({user_ids:"' + param + '",fields:"domain,name,photo_50"})'); // могут быть репосты от других пользователей
+            if (code.length) {
+                dApi.call('execute', {code: 'return ' + code.join('+') + ';', v: '5.60'}, function (b) {
+                    self.errorProcessing(b);
+                    b.response.forEach(function (value) {
+                        /* if (value.type='users'){
+                         response.users.push.apply( response.users, value.resp );
+                         } else {*/
+                        if (!response.senders) response.senders = b.response;
+                        else response.senders.push.apply(response.senders, b.response);
+                        //  }
+                        // });
+                    });
+                    rearrange();
+                });
+            } else {
+                rearrange();
+            }
+        }
+
+
+        function rearrange() {
+
+            function append(value) {
+                if (value.attachments) {
+                    value.attachments.forEach(function (att) {
+                        if (att.type == 'wall') {
+                            att.wall.sender = self.geId(response.senders, Math.abs(att.wall.to_id));
+                            if (att.wall.attachments || att.wall.copy_history) append(att.wall);
+                        }
+                    });
+                }
+
+                if (value.copy_history) value.copy_history.forEach(function (wall) {
+                    wall.sender = self.geId(response.senders, Math.abs(wall.from_id));
+                    if (wall.attachments || wall.copy_history) append(wall);
+                });
+
+                if (value.fwd_messages) {
+                    value.fwd_messages.forEach(function (att) {
+                        att.sender = self.geId(response.senders, Math.abs(att.user_id));
+                        append(att);
+                    });
+
+                }
+            }
+
+            obj.forEach(function (value) {
+                value.user = self.geId(response.senders, value.out ? vk.id : value.user_id);
+                append(value);
+                self.itemMessage[value.id] = value;
+            });
+
+            self.callEvent('normalazeMessage', self.itemMessage);
+
+
+        }
+    },
+
+    template: function () {
+        return vk_lib.get_block_comments(function () {/*menu_button:
+         <li>
+         <div class="ui_tab my_link_repost" onclick="vkopt['{vals.module_id}'].clickMenu(cur.peer)">
+         {lng.LinksAndRepost}
+         </div>
+         </li>
+         */
+            /*menu_right:
+             <ul id="history_list"  onclick="vkopt['{vals.module_id}'].clickList(event)">
+             <li><a  href="#" class="ui_rmenu_item ui_rmenu_item_sel" data-type="7">
+             <span>{lng.LinksAndRepost_all}</span>
+             </a>
+             </li>
+             <li><a href="#" class="ui_rmenu_item" data-type="2">
+             <span>{lng.LinksAndRepost_forward}</span>
+             </a>
+             </li>
+             <li><a  href="#" class="ui_rmenu_item " data-type="4">
+             <span>{lng.LinksAndRepost_post}</span>
+             </a>
+             </li>
+             <li><a  href="#" class="ui_rmenu_item" data-type="1">
+             <span>{lng.LinksAndRepost_link}</span>
+             </a>
+             </li>
+             </ul>
+             */
+            /*content_row:
+             <div class="im-mess-stack _im_mess_stack " style="margin-left: -7%;">
+             <div class="im-mess-stack--photo">
+             <div class="nim-peer nim-peer_small fl_l">
+             <div class="nim-peer--photo-w">
+             <div class="nim-peer--photo">
+             <a target="_blank" class="im_grid" href="/{vals.domain}"  onclick="nav.setLoc(this.getAttribute('href'));  nav.reload();"><img alt="{vals.name}" src="{vals.photo_50}"></a>
+             </div>
+             </div>
+             </div>
+             </div>
+             <div class="im-mess-stack--content">
+             <div class="im-mess-stack--info">
+             <div class="im-mess-stack--pname">
+             <a href="/{vals.domain}" class="im-mess-stack--lnk" title="" target="_blank">{vals.name}</a>
+             <span class="im-mess-stack--tools">
+             <a href="/{vals.location}" class="_im_mess_link {vals.no_link}" onclick="nav.setLoc(this.getAttribute('href'));  nav.reload();">{vals.time}</a>    <!--a href="/im?sel=c25&amp;msgid=868870" relocation  -->
+             </span>
+             </div>
+             </div>
+             <span name="content"><span><!-- контент -->
+             </div>
+             </div>
+             */
+            /*content_message:
+             <ul class="ui_clean_list im-mess-stack--mess _im_stack_messages">
+             <li class="im-mess im_in" style="padding-right: 8px;"> <!-- im-mess_selected выделяет-->
+             <div class="im-mess--text wall_module _im_log_body">
+             <div class="im_msg_text" name="content_repost"><div style="margin-top: 2px;">{vals.text_content}</div></div>
+             </li>
+             </ul>
+             </div>
+             </div>
+             */
+            /*content_repost:
+             <div class="media_desc im-mess--inline-fwd history_im_media_fwd clear_fix" data-deep="0">
+             <div class="history_im_fwd"><div class="im-mess-stack _im_mess_stack im-mess-stack_fwd">
+             </div>
+             </div>
+             */
+            /*content_repost_deep:
+             <div class="im-mess-stack _im_mess_stack im-mess-stack_fwd">
+             </div>
+             */
+            /*content_link:
+             <div class="_im_msg_media"><div class="im_msg_media im_msg_media_link"><div class="page_media_thumbed_link page_media_thumbed_link_big ">
+             <div class="page_media_link_photo"><a href="{vals.url}" target="_blank" class="page_media_link_img_wrap">
+             <img data-width="537" data-height="240" width="391" height="175" class="page_media_link_img" src="{vals.photo_604}"></a>
+             </div>
+             <div class="page_media_link_desc_wrap ">
+             <div class="page_media_link_desc_block">
+             <div class="page_media_link_title"><a href="{vals.url}" target="_blank">{vals.title}</a>
+             </div>
+
+             <a href="{vals.url}" target="_blank" class="page_media_link_url page_market_owner_link"><div class="page_media_link_text">{vals.caption}
+             </div></a>
+             </div>
+
+             </div>
+             */
+            /*content_link_no_photo:
+             <div class="im_msg_media im_msg_media_link">
+             <div class="media_desc">
+             <a class="lnk lnk_mail clear_fix" href="{vals.url}" target="_blank">
+             <span class="lnk_mail_title a clear_fix">{vals.title}</span>
+
+             <span class="lnk_mail_domain clear_fix">{vals.caption}</span>
+
+             </a>
+             </div>
+             </div>
+             */
+            /*page:
+             <div class="media_desc media_desc__">
+             <a class="lnk"  href="/page-{vals.group_id}_{vals.id}"   target="_blank"  onclick="window.open(this.href); cancelEvent(event);" >
+             <b class="fl_l "></b>
+             <span class="a">{vals.title}&nbsp;</span>
+             </a>
+             <a href="/page-{vals.group_id}_{vals.id}"   target="_blank" onclick="window.open(this.href); cancelEvent(event);" class="post_media_link_preview_wrap inl_bl">
+             <button class="flat_button">
+             <span class="wall_postlink_preview_btn_label">Просмотреть</span>
+             </button>
+             </a>
+             </div>
+             */
+            /*photo:
+             <img data-width="537" data-height="240"  class="page_media_link_img media_position" src="{vals.photo_604}"  onclick="showPhoto('{vals.owner_id}_{vals.id}',null,{img:this, queue: 1 }, event)">
+             */
+            /*gif:
+             <div class="clear_fix page_gif_large">
+             <a class="photo page_doc_photo_href" href="{vals.url}" onclick="return Page.showGif(this, event)" data-doc="{vals.owner_id}_{vals.id}" data-hash="{vals.url_parse_hash}"  data-add-txt="Скопировать в мои документы" data-share-txt="Поделиться" data-preview="1" data-thumb="{vals.photo_size_src_o}" data-width="{vals.dataWidth}" data-height="{vals.dataHeight}" style="width:{vals.width}px; height:{vals.height}px; display: block;">
+             <div class="page_doc_photo" style="background-image: url({vals.photo_size_src_o});width:{vals.width}px;height:{vals.height}px;background-size:cover;"></div>
+             <div class="page_gif_label">gif</div>
+             <div class="page_gif_play_icon"></div>
+             <div class="page_gif_actions">
+             <div class="page_gif_share" onmouseover="showTooltip(this, {text: 'Поделиться', black: 1, shift: [7, 6, 6], toup: 0, needLeft: 1})" onclick="return 0 ? false : Page.shareGif(this, '{vals.owner_id}_{vals.id}', '{vals.url_parse_hash}', event)">
+             <div class="page_gif_share_icon"></div>
+             </div>
+             </div>
+             </a>
+             </div>
+             */
+            /*doc:
+             <div class="media_desc media_desc__doc ">
+             <div class="page_doc_row" id="post_media_lnk{vals.owner_id}_{vals.id}">
+             <a class="page_doc_icon page_doc_icon1" href="{vals.url}" target="_blank"></a>
+             <a class="page_doc_title" href="{vals.url}" target="_blank">{vals.title}</a>
+             <div class="page_doc_size">{vals.size} КБ</div>
+             </div>
+             </div>
+             */
+            /*audio:
+             <div class="wall_audio_rows _wall_audio_rows">
+             <div class="audio_row _audio_row _audio_row_{vals.owner_id}_{vals.id} inlined canadd lpb clear_fix" onclick="return getAudioPlayer().toggleAudio(this, event)" data-audio="[&quot;{vals.id}&quot;,&quot;{vals.owner_id}&quot;,&quot;&quot;,&quot;{vals.title}&quot;,&quot;{vals.artist}&quot;,145,0,0,&quot;&quot;,0,16393,&quot;post-114356242_181&quot;,&quot;[]&quot;,&quot;abd77f44bf2391e1f4\/\/b8d78debc3b4fafcf6&quot;]" data-full-id="{vals.owner_id}_{vals.id}" id="audio_{vals.owner_id}_{vals.id}">
+             <div class="audio_play_wrap" data-nodrag="1"><button class="audio_play _audio_play" id="play_{vals.owner_id}_{vals.id}" aria-label="Воспроизвести "></button></div>
+             <div class="audio_info">
+             <div class="audio_duration_wrap _audio_duration_wrap">
+             <div class="audio_hq_label"></div>
+             <div class="audio_duration _audio_duration">{vals.duration}</div>
+             </div>
+             <div class="audio_title_wrap"><a href="/search?c[section]=audio&amp;c[q]={vals.artist_encode}&amp;c[performer]=1" onmouseover="setTitle(this)" nodrag="1" onclick="return audioSearchPerformer(this, event)" class="audio_performer">{vals.artist}</a><span class="audio_info_divider">–</span><span class="audio_title _audio_title" onmouseover="setTitle(this, domPN(this))"><span class="audio_title_inner" tabindex="0" nodrag="1" aria-label="{vals.title}" onclick="return toggleAudioLyrics(event, this, '{vals.owner_id}_{vals.id}', '0')">{vals.title}</span>
+             <span class="audio_author" onclick="cur.cancelClick=true"></span>
+             </span></div>
+             </div>
+             <div class="_audio_player_wrap"></div>
+             <div class="_audio_lyrics_wrap audio_lyrics" data-nodrag="1"></div>
+             </div>
+             </div>
+             */
+            /*video:
+             <div class="page_post_sized_thumbs  clear_fix" style="width:320px; height:240px;">
+             <a href="/video{vals.owner_id}_{vals.id}?list={vals.access_key}" data-video="{vals.owner_id}_{vals.id}" data-list="{vals.access_key}" data-duration="{vals.duration}" aria-label="{vals.title}&amp;#33;" onclick="return showInlineVideo('{vals.owner_id}_{vals.id}', '{vals.access_key}', {autoplay: 1, addParams: { post_id: '{vals.owner_id}_{vals.id}' }}, event, this);" style="width:320px; height:240px; background-image: url({vals.photo_320})" class="page_post_thumb_wrap image_cover  page_post_thumb_video page_post_thumb_last_column page_post_thumb_last_row">
+             <div class="page_post_video_play_inline"></div>
+             <div class="page_wm"></div>
+             <div class="page_post_video_duration_single">{vals.duration}</div>
+             </a>
+             </div>
+             <div class="a post_video_title" onclick="return showVideo('{vals.owner_id}_{vals.id}', '{vals.access_key}', {autoplay: 1, queue: 1, addParams: { post_id: '{vals.owner_id}_{vals.id}' }}, event);" style="width: 320px;">{vals.title}</div>
+             */
+            /*poll:
+             <div class="page_media_poll_wrap">
+             <div class="page_media_poll_title_wrap clear_fix">
+             <div class="page_media_poll_desc">{vals.state}</div>
+             <div class="page_media_poll_title">{vals.question}</div>
+             </div>
+             <div class="page_media_poll" id="post_poll{vals.postId}"><div class="page_poll_stats" onclick="Wall.pollFull(false, '{vals.postId}', event);">
+
+             <input type="hidden" id="post_poll_raw{vals.postId}" value="{vals.owner_id}_{vals.id}" class="user_revote"><input type="hidden" id="post_poll_open{vals.postId}" value="1"><div class="page_poll_bottom">
+             <div class="page_poll_total">
+             <span class="divider fl_r"></span>
+             <div class="page_poll_total_count">Неравнодушны <b>{vals.votes}</b> граждан.</div>
+             </div>
+             </div></div>
+             </div>
+             */
+            /*poll_answers:
+             <div class="page_poll_stat" onmouseover="Wall.pollOver(this, '{vals.postId}', {vals.id})">
+             <div class="page_poll_text">{vals.text}</div>
+             <div class="page_poll_row_wrap">
+             <div class="page_poll_row_percent">{vals.rate}%</div>
+             <div class="page_poll_row page_poll_voted">
+             <div class="page_poll_percent" style="width: 49%"></div>
+             <div class="page_poll_row_count">{vals.votes}</div>
+             </div>
+             </div>
+             </div>
+             */
+        })
+    }
+};
 
 vkopt_core.init();
