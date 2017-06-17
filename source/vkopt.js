@@ -8705,7 +8705,7 @@ vkopt['attachments_and_link'] = {
              </div>
              */
             /*content_repost:
-             <div class="media_desc im-mess--inline-fwd history_im_media_fwd" data-deep="0">
+             <div class="media_desc im-mess--inline-fwd history_im_media_fwd clear_fix" data-deep="0">
              <div class="history_im_fwd"><div class="im-mess-stack _im_mess_stack im-mess-stack_fwd">
              </div>
              </div>
