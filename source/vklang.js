@@ -1,4 +1,4 @@
-// ==UserScript==
+﻿// ==UserScript==
 // @description   VkOpt Languages
 // @include       *vkontakte.ru*
 // @include       *vkadre.ru*
@@ -773,7 +773,12 @@ vk_lang_ru={
    ,"seAudioDelButtonPl":"\u041a\u043d\u043e\u043f\u043a\u0430 \u00ab\u041f\u0440\u043e\u043f\u0443\u0441\u0442\u0438\u0442\u044c\u00bb \u0432 \u043f\u043b\u0435\u0435\u0440\u0435 \u0438\u0437 \u0448\u0430\u043f\u043a\u0438"
    ,"seStoreHeightImTxt":"\u0417\u0430\u043f\u043e\u043c\u0438\u043d\u0430\u0442\u044c \u0432\u044b\u0441\u043e\u0442\u0443 \u043f\u043e\u043b\u044f \u0432\u0432\u043e\u0434\u0430 \u0432 \u0434\u0438\u0430\u043b\u043e\u0433\u0430\u0445"
    ,'seDislikeEnable': '\u0412\u043A\u043B\u044E\u0447\u0438\u0442\u044C \u0434\u0438\u0437\u043B\u0430\u0439\u043A\u0438'   
-};
+   ,"LinksAndRepost": "\u0421\u0441\u044B\u043B\u043A\u0438  \u0438  \u0440\u0435\u043F\u043E\u0441\u0442\u044B"
+   ,"LinksAndRepost_all": "\u0412\u0441\u0435"
+   ,"LinksAndRepost_forward": "\u0424\u043E\u0440\u0432\u0430\u0440\u0434\u044B"
+   ,"LinksAndRepost_link": "\u0421\u0441\u044B\u043B\u043A\u0438"
+   ,"LinksAndRepost_post": "\u0420\u0435\u043F\u043E\u0441\u0442\u044B"
+   };
 
 vk_lang_en={//by Hzy
 'LangAuthor':'by Hzy',
@@ -1696,6 +1701,11 @@ vk_lang_en={//by Hzy
   ,"seRecentEmoji":"Block with recent Emoji in dialogs"
   ,"Skip_pl":"Skip"
   ,"seAudioDelButtonPl":"«Skip» button in topplayer"
+  ,"LinksAndRepost": "Links and repost"
+  ,"LinksAndRepost_all": "All"
+  ,"LinksAndRepost_forward": "Forward"
+  ,"LinksAndRepost_link": "Link"
+  ,"LinksAndRepost_post": "Post"
 };
 
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
