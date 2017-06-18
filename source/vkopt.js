@@ -50,7 +50,6 @@ var vkopt_defaults = {
       show_online_status: false,
       show_common_group: false,
       common_group_color: '90ee90',
-      audio_del_button_pl: true,
       dislikes_enabled: false,
       dislike_icon_index: 1,
 
@@ -2192,29 +2191,28 @@ vkopt['audio'] =  {
          padding-bottom: 5px;
          padding-top: 5px;
       }
-      .top_audio_layer .audio_row .audio_act.audio_act_rem_from_pl{
+
+      #top_audio_layer_place .audio_row .audio_acts .vko_skip {
          display: block;
+	      height: 24px;
+         width: 24px;
+         background: no-repeat url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M0%200h24v24H0z%22%2F%3E%3Cpath%20fill%3D%22%23828A99%22%20d%3D%22M5%2011.5c0-.27.23-.5.5-.5H12v2H5.5c-.27%200-.5-.2-.5-.5v-1zm0-4c0-.27.23-.5.5-.5h12c.28%200%20.5.2.5.5v1c0%20.27-.23.5-.5.5h-12c-.3%200-.5-.2-.5-.5v-1zm0%208c0-.27.23-.5.5-.5H12v2H5.5c-.27%200-.5-.2-.5-.5v-1zm15.9.9l-1.5-1.5%202.2-2.2c.4-.4.4-1%200-1.4-.4-.4-1-.4-1.4%200l-.7.7-1.5%201.5-1.5-1.5-.7-.7c-.4-.4-1-.4-1.4%200-.4.4-.4%201%200%201.4l2.2%202.2-1.5%201.5-.7.7c-.4.4-.4%201%200%201.4.4.4%201%20.4%201.4%200l2.2-2.2%202.2%202.2c.4.4%201%20.4%201.4%200%20.4-.4.4-1%200-1.4l-.7-.7z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
       }
-      .top_audio_layer .audio_row .audio_act.audio_act_rem_from_pl>div{
-         height: 12px;
-         width: 14px;
-         background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAMBAMAAACgrpHpAAAAGFBMVEUAAAByk7dyk7Zyk7Zyk7Zyk7ZzlLdyk7aWV8ipAAAAB3RSTlMA7SIuBBjsKPzYuwAAAEFJREFUCNdjEC8HgkIGCF3GgAyKGJgKgOLs5Q7u5UCatby4vBQkzl5eDpZnLi8G6WNwLy93ANJMQPkisDQQwfQDAJLaEk3kz9tlAAAAAElFTkSuQmCC");
-      }
-      .top_audio_layer .audio_row.audio_skipped .audio_act.audio_act_rem_from_pl,
-      .top_audio_layer .audio_row.audio_row_playing .audio_act.audio_act_rem_from_pl,
-      .top_audio_layer .audio_row.audio_row_playing.audio_added_next.audio_skipped .audio_act.audio_act_rem_from_pl{
+      #top_audio_layer_place .audio_row.audio_skipped .vko_skip,
+      #top_audio_layer_place .audio_row.audio_row_playing .vko_skip,
+      #top_audio_layer_place .audio_row.audio_row_playing.audio_added_next.audio_skipped .vko_skip {
          display: none;
       }
-      .audio_row.audio_skipped .audio_info{
+      .audio_row.audio_skipped .audio_info {
          opacity: 0.5;
       }
-      .audio_row.audio_added_next.audio_skipped .audio_info{
-         opacity:1
+      .audio_row.audio_added_next.audio_skipped .audio_info {
+         opacity: 1;
       }
-      .audio_row.audio_added_next.audio_skipped .audio_act.audio_act_rem_from_pl{
-         display:block;
+      .audio_row.audio_added_next.audio_skipped .vko_skip {
+         display: block;
       }
-       */
+      */
       });
       return codes.dl;
    },
@@ -2238,8 +2236,9 @@ vkopt['audio'] =  {
                }
             }
          },
-	     audio_del_button_pl: {
-		    title: 'seAudioDelButtonPl'
+	     audio_skip_button: {
+		    title: 'seAudioSkipButton',
+			default_value: true
          }
       },
       Extra:{
@@ -2261,8 +2260,8 @@ vkopt['audio'] =  {
 
       <a class="audio_act vk_audio_acts" data-aid="{vals.id}" onmouseover="vkopt.audio.acts.menu(this);" onclick="cancelEvent(event)"><div></div></a>
       */
-      /*del_button:
-      <a class="audio_act audio_act_rem_from_pl" id="vk_delete_pl" onmouseover="showTooltip(this,{text:IDL('Skip_pl'),black:1,shift:[7,5,0],needLeft:true})" onclick="vkopt.audio.delete_from_pl_act(event,'{vals.id}')"><div></div></a>
+      /*skip_button:
+      <div class="audio_act vko_skip" onmouseover="showTooltip(this,{text:'{lng.Skip_pl}',black:1,shift:[7,5,0],needLeft:true})" onclick="vkopt.audio.skip_act(event,'{vals.id}')"></div>
       */
       /*size_info:
       <small class="fl_l vk_audio_size_info_wrap" id="vk_audio_size_info_{vals.id}">
@@ -2619,10 +2618,10 @@ vkopt['audio'] =  {
          // Менюшка
          if ((!vkopt.settings.get('audio_dl') || vkopt.settings.get('audio_dl_acts_2_btns')) && vkopt.settings.get('audio_more_acts'))
              acts.firstChild ? acts.insertBefore(acts_btn, acts.firstChild) : acts.appendChild(acts_btn);
-         // Удалить из списка
-         if (vkopt.settings.get('audio_del_button_pl')){
-	        var del_button = se(vk_lib.tpl_process(vkopt.audio.tpls.del_button, {id: info_obj.fullId}));
-            acts.appendChild(del_button);
+         // Удалить из текущего плейлиста
+         if (vkopt.settings.get('audio_skip_button')){
+	        var skip_button = se(vk_lib.tpl_process(vkopt.audio.tpls.skip_button, {id: info_obj.fullId}));
+            acts.appendChild(skip_button);
          }
       }
 
@@ -2853,7 +2852,7 @@ vkopt['audio'] =  {
          vkAlertBox('Wiki-code:',code);
       }
    },
-   delete_from_pl_act: function (ev, id) {
+   skip_act: function (ev, id) {
        var row = gpeByClass("audio_row", ev.target);
        if (hasClass(row, 'audio_added_next') || !hasClass(row, 'audio_skipped')){ // наличие класса .audio_added_next разрешает убрать трек из очереди
           // при добавлении трека после исключения обратно в очередь следующим,
@@ -5255,6 +5254,7 @@ vkopt['face'] =  {
          .vk_compact_audio .audio_row .audio_row_cover_play_icon,
          .vk_compact_audio .audio_row .audio_sound_bars,
          .vk_compact_audio .audio_row .audio_acts .audio_act,
+         .vk_compact_audio #top_audio_layer_place .audio_row .audio_acts .vko_skip,
          .vk_compact_audio .audio_pl_edit_box .ape_audio_item_wrap .ape_check .ape_check_icon{
            width: 20px;
            height: 20px;
