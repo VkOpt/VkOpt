@@ -2003,6 +2003,9 @@ vkopt['photos'] =  {
          answer[1] = vkopt_core.mod_str_as_node(answer[1], vkopt.photos.update_photo_btn, {source:'process_edit_photo_response', url:url, q:q});
       }
    },
+   download_album: function(oid, aid) {
+      
+   },
    update_photo: function(photo_id){
       var box=vkAlertBox(IDL('Upload'),'<center><div id="vk_upd_photo"></div><div id="vk_upd_photo_progress"></div></center>');
       stManager.add('upload.js',function(){
