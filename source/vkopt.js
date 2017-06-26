@@ -2005,35 +2005,33 @@ vkopt['photos'] =  {
    },
    onLocation: function(){
       vkopt.photos.browse_comments_btn();
-      if (vkopt.settings.get('photos_album_dl') &&
-         window.location.href.indexOf('album') > -1) {
-            var oid_aid = window.location.href.substr(window.location.href.indexOf('album')+5);
-            var oid = oid_aid.split("_")[0];
-            var aid = oid_aid.split("_")[1];
-            if (!oid || !aid) return;
-            vkopt.log("зашли " + oid + " " + aid)
-            vkopt.photos.add_link_element(oid, aid);
-         }
    },
    onResponseAnswer: function(answer,url,q){
       if (url == '/al_photos.php' && q.act == 'edit_photo' && (vkopt.settings.get('photo_replacer'))){
          answer[1] = vkopt_core.mod_str_as_node(answer[1], vkopt.photos.update_photo_btn, {source:'process_edit_photo_response', url:url, q:q});
       }
-   },
-   add_link_element: function(oid, aid) {
-      setTimeout(function() {
-         var dl_link = vk_lib.tpl_process(vkopt.photos.tpls.photos_download_link, {oid: oid, aid: aid});
-         // всплывающее или страница
-         if (geByClass1('photos_is_albums_view') && !hasClass(geByClass1('photos_is_albums_view'),'has_dl_album_link')) {
-            vkopt.log("z1");
-            geByClass1('box_title',geByClass1('photos_is_albums_view')).innerHTML += dl_link;
-            addClass(geByClass1('photos_is_albums_view'),'has_dl_album_link');
-         } else if (geByClass1('photos_album_intro') && !hasClass(geByTag1('h1',geByClass1('photos_album_intro')), 'has_dl_album_link')) {
-            vkopt.log("z2");
-            geByTag1('h1',geByClass1('photos_album_intro')).innerHTML += dl_link;
-            addClass(geByTag1('h1',geByClass1('photos_album_intro')),'has_dl_album_link');
+      if(vkopt.settings.get('photos_album_dl') && url == '/al_photos.php') {
+         // всплывающая
+         if (q.act && q.act == 'show_album') {
+            var oid_aid = q.album;
+            var oid = oid_aid.split("_")[0];
+            var aid = oid_aid.split("_")[1];
+            var dl_link = vk_lib.tpl_process(vkopt.photos.tpls.photos_download_link, {oid: oid, aid: aid});
+            answer[3].summary += dl_link;
+         } else if (q.__query && q.__query.indexOf('album') > -1) {
+            // отдельная страница
+            var oid_aid = q.__query.substr(q.__query.indexOf('album')+5);
+            var oid = oid_aid.split("_")[0];
+            var aid = oid_aid.split("_")[1];
+            var dl_link = vk_lib.tpl_process(vkopt.photos.tpls.photos_download_link, {oid: oid, aid: aid});
+            var html_obj = se(answer[1]);
+            if (geByClass1('photos_album_intro',html_obj) && !hasClass(geByTag1('h1',geByClass1('photos_album_intro',html_obj)), 'has_dl_album_link')) {
+               geByTag1('h1',geByClass1('photos_album_intro',html_obj)).innerHTML += dl_link;
+               addClass(geByTag1('h1',geByClass1('photos_album_intro',html_obj)),'has_dl_album_link');
+            }
+            answer[1] = html_obj.outerHTML;
          }
-      }, 500);
+      }
    },
    download_album: function(oid, aid) {
       /* < Создание прогресс-бара > */
