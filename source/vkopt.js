@@ -1983,6 +1983,11 @@ vkopt['photos'] =  {
    onSettings:{
       Extra:{
          photo_replacer:{}
+      },
+      Media: {
+         photos_album_dl: {
+            title: "sePhjtosAlbumDownload"
+         }
       }
    },
    tpls:{},
@@ -1993,10 +1998,27 @@ vkopt['photos'] =  {
          <a href="/photos{vals.oid}?act=comments" onclick="return nav.go(this, event)">{lng.mPhC}</a>
       </span>
       */
+      /*photos_download_link:
+      <a href="" onclick="vkopt.photos.download_album({vals.oid},{vals.aid})">{lng.download}</a>
+      */
       });
    },
    onLocation: function(){
       vkopt.photos.browse_comments_btn();
+      vkopt.log(window.location.href);
+      if (vkopt.setting.get('photos_album_dl') &&
+         window.location.href.indexOf('album') > -1) {
+            var oid_aid = window.location.href.substr(window.location.href.indexOf('album')+5);
+            var oid = (int)oid_aid.split("_")[0];
+            var aid = (int)oid_aid.split("_")[1];
+            var dl_link = vk_lib.tpl_process(vkopt.photos.tpls.photos_download_link, {oid: oid, aid: aid});
+            // всплывающее или страница
+            if (var wrap = geByClass1('photos_is_albums_view')) {
+               geByClass1('box_title', wrap).innerHTML += dl_link;
+            } else {
+               geByTag1('h1',geByClass1('photos_album_intro')).innerHTML += dl_link;
+            }
+         }
    },
    onResponseAnswer: function(answer,url,q){
       if (url == '/al_photos.php' && q.act == 'edit_photo' && (vkopt.settings.get('photo_replacer'))){
