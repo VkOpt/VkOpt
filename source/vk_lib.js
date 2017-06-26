@@ -861,6 +861,8 @@ var vkMozExtension = {
          var wrapper = function func_wrapper(){
             var
                i,
+               res,
+               result,
                before = func_wrapper.inj_handlers.before,
                after  = func_wrapper.inj_handlers.after,
                args = Array.prototype.slice.call(arguments),
@@ -868,6 +870,7 @@ var vkMozExtension = {
                   args: args,
                   prevent: false,
                   prevent_all: false,
+                  return_result: undefined,
                   wrapper: func_wrapper
                };
 
@@ -876,17 +879,25 @@ var vkMozExtension = {
 
             // call "before" handlers
             for (i = 0; i < before.length; i++)
-               if (!obj.prevent_all)
+               if (!obj.prevent_all){
                   before[i].apply(obj, args);
+                  if (obj.prevent_all)
+                     res = obj.return_result;
+               }
 
             // call original function
             if (!obj.prevent)
-               func_wrapper.inj_func_main.apply(this, args);
+               result = func_wrapper.inj_func_main.apply(this, args);
 
             // call "after" handlers
             for (i = 0; i < after.length; i++)
-               if (!obj.prevent_all)
+               if (!obj.prevent_all){
                   after[i].apply(obj, args);
+                  if (obj.prevent_all)
+                     res = obj.return_result;
+               }
+
+            return res || result;
 
          }
          wrapper.add = function(type, fn){
