@@ -1986,7 +1986,7 @@ vkopt['photos'] =  {
       },
       Media: {
          photos_album_dl: {
-            title: "sePhjtosAlbumDownload"
+            title: "sePhotosAlbumDownload"
          }
       }
    },
@@ -1999,25 +1999,20 @@ vkopt['photos'] =  {
       </span>
       */
       /*photos_download_link:
-      <a href="" onclick="vkopt.photos.download_album({vals.oid},{vals.aid})">{lng.download}</a>
+      <a onclick="vkopt.photos.download_album({vals.oid},{vals.aid})">{lng.download}</a>
       */
       });
    },
    onLocation: function(){
       vkopt.photos.browse_comments_btn();
-      vkopt.log(window.location.href);
-      if (vkopt.setting.get('photos_album_dl') &&
+      if (vkopt.settings.get('photos_album_dl') &&
          window.location.href.indexOf('album') > -1) {
             var oid_aid = window.location.href.substr(window.location.href.indexOf('album')+5);
-            var oid = (int)oid_aid.split("_")[0];
-            var aid = (int)oid_aid.split("_")[1];
-            var dl_link = vk_lib.tpl_process(vkopt.photos.tpls.photos_download_link, {oid: oid, aid: aid});
-            // всплывающее или страница
-            if (var wrap = geByClass1('photos_is_albums_view')) {
-               geByClass1('box_title', wrap).innerHTML += dl_link;
-            } else {
-               geByTag1('h1',geByClass1('photos_album_intro')).innerHTML += dl_link;
-            }
+            var oid = oid_aid.split("_")[0];
+            var aid = oid_aid.split("_")[1];
+            if (!oid || !aid) return;
+            vkopt.log("зашли " + oid + " " + aid)
+            vkopt.photos.add_link_element(oid, aid);
          }
    },
    onResponseAnswer: function(answer,url,q){
@@ -2025,10 +2020,25 @@ vkopt['photos'] =  {
          answer[1] = vkopt_core.mod_str_as_node(answer[1], vkopt.photos.update_photo_btn, {source:'process_edit_photo_response', url:url, q:q});
       }
    },
+   add_link_element: function(oid, aid) {
+      setTimeout(function() {
+         var dl_link = vk_lib.tpl_process(vkopt.photos.tpls.photos_download_link, {oid: oid, aid: aid});
+         // всплывающее или страница
+         if (geByClass1('photos_is_albums_view') && !hasClass(geByClass1('photos_is_albums_view'),'has_dl_album_link')) {
+            vkopt.log("z1");
+            geByClass1('box_title',geByClass1('photos_is_albums_view')).innerHTML += dl_link;
+            addClass(geByClass1('photos_is_albums_view'),'has_dl_album_link');
+         } else if (geByClass1('photos_album_intro') && !hasClass(geByTag1('h1',geByClass1('photos_album_intro')), 'has_dl_album_link')) {
+            vkopt.log("z2");
+            geByTag1('h1',geByClass1('photos_album_intro')).innerHTML += dl_link;
+            addClass(geByTag1('h1',geByClass1('photos_album_intro')),'has_dl_album_link');
+         }
+      }, 500);
+   },
    download_album: function(oid, aid) {
       /* < Создание прогресс-бара > */
       if (!ge('vk_links_container')) {
-         var div = vkCe('div', {id: "vk_links_container", "class": "clear_fix", style: "padding:10px;"}, '<center>' + res.img.ldr_big + '</center>');
+         var div = vkCe('div', {id: "vk_links_container", "class": "clear_fix", style: "padding:10px;"}, '<center>' + vkopt.res.img.ldr_big + '</center>');
          var ref = ge('photos_container') || ge('likes_photo_content');
          if (ref)
             ref.parentNode.insertBefore(div, ref);
