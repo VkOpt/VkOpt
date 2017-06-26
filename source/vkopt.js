@@ -363,13 +363,15 @@ var vk_glue = {
          // Перехватываем результат ajax-запросов с возможностью модификации перед колбеком
          Inj.Start('ajax._post',
          // ARG0 - url; ARG1 - query object; ARG2 - options
-         function(){
+         function(url, query, options){
              // Mod callback:
-             if (__ARG2__.onDone){
-                 var onDoneOrig = __ARG2__.onDone;
-                 __ARG2__.onDone = function(){
+             var ctx = this;
+             if (ctx.__ARG2__.onDone){
+                 var onDoneOrig = ctx.__ARG2__.onDone;
+                 ctx.__ARG2__.onDone = function(){
                      var argarr = Array.prototype.slice.call(arguments);
-                     vk_glue.response_handler(argarr, __ARG0__, __ARG1__);
+                     vk_glue.response_handler(argarr, ctx.__ARG0__, ctx.__ARG1__);
+
                      onDoneOrig.apply(window, argarr);
                  }
              }

@@ -777,18 +777,28 @@ var vkMozExtension = {
 				}, check_timeout);
 			return false;
 		},
+      GetFunc: function(func){
+         return isFunction(func) ? func : eval('window.' + func);
+      },
 		Parse : function (func) {
 			// определение распарсить переданную функцию или же найти по имени функции.
-			var fn = isFunction(func) ? func : eval('window.' + func);
+			var fn = Inj.GetFunc(func);
+
 			if (!fn)
 				vkopt.log('Inj_Error: "' + func + '" not found', 1);
+
+         var wrp = Inj.Wrap(func);
+         fn = wrp.inj_func_main;
+
 			var res = fn ? String(fn).match(Inj.FRegEx) : ['', '', ''];
 			if (Inj.need_porno()) {
 				res[2] = res[2].replace(/\r?\n/g, " ");
 			}
 			return {
 				func_name : func, // для последующего использования в Make, функция должна быть передана в Parse по строковому имени, либо обязательно переопредление этого параметра на нужное строковое имя.
-				full : res[0],
+				func: fn,
+            wrapper: wrp,
+            full : res[0],
 				args : res[1],
 				code : res[2],
 				args_names : res[1].split(/\s*,\s*/) // используется для макрозамены обозначенных аргументов в коде
@@ -810,7 +820,8 @@ var vkMozExtension = {
 				if (!/^[\r\n\s]*['"]\[inj_label\]/.test(code))
 					ac += '\n';
 				// перезаписываем функцию новой:
-				eval(parsed_func.func_name + '=function(' + parsed_func.args + '){' + ac + code + '}');
+				//eval(parsed_func.func_name + '=function(' + parsed_func.args + '){' + ac + code + '}');
+            parsed_func.wrapper.inj_func_main = eval('(function(' + parsed_func.args + '){' + ac + code + '})');
 			return true;
 		},
 		need_porno : function () {
@@ -837,17 +848,104 @@ var vkMozExtension = {
 			} else
 				return s;
 		},
+      Wrapped : function(func){
+         return !!func.inj_handlers;
+      },
+      Wrap : function(func){
+         var src_func = Inj.GetFunc(func);
+         var fn_path = ('window.'+func).match(/(.+)\.([^\.]+)/);
+
+         if (Inj.Wrapped(src_func))
+            return src_func;
+
+         var wrapper = function func_wrapper(){
+            var
+               i,
+               before = func_wrapper.inj_handlers.before,
+               after  = func_wrapper.inj_handlers.after,
+               args = Array.prototype.slice.call(arguments),
+               obj = {
+                  args: args,
+                  prevent: false,
+                  prevent_all: false,
+                  wrapper: func_wrapper
+               };
+
+            for (i = 0; i < args.length; i++)
+               obj['__ARG'+i+'__'] = args[i]; // back compatible
+
+            // call "before" handlers
+            for (i = 0; i < before.length; i++)
+               if (!obj.prevent_all)
+                  before[i].apply(obj, args);
+
+            // call original function
+            if (!obj.prevent)
+               func_wrapper.inj_func_main.apply(this, args);
+
+            // call "after" handlers
+            for (i = 0; i < after.length; i++)
+               if (!obj.prevent_all)
+                  after[i].apply(obj, args);
+
+         }
+         wrapper.add = function(type, fn){
+            var hash = vk_lib.crc(fn.toString());
+            if (wrapper.inj_handlers[type + '_hashes'].indexOf(hash) == -1){
+               wrapper.inj_handlers[type].push(fn);
+               wrapper.inj_handlers[type + '_hashes'].push(hash);
+               return true;
+            } else
+               return false;
+         }
+
+         wrapper.add_before = function(fn){
+            return wrapper.add('before', fn);
+         }
+         wrapper.add_after = function(fn){
+            return wrapper.add('after', fn);
+         }
+
+         wrapper.inj_func_original = src_func;  // not modified original function
+         wrapper.inj_func_main = src_func;      // we call this, it can contain other injections
+         wrapper.inj_handlers = {
+            before: [],
+            before_hashes: [],
+            after: [],
+            after_hashes: []
+         }
+         eval(fn_path[1])[fn_path[2]] = wrapper;
+         return wrapper;
+      },
 		Start : function (func, inj_code) {
-			var s = Inj.Parse(func);
+         var new_func = Inj.Wrap(func);
+
+         if (isFunction(inj_code))
+            new_func.add_before(inj_code)
+         else {
+            var s = Inj.Parse(func);
+            new_func = Inj.Make(s, inj_code + ' ' + s.code, arguments);
+         }
+
+         return new_func;
+         /*
 			if (isFunction(inj_code))                 // ну а что? Inj и так костыль, а с этим удобней местами - передали интересующий нас логически завершённый код завёрнутым в анонимную функцию
 				inj_code = Inj.Parse(inj_code).code;   // и выдрали его из неё, а не строкой с экранированиями, без переносов и т.д
 			return Inj.Make(s, inj_code + ' ' + s.code, arguments);
+         */
+
 		},
 		End : function (func, inj_code) {
-			var s = Inj.Parse(func);
-			if (isFunction(inj_code))
-				inj_code = Inj.Parse(inj_code).code;
-			return Inj.Make(s, s.code + ' ' + inj_code, arguments);
+         var new_func = Inj.Wrap(func);
+
+         if (isFunction(inj_code))
+            new_func.add_after(inj_code)
+         else {
+            var s = Inj.Parse(func);
+            new_func = Inj.Make(s, s.code + ' ' + inj_code, arguments);
+         }
+
+         return new_func;
 		},
 		Before : function (func, before_str, inj_code) {
 			var s = Inj.Parse(func);
@@ -948,6 +1046,31 @@ var vkMozExtension = {
          svg[key] = 'data:' + type + ',' + encodeURIComponent(svg[key])
       return svg;
    }
+
+   vk_lib.crc = function(str){
+      var makeCRCTable = function(){
+          var c;
+          var crcTable = [];
+          for(var n =0; n < 256; n++){
+              c = n;
+              for(var k =0; k < 8; k++)
+                  c = ((c&1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1));
+              crcTable[n] = c;
+          }
+          return crcTable;
+      }
+
+      var crc32 = function(str) {
+          var crcTable = vk_lib.crcTable || (vk_lib.crcTable = makeCRCTable());
+          var crc = 0 ^ (-1);
+          for (var i = 0; i < str.length; i++ )
+              crc = (crc >>> 8) ^ crcTable[(crc ^ str.charCodeAt(i)) & 0xFF];
+          return (crc ^ (-1)) >>> 0;
+      };
+
+      return crc32(str);
+   }
+
 
 	function TwoWayMap (map) {
 		this.map = map;
