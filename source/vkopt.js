@@ -4562,6 +4562,11 @@ vkopt['messages'] = {
                <!--<link rel="stylesheet" type="text/css" href="http://vk.com/css/al/common.css" />-->
                <title>%title</title>
                <style>
+                  .emoji,.emoji_css {width: 16px;height: 16px;border: none;vertical-align: -3px;margin: 0 1px;display: inline-block}
+                  .emoji_css {background: url(/images/im_emoji.png?9) no-repeat}
+                  @media (-webkit-min-device-pixel-ratio: 2), (-o-min-device-pixel-ratio: 2/1), (min-resolution: 192dpi) {
+                      .emoji_css {background-image:url(/images/im_emoji_2x.png?9);background-size: 16px 544px}
+                  }
                   h4{font-family: inherit;font-weight: 500;line-height: 1.1;color: inherit;margin-top: 10px;margin-bottom: 10px;font-size: 18px;}
                   body{font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;font-size: 14px;line-height: 1.42857143;color: #333;background-color: #fff;margin:0;}
                   hr{height: 0;margin-top: 20px;margin-bottom: 20px;border: 0;border-top: 1px solid #eee;}
