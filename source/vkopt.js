@@ -2086,20 +2086,27 @@ vkopt['audio'] =  {
       .audio_row .audio_acts .audio_act.vk_audio_dl_btn{
          display:block;
       }
-      .audio_row .audio_acts .audio_act.vk_audio_dl_btn>div {
+      .audio_row .audio_acts .audio_act.vk_audio_dl_btn>div,
+      .audio_row__action_get_link div{
          background-image: url(/images/blog/about_icons.png);
          width: 12px;
          height: 14px;
          background-position: 0px -309px;
       }
+
       .audio_row .audio_acts .audio_act.vk_audio_acts>div {
          margin: 6px 0 0 6px;
       }
-      .audio_row .audio_acts .audio_act.vk_audio_dl_btn.dl_url_loading>div{
+      .audio_row .audio_acts .audio_act.vk_audio_dl_btn.dl_url_loading>div,
+      .audio_row__action_get_link.dl_url_loading div{
          opacity:0.3;
          background: url(/images/upload_inv_mini.gif) no-repeat 0% 50%;
          width: 17px;
          margin-left: -2px;
+      }
+      .audio_row__action_get_link div,
+      .audio_row__action_get_link.dl_url_loading div{
+         margin: 4px auto;
       }
 
       .vk_audio_icon_dots .audio_row .audio_acts .audio_act.vk_audio_acts{
@@ -2290,6 +2297,11 @@ vkopt['audio'] =  {
       */
       });
       vkopt.audio.load_sizes_cache();
+   },
+   onLibFiles: function(fn){
+      if (fn = 'audioplayer.js'){
+         Inj.Start('AudioUtils.onRowOver', vkopt.audio.acts.buttons);
+      }
    },
    onResponseAnswer: function(answer, url, q){
       if (vkopt.settings.get('audio_edit_box_album_selector') && q.act=='edit_audio_box' && answer[2]) answer[2]=answer[2]+'\n vkopt.audio.edit_box_move("'+q.aid+'");';
@@ -2539,8 +2551,8 @@ vkopt['audio'] =  {
 
       for (var i = 0; i < audios.length; i++){
          var row = audios[i];
-         var acts = geByClass1('audio_acts', row);
-         var dur = geByClass1('audio_duration', row);
+         var acts = geByClass1('audio_row__actions', row);
+         var dur = geByClass1('audio_row__duration', row);
          var info = null;
          try {
             info = JSON.parse(row.dataset["audio"]);
@@ -2812,7 +2824,149 @@ vkopt['audio'] =  {
          })
       });
    },
+   onAudioRowItems: function(audioEl, audioObject, audio){
+      return {
+         actions: [
+            [
+               'get_link',
+               function(audioEl, audioObject, audio){
+                  vkopt.log(arguments);
+                  var filename=vkCleanFileName(audioObject.performer+' - '+audioObject.title);
+                  var dl_btn = geByClass1('_audio_row__action_get_link', audioEl);
+                  if (vkopt.audio.download_file(dl_btn))
+                     se('<a href="'+dl_btn.href+'" download="'+filename+'.mp3"></a>').click();
+               },
+               '<div></div>',// button content
+               'data-aid="{vals.fullId}" href="" onmouseover="vkopt.audio.check_dl_url(this);"',//custom_attributes
+               'a'
+            ]
+         ],
+         more: [
+            [
+               'get_wiki_code',
+               function(audioEl, obj, audio){
+                  //vkopt.log(arguments);
+                  vkopt.audio.acts.wiki(obj.fullId,obj.ownerId,obj.id);
+               },
+               IDL('Wiki'),// button content
+               ''//custom_attributes
+            ]
+         ]
+      }
+   },
    acts: {
+      buttons: function(audioEl, event, forceRedraw){
+         var add_items = function(){
+            var
+               audio = AudioUtils.getAudioFromEl(audioEl),
+               audioObject = AudioUtils.getAudioFromEl(audioEl, !0),
+               actions = [],
+               moreActions = [],
+               extra = AudioUtils.getAudioExtra(audioObject);
+
+
+            /* actions[] item format
+            [
+               id,
+               onclick_function(audioEl, audioObject, audio),
+               button_content,
+               custom_attributes
+            ]
+            */
+            var
+               acts_wrap = geByClass1('_audio_row__actions', audioEl),
+               info_wrap = geByClass1("_audio_row__info", audioEl),
+               more_btn = geByClass1("_audio_row__action_more", audioEl);
+               more_wrap = geByClass1("_audio_row__more_actions", audioEl);
+
+            // если нет места под кнопки, делаем его
+            if (!acts_wrap){
+               acts_wrap = se('<div class="_audio_row__actions audio_row__actions"></div>');
+               info_wrap.appendChild(acts_wrap);
+            }
+            if (!more_btn){
+               actions.push(['more']);
+            } else { // пробуем выдрать элемент с доп. действиями из экземпляра ElementTooltip
+               var ett = data(more_btn, 'ett'); // получаем экземпляр ElementTooltip
+               if (ett){
+                  more_wrap = ett.getContent() || ett.getOptions().content; //getContent() возвращает контент, только если тултип показан
+                  more_wrap = geByClass1('_audio_row__more_actions', more_wrap) || more_wrap;
+               }
+            }
+            addClass(acts_wrap, 'vk_acts_added');
+
+            // если нет меню действий, то добавляем
+            if (!more_wrap){
+               more_wrap = se('<div class="_audio_row__more_actions audio_row__more_actions"></div>');
+
+               var
+                  eltt_content = gpeByClass("_eltt_content", audioEl),
+                  opts = eltt_content ? {appendTo : eltt_content} : {appendToParent : true};
+
+               opts = extend({
+                  cls : "_audio_row__tt",
+                  defaultSide : "bottom",
+                  rightShift : 20,
+                  content : more_wrap,
+                  bottomGap : 200,
+                  preventSideChange : !0,
+                  autoShow : !0,
+                  onFirstTimeShow : function () {
+                     this.getOptions().bottomGap = 0
+                  },
+                  onHide : function () {
+                     data(audioEl, "leaved") && AudioUtils.onRowLeave(audioEl)
+                  }
+               }, opts)
+               data(audioEl, "tt", new ElementTooltip(more_btn, opts))
+            }
+
+
+            var acts = vkopt_core.plugins.call_modules('onAudioRowItems', audioEl, audioObject, audio);
+            for (var plug_id in acts){
+                  var items = acts[plug_id];
+                  if (items.actions)
+                     actions = actions.concat(items.actions);
+                  if (items.more)
+                     moreActions = moreActions.concat(items.more);
+            }
+
+            var ref = geByClass1('acts_wrap', 'audio_row__action');
+            each(actions, function (e, i) {
+               var tag = i[4] || 'div';
+               var o = se(vk_lib.tpl_process(
+                     '<'+tag+' data-action="' + i[0] + '" class="audio_row__action audio_row__action_' + i[0] + " _audio_row__action_" + i[0] + '" ' + (i[3] || "") + ">" + (i[2] || "") + '</'+tag+'>',
+                     audioObject
+               ));
+               o.addEventListener("click", function (t) {
+                  return i[1] && i[1].call(window, audioEl, audioObject, audio),
+                  cancelEvent(t)
+               });
+               if (ref)
+                  acts_wrap.insertBefore(o, ref)
+               else
+                  acts_wrap.appendChild(o)
+            });
+
+            if (moreActions.length && more_btn){
+               each(moreActions, function (e, item) {
+                  var a = se(rs(AudioUtils.AUDIO_ROW_ACTION_ROW_ITEM, item));
+                  a.addEventListener("click", function (t) {
+                     return item[1].call(window, audioEl, audioObject),
+                     cancelEvent(t)
+                  }),
+                  more_wrap.appendChild(a)
+               });
+
+            };
+            data(audioEl, "actions", 1);
+         }
+         if (geByClass1('vk_acts_added', audioEl))
+            return;
+         clearTimeout(vkopt.audio.__onrowover);
+         vkopt.audio.__onrowover = setTimeout(add_items, 20);
+         vkopt.log('on row over:', arguments, this);
+      },
       menu : function (btn) {
          var audioRow = gpeByClass('_audio_row', btn);
          var info = AudioUtils.getAudioFromEl(audioRow);
