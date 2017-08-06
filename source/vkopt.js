@@ -62,7 +62,7 @@ var vkopt_defaults = {
       add_to_next_fix: true, // кнопка "Воспроизвести следующей" теперь добавляет в текущий список воспроизведения из посторонних
       audio_more_acts: true, // доп. менюшка для каждой аудиозаписи
       vk_audio_icon_dots: false, // иконка аудио "действия/скачать" в виде трех точек
-      audio_dl_acts_2_btns: false, // разделить на аудио кнопки скачивания и меню доп.действий
+      //audio_dl_acts_2_btns: false, // разделить на аудио кнопки скачивания и меню доп.действий
       audio_edit_box_album_selector: true, // поле выбора альбома в окне редактирования названия аудио
       audio_force_flash: false, // принудительно использовать Flash для аудио-плеера
       im_hide_dialogs: false, // Новый стиль диалогов. Полотно переписки на всю ширину, список диалогов скрывается при клике по истории, показ списка - клик по заголовку переписки
@@ -2106,7 +2106,7 @@ vkopt['audio'] =  {
       }
       .audio_row__action_get_link div,
       .audio_row__action_get_link.dl_url_loading div{
-         margin: 4px auto;
+         margin: 5px auto;
       }
 
       .vk_audio_icon_dots .audio_row .audio_acts .audio_act.vk_audio_acts{
@@ -2201,25 +2201,33 @@ vkopt['audio'] =  {
          padding-top: 5px;
       }
 
-      #top_audio_layer_place .audio_row .audio_acts .vko_skip {
+      .audio_row .audio_row__action.audio_row__action_skip_track{
+         display: none;
+      }
+      #top_audio_layer_place .audio_row .audio_row__action.audio_row__action_skip_track{
+         display: inline-block;
+      }
+
+      .audio_row__action_skip_track .vko_skip, #top_audio_layer_place .audio_row .audio_acts .vko_skip {
          display: block;
 	      height: 24px;
          width: 24px;
          background: no-repeat url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M0%200h24v24H0z%22%2F%3E%3Cpath%20fill%3D%22%23828A99%22%20d%3D%22M5%2011.5c0-.27.23-.5.5-.5H12v2H5.5c-.27%200-.5-.2-.5-.5v-1zm0-4c0-.27.23-.5.5-.5h12c.28%200%20.5.2.5.5v1c0%20.27-.23.5-.5.5h-12c-.3%200-.5-.2-.5-.5v-1zm0%208c0-.27.23-.5.5-.5H12v2H5.5c-.27%200-.5-.2-.5-.5v-1zm15.9.9l-1.5-1.5%202.2-2.2c.4-.4.4-1%200-1.4-.4-.4-1-.4-1.4%200l-.7.7-1.5%201.5-1.5-1.5-.7-.7c-.4-.4-1-.4-1.4%200-.4.4-.4%201%200%201.4l2.2%202.2-1.5%201.5-.7.7c-.4.4-.4%201%200%201.4.4.4%201%20.4%201.4%200l2.2-2.2%202.2%202.2c.4.4%201%20.4%201.4%200%20.4-.4.4-1%200-1.4l-.7-.7z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
       }
-      #top_audio_layer_place .audio_row.audio_skipped .vko_skip,
-      #top_audio_layer_place .audio_row.audio_row_playing .vko_skip,
-      #top_audio_layer_place .audio_row.audio_row_playing.audio_added_next.audio_skipped .vko_skip {
+
+      #top_audio_layer_place .audio_row.audio_skipped .audio_row__action_skip_track,
+      #top_audio_layer_place .audio_row.audio_row__playing .audio_row__action_skip_track,
+      #top_audio_layer_place .audio_row.audio_row__playing.audio_row__added_next.audio_skipped .audio_row__action_skip_track {
          display: none;
       }
-      .audio_row.audio_skipped .audio_info {
+      .audio_row.audio_skipped .audio_row_content {
          opacity: 0.5;
       }
-      .audio_row.audio_added_next.audio_skipped .audio_info {
+      .audio_row.audio_row__added_next.audio_skipped .audio_row_content {
          opacity: 1;
       }
-      .audio_row.audio_added_next.audio_skipped .vko_skip {
-         display: block;
+      #top_audio_layer_place .audio_row.audio_row__added_next.audio_skipped .audio_row__action_skip_track {
+         display: inline-block;
       }
       */
       });
@@ -2251,12 +2259,14 @@ vkopt['audio'] =  {
          }
       },
       Extra:{
+         /*
          audio_more_acts:{
             sub:{
-               vk_audio_icon_dots:{class_toggler: true},
+               vk_audio_icon_dots:{class_toggler: true}
                audio_dl_acts_2_btns:{}
             }
          },
+         */
          audio_edit_box_album_selector:{}
       }
    },
@@ -2478,11 +2488,6 @@ vkopt['audio'] =  {
 
       return false;
    },
-   btn_over: function(el){
-      vkopt.audio.check_dl_url(el);
-      if (!vkopt.settings.get('audio_dl_acts_2_btns') && vkopt.settings.get('audio_more_acts'))
-         vkopt.audio.acts.menu(el);
-   },
    download_file: function(el){
      var result = true;
      if (el.hasAttribute('url_ready'))
@@ -2540,7 +2545,7 @@ vkopt['audio'] =  {
       return url + '#FILENAME/' + vkEncodeFileName(name) + '.mp3';
    },
    processNode: function(node, params){
-      if (!vkopt.settings.get('audio_dl') && !vkopt.settings.get('audio_more_acts')) return;
+      if (!vkopt.settings.get('audio_dl')) return;
       if (!vkopt.audio.__full_audio_info_cache)
          vkopt.audio.__full_audio_info_cache = {};
       var cache = vkopt.audio.__full_audio_info_cache;
@@ -2574,18 +2579,6 @@ vkopt['audio'] =  {
 
          var name = unclean(info[4]+' - '+info[3]).replace(/<em>|<\/em>/g, ''); // зачищаем от тегов.
          name = vkCleanFileName(name);
-
-         var btn = se(
-            vk_lib.tpl_process(vkopt.audio.tpls['dl_button'], {
-               id: info_obj.fullId,
-               filename: name+'.mp3',
-               url: info_obj.url ? vkopt.audio.make_dl_url(info_obj.url, name) : ''
-            })
-         );
-
-         if (!vkopt.settings.get('audio_dl_acts_2_btns') && vkopt.settings.get('audio_more_acts')){
-            addClass(btn,'vk_audio_acts');
-         }
 
          var acts_btn = se(
             vk_lib.tpl_process(vkopt.audio.tpls['acts_button'], {
@@ -2624,18 +2617,6 @@ vkopt['audio'] =  {
                dur.parentNode.insertBefore(sz_info, dur);
                addClass(dur.parentNode, 'vk_with_au_info');
             }
-         }
-         // Кнопка скачивания
-         if (vkopt.settings.get('audio_dl') && !geByClass1('vk_audio_dl_btn',acts))
-            (acts.firstChild && !vkopt.settings.get('audio_dl_acts_2_btns')) ? acts.insertBefore(btn, acts.firstChild) : acts.appendChild(btn);
-
-         // Менюшка
-         if ((!vkopt.settings.get('audio_dl') || vkopt.settings.get('audio_dl_acts_2_btns')) && vkopt.settings.get('audio_more_acts'))
-             acts.firstChild ? acts.insertBefore(acts_btn, acts.firstChild) : acts.appendChild(acts_btn);
-         // Удалить из текущего плейлиста
-         if (vkopt.settings.get('audio_skip_button')){
-	        var skip_button = se(vk_lib.tpl_process(vkopt.audio.tpls.skip_button, {id: info_obj.fullId}));
-            acts.appendChild(skip_button);
          }
       }
 
@@ -2825,7 +2806,8 @@ vkopt['audio'] =  {
       });
    },
    onAudioRowItems: function(audioEl, audioObject, audio){
-      return {
+      var ap = getAudioPlayer();
+      var items = {
          actions: [
             [
                'get_link',
@@ -2853,6 +2835,27 @@ vkopt['audio'] =  {
             ]
          ]
       }
+
+      if (vkopt.settings.get('audio_skip_button') && gpeByClass('audio_section__current', audioEl)){ // для текущего плейлиста кнопку "воспроизветси следующей" зажали.
+         // исправляем это поведение
+         items.actions.push([
+            "next",
+            ap.setNext.bind(ap),
+            "",
+            'onmouseover="audioShowActionTooltip(this)"'
+         ]);
+         // добавляем кнопку исключения из плейлиста без мгновенного удаления из него
+         items.actions.push([
+            'skip_track',
+            function(audioEl, audioObject, audio){
+               // Удалить из текущего плейлиста
+               vkopt.audio.acts.skip(audioEl, audioObject.fullId);
+            },
+            '<div class="vko_skip"></div>',
+            'onmouseover="showTooltip(this,{text:\'{lng.Skip_pl}\',black:1,shift:[7,5,0],needLeft:true})"'
+         ]);
+      }
+      return items;
    },
    acts: {
       buttons: function(audioEl, event, forceRedraw){
@@ -3006,21 +3009,20 @@ vkopt['audio'] =  {
                oid_type: (parseInt(oid)>0?'id':'gid')
          });
          vkAlertBox('Wiki-code:',code);
+      },
+      skip: function (audioEl, id) {
+          var row = audioEl;//gpeByClass("audio_row", ev.target);
+          if (hasClass(row, 'audio_row__added_next') || !hasClass(row, 'audio_skipped')){ // наличие класса .audio_row__added_next разрешает убрать трек из очереди
+             // при добавлении трека после исключения обратно в очередь следующим,
+             // нужно чтоб класс .audio_row__added_next перекрывал визуальто стиль от .audio_skipped
+             // т.е тут роль костыля будет играть класс .audio_row__added_next.audio_skipped{opacity:1}
+             // вместо того, чтоб делать инъекцию в setNext для удаления класса audio_skipped
+             getAudioPlayer().getCurrentPlaylist().removeAudio(id);
+             addClass(row, "audio_skipped");
+             removeClass(row, "audio_row__added_next"); // чтоб трек можно было вернуть в очередь
+          }
       }
-   },
-   skip_act: function (ev, id) {
-       var row = gpeByClass("audio_row", ev.target);
-       if (hasClass(row, 'audio_added_next') || !hasClass(row, 'audio_skipped')){ // наличие класса .audio_added_next разрешает убрать трек из очереди
-          // при добавлении трека после исключения обратно в очередь следующим,
-          // нужно чтоб класс .audio_added_next перекрывал визуальто стиль от .audio_skipped
-          // т.е тут роль костыля будет играть класс .audio_added_next.audio_skipped{opacity:1}
-          // вместо того, чтоб делать инъекцию в setNext для удаления класса audio_skipped
-          getAudioPlayer().getCurrentPlaylist().removeAudio(id);
-          addClass(row, "audio_skipped");
-          removeClass(row, "audio_added_next"); // чтоб трек можно было вернуть в очередь
-       }
    }
-
 };
 
 // Scrobbling API documentation: http://users.last.fm/~tims/scrobbling/scrobbling2.html
