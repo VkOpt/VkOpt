@@ -2158,17 +2158,21 @@ vkopt['audio'] =  {
       {
          display: none;
       }
+      .vk_audio_size_info_wrap span{
+         display: block;
+      }
       .vk_audio_size_info_wrap{
-         font-size: 10px;
          line-height: 9px;
          margin-right: 3px;
+         margin-top: 12px;
+         height: 18px;
+         float:right;
+         font-size: 8px;
+         color: #777;
       }
-
-      .vk_audio_size_info_wrap{
-         margin-top: -4px;
-         height: 20px;
+      .audio_w_covers .vk_audio_size_info_wrap{
+         margin-top: 16px;
       }
-
       .vk_audio_size_info{
          display: table-cell;
          vertical-align: middle;
@@ -2283,7 +2287,7 @@ vkopt['audio'] =  {
       <div class="audio_act vko_skip" onmouseover="showTooltip(this,{text:'{lng.Skip_pl}',black:1,shift:[7,5,0],needLeft:true})" onclick="vkopt.audio.skip_act(event,'{vals.id}')"></div>
       */
       /*size_info:
-      <small class="fl_l vk_audio_size_info_wrap" id="vk_audio_size_info_{vals.id}">
+      <small class="vk_audio_size_info_wrap" id="vk_audio_size_info_{vals.id}">
          <div class="vk_audio_size_info">
             <span class="vk_audio_size">{vals.size}</span>
             <span class="vk_audio_kbps">{vals.kbps}</span>
@@ -2556,13 +2560,12 @@ vkopt['audio'] =  {
 
       for (var i = 0; i < audios.length; i++){
          var row = audios[i];
-         var acts = geByClass1('audio_row__actions', row);
-         var dur = geByClass1('audio_row__duration', row);
+         var dur = geByClass1('audio_row__performer_title', row);
          var info = null;
          try {
             info = JSON.parse(row.dataset["audio"]);
          } catch(e) {}
-         if (!acts || !info) continue;
+         if (!info) continue;
          var info_obj = AudioUtils.asObject(info);
          if (info_obj.url==""){                    // собираем очередь из аудио, которым требуется подгрузка инфы
             if (cache[info_obj.fullId])
@@ -5329,10 +5332,12 @@ vkopt['attacher'] = {
 vkopt['face'] =  {
    onSettings:{
       Media:{
+         /*
          compact_audio: {
             title: 'seCompactAudio',
             class_toggler: true
          },
+         */
          audio_full_title: {
             title: 'seAudioFullTitles',
             class_toggler: true
