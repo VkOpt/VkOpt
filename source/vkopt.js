@@ -3998,14 +3998,33 @@ vkopt['videoview'] = {
          border-bottom-color: rgba(255, 255, 255, 0.4);
          margin-bottom: 1px;
       }
+      #vk_mv_down_links_tt.eltt.eltt_bottom .eltt_arrow{
+         border-bottom-color: #000;
+      }
       #vk_mv_down_links_tt a {
          display: block;
          padding: 3px 10px;
          color: #FFF;
          white-space: nowrap;
       }
+      #vk_mv_down_links_tt a.size_loaded{
+         padding-right: 80px;
+      }
+      #vk_mv_down_links_tt a .vk_vid_size_info.progress_inv_mini{
+         position: absolute;
+         margin-top: 6px;
+         right: 3px;
+      }
+      #vk_mv_down_links_tt a.size_loaded .vk_vid_size_info{
+         position: absolute;
+         right: 10px;
+      }
       #mv_top_controls{
          z-index: 1000;
+      }
+      .vk_vid_size_info b{
+         color: #FFF;
+         padding-left: 10px;
       }
       */
       }).css
@@ -4018,7 +4037,7 @@ vkopt['videoview'] = {
          </div>
          */
          /*dl_link:
-         <a href="{vals.url}" download="{vals.name}">{vals.caption}</a>
+         <a href="{vals.url}" download="{vals.name}" onmouseover="vkopt.videoview.get_size(this)">{vals.caption}<span class="vk_vid_size_info"></span></a>
          */
          /*ext_link:
          <a class="vk_vid_external_view" href="{vals.url}">{vals.source_name}</a>
@@ -4053,7 +4072,14 @@ vkopt['videoview'] = {
                  forceSide: "bottom",
                  elClassWhenTooltip: "vk_mv_down_links_shown",
                  content: html,
-                 offset: [-3, 0]
+                 offset: [-3, 0],
+                 setPos: function(){
+                    return  {
+                     left: 0,
+                     top: 36,
+                     arrowPosition: 21
+                    }
+                 }
       });
    },
    check_show_args: function(args){
@@ -4165,6 +4191,33 @@ vkopt['videoview'] = {
             })
          }
       }
+   },
+   get_size: function(el){
+      if (!el || !el.href || hasClass(el,'size_loaded')) return;
+      var WAIT_TIME = 4000;
+      var szel = geByTag1('span', el);
+
+      var set_size_info = function(size){
+         removeClass(szel,'progress_inv_mini');
+         if (size != null)
+            szel.innerHTML = vkFileSize(size, 1).replace(/([\d\.]+)/,'<b>$1</b>');
+         if (size > 500)
+            addClass(el, 'size_loaded');
+      }
+      szel.innerHTML = '';
+      addClass(szel,'progress_inv_mini');
+      var reset=setTimeout(function(){
+         set_size_info(null);
+      }, WAIT_TIME);
+
+      XFR.post(el.href, {}, function(h, size){
+         clearTimeout(reset);
+         if (size > 0){
+            set_size_info(size);
+         } else {
+            // TODO: видать ссылка протухла. нужно подгрузить актуальный URL и снова запросить размер
+         }
+      }, true);
    },
    get_video_url: function(vars, q) {
       return vars.live_mp4 ? vars.live_mp4 : vars.extra_data ? vars.extra_data : vars["cache" + q] || vars["url" + q]
@@ -5549,7 +5602,7 @@ vkopt['face'] =  {
       if (url == '/al_video.php' && q.act == 'show'){
          if (answer[2])
             answer[2] = answer[2].replace(/(var\s*isInline)/,'\n   vkopt.face.ad_block.video(vars);\n $1');
-         if (answer[5] && answer[5].mvData && vkopt.settings.get('ad_block'))
+         if (answer[5] && answer[5].mvData && vkopt.settings.get('ad_block')){
             answer[5]['no_ads'] = 1;
             answer[5].player && answer[5].player.params && each(
                answer[5].player.params,
@@ -5557,6 +5610,7 @@ vkopt['face'] =  {
                   item['no_ads'] = 1;
                }
             );
+         }
 
       }
    },
