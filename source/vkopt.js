@@ -489,7 +489,16 @@ var vk_glue = {
       onImReceive:            <not implemented yet>
 
       // <audio>
-      onAudioRowMenuItems:    function(audio_info_obj){},                  // вернуть массив из строк с пунктами-ссылками "<a>..</a>"
+      onAudioRowItems: function(audioEl, audioObject, audio){}             // добавление кастомных кнопок-иконок (actions) и пунктов в доп. действия (more) для аудио
+                                                                           // результатом вызова функции должен быть объект вида {actions:[item1, item2, ...], more:[item1, item2, ...]}
+                                                                           // а каждый добавляемый пункт имеет вид массива с элементами:
+                                                                           // itemN = [
+                                                                           //    id,                                    // id кнопки, добавляется к имени CSS-класса
+                                                                           //    function(audioEl, audioObject, audio), // обработчик нажатия на кнопку
+                                                                           //    html,                                  // внутреннее содержимое кнопки, для конопок-иконок обычно пустая строка
+                                                                           //    attrs,                                 // строка с дополнительными атрибутами
+                                                                           //    tagName                                // если требуется, чтоб тегом кнопки был не "div", а другой, то указывать тут.
+                                                                           // ]
 
    };
    window.vkopt = (window.vkopt || {});
@@ -2276,16 +2285,6 @@ vkopt['audio'] =  {
    },
    onInit: function(){
       vkopt.audio.tpls = vk_lib.get_block_comments(function(){
-      /*dl_button:
-      <a class="audio_act vk_audio_dl_btn" data-aid="{vals.id}" download="{vals.filename}" href="{vals.url}" onclick="return vkopt.audio.download_file(this);" onmouseover="vkopt.audio.btn_over(this);"><div></div></a>
-      */
-      /*acts_button:
-
-      <a class="audio_act vk_audio_acts" data-aid="{vals.id}" onmouseover="vkopt.audio.acts.menu(this);" onclick="cancelEvent(event)"><div></div></a>
-      */
-      /*skip_button:
-      <div class="audio_act vko_skip" onmouseover="showTooltip(this,{text:'{lng.Skip_pl}',black:1,shift:[7,5,0],needLeft:true})" onclick="vkopt.audio.skip_act(event,'{vals.id}')"></div>
-      */
       /*size_info:
       <small class="vk_audio_size_info_wrap" id="vk_audio_size_info_{vals.id}">
          <div class="vk_audio_size_info">
@@ -2302,6 +2301,13 @@ vkopt['audio'] =  {
          <a href="/audio?{vals.oid_type}={vals.oid_abs}&audio_id={vals.aid}">{lng.Link}</a>
          --!>
       </center>
+      */
+      /*added_to_group:
+      <b>
+         <a href="/audio?id=-{vals.gid}&audio_id={vals.id}">{vals.id} ({vals.performer} - {vals.title})</a>
+      </b>
+      <br>
+      {vals:aid} -> club{vals:gid}
       */
       /*acts_menu:
       <a href="#" onclick="vkopt.audio.add_to_group({vals.ownerId}, {vals.id}); return false;">{lng.AddToGroup}</a>
@@ -2436,11 +2442,32 @@ vkopt['audio'] =  {
    add_to_group: function(oid, aid, to_gid){//vk_audio.add_to_group(oid,aid,to_gid)
          if (to_gid){
             if (vkopt.audio._add_box) vkopt.audio._add_box.hide();
-            dApi.call('audio.add',{aid:aid,oid:oid,gid:Math.abs(to_gid)},function(r){
-               if (r.response){
-                  vkMsg('<b><a href="/audio?id=-'+Math.abs(to_gid)+'&audio_id='+r.response+'">'+r.response+'</a></b><br>'+aid+' -> club'+to_gid);
-               } else {
-                  alert('aid:'+aid+'\n'+'Add error');
+            var data = AudioUtils.getAudioFromEl(geByClass1('_audio_row_'+oid+'_'+aid), true);
+            var params = {
+               act: "add",
+               group_id: to_gid,
+               audio_owner_id: data.ownerId,
+               audio_id: data.id,
+               hash: data.addHash,
+               from: "" // AudioUtils.getContextPlaylist(getAudioPlayer(), true)[0] ???
+            };
+            ajax.post("al_audio.php", params, {
+               onDone : function (t) {
+                  var data = AudioUtils.asObject(t);
+                  vkMsg(vk_lib.tpl_process(vkopt.audio.tpls['added_to_group'], {
+                     gid: to_gid,
+                     aid: aid,
+                     id: data.id,
+                     performer: data.performer,
+                     title: data.title
+                  }));
+               },
+               onFail : function (e) {
+                  new MessageBox({ title : getLang("global_error")})
+                  .content(e)
+                  .setButtons("Ok", function(){curBox().hide()})
+                  .show();
+                  return true;
                }
             });
             return false;
@@ -2582,12 +2609,6 @@ vkopt['audio'] =  {
 
          var name = unclean(info[4]+' - '+info[3]).replace(/<em>|<\/em>/g, ''); // зачищаем от тегов.
          name = vkCleanFileName(name);
-
-         var acts_btn = se(
-            vk_lib.tpl_process(vkopt.audio.tpls['acts_button'], {
-               id: info_obj.fullId
-            })
-         );
 
          var size = vkopt.audio._sizes_cache[info_obj.id];
          var sz_labels = size ? vkopt.audio.size_to_bitrare(size, info_obj.duration) : {};
@@ -2827,6 +2848,15 @@ vkopt['audio'] =  {
             ]
          ],
          more: [
+            [//<a href="#" onclick="vkopt.audio.add_to_group({vals.ownerId}, {vals.id}); return false;">{lng.AddToGroup}</a>
+               'add_to_group',
+               function(audioEl, obj, audio){
+                  //vkopt.log(arguments);
+                  vkopt.audio.add_to_group(obj.ownerId,obj.id);
+               },
+               IDL('AddToGroup'),// button content
+               ''//custom_attributes
+            ],
             [
                'get_wiki_code',
                function(audioEl, obj, audio){
@@ -2971,37 +3001,6 @@ vkopt['audio'] =  {
             return;
          clearTimeout(vkopt.audio.__onrowover);
          vkopt.audio.__onrowover = setTimeout(add_items, 20);
-         vkopt.log('on row over:', arguments, this);
-      },
-      menu : function (btn) {
-         var audioRow = gpeByClass('_audio_row', btn);
-         var info = AudioUtils.getAudioFromEl(audioRow);
-         var info_obj = AudioUtils.asObject(info);
-         var menu_code = vk_lib.tpl_process(vkopt.audio.tpls['acts_menu'], info_obj);
-
-         var raw_list = vkopt_core.plugins.call_modules('onAudioRowMenuItems',info_obj); // собираем доп. пункты со всех плагинов в один список
-         var additional_items = [];
-         for (var plug_id in raw_list)
-            additional_items = additional_items.concat(raw_list[plug_id]);
-
-         menu_code += additional_items.join('\n');
-
-         var options = {
-            text : function () {
-               return menu_code;
-            },
-            dir: "down",
-            shift : [14, 5, 0],
-            hasover: true,
-            showdt: 400,
-            hidedt: 300,
-            onCreate: function(){
-               addClass(btn.tt.container, 'vk_acts_menu_block');
-               addEvent(btn.tt.container, 'click', cancelEvent);
-               addEvent(btn.tt.container, 'mousedown', cancelEvent); // блочим перетаскивание за меню
-            }
-         };
-         showTooltip(btn, options);
       },
       wiki: function(full_id,oid,id){
          var code = vk_lib.tpl_process(vkopt.audio.tpls['wiki_code'], {

@@ -44,7 +44,16 @@ vkopt['vkopt_any_plugin'] = {
     /* onImReceive:       <not implemented yet> */
 
     // <audio>
-    onAudioRowMenuItems:  function(audio_info_obj){}            /* вернуть массив из строк с пунктами-ссылками "<a>..</a>" */
+    onAudioRowItems: function(audioEl, audioObject, audio){}      /* добавление кастомных кнопок-иконок (actions) и пунктов в доп. действия (more) для аудио
+                                                                  результатом вызова функции должен быть объект вида {actions:[item1, item2, ...], more:[item1, item2, ...]}
+                                                                  а каждый добавляемый пункт имеет вид массива с элементами:
+                                                                  itemN = [
+                                                                     id,                                    // id кнопки, добавляется к имени CSS-класса
+                                                                     function(audioEl, audioObject, audio), // обработчик нажатия на кнопку
+                                                                     html,                                  // внутреннее содержимое кнопки, для конопок-иконок обычно пустая строка
+                                                                     attrs,                                 // строка с дополнительными атрибутами
+                                                                     tagName                                // если требуется, чтоб тегом кнопки был не "div", а другой, то указывать тут.
+                                                                  ]  */
 
    };
    ```
