@@ -2199,21 +2199,6 @@ vkopt['audio'] =  {
          margin-top: 3px;
          margin-right: 4px;
       }
-      .vk_acts_menu_block a{
-         display: block;
-         white-space: nowrap;
-         text-decoration: none;
-      }
-      .vk_acts_menu_block a:hover{
-         background-color: rgba(0, 51, 127, 0.039);
-         margin: 0px -14px;
-         padding: 0 14px;
-      }
-      .tt_w.vk_acts_menu_block .tt_text {
-         padding-bottom: 5px;
-         padding-top: 5px;
-      }
-
       .audio_row .audio_row__action.audio_row__action_skip_track{
          display: none;
       }
@@ -2308,12 +2293,6 @@ vkopt['audio'] =  {
       </b>
       <br>
       {vals:aid} -> club{vals:gid}
-      */
-      /*acts_menu:
-      <a href="#" onclick="vkopt.audio.add_to_group({vals.ownerId}, {vals.id}); return false;">{lng.AddToGroup}</a>
-      <a href="#" onclick="return vkopt.audio.share('{vals.fullId}');">{lng.Share}</a>
-      <a href="#" onclick="vkopt.audio.acts.wiki('{vals.fullId}',{vals.owner_id},{vals.id}); return false">{lng.Wiki}</a>
-
       */
       });
       vkopt.audio.load_sizes_cache();
