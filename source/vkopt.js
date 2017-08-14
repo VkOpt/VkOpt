@@ -2811,21 +2811,7 @@ vkopt['audio'] =  {
    onAudioRowItems: function(audioEl, audioObject, audio){
       var ap = getAudioPlayer();
       var items = {
-         actions: [
-            [
-               'get_link',
-               function(audioEl, audioObject, audio){
-                  vkopt.log(arguments);
-                  var filename=vkCleanFileName(audioObject.performer+' - '+audioObject.title);
-                  var dl_btn = geByClass1('_audio_row__action_get_link', audioEl);
-                  if (vkopt.audio.download_file(dl_btn))
-                     se('<a href="'+dl_btn.href+'" download="'+filename+'.mp3"></a>').click();
-               },
-               '<div></div>',// button content
-               'data-aid="{vals.fullId}" href="" onmouseover="vkopt.audio.check_dl_url(this);"',//custom_attributes
-               'a'
-            ]
-         ],
+         actions: [],
          more: [
             [//<a href="#" onclick="vkopt.audio.add_to_group({vals.ownerId}, {vals.id}); return false;">{lng.AddToGroup}</a>
                'add_to_group',
@@ -2847,7 +2833,21 @@ vkopt['audio'] =  {
             ]
          ]
       }
-
+      if (vkopt.settings.get('audio_dl')){
+         items.actions.push([
+            'get_link',
+            function(audioEl, audioObject, audio){
+               vkopt.log(arguments);
+               var filename=vkCleanFileName(audioObject.performer+' - '+audioObject.title);
+               var dl_btn = geByClass1('_audio_row__action_get_link', audioEl);
+               if (vkopt.audio.download_file(dl_btn))
+                  se('<a href="'+dl_btn.href+'" download="'+filename+'.mp3"></a>').click();
+            },
+            '<div></div>',// button content
+            'data-aid="{vals.fullId}" href="" onmouseover="vkopt.audio.check_dl_url(this);"',//custom_attributes
+            'a'
+         ]);
+      }
       if (vkopt.settings.get('audio_skip_button') && gpeByClass('audio_section__current', audioEl)){ // для текущего плейлиста кнопку "воспроизветси следующей" зажали.
          // исправляем это поведение
          items.actions.push([
