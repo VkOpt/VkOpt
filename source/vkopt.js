@@ -6328,7 +6328,10 @@ vkopt['wall'] = {
          }
       },
       Extra: {
-         datepicker_inj:{}
+         datepicker_inj:{},
+         wall_reload_btn:{
+            default_value: true
+         }
       }
    },
    css: function(){
@@ -6336,6 +6339,27 @@ vkopt['wall'] = {
          /*css:
          .vk_poll_info_btn{
             color: #939393;
+         }
+         .vk_ui_tab_reload{
+            padding: 17px 6px 14px;
+         }
+         .vk_ui_tab_reload:after {
+            content: '';
+            display: inline;
+            padding: 5px 14px 5px 0;
+            background: no-repeat;
+            background-position: 100%;
+            opacity: 0.75;
+            filter: alpha(opacity=75);
+         }
+         .vk_ico_refresh, .vk_ui_tab_reload:after{
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20viewBox%3D%220%200%2024%2024%22%20version%3D%221.1%22%3E%3Cg%3E%3Cpath%20fill%3D%22%2397a6be%22%20d%3D%22M%2015.324219%204.445313%20C%2013.496094%203.640625%2011.433594%203.515625%209.515625%204.121094%20C%205.871094%205.269531%203.507813%208.726563%203.753906%2012.53125%20L%201.265625%2012.695313%20C%200.945313%207.738281%204.027344%203.238281%208.765625%201.742188%20C%2011.539063%200.867188%2014.546875%201.171875%2017.097656%202.550781%20L%2019.484375%200%20L%2020.121094%207.074219%20L%2012.628906%207.324219%20Z%20M%2015.230469%2022.257813%20C%2014.179688%2022.585938%2013.089844%2022.753906%2012.007813%2022.753906%20C%2010.242188%2022.753906%208.488281%2022.296875%206.90625%2021.445313%20L%204.515625%2024%20L%203.882813%2016.925781%20L%2011.371094%2016.675781%20L%208.679688%2019.554688%20C%2010.5%2020.355469%2012.5625%2020.484375%2014.480469%2019.878906%20C%2018.125%2018.726563%2020.492188%2015.265625%2020.246094%2011.46875%20L%2022.730469%2011.304688%20C%2023.058594%2016.253906%2019.972656%2020.757813%2015.230469%2022.257813%20Z%20%22%3E%3C%2Fpath%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+         }
+         .vk_ui_tab_reload:hover:after {
+            opacity: 1;
+         }
+         .ui_tabs_search_opened .vk_reload_wrap {
+            display: none;
          }
          */
       }).css;
@@ -6358,6 +6382,14 @@ vkopt['wall'] = {
          */
          /*results_btn:
          <a class="vk_poll_info_btn fl_r" href="#" onclick="return vkopt.wall.poll_results('{vals.owner_id}','{vals.poll_id}','{vals.post_id}');">{lng.ViewResults}</a>
+         */
+         /*reload_button:
+            <li class="vk_reload_wrap">
+              <a class="ui_tab_plain vk_ui_tab_reload" onclick="return vkopt.wall.reload();" href="#">
+               <span class="blind_label">{lng.Reload}</span>
+              </a>
+            </div>
+            </li>
          */
       });
    },
@@ -6422,6 +6454,22 @@ vkopt['wall'] = {
 
       if (!els.length && params && params.q && params.url == '/widget_poll.php' && params.q.act == 'a_vote')
          vkopt.wall.poll_btns(node);
+
+      vkopt.wall.reload_btn(node);
+   },
+   reload_btn: function(node){
+      if (!vkopt.settings.get('wall_reload_btn')) return;
+      var p = domQuery('#wall_tabs.ui_tabs', node)[0];
+      if (!p || geByClass1('vk_ui_tab_reload', p)) return;
+      var btn =  se(vk_lib.tpl_process(vkopt.wall.tpls['reload_button'],{}));
+      var ref = geByClass1('ui_tab_search_wrap', p);
+      //ref.parentNode.insertBefore(btn, ref);
+      p.appendChild(btn);
+   },
+   reload:function(){
+      cur.wallNextFrom = 0;
+      Wall.showMore(0);
+      return false;
    },
    poll_btns: function(p){
       var el=geByClass('page_poll_options',p)[0];
