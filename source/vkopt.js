@@ -731,6 +731,10 @@ vkopt['settings'] =  {
          #vkopt_donate_block{
             padding: 5px 20px;
          }
+         #vk_extra_actions_wrap{
+            padding: 4px 0px;
+            text-align: center;
+         }
          .vk_vkopt_guide #top_vkopt_settings_link:before,
          .vk_vkopt_guide .top_profile_link:before {
              content: '';
@@ -925,7 +929,11 @@ vkopt['settings'] =  {
             </div>
          </div>
          */
-
+         /*extra_actions:
+         <div id="vk_extra_actions_wrap">
+            <button class="flat_button" onclick="dApi.auth(); return false;">{lng.ResetApiAuth}</button>
+         </div>
+         */
 		 /*color_picker:
 		  <div id = "dev_widget_colors">
         <div id="dev_colorpicker" class="ttb dev_tt_to_left" style="display: none;">
@@ -1173,6 +1181,8 @@ vkopt['settings'] =  {
                });
 
       }
+      if (filter == 'extra')
+         html += vk_lib.tpl_process(vkopt.settings.tpls['extra_actions'], {});
       return html;
    },
    show: function(el, in_box){
