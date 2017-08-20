@@ -1731,6 +1731,7 @@ vkopt['away'] = {
    },
    process_link: function(node){
       var href = node.getAttribute('href');
+      //  href="/away.php?to=https%3A%2F%2F%EF%F0%E0%E7%E4%ED%E8%EA%E8-%F0%FF%E7%E0%ED%E8.%F0%F4%2F2017-08-18-2&post=177665937_1672&cc_key="  (source: /wall177665937_1672)
 
       if (!href || (href+'').indexOf('away.php?') == -1) // нас не интересуют ссылки без away.php
          return;
@@ -1739,6 +1740,9 @@ vkopt['away'] = {
          return;
 
       var new_lnk = vkopt.settings.get('away_unescape_cyrilic') ? vkUnescapeCyrLink(params.to) : params.to;
+
+      if (/^[a-z]+%/.test(new_lnk)) // тут не ссылка, а вероятно escaped win1251
+         return;                     // для декодирования нужна магия (vkUnescapeCyrLink). игнорим.
 
       if (!new_lnk)
          return;
