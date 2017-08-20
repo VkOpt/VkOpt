@@ -2181,16 +2181,16 @@ vkopt['audio'] =  {
          display: block;
       }
       .vk_audio_size_info_wrap{
-         line-height: 9px;
+         line-height: 10px;
          margin-right: 3px;
          margin-top: 12px;
          height: 18px;
          float:right;
-         font-size: 8px;
+         font-size: 10px;
          color: #777;
       }
       .audio_w_covers .vk_audio_size_info_wrap{
-         margin-top: 16px;
+         margin-top: 15px;
       }
       .vk_audio_size_info{
          display: table-cell;
