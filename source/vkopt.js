@@ -2110,6 +2110,9 @@ vkopt['audio'] =  {
       .audio_row .audio_acts .audio_act.vk_audio_dl_btn{
          display:block;
       }
+      .audio_row__action_get_link{
+         float: right;
+      }
       .audio_row .audio_acts .audio_act.vk_audio_dl_btn>div,
       .audio_row__action_get_link div{
          background-image: url(/images/blog/about_icons.png);
