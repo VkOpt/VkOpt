@@ -11,7 +11,7 @@
 //
 /* VERSION INFO */
 var vVersion	= 304;
-var vBuild = 170813;
+var vBuild = 170820;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -30,7 +30,7 @@ var vkopt_defaults = {
       audio_size_info: false,
       audio_clean_titles: false,
       audio_album_info: true,
-      size_info_on_ctrl: true,
+      //size_info_on_ctrl: true,
       scrobbler: true,
       im_dialogs_right: false,
       dont_cut_bracket: false,
@@ -2163,17 +2163,17 @@ vkopt['audio'] =  {
       }
 
       .audio_row.vk_info_loaded .vk_audio_size_info_wrap,
-      .vk_size_info_on_ctrl .ctrl_key_pressed .audio_row.vk_info_loaded .vk_audio_size_info_wrap,
-      .vk_size_info_on_ctrl .audio_hq_label_show .audio_row.vk_info_loaded .vk_audio_size_info_wrap{
+      ._vk_size_info_on_ctrl .ctrl_key_pressed .audio_row.vk_info_loaded .vk_audio_size_info_wrap,
+      ._vk_size_info_on_ctrl .audio_hq_label_show .audio_row.vk_info_loaded .vk_audio_size_info_wrap{
          display: table;
       }
 
       .vk_audio_size_info_wrap,
       .narrow_column .audios_module .vk_audio_size_info_wrap,
-      .vk_size_info_on_ctrl .audio_row .vk_audio_size_info_wrap,
       .audio_row:hover .vk_audio_size_info_wrap,
-      .vk_size_info_on_ctrl .audio_hq_label_show .audio_row:hover .vk_audio_size_info_wrap,
-      .vk_size_info_on_ctrl .audio_row:hover .vk_audio_size_info_wrap
+      ._vk_size_info_on_ctrl .audio_row .vk_audio_size_info_wrap,
+      ._vk_size_info_on_ctrl .audio_hq_label_show .audio_row:hover .vk_audio_size_info_wrap,
+      ._vk_size_info_on_ctrl .audio_row:hover .vk_audio_size_info_wrap
       {
          display: none;
       }
@@ -2237,6 +2237,10 @@ vkopt['audio'] =  {
       #top_audio_layer_place .audio_row.audio_row__added_next.audio_skipped .audio_row__action_skip_track {
          display: inline-block;
       }
+      .vk_audio_mod_info_visible .audios_module .audio_row .audio_row__duration,
+      .vk_audio_mod_info_visible .audios_module .audio_row__info._audio_row__info {
+         display: block !important;
+      }
       */
       });
       return codes.dl;
@@ -2255,15 +2259,17 @@ vkopt['audio'] =  {
                audio_wait_hover:{
                   title: 'seAudioSizeHover'
                },
+               /*
                size_info_on_ctrl: {
                   title: 'seAudioSizeShowOnCtrl',
                   class_toggler: true
                }
+               */
             }
          },
-	     audio_skip_button: {
-		    title: 'seAudioSkipButton',
-			default_value: true
+         audio_skip_button: {
+            title: 'seAudioSkipButton',
+            default_value: true
          }
       },
       Extra:{
@@ -2275,6 +2281,10 @@ vkopt['audio'] =  {
             }
          },
          */
+         audio_mod_info_visible:{  // на блоках с аудио (профиль, группы) тоже показывать длительность и кнопки
+            default_value: true,
+            class_toggler: true
+         },
          audio_edit_box_album_selector:{}
       }
    },
@@ -2527,6 +2537,7 @@ vkopt['audio'] =  {
                el.setAttribute('href', url);
                el.setAttribute('url_ready','1');
                removeClass(el,'dl_url_loading');
+               vkopt.audio.load_size_info(info.fullId, info.url);
             } else {
                setTimeout(function(){
                   wait_and_set_url();
@@ -2747,6 +2758,7 @@ vkopt['audio'] =  {
    __hover_load_queue:[], // очередь, из которой будут аудио перемещаться в __load_queue, при наведении на иконку загрузки.
    __loading_queue:[], // очередь текущих аудио, по которым в данный момент грузится инфа
    __load_req_num: 1,
+   __full_audio_info_cache: {},
    decode_url: function(url){
       var tmp = {};
       AudioPlayerHTML5.prototype._setAudioNodeUrl(tmp, url);
@@ -2909,8 +2921,11 @@ vkopt['audio'] =  {
                acts_wrap = se('<div class="_audio_row__actions audio_row__actions"></div>');
                info_wrap.appendChild(acts_wrap);
             }
+
             if (!more_btn){
                actions.push(['more']);
+               //more_btn = se('<div class="_audio_row__more_actions audio_row__more_actions"></div>');
+               //acts_wrap.appendChild(more_btn);
             } else { // пробуем выдрать элемент с доп. действиями из экземпляра ElementTooltip
                var ett = data(more_btn, 'ett'); // получаем экземпляр ElementTooltip
                if (ett){
@@ -2918,6 +2933,7 @@ vkopt['audio'] =  {
                   more_wrap = geByClass1('_audio_row__more_actions', more_wrap) || more_wrap;
                }
             }
+
             addClass(acts_wrap, 'vk_acts_added');
 
             // если нет меню действий, то добавляем
@@ -2943,9 +2959,8 @@ vkopt['audio'] =  {
                      data(audioEl, "leaved") && AudioUtils.onRowLeave(audioEl)
                   }
                }, opts)
-               data(audioEl, "tt", new ElementTooltip(more_btn, opts))
+               //data(audioEl, "tt", new ElementTooltip(more_btn, opts))
             }
-
 
             var acts = vkopt_core.plugins.call_modules('onAudioRowItems', audioEl, audioObject, audio);
             for (var plug_id in acts){
@@ -2972,6 +2987,10 @@ vkopt['audio'] =  {
                else
                   acts_wrap.appendChild(o)
             });
+            if (actions[0] && actions[0][0] == 'more'){
+               more_btn = geByClass1('audio_row__action_more', acts_wrap);
+               data(audioEl, "tt", new ElementTooltip(more_btn, opts))
+            }
 
             if (moreActions.length && more_btn){
                each(moreActions, function (e, item) {
@@ -2985,6 +3004,8 @@ vkopt['audio'] =  {
 
             };
             data(audioEl, "actions", 1);
+            if(moreActions.length > 0 || actions.length > 0)
+               setStyle(geByClass1("_audio_row__duration", audioEl), "visibility", "hidden");
          }
          if (geByClass1('vk_acts_added', audioEl))
             return;
