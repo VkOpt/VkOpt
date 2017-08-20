@@ -8476,7 +8476,8 @@ vkopt['attachments_and_link'] = {
             if (arr[i].id == id) return arr[i];
         }
     },
-    callEvent: function (name, item, status='ok') {
+    callEvent: function (name, item, status) {
+        status = status || 'ok';
         window.dispatchEvent(new CustomEvent("vkopt_attachments_and_link", {
             bubbles: true,
             detail: {
