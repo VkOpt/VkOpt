@@ -1718,6 +1718,11 @@ vkopt['away'] = {
          skip_away: {
             title: 'seOnAway'
          }
+      },
+      Extra:{
+         away_unescape_cyrilic:{
+            default_value: false
+         }
       }
    },
    processLinks:  function(link){
@@ -1733,7 +1738,7 @@ vkopt['away'] = {
       if (!params.to) // не нашли целевую ссылку
          return;
 
-      var new_lnk = vkUnescapeCyrLink(params.to);
+      var new_lnk = vkopt.settings.get('away_unescape_cyrilic') ? vkUnescapeCyrLink(params.to) : params.to;
 
       if (!new_lnk)
          return;
