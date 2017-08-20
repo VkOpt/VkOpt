@@ -1905,6 +1905,8 @@ vkopt['photoview'] =  {
    onElementTooltipFirstTimeShow: function(ett, ett_options){
       if (!ett_options || ett_options.id != 'pv_more_acts_tt' || !ett._ttel)
          return;
+      if (ett._ttel && hasClass(ett._ttel, 'vk_actions'))
+         return;
       var append_menu = function(content){
          ett._ttel.appendChild(se(trim(content)));
       };
@@ -1950,7 +1952,8 @@ vkopt['photoview'] =  {
          });
          append_menu(html);
       }
-
+      ett._ttel && addClass(ett._ttel, 'vk_actions');
+      ett.updatePosition();
 
    },
    links_toogle: function(){
