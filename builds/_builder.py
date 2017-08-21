@@ -26,18 +26,18 @@ def zipdir(dirPath=None, zipFilePath=None, includeDirInZip=True, regEx=None, exc
         if not includeDirInZip:
             archivePath = archivePath.replace(dirToZip + os.path.sep, "", 1)
         return os.path.normcase(archivePath)
-    
+
     if os.path.isfile(zipFilePath):
       print('Remove %s' % zipFilePath)
       os.remove(zipFilePath)
     print('Packing to %s' % zipFilePath)
-    
+
     outFile = zipfile.ZipFile(zipFilePath, "w",
         compression=zipfile.ZIP_DEFLATED)
     for (archiveDirPath, dirNames, fileNames) in os.walk(dirPath):
         if archiveDirPath.find('\\.') != -1:
             print("\tExcluded: "+archiveDirPath)
-            continue 
+            continue
         print("\tPacking dir: "+archiveDirPath)
         for fileName in fileNames:
             if regEx and not re.match(regEx, fileName):
@@ -45,7 +45,7 @@ def zipdir(dirPath=None, zipFilePath=None, includeDirInZip=True, regEx=None, exc
                continue
             if exclude_regex and re.match(exclude_regex, fileName):
                print("\tExcluded by exclude_regex: "+fileName)
-               continue               
+               continue
             #if fileName[-1] == '~' or (fileName[0] == '.' and fileName != '.htaccess'):
                 #skip backup files and all hidden files except .htaccess
                 #continue
@@ -61,7 +61,7 @@ def zipdir(dirPath=None, zipFilePath=None, includeDirInZip=True, regEx=None, exc
             #Here to allow for inserting an empty directory.  Still TBD/TODO.
             outFile.writestr(zipInfo, "")
     outFile.close()
-    
+
 def SetFirefoxVersion(file_name, new_version):
    print('Load install.RDF:\t\t'+file_name);
    with open(file_name, 'r') as infile:
@@ -71,9 +71,9 @@ def SetFirefoxVersion(file_name, new_version):
    with open(file_name, 'w') as outfile:
       outfile.write(data)
       outfile.close()
-   
-   
-def SetJsonVersion(file_name, new_version):  
+
+
+def SetJsonVersion(file_name, new_version):
    print('Load *.JSON :\t\t'+file_name);
    with open(file_name, 'r') as infile:  #
       data = infile.read()
@@ -82,8 +82,8 @@ def SetJsonVersion(file_name, new_version):
    with open(file_name, 'w') as outfile:
       outfile.write(data)
       outfile.close()
-      
-def SetSafariVersion(file_name, new_version):  
+
+def SetSafariVersion(file_name, new_version):
    print('Load info.plist :\t\t'+file_name);
    with open(file_name, 'r') as infile:  #
       data = infile.read()
@@ -91,8 +91,8 @@ def SetSafariVersion(file_name, new_version):
       infile.close()
    with open(file_name, 'w') as outfile:
       outfile.write(data)
-      outfile.close() 
-      
+      outfile.close()
+
 def SetOperaVersion(file_name, new_version):
    print('Load config.XML:\t\t'+file_name);
    with open(file_name, 'r') as infile:  #
@@ -110,10 +110,11 @@ def GetScriptsVersion(file_name):
       infile.close()
       build = re.search("var\s*vBuild\s*=\s*(\d+)", data).group(1)
       m_ver = re.search("var\s*vVersion\s*=\s*(\d+)", data).group(1)
+      rev = re.search("var\s*vVersionRev\s*=\s*(\d+)", data).group(1)
       ver = '%s.%s.%s' % (m_ver[0], m_ver[1], m_ver[2])
       print(ver+' ['+build+']')
-   return {"build":build, "ver": ver, "buildver": '%s.%s' % (ver, build)}
-   
+   return {"build":build, "ver": ver, "rev": rev, "buildver": '%s.%s' % (ver, build)}
+
 def MxAddonPack(indir, outfile):
    mxaddon = createMxPak1(indir)
    with open(outfile, 'wb') as f:
@@ -121,29 +122,29 @@ def MxAddonPack(indir, outfile):
       f.close()
    print("MxPack: Written %d bytes to %s" % (len(mxaddon), outfile))
 
-# парсим номер версии из скрипта  
+# парсим номер версии из скрипта
 version = GetScriptsVersion('chrome\\scripts\\vkopt.js')
 
-new_ver =  '%s.0' % version["ver"]
+new_ver =  '%s.%s' % (version["ver"], version["rev"])
 new_ver_ff =  version["buildver"]
 full_ver = 'v%s_(%s)' % (version["ver"], version["build"])
 
 # вшиваем номер версии в манифесты
-SetJsonVersion('chrome\\manifest.json', new_ver);  
+SetJsonVersion('chrome\\manifest.json', new_ver);
 SetFirefoxVersion('firefoxJetpack\\install.rdf', new_ver)
 SetFirefoxVersion('firefox\\install.rdf', new_ver_ff)
 SetJsonVersion('maxthon\\def.json', new_ver)
 SetOperaVersion('opera.extension\\config.xml', new_ver)
-SetSafariVersion('vkopt.safariextension\\Info.plist', new_ver) 
+SetSafariVersion('vkopt.safariextension\\Info.plist', new_ver)
 
 regex = None
 exclude_regex = "\.(orig|gitignore)$"
 
 zipdir("firefox", "vkopt_%s_firefox.xpi" % full_ver, False,regex,exclude_regex)
 zipdir("opera.extension", "vkopt_%s_opera.oex" % full_ver, False,regex,exclude_regex)
-zipdir("chrome", "vkopt_%s_chrome.zip" % full_ver, False,regex,exclude_regex)  
+zipdir("chrome", "vkopt_%s_chrome.zip" % full_ver, False,regex,exclude_regex)
 MxAddonPack('maxthon/','vkopt_%s_maxthon.mxaddon' % full_ver)
-zipdir('../source/', 'vkopt_%s_opera.zip' % full_ver, False, "^vk(_|opt|lang).*\.(js|txt)$", exclude_regex) 
+zipdir('../source/', 'vkopt_%s_opera.zip' % full_ver, False, "^vk(_|opt|lang).*\.(js|txt)$", exclude_regex)
 
 with open('vkopt_%s_!onserver.txt' % full_ver, 'w') as f:
    f.write('need update on server "config.json" and "scripts"')
