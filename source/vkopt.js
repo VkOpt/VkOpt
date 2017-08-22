@@ -11,8 +11,8 @@
 //
 /* VERSION INFO */
 var vVersion	= 304;
-var vBuild = 170822;
-var vVersionRev = 2;
+var vBuild = 170823;
+var vVersionRev = 3;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -392,7 +392,7 @@ var vk_glue = {
          Inj.Start('renderFlash','vkOnRenderFlashVars(vars);');
          */
          // перехват тултипов при создании их контента. например для перехвата создания меню "Ещё" перед его показом в просмотрщике фото
-         Inj.After('ElementTooltip.prototype.show',/this\._opts\.onFirstTimeShow\.call[^;]+;/,'vkopt_core.plugins.eltt_first_show(this);');
+         Inj.Before('ElementTooltip.prototype.show',/this\.updatePosition\(\);/,'(!this._firstTimeShown && vkopt_core.plugins.eltt_first_show(this));\n');
       },
       notifier: function(){
          Notifier.addRecvClbk('vkcmd', 0, function(data){
