@@ -1646,7 +1646,7 @@ vkopt['lang'] = {
 
       var lng=[];
       for (var i=0; i<VK_LANGS_IDS.length; i++){
-         lng.push([VK_LANGS_IDS[i],VK_LANGS[i]['LangTite'],VK_LANGS[i]['LangAuthor']])
+         lng.push([VK_LANGS_IDS[i],VK_LANGS[i]['LangTitle'],VK_LANGS[i]['LangAuthor']])
       }
       var html=[];
       var about=[];
