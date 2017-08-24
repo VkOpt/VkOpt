@@ -56,4 +56,7 @@ vkopt['vkopt_any_plugin'] = {
                                                                   ]  */
 
    };
+
+   window.vkopt = (window.vkopt || {});
+   if (window.vkopt_core_ready) vkopt_core.plugins.delayed_run('vkopt_any_plugin');      // запускает модуль, если мы опоздали к загрузке страницы, провоцирует вызов события onModuleDelayedInit
    ```
