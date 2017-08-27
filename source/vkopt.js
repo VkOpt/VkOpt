@@ -5544,7 +5544,7 @@ vkopt['face'] =  {
             bottom: 6px;
          }
          .vk_old_audio_btns .audio_w_covers .audio_row .audio_row__actions {
-            margin-top: -5px;
+            margin-top: -3px;
          }
          .vk_old_audio_btns .audio_w_covers .audio_row .audio_row__inner {
             padding-left: 42px;
@@ -5553,6 +5553,7 @@ vkopt['face'] =  {
             float: left;
             top: 10px;
             color: #2a5885;
+            font-weight: 500;
          }
          .vk_old_audio_btns .audio_w_covers .audio_row .audio_row__title:before {
             display: block;
@@ -5565,6 +5566,7 @@ vkopt['face'] =  {
          .vk_old_audio_btns .audio_w_covers .audio_row .audio_row__title {
             padding-left: 17px;
             top: 10px;
+            font-weight: normal;
          }
          .vk_old_audio_btns .audio_row .audio_row__cover_back {
             background-color: #6788AA;
@@ -5592,6 +5594,9 @@ vkopt['face'] =  {
          .vk_old_audio_btns .audio_row .audio_row__cover,
          .vk_old_audio_btns .audio_row .audio_row__sound_bars {
              display: none;
+         }
+         .vk_old_audio_btns .audio_w_covers .vk_audio_size_info_wrap {
+            margin-top: 9px;
          }
 
          .vk_audio_full_title .audio_row .audio_title_wrap,
