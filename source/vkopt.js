@@ -647,7 +647,7 @@ vkopt['settings'] =  {
              width: 248px;
          }
          .welcome_cfg .settings_labeled_text.vk_settings_block {
-             width: 255px;
+             width: 290px;
          }
          .welcome_cfg .settings_label.vk_setts_cat_header{
             width: auto;
@@ -694,7 +694,7 @@ vkopt['settings'] =  {
          }
 
          .vk_welcome_r{
-            width: 70px;
+            width: 105px;
          }
          .vk_welcome_r .vk_lang{
             width: auto;
@@ -702,7 +702,7 @@ vkopt['settings'] =  {
          }
          .vk_welcome_r .vk_lang a{
             font-size: 10px;
-            width: 55px;
+            width: 85px;
             height: 75px;
             line-height: 12px;
          }
@@ -710,7 +710,7 @@ vkopt['settings'] =  {
             display: none;
          }
          .vk_welcome_l{
-            width: 530px;
+            width: 600px;
          }
          .vk_welcome_warn{
             font-weight:bold;
@@ -1062,7 +1062,7 @@ vkopt['settings'] =  {
             vkopt.settings.set('version', vVersion);
             vkopt.settings.set('build', vBuild);
 
-            var box = new MessageBox({title: IDL('THFI'),width:"660px"});
+            var box = new MessageBox({title: IDL('THFI'),width:"760px"});
             box.removeButtons();
             box.addButton('OK',function(){box.hide( 200 );},'no');
 
