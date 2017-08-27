@@ -778,6 +778,7 @@ vk_lang_ru={
    ,"LinksAndRepost_forward": "\u0424\u043E\u0440\u0432\u0430\u0440\u0434\u044B"
    ,"LinksAndRepost_link": "\u0421\u0441\u044B\u043B\u043A\u0438"
    ,"LinksAndRepost_post": "\u0420\u0435\u043F\u043E\u0441\u0442\u044B"
+   ,"seOldAudioButtons":"\u041a\u043b\u0430\u0441\u0441\u0438\u0447\u0435\u0441\u043a\u0438\u0439 \u0441\u0442\u0438\u043b\u044c \u043d\u0430\u0437\u0432\u0430\u043d\u0438\u0439 \u0438 \u043a\u043d\u043e\u043f\u043e\u043a \u043f\u0440\u043e\u0438\u0433\u0440\u044b\u0432\u0430\u043d\u0438\u044f \u0430\u0443\u0434\u0438\u043e"
    };
 
 vk_lang_en={//by Hzy
@@ -1706,6 +1707,7 @@ vk_lang_en={//by Hzy
   ,"LinksAndRepost_forward": "Forward"
   ,"LinksAndRepost_link": "Link"
   ,"LinksAndRepost_post": "Post"
+  ,"seOldAudioButtons": "Classic audios titles and play buttons style"
 };
 
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
