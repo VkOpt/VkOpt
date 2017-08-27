@@ -5419,6 +5419,10 @@ vkopt['face'] =  {
          audio_full_title: {
             title: 'seAudioFullTitles',
             class_toggler: true
+         },
+         old_audio_btns: {
+            title: 'seOldAudioButtons',
+            class_toggler: true
          }
       },
 
@@ -5529,6 +5533,65 @@ vkopt['face'] =  {
          .vk_compact_audio .vk_audio_size_info_wrap {
            margin-top: -3px;
            height: 18px;
+         }
+
+         .vk_old_audio_btns .audio_w_covers .audio_row {
+            height: 42px;
+            padding: 2px 0;
+         }
+         .vk_old_audio_btns .audio_w_covers .audio_row .audio_row__info {
+            position: relative;
+            bottom: 6px;
+         }
+         .vk_old_audio_btns .audio_w_covers .audio_row .audio_row__actions {
+            margin-top: -5px;
+         }
+         .vk_old_audio_btns .audio_w_covers .audio_row .audio_row__inner {
+            padding-left: 42px;
+         }
+         .vk_old_audio_btns .audio_w_covers .audio_row .audio_row__performer {
+            float: left;
+            top: 10px;
+            color: #2a5885;
+         }
+         .vk_old_audio_btns .audio_w_covers .audio_row .audio_row__title:before {
+            display: block;
+            content: "\00a0\2013";
+            position: absolute;
+            top: 0;
+            left: 2px;
+            color: #000;
+         }
+         .vk_old_audio_btns .audio_w_covers .audio_row .audio_row__title {
+            padding-left: 17px;
+            top: 10px;
+         }
+         .vk_old_audio_btns .audio_row .audio_row__cover_back {
+            background-color: #6788AA;
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2228%22%20height%3D%2229%22%20viewBox%3D%220%200%2028%2029%22%3E%3Cg%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M11.8%2019.9C11.4%2020.2%2011%2020%2011%2019.5L11%208.5C11%208%2011.4%207.8%2011.8%208.1L19.5%2013.6C19.9%2013.8%2019.8%2014.2%2019.5%2014.4L11.8%2019.9Z%22%20fill%3D%22%23FFF%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+            width: 28px;
+            height: 28px;
+         }
+         .vk_old_audio_btns .audio_row.audio_row__playing .audio_row__cover_back {
+            background-color: #6788AA;
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2228%22%20height%3D%2229%22%20viewBox%3D%2236%200%2028%2029%22%3E%3Cg%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M46%208.6C46%208.3%2046.3%208%2046.6%208L48.4%208C48.7%208%2049%208.3%2049%208.6L49%2019.4C49%2019.7%2048.7%2020%2048.4%2020L46.6%2020C46.3%2020%2046%2019.7%2046%2019.4L46%208.6ZM51%208.6C51%208.3%2051.3%208%2051.6%208L53.4%208C53.7%208%2054%208.3%2054%208.6L54%2019.4C54%2019.7%2053.7%2020%2053.4%2020L51.6%2020C51.3%2020%2051%2019.7%2051%2019.4L51%208.6Z%22%20fill%3D%22%23FFF%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+            width: 28px;
+            height: 28px;
+         }
+         .vk_old_audio_btns .audio_row.audio_row__current .audio_row__cover_back {
+            background-color: #6788AA;
+         }
+         .vk_old_audio_btns .audio_row.audio_row_with_cover:hover .audio_row__cover_back {
+            background-color: #577CA1;
+         }
+         .vk_old_audio_btns .audio_row .audio_row__play_btn {
+            background-color: #5885B8;
+            border-radius: 2px;
+         }
+         .vk_old_audio_btns .audio_w_covers .audio_row .audio_row__cover_icon,
+         .vk_old_audio_btns .audio_row .audio_row__cover,
+         .vk_old_audio_btns .audio_row .audio_row__sound_bars {
+             display: none;
          }
 
          .vk_audio_full_title .audio_row .audio_title_wrap,
