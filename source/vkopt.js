@@ -2336,6 +2336,9 @@ vkopt['audio'] =  {
    onLibFiles: function(fn){
       if (fn = 'audioplayer.js'){
          Inj.Start('AudioUtils.onRowOver', vkopt.audio.acts.buttons);
+         Inj.End('AudioUtils.onRowLeave', function(){
+            clearTimeout(vkopt.audio.__onrowover);
+         });
       }
    },
    onResponseAnswer: function(answer, url, q){
