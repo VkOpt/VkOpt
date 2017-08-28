@@ -2056,6 +2056,15 @@ vkopt['photos'] =  {
                      //lockButton
                   },
                   onUploadComplete: function(u,res){
+                     var data = {};
+                     try{
+                        data = JSON.parse(res);
+                     }catch(e){ }
+                     if (data.error){
+                        box.hide();
+                        vkAlertBox(IDL('Error'), data.error);
+                        return;
+                     }
                      var params = {
                         '_query' 	 : res,
                         'act' 	 	 : 'save_desc',
