@@ -5614,6 +5614,9 @@ vkopt['face'] =  {
             top: 6px;
          }
 
+         .vk_compact_audio.vk_old_audio_btns .audio_w_covers .audio_row .audio_row__performer_title{
+            top: 0px;
+         }
          .vk_audio_full_title .audio_row .audio_title_wrap,
          .vk_audio_full_title .audio_row .audio_performer{
             white-space: normal;
