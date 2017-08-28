@@ -5413,19 +5413,19 @@ vkopt['attacher'] = {
 vkopt['face'] =  {
    onSettings:{
       Media:{
-         /*
-         compact_audio: {
-            title: 'seCompactAudio',
-            class_toggler: true
-         },
-         */
          audio_full_title: {
             title: 'seAudioFullTitles',
             class_toggler: true
          },
          old_audio_btns: {
             title: 'seOldAudioButtons',
-            class_toggler: true
+            class_toggler: true,
+            sub:{
+               compact_audio: {
+                  title: 'seCompactAudio',
+                  class_toggler: true
+               }
+            }
          }
       },
 
@@ -5498,46 +5498,6 @@ vkopt['face'] =  {
             border-radius: 0px !important;
          }
 
-         .vk_compact_audio .audio_row .audio_row_inner{
-           padding:0;
-         }
-         .vk_compact_audio .audio_row .audio_row_cover_wrap,
-         .vk_compact_audio .audio_row .audio_row_cover,
-         .vk_compact_audio .audio_row .audio_row_cover_back,
-         .vk_compact_audio .audio_row .audio_row_cover_play_icon,
-         .vk_compact_audio .audio_row .audio_sound_bars,
-         .vk_compact_audio .audio_row .audio_acts .audio_act,
-         .vk_compact_audio #top_audio_layer_place .audio_row .audio_acts .vko_skip,
-         .vk_compact_audio .audio_pl_edit_box .ape_audio_item_wrap .ape_check .ape_check_icon{
-           width: 20px;
-           height: 20px;
-           background-size: cover;
-         }
-         .vk_compact_audio .audio_row .audio_info{
-           padding-top: 4px
-         }
-         .vk_compact_audio .audio_row .audio_acts .audio_act.vk_audio_acts>div {
-           margin: 4px;
-         }
-         .vk_compact_audio .audio_pl_edit_box .ape_audio_item_wrap .ape_check{
-          padding: 0px
-         }
-
-         .vk_compact_audio .audio_row .audio_acts #add {
-             width: 15px;
-             background-position: 0px -18px;
-         }
-         .vk_compact_audio .audio_row.added .audio_act#add{
-           background-position: 0px 4px;
-         }
-         .vk_compact_audio .audio_pl_edit_box .ape_audio_item_wrap .ape_attach{
-            margin-top: 3px;
-         }
-         .vk_compact_audio .vk_audio_size_info_wrap {
-           margin-top: -3px;
-           height: 18px;
-         }
-
          .vk_old_audio_btns .audio_w_covers .audio_row {
             height: 42px;
             padding: 2px 0;
@@ -5600,6 +5560,49 @@ vkopt['face'] =  {
          }
          .vk_old_audio_btns .audio_w_covers .vk_audio_size_info_wrap {
             margin-top: 9px;
+         }
+
+         .vk_compact_audio.vk_old_audio_btns .audio_row,
+         .vk_compact_audio.vk_old_audio_btns .audio_row .audio_row__inner{
+            height: 26px;
+         }
+
+         .vk_compact_audio.vk_old_audio_btns .audio_row .audio_row__cover_back,
+         .vk_compact_audio.vk_old_audio_btns .audio_row .audio_row__play_btn{
+            width: 16px;
+            height: 16px;
+            background-size: contain;
+            background-position: 50% 50%;
+            top: 6px;
+         }
+         .vk_compact_audio.vk_old_audio_btns .audio_row .audio_row__inner {
+            padding-left: 30px;
+         }
+
+         .vk_compact_audio.vk_old_audio_btns .audio_w_covers .audio_row .audio_row__duration {
+            top: 9px;
+         }
+         .vk_compact_audio.vk_old_audio_btns .audio_row .audio_row__duration {
+            top: 5px;
+         }
+         .vk_compact_audio.vk_old_audio_btns .audio_w_covers  .vk_audio_size_info_wrap{
+            margin-top: 2px;
+         }
+         .vk_compact_audio.vk_old_audio_btns .vk_audio_size_info_wrap{
+            margin-top: 4px;
+         }
+         .vk_compact_audio.vk_old_audio_btns .audio_row .audio_row__performer_title .audio_row__performer,
+         .vk_compact_audio.vk_old_audio_btns .audio_w_covers .audio_row .audio_row__performer_title .audio_row__title {
+            top: 4px;
+         }
+         .vk_compact_audio.vk_old_audio_btns  .audio_w_covers .audio_row .audio_row__actions {
+            margin-top: -12px;
+         }
+         .vk_compact_audio.vk_old_audio_btns .audio_row .audio_row__actions {
+            margin-top: -15px;
+         }
+         .vk_compact_audio.vk_old_audio_btns .audio_row .audio_row__performer_title{
+            top: 6px;
          }
 
          .vk_audio_full_title .audio_row .audio_title_wrap,
