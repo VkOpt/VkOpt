@@ -5639,7 +5639,7 @@ vkopt['face'] =  {
             display: none;
          }
          .vk_hide_recommendations #friends_possible_block,
-         .vk_hide_recommendations #groups_filters_wrap {
+         .vk_hide_recommendations #groups_filters_wrap>.page_block{
             display: none;
          }
 	 .vk_hide_stories #stories_feed_wrap {
