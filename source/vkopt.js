@@ -3450,7 +3450,7 @@ vkopt['scrobbler'] = {
          if (el.tt) el.tt.hide();
          el.onmouseover=function(e){
             var el=e.target;
-            var text=IDL(!hasClass(el,'loved')?'LastFMAddToLoved':'LastFMRemoveFromLoved');
+            var text=!hasClass(el,'loved')?IDL('LastFMAddToLoved'):IDL('LastFMRemoveFromLoved');
 
             if (el.tt && el.tt.container) {
                val(geByClass1('tt_text', el.tt.container), text);
@@ -3564,7 +3564,7 @@ vkopt['scrobbler'] = {
          els[i].onmouseover=
          (function(z){
             return function(){
-               var text=IDL(fm.enable_scrobbling?'ScrobblingOn':'ScrobblingOff').replace(/<username>/g,fm.username);
+               var text=(fm.enable_scrobbling?IDL('ScrobblingOn'):IDL('ScrobblingOff')).replace(/<username>/g,fm.username);
                text+=' <a href="#" onclick="return vkopt.scrobbler.logout();">'+IDL('Logout')+'</a>';
                if (!fm.username || fm.username == 'NO_AUTH') text=IDL('AuthNeeded');
                fm.tip(els[z],text);
