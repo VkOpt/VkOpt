@@ -2318,6 +2318,7 @@ var vk_ext_msg = {
 };
 var vk_ext_api={
    mark:'vkopt_loader',
+   browsers: window._vkopt_loader_browser || {},
    callbacks:{},
    cid:1,
    ready: !!window._ext_ldr_vkopt_loader,
@@ -2971,7 +2972,7 @@ function vkDragOutFile(el) {
     },false);
 }
 function vkDownloadFile(el,ignore) {
-   if (!vkbrowser.mozilla || ignore) return true;
+   if (!vkbrowser.mozilla || vk_ext_api.browsers.webext || ignore) return true;
    //if (getSet(1) == 'n') return true;
    var a = el.getAttribute("href");
    var d = el.getAttribute("download");
