@@ -4,6 +4,7 @@ builds/opera.extension/scripts/vk*
 builds/vkopt.safariextension/scripts/vk*
 builds/firefoxJetpack/resources/vkopt/data/scripts/vk*
 builds/edge/scripts/vk*
+builds/webext/scripts/vk*
 
 builds/chrome/background.js
 builds/chrome/content_script.js
@@ -19,6 +20,8 @@ builds/vkopt.safariextension/background.js
 builds/vkopt.safariextension/content_script.js
 builds/edge/background.js
 builds/edge/content_script.js
+builds/webext/background.js
+builds/webext/content_script.js
 
 builds/vkopt_chrome.zip
 builds/vkopt_firefox_jetpack.xpi
