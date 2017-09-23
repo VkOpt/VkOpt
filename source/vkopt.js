@@ -11,7 +11,7 @@
 //
 /* VERSION INFO */
 var vVersion	= 304;
-var vBuild = 170823;
+var vBuild = 170911;
 var vVersionRev = 3;
 var vPostfix = '';
 
@@ -4788,6 +4788,14 @@ vkopt['messages'] = {
       vkopt_core.timeout(vkopt.messages.acts_menu, 500);
       if (vkopt.settings.get('im_hide_dialogs'))
          vkopt.messages.dialogs_hide_init();
+   },
+   onLibFiles: function(fn){
+      if (fn == 'ui_common.js'){
+         Inj.End('uiActionsMenu.show', function(el){
+            if (gpeByClass('_im_dialog_action_wrapper', el))
+               vkopt.messages.acts_menu();
+         })
+      }
    },
    processNode: function(node, params){
       if (!vkopt.settings.get('audio_dl') || !node || (params && params.source == "getTemplate" && params.tpl_name!="im_msg_row")) return;
