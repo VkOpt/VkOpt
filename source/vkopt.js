@@ -574,6 +574,20 @@ vkopt.permissions = { // for chromium
       }
       return false;
    },
+   /*
+   // Попытка заставить работать запрос доп. прав доступа на Firefox WebExt с помощью обработчика клика повешенного
+   // из content_script. Но в итоге "May only request permissions from a user input handler".
+   // У кого-то есть идеи как это заставить работать?
+   request_on_click: function(el, url, callback){
+      var m = url.match(/^[^\/]+:\/\/([^\/]+\.)?([^\/]+\.[^\/]+)\//);
+      var mask = "*://" + (m[2] ? "*." : '') + m[2] + "/*";
+      vk_ext_api.req({act:'permissions_request_on_click', eid: el.id, permissions_query:{origins:[mask]}},function(r){
+         vkopt.permissions.update(function(){
+            callback && callback(r.act == 'permission_granted');
+         });
+      });
+   },
+   */
    request: function(url, callback){
       var m = url.match(/^[^\/]+:\/\/([^\/]+\.)?([^\/]+\.[^\/]+)\//);
       var mask = "*://" + (m[2] ? "*." : '') + m[2] + "/*";
@@ -584,7 +598,7 @@ vkopt.permissions = { // for chromium
       });
    },
    check_dl_url: function(el, url){
-      if (!vkbrowser.chrome || vkopt.permissions.check_url(url)){
+      if (!(vkbrowser.chrome || vk_ext_api.browsers.webext) || vkopt.permissions.check_url(url)){
          return true;
       } else {
          show(boxLayerBG);
@@ -2566,6 +2580,7 @@ vkopt['audio'] =  {
                el.setAttribute('href', url);
                el.setAttribute('url_ready','1');
                removeClass(el,'dl_url_loading');
+               //vkopt.permissions.request_on_click(el, url, vkopt.log);
                vkopt.audio.load_size_info(info.fullId, info.url);
             } else {
                setTimeout(function(){
@@ -2772,6 +2787,7 @@ vkopt['audio'] =  {
          vkopt.audio.info_thread_count++;
          XFR.post(url, {}, function(h, size){
             clearTimeout(reset);
+            vkopt.log('get_size response:', id, size, h);
             if (rb){
                vkopt.audio.info_thread_count--;
             }
@@ -2895,7 +2911,7 @@ vkopt['audio'] =  {
                   se('<a href="'+dl_btn.href+'" download="'+filename+'.mp3"></a>').click();
             },
             '<div></div>',// button content
-            'data-aid="{vals.fullId}" href="" onmouseover="vkopt.audio.check_dl_url(this);"',//custom_attributes
+            'data-aid="{vals.fullId}" id="vk_get_link_{vals.fullId}" href="" onmouseover="vkopt.audio.check_dl_url(this);"',//custom_attributes
             'a'
          ]);
       }

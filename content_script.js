@@ -4,9 +4,10 @@
 (function(){
 
 var ext_browser={
-   mozilla:(function(){try{return Components.interfaces.nsIObserverService!=null} catch(e){return false} })(),
+   mozilla:(function(){try{return !chrome && Components.interfaces.nsIObserverService!=null} catch(e){return false} })(),
    mozilla_jetpack: typeof self != 'undefined' && self.port && self.port.emit && self.port.on,
    opera: window.opera && opera.extension,
+   webext: (function() { try { return !!chrome && !!chrome.extension } catch (e) {return false} })(),
    chrome: window.chrome && chrome.extension,
    safari: window.safari   && safari.self,
    maxthon: (function(){try{return window.external.mxGetRuntime!=null} catch(e){return false} })() //without try{}catch it fail script on Firefox
@@ -26,7 +27,7 @@ var ex_ldr={
          var run_at_start=[];
          var run_content_loaded=[];
          if (data.length){
-            ex_ldr.inj_script("window._ext_ldr_"+ex_ldr.mark+"=true;");
+            ex_ldr.inj_script(" window._ext_ldr_"+ex_ldr.mark+"=true;\n window._"+ex_ldr.mark+"_browser = "+ JSON.stringify(ext_browser) +";");
          }
          for (var i=0; i<data.length; i++){
             var file=data[i];  //file[3] - run_at
@@ -77,24 +78,44 @@ var ex_ldr={
                return msg;
             }
          },false);
-      } else if (ext_browser.chrome){                                              // CHROMIUM
-         chrome.extension.sendRequest({act:'get_scripts', url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc), __key:ex_ldr.__key}, function(data) {
+      } else if (ext_browser.webext){                                              // CHROMIUM
+         var handle_response = function(data) {
             if (data.__key==ex_ldr.__key && data.files && data.files.length>0){
                if (data.api_enabled)
                   api_enabled = true;
                callback(data.files);
             }
-         });
+         }
+         var req_data = {act:'get_scripts', url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc), __key:ex_ldr.__key};
+         //*
+         // For Mozilla's webext messaging with Promise
+         var chk = chrome.runtime.sendMessage('check_msg_api_mod');
+         if (chk && chk.then)
+            chrome.runtime.sendMessage(req_data).then(handle_response, function(error){
+               console.log('Error on sendMessage', error);
+            });
+         else
+         //*/
+            chrome.runtime.sendMessage(req_data, handle_response);
+
          //*
          ex_api.ready=true;
 
          ex_api.post_message=function(msg){
             msg=ex_api.prepare_data(msg);
-            chrome.extension.sendRequest(msg, function(data) {
+            var on_api_response = function(data) {
                if (data.__key==ex_ldr.__key){
                   ex_api.message_handler(data);
                }
-            });
+            }
+            //*
+            if (chk && chk.then)
+               chrome.runtime.sendMessage(msg).then(on_api_response, function(error){
+                  console.log('Error on API sendMessage', error);
+               });
+            else
+            //*/
+               chrome.runtime.sendMessage(msg, on_api_response);
             return msg;
          }
       } else if (ext_browser.safari){
@@ -219,7 +240,7 @@ var ex_ldr={
       switch(ext){
          case 'js':
             if (ext_browser.opera) win.eval(script);
-            else {   /*if (ext_browser.chrome || ext_browser.safari || ext_browser.maxthon)*/
+            else {   /*if (ext_browser.webext || ext_browser.safari || ext_browser.maxthon)*/
                var js = doc.createElement('script');
                js.type = 'text/javascript';
                js.charset = 'UTF-8';
@@ -391,6 +412,7 @@ var ex_api={
          case 'check_ext':
          case 'permissions_request':
          case 'permissions_get':
+         //case 'permissions_request_on_click':
          //case 'update_scripts':
             ex_api.req(res,function(data, sub){
                //win.postMessage(JSON.parse(JSON.stringify({response:data,sub:sub})),"*");
@@ -400,6 +422,23 @@ var ex_api={
       }
    },
    req:function(data,callback){
+      /*
+      if (data.act == 'permissions_request_on_click'){
+         var el = document.getElementById(data.eid);
+         if (!el) return;
+         el.addEventListener('click', function(event){
+            data.act = 'permissions_request';
+            ex_api.req(data, callback);
+            if (event.preventDefault) event.preventDefault();
+            if (event.stopPropagation) event.stopPropagation();
+            if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+            event.cancelBubble = true;
+            event.returnValue = false;
+            return false;
+         }, true)
+         return;
+      }
+      */
       var data=ex_api.post_message(data);
       if (!api_enabled)
          return true;
@@ -426,7 +465,7 @@ ex_api.init(win);
 }
 
 
-if (ext_browser.opera || ext_browser.chrome || ext_browser.safari || ext_browser.maxthon || ext_browser.mozilla_jetpack){
+if (ext_browser.opera || ext_browser.webext || ext_browser.safari || ext_browser.maxthon || ext_browser.mozilla_jetpack){
       init_content_script(window, document);
 }
 

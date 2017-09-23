@@ -10,6 +10,7 @@ if [%13] == [3%1] copy ..\source opera.extension\scripts\
 if [%14] == [4%1] copy ..\source vkopt.safariextension\scripts\
 if [%15] == [5%1] copy ..\source firefoxJetpack\resources\vkopt\data\scripts\
 if [%17] == [7%1] copy ..\source edge\scripts\
+if [%18] == [8%1] copy ..\source webext\scripts\
 
 echo background.js
 if [%11] == [1%1] copy ..\background.js chrome\
@@ -19,6 +20,7 @@ if [%14] == [4%1] copy ..\background.js vkopt.safariextension\
 if [%15] == [5%1] copy ..\background.js firefoxJetpack\resources\vkopt\data\
 if [%16] == [6%1] copy ..\background.js maxthon\
 if [%17] == [7%1] copy ..\background.js edge\
+if [%18] == [8%1] copy ..\background.js webext\
 
 echo content_script.js
 if [%11] == [1%1] copy ..\content_script.js chrome\
@@ -28,5 +30,6 @@ if [%14] == [4%1] copy ..\content_script.js vkopt.safariextension\
 if [%15] == [5%1] copy ..\content_script.js firefoxJetpack\resources\vkopt\data\
 if [%16] == [6%1] copy ..\content_script.js maxthon\
 if [%17] == [7%1] copy ..\content_script.js edge\
+if [%18] == [8%1] copy ..\content_script.js webext\
 
 echo Done.
