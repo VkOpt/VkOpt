@@ -4,7 +4,7 @@
   "version": "3.0.4.3",
   "description": "Добавление множества функций, упрощающих жизнь ВКонтакте (vk.com). Official site and support: http://vkopt.net/",
   "homepage_url": "http://vkopt.net/",
-  "default_locale": "ru",
+  "default_locale": "en",
   "applications": {
     "gecko": {
       "id": "vkopt_moz@vkopt.net.ru",
