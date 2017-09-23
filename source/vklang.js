@@ -5188,7 +5188,7 @@ vk_lang_md={
    ,"seShowCommonGroup":"Eviden\u0163ierea comunit\u0103\u021bilor comune \u00een profil"
    ,"seRecentEmoji":"Blocul cu Emoji recent utilizate \u00een dialoguri"
    ,"Skip_pl":"Treci peste"
-   ,"seAudioDelButtonPl":"Butonul \"Treci peste\" \u00een player-ul din antetul paginii"
+   ,"seAudioDelButtonPl":"Butonul \"Treci peste\" \u00een player-ul din antetul paginii",
     "seHideStories": "Ascunde blocul de istorii",
     "seAudioSkipButton": "Butonul \u00abTreci peste\u00bb \u00een player-ul din antetul paginii",
     "seStoreHeightImTxt": "Memoreaz\u0103 \u00een\u0103l\u021bimea spa\u021biului de scriere \u00een dialoguri",
