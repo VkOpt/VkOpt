@@ -131,6 +131,7 @@ full_ver = 'v%s_(%s)' % (version["ver"], version["build"])
 
 # вшиваем номер версии в манифесты
 SetJsonVersion('chrome\\manifest.json', new_ver);
+SetJsonVersion('webext\\manifest.json', new_ver);
 SetFirefoxVersion('firefoxJetpack\\install.rdf', new_ver)
 SetFirefoxVersion('firefox\\install.rdf', new_ver_ff)
 SetJsonVersion('maxthon\\def.json', new_ver)
@@ -143,6 +144,7 @@ exclude_regex = "\.(orig|gitignore)$"
 zipdir("firefox", "vkopt_%s_firefox.xpi" % full_ver, False,regex,exclude_regex)
 zipdir("opera.extension", "vkopt_%s_opera.oex" % full_ver, False,regex,exclude_regex)
 zipdir("chrome", "vkopt_%s_chrome.zip" % full_ver, False,regex,exclude_regex)
+zipdir("webext", "vkopt_%s_firefox.webext.xpi" % full_ver, False,regex,exclude_regex)
 MxAddonPack('maxthon/','vkopt_%s_maxthon.mxaddon' % full_ver)
 zipdir('../source/', 'vkopt_%s_opera.zip' % full_ver, False, "^vk(_|opt|lang).*\.(js|txt)$", exclude_regex)
 

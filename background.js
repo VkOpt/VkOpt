@@ -178,7 +178,7 @@ ex_loader = {
                sendResponse(data);
             };
             ext_api.message_handler(request,SendResp);
-
+            return true;
          });
       } else if(b.safari){                         // SAFARI
          safari.application.addEventListener("message", function(e) {

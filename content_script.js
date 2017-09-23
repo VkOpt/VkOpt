@@ -87,7 +87,7 @@ var ex_ldr={
             }
          }
          var req_data = {act:'get_scripts', url:doc.location.href,in_frame:ex_ldr.is_in_frame(doc), __key:ex_ldr.__key};
-         /*
+         //*
          // For Mozilla's webext messaging with Promise
          var chk = chrome.runtime.sendMessage('check_msg_api_mod');
          if (chk && chk.then)
@@ -95,7 +95,7 @@ var ex_ldr={
                console.log('Error on sendMessage', error);
             });
          else
-         */
+         //*/
             chrome.runtime.sendMessage(req_data, handle_response);
 
          //*
@@ -108,13 +108,13 @@ var ex_ldr={
                   ex_api.message_handler(data);
                }
             }
-            /*
+            //*
             if (chk && chk.then)
                chrome.runtime.sendMessage(msg).then(on_api_response, function(error){
                   console.log('Error on API sendMessage', error);
                });
             else
-            */
+            //*/
                chrome.runtime.sendMessage(msg, on_api_response);
             return msg;
          }
