@@ -8,7 +8,8 @@
   "applications": {
     "gecko": {
       "id": "vkopt_moz@vkopt.net.ru",
-      "strict_min_version": "45.0"
+      "strict_min_version": "45.0",
+      "update_url": "https://vkopt.net/upd/upd_webext_fx.json"
     }
   },
   "content_scripts": [
