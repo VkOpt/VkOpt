@@ -2256,7 +2256,7 @@ vkopt['audio'] =  {
          display: inline-block;
       }
 
-      .audio_row__action_skip_track .vko_skip, #top_audio_layer_place .audio_row .audio_acts .vko_skip {
+      .audio_row__action_skip_track .vko_skip, #top_audio_layer_place .audio_row .audio_acts .vko_skip, .audio_row__action_skip_track {
          display: block;
 	      height: 24px;
          width: 24px;
@@ -2930,7 +2930,7 @@ vkopt['audio'] =  {
                // Удалить из текущего плейлиста
                vkopt.audio.acts.skip(audioEl, audioObject.fullId);
             },
-            '<div class="vko_skip"></div>',
+            '',//'<div class="vko_skip"></div>',
             'onmouseover="showTooltip(this,{text:\'{lng.Skip_pl}\',black:1,shift:[7,5,0],needLeft:true})"'
          ]);
       }
@@ -3018,7 +3018,7 @@ vkopt['audio'] =  {
 
             var ref = geByClass1('acts_wrap', 'audio_row__action');
             each(actions, function (e, i) {
-               var tag = i[4] || 'div';
+               var tag = i[4] || 'button';
                var o = se(vk_lib.tpl_process(
                      '<'+tag+' data-action="' + i[0] + '" class="audio_row__action audio_row__action_' + i[0] + " _audio_row__action_" + i[0] + '" ' + (i[3] || "") + ">" + (i[2] || "") + '</'+tag+'>',
                      audioObject
