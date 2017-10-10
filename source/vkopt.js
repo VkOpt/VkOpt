@@ -6999,16 +6999,9 @@ vkopt['im_form'] = {
    onLibFiles: function(file_name) {
       if (file_name != 'writebox.js') return;
 
-      window.showWriteMessageBox = function(e, id) {
-         if (cur.onFriendMessage) cur.onFriendMessage();
-         stManager.add(['page.js', 'wide_dd.js']);
-         var box = showBox('al_mail.php', {act: 'write_box', to: id}, {stat: ['writebox.js', 'writebox.css', 'wide_dd.css', 'page.css', 'emoji.js', 'notifier.css'], cache: 1}, e);
-         if (box) cancelEvent(e);
-         //window.WriteBox && WriteBox.extractEmoji();
-         window.WriteBox && vkopt.im_form.debounce(vkopt.im_form.add_recent_emoji);
-         return !box;
-      }
-
+      Inj.End('showWriteMessageBox', function(){
+         vkopt.im_form.debounce(vkopt.im_form.add_recent_emoji);
+      });
       vkopt.im_form.debounce(vkopt.im_form.add_recent_emoji);
    },
 
