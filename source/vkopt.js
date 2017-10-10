@@ -5648,7 +5648,9 @@ vkopt['face'] =  {
             top:18px;
             padding-left: 18px;
          }
-
+         .vk_compact_audio.vk_old_audio_btns .audio_pl_edit_box .ape_audio_item_wrap .ape_attach{
+            margin-top: 3px;
+         }
          .vk_audio_full_title .audio_row .audio_title_wrap,
          .vk_audio_full_title .audio_row .audio_performer{
             white-space: normal;
