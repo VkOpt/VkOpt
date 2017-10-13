@@ -11,7 +11,7 @@
 //
 /* VERSION INFO */
 var vVersion	= 304;
-var vBuild = 170911;
+var vBuild = 171013;
 var vVersionRev = 3;
 var vPostfix = '';
 
@@ -4162,7 +4162,7 @@ vkopt['videoview'] = {
       //args = [videoRaw, title, html, js, desc, serviceBtns, opt]
       var videoRaw = args[0],
           js = args[3],
-          opt = args[6],
+          opt = args[5],
           rx = /(var\s*isInline)/;
       if (opt && opt.player){// новый формат ответа, JSON с данными о плеере находится в 6-ом аргументе.
          var vars = null;
