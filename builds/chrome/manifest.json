@@ -9,7 +9,7 @@
      {
         "js": ["content_script.js"],
         "run_at": "document_start",
-        "matches": ["*://vk.com/*","*://*.vk.com/*","*://vkontakte.ru/*","*://*.vkontakte.ru/*","*://vk.me/*","*://*.vk.me/*"],
+        "matches": ["*://vk.com/*","*://*.vk.com/*","*://vkontakte.ru/*","*://*.vkontakte.ru/*","*://vk.me/*","*://*.vk.me/*","*://userapi.com/*","*://*.userapi.com/*"],
         "all_frames": true
      }
   ],
