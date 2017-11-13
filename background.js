@@ -1035,7 +1035,10 @@ ext_api={
             if (!url)
                url=details.url.match(/^(.+)#FILENAME\/(.+\.[a-z0-9]+)/);
             if (url){
-               ext_api.utils.chrome.download_file_names['name'+details.requestId]=decodeURIComponent(url[2]);
+               ext_api.utils.chrome.download_file_names['name'+details.requestId]={
+                  decoded: decodeURIComponent(url[2]),
+                  encoded: url[2]
+               };
                return {redirectUrl: url[1]};
             }
          },
@@ -1043,16 +1046,18 @@ ext_api={
             //console.log('onHeadersReceived:',details);
             if (ext_api.utils.chrome.download_file_names['name'+details.requestId]){
                var found = false;
+               var name = ext_api.utils.chrome.download_file_names['name'+details.requestId];
+               var header_val = 'attachment; filename="'+name.decoded+'"; filename*=UTF-8\'\''+name.encoded;
                for (var i = 0; i < details.responseHeaders.length; ++i) {
                   if (details.responseHeaders[i].name === 'Content-Disposition') {
-                     details.responseHeaders[i].value = 'attachment; filename="'+ext_api.utils.chrome.download_file_names['name'+details.requestId]+'"';
+                     details.responseHeaders[i].value = header_val;
                      found = true;
                      break;
                   } //Content-Disposition: attachment; filename=\"1.png\""
                }
                if (!found) details.responseHeaders.push({
                   name: 'Content-Disposition',
-                  value: 'attachment; filename="'+ext_api.utils.chrome.download_file_names['name'+details.requestId]+'"'
+                  value: header_val
                });
                return {
                   responseHeaders: details.responseHeaders

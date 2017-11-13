@@ -11,8 +11,8 @@
 //
 /* VERSION INFO */
 var vVersion	= 304;
-var vBuild = 171013;
-var vVersionRev = 3;
+var vBuild = 171113;
+var vVersionRev = 5;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -2356,6 +2356,7 @@ vkopt['audio'] =  {
       */
       });
       vkopt.audio.load_sizes_cache();
+      vkbrowser.mozilla && vkopt.permissions.update();
    },
    onLibFiles: function(fn){
       if (fn = 'audioplayer.js'){
@@ -2907,8 +2908,15 @@ vkopt['audio'] =  {
                vkopt.log(arguments);
                var filename=vkCleanFileName(audioObject.performer+' - '+audioObject.title);
                var dl_btn = geByClass1('_audio_row__action_get_link', audioEl);
-               if (vkopt.audio.download_file(dl_btn))
-                  se('<a href="'+dl_btn.href+'" download="'+filename+'.mp3"></a>').click();
+               if (vkopt.audio.download_file(dl_btn)){
+                  var dlnk = se('<a href="'+dl_btn.href+'" download="'+filename+'.mp3"></a>');
+                  utilsNode.appendChild(dlnk)
+                  dlnk.click();
+                  setTimeout(function(){
+                     re(dlnk);
+                  },200);
+               }
+               return true;
             },
             '<div></div>',// button content
             'data-aid="{vals.fullId}" id="vk_get_link_{vals.fullId}" href="" onmouseover="vkopt.audio.check_dl_url(this);"',//custom_attributes
