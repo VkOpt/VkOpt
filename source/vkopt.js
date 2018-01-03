@@ -337,7 +337,10 @@ var vk_glue = {
    },
    inj_to_file: function(file_name){
       switch (file_name){
-         case 'common.js':       vk_glue.inj.common();  break;
+         case 'common.js':
+         case 'common_web.js':
+         case 'cmodules/web/common_web.js':
+            vk_glue.inj.common();  break;
          case 'groups.js':       vk_glue.inj.groups();  break;
          case 'public.js':       vk_glue.inj.publics();  break;
          case 'profile.js':       vk_glue.inj.profile();  break;
