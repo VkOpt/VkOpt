@@ -395,7 +395,7 @@ var vk_glue = {
          Inj.Start('renderFlash','vkOnRenderFlashVars(vars);');
          */
          // перехват тултипов при создании их контента. например для перехвата создания меню "Ещё" перед его показом в просмотрщике фото
-         Inj.Before('ElementTooltip.prototype.show',/this\.updatePosition\(\);/,'(!this._firstTimeShown && vkopt_core.plugins.eltt_first_show(this));\n');
+         Inj.Before('ElementTooltip.prototype.show', 'show(this._ttel)', ';(!this._firstTimeShown && vkopt_core.plugins.eltt_first_show(this));');
       },
       notifier: function(){
          Notifier.addRecvClbk('vkcmd', 0, function(data){
