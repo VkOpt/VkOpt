@@ -756,7 +756,43 @@ var vkMozExtension = {
 		FRegEx : /function[^\(]*\(\s*([^\)]*?)\s*\)[^\{]*\{([\s\S]+)\}/i,
 		DisableHistrory : false,
 		History : {},
-		Wait : function (func, callback, check_timeout, check_count, fail_callback) {
+		InitStringifier: function(){
+         Function.prototype.toStringOriginal = Function.prototype.toString;
+         //var origFnToStr = Function.prototype.toString;
+         Function.prototype.toString = function(){
+            if (this.inj_func_main){
+               var args = [];
+               args.push(
+                     'Inj modified function:       "'+this.inj_src_path+'"');
+               if (this.inj_func_original != this.inj_func_main){
+                  args.push(
+                     '\nSource function:            ',
+                     this.inj_func_original,
+                     '\nCurrent with modified code: ',
+                     this.inj_func_main
+                  );
+               }
+
+               if (this.inj_handlers.before.length){
+                  args.push(
+                     '\nBefore call handlers ('+this.inj_handlers.before.length+'):   ',
+                     this.inj_handlers.before
+                  )
+               }
+               if (this.inj_handlers.after.length){
+                  args.push(
+                     '\nAfter call handlers ('+this.inj_handlers.after.length+'):   ',
+                     this.inj_handlers.after
+                  )
+               }
+               console.log.apply(console, args);
+               return this.inj_func_main.toStringOriginal();
+            } else
+               return this.toStringOriginal();
+
+         }
+      },
+      Wait : function (func, callback, check_timeout, check_count, fail_callback) {
 			if (check_count == 0) {
 				if (fail_callback)
 					fail_callback('WaitForFunc out of allow checkes');
@@ -917,6 +953,7 @@ var vkMozExtension = {
             return wrapper.add('after', fn);
          }
 
+         wrapper.inj_src_path = fn_path[1];
          wrapper.inj_func_original = src_func;  // not modified original function
          wrapper.inj_func_main = src_func;      // we call this, it can contain other injections
          wrapper.inj_handlers = {
@@ -1016,6 +1053,7 @@ var vkMozExtension = {
 			return Inj.Make(s, s.code, arguments);
 		}
 	};
+   Inj.InitStringifier();
 
    vk_lib.get_block_comments = function(func){ // извлекаем из кода функции содержимое блоковых комментариев
       var code = Inj.Parse(func).code;
