@@ -2985,7 +2985,7 @@ vkopt['audio'] =  {
             } else { // пробуем выдрать элемент с доп. действиями из экземпляра ElementTooltip
                var ett = data(more_btn, 'ett'); // получаем экземпляр ElementTooltip
                if (ett){
-                  more_wrap = ett.getContent() || ett.getOptions().content; //getContent() возвращает контент, только если тултип показан
+                  more_wrap = ett.getOptions().content || ett.getContent(); //getContent() возвращает контент, только если тултип показан. UPD: почему-то возвращает чужой элемент.
                   more_wrap = geByClass1('_audio_row__more_actions', more_wrap) || more_wrap;
                }
             }
