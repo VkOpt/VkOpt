@@ -4125,7 +4125,7 @@ vkopt['videoview'] = {
          </div>
          */
          /*dl_link:
-         <a href="{vals.url}" download="{vals.name}" onmouseover="vkopt.videoview.get_size(this)">{vals.caption}<span class="vk_vid_size_info"></span></a>
+         <a href="{vals.url}" download="{vals.name}" onclick="return vkopt.videoview.download_file(this)" onmouseover="vkopt.videoview.get_size(this)">{vals.caption}<span class="vk_vid_size_info"></span></a>
          */
          /*ext_link:
          <a class="vk_vid_external_view" href="{vals.url}">{vals.source_name}</a>
@@ -4207,6 +4207,11 @@ vkopt['videoview'] = {
       vkopt.log('vkopt.videoview.on_show', args);
       vkopt.videoview.check_show_args(args);
    },
+   download_file: function(el){
+     var result = vkopt.permissions.check_dl_url(el, el.href);
+     if (result) result = vkDownloadFile(el);
+     return result;
+   },
    on_player_data: function(vars){
       vkopt.log('Video data:', vars, mvcur.mvData.videoRaw);
       if (!vkopt.settings.get('vid_dl')) return;
@@ -4230,8 +4235,8 @@ vkopt['videoview'] = {
       var html = '';
       for (var i = 0; i < links.length; i++){
          html += vk_lib.tpl_process(vkopt.videoview.tpls['dl_link'], {
-            url: links[i].url,
-            name: filename + '_' + links[i].quality + '.mp4',
+            url: links[i].url + (links[i].ext ? '#FILENAME/' + vkEncodeFileName(filename + '_' + links[i].quality) + links[i].ext : ''),
+            name: filename + '_' + links[i].quality + links[i].ext,
             caption: links[i].quality
          })
       }
@@ -4281,7 +4286,7 @@ vkopt['videoview'] = {
       }
    },
    get_size: function(el){
-      if (!el || !el.href || hasClass(el,'size_loaded')) return;
+      if (!el || !el.href || hasClass(el,'size_loaded') || /\.m3u8/.test(el.href)) return;
       var WAIT_TIME = 4000;
       var szel = geByTag1('span', el);
 
@@ -4315,13 +4320,16 @@ vkopt['videoview'] = {
 
       // 'ffmpeg -i "'+vars.hls+'" -c copy video.ts'
       if (vars.hls)
-         list.push({url: vars.hls, quality: 'hls'});
+         list.push({url: vars.hls, quality: 'hls', ext: '.m3u8'});
+
+      //if (vars.hls_raw)
+      //   list.push({text: vars.hls_raw, quality: 'hls_raw', ext: '.m3u8'});
 
       if (vars.postlive_mp4)
-         list.push({url: vars.postlive_mp4, quality: 'mp4'});
+         list.push({url: vars.postlive_mp4, quality: 'mp4', ext: '.mp4'});
 
       if (vars.live_mp4)
-         list.push({url: vars.live_mp4, quality: 'live_mp4'});
+         list.push({url: vars.live_mp4, quality: 'live_mp4', ext: '.mp4'});
 
       if (vars.extra_data && (vars.extra_data != (vars.author_id+'_'+vars.vid)))
          list.push({url: vars.extra_data, quality: 'extra'});
@@ -4329,8 +4337,8 @@ vkopt['videoview'] = {
       var q = [240, 360, 480, 720, 1080];
       for (var i = 0; i <= vars.hd; i++){
          var qname = q[i] || 0;
-         vars["url" + qname] && list.push({url: vars["url" + qname], quality: qname+'p'});
-         vars["cache" + qname] &&  list.push({url: vars["cache" + qname], quality: qname+'p_alt'})
+         vars["url" + qname] && list.push({url: vars["url" + qname], quality: qname+'p', ext: '.mp4'});
+         vars["cache" + qname] &&  list.push({url: vars["cache" + qname], quality: qname+'p_alt', ext: '.mp4'})
       }
       return list;
    },
