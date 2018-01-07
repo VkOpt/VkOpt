@@ -4212,7 +4212,7 @@ vkopt['videoview'] = {
       if (!vkopt.settings.get('vid_dl')) return;
       vkopt.videoview._cur_mv_data = vars;
       vkopt.videoview.update_dl_btn();
-      if (!vars || !vars.md_title || vars.extra){
+      if (!vars || !vars.md_title || (vars.extra && !vars.hls && !vars.postlive_mp4)){
          setTimeout(function(){
             var p, ifr;
             p = ge('mv_player_box');
@@ -4313,10 +4313,17 @@ vkopt['videoview'] = {
    get_video_links: function(vars){
       var list = [];
 
+      // 'ffmpeg -i "'+vars.hls+'" -c copy video.ts'
+      if (vars.hls)
+         list.push({url: vars.hls, quality: 'hls'});
+
+      if (vars.postlive_mp4)
+         list.push({url: vars.postlive_mp4, quality: 'mp4'});
+
       if (vars.live_mp4)
          list.push({url: vars.live_mp4, quality: 'live_mp4'});
 
-      if (vars.extra_data)
+      if (vars.extra_data && (vars.extra_data != (vars.author_id+'_'+vars.vid)))
          list.push({url: vars.extra_data, quality: 'extra'});
 
       var q = [240, 360, 480, 720, 1080];
