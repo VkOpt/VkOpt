@@ -7313,7 +7313,7 @@ vkopt['audio_clean_titles'] = {
 	},
 	processNode: function (node, params) {
 		if (vkopt.settings.get('audio_clean_titles')){ // clean titles
-			var nodes=geByClass('audio_title_wrap',node);
+			var nodes=domQuery('.audio_row__performer_title, .audio_title_wrap', node);
 			for (var i=0; i<nodes.length; i++){
 				FindAndProcessTextNodes(nodes[i],function(mainNode,childItem){
 					var el = mainNode.childNodes[childItem];
