@@ -5476,16 +5476,16 @@ vkopt['attacher'] = {
 vkopt['face'] =  {
    onSettings:{
       Media:{
-         audio_full_title: {
-            title: 'seAudioFullTitles',
-            class_toggler: true
-         },
          old_audio_btns: {
             title: 'seOldAudioButtons',
             class_toggler: true,
             sub:{
                compact_audio: {
                   title: 'seCompactAudio',
+                  class_toggler: true
+               },
+               audio_full_title: {
+                  title: 'seAudioFullTitles',
                   class_toggler: true
                }
             }
@@ -5685,6 +5685,64 @@ vkopt['face'] =  {
          .vk_audio_full_title .audio_row .audio_performer{
             display: inline;
          }
+
+         BEGIN {descr:'Begin of fixes from 8.01.2018'}
+         .vk_old_audio_btns .audio_w_covers .vk_audio_size_info_wrap {
+             margin-top: 8px;
+             margin-bottom: -12px;
+         }
+         .vk_old_audio_btns .audio_w_covers .audio_row .audio_row__actions {
+             margin-top: -3px;
+             margin-bottom: -12px;
+         }
+         .vk_old_audio_btns .audio_w_covers .audio_row .audio_row__info {
+             margin-bottom: -13px;
+         }
+         .vk_audio_full_title.vk_old_audio_btns .audio_row .audio_title_wrap,
+         .vk_audio_full_title.vk_old_audio_btns .audio_row .audio_performer,
+         .vk_audio_full_title.vk_old_audio_btns .audio_row .audio_row__title,
+         .vk_audio_full_title.vk_old_audio_btns .audio_row .audio_row__performer_title {
+            white-space: normal;
+         }
+         .vk_audio_full_title.vk_old_audio_btns .audio_row .audio_performer,
+         .vk_audio_full_title.vk_old_audio_btns .audio_row__title._audio_row__title,
+         .vk_audio_full_title.vk_old_audio_btns .audio_row .audio_row__performer_title {
+            display: inline;
+         }
+         .vk_audio_full_title.vk_old_audio_btns .audio_row,
+         .vk_audio_full_title.vk_old_audio_btns .audio_row .audio_row__inner {
+            height: auto;
+         }
+         .vk_audio_full_title.vk_old_audio_btns .audio_row {
+            padding-bottom: 5px;
+         }
+
+         .vk_audio_full_title .audio_row .audio_row_content {
+             padding-bottom: 23px;
+             margin-bottom: -10px;
+         }
+         .vk_compact_audio.vk_audio_full_title .audio_row .audio_row_content{
+             padding-bottom: 7px;
+             margin-bottom: -10px;
+         }
+         .vk_audio_full_title .audio_row__performer_title:after {
+             content: '.';
+             display: block;
+             height: 0;
+             font-size: 0;
+             line-height: 0;
+             clear: both;
+             visibility: hidden
+         }
+
+         .vk_audio_full_title.vk_old_audio_btns .audio_row .audio_row__performer_title,
+         .vk_audio_full_title.vk_old_audio_btns .audio_row .audio_row__performer{
+            overflow: visible;
+         }
+         END {descr:'End of fixes from 8.01.2018'}
+
+
+
          .vk_more_acts_icon{
             background: url(/images/icons/profile_dots.png) no-repeat 0 4px;
             height: 13px;
