@@ -1885,7 +1885,7 @@ vkopt['photoview'] =  {
    },
    onLibFiles: function(file_name){
       if (file_name == 'photoview.js'){
-         Inj.Start('Photoview.afterShow','vkopt.photoview.scroll_view();');
+         Inj.Start('Photoview.afterShow','vkopt.photoview.scroll_view(); (cur.pvBox && vkopt_core.plugins.process_node(cur.pvBox));');
          vkopt.photoview.move_comments_block.inj();
       }
    },
