@@ -3764,9 +3764,11 @@ vkopt['scrobbler'] = {
 vkopt['audio_info'] = {
    onSettings:{
       Media:{
+         /*
          audio_album_info: {
             title: 'seLoadAudioAlbumInfo'
          }
+         */
       }
    },
    css: function(){
