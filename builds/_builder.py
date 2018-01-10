@@ -142,6 +142,7 @@ regex = None
 exclude_regex = "\.(orig|gitignore)$"
 
 zipdir("firefox", "vkopt_%s_firefox.xpi" % full_ver, False,regex,exclude_regex)
+zipdir("firefox", "vkopt_%s_palemoon.xpi" % full_ver, False,regex,exclude_regex)
 zipdir("opera.extension", "vkopt_%s_opera.oex" % full_ver, False,regex,exclude_regex)
 zipdir("chrome", "vkopt_%s_chrome.zip" % full_ver, False,regex,exclude_regex)
 zipdir("webext", "vkopt_%s_firefox.webext.xpi" % full_ver, False,regex,exclude_regex)
