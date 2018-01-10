@@ -7,19 +7,19 @@
     <em:name>VkOpt</em:name>
     <em:description>Добавление множества функций для сайта ВКонтакте</em:description>
     <em:creator>KiberПсих</em:creator>
-    <em:homepageURL>http://vkopt.net/</em:homepageURL>    
-    <em:iconURL>chrome://vkopt/content/vkopt_icon.svg</em:iconURL>    
+    <em:homepageURL>http://vkopt.net/</em:homepageURL>
+    <em:iconURL>chrome://vkopt/content/vkopt_icon.svg</em:iconURL>
 	 <!--
-    <em:iconURL>chrome://vkopt/content/icon48.png</em:iconURL>    
+    <em:iconURL>chrome://vkopt/content/icon48.png</em:iconURL>
 	 <em:icon64URL>chrome://vkopt/content/icon64.png</em:icon64URL>
-    -->    
+    -->
     <em:type>2</em:type>
     <em:bootstrap>true</em:bootstrap>
     <em:unpack>true</em:unpack>
 
     <em:updateURL>http://vkopt.net/upd/update.rdf</em:updateURL>
     <em:updateKey>MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDKoFvysLtbyghFmQk/J9CLnLEzkULcQUTxFvhXUwyVozynqLmv3+WMoOur8DaSUvzQdHAvKxvzFKkFWYCCPJO83rJ76r6xhssGXa1i8ShfElBiPaW8CAj8W4EmSWnGnrGMsaonf0C3YX3iLgIbZTTz6ovnOH1tUPsOE3A8V4ohmwIDAQAB</em:updateKey>
-    
+
     <em:targetApplication>
       <Description>
         <!-- fennec -->
@@ -52,6 +52,13 @@
         <em:maxVersion>*</em:maxVersion>
       </Description>
     </em:targetApplication>
-    
+    <em:targetApplication>
+      <Description>
+        <!-- palemoon -->
+        <em:id>{8de7fcbb-c55c-4fbe-bfc5-fc555c87dbc4}</em:id>
+        <em:minVersion>27.1.0b1</em:minVersion>
+        <em:maxVersion>*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
   </Description>
 </RDF>
