@@ -4136,7 +4136,9 @@ vkopt['videoview'] = {
    },
    onLibFiles: function(fn){
       if (fn == 'videoview.js'){
-         Inj.Start('Videoview.showVideo','vkopt.videoview.on_show(arguments);');
+        Inj.Start('Videoview.showVideo', function(){
+           vkopt.videoview.on_show(arguments);
+        });
       }
    },
    /*
