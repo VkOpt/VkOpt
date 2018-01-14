@@ -779,6 +779,8 @@ vk_lang_ru={
    ,"LinksAndRepost_link": "\u0421\u0441\u044B\u043B\u043A\u0438"
    ,"LinksAndRepost_post": "\u0420\u0435\u043F\u043E\u0441\u0442\u044B"
    ,"seOldAudioButtons":"\u041a\u043b\u0430\u0441\u0441\u0438\u0447\u0435\u0441\u043a\u0438\u0439 \u0441\u0442\u0438\u043b\u044c \u043d\u0430\u0437\u0432\u0430\u043d\u0438\u0439 \u0438 \u043a\u043d\u043e\u043f\u043e\u043a \u043f\u0440\u043e\u0438\u0433\u0440\u044b\u0432\u0430\u043d\u0438\u044f \u0430\u0443\u0434\u0438\u043e"
+   ,"seShiftPageButtons": "\u041f\u043e\u043a\u0430\u0437\u044b\u0432\u0430\u0442\u044c \u0432 \u0448\u0430\u043f\u043a\u0435 \u043a\u043d\u043e\u043f\u043a\u0438 \u0441\u0434\u0432\u0438\u0433\u0430 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u044b"
+   ,"seHideShiftBtn": "\u0421\u0434\u0435\u043b\u0430\u0442\u044c \u043a\u043d\u043e\u043f\u043a\u0438 \u0441\u0434\u0432\u0438\u0433\u0430 \u043f\u043e\u043b\u043d\u043e\u0441\u0442\u044c\u044e \u043f\u0440\u043e\u0437\u0440\u0430\u0447\u043d\u044b\u043c\u0438"
    };
 
 vk_lang_en={//by Hzy
@@ -1708,6 +1710,8 @@ vk_lang_en={//by Hzy
   ,"LinksAndRepost_link": "Link"
   ,"LinksAndRepost_post": "Post"
   ,"seOldAudioButtons": "Classic audios titles and play buttons style"
+  ,"seShiftPageButtons": "Show page shift position buttons in the header"
+  ,"seHideShiftBtn": "Make shift buttons fully transparent"
 };
 
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
@@ -2632,7 +2636,8 @@ vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
    "LinksAndRepost_all": "\u0412\u0441\u0456",
    "LinksAndRepost_forward": "\u0424\u043e\u0440\u0432\u0430\u0440\u0434\u0438",
    "LinksAndRepost_link": "\u041f\u043e\u0441\u0438\u043b\u0430\u043d\u043d\u044f",
-   "LinksAndRepost_post": "\u0420\u0435\u043f\u043e\u0441\u0442\u0438"
+   "LinksAndRepost_post": "\u0420\u0435\u043f\u043e\u0441\u0442\u0438",
+   "seOldAudioButtons": "\u041a\u043b\u0430\u0441\u0438\u0447\u043d\u0438\u0439 \u0441\u0442\u0438\u043b\u044c \u043d\u0430\u0437\u0432\u0438 \u043a\u043d\u043e\u043f\u043e\u043a \u043f\u0440\u043e\u0433\u0440\u0430\u0432\u0430\u043d\u043d\u044f \u0430\u0443\u0434\u0456\u043e"
 };
 
 vk_lang_by={ //by Gavr id8610702

@@ -5526,10 +5526,20 @@ vkopt['face'] =  {
             title:"seHideRecomendations",
             class_toggler: true
          },
-	 hide_stories:{
+         hide_stories:{
             title:"seHideStories",
             class_toggler: true
-	 }
+         },
+         shift_page: {
+            title: 'seShiftPageButtons',
+            class_toggler: true,
+            sub:{
+               hide_shift_btn: {
+                  title: 'seHideShiftBtn',
+                  class_toggler: true
+               }
+            }
+         }
       },
 
       Users:{
@@ -5548,6 +5558,9 @@ vkopt['face'] =  {
          },
          anonimize: {
             class_toggler: true
+         },
+         shift_page_type:{
+            default_value: 0
          }
       }
    },
@@ -5777,7 +5790,7 @@ vkopt['face'] =  {
          .vk_hide_recommendations #groups_filters_wrap>.page_block{
             display: none;
          }
-	 .vk_hide_stories #stories_feed_wrap {
+         .vk_hide_stories #stories_feed_wrap {
             display: none;
          }
          #vk_online_status > * {
@@ -5846,7 +5859,45 @@ vkopt['face'] =  {
             -webkit-filter: blur(4px);
             filter: blur(4px);
          }
+         .vk_shift_page #page_layout.vk_shift_left{
+            margin-left:0px;
+         }
+         .vk_shift_page #page_layout.vk_shift_right{
+            margin-right:0px;
+         }
 
+         .vk_page_shift_left:before, .vk_page_shift_right:before {
+             content: "";
+             background-image: url(/images/icons/row_slider_btn.png);
+             background-position-y: 50%;
+             background-repeat: no-repeat;
+             display: block;
+             width: 26px;
+             height: 42px;
+         }
+         .vk_page_shift_left,
+         .vk_page_shift_right{
+            position: relative;
+            opacity: 0.2;
+            transition: opacity 300ms linear;
+         }
+         .vk_hide_shift_btn .vk_page_shift_left,
+         .vk_hide_shift_btn .vk_page_shift_right{
+            opacity: 0;
+         }
+         .vk_page_shift_left:hover, .vk_page_shift_right:hover,
+         .vk_hide_shift_btn .vk_page_shift_left:hover, .vk_hide_shift_btn .vk_page_shift_right:hover{
+            opacity: 1;
+         }
+         .vk_page_shift_left{
+            margin-left: -40px;
+         }
+         .vk_page_shift_right:before{
+            background-position-x: -26px;
+         }
+         .vk_page_shift_right{
+            margin-right: -40px;
+         }
          */
       });
       var progress_bar = vk_lib.get_block_comments(vkProgressBar).css;
@@ -5895,6 +5946,8 @@ vkopt['face'] =  {
    onInit: function() {
       vkopt.face.user_online_status();
       vkopt.face.anon_top_menu_item();
+      if (vkopt.settings.get('shift_page_type') != 0)
+         vkopt.face.shift_page.shift(vkopt.settings.get('shift_page_type'));
    },
    onCmd: function(data){
       if (data.act == 'user_online_status')
@@ -5903,6 +5956,7 @@ vkopt['face'] =  {
    onOptionChanged: function(option_id, val, option_data){
       if (option_id == 'show_online_status')
          vkopt.face.user_online_status();
+      vkopt.face.shift_page.btn();
    },
    anon_top_menu_item: function(){
       if (!vkopt.settings.get('anonimize_btn'))
@@ -5957,6 +6011,28 @@ vkopt['face'] =  {
                vkopt.face.check_online_timeout = setTimeout(function(){vkopt.face.user_online_status();},vkGenDelay(20000));
             }
        });
+      }
+   },
+   shift_page: {
+      btn: function(){
+         if (vkopt.settings.get('shift_page') && !geByClass('vk_page_shift_left')[0]){
+            ge('top_nav').insertBefore(se('<a class="vk_page_shift_left head_nav_item fl_l" onclick="return vkopt.face.shift_page.shift(-1);"></a>'), ge('top_nav').firstChild);
+            ge('top_nav').insertBefore(se('<a class="vk_page_shift_right head_nav_item fl_r" onclick="return vkopt.face.shift_page.shift(1);"></a>'),geByClass('fl_r', ge('top_nav'))[0]);
+         }
+      },
+      shift: function(dir){
+         if (hasClass('page_layout', 'vk_shift_right') || hasClass('page_layout', 'vk_shift_left')){
+            removeClass('page_layout', 'vk_shift_right');
+            removeClass('page_layout', 'vk_shift_left');
+            vkopt.settings.set('shift_page_type', 0);
+            return false;
+         }
+         vkopt.settings.set('shift_page_type', dir);
+         if (dir > 0)
+            addClass('page_layout', 'vk_shift_right');
+         else
+            addClass('page_layout', 'vk_shift_left');
+         return false;
       }
    }
 };
