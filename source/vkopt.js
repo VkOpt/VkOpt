@@ -5695,11 +5695,11 @@ vkopt['face'] =  {
          .vk_compact_audio.vk_old_audio_btns .audio_pl_edit_box .ape_audio_item_wrap .ape_attach{
             margin-top: 3px;
          }
-         .vk_audio_full_title .audio_row .audio_title_wrap,
-         .vk_audio_full_title .audio_row .audio_performer{
+         .vk_audio_full_title.vk_old_audio_btns .audio_row .audio_title_wrap,
+         .vk_audio_full_title.vk_old_audio_btns .audio_row .audio_performer{
             white-space: normal;
          }
-         .vk_audio_full_title .audio_row .audio_performer{
+         .vk_audio_full_title.vk_old_audio_btns .audio_row .audio_performer{
             display: inline;
          }
 
@@ -5734,7 +5734,7 @@ vkopt['face'] =  {
             padding-bottom: 5px;
          }
 
-         .vk_audio_full_title .audio_row .audio_row_content {
+         .vk_audio_full_title.vk_old_audio_btns .audio_row .audio_row_content {
              padding-bottom: 23px;
              margin-bottom: -10px;
          }
@@ -5742,7 +5742,7 @@ vkopt['face'] =  {
              padding-bottom: 7px;
              margin-bottom: -10px;
          }
-         .vk_audio_full_title .audio_row__performer_title:after {
+         .vk_audio_full_title.vk_old_audio_btns  .audio_row__performer_title:after {
              content: '.';
              display: block;
              height: 0;
@@ -5756,7 +5756,16 @@ vkopt['face'] =  {
          .vk_audio_full_title.vk_old_audio_btns .audio_row .audio_row__performer{
             overflow: visible;
          }
-         END {descr:'End of fixes from 8.01.2018'}
+
+         .vk_audio_full_title.vk_old_audio_btns .audio_row .audio_row__performer {
+            top: 11px;
+            position: relative;
+         }
+         .vk_audio_full_title.vk_old_audio_btns .audio_row .audio_row__actions {
+            margin-bottom: -20px;
+         }
+
+         END {descr:'End of fixes from 21.01.2018'}
 
 
 
