@@ -522,11 +522,38 @@ vkopt.cmd = function(msg){ // при вызове сразу из onInit, соо
 }
 vkopt.save_file = function(data, filename){
    vkLdr.show();
-   FileSaverConnect(function() {
+
+   var onFail = function(){
+      FileSaverConnect(function() { // load extenal library
+         vkopt.log('FileSaver loaded');
+         var blob = new Blob([data], {type: "text/plain;charset=utf-8"});
+         vkLdr.hide();
+         saveAs(blob, filename);
+      });
+   }
+
+   var url_create = (window.URL || window.webkitURL || window).createObjectURL;
+   var url_revoke = (window.URL || window.webkitURL || window).revokeObjectURL;
+   if (window.Blob && url_create && url_revoke){
       var blob = new Blob([data], {type: "text/plain;charset=utf-8"});
-      vkLdr.hide();
-      saveAs(blob, filename);
-   });
+      var url = url_create(blob);
+      if (url){
+         var dlnk = document.createElement('a');
+         dlnk.href = url;
+         dlnk.download = filename;
+         utilsNode.appendChild(dlnk)
+         dlnk.click();
+         vkopt.log('Download file: ', filename);
+         setTimeout(function(){
+            re(dlnk);
+            vkLdr.hide();
+            url_revoke(dlnk);
+         },200);
+      } else
+         onFail();
+   } else onFail();
+
+
 }
 vkopt.load_file = function(callback){
      var inp_el;
