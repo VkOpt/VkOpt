@@ -5792,7 +5792,11 @@ vkopt['face'] =  {
             margin-bottom: -20px;
          }
 
-         END {descr:'End of fixes from 21.01.2018'}
+         .vk_old_audio_btns.vk_compact_audio.vk_audio_full_title .audio_pl_edit_box .ape_audio_item_wrap{
+            clear:both;
+         }
+
+         END {descr:'End of fixes from 18.02.2018'}
 
 
 
