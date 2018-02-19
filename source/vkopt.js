@@ -590,12 +590,15 @@ vkopt.permissions = { // for chromium
    origins_cache:[],
    update: function(callback){
       vk_ext_api.req({act:'permissions_get'},function(r){
-         vkopt.permissions.origins_cache = r.permissions.origins;
+         var origins = r.permissions.origins.filter(function(item, idx){
+           if (!/:\/\/\*\//.test(item) && /:\/\/\*\./.test(item)) // исключаем маску *://*/* и маски без поддоменов
+              return item;
+         });
+         vkopt.permissions.origins_cache = origins;
          callback && callback(r.permissions);
       });
    },
-   check_url: function(url){
-      var masks = vkopt.permissions.origins_cache;
+   check_url: function(url, masks){
       for (var i in masks){
          var rx_pat = '^'+masks[i].replace(/\*$/,'').replace(/\*/g,'[^\/]*').replace(/\//g,'\\/').replace(/\./g,'\\.')+'.*';
          var rx = new RegExp(rx_pat,'i');
@@ -618,9 +621,12 @@ vkopt.permissions = { // for chromium
       });
    },
    */
-   request: function(url, callback){
+   get_url_mask: function(url){
       var m = url.match(/^[^\/]+:\/\/([^\/]+\.)?([^\/]+\.[^\/]+)\//);
-      var mask = "*://" + (m[2] ? "*." : '') + m[2] + "/*";
+      return "*://" + (m[2] ? "*." : '') + m[2] + "/*";
+   },
+   request: function(url, callback){
+      var mask = vkopt.permissions.get_url_mask(url);
       vk_ext_api.req({act:'permissions_request', permissions_query:{origins:[mask]}},function(r){
          vkopt.permissions.update(function(){
             callback && callback(r.act == 'permission_granted');
@@ -628,7 +634,7 @@ vkopt.permissions = { // for chromium
       });
    },
    check_dl_url: function(el, url){
-      if (!(vkbrowser.chrome || vk_ext_api.browsers.webext) || vkopt.permissions.check_url(url)){
+      if (!(vkbrowser.chrome || vk_ext_api.browsers.webext) || vkopt.permissions.check_url(url, vkopt.permissions.origins_cache)){
          return true;
       } else {
          show(boxLayerBG);
@@ -2939,10 +2945,11 @@ vkopt['audio'] =  {
                vkopt.log(arguments);
                var filename=vkCleanFileName(audioObject.performer+' - '+audioObject.title);
                var dl_btn = geByClass1('_audio_row__action_get_link', audioEl);
-               if (vkopt.audio.download_file(dl_btn)){
-                  var dlnk = se('<a href="'+dl_btn.href+'" download="'+filename+'.mp3"></a>');
-                  utilsNode.appendChild(dlnk)
-                  dlnk.click();
+               if (dl_btn.hasAttribute('url_ready')){
+                  var dlnk = se('<a href="'+dl_btn.href+'" download="'+filename+'.mp3" url_ready=1></a>');
+                  utilsNode.appendChild(dlnk);
+                  if (vkopt.audio.download_file(dlnk))
+                     dlnk.click();
                   setTimeout(function(){
                      re(dlnk);
                   },200);

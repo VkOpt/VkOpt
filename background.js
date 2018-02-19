@@ -695,7 +695,12 @@ ext_api={
                   origins : ["*://*.vk-cdn.net/*"]
                }*/, function (granted) {
                   // The callback argument will be true if the user granted the permissions.
-                  if (granted) {
+                  // if it fails in Firefox then granted == undefined
+                  if (typeof granted == 'undefined'){
+                     ext_api.utils.chrome.update(data.permissions_query, function(already_granted){
+                        send_response({act: already_granted ? 'permission_granted' : 'permission_denied'});
+                     });
+                  } else if (granted) {
                      send_response({act:'permission_granted'});
                      ext_api.utils.chrome.update(); // обновим регистрацию обработчиков запросов
                   } else {
@@ -705,6 +710,8 @@ ext_api={
             break;
          case 'permissions_get':
                chrome.permissions.getAll(function(perms){
+                  if (perms && perms.origins)
+                     perms.origins = perms.origins.concat(ext_api.utils.chrome.permissions_sub_cache);
                   send_response({permissions:perms});
                })
             break;
@@ -999,7 +1006,19 @@ ext_api={
          init: function(){
             ext_api.utils.chrome.update();
          },
-         update: function(){
+         //function duplicate from vkopt.js: vkopt.permissions.check_url
+         permissions_sub_cache: [],
+         check_mask: function(mask, masks){
+            var pseudo_url = mask.replace(/\*+/g,'pseudourlpart')
+            for (var i in masks){
+               var rx_pat = '^'+masks[i].replace(/\*$/,'').replace(/\*/g,'[^\/]*').replace(/\//g,'\\/').replace(/\./g,'\\.')+'.*';
+               var rx = new RegExp(rx_pat,'i');
+               if (rx.test(pseudo_url))
+                  return true;
+            }
+            return false;
+         },
+         update: function(permissions_query, callback){
              chrome.permissions.getAll(function(perms){
                var _this = ext_api.utils.chrome;
                var full_origins = perms.origins;
@@ -1008,6 +1027,28 @@ ext_api={
                  if (!/:\/\/\*\//.test(item) && /:\/\/\*\./.test(item)) // исключаем маску *://*/* и маски без поддоменов
                     return item;
                });
+
+               var cache = _this.permissions_sub_cache;
+               var granted = false;
+               if (permissions_query && permissions_query.origins){
+                  var check = _this.check_mask;
+
+                  var query_masks = permissions_query.origins;
+                  for (var i in query_masks){
+
+                     if (check(query_masks[i],origins) || check(query_masks[i],cache))
+                        granted = true;
+
+                     if (!check(query_masks[i],origins) && check(query_masks[i],full_origins) && cache.indexOf(query_masks[i]) < 0){
+                        granted = true;
+                        cache.push(query_masks[i]);
+                     }
+                  }
+
+               }
+               callback && callback(granted);
+               origins = origins.concat(cache);
+
                console.log('Origins for mod requests:', origins);
                //["*://*.vk.me/*","*://*.userapi.com/*","*://*.vk-cdn.net/*"];
 
