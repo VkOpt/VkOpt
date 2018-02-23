@@ -23,7 +23,10 @@ var ex_ldr={
    __key:(Math.round(Math.random()*10000000)).toString(35),
    init:function(){
       ex_ldr.get_scripts(function(data){
-         var obj=JSON.parse(win.localStorage['ldr_disabled_libs'] || "{}");
+         var obj = {};
+         try{
+            obj = JSON.parse(win.localStorage['ldr_disabled_libs'] || "{}");
+         } catch(e) {}
          var run_at_start=[];
          var run_content_loaded=[];
          if (data.length){

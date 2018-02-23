@@ -2614,7 +2614,7 @@ vkopt['audio'] =  {
             if (info){
                var name = vkCleanFileName(info.performer + ' - ' + info.title);
                var url = vkopt.audio.make_dl_url(info.url, name);
-               el.setAttribute('download', name);
+               el.setAttribute('download', name+'.mp3');
                el.setAttribute('href', url);
                el.setAttribute('url_ready','1');
                removeClass(el,'dl_url_loading');
