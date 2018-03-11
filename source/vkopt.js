@@ -5021,6 +5021,20 @@ vkopt['messages'] = {
          }
          return html;
       };
+      var make_ulink = function(id){
+         return 'http://vk.com/'+(id > 0 ? 'id' : 'club')+ Math.abs(id);
+      }
+      var make_attachments=function(attachments){
+         var html = '';
+         if(attachments !== undefined){
+            html+='<div class="attacments"> <b>'+IDL('HistMsgAttachments')+'</b> </div>';
+            var l=attachments.length;
+            for(var k=0;k<l;k++){
+               html+=make_attach(attachments[k]);
+            }
+         }
+         return html
+      }
       var make_attach=function(attach){
          var html='';
          if (!attach[attach.type]){
@@ -5047,7 +5061,10 @@ vkopt['messages'] = {
                html+='<div class="attacment"> <div class="att_ico att_doc"></div> <a target="_blank" href="'+attach.doc["url"].replace(/&/g,'&amp;')+'">'+doc2text(attach.doc.title)+'</a></div>';
                break;
             case 'wall':
-               html+='<div class="attacment"> <div class="att_ico att_wall"></div> <a target="_blank" href="http://vk.com/wall'+attach.wall.to_id+'_'+attach.wall.id+'">[wall'+attach.wall.to_id+'_'+attach.wall.id+']</a></div>';
+               html+='<div class="attacment"> <div class="att_ico att_wall"></div> <a target="_blank" href="http://vk.com/wall'+attach.wall.to_id+'_'+attach.wall.id+'">[wall'+attach.wall.to_id+'_'+attach.wall.id+']</a><div class="att_wall_text">'+attach.wall.text+'</div>'+make_attachments(attach.wall.attachments)+'</div>';
+               break;
+            case 'wall_reply':
+               html+='<div class="attacment"> <div class="att_ico att_wall"></div> <a target="_blank" href="http://vk.com/wall'+attach.wall_reply.owner_id+'_'+attach.wall_reply.post_id+'">[wall'+attach.wall_reply.owner_id+'_'+attach.wall_reply.post_id+']</a> <div class="att_wall_text">'+attach.wall_reply.text+'</div>'+make_attachments(attach.wall_reply.attachments)+'</div>';
                break;
             case 'link':
                html+='<div class="attacment attb_link"> <div class="att_ico att_link"></div> <a href="'+attach.link.url+'" target="_blank"><span>'+IDL('HistMsgAttachLink')+'</span> '+doc2text(attach.link.title)+'</a></div>';
@@ -5059,7 +5076,7 @@ vkopt['messages'] = {
                html+='<div class="attacment"> <div class="att_ico att_sticker"></div> <a target="_blank" href="'+attach.sticker.photo_256+'">'+IDL('HistMsgAttachSticker')+' #'+attach.sticker.id+'</a></div>';
                break;
             default:
-               html+=JSON.stringify(attach);
+               html+='<div class="attacment"><pre>'+JSON.stringify(attach,'','   ')+'</pre></div>';
                //console.log(attach.type+' is unknown');
          }
          return html;
@@ -5089,7 +5106,7 @@ vkopt['messages'] = {
                         } );
          html+='<div id="msg'+msg[i].id+'" class="msg_item">';
          html+='<div class="upic"><img src="'+u.photo_100+'" alt="[photo_100]"></div>';
-         html+='<div class="from"> <b>'+u.first_name+' '+u.last_name+'</b> <a href="http://vk.com/id'+from_id+'" target="_blank">@'+u.domain+'</a> <a href="#msg'+msg[i].id+'">'+t2d(msg[i].date)+'</a></div>';
+         html+='<div class="from"> <b>'+u.name+'</b> <a href="'+make_ulink(from_id)+'" target="_blank">@'+u.domain+'</a> <a href="#msg'+msg[i].id+'">'+t2d(msg[i].date)+'</a></div>';
 
          if(msg[i].body != ""){
                html+='<div class="msg_body">'+t2m(msg[i].body)+'</div>';
@@ -5129,7 +5146,7 @@ vkopt['messages'] = {
             html+='<div class="upic"><img src="'+
 			u.photo_100+
 			'" alt="[photo_100]"></div>';
-            html+='<div class="from"> <b>'+u.first_name+' '+u.last_name+'</b> <a href="http://vk.com/id'+msgfwd[k].user_id+'" target="_blank">@'+u.domain+'</a> '+t2d(msgfwd[k].date)+'</div>';
+            html+='<div class="from"> <b>'+u.name+'</b> <a href="'+make_ulink(msgfwd[k].user_id)+'" target="_blank">@'+u.domain+'</a> '+t2d(msgfwd[k].date)+'</div>';
             html+='<div class="msg_body"> '+t2m(msgfwd[k].body)+'</div>';
             if(msgfwd[k].attachments !== undefined){
                html+='<div class="attacments"> <b>'+IDL('HistMsgAttachments')+'</b> </div>';
@@ -5152,54 +5169,91 @@ vkopt['messages'] = {
    },
    export_data: function(messages){
       var users_ids = [];
+      var groups_ids = [];
       var history_uids={};
+
       var collect_users=function(arr){
+         var add_ugid = function(id){
+            var add_to = id > 0 ? users_ids : groups_ids;
+            id = Math.abs(id);
+            if (id && add_to.indexOf(id)==-1) add_to.push(id);
+         }
          for (var i=0; i<arr.length; i++){
             var msg=arr[i];
             //console.log(msg)
             if (msg.from_id) history_uids[msg.from_id]='1';
             if (msg.user_id) history_uids[msg.user_id]='1';
-            if (msg.from_id && users_ids.indexOf(msg.from_id)==-1) users_ids.push(msg.from_id);
-            if (msg.user_id && users_ids.indexOf(msg.user_id)==-1) users_ids.push(msg.user_id);
+            add_ugid(msg.from_id);
+            add_ugid(msg.user_id);
             if (msg.fwd_messages)
                collect_users(msg.fwd_messages);
                //for (var i=0; i<msg.fwd_messages.length; i++)
          }
       };
+      var users={};
+      var load_users_info = function(callback){
+         dApi.call('users.get',{user_ids:users_ids.join(','),fields:'photo_100,screen_name',v:'5.73'},function(r){
+            ldr && (ldr.innerHTML = vkProgressBar(90,100,w,'Users data... %'));
+            var usrs=r.response;
+
+            for (var i=0; i<usrs.length; i++){
+               usrs[i].name = usrs[i].first_name+' '+usrs[i].last_name
+               usrs[i].domain = usrs[i].screen_name;
+               users[usrs[i].id]=usrs[i];
+            }
+            for (var i=0; i<users_ids.length; i++)
+               if (!users[users_ids[i]])
+                  users[users_ids[i]]={
+                     id: users_ids[i],
+                     first_name: 'DELETED',
+                     last_name: '',
+                     photo_100: 'http://vk.com/images/deactivated_c.gif'
+                  };
+            dApi.call('groups.getById',{group_ids:groups_ids.join(','),fields:'photo_100,screen_name',v:'5.73'},function(r){
+               ldr && (ldr.innerHTML = vkProgressBar(95,100,w,'Groups data... %'));
+               var grps=r.response;
+               for (var i=0; i<grps.length; i++){
+                  grps[i].domain = grps[i].screen_name
+                  users['-'+grps[i].id]=grps[i];
+               }
+
+               for (var i=0; i<users_ids.length; i++)
+                  if (!users[users_ids[i]])
+                     users[users_ids[i]]={
+                        id: users_ids[i],
+                        name: 'DELETED',
+                        first_name: 'DELETED',
+                        last_name: '',
+                        photo_100: 'http://vk.com/images/deactivated_c.gif'
+                     };
+               callback && callback();
+            });
+         });
+      }
+
+
       collect_users(messages);
       var ldr = ge('saveldr');
       if (ldr){
          var w=getSize(ge('saveldr'),true)[0];
          ldr.innerHTML=vkProgressBar(0,100,w,'Users data... %');
       }
-      dApi.call('users.get',{user_ids:users_ids.join(','),fields:'photo_100,domain',v:'5.5'},function(r){
-         ldr && (ldr.innerHTML = vkProgressBar(90,100,w,'Users data... %'));
-         var usrs=r.response;
-         var users={};
-         for (var i=0; i<usrs.length; i++)
-            users[usrs[i].id]=usrs[i];
-         for (var i=0; i<users_ids.length; i++)
-            if (!users[users_ids[i]])
-               users[users_ids[i]]={
-                  id: users_ids[i],
-                  first_name: 'DELETED',
-                  last_name: '',
-                  photo_100: 'http://vk.com/images/deactivated_c.gif'
-               };
 
+
+      load_users_info(function(){
          var html=vkopt.messages.make_html(messages, users);
          html = vk_lib.tpl_process(vkopt.messages.tpls['history_html'], {
                body_class: !vkopt.settings.get('disable_border_radius') ? 'round_upic' : ' ',
                messages_body: html
             });
-         ldr && (ldr.innerHTML=vkProgressBar(100,100,w,'Users data... %'));
+         ldr && (ldr.innerHTML=vkProgressBar(100,100,w,'Export data... %'));
          show('save_btn_text');
          hide('saveldr');
 
          var file_name=[];
          for (var key in users){
             var uid=parseInt(key || '0');
-            if (history_uids[key] && !(window.vk && uid==vk.id)) file_name.push(users[key].first_name+" "+users[key].last_name+'('+uid+')');
+            if (history_uids[key] && !(window.vk && uid==vk.id)) file_name.push(users[key].name+'('+uid+')');
          }
 
          html=html.replace(/%title/g,'VK Messages: '+file_name.join(','));
@@ -5229,7 +5283,7 @@ vkopt['messages'] = {
             code.push('API.messages.getHistory({user_id:'+uid+', count:'+PER_REQ+', offset:'+offset+', rev:1}).items');//
             offset+=PER_REQ;
          }
-         dApi.call('execute',{code:'return {count:API.messages.getHistory({user_id:'+uid+', count:0, offset:0}).count, items:'+code.join('+')+'};',v:'5.5'},function(r){
+         dApi.call('execute',{code:'return {count:API.messages.getHistory({user_id:'+uid+', count:0, offset:0}).count, items:'+code.join('+')+'};',v:'5.73'},function(r){
             var msgs = r.response.items;
             var count = r.response.count;
             ge('saveldr').innerHTML=vkProgressBar(offset,count,w);
