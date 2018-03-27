@@ -5192,42 +5192,61 @@ vkopt['messages'] = {
       };
       var users={};
       var load_users_info = function(callback){
-         dApi.call('users.get',{user_ids:users_ids.join(','),fields:'photo_100,screen_name',v:'5.73'},function(r){
-            ldr && (ldr.innerHTML = vkProgressBar(90,100,w,'Users data... %'));
-            var usrs=r.response;
+         var get_users = function(cb){
+            if (users_ids.length){
+               dApi.call('users.get',{user_ids:users_ids.join(','),fields:'photo_100,screen_name',v:'5.73'},function(r){
+                  ldr && (ldr.innerHTML = vkProgressBar(90,100,w,'Users data... %'));
+                  var usrs=r.response;
 
-            for (var i=0; i<usrs.length; i++){
-               usrs[i].name = usrs[i].first_name+' '+usrs[i].last_name
-               usrs[i].domain = usrs[i].screen_name;
-               users[usrs[i].id]=usrs[i];
+                  for (var i=0; i<usrs.length; i++){
+                     usrs[i].name = usrs[i].first_name+' '+usrs[i].last_name
+                     usrs[i].domain = usrs[i].screen_name;
+                     users[usrs[i].id]=usrs[i];
+                  }
+                  for (var i=0; i<users_ids.length; i++)
+                     if (!users[users_ids[i]])
+                        users[users_ids[i]]={
+                           id: users_ids[i],
+                           first_name: 'DELETED',
+                           last_name: '',
+                           photo_100: 'http://vk.com/images/deactivated_c.gif'
+                        };
+                  cb && cb();
+               });
+            } else {
+               cb && cb();
             }
-            for (var i=0; i<users_ids.length; i++)
-               if (!users[users_ids[i]])
-                  users[users_ids[i]]={
-                     id: users_ids[i],
-                     first_name: 'DELETED',
-                     last_name: '',
-                     photo_100: 'http://vk.com/images/deactivated_c.gif'
-                  };
-            dApi.call('groups.getById',{group_ids:groups_ids.join(','),fields:'photo_100,screen_name',v:'5.73'},function(r){
-               ldr && (ldr.innerHTML = vkProgressBar(95,100,w,'Groups data... %'));
-               var grps=r.response;
-               for (var i=0; i<grps.length; i++){
-                  grps[i].domain = grps[i].screen_name
-                  users['-'+grps[i].id]=grps[i];
-               }
+         }
 
-               for (var i=0; i<users_ids.length; i++)
-                  if (!users[users_ids[i]])
-                     users[users_ids[i]]={
-                        id: users_ids[i],
-                        name: 'DELETED',
-                        first_name: 'DELETED',
-                        last_name: '',
-                        photo_100: 'http://vk.com/images/deactivated_c.gif'
-                     };
+         var get_groups = function(cb){
+            if (groups_ids.length){
+               dApi.call('groups.getById',{group_ids:groups_ids.join(','),fields:'photo_100,screen_name',v:'5.73'},function(r){
+                  ldr && (ldr.innerHTML = vkProgressBar(95,100,w,'Groups data... %'));
+                  var grps=r.response;
+                  for (var i=0; i<grps.length; i++){
+                     grps[i].domain = grps[i].screen_name
+                     users['-'+grps[i].id]=grps[i];
+                  }
+
+                  for (var i=0; i<users_ids.length; i++)
+                     if (!users[users_ids[i]])
+                        users[users_ids[i]]={
+                           id: users_ids[i],
+                           name: 'DELETED',
+                           first_name: 'DELETED',
+                           last_name: '',
+                           photo_100: 'http://vk.com/images/deactivated_c.gif'
+                        };
+                  cb && cb();
+               });
+            } else {
+               cb && cb();
+            }
+         }
+         get_users(function(){
+            get_groups(function(){
                callback && callback();
-            });
+            })
          });
       }
 
