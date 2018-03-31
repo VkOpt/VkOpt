@@ -8900,16 +8900,7 @@ vkopt['attachments_and_link'] = {
 
             this.state = 1;
             this.loader();
-            //try {
             f.apply(this, arguments);
-            //}
-            /// catch (e) {
-            //   self.state = null;
-            // }
-
-            /* setTimeout(function() {
-             self.state = null;
-             }, ms);*/
         }
 
     },
