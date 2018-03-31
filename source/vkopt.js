@@ -4889,6 +4889,25 @@ vkopt['messages'] = {
       if (!p || ge('vk_msg_info_btn')) return;
       p.insertBefore(se(vkopt.messages.tpls['info_btn']), p.firstChild);
    },
+   countUsersChat: function(){
+	/*var attr, list = geByClass('im-mess-stack--lnk'); //Как дополнение. Всплывающее меню при наведении на имя 
+	for (var key in list){				    //Будет везде: и в лс, и в беседах. Можно перенести чуть ниже, чтобы сделать только для бесед.
+		attr = list[key].getAttribute('href');	    //Для мгновенной отправки сообщения в лс. 
+		list[key].setAttribute('mention_id', attr.substr(1));
+		list[key].setAttribute('onmouseover', 'mentionOver(this)');
+	}*/
+	var p = geByClass1('_im_chat_members');
+	if (!p || ge('countUsers')) return;
+	var chatId = cur.peer - 2000000000;
+	var body_code = 'var listUsers = API.messages.getChatUsers({"chat_id":'+chatId+',"fields":"online"});'+
+			'int i = 0, count = 0;'+
+			'while(listUsers[i]){'+
+			'if(listUsers[i].online == 1) count=count+1; i=i+1;}'+
+			'return count;';
+	dApi.call('execute',{v:'5.73', code:body_code},function(r){
+		p.insertBefore(se('<span id="countUsers"> ('+r.response+' онлайн)</span>'), p.nextSibling);
+      	});
+   },
    show_info: function(el){ // показываем количество сообщений и диалогов
       var code_body = 'return {';
       code_body += '"in_count": API.messages.get({"count":1,"offset":0,"out":0,"preview_length":2}).count,' +
@@ -4914,7 +4933,7 @@ vkopt['messages'] = {
       if (!menu) return;
       menu.appendChild(se(vkopt.messages.tpls['menu_separator']));
       menu.appendChild(se(vk_lib.tpl_process(vkopt.messages.tpls['acts_export_history_item'])));
-
+      vkopt.messages.countUsersChat();
       var raw_list = vkopt_core.plugins.call_modules('onDialogActsMenu'),
           list = [];
       for (var key in raw_list)
