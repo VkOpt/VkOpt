@@ -1832,24 +1832,19 @@ function vk_oauth_api(app_id,scope){
          if (vk_DEBUG) console.log(r);
       },
       call:function(method, inputParams, callback, captcha){
-         if (api.allow_call){
+         if (api.allow_call && (!api.captcha_visible || captcha)){
             api.allow_call=false;
             api.allow_t=setTimeout(function(){api.allow_call=true;},300);
          } else {
             setTimeout(function(){
-               api.call(method, inputParams, callback);
+               api.call(method, inputParams, callback, captcha);
             },300);
             return;
          }
          if (api._captchaBox && !api._captchaBox.isVisible()){
             api.captcha_visible=false
          }
-         if (api.captcha_visible && !captcha){
-            setTimeout(function(){
-               api.call(method, inputParams, callback);
-            },300);
-            return;
-         }
+
          var rmid=remixmid();
          var apiReAuth=function(){
             if (api.auth_process) {
@@ -1894,6 +1889,19 @@ function vk_oauth_api(app_id,scope){
             if (api._captchaBox && api._captchaBox.isVisible() && inputParams['captcha_sid']){
                api._captchaBox.hide();
             }
+
+            var captcha_canceled = true;
+            var onCaptchaHide = function(){
+               api._captchaBox = false;
+               api.captcha_visible = false;
+               if (captcha_canceled){
+                  if (callback.ok){
+                        callback.ok(response,response.response,response.error);
+                  } else
+                     callback(response,response.response,response.error);
+               }
+            }
+
             if (response.error){
                if (response.error.error_code == 6){
                   setTimeout(function(){
@@ -1904,29 +1912,68 @@ function vk_oauth_api(app_id,scope){
                   apiReAuth();
                } else if(response.error.error_code == 14) { // Captcha needed
                   api.captcha_visible=true;
-                  api.captcha(response.error.captcha_sid, response.error.captcha_img, function(sid, value) {
-                     inputParams['captcha_sid'] = sid;  inputParams['captcha_key'] = value;
-                     api.call(method, inputParams, callback, true);
-                  }, false, function() {
-                        if (callback.ok){
-                              callback.ok(response,response.response,response.error);
-                        } else
-                           callback(response,response.response,response.error);
+                  vkopt.log('API Captcha');
+                  api._captchaBox = showCaptchaBox(response.error.captcha_sid, 0, api._captchaBox, {
+                     imgSrc: response.error.captcha_img,
+                     onSubmit: function(sid, key) {
+                        inputParams['captcha_sid'] = sid;
+                        inputParams['captcha_key'] = key;
+                        vkopt.log('API Submit captcha. sid: ', sid, ' key:', key);
+                        captcha_canceled = false;
+                        api.call(method, inputParams, callback, true);
+                     },
+                     onHide: onCaptchaHide
                   });
-               }else {
+               } else if(response.error.error_code == 17) { // validation request
+                  vkopt.log('api validation request.')
+                  // skip validation box and show captcha
+                  var vdata = q2ajx(response.error.redirect_uri.split('?')[1]);
+                  var options = {
+                     "act": "validate_box",
+                     "al":1,
+                     "captcha":1,
+                     "hash": vdata.hash,
+                     "ahash": vdata.api_hash,
+                     "skip_push": "",
+                     "from":""
+                  };
+                  ajax.post("/activation.php", options, {onDone: function(title, html, js){
+                        csid =(js.match(/validationCsid:\s*['"]?([a-f0-9]+)['"]?/) || [])[1];
+                        cstrong = (js.match(/strongCode:\s*['"]?([a-f0-9]+)['"]?/) || [0,0])[1];
+                        vkopt.log('API Activation captcha sid: ', csid, ' strong:', cstrong);
+                        api.captcha_visible=true;
+                        api._captchaBox = showCaptchaBox(csid, cstrong, api._captchaBox, {
+                           onSubmit: function(sid, key) {
+                              inputParams['captcha_sid'] = sid;
+                              inputParams['captcha_key'] = key;
+                              vkopt.log('API Submit activation captcha. sid: ', sid, ' key:', key);
+                              captcha_canceled = false;
+                              api.call(method, inputParams, callback, true);
+                           },
+                           onHide: onCaptchaHide
+                        });
+                  }})
+               } else {
                   if (!callback || !callback.error) api.show_error(response);
+                  /*
                   if (captcha) {
                      api._captchaBox.setOptions({onHide: function(){api.captcha_visible=false}}).hide();
+                     api._captchaBox = false;
                      //api._captchaBox.hide();
                   }
-
+                  */
                   if (callback.error){
                      callback.error(response,response.error);
                   } else
                      callback(response,response.response,response.error);
                }
             } else {
-               if (captcha) api._captchaBox.setOptions({onHide: function(){api.captcha_visible=false}}).hide(); //api._captchaBox.hide();
+               /*
+               if (captcha){
+                  api._captchaBox.setOptions({onHide: function(){api.captcha_visible=false}}).hide(); //api._captchaBox.hide();
+                  api._captchaBox = false;
+               }
+               */
                if (callback.ok){
                      callback.ok(response,response.response,response.error);
                } else
@@ -1960,42 +2007,6 @@ function vk_oauth_api(app_id,scope){
             })
          }
 
-      },
-      captcha: function(sid, img, onClick, onShow, onCancel/*onHide*/) {
-         if (ge('captcha_container')) re('captcha_container');
-         api._captchaBox = new MessageBox({title: getLang('captcha_enter_code'), width: 300});
-         var box = api._captchaBox;
-         box.removeButtons();
-         var rnd = '_'+Math.round(Math.random()*100000).toString(36);
-         var key;
-         var base_domain = base_domain || "/";
-         var prevent_onhide = false;
-         var onClickHandler = function() {
-            prevent_onhide = true;
-            removeEvent(key, 'keypress');
-            api.captcha_visible=false;
-            onClick(sid, key.value);
-            hide('captchaKey'+rnd);
-            show('captchaLoader'+rnd);
-            //box.hide();
-         };
-         box.addButton(getLang('captcha_cancel'), function(){
-            removeEvent(key, 'keypress');
-            box.hide();
-            if (isFunction(onCancel)) onCancel()
-         },'no');
-         box.addButton(getLang('captcha_send'),onClickHandler);
-         box.setOptions({onHide: function(){
-            if (!prevent_onhide)
-               if (isFunction(onCancel)) onCancel()
-         }, bodyStyle: 'padding: 16px 14px'});
-         box.content('<div style="text-align: center; height: 76px" id="captcha_container"><span style="cursor:pointer" id="refreshCaptcha'+rnd+'"><img id="captchaImg'+rnd+'" class="captchaImg" src="'+img+ '"/></span><div></div><input id="captchaKey'+rnd+'" class="inputText" name="captcha_key" type="text" style="width: 120px; margin: 3px 0px 0px;" maxlength="7"/><img id="captchaLoader'+rnd+'" src="'+base_domain+'images/progress7.gif" style="display:none; margin-top: 13px;" /></div>');
-         box.show();
-         if (isFunction(onShow)) onShow();
-         key = ge('captchaKey'+rnd);
-         addEvent(key, 'keypress', function(e) { if(e.keyCode==13){ onClickHandler(); }});
-         addEvent(ge('refreshCaptcha'+rnd), 'click', onClickHandler);
-         key.focus();
       }
    };
    return api;
