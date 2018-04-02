@@ -793,6 +793,7 @@ vk_lang_ru={
    ,'MessagesTryRestore': '\u041f\u044b\u0442\u0430\u0442\u044c\u0441\u044f \u0432\u043e\u0441\u0441\u0442\u0430\u043d\u0430\u0432\u043b\u0438\u0432\u0430\u0442\u044c \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u044f'
    ,'MessagesRestore': '\u0412\u043e\u0441\u0441\u0442\u0430\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u0435 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0439'
    ,'MessagesRestoreProgress': '\u0412\u043e\u0441\u0441\u0442\u0430\u043d\u043e\u0432\u043b\u0435\u043d\u043e %1 \u0438\u0437 %2'
+   ,'GoToBeginning':'\u041f\u0435\u0440\u0435\u0439\u0442\u0438 \u043a \u043d\u0430\u0447\u0430\u043b\u0443'
 };
 
 vk_lang_en={//by Hzy
@@ -1725,6 +1726,7 @@ vk_lang_en={//by Hzy
   ,"seShiftPageButtons": "Show page shift position buttons in the header"
   ,"seHideShiftBtn": "Make shift buttons fully transparent"
   ,"online_count":['', ' %s online', ' %s online', ' %s online']
+  ,'GoToBeginning':'Go to beginning'
 };
 
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)

@@ -4812,6 +4812,9 @@ vkopt['messages'] = {
          /*acts_export_history_item:
          <a tabindex="0" role="link" class="ui_actions_menu_item _im_action im-action vk_acts_item_icon" onclick="return vkopt.messages.export_box()">{lng.SaveHistory}</a>
          */
+         /*acts_to_beginning_item:
+         <a tabindex="0" role="link" class="ui_actions_menu_item _im_action im-action vk_acts_item_icon" onclick="return vkopt.messages.go_to_beginning()">{lng.GoToBeginning}</a>
+         */
          /*audio_msg_btns:
          <div class="vk_audio_msg_btns">
            <a class="vk_au_msg_dl" href="{vals.url_mp3}"><div></div>mp3</a>
@@ -4992,6 +4995,7 @@ vkopt['messages'] = {
       if (!menu) return;
       menu.appendChild(se(vkopt.messages.tpls['menu_separator']));
       menu.appendChild(se(vk_lib.tpl_process(vkopt.messages.tpls['acts_export_history_item'])));
+      menu.appendChild(se(vk_lib.tpl_process(vkopt.messages.tpls['acts_to_beginning_item'])));
       var raw_list = vkopt_core.plugins.call_modules('onDialogActsMenu'),
           list = [];
       for (var key in raw_list)
@@ -5015,6 +5019,18 @@ vkopt['messages'] = {
          if (domClosest('im-page--header-chat',e.target))
             toggle(dialogs)
       });
+   },
+   go_to_beginning: function(){
+      var sel_id = nav.objLoc['sel'];
+      var cur_loc = clone(nav.objLoc);
+      dApi.call('messages.getHistory',{user_id:cur.peer, count:1, rev:1, v:'5.73'},function(r,response){
+         if (!(response && response.items && response.items[0]))
+            return vkMsg(IDL('Error'));
+         nav.go(extend(cur_loc, {sel:''}));
+         setTimeout(function(){
+            nav.go(extend(cur_loc, {msgid: response.items[0].id,sel:sel_id}));
+         },300);
+      })
    },
    search_deleted: function(){
       var get_last_msg_id = function(cb){
