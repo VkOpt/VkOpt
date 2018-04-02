@@ -43,7 +43,7 @@ var vkopt_defaults = {
       old_unread_msg_bg: 'c5d9e7',
       im_recent_emoji: false,
       ru_vk_logo: false,
-      hide_big_like: false,
+      //hide_big_like: false,
       hide_left_set: false,
       hide_recommendations: false,
       show_full_user_info: false,
@@ -5853,10 +5853,12 @@ vkopt['face'] =  {
             title: 'seVkontakteLogo',
             class_toggler: true
          },
+         /*
          hide_big_like:{
             title: 'seHideBigLike',
             class_toggler: true
          },
+         */
          hide_left_set:{
             title: 'seHideLeftSettings',
             class_toggler: true
