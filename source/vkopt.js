@@ -4671,6 +4671,9 @@ vkopt['messages'] = {
             margin-top: -5px;
             margin-bottom: -5px;
          }
+         #vk_restore_msg {
+             margin-top: 5px;
+         }
          */
       }).css + vkopt.messages.css_msg_bg(vkopt.settings.get('old_unread_msg_bg'))
    },
@@ -4815,6 +4818,32 @@ vkopt['messages'] = {
            <a class="vk_au_msg_dl" href="{vals.url_ogg}"><div></div>ogg</a>
          </div>
          */
+         /*search_deleted_content:
+         <div id="vk_scan_msg"></div>
+         <div id="vk_restore_msg"></div>
+         <div id="vk_restore_info"></div>
+         <div class="info_msg" style="line-height: 160%;">
+            {lng.SearchDeletedMessagesInfo}
+         </div>
+
+         <h2>
+            {lng.MessagesSaveFound}
+            (<span id="vk_msg_found_cnt">0</span>)
+         </h2>
+         <div id="vk_msg_save_html" class="flat_button button_indent">{lng.SaveToFile} (.html)</div>
+         <div id="vk_msg_save_json" class="flat_button secondary button_indent">{lng.SaveToFile} (.json)</div>
+         */
+         /*search_deleted_done:
+         <div class="ok_msg">{lng.Done}</div>
+         */
+         /*try_restore_chk:
+         <div class="checkbox on" id="vk_msg_try_restore" role="checkbox" aria-checked="true">
+            {lng.MessagesTryRestore}
+         </div>
+         */
+         /*search_deleted_item:
+         <a class="ui_actions_menu_item _im_settings_action im-action vk_acts_item_icon" id="vk_search_deleted_item" onclick="vkopt.messages.search_deleted(); return false;">{lng.SearchDeletedMessages}</a>
+         */
       });
    },
    onRequestQuery: function(url, query, options) {
@@ -4876,6 +4905,11 @@ vkopt['messages'] = {
                vkopt.messages.acts_menu();
          })
       }
+      if (fn == 'tooltips.js')
+         Inj.End('tooltips.show', function(el, opts){
+            if (el && /im-page--dialogs-settings/.test(el.className||''))
+               vkopt.messages.dialogs_menu();
+         })
    },
    processNode: function(node, params){
       if (!vkopt.settings.get('audio_dl') || !node || (params && params.source == "getTemplate" && params.tpl_name!="im_msg_row")) return;
@@ -4945,6 +4979,11 @@ vkopt['messages'] = {
          });
       });
    },
+   dialogs_menu: function(){
+      var menu = geByClass1('_im_settings_popup');
+      if (!menu) return;
+      !ge('vk_search_deleted_item') && menu.appendChild(se(vk_lib.tpl_process(vkopt.messages.tpls['search_deleted_item'])));
+   },
    acts_menu: function(){
       if (ge('vk_im_acts_sep')) return;
       var p = geByClass1('im-page--header-more');
@@ -4975,6 +5014,161 @@ vkopt['messages'] = {
             hide(dialogs);
          if (domClosest('im-page--header-chat',e.target))
             toggle(dialogs)
+      });
+   },
+   search_deleted: function(){
+      var get_last_msg_id = function(cb){
+         var dt = (new Date()).format('HH:MM:ss dd.mm.yyyy');
+         var code  =
+            'var user = API.users.get({})[0];'+
+            'return API.messages.send({'+
+               'user_id:user.id, '+
+               'message: user.first_name+", '+IDL('SearchDeletedMessagesStarted')+' ('+dt+')"'+
+            '});';
+         dApi.call('execute',{code:code, v:'5.73'}, function(r){
+            cb(r.response || 0);
+         });
+      }
+      //window.vk_deleted_messages = [];
+      var msg = [];//window.vk_deleted_messages;
+      var del_ids = [];
+      var restored = 0;
+      var total_try = 0;
+      var last_msg = 0;
+      var offset = 0;
+      var width = 0;
+
+      var restore_stage = 0;
+      var restore_max_progress = 0;
+
+      var collect = function(cb){
+         var ids = [];
+         var PER_REQ = 50;
+         var PER_EXEC = 10;
+         for (var i = 0; (i < PER_REQ * PER_EXEC) && (offset > 0); i++)
+            ids.push(offset--);
+
+         var code = [];
+         while(ids.length)
+            code.push('API.messages.getById({"message_ids":"'+ids.splice(0,PER_REQ).join(',')+'"}).items');
+         code = 'return ' + code.join('+') + ';'
+
+         ge('vk_scan_msg').innerHTML = vkProgressBar(last_msg - offset, last_msg, width, IDL('MessagesScan') + ' %'+(offset > 0 ? ' (id:' + offset + ')' : ''));
+
+         dApi.call('execute', {code: code, v:'5.73'}, function(r){
+            if (r && r.response){
+               r.response.forEach(function(item, idx){
+                  if (item.deleted){
+                     msg.push(item);
+                     del_ids.push(item.id);
+                  }
+               })
+
+               ge('vk_scan_msg').innerHTML = vkProgressBar(last_msg - offset, last_msg, width, IDL('MessagesScan') + ' %'+(offset > 0 ? ' (id:' + offset + ')' : ''));
+               ge('vk_msg_found_cnt').innerHTML = msg.length;
+
+               /*
+               if (!restoring){
+                  ge('vk_restore_msg').innerHTML = restored > 0 ? 'Restored: <b>' + restored + '</b>' : '';
+                  var r_btn = se('<div class="button_blue"><button>try restore '+del_ids.length+' messages</button></div>');
+                  ge('vk_restore_msg').appendChild(r_btn);
+                  addEvent(r_btn, 'click', function(ev){
+                     restore();
+                  });
+               }
+               */
+               restore_stage++;
+               restore_max_progress = 0;
+               restore(function(){
+                  if (offset > 0){
+                     setTimeout(function(){collect(cb)},300);
+                  } else {
+                     cb();
+                  }
+               })
+
+            } else {
+               console.log('API EXEC FAILED: ', code);
+            }
+
+         })
+      }
+      var restore_executed = false;
+      var restore = function(cb){
+         if (!del_ids.length || !isChecked(chk)){
+            restore_executed = false;
+            cb && cb();
+            return;
+         }
+         restore_executed = true;
+         restore_max_progress = Math.max(restore_max_progress, del_ids.length);
+         var code = [];
+         for (var i = 0; i < 15 && del_ids.length; i++)
+            code.push('API.messages.restore({message_id:'+del_ids.shift()+'})');
+         code = 'return [ ' + code.join(',') + ' ];'
+
+         dApi.call('execute', {code: code, v:'5.73'}, function(r){
+             if (r && r.response){
+                total_try += r.response.length;
+                restored += r.response.filter(function(item){return item}).length;
+                var prog_txt = vk_lib.format(IDL('MessagesRestoreProgress'), restored, total_try);
+                ge('vk_restore_msg').innerHTML = vkProgressBar(restore_max_progress - del_ids.length, restore_max_progress, width, prog_txt +' (#'+restore_stage+' / %)');
+             } else {
+                console.log('API EXEC RESTORE FAILED: ', code);
+             }
+             if (del_ids.length){
+                setTimeout(restore,300);
+             } else {
+                restore_executed = false;
+                var prog_txt = vk_lib.format(IDL('MessagesRestoreProgress'), restored, total_try);
+                ge('vk_restore_msg').innerHTML = vkProgressBar(restore_max_progress - del_ids.length, restore_max_progress, width, prog_txt +' (#'+restore_stage+' / %)');
+                cb && cb();
+             }
+
+         })
+      }
+
+      var box = new MessageBox({
+            title : IDL('SearchDeletedMessages'),
+            closeButton : true,
+            width : "650px"
+         });
+      box.changed = true;
+      box.removeButtons();
+      box.addButton(IDL('Cancel'), function (r) {
+         abort = true;
+         box.hide();
+      }, 'no');
+
+      box.show();
+      var width = getSize(box.bodyNode, true)[0];
+      box.content(vk_lib.tpl_process(vkopt.messages.tpls['search_deleted_content'],{}));
+      box.setControlsText(vk_lib.tpl_process(vkopt.messages.tpls['try_restore_chk'],{}));
+      box.changed = true;
+      var chk = ge('vk_msg_try_restore');
+      addEvent(chk, 'click', function(e){
+         checkbox(chk);
+         if (!restore_executed && done && isChecked(chk))
+            restore();
+      })
+      addEvent('vk_msg_save_html', 'click', function(e){
+         vkopt.messages.export_data(msg);
+      })
+      addEvent('vk_msg_save_json', 'click', function(e){
+         vkopt.save_file(JSON.stringify(msg,'', '   '), 'deleted_messages'+vk.id+' '+(new Date())+'.json');
+      });
+      var done = false;
+      get_last_msg_id(function(id){
+         if (!id){
+            alert('Nothing...');
+            return;
+         }
+         last_msg = id;
+         offset = id;
+         collect(function(){
+            done = true;
+            val('vk_restore_info',vk_lib.tpl_process(vkopt.messages.tpls['search_deleted_done'],{}));
+         })
       });
    },
    get: function(out, offset, count, onDone) {
