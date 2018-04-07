@@ -794,6 +794,7 @@ vk_lang_ru={
    ,'MessagesRestore': '\u0412\u043e\u0441\u0441\u0442\u0430\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u0435 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0439'
    ,'MessagesRestoreProgress': '\u0412\u043e\u0441\u0441\u0442\u0430\u043d\u043e\u0432\u043b\u0435\u043d\u043e %1 \u0438\u0437 %2'
    ,'GoToBeginning':'\u041f\u0435\u0440\u0435\u0439\u0442\u0438 \u043a \u043d\u0430\u0447\u0430\u043b\u0443'
+   ,'UploadPngDocAsGraffiti': '\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c .PNG \u043a\u0430\u043a \u0433\u0440\u0430\u0444\u0444\u0438\u0442\u0438'
 };
 
 vk_lang_en={//by Hzy
@@ -1727,6 +1728,7 @@ vk_lang_en={//by Hzy
   ,"seHideShiftBtn": "Make shift buttons fully transparent"
   ,"online_count":['', ' %s online', ' %s online', ' %s online']
   ,'GoToBeginning':'Go to beginning'
+  ,"UploadPngDocAsGraffiti": "Upload .PNG-file as graffiti"
 };
 
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)

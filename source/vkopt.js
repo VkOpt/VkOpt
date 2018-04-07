@@ -5715,8 +5715,34 @@ vkopt['messages'] = {
    }
 };
 
+
+//"UploadPngDocAsGraffiti": "Загрузить .PNG как граффити"
 vkopt['attacher'] = {
    tpls: null,
+   css: function(){
+      return vk_lib.get_block_comments(function(){
+         /*css:
+         .docs_choose_upload_area_wrap:hover .vk_doc_upload_cfg {
+              max-height: 100px;
+         }
+
+         .vk_doc_upload_cfg {
+             max-height: 0px;
+             transition: max-height 1000ms ease-out 500ms;
+             overflow: hidden;
+         }
+
+         .vk_doc_upload_cfg_cont {
+             padding: 10px 52px;
+             background-position: 23px 11px;
+             border-bottom: 1px solid #e7e8ec;
+         }
+         .vk_doc_upload_cfg_cont .checkbox{
+            display: inline-block;
+         }
+         */
+      }).css;
+   },
    onSettings:{
       Extra: {
          attach_media_by_id:{}
@@ -5730,6 +5756,15 @@ vkopt['attacher'] = {
             <div class="choose_row">{vals.audio_row}</div>
          </div>
          */
+         /*doc_attach_cfg:
+         <div class="vk_doc_upload_cfg">
+            <div class="vk_doc_upload_cfg_cont vkopt_icon">
+               <div class="checkbox" onclick="checkbox(this); return vkopt.attacher.doc.upload_as_graffiti(isChecked(this));" role="checkbox" aria-checked="false" tabindex="0">
+                  {lng.UploadPngDocAsGraffiti}
+               </div>
+            </div>
+         </div>
+         */
       });
    },
    onResponseAnswer: function(answer, url, q){
@@ -5740,13 +5775,33 @@ vkopt['attacher'] = {
             answer[2] = answer[2].replace(/(cur\.onChangeAudioQuery\s*=\s*function[^\{]+\{([\r\n\s]*))/,'$1vkopt.attacher.audio.check_query(arguments[0]);$2');
             answer[2] = answer[2].replace(/(box\.hideCloseProgress\(\);)/,'$1\n   vkopt.attacher.audio.check_query(cur.chooseAudioQuery);');
       }
+
+      if (url == '/docs.php' && q.act == 'a_choose_doc_box' && !q.switch_tab && isString(answer[1])){
+         // answer:
+         // [0] - box title content
+         // [1] - box body content
+         // [2] - js
+         answer[1] = vkopt_core.mod_str_as_node(answer[1], vkopt.attacher.doc.process_box_node, {source:'doc_attach_mod', url:url, q:q});
+      }
          /*
          setTimeout(function(){
             Inj.Start('cur.onChangeAudioQuery','vkopt.attacher.audio.check_query(arguments[0]);')
          });
          */
    },
-
+   doc: {
+      process_box_node: function(node, params){
+         var p = geByClass1('docs_choose_upload_area_wrap',node);
+         if (!p || geByClass1('vk_doc_upload_cfg', node)) return;
+         p.appendChild(se(vk_lib.tpl_process(vkopt.attacher.tpls['doc_attach_cfg'], {})));
+      },
+      upload_as_graffiti: function(val){
+         if (val)
+            Upload.vars[cur.uplId].type='graffiti'
+         else
+            delete Upload.vars[cur.uplId].type
+      }
+   },
    audio: {
       cache:{},
       check_query: function(s){
