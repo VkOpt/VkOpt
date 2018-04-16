@@ -6648,12 +6648,18 @@ vkopt['profile'] = {
          }
       },
       Extra: {
-         zodiak_ophiuchus:{}
+         zodiak_ophiuchus:{},
+         scan_hidden_audios: {
+            default_value: true
+         }
       }
    },
 
    css: function() {
-      return vkopt.profile.css_common_group(vkopt.settings.get('common_group_color'));
+      return vkopt.profile.css_common_group(vkopt.settings.get('common_group_color'))+
+             '.vk_scan_audio_btn .count{height: 20px; background: url(/images/svg_icons/ic_head_loupe.svg) no-repeat 50% 0%; }\
+             .counts_module.vk_scan_audio .page_counter { padding-left: 8px; padding-right: 8px;}\
+             ';
    },
 
    css_common_group: function(color){
@@ -6700,6 +6706,15 @@ vkopt['profile'] = {
 
       if (vkopt.settings.get('show_common_group') && cur.module == 'profile' && vk.id != cur.oid)
          vkopt.profile.fshow_common_group();
+
+      if (cur.module == 'profile' && vkopt.settings.get('scan_hidden_audios') && !ge('profile_audios')){
+         var p = geByClass1('counts_module');
+         if (!hasClass(p,'vk_scan_audio')){
+            addClass(p, 'vk_scan_audio');
+            var btn = se('<a class="page_counter vk_scan_audio_btn" href="#" onclick="return vkopt.profile.scan_audio()"><div class="count"></div><div class="label">'+IDL('audio').toLowerCase()+'</div></a>');
+            p.appendChild(btn);
+         }
+      }
    },
    onLibFiles: function(fn){
       if (fn == 'fansbox.js' && vkopt.settings.get('show_common_group')){
@@ -6819,6 +6834,33 @@ vkopt['profile'] = {
          info.push(zodiac);
       }
       return info;
+   },
+   scan_audio: function (){
+      var code = [];
+      for (var i = 0; i < 1000; i++)
+         code.push('[[audio'+cur.oid + '_' + (456239000 + i) + ']]');
+
+      ajax.post("al_pages.php", {
+            act: "convert_wiki",
+            Body: code.join('\n')
+         }, {
+            onDone: function(html, wikiPref) {
+               hide(boxLayerBG);
+               var el = se('<div></div>');
+               el.innerHTML = html;
+               var au = geByClass('audio_row', el);
+               var box = showFastBox(IDL('audio'),'');
+               if (au.length){
+                   box.setOptions({width:650});
+                   for (var i = au.length - 1; i >= 0 ; i--)
+                       box.bodyNode.appendChild(au[i]);
+               } else {
+                   box.bodyNode.innerHTML = getLang('audio_user_no_recs');
+               }
+            },
+            loader: true
+      });
+      return false;
    },
    search_age: function(uid,el){
       var _el=ge(el);
