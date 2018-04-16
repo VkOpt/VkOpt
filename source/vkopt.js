@@ -5740,12 +5740,82 @@ vkopt['attacher'] = {
          .vk_doc_upload_cfg_cont .checkbox{
             display: inline-block;
          }
+         .vk_doc_recent_graffiti{
+            margin-left: -2px;
+            margin-right:-2px;
+         }
+         .vk_doc_recent_graffiti div{
+            cursor: pointer;
+         }
+
+         .doc_show_graffiti:before {
+             position: absolute;
+             left: 5px;
+             content: '';
+             width: 22px;
+             height: 22px;
+             background: url(/images/post_icon.png?10) no-repeat;
+             background-position-y: -173px;
+             opacity: 0.7;
+         }
+
+         .ui_search_field_empty .doc_show_graffiti_btn {
+             visibility: visible;
+         }
+
+         .doc_show_graffiti_btn {
+             position: absolute;
+             width: 38px;
+             top: 0;
+             bottom: 0;
+             right: 6px;
+             cursor: pointer;
+             z-index: 4;
+             opacity: 0.75;
+             visibility: hidden;
+             margin-top: 10px;
+             margin-left: 2px;
+             width: 22px;
+             height: 22px;
+             padding: 0 0 0 22px;
+             display: block;
+             float: left;
+         }
+
+         .doc_show_graffiti_btn:hover .doc_show_graffiti:before {
+             opacity: 1;
+         }
+
+         .doc_show_graffiti_btn:before {
+             content: attr(count);
+             position: absolute;
+             display: block;
+             font-size: 10px;
+             font-weight: bold;
+             border-radius: 50%;
+             color: #5b88bd;
+             width: 16px;
+             height: 16px;
+             line-height: 16px;
+             top: 10px;
+             left: 19px;
+         }
+         #vk_doc_recent_graffiti{
+            display:none;
+         }
+         .vk_doc_recent_graffiti_show #vk_doc_recent_graffiti{
+            display:block;
+         }
          */
       }).css;
    },
    onSettings:{
       Extra: {
-         attach_media_by_id:{}
+         attach_media_by_id:{},
+         doc_recent_graffiti_show:{
+            class_toggler: true,
+            default_value: false
+         }
       }
    },
    onInit: function(){
@@ -5765,6 +5835,18 @@ vkopt['attacher'] = {
             </div>
          </div>
          */
+         /*doc_graffiti_item:
+         <div id="docs_choose_row{vals.doc_id}_" href="{vals.doc_url}" onclick="return Docs.chooseDoc(this, '{vals.doc_id}', {vals.doc_data}, event);" class="photos_choose_row fl_l _docs_choose_attach" onmouseover="addClass(this, 'over');" onmouseout="removeClass(this, 'over');">
+            <div class="photo_row_img" style="background-image: url('{vals.thumb}')"></div>
+            <div class="photos_choose_row_bg"></div>
+         </div>
+         */
+         /*doc_graffiti_show_btn: //insert before '.ui_search_field'
+         <div class="doc_show_graffiti_btn" count="0" onclick="return vkopt.attacher.doc.recent_graffiti_toggle();" style="display:none">
+            <span class="doc_show_graffiti"></span>
+         </div>
+         */
+
       });
    },
    onResponseAnswer: function(answer, url, q){
@@ -5794,12 +5876,89 @@ vkopt['attacher'] = {
          var p = geByClass1('docs_choose_upload_area_wrap',node);
          if (!p || geByClass1('vk_doc_upload_cfg', node)) return;
          p.appendChild(se(vk_lib.tpl_process(vkopt.attacher.tpls['doc_attach_cfg'], {})));
+
+
+
+         p = geByClass1('docs_choose_rows',node);
+         if (!p || geByClass1('vk_doc_recent_graffiti', node)) return;
+         var div = se('<div id="vk_doc_recent_graffiti", class="vk_doc_recent_graffiti clear_fix"></div>');
+         if (p.firstChild)
+            p.insertBefore(div,p.firstChild)
+         else
+            p.appendChild(div);
+
+         p = geByClass1('ui_search_field',node);
+         if (p && !geByClass1('doc_show_graffiti_btn',node)){
+            p.parentNode.insertBefore(se(vk_lib.tpl_process(vkopt.attacher.tpls['doc_graffiti_show_btn'], {})),p)
+
+         }
+
+         setTimeout(vkopt.attacher.doc.recent_graffiti, 100);
+
       },
       upload_as_graffiti: function(val){
          if (val)
             Upload.vars[cur.uplId].type='graffiti'
          else
             delete Upload.vars[cur.uplId].type
+      },
+      recent_graffiti: function(){
+         dApi.call('messages.getRecentGraffities',{limit:32, v:'5.74'},function(r, items){
+            if(!items || items.length < 1) return;
+            var btn = geByClass1('doc_show_graffiti_btn');
+            if (btn){
+               btn.setAttribute('count', items.length);
+               show(btn);
+            }
+
+            stManager.add('photos.css');
+            var html = [];
+            for (var i = 0; i < items.length; i++){
+               var item = items[i];
+               var str_size = vkFileSize(item.size);
+               var attach_data = {
+                  "ext": item.ext,
+                  "size": item.size,
+                  "size_str": str_size,
+                  "type": item.type,
+                  "href": item.url,
+                  "video_preview":false,
+                  "video_preview_size":[],
+                  "title": '<span class="doc_ext">'+item.ext.toUpperCase()+'</span>'+
+                           '<div class="doc_title">'+
+                              '<span class="doc_size">'+str_size+'</span>'+
+                              '<div class="doc_label">'+clean(item.title)+'</div>'+
+                           '</div>',
+                  "title_plain": clean(item.title)
+               }
+
+               if (item.preview && item.preview.video){
+                  attach_data.video_preview = item.preview.video.src;
+                  attach_data.video_preview_size = [item.preview.video.width, item.preview.video.height];
+               }
+
+               var sizes = {};
+               if (item.preview && item.preview.photo){
+                  each(item.preview.photo.sizes, function(i,size){sizes[size.type] = size });
+                  attach_data.thumb = (sizes.m || {}).src;
+                  attach_data.thumb_s = (sizes.s || {}).src;
+               }
+               html.push(
+                  vk_lib.tpl_process(vkopt.attacher.tpls['doc_graffiti_item'], {
+                     doc_data: clean(JSON.stringify(attach_data)),
+                     doc_id: item.owner_id + '_' + item.id,
+                     doc_url: item.url,
+                     thumb: (sizes.m || {}).src || '/images/camera_big.png'
+                  })
+               );
+            }
+            val('vk_doc_recent_graffiti', html.join('\n'))
+         })
+      },
+      recent_graffiti_toggle: function(){
+         var visible = vkopt.settings.get('doc_recent_graffiti_show');
+         vkopt.settings.set('doc_recent_graffiti_show', !visible);
+         return false;
       }
    },
    audio: {
