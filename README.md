@@ -1,9 +1,14 @@
 VkOpt
 =====
 
-VkOpt
+VkOpt - браузерное расширение для vk.com
+
+Есть возможность создавать свои модули используя возможности расширения, и подключать их как userscript.
+
+Краткое описание доступных для модулей обработчиков, вызов которых инициируется расширением в ответ на какие-то действия/события на сайте
 
 ```javascript
+window.vkopt = (window.vkopt || {});
 vkopt['vkopt_any_plugin'] = {
     // id: 'vkopt_any_plugin',
     // <core>
@@ -22,8 +27,6 @@ vkopt['vkopt_any_plugin'] = {
     onElementTooltipFirstTimeShow: function(ett, ett_options){},/* реакция на первый показ ElementTooltip, при
                                                                    создании его контента. На момент вызова в элементе ett._ttel уже есть контент.
                                                                    По ett._opts.id можно определить к чему тултип относится. */
-    onInlineDropdownCreate: function(el, options){},            /* реакция на создание контрола InlineDropdown.
-                                                                   Можно использовать для добавления своих пунктов в options.items для меню элемента el */
     onDatepickerCreate:   function(args){},                     /* вызывается при создании селектора даты new Datepicker(),
                                                                    args - массив аргументов переданных в конструктор */
     css:                  function(){} || {},                   /* CSS модуля, автоматическм встраивается в страницу */
@@ -55,8 +58,7 @@ vkopt['vkopt_any_plugin'] = {
                                                                      tagName                                // если требуется, чтоб тегом кнопки был не "div", а другой, то указывать тут.
                                                                   ]  */
 
-   };
+};
 
-   window.vkopt = (window.vkopt || {});
-   if (window.vkopt_core_ready) vkopt_core.plugins.delayed_run('vkopt_any_plugin');      // запускает модуль, если мы опоздали к загрузке страницы, провоцирует вызов события onModuleDelayedInit
-   ```
+if (window.vkopt_core_ready) vkopt_core.plugins.delayed_run('vkopt_any_plugin');      // запускает модуль, если мы опоздали к загрузке страницы, провоцирует вызов события onModuleDelayedInit
+```

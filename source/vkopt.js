@@ -313,9 +313,11 @@ var vkopt_core = {
       eltt_first_show: function(ett){
          vkopt_core.plugins.call_modules('onElementTooltipFirstTimeShow', ett, ett._opts);
       },
+      /*
       inline_dd_create: function(el, opts){
          vkopt_core.plugins.call_modules('onInlineDropdownCreate', el, opts);
       },
+      */
       datepicker_create: function(){
          vkopt_core.plugins.call_modules('onDatepickerCreate', Array.prototype.slice.call(arguments));
       }
@@ -418,10 +420,12 @@ var vk_glue = {
          // Inj.End('AutoList.prototype._drawRows', '; vkopt_core.plugins.process_node(this._containerEl);'); // Другой вариант. Меньше шансов того, что отвалится, но тут выходит повторная обработка ранее выведенного.
       },
       ui_controls: function(){
+         /*
          var orig = InlineDropdown; // бекап
-         Inj.Start('InlineDropdown','vkopt_core.plugins.inline_dd_create(#ARG0#, #ARG1#);');
+         Inj.Start('InlineDropdown','vkopt_core.plugins.inline_dd_create(#ARG0#, #ARG1#);'); // Инжект в конструктор не работает с текущим враппером функций из обновленного Inj
          for (var method in orig.prototype) //восстанавливаем методы из бекапа
             InlineDropdown.prototype[method] = orig.prototype[method];
+         */
       },
       datepicker: function(){
          if (!vkopt.settings.get('datepicker_inj'))
@@ -477,7 +481,7 @@ var vk_glue = {
       processLinks:           function(link, params){},                    // обработка ссылки
       onModuleDelayedInit:    function(plugin_id){},                       // реакция на подключение модуля, опоздавшего к загрузке страницы.
       onElementTooltipFirstTimeShow: function(ett, ett_options),           // реакция на первый показ ElementTooltip, при создании его контента. На момент вызова в элементе ett._ttel уже есть контент. По ett._opts.id можно определить к чему тултип относится.
-      onInlineDropdownCreate: function(el, options),                       // реакция на создание контрола InlineDropdown. Можно использовать для добавления своих пунктов в options.items для меню элемента el
+      // UNAVAILABLE! onInlineDropdownCreate: function(el, options),       // реакция на создание контрола InlineDropdown. Можно использовать для добавления своих пунктов в options.items для меню элемента el
       onDatepickerCreate: function(args){},                                // вызывается при создании селектора даты new Datepicker(), args - массив аргументов переданных в конструктор
 
       // <settings>
