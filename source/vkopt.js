@@ -6663,6 +6663,8 @@ vkopt['profile'] = {
       return vkopt.profile.css_common_group(vkopt.settings.get('common_group_color'))+
              '.vk_scan_audio_btn .count{height: 20px; background: url(/images/svg_icons/ic_head_loupe.svg) no-repeat 50% 0%; }\
              .counts_module.vk_scan_audio .page_counter { padding-left: 8px; padding-right: 8px;}\
+             .counts_module {max-height: none;}\
+             .vk_scan_audio_rows{padding:10px;}\
              ';
    },
 
@@ -6853,18 +6855,38 @@ vkopt['profile'] = {
                var el = se('<div></div>');
                el.innerHTML = html;
                var au = geByClass('audio_row', el);
-               var box = showFastBox(IDL('audio'),'');
+               var box = showFastBox({
+                     title:IDL('audio'),
+                     bodyStyle: 'padding: 0px'
+               },'');
                if (au.length){
-                   box.setOptions({width:650});
-                   for (var i = au.length - 1; i >= 0 ; i--)
-                       box.bodyNode.appendChild(au[i]);
+                  box.bodyNode.appendChild(se('<div class="ui_search">\
+                        <input type="text" class="ui_search_field" id="scan_audio_filter_text" onkeyup="vkopt.profile.scan_audio_filter()" placeholder="Поиск..">\
+                  </div>'));
+                  var wrap = se('<div class="vk_scan_audio_rows"></div>');
+                  box.bodyNode.appendChild(wrap);
+                  box.setOptions({width:650});
+                  for (var i = au.length - 1; i >= 0 ; i--)
+                     wrap.appendChild(au[i]);
                } else {
-                   box.bodyNode.innerHTML = getLang('audio_user_no_recs');
+                  box.bodyNode.innerHTML = getLang('audio_user_no_recs');
                }
             },
             loader: true
       });
       return false;
+   },
+   scan_audio_filter: function () {
+      var input = ge("scan_audio_filter_text");
+      var newText = input.value.toUpperCase().trim();
+      var wrap = geByClass1("box_body");
+      var rows = geByClass("audio_row", wrap);
+
+      for (var i = 0; i < rows.length; i++) {
+         var performer = geByClass1("audio_row__performer", rows[i]).innerText.toUpperCase();
+         var title = geByClass1("audio_row__title_inner", rows[i]).innerText.toUpperCase();
+         ((performer.indexOf(newText) > -1 || title.indexOf(newText) > -1) ? show : hide)(rows[i]);
+      }
    },
    search_age: function(uid,el){
       var _el=ge(el);
