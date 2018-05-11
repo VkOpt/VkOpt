@@ -6118,6 +6118,10 @@ vkopt['face'] =  {
                   class_toggler: true
                }
             }
+         },
+         compact_like_btns: {
+            title: 'seCompactLikeBtns',
+            class_toggler: true
          }
       },
 
@@ -6490,6 +6494,42 @@ vkopt['face'] =  {
          .vk_page_shift_right{
             margin-right: -40px;
          }
+
+         .vk_compact_like_btns .like_btns .post_dislike .post_dislike_icon {
+             width: 17px;
+             height: 14px;
+         }
+
+         .vk_compact_like_btns .like_button_icon{
+             height: 14px;
+             width: 17px;
+             opacity: 0.35;
+         }
+         .vk_compact_like_btns .like_btn {
+             margin-left: 8px;
+         }
+         .vk_compact_like_btns .like_button_count, .like_button_label{
+             font-size: 13px;
+         }
+         .vk_compact_like_btns .like_views,
+         .vk_compact_like_btns .like_views:before{
+             height: 11px;
+             line-height: 11px;
+             font-size: 11px;
+         }
+
+         .vk_compact_like_btns .like_btn.like .like_button_icon {
+             background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2214%22%20viewBox%3D%220%200%2016%2014%22%20style%3D%22fill%3A%233D6899%3B%22%3E%3Cpath%20d%3D%22M8%203.2C7.4-0.3%203.2-0.8%201.4%201%20-0.5%202.9-0.5%205.8%201.4%207.7%201.9%208.2%206.9%2013%206.9%2013%207.4%2013.6%208.5%2013.6%209%2013L14.5%207.7C16.5%205.8%2016.5%202.9%2014.6%201%2012.8-0.7%208.6-0.3%208%203.2Z%22%2F%3E%3C%2Fsvg%3E");
+         }
+
+         .vk_compact_like_btns .like_btn.comment .like_button_icon {
+             background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2214%22%20height%3D%2214%22%20viewBox%3D%225%206%2014%2014%22%20style%3D%22fill%3A%233D6899%3B%22%3E%3Cpath%20d%3D%22M5%207C5%206.4%205.4%206%206%206L18%206C18.5%206%2019%206.5%2019%207L19%2015C19%2015.6%2018.6%2016%2018%2016L6%2016C5.5%2016%205%2015.5%205%2015L5%207ZM9%2016L9%2020%2014%2016%209%2016Z%22%2F%3E%3C%2Fsvg%3E");
+         }
+
+         .vk_compact_like_btns .like_btn.share .like_button_icon {
+             background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2214%22%20height%3D%2214%22%20viewBox%3D%220%200%2014%2014%22%20style%3D%22fill%3A%233D6899%3B%22%3E%3Cpath%20d%3D%22M0%205.5L0%206.5C0%208%201.6%209%203%209L8%209C8.4%209%209.1%209.2%2010.7%2010.3%2011.7%2011.1%2012.9%2012%2012.9%2012L14%2012%2014%206%2014%206%2014%206%2014%200%2012.9%200C12.9%200%2011.7%200.9%2010.7%201.7%209.1%202.8%208.4%203%208%203L3%203C1.6%203%200%204%200%205.5ZM7.5%2012L6.4%209%204%209%205.3%2014C7.3%2014%207.5%2013.3%207.5%2012Z%22%2F%3E%3C%2Fsvg%3E");
+         }
+
          */
       });
       var progress_bar = vk_lib.get_block_comments(vkProgressBar).css;
@@ -8435,7 +8475,7 @@ vkopt['vk_dislike'] = {
                </a>');
             }
             return se('\
-            <a href="#" dislike_id="'+obj_id+'" class="post_dislike '+(my_dislike?' '+'pv_disliked':'')+' no_dislikes" onclick="vkopt.vk_dislike.dislike(this.getAttribute(\'dislike_id\')); return false;" onmouseover="vkopt.vk_dislike.dislike_over(this.getAttribute(\'dislike_id\'));" id="post_dislike'+obj_id+'">\
+            <a href="#" dislike_id="'+obj_id+'" class="like_btn post_dislike '+(my_dislike?' '+'pv_disliked':'')+' no_dislikes" onclick="vkopt.vk_dislike.dislike(this.getAttribute(\'dislike_id\')); return false;" onmouseover="vkopt.vk_dislike.dislike_over(this.getAttribute(\'dislike_id\'));" id="post_dislike'+obj_id+'">\
                <i class="post_dislike_icon" id="dislike_icon'+obj_id+'"></i>\
                <span class="post_like_link" id="dislike_link'+obj_id+'">'+IDL('dislike')+'</span>\
                <span class="post_like_count fl_l" id="dislike_count'+obj_id+'">'+(count|| '')+'</span>\
@@ -8504,6 +8544,9 @@ vkopt['vk_dislike'] = {
          case 'before':
             el.parentNode.insertBefore(dislike,el);
             break;
+         case 'append':
+            el.appendChild(dislike);
+            break;
          case 'wiki':
          case 'video':
             insertAfter(dislike,el);
@@ -8525,10 +8568,17 @@ vkopt['vk_dislike'] = {
       for (var i=0; i<els.length;i++){
          vkopt.vk_dislike.add(els[i]);
       }
+      /*
       els=geByClass('like_wrap',node);
       for (var i=0; i<els.length;i++){
          vkopt.vk_dislike.add(els[i]);
+      }*/
+
+      els=geByClass('like_btns',node);
+      for (var i=0; i<els.length;i++){
+         vkopt.vk_dislike.add(geByClass1('like',els[i]));
       }
+
       els=geByClass('fw_like_wrap',node);
       for (var i=0; i<els.length;i++){
          vkopt.vk_dislike.add(els[i],'before');
@@ -8870,6 +8920,9 @@ vkopt['vk_dislike'] = {
          }
          */
          /*css:
+         .dislike_wrap, .dislike_wrap:hover{
+            text-decoration:none;
+         }
          .dislike_icon{
             background-size: contain;
          }
@@ -8963,7 +9016,7 @@ vkopt['vk_dislike'] = {
             width:12px;
             height:10px;
             float: left;
-            margin:3px 0 0;
+            margin:1px 0 0;
             opacity:0.4;
             filter:alpha(opacity=40);
             -o-transition:opacity 100ms ease;
@@ -8992,7 +9045,8 @@ vkopt['vk_dislike'] = {
          .wall_module .reply .dislike_wrap {
             float:right;
             padding:10px;
-            margin:-10px;
+            padding-right: 0px;
+            margin:-10px 0px;
             margin-right: 0;
          }
          .wall_module .dislike_wrap {
@@ -9002,6 +9056,18 @@ vkopt['vk_dislike'] = {
          }
          .wall_module .dislike_link {
             margin:0 4px 0 0
+         }
+
+         .like_btns .post_dislike .post_like_link{display:none}
+         .post_dislike.no_dislikes .post_like_count{
+            margin-left: 0!important;
+         }
+         .like_btns .post_dislike{
+            margin-right: 0px;
+         }
+         .like_btns .post_dislike .post_dislike_icon {
+            width: 24px;
+            height: 20px;
          }
 
          .pv_dislike_icon {

@@ -795,6 +795,7 @@ vk_lang_ru={
    ,'MessagesRestoreProgress': '\u0412\u043e\u0441\u0441\u0442\u0430\u043d\u043e\u0432\u043b\u0435\u043d\u043e %1 \u0438\u0437 %2'
    ,'GoToBeginning':'\u041f\u0435\u0440\u0435\u0439\u0442\u0438 \u043a \u043d\u0430\u0447\u0430\u043b\u0443'
    ,'UploadPngDocAsGraffiti': '\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c .PNG \u043a\u0430\u043a \u0433\u0440\u0430\u0444\u0444\u0438\u0442\u0438'
+   ,'seCompactLikeBtns':'\u041a\u043e\u043c\u043f\u0430\u043a\u0442\u043d\u044b\u0439 \u0441\u0442\u0438\u043b\u044c \u043a\u043d\u043e\u043f\u043e\u043a \u043b\u0430\u0439\u043a\u043e\u0432 \u0438 \u0440\u0435\u043f\u043e\u0441\u0442\u043e\u0432'
 };
 
 vk_lang_en={//by Hzy
@@ -1729,6 +1730,7 @@ vk_lang_en={//by Hzy
   ,"online_count":['', ' %s online', ' %s online', ' %s online']
   ,'GoToBeginning':'Go to beginning'
   ,"UploadPngDocAsGraffiti": "Upload .PNG-file as graffiti"
+  ,"seCompactLikeBtns": "Compact style for like/share buttons"
 };
 
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
