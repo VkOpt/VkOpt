@@ -8224,14 +8224,15 @@ vkopt['vk_dislike'] = {
       var scan=function(){
          var ids=uids.splice(0,1000);// max 1000 uids in one request
          var params={
-            oauth:1,
-            method:'users.get',
+            //oauth:1,
+            //method:'users.get',
             uids:ids.join(','),
             fields:'first_name,last_name,photo_100'
          };
          if (ids.length>0)
-            vkopt.vk_dislike.post('/api.php',params,function(t){
-               var r=JSON.parse(t);
+            //vkopt.vk_dislike.post('/api.php',params,
+            api4dislike.call('users.get', params, function(r){
+               //var r=JSON.parse(t);
                res=res.concat(r.response);
                if (uids.length>0)
                   setTimeout(function(){scan();},340);
