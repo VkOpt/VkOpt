@@ -172,8 +172,12 @@ var vkopt_core = {
       //TODO: тут ещё бы дождаться подгрузки vk_lib.js
       vkopt_core.dom_ready(function(){
          // if (!isNewVk()) return;
-         console.log('init vkopt 3.x');
-         vkopt_core.run();
+         if (!window.StaticFiles){
+            console.log('avoid vkopt init');
+         } else {
+            console.log('init vkopt 3.x');
+            vkopt_core.run();
+         }
       });
    },
    run: function(){

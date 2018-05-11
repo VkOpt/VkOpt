@@ -1854,7 +1854,7 @@ function vk_oauth_api(app_id,scope){
                return;
             }
             if (!remixmid()) {
-               vklog('API '+api.API_ID+' Error. user id not found');
+               //vkopt.log('API '+api.API_ID+' Error. user id not found');
                if (vk_DEBUG) console.log('API '+api.API_ID+' Error. user id not found');
                return;
             }
