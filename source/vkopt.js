@@ -6161,38 +6161,44 @@ vkopt['face'] =  {
             border-radius: 0px !important;
          }
 
+         .vk_old_audio_btns .audio_row {
+            line-height: 1;
+         }
+         .vk_old_audio_btns .audio_w_covers .audio_row .audio_row__performer_title {
+            justify-content: flex-end;
+            flex-direction: row-reverse;
+            align-items: center;
+         }
+         .vk_old_audio_btns .audio_w_covers .audio_row .audio_row__performers a {
+            color: #2a5885;
+         }
          .vk_old_audio_btns .audio_w_covers .audio_row {
             height: 42px;
             padding: 2px 0;
          }
-         .vk_old_audio_btns .audio_w_covers .audio_row .audio_row__info {
-            position: relative;
-            bottom: 6px;
-         }
          .vk_old_audio_btns .audio_w_covers .audio_row .audio_row__actions {
-            margin-top: -3px;
+            margin-top: -5px;
          }
          .vk_old_audio_btns .audio_w_covers .audio_row .audio_row__inner {
             padding-left: 42px;
+            height: 40px;
          }
-         .vk_old_audio_btns .audio_w_covers .audio_row .audio_row__performer {
-            float: left;
-            top: 10px;
-            color: #2a5885;
-            font-weight: 500;
-         }
-         .vk_old_audio_btns .audio_w_covers .audio_row .audio_row__title:before {
-            display: block;
-            content: "\00a0\2013";
-            position: absolute;
-            top: 0;
-            left: 2px;
-            color: #000;
+         .vk_old_audio_btns .audio_row .audio_row__performers {
+            overflow: visible;
          }
          .vk_old_audio_btns .audio_w_covers .audio_row .audio_row__title {
-            padding-left: 17px;
-            top: 10px;
-            font-weight: normal;
+            margin-bottom: 0px;
+            overflow: hidden;
+            text-overflow: clip;
+         }
+         .vk_old_audio_btns .audio_w_covers .audio_row .audio_row__title:before {
+            display: inline-block;
+            content: "\00a0\2013";
+            color: #000;
+         }
+         .vk_old_audio_btns .audio_w_covers .audio_row .audio_row__duration,
+         .vk_old_audio_btns .audio_row.audio_row__current .audio_row__duration {
+            top: 13px;
          }
          .vk_old_audio_btns .audio_row .audio_row__cover_back {
             background-color: #6788AA;
@@ -6221,9 +6227,6 @@ vkopt['face'] =  {
          .vk_old_audio_btns .audio_row .audio_row__sound_bars {
              display: none;
          }
-         .vk_old_audio_btns .audio_w_covers .vk_audio_size_info_wrap {
-            margin-top: 9px;
-         }
 
          .vk_compact_audio.vk_old_audio_btns .audio_row,
          .vk_compact_audio.vk_old_audio_btns .audio_row .audio_row__inner{
@@ -6242,9 +6245,6 @@ vkopt['face'] =  {
             padding-left: 30px;
          }
 
-         .vk_compact_audio.vk_old_audio_btns .audio_w_covers .audio_row .audio_row__duration {
-            top: 9px;
-         }
          .vk_compact_audio.vk_old_audio_btns .audio_row .audio_row__duration {
             top: 5px;
          }
@@ -6253,10 +6253,6 @@ vkopt['face'] =  {
          }
          .vk_compact_audio.vk_old_audio_btns .vk_audio_size_info_wrap{
             margin-top: 4px;
-         }
-         .vk_compact_audio.vk_old_audio_btns .audio_row .audio_row__performer_title .audio_row__performer,
-         .vk_compact_audio.vk_old_audio_btns .audio_w_covers .audio_row .audio_row__performer_title .audio_row__title {
-            top: 4px;
          }
          .vk_compact_audio.vk_old_audio_btns  .audio_w_covers .audio_row .audio_row__actions {
             margin-top: -12px;
