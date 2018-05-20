@@ -2700,7 +2700,7 @@ vkopt['audio'] =  {
          var name = unclean(info[4]+' - '+info[3]).replace(/<em>|<\/em>/g, ''); // зачищаем от тегов.
          name = vkCleanFileName(name);
 
-         var size = vkopt.audio._sizes_cache[info_obj.id];
+         var size = vkopt.audio._sizes_cache[info_obj.fullId];
          var sz_labels = size ? vkopt.audio.size_to_bitrare(size, info_obj.duration) : {};
          if (size){
             row.dataset['kbps'] = sz_labels.kbps_raw;
@@ -2792,7 +2792,7 @@ vkopt['audio'] =  {
       if (!vkopt.settings.get('audio_size_info')) return;
 
       var aid = id.split('_')[1];
-      var size = vkopt.audio._sizes_cache[aid];
+      var size = vkopt.audio._sizes_cache[id];
       var rb = true;
       var WAIT_TIME = 4000;
       var els = geByClass('_audio_row_' + id);
@@ -2810,13 +2810,15 @@ vkopt['audio'] =  {
             el.dataset['kbps'] = sz_info.kbps_raw;
             el.dataset['filesize'] = size;
             addClass(el, 'vk_info_loaded');
-            if (sz_info.kbps_raw > 120 && !vkopt.audio._sizes_cache[aid]){
-               vkopt.audio._sizes_cache[aid] = size;
-               vkopt.audio.save_sizes_cache();
-            } else {
-               vkopt.audio._sizes_cache[aid] = false;
-               vkopt.audio.save_sizes_cache();
 
+            if (!vkopt.audio._sizes_cache[id]){
+               if (sz_info.kbps_raw > 120){
+                  vkopt.audio._sizes_cache[id] = size;
+                  vkopt.audio.save_sizes_cache();
+               } else {
+                  vkopt.audio._sizes_cache[id] = false;
+                  vkopt.audio.save_sizes_cache();
+               }
             }
             return sz_info.kbps_raw > 120;
          }
