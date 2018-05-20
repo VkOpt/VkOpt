@@ -2677,7 +2677,7 @@ vkopt['audio'] =  {
 
       for (var i = 0; i < audios.length; i++){
          var row = audios[i];
-         var dur = geByClass1('audio_row__performer_title', row);
+         var dur = geByClass1('audio_row__info', row);
          var info = null;
          try {
             info = JSON.parse(row.dataset["audio"]);
@@ -6173,6 +6173,7 @@ vkopt['face'] =  {
          }
          .vk_old_audio_btns .audio_w_covers .audio_row .audio_row__performers a {
             color: #2a5885;
+            font-weight: 500;
          }
          .vk_old_audio_btns .audio_w_covers .audio_row {
             height: 42px;
@@ -6192,6 +6193,7 @@ vkopt['face'] =  {
             margin-bottom: 0px;
             overflow: hidden;
             text-overflow: clip;
+            font-weight: normal;
          }
          .vk_old_audio_btns .audio_w_covers .audio_row .audio_row__title:before {
             display: inline-block;
@@ -6233,6 +6235,11 @@ vkopt['face'] =  {
          .vk_compact_audio.vk_old_audio_btns .audio_row,
          .vk_compact_audio.vk_old_audio_btns .audio_row .audio_row__inner{
             height: 26px;
+         }
+
+         .vk_compact_audio.vk_old_audio_btns .audio_row .audio_row__performers,
+         .vk_compact_audio.vk_old_audio_btns .audio_row .audio_row__title {
+            padding: 2px 0;
          }
 
          .vk_compact_audio.vk_old_audio_btns .audio_row .audio_row__cover_back,
@@ -6303,10 +6310,19 @@ vkopt['face'] =  {
             white-space: normal;
          }
          .vk_audio_full_title.vk_old_audio_btns .audio_row .audio_performer,
+         .vk_audio_full_title.vk_old_audio_btns .audio_row .audio_row__performers,
          .vk_audio_full_title.vk_old_audio_btns .audio_row__title._audio_row__title,
          .vk_audio_full_title.vk_old_audio_btns .audio_row .audio_row__performer_title {
             display: inline;
          }
+         .vk_audio_full_title.vk_compact_audio.vk_old_audio_btns .audio_row__performer_title,
+         .vk_audio_full_title.vk_compact_audio.vk_old_audio_btns .audio_w_covers .audio_row .audio_row__performer_title {
+             top: 6px;
+         }
+         .vk_audio_full_title.vk_old_audio_btns .audio_row__performer_title {
+             top: 13px;
+         }
+
          .vk_audio_full_title.vk_old_audio_btns .audio_row,
          .vk_audio_full_title.vk_old_audio_btns .audio_row .audio_row__inner {
             height: auto;
@@ -6319,8 +6335,8 @@ vkopt['face'] =  {
              padding-bottom: 23px;
              margin-bottom: -10px;
          }
-         .vk_compact_audio.vk_audio_full_title .audio_row .audio_row_content{
-             padding-bottom: 7px;
+         .vk_compact_audio.vk_audio_full_title.vk_old_audio_btns .audio_row .audio_row_content{
+             padding-bottom: 11px;
              margin-bottom: -10px;
          }
          .vk_audio_full_title.vk_old_audio_btns  .audio_row__performer_title:after {
