@@ -6710,10 +6710,12 @@ vkopt['profile'] = {
          }
       },
       Extra: {
-         zodiak_ophiuchus:{},
+         zodiak_ophiuchus:{}
+         /*
          scan_hidden_audios: {
-            default_value: true
+            default_value: false
          }
+         */
       }
    },
 
@@ -6770,7 +6772,7 @@ vkopt['profile'] = {
 
       if (vkopt.settings.get('show_common_group') && cur.module == 'profile' && vk.id != cur.oid)
          vkopt.profile.fshow_common_group();
-
+      /*
       if (cur.module == 'profile' && vkopt.settings.get('scan_hidden_audios') && !ge('profile_audios')){
          var p = geByClass1('counts_module');
          if (!hasClass(p,'vk_scan_audio')){
@@ -6779,6 +6781,7 @@ vkopt['profile'] = {
             p.appendChild(btn);
          }
       }
+      */
    },
    onLibFiles: function(fn){
       if (fn == 'fansbox.js' && vkopt.settings.get('show_common_group')){
