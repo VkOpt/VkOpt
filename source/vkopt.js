@@ -7100,6 +7100,49 @@ vkopt['profile'] = {
    }
 };
 
+vkopt['extra_online'] = {
+   onSettings: {
+      Users: {
+         extra_online: {
+            title: 'seShowOnlineExtraInfo',
+            default_value: true
+         }
+      }
+   },
+   css: '.vk_extra_online_info{margin-left:5px}',
+   onLocation: function(){
+      if (cur.module == "profile"){
+         vkopt.extra_online.update_online_info();
+         cur.onPeerStatusChanged && Inj.End('cur.onPeerStatusChanged', vkopt.extra_online.update_online_info);
+      }
+   },
+   update_online_info: function(){
+      var code = 'var clients=["","m.vk.com","iPhone","iPad","Android","Windows Phone","Windows 10","vk.com","VK Mobile"];var u = API.users.get({user_ids:"%UID",fields:"online,last_seen"})[0];if (u.online_app){u.app_title=API.apps.get({app_id:u.online_app}).items[0].title;}if(u.last_seen)u.last_seen.platform_title=clients[u.last_seen.platform];return u;';
+      code = code.replace(/%UID/g,cur.oid);
+      dApi.call('execute',{code: code, v:'5.75'},function(r,info){
+         re(geByClass1('vk_extra_online_info'));
+         var extra = null;
+         if (info.online_app)
+            extra = se('<a class="vk_extra_online_info" href="/app'+info.online_app+'">('+info.app_title+')</a>');
+         else if (!info.online && info.last_seen)
+            extra = se('<span class="vk_extra_online_info" title="'+(new Date(info.last_seen.time*1000)).format('HH:MM dd.mm.yyyy')+'">('+info.last_seen.platform_title+')</span>');
+
+         var p = geByClass1('profile_online');
+         if (p && hasClass(p, 'is_online'))
+            p = geByClass1('profile_online_lv');
+         else
+            p = geByClass1('profile_time_lv');
+
+         if (p){
+            if (p.childNodes.length < 1 && !info.online && info.last_seen) // no last seen info
+               p.innerHTML = (new Date(info.last_seen.time*1000)).format('HH:MM dd.mm.yyyy');
+            if (extra)
+               p.appendChild(extra);
+         }
+      })
+   }
+}
+
 vkopt['groups'] = {
    tpls:null,
    css: function(){
