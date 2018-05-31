@@ -4858,6 +4858,23 @@ vkopt['messages'] = {
          /*search_deleted_item:
          <a class="ui_actions_menu_item _im_settings_action im-action vk_acts_item_icon" id="vk_search_deleted_item" onclick="vkopt.messages.search_deleted(); return false;">{lng.SearchDeletedMessages}</a>
          */
+	 /*users_item:
+	 <div class="ListItem">
+	   <div class="Entity">
+	     <div class="Entity__aside">
+	       <a href="/{vals.domain}"><img src="{vals.photo}" class="Entity__photo"></a>
+	     </div>
+	     <div class="Entity__main">
+	       <div class="Entity__title">
+		 <a href="/{vals.domain}" class="Link">{vals.fullName}</a>
+	       </div>
+	       <div class="Entity__description">
+		 <span>online{vals.mobile}</span>
+	       </div>
+	     </div>
+           </div>
+         </div>
+	 */
       });
    },
    onRequestQuery: function(url, query, options) {
@@ -4960,8 +4977,8 @@ vkopt['messages'] = {
          list[key].setAttribute('mention_id', attr.substr(1));
          list[key].setAttribute('onmouseover', 'mentionOver(this)');
       }*/
-      var p = geByClass1('_im_chat_members');
-      if (!p) return;
+      var p = geByClass1('_im_page_peer_online');
+      if (!p || !geByClass1('_im_chat_members')) return;
       var chatId = cur.peer - 2000000000;
       var body_code = 'var listUsers = API.messages.getChatUsers({"chat_id":'+chatId+',"fields":"online"});'+
                       'var i = 0, count = 0;'+
@@ -4970,11 +4987,34 @@ vkopt['messages'] = {
                       'return count;';
       dApi.call('execute',{v:'5.73', code:body_code},function(r){
          if (!ge('countUsers'))
-            p.insertBefore(se('<span id="countUsers"></span>'), p.nextSibling);
+           p.appendChild(se('<button id="countUsers" class="im-page--members" style="padding-left: 5px" onclick="vkopt.messages.show_on_users()"></button>'));
          ge('countUsers').innerHTML = r.response > 0 ? ' ('+langNumeric(r.response, IDL('online_count'))+')' : '';
 
          //p.insertBefore(se('<span id="countUsers"> ('+r.response+' онлайн)</span>'), p.nextSibling);
       });
+   },
+   show_on_users:  function(){
+     vkLdr.show();
+     var chatId = cur.peer - 2000000000;
+     var body_code = 'return API.messages.getChatUsers({"chat_id":'+chatId+',"fields":"photo_50,online,domain"});'
+     dApi.call('execute',{v:'5.75', code:body_code},function(r){
+       var items='', mob='' , i=0, on = 0;
+       while(r.response[i]){
+         if(r.response[i]['online'] == 1){
+	   mob = (r.response[i]['online_mobile']) ? '<b class="mob_onl im_status_mob_onl"></b>' : '';
+           items = items+vk_lib.tpl_process(vkopt.messages.tpls['users_item'],{
+             fullName: r.response[i]['first_name']+' '+r.response[i]['last_name'],
+             photo: r.response[i]['photo_50'],
+             domain: r.response[i]['domain'],
+	     mobile: mob
+           });
+	   on++;
+         }
+         i++;
+       }
+       vkLdr.hide();
+       vkAlertBox('Участники онлайн • '+on, items, null, null, true);
+     });
    },
    show_info: function(el){ // показываем количество сообщений и диалогов
       var code_body = 'return {';
