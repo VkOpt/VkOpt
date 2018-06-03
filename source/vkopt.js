@@ -4987,34 +4987,56 @@ vkopt['messages'] = {
                       'return count;';
       dApi.call('execute',{v:'5.73', code:body_code},function(r){
          if (!ge('countUsers'))
-           p.appendChild(se('<button id="countUsers" class="im-page--members" style="padding-left: 5px" onclick="vkopt.messages.show_on_users()"></button>'));
+           p.appendChild(se('<span id="countUsers" onmouseover="vkopt.messages.show_on_users(this)"></span>'));
          ge('countUsers').innerHTML = r.response > 0 ? ' ('+langNumeric(r.response, IDL('online_count'))+')' : '';
 
          //p.insertBefore(se('<span id="countUsers"> ('+r.response+' онлайн)</span>'), p.nextSibling);
       });
    },
-   show_on_users:  function(){
-     vkLdr.show();
-     var chatId = cur.peer - 2000000000;
-     var body_code = 'return API.messages.getChatUsers({"chat_id":'+chatId+',"fields":"photo_50,online,domain"});'
-     dApi.call('execute',{v:'5.75', code:body_code},function(r){
-       var items='', mob='' , i=0, on = 0;
-       while(r.response[i]){
-         if(r.response[i]['online'] == 1){
-	   mob = (r.response[i]['online_mobile']) ? '<b class="mob_onl im_status_mob_onl"></b>' : '';
-           items = items+vk_lib.tpl_process(vkopt.messages.tpls['users_item'],{
-             fullName: r.response[i]['first_name']+' '+r.response[i]['last_name'],
-             photo: r.response[i]['photo_50'],
-             domain: r.response[i]['domain'],
-	     mobile: mob
-           });
-	   on++;
+   show_on_users:  function(el){
+      var chatId = cur.peer - 2000000000;
+      var body_code = 'return API.messages.getChatUsers({"chat_id":'+chatId+',"fields":"photo_50,online,domain"});';
+      dApi.call('execute',{v:'5.75', code:body_code},function(r){
+         var items='', mob='' , i=0, on = 0, u = {};
+         while(r.response[i]){
+            if(r.response[i]['online'] == 1){
+               u = r.response[i];
+               mob = (u['online_mobile']) ? '<b class="mob_onl im_status_mob_onl"></b>' : '';
+               items = items+vk_lib.tpl_process(vkopt.messages.tpls['users_item'],{
+                  fullName: u['first_name']+' '+u['last_name'],
+                  photo: u['photo_50'],
+                  domain: u['domain'],
+                  mobile: mob
+               });
+               on++;
+            }
+            i++;
          }
-         i++;
-       }
-       vkLdr.hide();
-       vkAlertBox('Участники онлайн • '+on, items, null, null, true);
-     });
+         ge('countUsers') && (ge('countUsers').innerHTML = ' ('+langNumeric(on, IDL('online_count'))+')');
+
+         var html = '<div class="vk_users_items_wrap" style="max-height:250px;">' + items + '</div>';
+
+         var statusTT = new ElementTooltip(el,{
+             content: html,
+             width: 250,
+             rightShift: 80,
+             elClassWhenShown: "vk_users_items_tt_shown",
+             id: "vk_users_items_tt",
+             appendToParent: true,
+             onFirstTimeShow: function(e) {
+                 this.sb = new uiScroll(geByClass1("vk_users_items_wrap", e),{
+                     global: true
+                 })
+             },
+             onShow: function() {
+                 setTimeout(function() {
+                     statusTT.sb.update()
+                 }, 0)
+             }
+         });
+         statusTT.show();
+         statusTT.sb.update();
+      });
    },
    show_info: function(el){ // показываем количество сообщений и диалогов
       var code_body = 'return {';
