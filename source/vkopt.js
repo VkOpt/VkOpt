@@ -64,7 +64,6 @@ var vkopt_defaults = {
       audio_more_acts: true, // доп. менюшка для каждой аудиозаписи
       vk_audio_icon_dots: false, // иконка аудио "действия/скачать" в виде трех точек
       //audio_dl_acts_2_btns: false, // разделить на аудио кнопки скачивания и меню доп.действий
-      audio_edit_box_album_selector: true, // поле выбора альбома в окне редактирования названия аудио
       audio_force_flash: false, // принудительно использовать Flash для аудио-плеера
       im_hide_dialogs: false, // Новый стиль диалогов. Полотно переписки на всю ширину, список диалогов скрывается при клике по истории, показ списка - клик по заголовку переписки
       attach_media_by_id: true, // при вставке айди медиа в поле поиска из диалога прикрепления, в диалог подгружается медиа-файл с этим айди
@@ -2369,8 +2368,7 @@ vkopt['audio'] =  {
          audio_mod_info_visible:{  // на блоках с аудио (профиль, группы) тоже показывать длительность и кнопки
             default_value: true,
             class_toggler: true
-         },
-         audio_edit_box_album_selector:{}
+         }
       }
    },
    onInit: function(){
@@ -2410,83 +2408,6 @@ vkopt['audio'] =  {
             clearTimeout(vkopt.audio.__onrowover);
          });
       }
-   },
-   onResponseAnswer: function(answer, url, q){
-      if (vkopt.settings.get('audio_edit_box_album_selector') && q.act=='edit_audio_box' && answer[2]) answer[2]=answer[2]+'\n vkopt.audio.edit_box_move("'+q.aid+'");';
-   },
-   album_cache: {},
-   edit_box_move: function(full_aid){
-      // "Access denied: audio methods are unavailable": audio.moveToAlbum, audio.getAlbums
-      var x=full_aid.split('_');
-      var oid=parseInt(x[0]);
-      var aid=parseInt(x[1]);
-
-      var info = AudioUtils.getAudioFromEl(ge('audio_'+full_aid));
-      var def_aid = info[AudioUtils.AUDIO_ITEM_INDEX_ALBUM_ID];
-
-      var cur_offset=0;
-      var albums=[];
-      var get_albums=function(callback){
-         var result = [];
-         each(geByClass('audio_album_item'),function(i,el){
-           var t_el = geByClass1('audio_album_title',el)
-           var title = t_el.getAttribute('title') || t_el.innerText || t_el.textContent;
-           var album_id = (el.getAttribute('id').match(/(-?\d+)_(\d+)/i) || [])[2];
-           if (title && album_id)
-              result.push({album_id: album_id, title: title});
-         })
-         callback(result)
-      }
-      var p=ge('audio_extra_link');
-      if (!p) return;
-      var div=vkCe('div',{id:'vk_audio_mover', 'class':'audio_edit_row clear_fix'},'\
-                    <div class="audio_edit_label fl_l ta_r">'+IDL('SelectAlbum',1)+'</div>\
-                    <div class="audio_edit_input fl_l"><div id="vk_audio_album_selector"></div><div id="vk_au_alb_ldr">'+vkopt.res.img.ldr+'</div></div>\
-                  ');
-      p.parentNode.insertBefore(div,p);
-
-      get_albums(function(list){
-         stManager.add(['ui_controls.js', 'ui_controls.css'],function(){
-            var items=[];
-            items.push(['0',IDL('NotInAlbums')]);
-            for (var i=0; i<list.length;i++){
-               items.push([list[i].album_id,list[i].title]);
-            }
-
-            cur.vk_auMoveToAlbum = new Dropdown(ge('vk_audio_album_selector'), items, {
-                 width: 298,
-                 selectedItems: [def_aid],
-                 autocomplete: (items.length > 7),
-                 onChange: function(val) {
-                   if (!intval(val)) {
-                     cur.vk_auMoveToAlbum.val(0);
-                   }
-                   var to_album=cur.vk_auMoveToAlbum.val();
-                   show('vk_au_alb_ldr');
-
-                   //*
-                   var options = cur.audioPage.options;
-                   ajax.post("al_audio.php", {
-                       act: "a_move_to_album",
-                       album_id: to_album,
-                       audio_id: aid,
-                       hash: options.moveHash,
-                       gid: options.oid < 0 ? -options.oid : null
-                   },{
-                      onDone: function(){
-                        // TODO: допилить. ибо в закэшированных плейлистах не изменяется до перезагрузки страницы
-                        var u = {};
-                        u[AudioUtils.AUDIO_ITEM_INDEX_ALBUM_ID] = to_album;
-                        getAudioPlayer().updateAudio(info, u);
-
-                        hide('vk_au_alb_ldr');
-                      }
-                   });
-                 }
-            });
-            hide('vk_au_alb_ldr');
-         });
-      });
    },
    remove_trash:function(s){
       s=vkRemoveTrash(s); // удаление символов не являющихся буквами/иероглифами/и т.д
