@@ -2081,7 +2081,7 @@ vkopt['photos'] =  {
       vkopt.photos.tpls = vk_lib.get_block_comments(function(){
       /*photos_comments_link:
       <span class="photos_comments_link">
-         <a href="/photos{vals.oid}?act=comments" onclick="return nav.go(this, event)">{lng.mPhC}</a>
+         <a href="/{vals.loc}?act=comments" onclick="return nav.go(this, event)">{lng.mPhC}</a>
       </span>
       */
       });
@@ -2166,13 +2166,14 @@ vkopt['photos'] =  {
       p.appendChild(btn);
    },
    browse_comments_btn: function(){ // добавляем кнопку на обзор комментариев к фото, если она отсутствует
-      var p = ge('photos_all_block');
-      if (!p) return;
-      var h = geByClass1('page_block_header_extra', p);
+      var p = ge('photos_all_block') || ge('photos_container_photos');
+      var loc = nav.objLoc[0];
+      if (!p || nav.objLoc['act'] || !/(album|tag|photos)-?\d+/.test(loc)) return;
+      var h = geByClass1('page_block_header_extra');
       if (!h || geByClass1('photos_comments_link', h)) return;
       var btn = se(
             vk_lib.tpl_process(vkopt.photos.tpls['photos_comments_link'], {
-               oid: cur.oid
+               loc: loc
             })
          );
       h.appendChild(btn);
