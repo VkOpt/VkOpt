@@ -2074,6 +2074,11 @@ vkopt['photos'] =  {
    onSettings:{
       Extra:{
          photo_replacer:{}
+      },
+      Media: {
+         photos_album_dl: {
+            title: "sePhotosAlbumDownload"
+         }
       }
    },
    tpls:{},
@@ -2084,6 +2089,9 @@ vkopt['photos'] =  {
          <a href="/{vals.loc}?act=comments" onclick="return nav.go(this, event)">{lng.mPhC}</a>
       </span>
       */
+      /*photos_download_link:
+      <a onclick="vkopt.photos.download_album({vals.oid},{vals.aid})">{lng.download}</a>
+      */
       });
    },
    onLocation: function(){
@@ -2093,6 +2101,107 @@ vkopt['photos'] =  {
       if (url == '/al_photos.php' && q.act == 'edit_photo' && (vkopt.settings.get('photo_replacer'))){
          answer[1] = vkopt_core.mod_str_as_node(answer[1], vkopt.photos.update_photo_btn, {source:'process_edit_photo_response', url:url, q:q});
       }
+      if(vkopt.settings.get('photos_album_dl') && url == '/al_photos.php') {
+         // всплывающая
+         if (q.act && q.act == 'show_album') {
+            var oid_aid = q.album;
+            var oid = oid_aid.split("_")[0];
+            var aid = oid_aid.split("_")[1];
+            var dl_link = vk_lib.tpl_process(vkopt.photos.tpls.photos_download_link, {oid: oid, aid: aid});
+            answer[3].summary += dl_link;
+         } else if (q.__query && q.__query.indexOf('album') > -1) {
+            // отдельная страница
+            var oid_aid = q.__query.substr(q.__query.indexOf('album')+5);
+            var oid = oid_aid.split("_")[0];
+            var aid = oid_aid.split("_")[1];
+            var dl_link = vk_lib.tpl_process(vkopt.photos.tpls.photos_download_link, {oid: oid, aid: aid});
+            var html_obj = se(answer[1]);
+            if (geByClass1('photos_album_intro',html_obj) && !hasClass(geByTag1('h1',geByClass1('photos_album_intro',html_obj)), 'has_dl_album_link')) {
+               geByTag1('h1',geByClass1('photos_album_intro',html_obj)).innerHTML += dl_link;
+               addClass(geByTag1('h1',geByClass1('photos_album_intro',html_obj)),'has_dl_album_link');
+            }
+            answer[1] = html_obj.outerHTML;
+         }
+      }
+   },
+   download_album: function(oid, aid) {
+      /* < Создание прогресс-бара > */
+      if (!ge('vk_links_container')) {
+         var div = vkCe('div', {id: "vk_links_container", "class": "clear_fix", style: "padding:10px;"}, '<center>' + vkopt.res.img.ldr_big + '</center>');
+         var ref = ge('photos_container') || ge('likes_photo_content');
+         if (ref)
+            ref.parentNode.insertBefore(div, ref);
+         else
+            div = null;
+      } else var div = ge('vk_links_container');
+      var box = null;
+      if (!div) {
+         box = vkAlertBox(IDL('Links'), '<div id="vk_links_container"></div>');
+         box.setOptions({width: "640px"});
+         div = ge('vk_links_container');
+      }
+      /* </ Создание прогресс-бара > */
+
+      var CORS_PROXY = location.protocol+'//crossorigin.me/';  // константа, содержащая адрес прокси для CORS-запросов
+      var zip;            // переменная для объекта JSZip
+      var links;          // переменная для массива ссылок на фотки
+      var links_length;   // длина этого массива. Чтобы каждый раз не дергать .length
+      var dlphoto = function (i) {  // рекурсивная функция скачивания фоток. i - номер ссылки в массиве
+         if (i > -1) {   // условие продолжения рекурсии
+            var next = function() {
+               Progress(links_length - i, links_length); // Потому что скачивание идет задом наперед
+               dlphoto(--i);                             // продолжаем рекурсию
+            }
+            var request = (vkAjTransport.readyState == 4 || vkAjTransport.readyState == 0) ? vkAjTransport : new XMLHttpRequest();
+            if (request) {
+               var cors_proxy_used = false;    // использовался ли уже CORS-прокси
+               var onerror = function() {
+                  if (!cors_proxy_used) {                  // Если еще не использовали прокси, используем
+                     cors_proxy_used = true;
+                     request.open('GET', CORS_PROXY + links[i], true);
+                     request.send();
+                  } else {    // Не скачалось даже через прокси. Наверное, прокси лежит. Скачиваем файл через background.
+                     vk_aj.ajax({url: links[i], method: 'GET', responseType: 'arraybuffer'}, function (response) {
+                        if (response.status == 200)
+                           zip.file(i + ".jpg", response.raw);
+                        next();
+                     });
+                  }
+               };
+               request.responseType = 'arraybuffer';
+               request.onreadystatechange = function () {
+                  if (request.readyState == 4) {
+                     if (request.status == 200) {
+                        zip.file(i + ".jpg", request.response);     // Добавление скачанного файла в объект JSZip
+                        next();
+                     } else
+                        onerror();
+                  }
+               };
+               request.onerror=onerror;
+               request.open('GET', links[i], true);
+               request.send();
+            } else next();
+         }
+         else {      // При завершении скачивания сохраняем сгенерированный архивчик
+            var content = zip.generate({type: "blob"});
+            saveAs(content, "photos_" + vkCleanFileName((oid || '') + '_' + (aid || '')).substr(0, 250) + ".zip");
+            val(div, ''); // очистить прогрессбар
+         }
+      };
+      var Progress = function (c, f) {    // обновление прогрессбара
+         if (!f) f = 1;
+         val(ge('vk_links_container'), vkProgressBar(c, f, 600));
+      };
+      // Когда все библиотеки подключены
+      JsZipConnect(function () {
+         zip = new JSZip();                          // Создание объекта JSZip в ранее объявленную переменную
+         vkApis.photos_hd(oid, aid, function (r) {   // Получение списка ссылок
+            links = r;
+            links_length = links.length;
+            dlphoto(links_length - 1);              // Запуск рекурсии с последней ссылки
+         }, Progress);
+      });
    },
    update_photo: function(photo_id){
       var box=vkAlertBox(IDL('Upload'),'<center><div id="vk_upd_photo"></div><div id="vk_upd_photo_progress"></div></center>');
