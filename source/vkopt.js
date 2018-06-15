@@ -3031,12 +3031,14 @@ vkopt['albums'] = {
             }
             mode = mode || 0;
             url = list[idx];
-            file_name = url.split('?')[0].split('/').pop();
+
+            file_name = (url || '/null').split('?')[0].split('/').pop();
             var info = {
                url: url,
                file_name: file_name,
                num: idx
             }
+            if (!url) mode = 99;
 
             var onload = function(){
                if (xhr.status == 200){
