@@ -20,7 +20,7 @@ vkopt['vkopt_any_plugin'] = {
     /*  вызывается перед выполнением ajax.post метода.
         Если функция вернёт false, то запрос выполнен не будет. */
     onRequestQuery:       function(url, query, options) {},
-    /*  answer — массив, изменять только его элементы */      
+    /*  answer — массив, изменять только его элементы */
     onResponseAnswer:     function(answer, url, params) {},
     /*  слушает сообщения, отосланные из других
         вкладок ВК через vkopt.cmd(command_obj) */
@@ -39,7 +39,7 @@ vkopt['vkopt_any_plugin'] = {
         args - массив аргументов переданных в конструктор */
     onDatepickerCreate:   function(args){},
     /*  CSS модуля, автоматически встраивается в страницу */
-    css:                  function() {} || {},                   
+    css:                  function() {} || {},
 
     // <settings>
     /*  возвращаем объект с перечисленными по категориям настройками этого модуля */
@@ -73,8 +73,22 @@ vkopt['vkopt_any_plugin'] = {
             tagName                                // если требуется, чтоб тегом кнопки был не "div", а другой, то указывать тут.
         ]  */
     onAudioRowItems: function(audioEl, audioObject, audio) {}
+
+    // <photos>
+    /* добавление пунктов в меню действий с альбомом
+       результатом вызова функции должен быть массив с объектами, которые могут содержать поля:
+       {
+         href:       ссылка
+         item_class: доп. CSS-класс,
+         onclick:    строка или функция обработчик,
+         attrs:      доп. HTML атрибуты тега пункта,
+         text:       название пункта
+       }
+       aid может быть как числовым, так и вида "tag", "photos", "00", "000"
+    */
+    onPhotoAlbumItems:    function(aid, oid){}
 };
 
 // запускает модуль. Если мы опоздали к загрузке страницы, провоцирует вызов события onModuleDelayedInit
-if (window.vkopt_core_ready) vkopt_core.plugins.delayed_run('vkopt_any_plugin');      
+if (window.vkopt_core_ready) vkopt_core.plugins.delayed_run('vkopt_any_plugin');
 ```

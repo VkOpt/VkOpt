@@ -1072,10 +1072,10 @@ var vkMozExtension = {
    };
 
    vk_lib.tpl_process = function(tpl, values){
-      return (tpl || '').replace(/\{([a-z]+)\.([a-z0-9_-]+)\}/ig,function(s,type, id){
+      return (tpl || '').replace(/\{([a-z]+)\.([a-z0-9_-]+)(?:\=([^\{\}\r\n"']*?))?\}/ig,function(s,type, id, def_val){
          switch(type.toLowerCase()){
             case 'lng': return IDL(id);
-            case 'vals': return (values && typeof values[id] != 'undefined') ? values[id] : s;
+            case 'vals': return (values && typeof values[id] != 'undefined') ? values[id] : ((typeof def_val != 'undefined') ? def_val : s);
             default: return s;
          }
 

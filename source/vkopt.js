@@ -471,6 +471,7 @@ var vk_glue = {
 
 /*
 (function(){
+   window.vkopt = (window.vkopt || {});
    var m = {
       id: 'vkopt_any_plugin',
       // <core>
@@ -510,13 +511,651 @@ var vk_glue = {
                                                                            //    attrs,                                 // строка с дополнительными атрибутами
                                                                            //    tagName                                // если требуется, чтоб тегом кнопки был не "div", а другой, то указывать тут.
                                                                            // ]
+      // <photos>
+      onPhotoAlbumItems:      function(aid, oid){}                         // добавление пунктов в меню действий с альбомом
+                                                                           // результатом вызова функции должен быть массив с объектами, которые могут содержать поля:
+                                                                           // {
+                                                                           //    href:       ссылка
+                                                                           //    item_class: доп. CSS-класс,
+                                                                           //    onclick:    строка или функция обработчик,
+                                                                           //    attrs:      доп. HTML атрибуты тега пункта,
+                                                                           //    text:       название пункта
+                                                                           // }
+                                                                           // aid может быть как числовым, так и вида "tag", "photos", "00", "000"
 
    };
-   window.vkopt = (window.vkopt || {});
    window.vkopt[m.id] = m;
    if (window.vkopt_core_ready) vkopt_core.plugins.delayed_run(m.id);      // запускает модуль, если мы опоздали к загрузке страницы, провоцирует вызов события onModuleDelayedInit
 })();
 */
+
+// vkopt.zipjs library
+(function(obj) {
+   /*
+    Zip.js
+    Copyright (c) 2013 Gildas Lormeau. All rights reserved.
+    Please read copyright notice, list of conditions and the disclaimer https://raw.githubusercontent.com/gildas-lormeau/zip.js/master/WebContent/zip.js
+    */
+   "use strict";
+	var ERR_WRITE = "Error while writing zip file.";
+	var ERR_READ_DATA = "Error while reading file data.";
+	var ERR_DUPLICATED_NAME = "File already exists.";
+	var CHUNK_SIZE = 512 * 1024;
+
+	var appendABViewSupported;
+	try {
+		appendABViewSupported = new Blob([ new DataView(new ArrayBuffer(0)) ]).size === 0;
+	} catch (e) {
+	}
+
+	function Crc32() {
+		this.crc = -1;
+	}
+	Crc32.prototype.append = function append(data) {
+		var crc = this.crc | 0, table = this.table;
+		for (var offset = 0, len = data.length | 0; offset < len; offset++)
+			crc = (crc >>> 8) ^ table[(crc ^ data[offset]) & 0xFF];
+		this.crc = crc;
+	};
+	Crc32.prototype.get = function get() {
+		return ~this.crc;
+	};
+	Crc32.prototype.table = (function() {
+		var i, j, t, table = []; // Uint32Array is actually slower than []
+		for (i = 0; i < 256; i++) {
+			t = i;
+			for (j = 0; j < 8; j++)
+				if (t & 1)
+					t = (t >>> 1) ^ 0xEDB88320;
+				else
+					t = t >>> 1;
+			table[i] = t;
+		}
+		return table;
+	})();
+
+	// "no-op" codec
+	function NOOP() {}
+	NOOP.prototype.append = function append(bytes, onprogress) {
+		return bytes;
+	};
+	NOOP.prototype.flush = function flush() {};
+
+	function getDataHelper(byteLength, bytes) {
+		var dataBuffer, dataArray;
+		dataBuffer = new ArrayBuffer(byteLength);
+		dataArray = new Uint8Array(dataBuffer);
+		if (bytes)
+			dataArray.set(bytes, 0);
+		return {
+			buffer : dataBuffer,
+			array : dataArray,
+			view : new DataView(dataBuffer)
+		};
+	}
+
+   function blobSlice(blob, index, length) {
+		if (index < 0 || length < 0 || index + length > blob.size)
+			throw new RangeError('offset:' + index + ', length:' + length + ', size:' + blob.size);
+		if (blob.slice)
+			return blob.slice(index, index + length);
+		else if (blob.webkitSlice)
+			return blob.webkitSlice(index, index + length);
+		else if (blob.mozSlice)
+			return blob.mozSlice(index, index + length);
+		else if (blob.msSlice)
+			return blob.msSlice(index, index + length);
+	}
+	// Readers
+	function Reader() {
+	}
+   function BlobReader(blob) {
+		var that = this;
+
+		function init(callback) {
+			that.size = blob.size;
+			callback();
+		}
+
+		function readUint8Array(index, length, callback, onerror) {
+			var reader = new FileReader();
+			reader.onload = function(e) {
+				callback(new Uint8Array(e.target.result));
+			};
+			reader.onerror = onerror;
+			try {
+				reader.readAsArrayBuffer(blobSlice(blob, index, length));
+			} catch (e) {
+				onerror(e);
+			}
+		}
+
+		that.size = 0;
+		that.init = init;
+		that.readUint8Array = readUint8Array;
+	}
+	BlobReader.prototype = new Reader();
+	BlobReader.prototype.constructor = BlobReader;
+
+	// Writers
+
+	function Writer() {
+	}
+	Writer.prototype.getData = function(callback) {
+		callback(this.data);
+	};
+
+	function BlobWriter(contentType) {
+		var blob, that = this;
+
+		function init(callback) {
+			blob = new Blob([], {
+				type : contentType
+			});
+			callback();
+		}
+
+		function writeUint8Array(array, callback) {
+			blob = new Blob([ blob, appendABViewSupported ? array : array.buffer ], {
+				type : contentType
+			});
+			callback();
+		}
+
+		function getData(callback) {
+			callback(blob);
+		}
+
+		that.init = init;
+		that.writeUint8Array = writeUint8Array;
+		that.getData = getData;
+	}
+	BlobWriter.prototype = new Writer();
+	BlobWriter.prototype.constructor = BlobWriter;
+
+	function FileWriter(fileEntry, contentType) {
+		var writer, that = this;
+
+		function init(callback, onerror) {
+			fileEntry.createWriter(function(fileWriter) {
+				writer = fileWriter;
+				callback();
+			}, onerror);
+		}
+
+		function writeUint8Array(array, callback, onerror) {
+			var blob = new Blob([ appendABViewSupported ? array : array.buffer ], {
+				type : contentType
+			});
+			writer.onwrite = function() {
+				writer.onwrite = null;
+				callback();
+			};
+			writer.onerror = onerror;
+			writer.write(blob);
+		}
+
+		function getData(callback) {
+			fileEntry.file(callback);
+		}
+
+		that.init = init;
+		that.writeUint8Array = writeUint8Array;
+		that.getData = getData;
+	}
+	FileWriter.prototype = new Writer();
+	FileWriter.prototype.constructor = FileWriter;
+
+   function MutableFileWriter(fileHandle, contentType) {
+      var lockedFile, that = this;
+
+      function init(callback) {
+         //lockedFile = fileHandle.open('readwrite');
+         callback();
+      }
+
+      function writeUint8Array(array, callback) {
+         var blob = new Blob([ appendABViewSupported ? array : array.buffer ], {
+            type : contentType
+         });
+         var lockedFile = fileHandle.open('readwrite');
+         var writing = lockedFile.append(blob)
+         writing.onsuccess = function(){
+            callback();
+         }
+         writing.onerror =  function(){
+            console.log('Something goes wrong in the writing process: ' + this.error);
+         }
+      }
+
+      function getData(callback) {
+         fileHandle.getFile().onsuccess = function () {
+           callback(this.result);
+         }
+      }
+
+      that.init = init;
+      that.writeUint8Array = writeUint8Array;
+      that.getData = getData;
+   }
+   MutableFileWriter.prototype = new Writer();
+   MutableFileWriter.prototype.constructor = MutableFileWriter;
+
+	function launchProcess(process, reader, writer, offset, size, crcType, onprogress, onend, onreaderror, onwriteerror) {
+		var chunkIndex = 0, index, outputSize = 0,
+			crcInput = crcType === 'input',
+			crcOutput = crcType === 'output',
+			crc = new Crc32();
+		function step() {
+			var outputData;
+			index = chunkIndex * CHUNK_SIZE;
+			if (index < size)
+				reader.readUint8Array(offset + index, Math.min(CHUNK_SIZE, size - index), function(inputData) {
+					var outputData;
+					try {
+						outputData = process.append(inputData, function(loaded) {
+							if (onprogress)
+								onprogress(index + loaded, size);
+						});
+					} catch (e) {
+						onreaderror(e);
+						return;
+					}
+					if (outputData) {
+						outputSize += outputData.length;
+						writer.writeUint8Array(outputData, function() {
+							chunkIndex++;
+							setTimeout(step, 1);
+						}, onwriteerror);
+						if (crcOutput)
+							crc.append(outputData);
+					} else {
+						chunkIndex++;
+						setTimeout(step, 1);
+					}
+					if (crcInput)
+						crc.append(inputData);
+					if (onprogress)
+						onprogress(index, size);
+				}, onreaderror);
+			else {
+				try {
+					outputData = process.flush();
+				} catch (e) {
+					onreaderror(e);
+					return;
+				}
+				if (outputData) {
+					if (crcOutput)
+						crc.append(outputData);
+					outputSize += outputData.length;
+					writer.writeUint8Array(outputData, function() {
+						onend(outputSize, crc.get());
+					}, onwriteerror);
+				} else
+					onend(outputSize, crc.get());
+			}
+		}
+
+		step();
+	}
+
+	function copy(worker, sn, reader, writer, offset, size, computeCrc32, onend, onprogress, onreaderror, onwriteerror) {
+		var crcType = 'input';
+		launchProcess(new NOOP(), reader, writer, offset, size, crcType, onprogress, onend, onreaderror, onwriteerror);
+	}
+
+	// ZipWriter
+
+	function encodeUTF8(string) {
+		return unescape(encodeURIComponent(string));
+	}
+
+	function getBytes(str) {
+		var i, array = [];
+		for (i = 0; i < str.length; i++)
+			array.push(str.charCodeAt(i));
+		return array;
+	}
+
+	function createZipWriter(writer, callback, onerror) {
+		var files = {}, filenames = [], datalength = 0;
+		var deflateSN = 0;
+
+		function onwriteerror(err) {
+			onerror(err || ERR_WRITE);
+		}
+
+		function onreaderror(err) {
+			onerror(err || ERR_READ_DATA);
+		}
+
+		var zipWriter = {
+			add : function(name, reader, onend, onprogress, options) {
+				var header, filename, date;
+				var worker = this._worker;
+
+				function writeHeader(callback) {
+					var data;
+					date = options.lastModDate || new Date();
+					header = getDataHelper(26);
+					files[name] = {
+						headerArray : header.array,
+						directory : options.directory,
+						filename : filename,
+						offset : datalength,
+						comment : getBytes(encodeUTF8(options.comment || ""))
+					};
+					header.view.setUint32(0, 0x14000808);
+					if (options.version)
+						header.view.setUint8(0, options.version);
+					header.view.setUint16(6, (((date.getHours() << 6) | date.getMinutes()) << 5) | date.getSeconds() / 2, true);
+					header.view.setUint16(8, ((((date.getFullYear() - 1980) << 4) | (date.getMonth() + 1)) << 5) | date.getDate(), true);
+					header.view.setUint16(22, filename.length, true);
+					data = getDataHelper(30 + filename.length);
+					data.view.setUint32(0, 0x504b0304);
+					data.array.set(header.array, 4);
+					data.array.set(filename, 30);
+					datalength += data.array.length;
+					writer.writeUint8Array(data.array, callback, onwriteerror);
+				}
+
+				function writeFooter(compressedLength, crc32) {
+					var footer = getDataHelper(16);
+					datalength += compressedLength || 0;
+					footer.view.setUint32(0, 0x504b0708);
+					if (typeof crc32 != "undefined") {
+						header.view.setUint32(10, crc32, true);
+						footer.view.setUint32(4, crc32, true);
+					}
+					if (reader) {
+						footer.view.setUint32(8, compressedLength, true);
+						header.view.setUint32(14, compressedLength, true);
+						footer.view.setUint32(12, reader.size, true);
+						header.view.setUint32(18, reader.size, true);
+					}
+					writer.writeUint8Array(footer.array, function() {
+						datalength += 16;
+						onend();
+					}, onwriteerror);
+				}
+
+				function writeFile() {
+					options = options || {};
+					name = name.trim();
+					if (options.directory && name.charAt(name.length - 1) != "/")
+						name += "/";
+					if (files.hasOwnProperty(name)) {
+						onerror(ERR_DUPLICATED_NAME);
+						return;
+					}
+					filename = getBytes(encodeUTF8(name));
+					filenames.push(name);
+					writeHeader(function() {
+						if (reader)
+                     copy(worker, deflateSN++, reader, writer, 0, reader.size, true, writeFooter, onprogress, onreaderror, onwriteerror);
+						else
+							writeFooter();
+					}, onwriteerror);
+				}
+
+				if (reader)
+					reader.init(writeFile, onreaderror);
+				else
+					writeFile();
+			},
+			close : function(callback) {
+				if (this._worker) {
+					this._worker.terminate();
+					this._worker = null;
+				}
+
+				var data, length = 0, index = 0, indexFilename, file;
+				for (indexFilename = 0; indexFilename < filenames.length; indexFilename++) {
+					file = files[filenames[indexFilename]];
+					length += 46 + file.filename.length + file.comment.length;
+				}
+				data = getDataHelper(length + 22);
+				for (indexFilename = 0; indexFilename < filenames.length; indexFilename++) {
+					file = files[filenames[indexFilename]];
+					data.view.setUint32(index, 0x504b0102);
+					data.view.setUint16(index + 4, 0x1400);
+					data.array.set(file.headerArray, index + 6);
+					data.view.setUint16(index + 32, file.comment.length, true);
+					if (file.directory)
+						data.view.setUint8(index + 38, 0x10);
+					data.view.setUint32(index + 42, file.offset, true);
+					data.array.set(file.filename, index + 46);
+					data.array.set(file.comment, index + 46 + file.filename.length);
+					index += 46 + file.filename.length + file.comment.length;
+				}
+				data.view.setUint32(index, 0x504b0506);
+				data.view.setUint16(index + 8, filenames.length, true);
+				data.view.setUint16(index + 10, filenames.length, true);
+				data.view.setUint32(index + 12, length, true);
+				data.view.setUint32(index + 16, datalength, true);
+				writer.writeUint8Array(data.array, function() {
+					writer.getData(callback);
+				}, onwriteerror);
+			},
+			_worker: null
+		};
+
+		callback(zipWriter);
+	}
+
+	function resolveURLs(urls) {
+		var a = document.createElement('a');
+		return urls.map(function(url) {
+			a.href = url;
+			return a.href;
+		});
+	}
+
+	function onerror_default(error) {
+		console.error(error);
+	}
+	obj.zipjs = {
+		Writer : Writer,
+		BlobWriter : BlobWriter,
+      FileWriter : FileWriter,
+      MutableFileWriter: MutableFileWriter,
+      BlobReader : BlobReader,
+		createWriter : function(writer, callback, onerror) {
+			onerror = onerror || onerror_default;
+			writer.init(function() {
+				createZipWriter(writer, callback, onerror);
+			}, onerror);
+		}
+	};
+
+})(vkopt);
+
+/* vkopt.zip = { //library wrapper
+   addFile(name, data, ondone, onprogress),
+   getBlobURL(callback),
+   getBlob(callback),
+   download() // run download archive
+}
+*/
+(function(obj) {
+
+	var requestFileSystem = obj.webkitRequestFileSystem || obj.mozRequestFileSystem || obj.requestFileSystem;
+   var url_create = (window.URL || window.webkitURL || window.mozURL || window).createObjectURL;
+   var url_revoke = (window.URL || window.webkitURL || window.mozURL || window).revokeObjectURL;
+
+	function onerror(message) {
+		alert(message);
+	}
+
+
+	var model = function(file_name){
+		var
+         zipFileEntry, zipWriter, writer,
+         creationMethod = 'Blob',
+         download_url =  null;
+
+         if (typeof requestFileSystem != "undefined")
+            creationMethod = 'File';
+         else
+         if (typeof IDBMutableFile != "undefined")
+            creationMethod = 'MutableFile';
+
+      function createTempFile(file_name, callback) {
+         var tmpFilename = file_name || "tmp.zip";
+         requestFileSystem(TEMPORARY, 4 * 1024 * 1024 * 1024, function(filesystem) {
+            function create() {
+               filesystem.root.getFile(tmpFilename, {
+                  create : true
+               }, function(zipFile) {
+                  callback(zipFile);
+               });
+            }
+
+            filesystem.root.getFile(tmpFilename, null, function(entry) {
+               entry.remove(create, create);
+            }, create);
+         });
+      }
+
+      function createMutableFile(file_name, contentType, cb){
+         var idb = indexedDB.open("vkoptFileStorageDB",{version: 1, storage:'persistent'});
+         idb.onsuccess = function(){
+           var db = this.result;
+           var buildHandle = db.createMutableFile(file_name, contentType);
+           buildHandle.onsuccess = function(){
+             cb && cb(this.result); // fileHandle
+           };
+         };
+      }
+
+      //function onprogress(current, total) {}
+      var add_locked = false;
+      var addFile = function (name, data, ondone, onprogress){
+            if (add_locked){
+               var args = Array.prototype.slice.call(arguments);
+               setTimeout(function(){addFile.apply(this, args)}, Math.round(Math.random()*100)+10);
+               return;
+            }
+            add_locked = true;
+            var add = function(){
+               zipWriter.add(name, new vkopt.zipjs.BlobReader(data), function() {
+                     add_locked = false;
+                     ondone();
+               }, onprogress);
+            }
+            function createZipWriter() {
+               vkopt.zipjs.createWriter(writer, function(writer) {
+						zipWriter = writer;
+						add();
+					}, onerror);
+				}
+
+				if (zipWriter)
+					add();
+            else switch(creationMethod){
+               case 'Blob': {
+                  writer = new vkopt.zipjs.BlobWriter();
+                  createZipWriter();
+                  break;
+               };
+               case 'File': {
+                  createTempFile(file_name, function(fileEntry) {
+                     zipFileEntry = fileEntry;
+                     writer = new vkopt.zipjs.FileWriter(zipFileEntry);
+                     createZipWriter();
+                  });
+                  break;
+               };
+               case 'MutableFile': {
+                  createMutableFile(file_name, "application/zip", function(fileHandle) {
+                     writer = new vkopt.zipjs.MutableFileWriter(fileHandle, "application/zip");
+                     createZipWriter();
+                  })
+                  break;
+               }
+            }
+      };
+		var addFiles = function (files, onadd, onprogress, onend) {
+         var addIndex = 0;
+
+         function nextFile() {
+            var file = files[addIndex];
+            onadd(file);
+            addFile(file.name, file, function(){
+               addIndex++;
+               if (addIndex < files.length)
+                  nextFile();
+               else
+                  onend();
+            }, onprogress)
+         }
+
+         nextFile();
+      };
+      var getBlobURL = function(callback) {
+         zipWriter.close(function(blob) {
+            var blobURL = creationMethod == "File" ? zipFileEntry.toURL() : url_create(blob);
+            callback(blobURL);
+            zipWriter = null;
+         });
+      };
+      var getBlob = function(callback) {
+         zipWriter.close(callback);
+      };
+      return {
+			addFile: addFile,
+         addFiles : addFiles,
+			getBlobURL : getBlobURL,
+			getBlob : getBlob,
+         download: function(){
+            var dl = function(){
+               if (creationMethod == 'MutableFile'){
+                  var fr = document.createElement('iframe');
+                  fr.frameBorder = 0;
+                  fr.width = 1;
+                  fr.height = 1;
+                  document.body.appendChild(fr);
+                  var doc = fr.contentDocument;
+                  var form = doc.createElement('form');
+                  form.action = download_url;
+                  doc.body.appendChild(form);
+                  form.submit();
+                  setTimeout(function(){
+                     fr.parentNode.removeChild(fr);
+                  }, 100);
+               } else {
+                  var dlnk = document.createElement('a');
+                  dlnk.href = download_url;
+                  dlnk.download = file_name;
+                  (window.utilsNode || document.body).appendChild(dlnk)
+                  dlnk.click();
+                  vkopt.log('Download zip file: ', file_name);
+                  setTimeout(function(){
+                     re(dlnk);
+                     //url_revoke(dlnk);
+                  },200);
+               }
+            }
+            if (typeof navigator.msSaveBlob == "function") {
+					getBlob(function(blob) {
+						navigator.msSaveBlob(blob, file_name);
+					});
+				} else {
+               if (!download_url){
+                  getBlobURL(function(blobURL){
+                     download_url = blobURL;
+                     vkopt.log(file_name + ' download url: ' + download_url);
+                     dl();
+                  })
+               } else dl();
+            }
+         }
+		};
+	};
+   obj.zip = model;
+})(vkopt);
+
 
 vkopt.log = function(){
    var args = Array.prototype.slice.call(arguments);
@@ -2067,10 +2706,32 @@ vkopt['photoview'] =  {
 };
 
 vkopt['photos'] =  {
-   css: '\
-      #vk_ph_upd_btn{opacity:0.1}\
-      #vk_ph_upd_btn:hover{opacity:1}\
-   ',
+   css: function(){
+      return vk_lib.get_block_comments(function(){
+      /*css:
+      #vk_ph_upd_btn{
+         opacity:0.1
+      }
+      #vk_ph_upd_btn:hover{
+         opacity:1
+      }
+
+      .vk_photos_album_more_btn {
+          margin: 10px 0px 0px 10px;
+          padding: 5px;
+          float: right;
+          cursor: pointer;
+          font-size: 13px;
+          position: relative;
+          width: 22px;
+          height: 24px;
+      }
+      .vk_photos_album_more_btn .ui_actions_menu_icons{
+         top:auto;
+      }
+      */
+      }).css
+   },
    onSettings:{
       Extra:{
          photo_replacer:{}
@@ -2084,10 +2745,46 @@ vkopt['photos'] =  {
          <a href="/{vals.loc}?act=comments" onclick="return nav.go(this, event)">{lng.mPhC}</a>
       </span>
       */
+      /*more_acts:
+      <div class="vk_photos_album_more_btn ui_actions_menu_wrap _ui_menu_wrap" onmouseover="uiActionsMenu.show(this);" onmouseout="uiActionsMenu.hide(this);">
+         <div class="ui_actions_menu_icons" tabindex="0" aria-label="{lng.Actions}" role="button" onclick="uiActionsMenu.keyToggle(this, event);">
+            <span class="blind_label">{lng.Actions}</span>
+         </div>
+         <div class="ui_actions_menu _ui_menu">
+         </div>
+      </div>
+      */
+      /*more_acts_item:
+      <a href="{vals.href=#}" tabindex="0" role="link" class="ui_actions_menu_item vk_acts_item {vals.item_class=vk_acts_item_icon}" onclick="{vals.onclick=}" {vals.attrs=}>{vals.text}</a>
+      */
+      /*more_acts_item_sep:
+      <div class="ui_actions_menu_sep"></div>
+      */
       });
    },
+   onPhotoAlbumItems: function(aid, oid){
+      var items = [];
+      var loc = nav.objLoc[0];
+      if (!nav.objLoc['act']){
+         items.push({
+            text: 'mPhC',
+            href: '/'+nav.objLoc[0]+'?act=comments'
+         });
+         //items.push({}); // separator
+      }
+      return items;
+   },
    onLocation: function(){
-      vkopt.photos.browse_comments_btn();
+      if (/album|tag|photos/.test(nav.objLoc[0])){
+         var m=nav.objLoc[0].match(/album(-?\d+)_(\d+)|(tag|photos|albums)(-?\d+)/);
+         if (m){
+            oid = m[1] ? m[1] : m[4];
+            aid = m[1] ? m[2] : m[3];
+            if (aid == 'albums')
+               aid = 'photos'
+            vkopt.photos.album_actions(aid, oid);
+         }
+      }
    },
    onResponseAnswer: function(answer,url,q){
       if (url == '/al_photos.php' && q.act == 'edit_photo' && (vkopt.settings.get('photo_replacer'))){
@@ -2165,20 +2862,392 @@ vkopt['photos'] =  {
       var btn = se('<div class="button_gray fl_r" id="vk_ph_upd_btn"><button onclick=" vkopt.photos.update_photo(cur.filterPhoto);">'+IDL('Update',2)+'</button></div>');
       p.appendChild(btn);
    },
-   browse_comments_btn: function(){ // добавляем кнопку на обзор комментариев к фото, если она отсутствует
-      var p = ge('photos_all_block') || ge('photos_container_photos');
-      var loc = nav.objLoc[0];
-      if (!p || nav.objLoc['act'] || !/(album|tag|photos)-?\d+/.test(loc)) return;
-      var h = geByClass1('page_block_header_extra');
-      if (!h || geByClass1('photos_comments_link', h)) return;
-      var btn = se(
-            vk_lib.tpl_process(vkopt.photos.tpls['photos_comments_link'], {
-               loc: loc
-            })
-         );
-      h.appendChild(btn);
+   album_actions: function(aid, oid){ // добавляем кнопку на обзор комментариев к фото, если она отсутствует
+      var cnt = 0, btn, p = ge('photos_all_block');// || ge('photos_container_photos');
+      var h = geByClass1('page_block_header_extra', p);
+      if (!h || geByClass1('vk_photos_album_more_btn', h)) return;
+
+      btn = se(vk_lib.tpl_process(vkopt.photos.tpls['more_acts'], {}));
+      h.firstChild && !geByClass1('upload_btn_wrap', h) && !p ? h.insertBefore(btn, h.firstChild) : h.appendChild(btn);
+
+      var menu = geByClass1('ui_actions_menu', btn);
+      var acts = vkopt_core.plugins.call_modules('onPhotoAlbumItems', aid, oid);
+      for (var plug_id in acts){
+         var items = acts[plug_id];
+         for (var i = 0; i < items.length; i++){
+            var item = se(vk_lib.tpl_process(vkopt.photos.tpls[items[i].text ? 'more_acts_item' : 'more_acts_item_sep'], {
+               href:       items[i].href,
+               item_class: items[i].item_class,
+               onclick:    isString(items[i].onclick) ? items[i].onclick : '',
+               attrs:      isString(items[i].attrs) ? attrs : '',
+               text:       IDL(items[i].text)
+            }));
+
+            if (isObject(items[i].attrs))
+               for (var attr in items[i].attrs)
+                  item.setAttribute(attr, items[i].attrs[attr]);
+
+            if (isFunction(items[i].onclick))
+               addEvent(item, 'click', items[i].onclick);
+
+            menu.appendChild(item);
+            cnt++;
+         }
+      }
+      if (cnt < 1)
+         hide(btn);
+      else
+         show(btn);
+      /*
+      if (!geByClass1('photos_comments_link', h)){
+         btn = se(
+               vk_lib.tpl_process(vkopt.photos.tpls['photos_comments_link'], {
+                  loc: loc
+               })
+            );
+         h.appendChild(btn);
+      }*/
+
+
    }
+
 };
+
+vkopt['albums'] = {
+   css: function(){
+      return vk_lib.get_block_comments(function(){
+         /*css:
+         #vk_max_zip_size_slider,
+         #vk_max_threads_count_slider{
+            width: 280px;
+         }
+         .vk_adl_val_view {
+            font-weight: bold;
+         }
+         .vkopt_box .box_title{
+            background: url(data:image/svg+xml,%3Csvg%20version%3D%221.1%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2216%22%20height%3D%2216%22%09%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20fill%3D%22%23FFFFFF66%22%20d%3D%22M204.1%2C66l-25.3%2C30.4c-14.1-25-44.3-37.6-72.7-28.5%09c-32.5%2C10.4-50.5%2C45.2-40%2C77.8c6.2%2C19.4%2C21.2%2C33.6%2C39.1%2C39.7c7.4%2C14%2C15.4%2C31.9%2C21.1%2C46c-7.5%2C7.8-12.1%2C19.6-12.1%2C19.6l-30.9-6.7%09l3.5-26.3c-4.8-2-9.5-4.4-13.9-7.2L53.6%2C229l-23.4-21.3l16.2-21c-3.1-4.1-6-8.5-8.5-13.2l-25.8%2C6l-9.7-30.1l24.5-10.1%09c-0.7-5.3-0.9-10.5-0.8-15.7L0.8%2C116l6.7-30.9l26.3%2C3.5c2-4.8%2C4.4-9.5%2C7.2-13.9L22.8%2C55.3l21.3-23.4l21%2C16.2c4.1-3.1%2C8.5-6%2C13.2-8.5%09l-6-25.8l30.1-9.7l10.1%2C24.5c5.3-0.7%2C10.5-0.9%2C15.7-0.8l7.7-25.4l30.9%2C6.7l-3.5%2C26.3c4.8%2C2%2C9.5%2C4.4%2C13.9%2C7.2l19.3-18.2l23.4%2C21.3%09l-15.4%2C20L204.1%2C66z%20M79%2C106.3l49.8-18.1l44.6%2C87.8l31.7-95.6l50%2C18.1c-11%2C24.1-21%2C48.8-30.1%2C74c-9.1%2C25.2-17.2%2C50.9-24.4%2C77h-50.9%09c-9.5-22.9-20.2-46.3-32-70.2C105.8%2C155.3%2C92.9%2C131%2C79%2C106.3z%22/%3E%3C/svg%3E) 11px 50% no-repeat;
+            background-size: 24px;
+            padding-left: 45px;
+         }
+         .vk_opts_col{
+            width: 290px;
+            padding:3px;
+            display: inline-block;
+         }
+         .vk_ph_progress_view .vk_ph_row{
+            padding:10px 40px
+         }
+         */
+      }).css
+   },
+   tpls: null,
+   onInit: function(){
+      vkopt.albums.tpls = vk_lib.get_block_comments(function(){
+      /*options_content:
+      <div>
+         <div class="vk_opts_col">
+            <div>{lng.FileSizePerArchive} <div class="vk_adl_val_view" id="vk_fsz_arch">{vals.def_filesize}</div></div>
+            <div id="vk_max_zip_size_slider"></div>
+         </div>
+         <div class="vk_opts_col">
+            <div>{lng.DownloadThreadsCount} <div class="vk_adl_val_view" id="vk_dl_th_cnt">{vals.def_threads}</div></div>
+            <div id="vk_max_threads_count_slider"></div>
+         </div>
+      </div>
+      */
+      /*progress_view:
+      <div class="vk_ph_progress_view">
+         <div class="vk_ph_progress vk_ph_row"></div>
+         <div class="vk_ph_arch_list vk_ph_row"></div>
+      </div>
+      */
+      });
+   },
+   onPhotoAlbumItems: function(aid, oid){
+      var items = [];
+      if (!nav.objLoc['act']){
+         items.push({
+            text: 'download',
+            onclick: "return vkopt.albums.download('"+aid+"',"+oid+");"
+         });
+      }
+      return items;
+   },
+   download: function(aid, oid){
+      var album_name = (aid=='tag' || aid=='photos') ?  aid+oid : "album"+oid+"_"+aid;
+      var box = null;
+
+      var jpeg_vk_size = 6758400; // max 100% quality jpg file size in bytes (2560*2560*8.25)/8
+      //cur_threads*jpeg_vk_size
+
+      var max_threads = 10,
+          cur_threads = 5;
+      var max_zip_size = 600 * 1024 * 1024,
+          cur_size =  400 * 1024 * 1024; // 400Mb
+      var sz_val, th_val;
+
+
+      var download_photo_list = function(list, name, ondone, on_progress){
+         var modes = [
+            'direct download',
+            'direct download',
+            'download with domain replace',
+            'download with domain replace',
+            'download through ext bg'
+         ];
+
+         var cur = 0;
+         var dl_cnt = 0;
+         var zip_cnt = 0;
+         var size_sum = 0;
+         var url, file_name;
+
+         //var phz = vkopt.zip(name || 'photos.zip');
+
+         var xhrs = [];
+         for (var i = 0; i < cur_threads; i++){
+            var xhr = new XMLHttpRequest();
+            xhr.responseType = 'blob';
+            xhrs.push(xhr);
+         }
+
+         var make_next_zip = function(cb){
+             var zipname = (name || 'photos.zip').replace(/(\.zip)?$/i, '_p' + zip_cnt + '.zip');
+             size_sum = 0;
+             phz = vkopt.zip(zipname);
+             phz.addFile('0_info.txt', new Blob(['Archive #'+zip_cnt+'\r\nOriginal file name: ' + zipname + '\r\nDownloaded from vk.com by vkopt extension ( http://vkopt.net/ )'],{type:'plain/text'}), function(){
+                cb && cb();
+             });
+             zip_cnt++;
+         }
+
+         var dl = function(idx, mode, callback){
+            var error_fired = false;
+            var xhr = xhrs.pop();
+            if (!xhr) {
+               vkopt.log('Get existing XHR object error. Create new');
+               xhr = new XMLHttpRequest();
+               xhr.responseType = 'blob';
+            }
+            mode = mode || 0;
+            url = list[idx];
+            file_name = url.split('?')[0].split('/').pop();
+            var info = {
+               url: url,
+               file_name: file_name,
+               num: idx
+            }
+
+            var onload = function(){
+               if (xhr.status == 200){
+                  xhrs.push(xhr);
+                  callback(null, xhr.response, info)
+               } else
+                  onerror();
+
+            };
+            var onerror = function(){
+               if (error_fired) return;
+               error_fired = true;
+               vkopt.log('Failed ' + modes[mode] + ': ' + file_name);
+               xhrs.push(xhr);
+               dl(idx, mode+1, callback)
+            };
+            xhr.onload = onload;
+            xhr.onerror = onerror;
+            //xhr.onprogress = function(e){console.log(e.loaded, e.total)}
+            switch(mode){
+               case 0:
+               case 1: //retry
+               {
+                  xhr.open('GET', url, true);
+                  xhr.send();
+                  break;
+               };
+               case 2:
+               case 3: // retry
+               {
+                  if (/pp\.userapi\.com/.test(url)){ // пробудем подставить в ссылку домен раздачи, на котором есть CORS хидеры.
+                     xhrs.push(xhr);
+                     dl(idx, mode+1, callback);
+                  } else if (/[^\/\/]+\.userapi\.com/.test(url)){
+                     url = url.replace(/:\/\/[^\/\/]+\.userapi\.com/,'://pp.userapi.com')
+                     xhr.open('GET', url, true);
+                     xhr.send();
+                  } else
+                     onerror();
+                  break;
+               };
+               case 4: {
+                  vk_aj.ajax({url: url, method: 'GET', responseType: 'arraybuffer'}, function (response) {
+                     if (response && response.status == 200){
+                        xhrs.push(xhr);
+                        callback(null, new Blob([new Uint8Array(response.raw)],{type:'image/jpeg'}), info);
+                     } else
+                        onerror();
+                  });
+                  break;
+               };
+               default: {
+                  xhrs.push(xhr);
+                  callback('Failed while downloading "'+file_name+'"', null, info);
+               }
+            }
+         }
+         if (list.length < 1){
+            alert('Photos not found');
+            return;
+         }
+         var thread_count = 0;
+         var run_threads  = function(){
+            make_next_zip(function(){
+               for (var i = 0; i < cur_threads; i++)
+                  (cur < list.length) && step();
+            });
+         }
+         var step = function(){
+            thread_count++;
+            dl(cur++, 0,function(err, result, info){
+               if (!result){
+                  result = new Blob(['Failed while downloaing:\r\n'+info.url],{type:'plain/text'});
+                  info.file_name += '.txt';
+               }
+               size_sum += result.size || result.length || 0;
+               phz.addFile(info.num + '_' + info.file_name, result, function(){
+                  dl_cnt++;
+                  thread_count--;
+                  on_progress(dl_cnt, list.length);
+                  if (size_sum >= cur_size) {
+                     check_ready();
+                  } else if (cur < list.length){
+                     step();
+                  } else {
+                     check_ready();
+                  }
+               });
+            });
+         }
+         var check_ready = function(){
+            if (thread_count == 0){
+               phz.download();
+               if (cur < list.length){
+                  run_threads();
+               } else {
+                  ondone && ondone();
+               }
+            } else
+               vkopt.log('Wait download ending...');
+         }
+
+          run_threads();
+      }
+
+      function run(){
+         if (!box) return;
+         box.setOptions({title:IDL('Downloading')})
+         box.changed = true;
+         box.removeButtons();
+         val(box.bodyNode, vk_lib.tpl_process(vkopt.albums.tpls['progress_view'], {}));
+         var wrp = geByClass1('vk_ph_progress',box.bodyNode);
+
+         vkApis.photos_hd(oid, aid, function(r){
+            vkopt.log('Links collected. Downloading...');
+            download_photo_list(r, album_name+'.zip',
+               function(){//on_done
+                  box.changed = false;
+                  box.setOptions({title:false});
+                  wrp.innerHTML = IDL("Done");
+                  removeClass(wrp,'vk_ph_row');
+                  addClass(wrp,'ok_msg');
+                  box.removeButtons();
+                  box.addButton(getLang('box_close'), function (r) {
+                     box.hide();
+                  }, 'yes');
+               },
+               function(progr, total){ //on_progress
+                  wrp.innerHTML = vkProgressBar(progr, total, 500, IDL('DownloadingAndArchiving'));
+               }
+            );
+         }, function(progr, total){
+            wrp.innerHTML = vkProgressBar(progr, total, 500, IDL('CollectingLinks'));
+         });
+      }
+
+      function start(){
+         if (navigator.storage && navigator.storage.persist){
+           navigator.storage.persist().then(function(granted){
+             run();
+           });
+         } else {
+            run();
+         }
+      }
+      stManager.add(['ui_common.css','ui_common.js'], function(){
+         box = new MessageBox({
+               title : IDL('DownloadSettings'),
+               containerClass:'vkopt_box',
+               closeButton : true,
+               width : "650px"
+            });
+         box.removeButtons();
+         box.addButton(IDL('download'), function (r) {
+            start();
+         }, 'yes');
+         box.addButton(IDL('Cancel'), function (r) {
+            abort = true;
+            box.hide();
+         }, 'no');
+
+         box.show();
+         var width = getSize(box.bodyNode, true)[0];
+         box.content(vk_lib.tpl_process(vkopt.albums.tpls['options_content'], {
+               def_filesize: vkFileSize(cur_size),
+               def_threads: cur_threads
+         }));
+         box.show();
+
+         var upd_info = debounce(function(){
+               cur_size = 1 + sz_val * max_zip_size;
+               cur_threads = 1 + Math.round(th_val * max_threads);
+               var sz = vkFileSize(cur_size) + ' ~ ' + vkFileSize(cur_size + (cur_threads * jpeg_vk_size));
+               val('vk_fsz_arch',sz);
+               val('vk_dl_th_cnt',cur_threads);
+         },30)
+
+         var sz_sl = new Slider('vk_max_zip_size_slider', { // silder set float value from 0 to 1
+            // backValue:0,
+            // withBackLine:1|0,
+            // color:''
+            // backColor:''
+            // formatHint: callback(obj, n)
+            // hintClass:'',
+            // log:0|1
+            // onEndDragging: callback(cur_val)
+            fireChangeEventOnInit: true,
+            size:2,
+            //debounce: 100,
+            value: cur_size/max_zip_size,
+            onChange: function(cur_val){
+               sz_val = cur_val;
+               upd_info();
+
+            }
+         });
+         var th_sl = new Slider('vk_max_threads_count_slider', {
+            fireChangeEventOnInit: true,
+            size:2,
+            //debounce: 100,
+            value: cur_threads/max_threads,
+            onChange: function(cur_val){
+               th_val = cur_val;
+               upd_info();
+            }
+         });
+
+      })
+      return false;
+   }
+}
 
 vkopt['audio'] =  {
    css: function(){
@@ -4578,10 +5647,21 @@ vkopt['messages'] = {
             margin-top: -3px;
             margin-right: 0;
          }
-         .ui_actions_menu_item.im-action.vk_acts_item_icon:before,
+         .ui_actions_menu_item.vk_acts_item_icon:before,
          .vk_acts_item_icon:before{
             background: url("data:image/svg+xml,%3Csvg%20version%3D%221.1%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2216%22%20height%3D%2216%22%09%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20fill%3D%22%237D9AB7%22%20d%3D%22M204.1%2C66l-25.3%2C30.4c-14.1-25-44.3-37.6-72.7-28.5%09c-32.5%2C10.4-50.5%2C45.2-40%2C77.8c6.2%2C19.4%2C21.2%2C33.6%2C39.1%2C39.7c7.4%2C14%2C15.4%2C31.9%2C21.1%2C46c-7.5%2C7.8-12.1%2C19.6-12.1%2C19.6l-30.9-6.7%09l3.5-26.3c-4.8-2-9.5-4.4-13.9-7.2L53.6%2C229l-23.4-21.3l16.2-21c-3.1-4.1-6-8.5-8.5-13.2l-25.8%2C6l-9.7-30.1l24.5-10.1%09c-0.7-5.3-0.9-10.5-0.8-15.7L0.8%2C116l6.7-30.9l26.3%2C3.5c2-4.8%2C4.4-9.5%2C7.2-13.9L22.8%2C55.3l21.3-23.4l21%2C16.2c4.1-3.1%2C8.5-6%2C13.2-8.5%09l-6-25.8l30.1-9.7l10.1%2C24.5c5.3-0.7%2C10.5-0.9%2C15.7-0.8l7.7-25.4l30.9%2C6.7l-3.5%2C26.3c4.8%2C2%2C9.5%2C4.4%2C13.9%2C7.2l19.3-18.2l23.4%2C21.3%09l-15.4%2C20L204.1%2C66z%20M79%2C106.3l49.8-18.1l44.6%2C87.8l31.7-95.6l50%2C18.1c-11%2C24.1-21%2C48.8-30.1%2C74c-9.1%2C25.2-17.2%2C50.9-24.4%2C77h-50.9%09c-9.5-22.9-20.2-46.3-32-70.2C105.8%2C155.3%2C92.9%2C131%2C79%2C106.3z%22/%3E%3C/svg%3E") 9px 0px no-repeat;
             height: 17px;
+         }
+         .ui_actions_menu_item.vk_acts_item{
+            padding-left: 0;
+         }
+         .ui_actions_menu_item.vk_acts_item:before{
+            content: "";
+            width: 20px;
+            display: inline-block;
+            padding-left: 15px;
+            opacity: 0.7;
+            vertical-align: middle;
          }
          .vk_save_hist_cfg textarea{
             width:370px;
@@ -10212,3 +11292,4 @@ vkopt['attachments_and_link'] = {
 };
 
 vkopt_core.init();
+
