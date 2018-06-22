@@ -803,6 +803,11 @@ vk_lang_ru={
    ,"DownloadSettings": "\u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 \u0441\u043a\u0430\u0447\u0438\u0432\u0430\u043d\u0438\u044f"
    ,"FileSizePerArchive": "\u041c\u0430\u043a\u0441. \u0440\u0430\u0437\u043c\u0435\u0440 \u043e\u0434\u043d\u043e\u0433\u043e \u0430\u0440\u0445\u0438\u0432\u0430: "
    ,"DownloadThreadsCount": "\u041a\u043e\u043b-\u0432\u043e \u043f\u043e\u0442\u043e\u043a\u043e\u0432 \u0441\u043a\u0430\u0447\u0438\u0432\u0430\u043d\u0438\u044f: "
+   ,"SavePhotoDescriptions":"\u0421\u043e\u0445\u0440\u0430\u043d\u044f\u0442\u044c \u043e\u043f\u0438\u0441\u0430\u043d\u0438\u044f \u0444\u043e\u0442\u043e \u0432 .txt \u0444\u0430\u0439\u043b\u0430\u0445"
+   ,"SaveAlbumDescriptions":"\u0421\u043e\u0445\u0440\u0430\u043d\u044f\u0442\u044c \u043e\u043f\u0438\u0441\u0430\u043d\u0438\u044f \u0430\u043b\u044c\u0431\u043e\u043c\u043e\u0432 \u0432 .txt \u0444\u0430\u0439\u043b\u0430\u0445"
+   ,"SaveAlbumStructure":"\u0421\u043e\u0445\u0440\u0430\u043d\u044f\u0442\u044c \u0430\u043b\u044c\u0431\u043e\u043c\u044b \u043a\u0430\u043a \u043f\u0430\u043f\u043a\u0438 \u0432 .zip-\u0430\u0440\u0445\u0438\u0432\u0435"
+   ,"AlbumCreated":"\u0410\u043b\u044c\u0431\u043e\u043c \u0441\u043e\u0437\u0434\u0430\u043d"
+   ,"AlbumUpdated":"\u0410\u043b\u044c\u0431\u043e\u043c \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d"
 };
 
 vk_lang_en={//by Hzy
@@ -1745,6 +1750,11 @@ vk_lang_en={//by Hzy
   ,"DownloadSettings": "Download settings"
   ,"FileSizePerArchive": "Max. file size per archive: "
   ,"DownloadThreadsCount": "Download threads count: "
+  ,"SavePhotoDescriptions":"Save photos descriptions in .txt files"
+  ,"SaveAlbumDescriptions":"Save albums descriptions in .txt files"
+  ,"SaveAlbumStructure":"Save albums as folders in .zip file"
+  ,"AlbumCreated":"Album created"
+  ,"AlbumUpdated":"Album updated"
 
 };
 

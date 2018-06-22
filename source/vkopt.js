@@ -2937,10 +2937,36 @@ vkopt['albums'] = {
          .vk_ph_progress_view .vk_ph_row{
             padding:10px 40px
          }
+         .vk_opts_checkboxes .checkbox{
+            margin-top: 10px;
+            display: inline-block;
+            width: 285px;
+            vertical-align: top;
+            margin-right: 10px;
+         }
          */
       }).css
    },
    tpls: null,
+   onSettings: {
+      Extra:{
+         album_dl_threads:{
+            default_value: 5
+         },
+         album_dl_zip_size:{
+            default_value:  400 * 1024 * 1024 // 400Mb
+         },
+         album_dl_photo_descr:{
+            default_value: false
+         },
+         album_dl_album_descr:{
+            default_value: true
+         },
+         album_dl_album_struct:{
+            default_value: true
+         }
+      }
+   },
    onInit: function(){
       vkopt.albums.tpls = vk_lib.get_block_comments(function(){
       /*options_content:
@@ -2953,6 +2979,17 @@ vkopt['albums'] = {
             <div>{lng.DownloadThreadsCount} <div class="vk_adl_val_view" id="vk_dl_th_cnt">{vals.def_threads}</div></div>
             <div id="vk_max_threads_count_slider"></div>
          </div>
+         <div class="vk_opts_checkboxes">
+            <div class="checkbox on" id="vk_ab_photo_descr" role="checkbox" aria-checked="true">
+               {lng.SavePhotoDescriptions}
+            </div>
+            <div class="checkbox on" id="vk_ab_album_descr" role="checkbox" aria-checked="true">
+               {lng.SaveAlbumDescriptions}
+            </div>
+            <div class="checkbox on" id="vk_ab_album_struct" role="checkbox" aria-checked="true">
+               {lng.SaveAlbumStructure}
+            </div>
+         </div>
       </div>
       */
       /*progress_view:
@@ -2963,6 +3000,7 @@ vkopt['albums'] = {
       */
       });
    },
+
    onPhotoAlbumItems: function(aid, oid){
       var items = [];
       if (!nav.objLoc['act']){
@@ -2980,12 +3018,16 @@ vkopt['albums'] = {
       var jpeg_vk_size = 6758400; // max 100% quality jpg file size in bytes (2560*2560*8.25)/8
       //cur_threads*jpeg_vk_size
 
-      var max_threads = 10,
-          cur_threads = 5;
-      var max_zip_size = 600 * 1024 * 1024,
-          cur_size =  400 * 1024 * 1024; // 400Mb
+      var max_threads = 20,
+          cur_threads = vkopt.settings.get('album_dl_threads');
+      var max_zip_size = 900 * 1024 * 1024,
+          cur_size =  vkopt.settings.get('album_dl_zip_size'); //400 * 1024 * 1024; // 400Mb
       var sz_val, th_val;
+      var save_photo_descr = vkopt.settings.get('album_dl_photo_descr'),
+          save_albums_descr = vkopt.settings.get('album_dl_album_descr');
+          save_albums_struct = vkopt.settings.get('album_dl_album_struct');
 
+//dApi.call('photos.getAlbums',{owner_id:-337, album_ids:249252152, v:'5.80'},vkopt.log)
 
       var download_photo_list = function(list, name, ondone, on_progress){
          var modes = [
@@ -3001,6 +3043,7 @@ vkopt['albums'] = {
          var zip_cnt = 0;
          var size_sum = 0;
          var url, file_name;
+         var aids = [];
 
          //var phz = vkopt.zip(name || 'photos.zip');
 
@@ -3030,12 +3073,15 @@ vkopt['albums'] = {
                xhr.responseType = 'blob';
             }
             mode = mode || 0;
-            url = list[idx];
+            photo_info = list[idx];
+            url = photo_info.url;
 
             file_name = (url || '/null').split('?')[0].split('/').pop();
             var info = {
                url: url,
+               desc: photo_info.desc,
                file_name: file_name,
+               path: vkCleanFileName(photo_info.album_id+' - '+photo_info.album_name) + '/',
                num: idx
             }
             if (!url) mode = 99;
@@ -3114,8 +3160,7 @@ vkopt['albums'] = {
                   result = new Blob(['Failed while downloaing:\r\n'+info.url],{type:'plain/text'});
                   info.file_name += '.txt';
                }
-               size_sum += result.size || result.length || 0;
-               phz.addFile(info.num + '_' + info.file_name, result, function(){
+               var on_added = function(){
                   dl_cnt++;
                   thread_count--;
                   on_progress(dl_cnt, list.length);
@@ -3126,17 +3171,68 @@ vkopt['albums'] = {
                   } else {
                      check_ready();
                   }
+               };
+
+               size_sum += result.size || result.length || 0;
+
+
+               var file_name = info.num + '_' + info.file_name;
+               if (save_albums_struct)
+                  file_name = info.path + file_name;
+
+               save_albums_descr && info.path.replace(/album-?\d+_(\d+)/,function(s,album_id){
+                  if (aids.indexOf(album_id) < 0)
+                     aids.push(album_id);
+                  return s;
+               });
+
+               phz.addFile(file_name, result, function(){
+                  if (save_photo_descr && (trim(info.desc || '')).length){
+                     phz.addFile(file_name + '_description.txt', new Blob([info.desc],{type:'plain/text'}), on_added);
+                  } else
+                     on_added();
                });
             });
          }
+         var add_albums_info = function(items, callback){
+            var i = 0;
+            var add_next = function(){
+               var item = items[i++];
+               if (!item)
+                  callback();
+               else {
+                  var descr = [
+                     item.title,
+                     item.description,
+                     IDL('AlbumCreated')+': '+(new Date(item.created*1000)).format('dd mmm yyyy HH:MM'),
+                     IDL('AlbumUpdated')+': '+(new Date(item.updated*1000)).format('dd mmm yyyy HH:MM')
+                  ].join('\r\n\r\n');
+                  phz.addFile('album' + item.owner_id + item.id + '_description.txt', new Blob([descr],{type:'plain/text'}), add_next);
+               }
+            }
+            add_next();
+         }
+         var check_add_info = function(cb){
+            if (save_albums_descr){
+               dApi.call('photos.getAlbums', {owner_id:oid,album_ids:aids.join(','), v:'5.80'}, function(res, r, e){
+                  if (r && r.items)
+                     add_albums_info(r.items, cb);
+                  else
+                     cb && cb();
+               });
+            }
+         }
+
          var check_ready = function(){
             if (thread_count == 0){
-               phz.download();
-               if (cur < list.length){
-                  run_threads();
-               } else {
-                  ondone && ondone();
-               }
+               check_add_info(function(){
+                  phz.download();
+                  if (cur < list.length){
+                     run_threads();
+                  } else {
+                     ondone && ondone();
+                  }
+               });
             } else
                vkopt.log('Wait download ending...');
          }
@@ -3146,13 +3242,20 @@ vkopt['albums'] = {
 
       function run(){
          if (!box) return;
+
+         vkopt.settings.set('album_dl_threads',cur_threads)
+         vkopt.settings.set('album_dl_zip_size',cur_size)
+         vkopt.settings.set('album_dl_photo_descr',save_photo_descr)
+         vkopt.settings.set('album_dl_album_struct',save_albums_struct)
+         vkopt.settings.set('album_dl_album_descr',save_albums_descr)
+
          box.setOptions({title:IDL('Downloading')})
          box.changed = true;
          box.removeButtons();
          val(box.bodyNode, vk_lib.tpl_process(vkopt.albums.tpls['progress_view'], {}));
          var wrp = geByClass1('vk_ph_progress',box.bodyNode);
 
-         vkApis.photos_hd(oid, aid, function(r){
+         vkApis.photos_hd({oid:oid, aid:aid, info:1}, function(r){
             vkopt.log('Links collected. Downloading...');
             download_photo_list(r, album_name+'.zip',
                function(){//on_done
@@ -3245,6 +3348,25 @@ vkopt['albums'] = {
                upd_info();
             }
          });
+
+         checkbox('vk_ab_photo_descr', save_photo_descr);
+         checkbox('vk_ab_album_descr', save_albums_descr);
+         checkbox('vk_ab_album_struct', save_albums_struct);
+
+         addEvent('vk_ab_photo_descr', 'click', function(e){
+            checkbox(e.target);
+            save_photo_descr = isChecked(e.target)
+         });
+
+         addEvent('vk_ab_album_descr', 'click', function(e){
+            checkbox(e.target);
+            save_albums_descr = isChecked(e.target)
+         })
+
+         addEvent('vk_ab_album_struct', 'click', function(e){
+            checkbox(e.target);
+            save_albums_struct = isChecked(e.target)
+         })
 
       })
       return false;

@@ -2105,7 +2105,15 @@ vkApis={
         run(0);
     },
 	photos_hd:function(oid,aid,callback,progress){
-		var listId=(aid=='tag' || aid=='photos') ?  aid+oid : "album"+oid+"_"+aid;
+		var opts = {};
+      if (isObject(oid)){
+         opts = oid;
+         progress = opts.onProgress || callback;
+         callback = opts.onDone || aid;
+         aid = opts.aid;
+         oid = opts.oid;
+      }
+      var listId=(aid=='tag' || aid=='photos') ?  aid+oid : "album"+oid+"_"+aid;
       if (aid==null) listId=oid;
 		var PER_REQ=10;
 		var cur=0;
@@ -2113,7 +2121,8 @@ vkApis={
       var from=0;
       var to=0;
 		var photos=[];
-		var temp={};
+		var temp={}, temp2=[];
+      var ab_rx = /<a.+?href="\/(.+?)".+?>(.+?)<\/a>/i; // [1] - albumXXX_YYY; [2] - album title
       if (!isFunction(callback)){
          var params=callback;
          callback=params.callback;
@@ -2134,7 +2143,21 @@ vkApis={
                   var p=data[i];
                   var max_src= p.w_src || p.z_src || p.y_src || p.x_src;
                   //p.max_src=max_src;
-                  photos.push(max_src);//p
+                  //p.album = '<a href="/album-22786271_124932410" onclick="return nav.go(this, event)">АРХИВ (9)</a>'
+                  //p.desc = ''
+                  if (max_src){
+                     if (opts.info){
+                        temp2 = p.album.match(ab_rx);
+                        photos.push({
+                           album_id: temp2[1],
+                           album_name: replaceEntities(temp2[2]),
+                           desc: p.desc,
+                           url: max_src
+                        });
+                     } else {
+                        photos.push(max_src);//p
+                     }
+                  }
                   data[i]=null;
                   p=null;
                }
