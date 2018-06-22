@@ -3045,6 +3045,8 @@ vkopt['albums'] = {
          var url, file_name;
          var aids = [];
 
+         var lz_count = (list.length+'').length;
+
          //var phz = vkopt.zip(name || 'photos.zip');
 
          var xhrs = [];
@@ -3082,7 +3084,7 @@ vkopt['albums'] = {
                desc: photo_info.desc,
                file_name: file_name,
                path: vkCleanFileName(photo_info.album_id+' - '+photo_info.album_name) + '/',
-               num: idx
+               num: ('0000000000'+idx).substr(-lz_count)
             }
             if (!url) mode = 99;
 
@@ -3174,7 +3176,6 @@ vkopt['albums'] = {
                };
 
                size_sum += result.size || result.length || 0;
-
 
                var file_name = info.num + '_' + info.file_name;
                if (save_albums_struct)
