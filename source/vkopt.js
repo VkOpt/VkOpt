@@ -366,6 +366,7 @@ var vk_glue = {
          //Inj.BeforeR("stManager.add",/(if\s*\(![a-zA-z_]+.length\))/,"$1{vk_glue.inj_handler(#ARG0#)(true);}"); //"_matched_{vk_glue.inj...
 
          // перехват события об аякс загрузке новой страницы / смене URL'а
+         if (!window.Nav && window.nav) window.Nav = window.nav; // TODO: ниже исправить инжект, чтоб не модифицировал оригинальную функцию.
          Inj.End('nav.setLoc',';\nif (arguments[1]!="vkopt") setTimeout(vk_glue.nav_handler,2);\n');
 
 
@@ -10689,7 +10690,7 @@ vkopt['attachments_and_link'] = {
         if (uid != this._uid || !this.itemMessage) this.itemMessage = {};
         this._uid = uid;
         this.cursor = 0;
-	this.start=true;
+        this.start=true;
         this.dialogsFilter = 7;
         nav.objLoc.w = 'history' + nav.objLoc.sel + '_document';
         wkcur.wkRaw = nav.objLoc.w;
