@@ -5774,14 +5774,16 @@ vkopt['messages'] = {
             margin-right: 0;
          }
          .ui_actions_menu_item.vk_acts_item_icon:before,
-         .vk_acts_item_icon:before{
+         .vk_acts_item_icon:before,
+         .vk_acts_item_ricon:after{
             background: url("data:image/svg+xml,%3Csvg%20version%3D%221.1%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2216%22%20height%3D%2216%22%09%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20fill%3D%22%237D9AB7%22%20d%3D%22M204.1%2C66l-25.3%2C30.4c-14.1-25-44.3-37.6-72.7-28.5%09c-32.5%2C10.4-50.5%2C45.2-40%2C77.8c6.2%2C19.4%2C21.2%2C33.6%2C39.1%2C39.7c7.4%2C14%2C15.4%2C31.9%2C21.1%2C46c-7.5%2C7.8-12.1%2C19.6-12.1%2C19.6l-30.9-6.7%09l3.5-26.3c-4.8-2-9.5-4.4-13.9-7.2L53.6%2C229l-23.4-21.3l16.2-21c-3.1-4.1-6-8.5-8.5-13.2l-25.8%2C6l-9.7-30.1l24.5-10.1%09c-0.7-5.3-0.9-10.5-0.8-15.7L0.8%2C116l6.7-30.9l26.3%2C3.5c2-4.8%2C4.4-9.5%2C7.2-13.9L22.8%2C55.3l21.3-23.4l21%2C16.2c4.1-3.1%2C8.5-6%2C13.2-8.5%09l-6-25.8l30.1-9.7l10.1%2C24.5c5.3-0.7%2C10.5-0.9%2C15.7-0.8l7.7-25.4l30.9%2C6.7l-3.5%2C26.3c4.8%2C2%2C9.5%2C4.4%2C13.9%2C7.2l19.3-18.2l23.4%2C21.3%09l-15.4%2C20L204.1%2C66z%20M79%2C106.3l49.8-18.1l44.6%2C87.8l31.7-95.6l50%2C18.1c-11%2C24.1-21%2C48.8-30.1%2C74c-9.1%2C25.2-17.2%2C50.9-24.4%2C77h-50.9%09c-9.5-22.9-20.2-46.3-32-70.2C105.8%2C155.3%2C92.9%2C131%2C79%2C106.3z%22/%3E%3C/svg%3E") 9px 0px no-repeat;
             height: 17px;
          }
          .ui_actions_menu_item.vk_acts_item{
             padding-left: 0;
          }
-         .ui_actions_menu_item.vk_acts_item:before{
+         .ui_actions_menu_item.vk_acts_item:before,
+         .ui_actions_menu_item.vk_acts_item_r:after{
             content: "";
             width: 20px;
             display: inline-block;
@@ -8693,11 +8695,8 @@ vkopt['wall'] = {
    tpls:{},
    onInit: function(){
       vkopt.wall.tpls = vk_lib.get_block_comments(function(){
-         /*cancel_btn:
-         <a class="vk_poll_info_btn fl_r" href="#" onclick="return vkopt.wall.poll_cancel_answer('{vals.owner_id}','{vals.poll_id}','{vals.post_id}');">{lng.CancelAnswer}</a>
-         */
          /*results_btn:
-         <a class="vk_poll_info_btn fl_r" href="#" onclick="return vkopt.wall.poll_results('{vals.owner_id}','{vals.poll_id}','{vals.post_id}');">{lng.ViewResults}</a>
+         <a class="ui_actions_menu_item vk_acts_item_r vk_acts_item_ricon" href="#" onclick="cancelEvent(event); return vkopt.wall.poll_results('{vals.owner_id}','{vals.poll_id}','{vals.post_id}');">{lng.ViewResults}</a>
          */
          /*reload_button:
             <li class="vk_reload_wrap">
@@ -8706,6 +8705,47 @@ vkopt['wall'] = {
               </a>
             </div>
             </li>
+         */
+
+         /*poll_answer_row:
+            <div class="media_voting_option_wrap media_voting_option_voted media_voting_option_leader">
+                <div class="media_voting_option">
+                    <div class="media_voting_option_text">
+                    {vals.answer}
+                      <span class="media_voting_option_count">
+                         <span class="media_voting_option_counter">
+                           <span class="media_voting_separator">&#8901;</span>
+                           {vals.count}
+                         </span>
+                         <span class="media_voting_separator">&#8901;</span>000
+                      </span>
+                    </div>
+                    <div class="media_voting_option_percent">{vals.rate} %</div>
+                    <div class="media_voting_option_bar" style="width:{vals.width}%"></div>
+                </div>
+            </div>
+         */
+
+         /*poll_wrap:
+         <div class="post_media_voting">
+             <div class="media_voting media_voting_clickable_options">
+                 <div class="media_voting_header">
+                     <div class="media_voting_question">{vals.question}</div>
+                     <div class="media_voting_info">{vals.type=}</div>
+                 </div>
+                 <div class="media_voting_options">
+                 {vals.answers}
+                 </div>
+                 <div class="media_voting_footer">
+                     <div class="pr pr_medium media_voting_footer_pr">
+                         <div class="pr_bt"></div>
+                         <div class="pr_bt"></div>
+                         <div class="pr_bt"></div>
+                     </div>
+                     <div class="media_voting_footer_voted"><span><b>{vals.total=}</b></span></div>
+                 </div>
+             </div>
+         </div>
          */
       });
    },
@@ -8763,7 +8803,7 @@ vkopt['wall'] = {
       }
    },
    processNode: function(node, params) {
-      var els=geByClass('page_media_poll',node);
+      var els=geByClass('post_media_voting',node);
       for (var i=0; i<els.length; i++){
          vkopt.wall.poll_btns(els[i]);
       }
@@ -8788,120 +8828,25 @@ vkopt['wall'] = {
       return false;
    },
    poll_btns: function(p){
-      var el=geByClass('page_poll_options',p)[0];
-      var c=geByClass('page_poll_total',p)[0];//'page_poll_bottom'
-      if (!c || geByClass1('vk_poll_info_btn', c)) return;
-      if (!el){ //проголосовали, но хотим отменить голос
-         var m = val(p).match(/id="post_poll_raw(-?\d+)_(\d+)[^>]+value="(-?\d+)_(\d+)"/);
-         c.insertBefore(vkCe('span',{"class":"divider fl_r"},""),c.firstChild);
-         var cancel_btn = se(vk_lib.tpl_process(vkopt.wall.tpls['cancel_btn'],{
-            owner_id: m[3], // or m[1]
-            poll_id:  m[4],
-            post_id:  m[2]
-         }));
-         c.insertBefore(cancel_btn,c.firstChild);
-      } else { // не голосовали, но можем подсмотреть результаты
-         var m = val(p).match(/id="post_poll_id(-?\d+)_(\d+)+[^>]+value="(\d+)"/);
-         c.insertBefore(vkCe('span',{"class":"divider fl_r"},""), c.firstChild);
-         var res_btn =  se(vk_lib.tpl_process(vkopt.wall.tpls['results_btn'],{
-            owner_id: m[1],
-            poll_id:  m[3],
-            post_id:  m[2]
-         }));
-         c.insertBefore(res_btn, c.firstChild);
-      }
-   },
-   poll_cancel_answer: function (owner_id, poll_id, post_id){
-      var cancel = function(data){
-         if (data.answer_id==0){
-            alert(IDL('CancelAnswerError'));
-            return;
-         }
-         dApi.call('polls.deleteVote',{owner_id: data.owner_id, poll_id: data.id, answer_id: data.answer_id, v: '5.59'},function(r){
-            if (r.response==1) {
-               ajax.post('/al_wall.php',{
-                  act: 'post_tt',
-                  post: owner_id+'_'+post_id,
-                  self:1
-                  }, {
-                     onDone:function(data,js){
-                        var poll = geByClass1('page_media_poll_wrap',se(data));
-                        var pollOnPage = geByClass1('page_media_poll_wrap',ge('wpt'+owner_id+'_'+post_id));
-                        if (poll && pollOnPage)
-                           pollOnPage.innerHTML = poll.innerHTML;
-                        else
-                           vkMsg(IDL('CancelAnswerSuccess'));
-                     },
-                     onFail:function(msg){
-                        vkMsg(IDL('CancelAnswerSuccess'));
-                        return true;
-                     }
-                  }
-               );
-            }
-            else
-               alert(IDL('CancelAnswerFail'));
-         });
-      };
+      var votingEl=geByClass('media_voting',p)[0];
+      var c=geByClass('ui_actions_menu_item',votingEl)[0];
 
-      var code='\
-         var post=API.wall.getById({posts:"'+owner_id+'_'+post_id+'"})[0];\
-         var attachments=post.attachments;\
-         var i=0;\
-         var b=attachments[i];\
-         var pid = 0;\
-         var oid = 0;\
-         var oid2 = 0;\
-         while(i<attachments.length){\
-            if (b.type=="poll"){\
-               pid=b.poll.poll_id;\
-               oid=post.copy_owner_id;\
-               oid2=post.to_id;\
-            };\
-            i = i + 1;\
-            b=attachments[i]; \
-         }\
-         return {oid:oid,oid2:oid2,pid:pid,p:post,poll1:API.polls.getById({owner_id:oid,poll_id:pid}),poll2:API.polls.getById({owner_id:oid2,poll_id:pid})};\
-         ';
+      if (!votingEl) return;
 
-      if (owner_id && poll_id){
-         dApi.call('polls.getById',{owner_id:owner_id, poll_id:poll_id, v: '5.59'},function(r){
-            var data = r.response;
-            cancel(data);
-         });
-      } else {
-         dApi.call('execute',{code:code, v: '5.59'},function(r){
-            var data = r.response;
-            if (vk_DEBUG) console.log(data);
-            cancel(data.poll1 || data.poll2);
-         });
-      }
-      return false;
+      var id = domData(votingEl, 'id'),
+          oid = domData(votingEl, 'owner-id'),
+          board = domData(votingEl, 'board'),
+          post_id = domData(votingEl.parentNode, 'post-raw');
+
+      var res_btn =  se(vk_lib.tpl_process(vkopt.wall.tpls['results_btn'],{
+         owner_id: oid,
+         poll_id:  id,
+         post_id:  post_id
+      }));
+      c.parentNode.appendChild(res_btn);
    },
    poll_results: function(owner_id, poll_id, post_id){
-      var tpl_old='\
-          <tr>\
-            <td colspan="2" class="page_poll_text">%TEXT</td>\
-          </tr><tr onmouseover="Wall.pollOver(this, \'%FULL_POST_ID\', %ANSWER_ID)">\
-            <td class="page_poll_row">\
-            <div class="page_poll_percent" style="width: %WIDTH%"></div><div class="page_poll_row_count">%COUNT</div>\
-            </td><td class="page_poll_row_percent ta_r"><nobr><b>%RATE%</b></nobr></td>\
-          </tr>\
-          <tr><td colspan="2"><div id="vk_poll_usrs%ANSWER_ID" class="wk_poll_usrs"></div></td></tr>\
-      ';
-      var tpl='\
-      <div class="page_poll_stat" onmouseover="Wall.pollOver(this, \'%FULL_POST_ID\', %ANSWER_ID)">\
-         <div class="page_poll_text">%TEXT</div>\
-         <div class="page_poll_row_wrap">\
-            <div class="page_poll_row_percent">%RATE%</div>\
-            <div class="page_poll_row">\
-               <div class="page_poll_percent" style="width: %WIDTH%"></div>\
-               <div class="page_poll_row_count">%COUNT</div>\
-            </div>\
-         </div>\
-      </div>\
-      ';
-      var full_post_id = owner_id + '_' + post_id;
+      var full_post_id = /*owner_id + '_' +*/ post_id;
       var view=function(data){
          if(!data){
             vkAlertBox(IDL('Error'),'poll data: <br>'+[owner_id, poll_id, post_id].join('<br>'));
@@ -8914,25 +8859,26 @@ vkopt['wall'] = {
          }
 
          var html="";
+
          for (var i=0; i<answer.length; i++){
             var width=Math.round(answer[i].rate*100/max);
-            html+=tpl.replace(/%RATE/g,answer[i].rate)
-                     .replace(/%TEXT/g,answer[i].text)
-                     .replace(/%FULL_POST_ID/g,full_post_id)
-                     .replace(/%ANSWER_ID/g,answer[i].id)
-                     .replace(/%WIDTH/g,width)
-                     .replace(/%COUNT/g,answer[i].votes);
+            html +=  vk_lib.tpl_process(vkopt.wall.tpls['poll_answer_row'],{//['poll_answer_row']
+               answer: answer[i].text,
+               count:answer[i].votes,
+               rate: answer[i].rate,
+               width:width
+            });
          }
-         html='<div class="page_media_poll">'+html+'</div>';
 
-         html='\
-         <div class="page_media_poll_title_wrap clear_fix">\
-            <div class="page_media_poll_title">'+data.question+'</div>\
-            '+html+'\
-         </div>';
+         html =  vk_lib.tpl_process(vkopt.wall.tpls['poll_wrap'],{//['poll_wrap']
+            question:data.question,
+            type: '',
+            answers: html,
+            total: data.votes
+         });
 
-         vkAlertBox(IDL('ViewResults'),html);
-         vkopt.wall.poll_voters(data.owner_id,data.id);
+         vkAlertBox(IDL('ViewResults'),html).setOptions({width:550});
+         //vkopt.wall.poll_voters(data.owner_id,data.id);
       };
 
 
