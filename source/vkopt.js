@@ -366,8 +366,10 @@ var vk_glue = {
          //Inj.BeforeR("stManager.add",/(if\s*\(![a-zA-z_]+.length\))/,"$1{vk_glue.inj_handler(#ARG0#)(true);}"); //"_matched_{vk_glue.inj...
 
          // перехват события об аякс загрузке новой страницы / смене URL'а
-         if (!window.Nav && window.nav) window.Nav = window.nav; // TODO: ниже исправить инжект, чтоб не модифицировал оригинальную функцию.
-         Inj.End('nav.setLoc',';\nif (arguments[1]!="vkopt") setTimeout(vk_glue.nav_handler,2);\n');
+         Inj.End('nav.setLoc',function(){
+            if (arguments[1]!="vkopt")
+               setTimeout(vk_glue.nav_handler,2);
+         });
 
 
          // Перехватываем результат ajax-запросов с возможностью модификации перед колбеком
