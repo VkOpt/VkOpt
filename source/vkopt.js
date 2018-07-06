@@ -3480,6 +3480,7 @@ vkopt['audio'] =  {
          display: table-cell;
          vertical-align: middle;
       }
+      .audio_row.vk_info_loaded .audio_row__info {margin-left: 30px;}
       .wall_module .media_desc .vk_audio_size_info b {
          background:none
       }
