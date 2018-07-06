@@ -1575,14 +1575,16 @@ vkopt['settings'] =  {
              <div id="vkopt_donate_block"></div>
          */
          /*donate_form:
-         <div>{lng.Donations}</div>
+         <h2>{lng.Donations}</h2>
          <div class="vk_donations">
             <div class="vk_donations_left fl_l">
                <div>{lng.DevRekv}</div>
                <div id="vk_purses_list">vkOptDonate.WMPursesList('wmdonate')</div>
             </div>
             <div class="vk_donations_right fl_l">
-            <div id="wmdonate">vkOptDonate.WMDonateForm(30,'R255120081922')</div>
+            <div id="wmdonate">
+               <div class="eltt feature_intro_tt feature_info_tooltip hot_feature_tooltip eltt_arrow_size_normal eltt_align_center eltt_right eltt_vis" id="" style="display: block;"><div class="eltt_arrow_back _eltt_arrow_back" style="margin-top: 33px;"><div class="eltt_arrow"></div></div><div class="eltt_content _eltt_content">{lng.DonateInfo} </div></div>
+            </div>
             </div>
             <div class="clear_fix">
          </div>
@@ -1892,12 +1894,12 @@ vkopt['settings'] =  {
 
          val('vkopt_donate_block', vk_lib.tpl_process(vkopt.settings.tpls['donate_form'], {}));
          val('vk_purses_list', vkOptDonate.WMPursesList('wmdonate'));
-         val('wmdonate', vkOptDonate.WMDonateForm(30,'R255120081922'));
+         //val('wmdonate', vkOptDonate.WMDonateForm(30,'R255120081922'));
       };
       var bottom_block = vk_lib.tpl_process(vkopt.settings.tpls['bottom_block'], {});
 
       if (!in_box || ge('vkopt_settings_block')){ // показ на странице, а не во всплывающем окне
-         stManager.add(['dev.css']);
+         stManager.add(['dev.css','page.css']);
          el = el || ge('ui_rmenu_vkopt');
          el && uiRightMenu.switchMenu(el);
          var p = ge('wide_column');
@@ -1905,7 +1907,7 @@ vkopt['settings'] =  {
          p.innerHTML = vk_lib.tpl_process(vkopt.settings.tpls['main'],{bottom_block: bottom_block});
          update_view();
       } else {
-         stManager.add(['settings.css','dev.css'],function(){
+         stManager.add(['settings.css','dev.css','page.css'],function(){
             var html = vk_lib.tpl_process(vkopt.settings.tpls['search_block'], {content: '', bottom_block: bottom_block});
             vkopt.settings.__box = new MessageBox({title:vkopt.settings.__full_title, width: 650 ,hideButtons:true, bodyStyle: 'padding:0px;'}).content(html).show();
             update_view();

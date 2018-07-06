@@ -3201,23 +3201,40 @@ var vkOptDonate = {
     },
     // YM & WM purses list
     WMPursesList: function WMPursesList(result_el){
-    	var purses=[['R'+'2551200'+'81922',30],['E'+'101435'+'675230',1],['Z'+'498828'+'961904',1],['*41001'+'96245'+'7205',30]/*,['*41001486412536',30]*/];
+    	var purses=[['qw','https://qiw'+'i.me/vk'+'opt'],['yd','41001'+'96245'+'7205',100,'htt'+'ps:/'+'/yas'+'obe.ru/na/vk'+'opt'],['wm','R'+'2551200'+'81922',100],['wm','E'+'101435'+'675230',1],['wm','Z'+'498828'+'961904',1]];
     	var html='<style  type="text/css">\
     	.purse_link{cursor:pointer; padding:2px 3px 3px 18px; text-decoration:none; display:block; border:1px solid transparent; width:222px;}\
-    	.purse_link:hover,.purse_yad_link:hover{border:1px solid #DDD;text-decoration:none;}\
-    	.purse_yad_link{margin-right: 5px; padding:2px 3px 3px 0px; display:block; border:1px solid transparent; width:240px;}\
+    	.purse_link:hover,.purse_yad_link:hover,.purse_qw_link:hover{border:1px solid #DDD;text-decoration:none;}\
+    	.purse_yad_link, .purse_qw_link{margin-right: 5px; padding:2px 3px 3px 0px; display:block; border:1px solid transparent; width:240px;}\
     	.purse_yad_link_img{float:left; background-image: url("data:image/gif;base64,R0lGODlhDQAPAPcAABANC5LeNslOAAN3wmaZM/jzscaIUFXO8A1Gi63P6ZVDBn224P8AAMfSst+sebWdSFktXyDA6+Tp8m2CmK2urf87O3R0dKPQZkp4Ct+SWJmZmVSBw8d8M1mu17jT609ngOPi30hfdE1NTOD5/7m6uvSlGMTFxeDOXX6v/PV6H7W1tff4+UKN0oeGhjMzM7CIYqi6zPvbw/nTjY5vH2OX65nM/+tRGv58O+/gQv+IOdTU1IisVOd/JPD157iqoCxUuBSl5dKtkOWpPs+6Xf/MAP3V1szMzO2TQ0uGrpK85JXh9TddBLPp+Yttj2ChBVub1iFbjf+ZmT1pyf9mZnmPpON5Qoecsf+uXvBtGY+Pj2aEPNLHe7huMjep5unXyOFsEaTE7F6s/P/3iNeIN22m/aZeKcu9zaWjoWZmZvrbIP7dXby0ftvZ3efn5+Dt+LfRk8TL0i6Nx/abXofC/f/2+6yWr5ythj+Uy1B9wERxtiid3VuN4/C8fXCm3Jiuzf7BQ/ODLtbm9fy1MPSWSvlnK/3YbMbT69lkDK9zQZCkuEl41T1qr4u8RPnt6aRQC3HW8u+Hbe7u7uWITIzE+lKD2/8ZGWN5kMrX49vmy76yv9nLmf7lWl2q+H2cUlWi93WyH/6LR+O+mP/UTmu3/bbE0cGVacPm/efx2fr03LzL2WWEvqvC3OytcxeU0abL/vP5/lCIAPeOKvrAwM67d+u0fvpZINXK17bDouKiav/keeHm6vPQrcPolL1xJLPT/v/IDLy8vP6hQ6DR+e5/Mv7sRo+raEe579NHFOCWLC5boOPt9uZ1GYqHdZXB/fRuNiJPkDyh1v727vi/h2Wz/4e4/pHC+fzp2fvkyv3tW6i6jc7s/t/d3qvZ/fXnN9jh6nfGCzR+rf759venguzVW7yysvSTGPinYsXd9f+ZM/TBneRMEe+GJ02U1f///5Z2JXK//9bx//RiDtjFZfzx6iJpn9u5nyBLiqLY8Zy65z5/rvN9KvJzFPqucfz/8eBgCv///yH5BAEAAP8ALAAAAAANAA8AAAhrAP8JHPjPmrQVBAkaTJEiRkKB0gAxbJgwhsQUFx0KjCHnYgo5DDX+8wgI0IqQcuT8m8iwZEiJK1mytJgipkyG1hjalCnHGkyZgOTEWOGz5kRA0qzFkAZSJ0ZpHC96HMmSpE6lMbJq1WrtX0AAOw=="); background-position: 0px 0px;height: 15px;margin-right: 5px;width: 12px; display:block}\
     	.purse_ad_link_img{float:left;height: 15px;margin-right: 5px;width: 12px; display:block}\
+      .purse_qw_link_img{float:left; background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2248.151%22%20height%3D%2249.773%22%3E%3Cpath%20d%3D%22M38.286%2031.337c.837.322%201.159%201.576%201.223%202.123.129.998-.16%201.384-.482%201.384-.322%200-.773-.386-1.255-1.158-.483-.773-.676-1.641-.418-2.092.16-.29.514-.418.933-.257zm-4.89%203.636c.515%200%201.094.225%201.609.675.997.837%201.287%201.802.772%202.51-.29.354-.772.579-1.319.579-.547%200-1.126-.193-1.512-.547-.901-.772-1.158-2.06-.58-2.767.226-.29.58-.45%201.03-.45zm-11.26%209.298C9.909%2044.271%200%2034.361%200%2022.135%200%209.909%209.91%200%2022.135%200c12.226%200%2022.136%209.91%2022.136%2022.135%200%204.15-1.158%208.044-3.12%2011.358-.065.096-.226.064-.258-.065-.772-5.437-4.086-8.43-8.912-9.33-.419-.065-.483-.322.064-.386%201.48-.129%203.571-.097%204.665.096.064-.547.097-1.126.097-1.705%200-8.076-6.564-14.64-14.64-14.64-8.075%200-14.639%206.564-14.639%2014.64s6.564%2014.64%2014.64%2014.64h.675a19.75%2019.75%200%200%201-.29-3.958c.033-.901.226-1.03.612-.322%202.027%203.507%204.923%206.66%2010.585%207.915%204.633%201.03%209.266%202.22%2014.253%208.558.45.547-.225%201.126-.74.676-5.083-4.505-9.716-5.985-13.931-5.985-4.73.033-7.947.644-11.197.644z%22%20fill%3D%22%23ff8c00%22%2F%3E%3C%2Fsvg%3E"); background-repeat:no-repeat; background-position:50% 50%; background-size: contain; height:17px;width:18px; margin-left: -3px;margin-right: 5px;display:block}\
        #wmdonate{border:1px solid #AAA; border-radius:5px;}\
+       #wmdonate .eltt.feature_intro_tt {width: 200px;margin-top: 15px;font-size: 14px;line-height: 17px;}\
     	</style><div class="purses_block">';
     	for (var i=0; i<purses.length; i++){
-    		var type=purses[i][0].match(/(\w)(\d+)/)[1].toLowerCase();
+    		switch(purses[i][0]){
+            case 'wm':
+               var type=purses[i][1].match(/(\w)(\d+)/)[1].toLowerCase();
+               html+='<a href=# class="purse_link" onclick="ge(\''+result_el+'\').innerHTML=vkOptDonate.WMDonateForm('+purses[i][2]+',\''+purses[i][1]+'\'); return false" style="background:url(\''+vkOptDonate.wmicons_img[type]+'\') 0px 0px no-repeat;">'+purses[i][1]+'<span style="float:right">WebMoney</span></a>';
+               break;
+            case 'qw':
+               html+='<a href="'+purses[i][1]+'" target="_blank" class="purse_qw_link" onclick="ge(\''+result_el+'\').innerHTML=\'\';"><div class="purse_qw_link_img" ></div>\u041a\u043e\u043f\u0438\u043b\u043a\u0430 qiwi.me<span style="float:right">QIWI</span></a>';
+               break;
+            case 'yd':
+               html+='<a href="'+purses[i][3]+'" target="_blank" class="purse_yad_link" onclick="ge(\''+result_el+'\').innerHTML=\'\';"><div class="purse_yad_link_img" ></div>'+purses[i][1]+'<span style="float:right">\u042f\u043d\u0434\u0435\u043a\u0441.\u0414\u0435\u043d\u044c\u0433\u0438</span></a>';
+               break;
+         }
+/*
     		var yad=purses[i][0].split('*')[1];
-    		if (!yad)
-    			html+='<a href=# class="purse_link" onclick="ge(\''+result_el+'\').innerHTML=vkOptDonate.WMDonateForm('+purses[i][1]+',\''+purses[i][0]+'\'); return false" style="background:url(\''+vkOptDonate.wmicons_img[type]+'\') 0px 0px no-repeat;">'+purses[i][0]+'<span style="float:right">WebMoney</span></a>';
+
+         if (!yad)
+
     		else
-    			html+='<a href=# class="purse_yad_link" onclick="ge(\''+result_el+'\').innerHTML=vkOptDonate.YMDonateForm('+purses[i][1]+',\''+yad+'\'); return false"><div class="purse_yad_link_img" ></div>'+yad+'<span style="float:right">\u042f\u043d\u0434\u0435\u043a\u0441.\u0414\u0435\u043d\u044c\u0433\u0438</span></a>';
-    	}
+    			html+='<a href="https://yasobe.ru/na/vkopt" target="_blank" class="purse_yad_link" onclick="ge(\''+result_el+'\').innerHTML='';"><div class="purse_yad_link_img" ></div>'+yad+'<span style="float:right">\u042f\u043d\u0434\u0435\u043a\u0441.\u0414\u0435\u043d\u044c\u0433\u0438</span></a>';
+    			//html+='<a href=# class="purse_yad_link" onclick="ge(\''+result_el+'\').innerHTML=vkOptDonate.YMDonateForm('+purses[i][1]+',\''+yad+'\'); return false"><div class="purse_yad_link_img" ></div>'+yad+'<span style="float:right">\u042f\u043d\u0434\u0435\u043a\u0441.\u0414\u0435\u043d\u044c\u0433\u0438</span></a>';
+*/
+      }
        //html+='<a href=# class="purse_ad_link" id="purse_ad_link" style="display:none;" onclick="ge(\''+result_el+'\').innerHTML=vkOptDonate.AdDonateForm(); return false"><div class="purse_ad_link_img" ></div>\u0420\u0435\u043a\u043b\u0430\u043c\u0430</a>';
     	html+='</div>';
     	return html;

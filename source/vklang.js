@@ -393,7 +393,7 @@ vk_lang_ru={
    "RefreshFrListConfirm": "\u041f\u0440\u043e\u0432\u0435\u0440\u0438\u0442\u044c \u0441\u043f\u0438\u0441\u043e\u043a \u043d\u043e\u0432\u044b\u0445/\u0443\u0434\u0430\u043b\u0438\u0432\u0448\u0438\u0445\u0441\u044f \u0434\u0440\u0443\u0437\u0435\u0439?",
    "Donate": "\u041f\u043e\u0436\u0435\u0440\u0442\u0432\u043e\u0432\u0430\u0442\u044c",
    "Donate_text": "\u041f\u043e\u0436\u0435\u0440\u0442\u0432\u043e\u0432\u0430\u043d\u0438\u0435 \u043f\u0440\u043e\u0435\u043a\u0442\u0443 VkOpt",
-   "DevRekv": "<b><a href=\"http://vkontakte.ru/id13391307\">\u0420\u0430\u0435\u0432\u0441\u043a\u0438\u0439 \u041c\u0438\u0445\u0430\u0438\u043b [Kiber\u041f\u0441\u0438\u0445]</a>:</b>",
+   "DevRekv": "<b><a href=\"http://vk.com/id13391307\">\u0420\u0430\u0435\u0432\u0441\u043a\u0438\u0439 \u041c\u0438\u0445\u0430\u0438\u043b [Kiber\u041f\u0441\u0438\u0445]</a>:</b>",
    "NeedWMKeeper": "\u041d\u0435\u043e\u0431\u0445\u043e\u0434\u0438\u043c \u0443\u0441\u0442\u0430\u043d\u043e\u0432\u043b\u0435\u043d\u043d\u044b\u0439 <br><b>WebMoney Keeper Classic</b>",
    "Page": "\u0421\u0442\u0440\u0430\u043d\u0438\u0446\u0430",
    "TinEyeSearch": "[ \u041f\u043e\u0438\u0441\u043a \u043a\u043e\u043f\u0438\u0439  (TinEye) ]",
@@ -808,6 +808,7 @@ vk_lang_ru={
    ,"SaveAlbumStructure":"\u0421\u043e\u0445\u0440\u0430\u043d\u044f\u0442\u044c \u0430\u043b\u044c\u0431\u043e\u043c\u044b \u043a\u0430\u043a \u043f\u0430\u043f\u043a\u0438 \u0432 .zip-\u0430\u0440\u0445\u0438\u0432\u0435"
    ,"AlbumCreated":"\u0410\u043b\u044c\u0431\u043e\u043c \u0441\u043e\u0437\u0434\u0430\u043d"
    ,"AlbumUpdated":"\u0410\u043b\u044c\u0431\u043e\u043c \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d"
+   ,"DonateInfo":"\u0415\u0441\u043b\u0438 \u0412\u0430\u043c \u043f\u043e\u043d\u0440\u0430\u0432\u0438\u043b\u0441\u044f VkOpt, \u0442\u043e \u043c\u043e\u0436\u0435\u0442\u0435 \u0432\u044b\u0431\u0440\u0430\u0442\u044c \u0443\u0434\u043e\u0431\u043d\u044b\u0439 \u0434\u043b\u044f \u0412\u0430\u0441 \u0441\u043f\u043e\u0441\u043e\u0431 \u0432\u044b\u0440\u0430\u0437\u0438\u0442\u044c \u0431\u043b\u0430\u0433\u043e\u0434\u0430\u0440\u043d\u043e\u0441\u0442\u044c"
 };
 
 vk_lang_en={//by Hzy
@@ -1068,7 +1069,7 @@ vk_lang_en={//by Hzy
 'whofavedonline':'Added to faves and online now',
 'whofavedofline':'Added to faves and offline now',
 'rekvizits':'<b><a href="http://vkontakte.ru/id14782277">Ivan Dmitritch [VkOpt]</a>:</b><br>R392598737391 - wmr <br>E303827419590 - wme <br>Z363416290401 - wmz <br>41001323116074 - РЇРЅРґРµРєСЃ.Р”РµРЅСЊРіРё<br><a href="http://smskopilka.ru/?info&id=41872">sms</a>',
-'rekvizits2':'<b><a href="http://vkontakte.ru/id13391307">Raevskiy Mikhail [Kiber\u041f\u0441\u0438\u0445]</a>:</b><br>R255120081922 - wmr <br>E101435675230 - wme <br>Z498828961904 - wmz <br>41001486412536 - Yandex.Money<br><a href="http://smskopilka.ru/?info&id=50111">sms</a>',
+'rekvizits2':'<b><a href="http://vk.com/id13391307">Raevskiy Mikhail [Kiber\u041f\u0441\u0438\u0445]</a>:</b><br>R255120081922 - wmr <br>E101435675230 - wme <br>Z498828961904 - wmz <br>41001486412536 - Yandex.Money<br><a href="http://smskopilka.ru/?info&id=50111">sms</a>',
 'ResetApp':'[Reset]',
 'SwichAppDescr':'[Show/hide description]',
 'invite':'[ Invite ]',
@@ -1347,7 +1348,7 @@ vk_lang_en={//by Hzy
 	'RefreshFrListConfirm':'Check list of added/deleted friends?',
 	'Donate':'Donate',
 	'Donate_text':'Donate to VkOpt project',
-	'DevRekv':'<b><a href="http://vkontakte.ru/id13391307">Raevskiy Mikhail [Kiber\u041f\u0441\u0438\u0445]</a>:</b>',
+	'DevRekv':'<b><a href="http://vk.com/id13391307">Raevskiy Mikhail [Kiber\u041f\u0441\u0438\u0445]</a>:</b>',
 	'NeedWMKeeper':'You need installed <br><b>WebMoney Keeper Classic</b>',
 	'Page':'Page',
 	'TinEyeSearch':'[ Search copies (TinEye) ]',
@@ -1755,7 +1756,7 @@ vk_lang_en={//by Hzy
   ,"SaveAlbumStructure":"Save albums as folders in .zip file"
   ,"AlbumCreated":"Album created"
   ,"AlbumUpdated":"Album updated"
-
+  ,"DonateInfo":"If you liked VkOpt, then you can choose the convenient way for you to express your gratitude to us"
 };
 
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
@@ -2011,7 +2012,7 @@ vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
 'whofavedonline':'\u0414\u043e\u0434\u0430\u043b\u0438 \u0432 \u0437\u0430\u043a\u043b\u0430\u0434\u043a\u0438 \u0442\u0430 \u0437\u0430\u0440\u0430\u0437 \u043e\u043d\u043b\u0430\u0439\u043d',
 'whofavedofline':'\u0414\u043e\u0434\u0430\u043b\u0438 \u0432 \u0437\u0430\u043a\u043b\u0430\u0434\u043a\u0438 \u0442\u0430 \u0437\u0430\u0440\u0430\u0437 \u043e\u0444\u0444\u043b\u0430\u0439\u043d',
 'rekvizits':'<b><a href="http://vkontakte.ru/id14782277">\u0406\u0432\u0430\u043d \u0414\u043c\u0438\u0442\u0440\u043e\u0432\u0438\u0447 [VkOpt]</a>:</b><br>R392598737391 - wmr <br>E303827419590 - wme <br>Z363416290401 - wmz <br>41001323116074 - \u042f\u043d\u0434\u0435\u043a\u0441.\u0414\u0435\u043d\u044c\u0433\u0438<br><a href="http://smskopilka.ru/?info&id=41872">sms</a>',
-'rekvizits2':'<b><a href="http://vkontakte.ru/id13391307">\u0420\u0430\u0454\u0432\u0441\u044c\u043a\u0438\u0439 \u041c\u0438\u0445\u0430\u0439\u043b\u043e [Kiber\u041f\u0441\u0438\u0445]</a>:</b><br>R255120081922 - wmr <br>E101435675230 - wme <br>Z498828961904 - wmz <br>41001486412536 - \u042f\u043d\u0434\u0435\u043a\u0441.\u0414\u0435\u043d\u044c\u0433\u0438<br><a href="http://smskopilka.ru/?info&id=50111">sms</a>',
+'rekvizits2':'<b><a href="http://vk.com/id13391307">\u0420\u0430\u0454\u0432\u0441\u044c\u043a\u0438\u0439 \u041c\u0438\u0445\u0430\u0439\u043b\u043e [Kiber\u041f\u0441\u0438\u0445]</a>:</b><br>R255120081922 - wmr <br>E101435675230 - wme <br>Z498828961904 - wmz <br>41001486412536 - \u042f\u043d\u0434\u0435\u043a\u0441.\u0414\u0435\u043d\u044c\u0433\u0438<br><a href="http://smskopilka.ru/?info&id=50111">sms</a>',
 'ResetApp':'[\u0421\u0431\u0440\u043e\u0441]',
 'SwichAppDescr':'[\u041f\u043e\u043a\u0430\u0437\u0430\u0442\u0438/\u043f\u0440\u0438\u0445\u043e\u0432\u0430\u0442\u0438 \u043e\u043f\u0438\u0441]',
 'invite':'[ \u0417\u0430\u043f\u0440\u043e\u0441\u0438\u0442\u0438 ]',
@@ -2286,7 +2287,7 @@ vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
 'RefreshFrListConfirm': '\u041f\u0435\u0440\u0435\u0432\u0456\u0440\u0438\u0442\u0438 \u0441\u043f\u0438\u0441\u043e\u043a \u043d\u043e\u0432\u0438\u0445/\u0432\u0438\u0434\u0430\u043b\u0435\u043d\u0438\u0445 \u0434\u0440\u0443\u0437\u0456\u0432?',
 'Donate': '\u041f\u043e\u0436\u0435\u0440\u0442\u0432\u0443\u0432\u0430\u0442\u0438',
 'Donate_text': '\u041f\u043e\u0436\u0435\u0440\u0442\u0432\u0443\u0432\u0430\u043d\u043d\u044f \u043f\u0440\u043e\u0435\u043a\u0442\u0443 VkOpt',
-'DevRekv': '<b><a href="http://vkontakte.ru/id13391307">\u0420\u0430\u0454\u0432\u0441\u044c\u043a\u0438\u0439 \u041c\u0438\u0445\u0430\u0439\u043b\u043e [Kiber\u041f\u0441\u0438\u0445]</a>:</b>',
+'DevRekv': '<b><a href="http://vk.com/id13391307">\u0420\u0430\u0454\u0432\u0441\u044c\u043a\u0438\u0439 \u041c\u0438\u0445\u0430\u0439\u043b\u043e [Kiber\u041f\u0441\u0438\u0445]</a>:</b>',
 'NeedWMKeeper': '\u041d\u0435\u043e\u0431\u0445\u0456\u0434\u043d\u0438\u0439 \u0432\u0441\u0442\u0430\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u0439 <br><b>WebMoney Keeper Classic</b>',
 'Page': '\u0421\u0442\u043e\u0440\u0456\u043d\u043a\u0430',
 'TinEyeSearch': '[ \u041f\u043e\u0448\u0443\u043a \u043a\u043e\u043f\u0456\u0439  (TinEye) ]',
@@ -2937,7 +2938,7 @@ vk_lang_by={ //by Gavr id8610702
 'whofavedonline':'\u0414\u0430\u0434\u0430\u043b\u0456 \u045e \u0437\u0430\u043a\u043b\u0430\u0434\u043a\u0456 \u0456 \u0446\u044f\u043f\u0435\u0440 \u0430\u043d\u043b\u0430\u0439\u043d',
 'whofavedofline':'\u0414\u0430\u0434\u0430\u043b\u0456 \u045e \u0437\u0430\u043a\u043b\u0430\u0434\u043a\u0456 \u0456 \u0446\u044f\u043f\u0435\u0440 \u0430\u0444\u043b\u0430\u0439\u043d',
 'rekvizits':'<b><a href="http://vkontakte.ru/id14782277">\u0406\u0432\u0430\u043d \u0414\u0437\u043c\u0456\u0442\u0440\u044b\u0435\u0432\u0456\u0447 [VkOpt]</a>:</b><br>R392598737391 - wmr <br>E303827419590 - wme <br>Z363416290401 - wmz <br>41001323116074 - \u042f\u043d\u0434\u044d\u043a\u0441.\u0413\u0440\u043e\u0448\u044b<br><a href="http://smskopilka.ru/?info&id=41872">sms</a>',
-'rekvizits2':'<b><a href="http://vkontakte.ru/id13391307">\u0420\u0430\u0435\u045e\u0441\u043a\u0456 \u041c\u0456\u0445\u0430\u0441\u044c [Kiber\u041f\u0441\u0438\u0445]</a>:</b><br>R255120081922 - wmr <br>E101435675230 - wme <br>Z498828961904 - wmz <br>41001486412536 - \u042f\u043d\u0434\u044d\u043a\u0441.\u0413\u0440\u043e\u0448\u044b<br><a href="http://smskopilka.ru/?info&id=50111">sms</a>',
+'rekvizits2':'<b><a href="http://vk.com/id13391307">\u0420\u0430\u0435\u045e\u0441\u043a\u0456 \u041c\u0456\u0445\u0430\u0441\u044c [Kiber\u041f\u0441\u0438\u0445]</a>:</b><br>R255120081922 - wmr <br>E101435675230 - wme <br>Z498828961904 - wmz <br>41001486412536 - \u042f\u043d\u0434\u044d\u043a\u0441.\u0413\u0440\u043e\u0448\u044b<br><a href="http://smskopilka.ru/?info&id=50111">sms</a>',
 'ResetApp':'[\u0421\u043a\u0456\u0434]',
 'SwichAppDescr':'[\u041f\u0430\u043a\u0430\u0437\u0430\u0446\u044c/\u0441\u0445\u0430\u0432\u0430\u0446\u044c \u0430\u043f\u0456\u0441\u0430\u043d\u044c\u043d\u0435]',
 'invite':'[ \u0417\u0430\u043f\u0440\u0430\u0441\u0456\u0446\u044c ]',
@@ -3219,7 +3220,7 @@ vk_lang_by={ //by Gavr id8610702
 	'RefreshFrListConfirm':'\u041f\u0440\u0430\u0432\u0435\u0440\u044b\u0446\u044c \u0441\u043f\u0456\u0441 \u043d\u043e\u0432\u044b\u0445/\u043f\u0440\u044b\u0431\u0440\u0430\u045e\u0448\u044b\u0445\u0441\u044f \u0441\u044f\u0431\u0440\u043e\u045e?',
 	'Donate':'\u0410\u0445\u0432\u044f\u0440\u0430\u0432\u0430\u0446\u044c',
 	'Donate_text':'\u0410\u0445\u0432\u044f\u0440\u0430\u0432\u0430\u043d\u043d\u0435 \u043f\u0440\u0430\u0435\u043a\u0442\u0443 VkOpt',
-	'DevRekv':'<b><a href="http://vkontakte.ru/id13391307">\u0420\u0430\u0435\u0432\u0441\u043a\u0438\u0439 \u041c\u0438\u0445\u0430\u0438\u043b [Kiber\u041f\u0441\u0438\u0445]</a>:</b>',
+	'DevRekv':'<b><a href="http://vk.com/id13391307">\u0420\u0430\u0435\u0432\u0441\u043a\u0438\u0439 \u041c\u0438\u0445\u0430\u0438\u043b [Kiber\u041f\u0441\u0438\u0445]</a>:</b>',
 	'NeedWMKeeper':'\u041f\u0430\u0442\u0440\u044d\u0431\u043d\u044b \u0443\u0441\u0442\u0430\u043d\u043e\u045e\u043b\u0435\u043d\u044b <br><b>WebMoney Keeper Classic</b>',
 	'Page':'\u0421\u0442\u0430\u0440\u043e\u043d\u043a\u0430',
 	'TinEyeSearch':'[ \u041f\u043e\u0448\u0443\u043a \u043a\u043e\u043f\u0456\u0439  (TinEye) ]',
@@ -3633,7 +3634,7 @@ vk_lang_it={ //by Maybkot /id5027410 (mayboroda.com.ua)
 'whofavedonline':'Ha aggiunto nei segnalibri e adesso on-line',
 'whofavedofline':'Ha aggiunto nei segnalibri e adesso off-line',
 'rekvizits':'<b><a href="http://vkontakte.ru/id14782277">Ivan Dmitrievich [VkOpt]</a>:</b><br>R392598737391 - wmr <br>E303827419590 - wme <br>Z363416290401 - wmz <br>41001323116074 - \u042f\u043d\u0434\u0435\u043a\u0441.\u0414\u0435\u043d\u044c\u0433\u0438<br><a href="http://smskopilka.ru/?info&id=41872">sms</a>',
-'rekvizits2':'<b><a href="http://vkontakte.ru/id13391307">Raevsky Mihail [Kiber\u041f\u0441\u0438\u0445]</a>:</b><br>R255120081922 - wmr <br>E101435675230 - wme <br>Z498828961904 - wmz <br>41001486412536 - \u042f\u043d\u0434\u0435\u043a\u0441.\u0414\u0435\u043d\u044c\u0433\u0438<br><a href="http://smskopilka.ru/?info&id=50111">sms</a>',
+'rekvizits2':'<b><a href="http://vk.com/id13391307">Raevsky Mihail [Kiber\u041f\u0441\u0438\u0445]</a>:</b><br>R255120081922 - wmr <br>E101435675230 - wme <br>Z498828961904 - wmz <br>41001486412536 - \u042f\u043d\u0434\u0435\u043a\u0441.\u0414\u0435\u043d\u044c\u0433\u0438<br><a href="http://smskopilka.ru/?info&id=50111">sms</a>',
 'ResetApp':'[Reset]',
 'SwichAppDescr':'[Mostra/nasconde descrizione]',
 'invite':'[ Invita ]',
@@ -3900,7 +3901,7 @@ vk_lang_it={ //by Maybkot /id5027410 (mayboroda.com.ua)
 'RefreshFrListConfirm':'Vuoi verificare la lista degli amici nuovi/eliminati?',
 'Donate':'Dona',
 'Donate_text':'Una donazione al progetto VkOpt',
-'DevRekv':'<b><a href="http://vkontakte.ru/id13391307">%D0%A0%D0%B0%D0%B5%D0%B2%D1%81%D0%BA%D0%B8%D0%B9%20%D0%9C%D0%B8%D1%85%D0%B0%D0%B8%D0%BB%20[Kiber%D0%9F%D1%81%D0%B8%D1%85]</a>:</b>',
+'DevRekv':'<b><a href="http://vk.com/id13391307">%D0%A0%D0%B0%D0%B5%D0%B2%D1%81%D0%BA%D0%B8%D0%B9%20%D0%9C%D0%B8%D1%85%D0%B0%D0%B8%D0%BB%20[Kiber%D0%9F%D1%81%D0%B8%D1%85]</a>:</b>',
 'NeedWMKeeper':'Necessario installato <br><b>WebMoney Keeper Classic</b>',
 'Page':'La pagina',
 'TinEyeSearch':'[ Ricerca i duplicati  (TinEye) ]',
@@ -4226,7 +4227,7 @@ vk_lang_tat = {//by eurotat /id15202178
     whofavedonline: "\u0421\u0435\u0437\u0433\u04d9 \u0442\u0430\u043c\u0433\u0430 \u043a\u0443\u0439\u0434\u044b\u043b\u0430\u0440 \u04bb\u04d9\u043c \u0445\u04d9\u0437\u0435\u0440 \u043e\u043d\u043b\u0430\u0439\u043d",
     whofavedofline: "\u0421\u0435\u0437\u0433\u04d9 \u0442\u0430\u043c\u0433\u0430 \u043a\u0443\u0439\u0434\u044b\u043b\u0430\u0440 \u04bb\u04d9\u043c \u0445\u04d9\u0437\u0435\u0440 \u043e\u0444\u0444\u043b\u0430\u0439\u043d",
     rekvizits: '<b><a href="http://vkontakte.ru/id14782277">\u0418\u0432\u0430\u043d \u0414\u043c\u0438\u0442\u0440\u0438\u0439 \u0443\u043b\u044b [VkOpt]</a>:</b><br>R392598737391 - wmr <br>E303827419590 - wme <br>Z363416290401 - wmz <br>41001323116074 - \u042f\u043d\u0434\u0435\u043a\u0441.\u0410\u043a\u0447\u0430<br><a href="http://smskopilka.ru/?info&id=41872">sms</a>',
-    rekvizits2: '<b><a href="http://vkontakte.ru/id13391307">\u0420\u0430\u0435\u0432\u0441\u043a\u0438\u0439 \u041c\u0438\u0445\u0430\u0438\u043b [Kiber\u041f\u0441\u0438\u0445]</a>:</b><br>R255120081922 - wmr <br>E101435675230 - wme <br>Z498828961904 - wmz <br>41001486412536 - \u042f\u043d\u0434\u0435\u043a\u0441.\u0410\u043a\u0447\u0430<br><a href="http://smskopilka.ru/?info&id=50111">sms</a>',
+    rekvizits2: '<b><a href="http://vk.com/id13391307">\u0420\u0430\u0435\u0432\u0441\u043a\u0438\u0439 \u041c\u0438\u0445\u0430\u0438\u043b [Kiber\u041f\u0441\u0438\u0445]</a>:</b><br>R255120081922 - wmr <br>E101435675230 - wme <br>Z498828961904 - wmz <br>41001486412536 - \u042f\u043d\u0434\u0435\u043a\u0441.\u0410\u043a\u0447\u0430<br><a href="http://smskopilka.ru/?info&id=50111">sms</a>',
     ResetApp: "[\u0422\u0430\u0448\u043b\u0430\u0443]",
     SwichAppDescr: "[\u0422\u0430\u0441\u0432\u0438\u0440\u043b\u0430\u043c\u0430\u043d\u044b \u043a\u04af\u0440\u0441\u04d9\u0442\u0435\u0440\u0433\u04d9/\u044f\u0448\u0435\u0440\u0435\u0440\u0433\u04d9]",
     invite: "[ \u0427\u0430\u043a\u044b\u0440\u044b\u0440\u0433\u0430 ]",
@@ -4861,7 +4862,7 @@ vk_lang_md={
    "RefreshFrListConfirm": "Verific\u0103 lista de prieteni noi/vechi?",
    "Donate": "Donare",
    "Donate_text": "Dona\u021bii proiectului VkOpt",
-   "DevRekv": "<b><a href=\"http://vkontakte.ru/id13391307\">Raevskiy Mihail [KiberPsih]</a>:</b>",
+   "DevRekv": "<b><a href=\"http://vk.com/id13391307\">Raevskiy Mihail [KiberPsih]</a>:</b>",
    "NeedWMKeeper": "Trebuie s\u0103 fie instalat <br> <b>WebMoney Keeper Classic </ b>",
    "Page": "Pagina",
    "TinEyeSearch": "[ Cautarea copiilor  (TinEye) ]",
@@ -5297,7 +5298,7 @@ vk_lang_lv = {
    "mDialogsMessages": "Dialogi",
    "Donate": "Ziedot",
    "Donate_text": "Ziedojums projektam VkOpt",
-   "DevRekv": "<b><a href=\"http://vkontakte.ru/id13391307\">Rajevskis Mihails[Kiber\u041f\u0441\u0438\u0445]</a>:</b>",
+   "DevRekv": "<b><a href=\"http://vk.com/id13391307\">Rajevskis Mihails[Kiber\u041f\u0441\u0438\u0445]</a>:</b>",
    "NeedWMKeeper": "Oblig\u0101ti vajag<br><b>WebMoney Keeper Classic</b>",
    "Page": "Lapa",
    "seCompactAudio": "Samaziniet at\u0161\u0137ir\u012bbas starp audio",
