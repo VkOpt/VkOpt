@@ -2527,7 +2527,7 @@ vkopt['photoview'] =  {
             padding-bottom: 50px;
          }
          #pv_more_acts_tt .vk_ph_copy_search.pv_more_act_item{
-            padding: 8px 10px;
+            padding: 8px 5px;
          }
          #pv_more_acts_tt .vk_ph_copy_search.pv_more_act_item:before{
             display: none;
