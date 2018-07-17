@@ -8836,7 +8836,7 @@ vkopt['wall'] = {
       var votingEl=geByClass('media_voting',p)[0];
       var c=geByClass('ui_actions_menu_item',votingEl)[0];
 
-      if (!votingEl) return;
+      if (!votingEl || !c) return;
 
       var id = domData(votingEl, 'id'),
           oid = domData(votingEl, 'owner-id'),
