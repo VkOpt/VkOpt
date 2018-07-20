@@ -22,7 +22,12 @@ var ex_ldr={
    mark:'vkopt_loader',
    __key:(Math.round(Math.random()*10000000)).toString(35),
    init:function(){
-      ex_ldr.get_scripts(function(data){
+      ex_ldr.get_scripts(function on_scripts_data(data){
+         if (!doc.getElementsByTagName("head")[0]){
+            setTimeout(function(){on_scripts_data(data)},10);
+            return;
+         }
+
          var obj = {};
          try{
             obj = JSON.parse(win.localStorage['ldr_disabled_libs'] || "{}");

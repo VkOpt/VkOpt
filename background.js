@@ -169,7 +169,7 @@ ex_loader = {
                   //console.log({url: request.url, inframe: request.in_frame, files:files});
                   sendResponse({files:files, api_enabled:api_allowed, __key:request.__key});
                },request.in_frame);
-               return;
+               return true;
             }
             // FOR API
             var SendResp=function(data){
