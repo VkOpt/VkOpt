@@ -1283,7 +1283,7 @@ vkopt.permissions = { // for chromium
       });
    },
    check_dl_url: function(el, url){
-      if (!(vkbrowser.chrome || vk_ext_api.browsers.webext) || vkopt.permissions.check_url(url, vkopt.permissions.origins_cache)){
+      if (!(vkbrowser.chrome || vk_ext_api.browsers.webext) || vk_ext_api.browsers.maxthon || vkopt.permissions.check_url(url, vkopt.permissions.origins_cache)){
          return true;
       } else {
          show(boxLayerBG);
