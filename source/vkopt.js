@@ -7925,19 +7925,36 @@ vkopt['profile'] = {
       Extra: {
          zodiak_ophiuchus:{},
          scan_hidden_audios: {
+            class_toggler: true,
             default_value: true
          }
       }
    },
 
    css: function() {
-      return vkopt.profile.css_common_group(vkopt.settings.get('common_group_color'))+
-             '.vk_scan_audio_btn .count{height: 20px; background: url(/images/svg_icons/ic_head_loupe.svg) no-repeat 50% 0%; }\
-             .counts_module.vk_scan_audio .page_counter { padding-left: 8px; padding-right: 8px;}\
-             .counts_module {max-height: none;}\
-             .vk_scan_audio_rows{padding:10px;}\
-             .vk_box_content_loading{text-align:center}\
-             ';
+      return '' +
+         vkopt.profile.css_common_group(vkopt.settings.get('common_group_color'))+
+         vk_lib.get_block_comments(function(){
+         /*css:
+            .vk_scan_audio_btn .count{
+               height: 20px;
+               background: url(/images/svg_icons/ic_head_loupe.svg) no-repeat 50% 0%;
+            }
+            .counts_module.vk_scan_audio .page_counter{
+               padding-left: 8px;
+               padding-right: 8px;
+            }
+            .vk_scan_hidden_audios .counts_module{
+               max-height: none;
+            }
+            .vk_scan_audio_rows{
+               padding:10px;
+            }
+            .vk_box_content_loading{
+               text-align:center
+            }
+         */
+         }).css;
    },
 
    css_common_group: function(color){
