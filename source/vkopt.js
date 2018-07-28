@@ -11,8 +11,8 @@
 //
 /* VERSION INFO */
 var vVersion	= 306;
-var vBuild = 180715;
-var vVersionRev = 0;
+var vBuild = 180728;
+var vVersionRev = 1;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -398,7 +398,14 @@ var vk_glue = {
          Inj.Start('ajax.post','if (vk_glue.process_on_post(#ARG0#, #ARG1#, #ARG2#) === false) return;');//(url, query, options)
 
          // цепляемся к возвращению обработанного шаблона из getTemplate
-         Inj.Replace('getTemplate', /return\s+([^;]+);/,'return vk_glue.tpl_hook($1, #ARG0#, #ARG1#)');
+         Inj.End('getTemplate',function(tplName, state){
+            // если исходная функция что-то вернула
+            if (this.result){
+               // возвращаем модифицированный ответ
+               this.return_result = vk_glue.tpl_hook(this.result, tplName, state)
+               this.prevent_all = true;
+            }
+         })
          /*
          Inj.Start('renderFlash','vkOnRenderFlashVars(vars);');
          */

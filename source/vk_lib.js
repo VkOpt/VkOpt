@@ -924,6 +924,7 @@ var vkMozExtension = {
             // call original function
             if (!obj.prevent)
                result = func_wrapper.inj_func_main.apply(this, args);
+            obj.result = result;
 
             // call "after" handlers
             for (i = 0; i < after.length; i++)
