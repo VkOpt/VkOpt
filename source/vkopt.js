@@ -3627,7 +3627,7 @@ vkopt['audio'] =  {
       }
    },
    remove_trash:function(s){
-      s=vkRemoveTrash(s); // удаление символов не являющихся буквами/иероглифами/и т.д
+      s=vkRemoveTrash(s,'%'); // удаление символов не являющихся буквами/иероглифами/и т.д
       // Удаление лишних дефисов в названиях и приведение их к одному виду
       s=s.replace(/\[\s*\]|\(\s*\)|\{\s*\}/g,'');
       s=s.replace(/[\u1806\u2010\u2011\u2012\u2013\u2014\u2015\u2212\u2043\u02D7\u2796\-]+/g,'\u2013').replace(/\u2013\s*\u2013/g,'\u2013');
@@ -3759,7 +3759,11 @@ vkopt['audio'] =  {
          function wait_and_set_url(){
             var info = vkopt.audio.__full_audio_info_cache[id];
             if (info){
-               var name = vkCleanFileName(info.performer + ' - ' + info.title);
+               var name = unclean(info.performer + ' - ' + info.title);
+               if (vkopt.settings.get('audio_clean_titles'))
+                  name = vkopt.audio.remove_trash(name);
+
+               var name = vkCleanFileName(name);
                var url = vkopt.audio.make_dl_url(info.url, name);
                el.setAttribute('download', name+'.mp3');
                el.setAttribute('href', url);
@@ -3836,8 +3840,8 @@ vkopt['audio'] =  {
          if (info_obj.url)
             info_obj.url = vkopt.audio.decode_url(info_obj.url);
 
-         var name = unclean(info[4]+' - '+info[3]).replace(/<em>|<\/em>/g, ''); // зачищаем от тегов.
-         name = vkCleanFileName(name);
+         //var name = unclean(info[4]+' - '+info[3]).replace(/<em>|<\/em>/g, ''); // зачищаем от тегов.
+         //name = vkCleanFileName(name);
 
          var size = vkopt.audio._sizes_cache[info_obj.fullId];
          var sz_labels = size ? vkopt.audio.size_to_bitrare(size, info_obj.duration) : {};
@@ -4092,7 +4096,7 @@ vkopt['audio'] =  {
             'get_link',
             function(audioEl, audioObject, audio){
                vkopt.log(arguments);
-               var filename=vkCleanFileName(audioObject.performer+' - '+audioObject.title);
+               var filename=vkCleanFileName(unclean(audioObject.performer+' - '+audioObject.title));
                var dl_btn = geByClass1('_audio_row__action_get_link', audioEl);
                if (dl_btn.hasAttribute('url_ready')){
                   var dlnk = se('<a href="'+dl_btn.href+'" download="'+filename+'.mp3" url_ready=1></a>');
@@ -5418,7 +5422,7 @@ vkopt['videoview'] = {
       }
 
       var links = vkopt.videoview.get_video_links(vars);
-      var filename = vkCleanFileName(vars.md_title);
+      var filename = vkCleanFileName(unclean(vars.md_title));
       var html = '';
       for (var i = 0; i < links.length; i++){
          html += vk_lib.tpl_process(vkopt.videoview.tpls['dl_link'], {
@@ -5436,7 +5440,7 @@ vkopt['videoview'] = {
          if (url.indexOf('ivi.ru') > -1){
             vkopt.videoview.get_ivi_links(url, function(links, vid){
                   var html = '';
-                  var filename = vkCleanFileName(mvcur.mvData.title);
+                  var filename = vkCleanFileName(unclean(mvcur.mvData.title));
                   html += vk_lib.tpl_process(vkopt.videoview.tpls['ext_link'], {
                      url: 'http://www.ivi.ru/watch/' + vid,
                      source_name:'ivi.ru'
@@ -5455,7 +5459,7 @@ vkopt['videoview'] = {
          if (url.indexOf('youtube.com') > -1){
             vkopt.videoview.yt.get_links(url, function(links, vid){
                   var html = '';
-                  var filename = vkCleanFileName(mvcur.mvData.title);
+                  var filename = vkCleanFileName(unclean(mvcur.mvData.title));
                   html += vk_lib.tpl_process(vkopt.videoview.tpls['ext_link'], {
                      url: 'http://youtube.com/watch?v=' + vid,
                      source_name: 'YouTube'
