@@ -5,11 +5,11 @@
 
 var ext_browser={
    mozilla:(function(){try{return !chrome && Components.interfaces.nsIObserverService!=null} catch(e){return false} })(),
-   mozilla_jetpack: typeof self != 'undefined' && self.port && self.port.emit && self.port.on,
-   opera: window.opera && opera.extension,
+   mozilla_jetpack: !!(typeof self != 'undefined' && self.port && self.port.emit && self.port.on),
+   opera: !!(window.opera && opera.extension),
    webext: (function() { try { return !!chrome && !!chrome.extension } catch (e) {return false} })(),
-   chrome: window.chrome && chrome.extension,
-   safari: window.safari   && safari.self,
+   chrome: !!(window.chrome && chrome.extension),
+   safari: !!(window.safari   && safari.self),
    maxthon: (function(){try{return window.external.mxGetRuntime!=null} catch(e){return false} })() //without try{}catch it fail script on Firefox
 };
 
