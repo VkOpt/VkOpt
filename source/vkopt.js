@@ -2307,9 +2307,10 @@ vkopt['lang'] = {
       else
          return str;
    },
+   cur_rx: /^\[\s*(.+)\s*\]$/,
    cut_bracket: function(s,bracket){ // bracket = 2 - remove [], other  - add []
       if (isArray(s)) return s;
-      if (!vkopt.settings.get('dont_cut_bracket') || bracket==2) s=(s.substr(0,1)=='[')?s.substr(1,s.length-2):s;
+      if (!vkopt.settings.get('dont_cut_bracket') || bracket==2) s=s.replace(vkopt.lang.cur_rx,'$1');
       else if (bracket &&  bracket!=2) s='[ '+s+' ]';
 		return s;
 	},
