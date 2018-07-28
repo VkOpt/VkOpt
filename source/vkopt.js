@@ -258,9 +258,16 @@ var vkopt_core = {
       },
       add_css:function(){
          var code = '';
-         for (var plug_id in vkopt)
-            code += vkopt_core.plugins.get_css(plug_id);
-         vkaddcss(code);
+         if (!vkopt.settings.get('style_per_module')){
+            for (var plug_id in vkopt)
+               code += vkopt_core.plugins.get_css(plug_id);
+            vkaddcss(code);
+         } else {
+            for (var plug_id in vkopt){
+               code = vkopt_core.plugins.get_css(plug_id);
+               code && vkopt.set_css(vkopt_core.plugins.get_css(plug_id),'vkopt_module_'+plug_id);
+            }
+         }
       },
       get_css:function(plug_id){
          var css = vkopt[plug_id].css;
@@ -1747,7 +1754,8 @@ vkopt['settings'] =  {
       Extra:{
          vkopt_guide:{
             class_toggler: true
-         }
+         },
+         style_per_module:{}
       }
    },
    first_launch: function(){
