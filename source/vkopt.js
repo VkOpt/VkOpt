@@ -8467,9 +8467,9 @@ vkopt['groups'] = {
       }
    },
    append_extra_action_btn: function(btn){         // добавляем в выпадающем меню доп. действий группы под аватаркой свою кнопку
-      var p = geByClass1('page_extra_actions_wrap');
+      var p = geByClass1('page_actions_expanded');
       if (!p) return false;
-      var wrap = geByClass1('page_actions_inner', p);
+      var wrap = geByClass1('page_actions_more', p) || p;
       if (!wrap) return false;
       wrap.appendChild(btn);
       return true;
