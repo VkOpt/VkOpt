@@ -265,7 +265,7 @@ var vkopt_core = {
          } else {
             for (var plug_id in vkopt){
                code = vkopt_core.plugins.get_css(plug_id);
-               code && vkopt.set_css(vkopt_core.plugins.get_css(plug_id),'vkopt_module_'+plug_id);
+               code && vkopt.set_css(code,'vkopt_module_'+plug_id);
             }
          }
       },
