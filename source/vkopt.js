@@ -11,7 +11,7 @@
 //
 /* VERSION INFO */
 var vVersion	= 306;
-var vBuild = 180728;
+var vBuild = 180729;
 var vVersionRev = 1;
 var vPostfix = '';
 
