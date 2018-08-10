@@ -904,7 +904,8 @@ var vkMozExtension = {
                   prevent: false,
                   prevent_all: false,
                   return_result: undefined,
-                  wrapper: func_wrapper
+                  wrapper: func_wrapper,
+                  this_obj: this
                };
 
             for (i = 0; i < args.length; i++)
@@ -3199,7 +3200,7 @@ var vkOptDonate = {
     },
     // YM & WM purses list
     WMPursesList: function WMPursesList(result_el){
-    	var purses=[['qw','https://qiw'+'i.me/vk'+'opt'],['yd','41001'+'96245'+'7205',100,'htt'+'ps:/'+'/yas'+'obe.ru/na/vk'+'opt'],['wm','R'+'2551200'+'81922',100],['wm','E'+'101435'+'675230',1],['wm','Z'+'498828'+'961904',1]];
+    	var purses=[['qw','https://qiw'+'i.me/vk'+'opt_de'+'veloper'],['yd','41001'+'96245'+'7205',100,'htt'+'ps:/'+'/yas'+'obe.ru/na/vk'+'opt'],['wm','R'+'2551200'+'81922',100],['wm','E'+'101435'+'675230',1],['wm','Z'+'498828'+'961904',1]];
     	var html='<style  type="text/css">\
     	.purse_link{cursor:pointer; padding:2px 3px 3px 18px; text-decoration:none; display:block; border:1px solid transparent; width:222px;}\
     	.purse_link:hover,.purse_yad_link:hover,.purse_qw_link:hover{border:1px solid #DDD;text-decoration:none;}\
