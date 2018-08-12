@@ -60,7 +60,6 @@ var vkopt_defaults = {
       //Extra:
       vkopt_guide: true,   // показываем, где находится кнопка настроек, до тех пор, пока в настройки всё же не зайдут
       photo_replacer: true,
-      add_to_next_fix: true, // кнопка "Воспроизвести следующей" теперь добавляет в текущий список воспроизведения из посторонних
       audio_more_acts: true, // доп. менюшка для каждой аудиозаписи
       vk_audio_icon_dots: false, // иконка аудио "действия/скачать" в виде трех точек
       //audio_dl_acts_2_btns: false, // разделить на аудио кнопки скачивания и меню доп.действий
@@ -366,7 +365,25 @@ var vk_glue = {
    inj: {
       common: function(){
          // перехватываем момент подключения скриптов:
-         Inj.BeforeR("stManager.add",/__stm._waiters.push\(\[([^,]+)/,"__stm._waiters.push([$1, vk_glue.inj_handler(#ARG0#)]);");
+         //Inj.BeforeR("stManager.add",/__stm._waiters.push\(\[([^,]+)/,"__stm._waiters.push([$1, vk_glue.inj_handler(#ARG0#)]);");
+         Inj.End("stManager.add",function(files, callback, asyn){
+            var f, wait = [];
+            if (!isArray(files))
+               files = [files];
+
+            for (var i in files){
+               f = files[i];
+               if (!f) continue;
+               if (f.indexOf('?') != -1)
+                  f = f.split('?')[0];
+
+               if (!StaticFiles[f].l)
+                  wait.push(f);
+            }
+
+            if (wait.length)
+               __stm._waiters.push([wait, vk_glue.inj_handler(files)]);
+         });
 
          // следующая строка не факт что нужна (а может оптимизированней будет, если её убрать), т.к она срабатывает только если у нас нет списка ожидания,
          // т.е скрипты были ранее уже подгружены на страницу, и инъекции вероятно остались на месте.
@@ -399,10 +416,16 @@ var vk_glue = {
          );
          // айфремовая загрузка выглядит так - загрузили каркас с частью данных, дальше по ходу загрузки айфреймовой страницы выполняются куски заполнения элементов карскаса.
          // эти кучки тоже надо перехватывать.
-         Inj.Start('ajax.framegot','if (#ARG1#) #ARG1#=vk_glue.process_on_framegot(#ARG1#);');
+         Inj.Start('ajax.framegot',function(cont, html, js, params){
+            if (this.args && this.args[1])
+               this.args[1]=vk_glue.process_on_framegot(this.args[1]);
+         });
 
          // Можем модифицировать поля запроса перед отсылкой ajax-запроса, либо заблокировать его
-         Inj.Start('ajax.post','if (vk_glue.process_on_post(#ARG0#, #ARG1#, #ARG2#) === false) return;');//(url, query, options)
+         Inj.Start('ajax.post',function(url, query, options){
+            if (vk_glue.process_on_post(url, query, options) === false)
+               this.prevent = true;
+         });
 
          // цепляемся к возвращению обработанного шаблона из getTemplate
          Inj.End('getTemplate',function(tplName, state){
@@ -442,18 +465,29 @@ var vk_glue = {
          }, true);
       },
       groups: function(){
-         Inj.Start('Groups.init',' ; setTimeout(vk_glue.nav_handler,2);');
+         Inj.Start('Groups.init', function(){setTimeout(vk_glue.nav_handler,2);});
       },
       publics: function(){
-         Inj.Start('Public.init',' ; setTimeout(vk_glue.nav_handler,2);');
+         Inj.Start('Public.init', function(){setTimeout(vk_glue.nav_handler,2);});
       },
       profile: function(){
-         Inj.Start('Profile.init',' ; setTimeout(vk_glue.nav_handler,2);');
+         Inj.Start('Profile.init', function(){setTimeout(vk_glue.nav_handler,2);});
       },
       auto_list: function(){
          if (vkopt_defaults.config.AUTO_LIST_DRAW_ROWS_INJ){
-            Inj.Replace('AutoList.prototype._drawRows',/\.appendChild\(([A-Za-z_0-9]+)\)/,'$&; vkopt_core.plugins.process_node($1);');
+            Inj.End('AutoList.prototype._drawRows',function(t){
+               var s = this.this_obj;
+               var N = 0;
+               each(t, function(i, o) {
+                  if ("string" == typeof o)                          // копипаст фильтра из _drawRows
+                     N++;                                            // считаем количество элементов, которые должны были быть вставлены
+               });
+               var new_rows = domChildren(s._containerEl).slice(-N); // получаем список из N последних вставленных элементов
+               for (var i = 0; i < new_rows.length; i++)
+                  vkopt_core.plugins.process_node(new_rows[i]);
+            })
          }
+         // Inj.Replace('AutoList.prototype._drawRows',/\.appendChild\(([A-Za-z_0-9]+)\)/,'$&; vkopt_core.plugins.process_node($1);');
          // Inj.End('AutoList.prototype._drawRows', '; vkopt_core.plugins.process_node(this._containerEl);'); // Другой вариант. Меньше шансов того, что отвалится, но тут выходит повторная обработка ранее выведенного.
       },
       ui_controls: function(){
@@ -2602,7 +2636,10 @@ vkopt['photoview'] =  {
    },
    onLibFiles: function(file_name){
       if (file_name == 'photoview.js'){
-         Inj.Start('Photoview.afterShow','vkopt.photoview.scroll_view(); (cur.pvBox && vkopt_core.plugins.process_node(cur.pvBox));');
+         Inj.Start('Photoview.afterShow', function(){
+            vkopt.photoview.scroll_view();
+            cur.pvBox && vkopt_core.plugins.process_node(cur.pvBox);
+         });
          vkopt.photoview.move_comments_block.inj();
       }
    },
@@ -4386,7 +4423,9 @@ vkopt['scrobbler'] = {
              pl.on(this, AudioPlayer.EVENT_PLAY, function(){console.log('play ', arguments)}),
              pl.on(this, AudioPlayer.EVENT_PAUSE, function(){console.log('pause ', arguments)});
          */
-         Inj.End('AudioPlayer.prototype.notify','vkopt.scrobbler.onPlayerNotify(#ARG0#, #ARG1#, #ARG2#)');
+         Inj.End('AudioPlayer.prototype.notify', function(event_name, data, var1, var2){
+            vkopt.scrobbler.onPlayerNotify(event_name, data, var1)
+         });
    },
    onPlayerNotify: function(event_name, data, var1){
       /*
@@ -5209,7 +5248,6 @@ vkopt['audio_info'] = {
 vkopt['audioplayer'] = {
    onSettings:{
       Extra:{
-         add_to_next_fix: {},
          audio_force_flash: {}
       }
    },
@@ -5234,9 +5272,6 @@ vkopt['audioplayer'] = {
 
       if (file_name != 'audioplayer.js')
          return;
-      // багфикс: на Opera с включенной блокировкой рекламы треки не добавляются в очередь кнопкой "Воспроизвести следующей"
-      if (vkopt.settings.get('add_to_next_fix'))
-         Inj.Replace('AudioPlaylist.prototype._unref',/^([\s\S]+params)/,'if (typeof params == "undefined") var params = {};\n$1');
 
       // У меня HTML5 плеер аудио глючит, вызывая артефакты со случайными перескакиваниями проигрываемой позиции по хронометражу.
       if (vkopt.settings.get('audio_force_flash')){
