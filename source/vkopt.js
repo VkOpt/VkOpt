@@ -7974,6 +7974,10 @@ vkopt['profile'] = {
          calc_age:{
             title: 'seCalcAge'
          },
+         show_reg_date: {
+            title: 'seShowRegDate',
+            default_value: true
+         },
          show_common_group:{
             title: 'seShowCommonGroup',
             class_toggler: true,
@@ -8055,6 +8059,12 @@ vkopt['profile'] = {
                <input type="text" class="ui_search_field" id="scan_audio_filter_text" onkeyup="vkopt.profile.scan_audio_filter()" placeholder="Поиск..">
          </div>
          */
+	 /*date_reg:
+	 <div class="clear_fix profile_info_row ">
+	   <div class="label fl_l">{lng.RegDate}:</div>
+	   <div class="labeled labeled_date_reg">{vals.date_reg}</div>
+	 </div>
+	 */
       });
    },
    onLocation: function(){
@@ -8072,6 +8082,9 @@ vkopt['profile'] = {
 
       if (vkopt.settings.get('show_common_group') && cur.module == 'profile' && vk.id != cur.oid)
          vkopt.profile.fshow_common_group();
+
+      if(vkopt.settings.get('show_reg_date') && cur.module == 'profile' && cur.oid && ge('profile_short') && !geByClass1('labeled_date_reg'))
+         vkopt.profile.date_reg();
 
       if (cur.module == 'profile' && vkopt.settings.get('scan_hidden_audios') && !ge('profile_audios')){
          var p = geByClass1('counts_module');
@@ -8169,6 +8182,29 @@ vkopt['profile'] = {
 
             p.appendChild(se('<span id="vk_age_info">'+info+'</span>'));
          }
+   },
+   date_reg:function(){
+      ajax.plainpost('/foaf.php',{id: cur.oid}, function(response){
+         var date_raw = (response.match(/<ya:created dc:date="(.*?)"/i) || [])[1];
+         if (!date_raw)
+            return;
+         var date = new Date(date_raw);
+         var month_lang = getLang('month'+(date.getMonth()+1)+'_of');
+         if (month_lang)
+            date = dateFormat(date, 'd ' + month_lang + ' yyyy (HH:MM)');
+         else
+            date = dateFormat(date, 'd.mm.yyyy (HH:MM)');
+         var ref = geByClass1('profile_more_info');
+         if(ref)
+            ref.parentNode.insertBefore(se(
+               vk_lib.tpl_process(vkopt.profile.tpls['date_reg'], {date_reg: date})
+            ), ref);
+         else
+            ge('profile_short').appendChild(se(
+               vk_lib.tpl_process(vkopt.profile.tpls['date_reg'], {date_reg: date})
+            ));
+         return true;
+      });
    },
    bday_info: function(day,month,year){
       var zodiac_cfg=[20,19,20,20,21,21,22,23,23,23,22,21];// days
