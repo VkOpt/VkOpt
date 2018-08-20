@@ -7803,7 +7803,9 @@ vkopt['face'] =  {
              font-size: 11px;
          }
 
-         .vk_compact_like_btns .like_btn.like .like_button_icon {
+         .vk_compact_like_btns .like_btn.like .like_button_icon,
+         .vk_compact_like_btns .like_btn.like.active .like_button_icon,
+         .vk_compact_like_btns .like_wrap.lite .like_btn.like.active .like_button_icon {
              background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2214%22%20viewBox%3D%220%200%2016%2014%22%20style%3D%22fill%3A%233D6899%3B%22%3E%3Cpath%20d%3D%22M8%203.2C7.4-0.3%203.2-0.8%201.4%201%20-0.5%202.9-0.5%205.8%201.4%207.7%201.9%208.2%206.9%2013%206.9%2013%207.4%2013.6%208.5%2013.6%209%2013L14.5%207.7C16.5%205.8%2016.5%202.9%2014.6%201%2012.8-0.7%208.6-0.3%208%203.2Z%22%2F%3E%3C%2Fsvg%3E");
          }
 
