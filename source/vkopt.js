@@ -3296,7 +3296,8 @@ vkopt['albums'] = {
                   else
                      cb && cb();
                });
-            }
+            } else
+               cb && cb();
          }
 
          var check_ready = function(){
