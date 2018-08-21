@@ -7087,6 +7087,32 @@ vkopt['attacher'] = {
          .vk_doc_recent_graffiti_show #vk_doc_recent_graffiti{
             display:block;
          }
+
+         .vk_hide_graffiti {
+            position: absolute;
+            display: block;
+            background: rgba(0,0,0,0.6);
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            top: 0;
+            border-radius: 2px;
+            right: -30px;
+            transition: right 200ms linear;
+            transition-delay: 800ms;
+         }
+
+         .vk_hide_graffiti:before {
+            content: '\2A09';
+            display: block;
+            color: #FFF;
+            font-weight: bold;
+            text-align: center;
+         }
+
+         .photos_choose_row:hover  .vk_hide_graffiti {
+            right: 0;
+         }
          */
       }).css;
    },
@@ -7120,6 +7146,7 @@ vkopt['attacher'] = {
          <div id="docs_choose_row{vals.doc_id}_" href="{vals.doc_url}" onclick="return Docs.chooseDoc(this, '{vals.doc_id}', {vals.doc_data}, event);" class="photos_choose_row fl_l _docs_choose_attach" onmouseover="addClass(this, 'over');" onmouseout="removeClass(this, 'over');">
             <div class="photo_row_img" style="background-image: url('{vals.thumb}')"></div>
             <div class="photos_choose_row_bg"></div>
+            <div class="vk_hide_graffiti" onclick="return vkopt.attacher.doc.hide_graffiti(this, event, '{vals.doc_id}');"></div>
          </div>
          */
          /*doc_graffiti_show_btn: //insert before '.ui_search_field'
@@ -7240,6 +7267,28 @@ vkopt['attacher'] = {
          var visible = vkopt.settings.get('doc_recent_graffiti_show');
          vkopt.settings.set('doc_recent_graffiti_show', !visible);
          return false;
+      },
+      hide_graffiti: function(el, ev, doc_full_id){
+         cancelEvent(ev);
+         var doc_id = (doc_full_id.match(/-?\d+_(\d+)/) || [])[1];
+         if (!doc_id) return;
+         var box = showFastBox(getLang('global_box_confirm_title'), IDL('HideRecentGraffitiConfirm'), getLang('global_delete'),function(){
+            dApi.call('messages.hideRecentGraffiti',{doc_id:doc_id, v:'5.80'}, function(r, resp, err){
+               if (resp){
+                  box.hide();
+                  setTimeout(function(){
+                     fadeOut(ge('docs_choose_row'+doc_full_id+'_'));
+                  },500);;
+               } else if (err && err.error_msg) {
+                  box.content(err.error_msg);
+                  box.setButtons();
+               } else {
+                  box.content(getLang('global_unknown_error')+'<pre>'+JSON.stringify(r,'','   ')+'</pre>');
+                  box.setButtons();
+               }
+            })
+         }, getLang('box_cancel'));
+
       }
    },
    audio: {
