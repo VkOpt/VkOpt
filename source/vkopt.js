@@ -8243,7 +8243,7 @@ vkopt['profile'] = {
          var date = new Date(date_raw);
          var month_lang = getLang('month'+(date.getMonth()+1)+'_of');
          if (month_lang)
-            date = dateFormat(date, 'd ' + month_lang + ' yyyy (HH:MM)');
+            date = dateFormat(date, "d '" + month_lang + "' yyyy (HH:MM)");
          else
             date = dateFormat(date, 'd.mm.yyyy (HH:MM)');
          var ref = geByClass1('profile_more_info');
