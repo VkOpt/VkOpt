@@ -8594,7 +8594,10 @@ vkopt['groups'] = {
          /*stat_btn:
          <a class="page_actions_item" id="vk_gr_stat_btn" href="/stats?gid={vals.gid}">{lng.Stats}</a>
          */
-      });
+         /*mentions_btn:
+         <a class="page_actions_item" id="vk_gr_mentions_btn" href="/feed?obj=-{vals.gid}&section=mentions">{lng.Mentions}</a>
+         */
+       });
    },
    onLocation: function(){
       if (!/groups|public/.test(cur.module+''))
