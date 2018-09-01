@@ -591,6 +591,17 @@ var vk_glue = {
                                                                            // }
                                                                            // aid может быть как числовым, так и вида "tag", "photos", "00", "000"
 
+      // <groups>
+      onGroupActionItems:    function(oid, gid){}                          // добавление пунктов в меню действий на главной странице группы
+                                                                           // результатом вызова функции должен быть массив с объектами, которые могут содержать поля:
+                                                                           // {
+                                                                           //    href:       ссылка
+                                                                           //    item_class: доп. CSS-класс,
+                                                                           //    onclick:    строка или функция обработчик,
+                                                                           //    attrs:      доп. HTML атрибуты тега пункта,
+                                                                           //    text:       название пункта
+                                                                           // }
+
    };
    window.vkopt[m.id] = m;
    if (window.vkopt_core_ready) vkopt_core.plugins.delayed_run(m.id);      // запускает модуль, если мы опоздали к загрузке страницы, провоцирует вызов события onModuleDelayedInit
@@ -8539,15 +8550,30 @@ vkopt['groups'] = {
          .vk_wiki_page_code:hover{
             opacity: 1;
          }
+         .vk_wiki_list_table div{
+            max-width: 295px;
+            overflow: hidden;
+            word-wrap: break-word;
+         }
+
+         .page_photo.page_action_menu_groups .page_actions_item.vk_acts_item_icon:before{
+            background: url("data:image/svg+xml,%3Csvg%20version%3D%221.1%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2216%22%20height%3D%2216%22%09%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20fill%3D%22%237D9AB7%22%20d%3D%22M204.1%2C66l-25.3%2C30.4c-14.1-25-44.3-37.6-72.7-28.5%09c-32.5%2C10.4-50.5%2C45.2-40%2C77.8c6.2%2C19.4%2C21.2%2C33.6%2C39.1%2C39.7c7.4%2C14%2C15.4%2C31.9%2C21.1%2C46c-7.5%2C7.8-12.1%2C19.6-12.1%2C19.6l-30.9-6.7%09l3.5-26.3c-4.8-2-9.5-4.4-13.9-7.2L53.6%2C229l-23.4-21.3l16.2-21c-3.1-4.1-6-8.5-8.5-13.2l-25.8%2C6l-9.7-30.1l24.5-10.1%09c-0.7-5.3-0.9-10.5-0.8-15.7L0.8%2C116l6.7-30.9l26.3%2C3.5c2-4.8%2C4.4-9.5%2C7.2-13.9L22.8%2C55.3l21.3-23.4l21%2C16.2c4.1-3.1%2C8.5-6%2C13.2-8.5%09l-6-25.8l30.1-9.7l10.1%2C24.5c5.3-0.7%2C10.5-0.9%2C15.7-0.8l7.7-25.4l30.9%2C6.7l-3.5%2C26.3c4.8%2C2%2C9.5%2C4.4%2C13.9%2C7.2l19.3-18.2l23.4%2C21.3%09l-15.4%2C20L204.1%2C66z%20M79%2C106.3l49.8-18.1l44.6%2C87.8l31.7-95.6l50%2C18.1c-11%2C24.1-21%2C48.8-30.1%2C74c-9.1%2C25.2-17.2%2C50.9-24.4%2C77h-50.9%09c-9.5-22.9-20.2-46.3-32-70.2C105.8%2C155.3%2C92.9%2C131%2C79%2C106.3z%22/%3E%3C/svg%3E") 0px 0px no-repeat;
+         }
+         .page_photo.page_action_menu_groups .page_actions_item.vk_acts_item_icon:before{
+            content: "";
+            height: 20px;
+            width: 20px;
+            margin-left: 3px;
+            background-size:contain;
+            display: inline-block;
+            padding-left: 0px;
+            vertical-align: middle;
+         }
          */
       }).css
    },
    onInit: function(){
       vkopt.groups.tpls = vk_lib.get_block_comments(function(){
-         /*wiki_list_btn:
-         <a class="page_actions_item" id="vk_wiki_links" href="#" onclick="vkopt.groups.wiki_list.show(cur.oid); return false;">{lng.WikiPagesList}</a>
-         */
-
          /*wiki_owner_list_btn:
          <a id="vk_wiki_links" href="#" onclick="vkopt.groups.wiki_list.show(cur.oid); return false;" class="ui_rmenu_item" role="listitem">
            <span>{lng.WikiPagesList}</span>
@@ -8560,7 +8586,7 @@ vkopt['groups'] = {
             <a class="fl_r" onclick="vkopt.groups.wiki_list.download({vals.oid})">{lng.downloadAll}</a>
          </h3>
          <br>
-         <table class="wk_table" cellspacing="0" cellpadding="0">
+         <table class="wk_table vk_wiki_list_table" cellspacing="0" cellpadding="0">
             <tr>
                <th><a onclick="vkopt.groups.wiki_list.sort_column(0, this)">{lng.Page} </a></th>
                <th>{lng.History}</th>
@@ -8578,7 +8604,7 @@ vkopt['groups'] = {
                <div>
                   <a class="vk_wiki_link" pid="{vals.id}" href="/{vals.page}">{vals.title}</a>
                </div>
-               <di class="vk_wiki_page_code">[[{vals.page}]]</div>
+               <div class="vk_wiki_page_code">[[{vals.page}]]</div>
              </td>
              <td><a href="/pages.php?oid={vals.oid}&p={vals.enc_title}&act=history" target="_blank">{lng.History}</a></td>
              <td><a href="#" onclick="return vkopt.groups.wiki_list.view_code({vals.id}, {vals.group_id});">{lng.Code}</a></td>
@@ -8590,9 +8616,11 @@ vkopt['groups'] = {
          /*view_wiki_source:
          <h2>{vals.title}</h2><textarea id="vk_wikicode_area">{vals.code}</textarea>
          */
-
-         /*stat_btn:
-         <a class="page_actions_item" id="vk_gr_stat_btn" href="/stats?gid={vals.gid}">{lng.Stats}</a>
+         /*more_acts_item:
+         <a href="{vals.href=#}" class="page_actions_item vk_acts_item {vals.item_class=vk_acts_item_icon}" onclick="{vals.onclick=}" {vals.attrs=}>{vals.text}</a>
+         */
+         /*more_acts_item_sep:
+         <div class="page_actions_separator"></div>
          */
       });
    },
@@ -8607,9 +8635,55 @@ vkopt['groups'] = {
       }
 
       // На странице группы добавляем кнопку
-      if (ge('group') || ge('public')){
-         vkopt.groups.wiki_list.btn();
-         vkopt.groups.stat_btn();
+      if (ge('group') || ge('public'))
+         vkopt.groups.actions_items();
+   },
+   onGroupActionItems: function(oid, gid){
+      var items = [
+         {
+            //id="vk_wiki_links"
+            onclick:"vkopt.groups.wiki_list.show(cur.oid); return false;",
+            text:IDL('WikiPagesList')
+         },
+         {
+            //id="vk_gr_mentions_btn"
+            href:"/feed?obj="+oid+"&section=mentions",
+            text:IDL('mNeMe')
+         }
+
+      ];
+      if (!/stats\?gid=/.test(val(geByClass1('page_actions_expanded'))))
+         items.push({
+            //id="vk_gr_stat_btn"
+            href:"/stats?gid="+gid,
+            text:IDL('Stats'),
+            item_class: 'page_menu_group_stats'
+         })
+
+      return items;
+   },
+   actions_items: function(){
+      var acts = vkopt_core.plugins.call_modules('onGroupActionItems', cur.oid, Math.abs(cur.oid));
+      for (var plug_id in acts){
+         var items = acts[plug_id];
+         for (var i = 0; i < items.length; i++){
+            var item = se(vk_lib.tpl_process(vkopt.groups.tpls[items[i].text ? 'more_acts_item' : 'more_acts_item_sep'], {
+               href:       items[i].href,
+               item_class: items[i].item_class,
+               onclick:    isString(items[i].onclick) ? items[i].onclick : '',
+               attrs:      isString(items[i].attrs) ? attrs : '',
+               text:       IDL(items[i].text)
+            }));
+
+            if (isObject(items[i].attrs))
+               for (var attr in items[i].attrs)
+                  item.setAttribute(attr, items[i].attrs[attr]);
+
+            if (isFunction(items[i].onclick))
+               addEvent(item, 'click', items[i].onclick);
+
+            vkopt.groups.append_extra_action_btn(item);
+         }
       }
    },
    append_extra_action_btn: function(btn){         // добавляем в выпадающем меню доп. действий группы под аватаркой свою кнопку
@@ -8621,12 +8695,6 @@ vkopt['groups'] = {
       return true;
    },
    wiki_list:{
-      btn:function(){
-         var btn = se(
-            vk_lib.tpl_process(vkopt.groups.tpls['wiki_list_btn'], {})
-         );
-         vkopt.groups.append_extra_action_btn(btn);
-      },
       owner_pages_btn:function(){
          var p = ge('ui_rmenu_all');
          if (!p) return;
@@ -8813,16 +8881,6 @@ vkopt['groups'] = {
               dlpages(anchors_length - 1);                // Запуск рекурсии с последней ссылки
           });
       }
-   },
-   stat_btn: function(){
-      if (/stats\?gid=/.test(val('page_actions')))
-         return; // нам не нужен дубль ссылки на статистику
-      var btn = se(
-         vk_lib.tpl_process(vkopt.groups.tpls['stat_btn'], {
-            gid: Math.abs(cur.oid)
-         })
-      );
-      vkopt.groups.append_extra_action_btn(btn);
    }
 };
 
