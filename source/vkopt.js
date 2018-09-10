@@ -9195,10 +9195,52 @@ vkopt['friends'] = {
          accept_more_cats:{}
       }
    },
+   css: function(){
+      return vk_lib.get_block_comments(function(){
+         /*css:
+            .show_del_us{
+               color: #2a5885;
+               padding-top: 10px;
+            }
+            .show_del_us:hover{
+               cursor:pointer;
+            }
+         */
+      }).css;
+   },
    onLibFiles: function(fn){
       if (fn != 'friends.js') return;
       if (vkopt.settings.get('accept_more_cats'))
          Inj.Replace('Friends.acceptRequest',/(\.innerHTML)\s*=\s*([^,'\(\)\s])/,'$1 = vkopt.friends.accept_more_cats($2,#ARG0#)')
+   },
+   onLocation: function(){
+      if(nav.objLoc[0] == 'friends' && !geByClass1('show_del_us')) 
+         geByClass1('ui_search_fltr').appendChild(se('<div class="ui_search_fltr_label show_del_us"  onclick="vkopt.friends.show_del_us();">Показать заблокированных</div>'));
+   },
+   show_del_us: function (){
+      hide(geByClass1('ui_search_custom_ctrl'));
+      var el = ge("friends_cur_filters");
+      var u = ce("div", {
+         id: 'friends_filters_token_deleted',
+         className: "token",
+         innerHTML: '<div onclick="vkopt.friends.hide_del_us()"><span class="label">Заблокированные</span><span class="del_icon"></span></div>',
+         onclick: Friends.clearFilter.pbind()
+      });
+      el.appendChild(u);
+      show(el);
+      var e = [];
+      for(var i = 0; i < cur.friendsList.all.length; i++) 
+         if(cur.friendsList.all[i][1] == '/images/deactivated_100.png?ava=1') e.push([cur.friendsList.all[i][0]]);
+      cur.filterIds = {};
+      for (var r in e) 
+         cur.filterIds[e[r]] = 1;
+      geByClass1('ui_tab_count').innerHTML = e.length;
+      Friends.switchTab('all');
+   },
+   hide_del_us: function(){
+      hide(cur.fListEl);
+      vkLdr.show();
+      nav.reload();
    },
    accept_more_cats: function(html, mid){
       if (vkopt.settings.get('accept_more_cats')){
