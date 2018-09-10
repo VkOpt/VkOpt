@@ -3354,9 +3354,16 @@ function vk_tag_api(section,url,app_id){
       get_tags:function(obj_ids,callback){
          var tmp=[];
          for (var i=0; i<obj_ids.length; i++){
+            if (!obj_ids[i]) continue;
             var like_obj=t.parse_id(obj_ids[i]);
             var url=t.page_url+t.section+'/'+like_obj;
             tmp.push('"'+obj_ids[i]+'": API.likes.getList({type:"sitepage",page_url:"'+url+'",owner_id:"'+t.app+'",count:1,offset:0}) ');
+         }
+         if (tmp.length == 0){
+            setTimeout(function(){
+               callback({});
+            },10);
+            return;
          }
          var code = 'return {'+tmp.join(',')+'};';
          var retry_count=0;

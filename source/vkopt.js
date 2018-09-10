@@ -9877,6 +9877,7 @@ vkopt['vk_dislike'] = {
             }
          }*/
          var ids=vkopt.vk_dislike.queue.splice(0,vkopt.vk_dislike.ids_per_req);
+         if (ids.length == 0) return;
          var need_continue = (vkopt.vk_dislike.queue.length>0); // если очередь не пустая, то после текущей пачки, нужно обработать следущую
          vkopt.vk_dislike.req({likes:ids.join(',')},function(data){
             //for (var i=0; i<ids.length;i++) ge('dislike_icon'+ids[i]).style.boxShadow="0 0 5px 2px #F00";
