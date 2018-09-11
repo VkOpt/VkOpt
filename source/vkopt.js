@@ -9208,10 +9208,15 @@ vkopt['friends'] = {
       */
       });
    },
-   onLibFiles: function(fn){
-      if (fn != 'friends.js') return;
-      if (vkopt.settings.get('accept_more_cats'))
-         Inj.Replace('Friends.acceptRequest',/(\.innerHTML)\s*=\s*([^,'\(\)\s])/,'$1 = vkopt.friends.accept_more_cats($2,#ARG0#)')
+   onResponseAnswer: function(answer,url,q){
+      if (
+         window.cur && cur.userLists &&
+         vkopt.settings.get('accept_more_cats') &&
+         url == '/al_friends.php' && q.act == 'add' &&
+         q.request == 1 && q.select_list == 1 && answer[0]
+      ){
+         answer[0] = vkopt.friends.accept_more_cats(answer[0], q.mid);
+      }
    },
    onLocation: function(){
       if(nav.objLoc[0] != 'friends')
@@ -9254,6 +9259,7 @@ vkopt['friends'] = {
       return html;
    }
 }
+
 vkopt['support'] = {
    onSettings:{
       Extra: {
