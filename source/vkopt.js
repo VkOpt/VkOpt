@@ -9190,15 +9190,53 @@ vkopt['wall'] = {
 };
 
 vkopt['friends'] = {
+   tpls: {},
    onSettings:{
       Extra:{
          accept_more_cats:{}
       }
    },
+   onInit: function(){
+      vkopt.friends.tpls = vk_lib.get_block_comments(function(){
+      /*ritem_show_deleted:
+      <a id="ui_rmenu_deleted" href="{vals.href=#}" class="ui_rmenu_item _ui_item_deleted friends_section_deleted" onclick="return vkopt.friends.show_deleted(this, event);">
+        <span>{lng.FrDeleted}</span>
+      </a>
+      */
+      });
+   },
    onLibFiles: function(fn){
       if (fn != 'friends.js') return;
       if (vkopt.settings.get('accept_more_cats'))
          Inj.Replace('Friends.acceptRequest',/(\.innerHTML)\s*=\s*([^,'\(\)\s])/,'$1 = vkopt.friends.accept_more_cats($2,#ARG0#)')
+   },
+   onLocation: function(){
+      if(nav.objLoc[0] != 'friends')
+         return;
+
+      if (!geByClass1('friends_section_deleted')){
+         var ref = ge('ui_rmenu_find') || ge('ui_rmenu_recent') || ge('ui_rmenu_phonebook') || ge('ui_rmenu_all');
+         ref && domInsertAfter(se(vk_lib.tpl_process(vkopt.friends.tpls['ritem_show_deleted'],{})),ref);
+      }
+      (cur.section=='all' || nav.objLoc['section'] == 'all' || !nav.objLoc['section'] ? show : hide)(ge('ui_rmenu_deleted'));
+   },
+   show_deleted: function(el, ev){
+      el && uiRightMenu.switchMenu(el);
+
+      if (cur.silent){
+         setTimeout(function(){
+            vkopt.friends.show_deleted(el, ev);
+         }, 500);
+         return;
+      }
+
+      var deleted = [];
+      for(var i = 0; i < cur.friendsList.all.length; i++)
+         if(/\/images\/deactivated_/.test(cur.friendsList.all[i][1]) || cur.friendsList.all[i][5] == 'DELETED')
+            deleted.push(cur.friendsList.all[i]);
+      cur.friendsList['deleted'] = deleted;
+      Friends.showSection('deleted');
+      return false;
    },
    accept_more_cats: function(html, mid){
       if (vkopt.settings.get('accept_more_cats')){
