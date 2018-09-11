@@ -9200,7 +9200,10 @@ vkopt['friends'] = {
       vkopt.friends.tpls = vk_lib.get_block_comments(function(){
       /*ritem_show_deleted:
       <a id="ui_rmenu_deleted" href="{vals.href=#}" class="ui_rmenu_item _ui_item_deleted friends_section_deleted" onclick="return vkopt.friends.show_deleted(this, event);">
-        <span>{lng.FrDeleted}</span>
+         <span>
+            <span class="ui_rmenu_count"></span>
+            {lng.FrDeleted}
+         </span>
       </a>
       */
       });
@@ -9234,6 +9237,8 @@ vkopt['friends'] = {
       for(var i = 0; i < cur.friendsList.all.length; i++)
          if(/\/images\/deactivated_/.test(cur.friendsList.all[i][1]) || cur.friendsList.all[i][5] == 'DELETED')
             deleted.push(cur.friendsList.all[i]);
+
+      el && val(geByClass1('ui_rmenu_count',el), deleted.length)
       cur.friendsList['deleted'] = deleted;
       Friends.showSection('deleted');
       return false;
