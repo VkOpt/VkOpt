@@ -352,9 +352,6 @@ var vk_glue = {
          case 'common_web.js':
          case 'cmodules/web/common_web.js':
             vk_glue.inj.common();  break;
-         case 'groups.js':       vk_glue.inj.groups();  break;
-         case 'public.js':       vk_glue.inj.publics();  break;
-         case 'profile.js':       vk_glue.inj.profile();  break;
          case 'auto_list.js':    vk_glue.inj.auto_list();  break;
          case 'ui_controls.js':  vk_glue.inj.ui_controls();  break;
          case 'datepicker.js':  vk_glue.inj.datepicker();  break;
@@ -395,6 +392,11 @@ var vk_glue = {
                setTimeout(vk_glue.nav_handler,2);
          });
 
+         // Ловим момент, когда через extend меняют информацию о текущем модуле страницы
+         Inj.End('extend', function(obj, obj2){
+            if (obj && obj2 && window.cur && obj == cur && obj2.module)
+               setTimeout(vk_glue.nav_handler,2);
+         })
 
          // Перехватываем результат ajax-запросов с возможностью модификации перед колбеком
          Inj.Start('ajax._post',
@@ -464,15 +466,6 @@ var vk_glue = {
             vkopt_core.plugins.on_cmd(data);
          }, true);
       },
-      groups: function(){
-         Inj.Start('Groups.init', function(){setTimeout(vk_glue.nav_handler,2);});
-      },
-      publics: function(){
-         Inj.Start('Public.init', function(){setTimeout(vk_glue.nav_handler,2);});
-      },
-      profile: function(){
-         Inj.Start('Profile.init', function(){setTimeout(vk_glue.nav_handler,2);});
-      },
       auto_list: function(){
          if (vkopt_defaults.config.AUTO_LIST_DRAW_ROWS_INJ){
             Inj.End('AutoList.prototype._drawRows',function(t){
@@ -513,8 +506,8 @@ var vk_glue = {
          }
       }
    },
-   nav_handler: function(){
-      // тут какие-то системные действия движка до передачи события в плагины
+   nav_handler: function(){ //TODO: debounce?
+      // тут какие-то системные действия движка до передаче события в плагины
       // ...
       vkopt_core.plugins.on_location();
    },
