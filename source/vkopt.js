@@ -8562,6 +8562,27 @@ vkopt['groups'] = {
             padding-left: 0px;
             vertical-align: middle;
          }
+         i.vk_edit_icon{
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%2232%20126%2024%2024%22%3E%3Cg%20style%3D%22fill%3Anone%3B%22%3E%3Crect%20x%3D%2232%22%20y%3D%22126%22%20width%3D%2224%22%20height%3D%2224%22%2F%3E%3Cpath%20d%3D%22M39%20141L41%20143%2040.5%20143.5%2038.3%20143.9C38.1%20144%2038%20143.9%2038.1%20143.7L38.5%20141.5%2039%20141ZM40%20140L47.7%20132.3C48.1%20131.9%2048.7%20131.9%2049.1%20132.3L49.7%20132.9C50.1%20133.3%2050.1%20133.9%2049.7%20134.3L42%20142%2040%20140Z%22%20fill%3D%22%23828A99%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+            display: inline-block;
+            cursor: pointer;
+            outline: none;
+            height: 24px;
+            width: 24px;
+            margin: 0 2px;
+            opacity: 0.7;
+            border: none;
+            background-color: transparent;
+            padding: 0;
+         }
+         .vk_wiki_list_table i.vk_edit_icon {
+            float: right;
+            opacity:0.3;
+            transition: opacity 200ms linear;
+         }
+         .vk_wiki_list_table i.vk_edit_icon:hover {
+            opacity:1;
+         }
          */
       }).css
    },
@@ -8596,6 +8617,7 @@ vkopt['groups'] = {
              <td>
                <div>
                   <a class="vk_wiki_link" pid="{vals.id}" href="/{vals.page}">{vals.title}</a>
+                  <a class="vk_wiki_edit_link" pid="{vals.id}" onclick="return showWiki({w:'{vals.page}/market'}, false, null, {onLoaded:WkView.edit});" href="#"><i class="vk_edit_icon"></i></a>
                </div>
                <div class="vk_wiki_page_code">[[{vals.page}]]</div>
              </td>
@@ -8632,9 +8654,11 @@ vkopt['groups'] = {
          vkopt.groups.actions_items();
    },
    onGroupActionItems: function(oid, gid){
+      if (ge('vk_wiki_links'))
+         return [];
       var items = [
          {
-            //id="vk_wiki_links"
+            id: "vk_wiki_links",
             onclick:"vkopt.groups.wiki_list.show(cur.oid); return false;",
             text:IDL('WikiPagesList')
          },
@@ -8667,6 +8691,7 @@ vkopt['groups'] = {
                attrs:      isString(items[i].attrs) ? attrs : '',
                text:       IDL(items[i].text)
             }));
+            if (items[i].id) item.id = items[i].id;
 
             if (isObject(items[i].attrs))
                for (var attr in items[i].attrs)
