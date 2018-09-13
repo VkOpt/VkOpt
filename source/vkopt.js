@@ -9417,41 +9417,53 @@ vkopt['im_form'] = {
       if (ge('im_form_emoji') || !window.Emoji) return;
       if (!geByClass1('im-chat-input--text') && !ge('mail_box_editable')) return;
 
-      var emoji = document.createElement('div');
-      emoji.id = 'im_form_emoji';
-      emoji.appendChild(vkopt.im_form.recent_emoji());
+      stManager.add([jsc("web/emoji.js")], function(){
+         var emoji = document.createElement('div');
+         emoji.id = 'im_form_emoji';
 
-      var tarea = geByClass1('im-chat-input--textarea');
-      if (tarea) tarea.insertBefore(emoji, geByClass1('im-chat-input--scroll', tarea));
-      else {
-         tarea = ge('mbe_emoji_wrap');
-         if (tarea) tarea.appendChild(emoji);
-      }
+
+         var tarea = geByClass1('im-chat-input--textarea');
+         if (tarea)
+            tarea.insertBefore(emoji, geByClass1('im-chat-input--scroll', tarea));
+         else {
+            tarea = ge('mbe_emoji_wrap');
+            if (tarea) tarea.appendChild(emoji);
+         }
+         if (tarea){
+            emoji.appendChild(vkopt.im_form.recent_emoji(tarea));
+         }
+      })
    },
-   recent_emoji: function() {
+   get_opt_id: function(el){
+      var optId = 0;
+      try{
+         optId = data(geByClass1('_emoji_wrap', gpeByClass('_emoji_field_wrap',el)), 'optId') || 0;
+      } catch(e){}
+      return optId;
+   },
+   recent_emoji: function(el) {
       var emojiList = Emoji.emojiGetRecentFromStorage();
       if (emojiList) Emoji.setRecentEmojiList(emojiList);
 
       var cat = Emoji.getRecentEmojiSorted();
       var data = document.createElement('div');
       data.className = 'emoji_smiles_row';
+
+      var optId = 0;
+      try{
+         optId = data(geByClass1('_emoji_wrap', el), 'optId') || 0; // вообще не факт, что к этому моменту optId уже проставлен.
+                                                                    // из-за этого может быть путаница при определение набора опций принадлежащего конкретному иниту панели Emoji,
+                                                                    // а на сколько это важно, возможно из баг-репортов узнаем.
+      } catch(e){}
+
       for (var i=0, len = cat.length; i<len; i++) {
-         data.innerHTML += this.emojiWrapItem(cat[i], i);
+         var wrap = Emoji.emojiWrapItem(optId, cat[i], i);
+         wrap = wrap.replace(/Emoji\.shownId/g,'vkopt.im_form.get_opt_id(this)'); // при закрытой панели смайлов Emoji.shownId не содержит нужного значения. Меняем его на функцию поиска optId
+         data.innerHTML += wrap;
       }
 
       return data;
    },
-
-   emojiWrapItem : function (code, i) {
-      var info = Emoji.cssEmoji[code];
-      if (info)
-         var titleStr = ' title="' + info[1] + '"';
-      else
-         var titleStr = '';
-
-      return '<a class="emoji_smile_cont ' + ((code != '2764' && i && (i < 54)) ? 'emoji_smile_shadow' : '') + '" ' + titleStr + ' onmousedown="Emoji.addEmoji(Emoji.last-1, \'' + code + '\', this); return cancelEvent(event);" onclick="return cancelEvent(event);" onmouseover="addClass(this, \'emoji_over\');" onmouseout="removeClass(this, \'emoji_over\');" ><div class="emoji_bg"></div><div class="emoji_shadow"></div>' + Emoji.getEmojiHTML(code, false, false, true) + '</a>';
-   },
-
    del_recent_emoji : function () {
       if (ge('im_form_emoji')) {
          re('im_form_emoji')
