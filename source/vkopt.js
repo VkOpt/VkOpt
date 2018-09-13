@@ -8144,7 +8144,7 @@ vkopt['profile'] = {
 
       if (cur.module == 'profile' && vkopt.settings.get('scan_hidden_audios') && !ge('profile_audios')){
          var p = geByClass1('counts_module');
-         if (!hasClass(p,'vk_scan_audio')){
+         if (p && !hasClass(p,'vk_scan_audio')){
             addClass(p, 'vk_scan_audio');
             var btn = se('<a class="page_counter vk_scan_audio_btn" href="#" onclick="return vkopt.profile.scan_audio()"><div class="count"></div><div class="label">'+IDL('audio').toLowerCase()+'</div></a>');
             p.appendChild(btn);
