@@ -404,13 +404,13 @@ var vk_glue = {
          function(url, query, options){
              // Mod callback:
              var ctx = this;
-             if (ctx.__ARG2__.onDone){
+             if (ctx.__ARG2__){
                  var onDoneOrig = ctx.__ARG2__.onDone;
                  ctx.__ARG2__.onDone = function(){
                      var argarr = Array.prototype.slice.call(arguments);
                      vk_glue.response_handler(argarr, ctx.__ARG0__, ctx.__ARG1__);
 
-                     onDoneOrig.apply(window, argarr);
+                     onDoneOrig && onDoneOrig.apply(window, argarr);
                  }
              }
              // End of callback mod
