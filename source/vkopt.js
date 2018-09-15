@@ -2540,7 +2540,8 @@ vkopt['photoview'] =  {
       Extra:{
          photo_search_copy:{},
          ph_download_with_name:{},
-         pv_editor_ignore_flash:{default_value: true}
+         pv_editor_ignore_flash:{default_value: true},
+         ph_update_btn:{}
       }
    },
    tpls:{},
@@ -2709,6 +2710,16 @@ vkopt['photoview'] =  {
          });
          append_menu(html);
       }
+
+      if (vkopt.settings.get('ph_update_btn'))
+         if (cur.pvCurPhoto && cur.pvCurPhoto.id){
+            var html = vk_lib.tpl_process(vkopt.photoview.tpls['act_item'],{
+               class_name: 'vk_pv_more_act_item',
+               onclick: 'vkopt.photos.update_photo(cur.pvCurPhoto.id);',
+               text: IDL('Update')
+            });
+            append_menu(html);
+         }
 
       // Поиск копий
       if (vkopt.settings.get('photo_search_copy')){
@@ -2915,7 +2926,7 @@ vkopt['photos'] =  {
    },
    update_photo: function(photo_id){
       var box=vkAlertBox(IDL('Upload'),'<center><div id="vk_upd_photo"></div><div id="vk_upd_photo_progress"></div></center>');
-      stManager.add('upload.js',function(){
+      stManager.add(['upload.js','filters.js'],function(){
          var photo=photo_id;
          if (/photo-?\d+_\d+/.test(photo)) photo=photo.match(/photo(-?\d+_\d+)/)[1];
          AjPost('/al_photos.php',{'act':'edit_photo', 'al': 1, 'photo': photo},function(t){
