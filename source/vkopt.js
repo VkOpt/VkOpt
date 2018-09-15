@@ -2540,8 +2540,9 @@ vkopt['photoview'] =  {
       Extra:{
          photo_search_copy:{},
          ph_download_with_name:{},
-         pv_editor_ignore_flash:{default_value: true},
-         ph_update_btn:{}
+         ph_show_save_info:{default_value: true},
+         ph_update_btn:{},
+         pv_editor_ignore_flash:{default_value: true}
       }
    },
    tpls:{},
@@ -2637,6 +2638,16 @@ vkopt['photoview'] =  {
          }
          #vk_ph_links_list{
             padding-left: 8px;
+         }
+
+         .vk_save_info a {
+            font-weight: bold;
+         }
+         .vk_save_info {
+            text-align: right;
+            padding-right: 28px;
+            background: url("data:image/svg+xml,%3Csvg%20version%3D%221.1%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2216%22%20height%3D%2216%22%09%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20fill%3D%22%237D9AB7%22%20d%3D%22M204.1%2C66l-25.3%2C30.4c-14.1-25-44.3-37.6-72.7-28.5%09c-32.5%2C10.4-50.5%2C45.2-40%2C77.8c6.2%2C19.4%2C21.2%2C33.6%2C39.1%2C39.7c7.4%2C14%2C15.4%2C31.9%2C21.1%2C46c-7.5%2C7.8-12.1%2C19.6-12.1%2C19.6l-30.9-6.7%09l3.5-26.3c-4.8-2-9.5-4.4-13.9-7.2L53.6%2C229l-23.4-21.3l16.2-21c-3.1-4.1-6-8.5-8.5-13.2l-25.8%2C6l-9.7-30.1l24.5-10.1%09c-0.7-5.3-0.9-10.5-0.8-15.7L0.8%2C116l6.7-30.9l26.3%2C3.5c2-4.8%2C4.4-9.5%2C7.2-13.9L22.8%2C55.3l21.3-23.4l21%2C16.2c4.1-3.1%2C8.5-6%2C13.2-8.5%09l-6-25.8l30.1-9.7l10.1%2C24.5c5.3-0.7%2C10.5-0.9%2C15.7-0.8l7.7-25.4l30.9%2C6.7l-3.5%2C26.3c4.8%2C2%2C9.5%2C4.4%2C13.9%2C7.2l19.3-18.2l23.4%2C21.3%09l-15.4%2C20L204.1%2C66z%20M79%2C106.3l49.8-18.1l44.6%2C87.8l31.7-95.6l50%2C18.1c-11%2C24.1-21%2C48.8-30.1%2C74c-9.1%2C25.2-17.2%2C50.9-24.4%2C77h-50.9%09c-9.5-22.9-20.2-46.3-32-70.2C105.8%2C155.3%2C92.9%2C131%2C79%2C106.3z%22/%3E%3C/svg%3E") 100% 50% no-repeat;
+            background-size: 24px;
          }
          */
       }).css;
@@ -2765,6 +2776,25 @@ vkopt['photoview'] =  {
       ett._ttel && addClass(ett._ttel, 'vk_actions');
       ett.updatePosition();
 
+   },
+
+   onResponseAnswer: function(answer, url, q) {
+      if (url == '/al_photos.php' && q.act == 'save_me' && answer[0]){
+         if (!vkopt.settings.get('ph_show_save_info')) return;
+         if (window.cur && cur.pvData){
+			var idx = cur.pvIndex,
+                lid = cur.pvListId,
+                pv = cur.pvData;
+            if (cur.pvData[lid] && cur.pvData[lid][idx] && cur.pvData[lid][idx].id == q.photo){
+               var p = geByClass1('pv_author_block'),
+                   div = ce('div',{className:'fl_r vk_save_info'});
+               val(div, answer[0]);
+               re(geByClass1('top_result_header', div));
+               p.insertBefore(div, p.firstChild);
+            }
+
+         }
+      }
    },
    links_toogle: function(){
       toggle('vk_ph_links_list');
