@@ -2524,6 +2524,244 @@ vkopt['away'] = {
    }
 };
 
+vkopt['side_bar'] = {
+   onSettings:{
+      vkInterface: {
+         menu: {
+            title: 'seMenu',
+            class_toggler: true,
+            default_value: true
+         }
+      }
+   },
+   tpls:{},
+   items: function(){
+      var vkmid = vk.id;
+      return {
+         'profile': [
+            ['wall' + vkmid, IDL('mWAllPosts')],
+            [['#', "showWiki({w: 'postbox'}, false, event, {queue: 1, stat: ['wkview.js' ,'wkview.css', 'postbox.js', 'postbox.css', 'wide_dd.js', 'wide_dd.css', 'page.js', 'page.css']}); return false;"], IDL('NewPost')],
+            ['/notes', IDL("mNoM")],
+            [['/gifts' + vkmid, "return !showBox('al_gifts.php',{act:'box',tab:'received',mid:"+vkmid+"},{cache:1,stat:['gifts.css','gifts.js']})"], IDL('clGi')],
+            [['#', "return !showTabbedBox('al_page.php', {act: 'box', oid: "+vkmid+", tab: 'fans'}, {cache: 1}, event)"], IDL('clFans')],
+            [['#', "return !showBox('al_fans.php',{act:'box',tab:'idols',oid:"+vkmid+"},{cache:1,stat:['page_help.css', 'fansbox.js']})"], IDL('clSubscriptions')],
+            ['/edit', IDL('mAuE')],
+            ['/stats?mid=' + vkmid, IDL('Stats')]
+         ],
+         'feed': [
+            ['feed', IDL("mNeP")],
+            ['feed?section=notifications&list=replies', IDL("mNeNotif")],
+            ['feed?section=updates', IDL("mNeU")],
+            ['feed?section=comments', IDL("mNeB")],
+
+            ['feed?section=friends',IDL("mNeF")],
+            ['feed?section=groups', IDL("mNeG")],
+            ['feed?section=photos', IDL("clPh")],
+            ['feed?section=videos', IDL("clVi")],
+            ['feed?section=mentions', IDL("mNeMe")],
+            ['feed?section=recommended', IDL("mNeR")],
+            //['feed?section=suggested',IDL("mNeR")+' 2'],
+            ['feed?section=likes', IDL("mNeLiked")],
+            ['feed?section=search', IDL("Search")]
+         ],
+         'im': [
+            ['/im', IDL('mDialogsMessages')],
+            ['/im?tab=unread', IDL('mUnread')],
+            [['#', "return !showTabbedBox('al_im.php', {act: 'a_spam', gid: 0, offset: 0},{stat: ['im.css'], params:{width: 638}})"], IDL('Spam')],
+            [['#', "return !showTabbedBox('al_im.php', {act: 'a_important', offset: 0},{stat: ['im.css'], params:{width: 638}})"], IDL('mImportant')]
+            /*
+            ['/im?q=day:' + dateFormat("ddmmyyyy"), IDL('mStealth')]
+            ._im_search .nim-dialog--preview {white-space: normal;}
+            .nim-dialog._im_search {height: auto;}
+            ._im_search.nim-dialog .nim-dialog--cw, ._im_search.nim-dialog.nim-dialog_classic .nim-dialog--cw {height: auto;margin: 4px 0;}
+            */
+         ],
+         'friends': [
+            ['/friends?section=all', IDL("mFrA")],
+            ['/friends?section=online', IDL("mFrO")],
+            ['/friends?section=recent', IDL("mFrNew")],
+            ['/friends?act=find', IDL("mFrSug")],
+            ['/friends?section=requests', IDL("mFrR"), true],
+            ['/friends?section=all_requests', IDL("mFrAllReq")],
+            ['/friends?section=out_requests', IDL("mFrOutReq")],
+            [['/friends?w=calendar', 'return nav.change({w: \'calendar\'})'], IDL("Birthdays")]
+         ],
+         'groups': [
+            ['/groups', IDL("mGrM")],
+            ['/groups?act=events', IDL("Events")],
+            ['/groups?act=catalog', IDL("mGrS")],
+            ['/groups?tab=admin', IDL("mGrAdmin")]
+         ],
+
+         'albums': [
+            ['/albums' + vkmid, IDL("mPhM")],
+            ['/tag' + vkmid, IDL("mPhW")],
+            [["#", "showBox('al_photos.php', {act: 'new_album_box'},{stat: ['photos.css']}); return false;"], IDL("mPhN")],
+            ['/photos' + vkmid + '?act=comments', IDL("mPhC")],
+            ['/photos' + vkmid, IDL("mPhA")]
+         ],
+         'audio': [
+            ['/audio', IDL("mAuM")],
+            ['/audio?section=playlists', IDL("Playlists")],
+            ['/audio?section=updates', IDL("mNeU")],
+            ['/audio?section=recoms', IDL("mNeR")],
+            [['#', "showBox('/audio', {act: 'new_audio'}, {params: {width: 430}, stat: ['audio.css','audio.js'] }); return false;"], IDL("mAuN")]
+         ],
+         'video': [
+            ['/videos'+vkmid, IDL("mViM")],
+            ['/video?section=uploaded', IDL("mViUploaded")],
+            ['/video?section=comments', IDL("mPhC")]
+            //[['#', "stManager.add(['ui_controls.js','video.js', 'upload.js', 'video_upload.js'],function(){VideoUpload.showBox({aid:0});}); return false;"], IDL("mViN")]
+         ],
+         'apps': [
+            ['/apps?act=apps', IDL("mApM")],
+            ['/apps?act=catalog', IDL("mApA")],
+            ['/apps?act=notifications', IDL("mTags"), true],
+            ['/settings?act=apps', IDL("mApS")]
+         ],
+         'market': [
+            ['/market',IDL('Catalog')],
+            ['/market?act=fav',IDL('favorites')],
+            ['/market?act=my',IDL('MyProducts')]
+         ],
+         'fave': [
+            ["fave?section=users", IDL("mFaV")],
+            ["fave?section=likes_photo", IDL("mFaP")],
+            ["fave?section=likes_video", IDL("mFaVI")],
+            ["fave?section=likes_posts", IDL("mFaPO")],
+            ["fave?section=likes_market", IDL("Products")],
+            ["fave?section=links", IDL("mFaL")],
+            ["fave?section=articles", IDL("Articles")],
+            ["cc", IDL("vk_cc")]
+         ],
+         'docs': [],
+         'apps_manage': []
+      }
+   },
+   css: function(){
+      return vk_lib.get_block_comments(function(){
+         /*css:
+         .vk_menu #side_bar.side_bar,
+         .vk_menu .body_im #side_bar.side_bar{
+            overflow:visible;
+         }
+         .vk_menu_block {
+            position: absolute;
+            z-index: 2000;
+            margin-left: 115px;
+            margin-top: -5px;
+         }
+         .vk_menu_block ul{
+            list-style: none;
+            margin: 2px;
+            padding: 0px;
+            background: rgba(255,255,255,0.9);
+            border-radius:5px;
+            box-shadow: 0 1px 0 0 #d7d8db, 0 0 0 1px #e3e4e8;
+            overflow:hidden;
+         }
+         #side_bar ol li .vk_menu_block ul li{
+            margin:0;
+            padding:0;
+            display:block;
+            white-space: nowrap;
+         }
+         .vk_menu_block ul li a{
+            display:block;
+            padding:7px 15px;
+            text-decoration:none;
+            background:rgba(255, 255, 255, 0);
+            transition:background-color 200ms linear;
+         }
+         .vk_menu_block ul li a:hover{
+            background:rgba(0, 34, 85, 0.1)
+         }
+         #side_bar ol li .vk_menu_block{
+            overflow:hidden;
+            max-height:0px;
+            transition: max-height 100ms;
+            transition-delay:400ms;
+         }
+         .vk_menu #side_bar ol li:hover .vk_menu_block{
+            max-height:500px;
+         }
+         */
+      }).css
+   },
+   onInit: function(){
+      vkopt.side_bar.tpls = vk_lib.get_block_comments(function(){
+         /*menu_block:
+         <div class="vk_menu_block">
+            <ul>
+               {vals.items}
+            </ul>
+         </div>
+         */
+         /*menu_item:
+         <li><a href="{vals.href=#}" onclick="{vals.onclick=}">{vals.text}</a></li>
+         */
+      });
+      vkopt.side_bar.make_menu();
+   },
+   onOptionChanged: function(option_id, val, option_data){
+      if (option_id == 'menu')
+         vkopt.side_bar.make_menu();
+   },
+   make_menu: function(){
+      if (geByClass1('vk_menu_block')) return;
+      var id2type =    {
+         "l_pr": "profile",
+         "l_nwsf": "feed",
+         "l_msg": "im",
+         "l_fr": "friends",
+         "l_gr": "groups",
+         "l_ph": "albums",
+         "l_aud": "audio",
+         "l_vid": "video",
+         "l_ap": "apps",
+         "l_mk": "market",
+         "l_fav": "fave",
+         "l_doc": "docs",
+         "l_apm": "apps_manage"
+         //"l_mgid\d+": "club\d+"
+      }
+
+      var p = ge('side_bar_inner');
+      var lis = geByTag('li', p);
+      var els = [];
+      for (var i=0;i<lis.length; i++)
+         els.push(lis[i]);
+
+      var blocks = vkopt.side_bar.items();
+      for (i = 0; i < els.length; i++){
+         var
+            li = els[i],
+            id = li.id,
+            a = geByTag1('a',li),
+            lnk = '';
+         if (a && a.href)
+            lnk = a.href.split('?')[0].split('/').pop();
+
+         var items = blocks[id2type[id]] || blocks[lnk];
+
+         var sub_items = [];
+         if (items && items.length){
+            for (var k = 0; k < items.length; k++)
+               sub_items.push(vk_lib.tpl_process(vkopt.side_bar.tpls['menu_item'], {
+                  href:       isArray(items[k][0]) ? items[k][0][0] : items[k][0],
+                  onclick:    isArray(items[k][0]) ? items[k][0][1] : "return nav.go(this, event, {noback: true});",
+                  text:       IDL(items[k][1])
+               }))
+
+            var block = se(vk_lib.tpl_process(vkopt.side_bar.tpls['menu_block'], {
+               items: sub_items.join('\n')
+            }));
+            li.appendChild(block);
+         }
+      }
+   }
+}
+
 vkopt['photoview'] =  {
    onSettings:{
       Media:{
@@ -8244,6 +8482,15 @@ vkopt['profile'] = {
             p.appendChild(btn);
          }
       }
+
+      /*
+      ge('profile_message_send') && dApi.call('messages.getHistory',{user_id: cur.oid, v:'5.85'}, function(r,result){
+         if (result && result.count){
+            geByClass1('flat_button', ge('profile_message_send')).appendChild(se('<span> ('+result.count+')</span>'))
+         }
+         // + first message date / last message date
+      })
+      */
    },
    onLibFiles: function(fn){
       if (fn == 'fansbox.js' && vkopt.settings.get('show_common_group')){
