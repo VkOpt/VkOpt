@@ -298,6 +298,13 @@ var vkopt_core = {
             if (typeof answer[i]=='string' && _rx.test(answer[i]) ){
                answer[i] = vkopt_core.mod_str_as_node(answer[i], vkopt_core.plugins.process_node, {source:'process_response', url:url, q:q});
             }
+            else if (isArray(answer[i])){
+               var sub = answer[i];
+               for (var j = 0; j < sub.length; j++)
+                  if (typeof sub[j]=='string' && _rx.test(sub[j]) ){
+                     sub[j] = vkopt_core.mod_str_as_node(sub[j], vkopt_core.plugins.process_node, {source:'process_response', url:url, q:q});
+                  }
+            }
          }
          // для случаев, когда тело html'а передано не отдельным аргументом, а внутри какого-то JSON'а:
          if (url === '/al_im.php' && q.act == 'a_start' && answer[0] && answer[0].history){ // открытие диалога
