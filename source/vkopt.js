@@ -4230,8 +4230,9 @@ vkopt['audio'] =  {
                info_obj = cache[info_obj.fullId];
             else {
                var queue = vkopt.settings.get('audio_wait_hover') ? vkopt.audio.__hover_load_queue : vkopt.audio.__load_queue;
-               if (queue.indexOf(info_obj.fullId) == -1 && vkopt.audio.__loading_queue.indexOf(info_obj.fullId) == -1)
-                  queue.push(info_obj.fullId);
+               var full_id_req = info_obj.fullId  + "_" + info_obj.actionHash;
+               if (queue.indexOf(full_id_req) == -1 && vkopt.audio.__loading_queue.indexOf(full_id_req) == -1)
+                  queue.push(full_id_req);
             }
          }
 
