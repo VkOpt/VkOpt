@@ -5659,36 +5659,36 @@ vkopt['videoview'] = {
          width: 20px;
          transform: rotate(90deg);
       }
-      #vk_mv_down_links_tt {
+      .vk_mv_down_links_tt {
          background: rgba(0,0,0,0.6);
          border: 1px solid rgba(255,255,255,0.4);
       }
 
-      #vk_mv_down_links_tt.eltt.eltt_bottom:before {
+      .vk_mv_down_links_tt.eltt.eltt_bottom:before {
          border-bottom-color: transparent;
       }
-      #vk_mv_down_links_tt.eltt.eltt_bottom:after {
+      .vk_mv_down_links_tt.eltt.eltt_bottom:after {
          border-bottom-color: rgba(255, 255, 255, 0.4);
          margin-bottom: 1px;
       }
-      #vk_mv_down_links_tt.eltt.eltt_bottom .eltt_arrow{
+      .vk_mv_down_links_tt.eltt.eltt_bottom .eltt_arrow{
          border-bottom-color: #000;
       }
-      #vk_mv_down_links_tt a {
+      .vk_mv_down_links_tt a {
          display: block;
          padding: 3px 10px;
          color: #FFF;
          white-space: nowrap;
       }
-      #vk_mv_down_links_tt a.size_loaded{
+      .vk_mv_down_links_tt a.size_loaded{
          padding-right: 80px;
       }
-      #vk_mv_down_links_tt a .vk_vid_size_info.progress_inv_mini{
+      .vk_mv_down_links_tt a .vk_vid_size_info.progress_inv_mini{
          position: absolute;
          margin-top: 6px;
          right: 3px;
       }
-      #vk_mv_down_links_tt a.size_loaded .vk_vid_size_info{
+      .vk_mv_down_links_tt a.size_loaded .vk_vid_size_info{
          position: absolute;
          right: 10px;
       }
@@ -5743,7 +5743,7 @@ vkopt['videoview'] = {
       }
       // создаём новое тултип-меню
       vkopt.videoview._links_tt = new ElementTooltip(btn,{
-                 id: "vk_mv_down_links_tt",
+                 cls: "vk_mv_down_links_tt",
                  forceSide: "bottom",
                  elClassWhenTooltip: "vk_mv_down_links_shown",
                  content: html,
@@ -5757,24 +5757,19 @@ vkopt['videoview'] = {
                  }
       });
    },
-   check_show_args: function(args){
-      //args = [videoRaw, title, html, js, desc, serviceBtns, opt]
-      var videoRaw = args[0],
-          js = args[3],
-          opt = args[5],
-          rx = /(var\s*isInline)/;
-      if (opt && opt.player){// новый формат ответа, JSON с данными о плеере находится в 6-ом аргументе.
-         var vars = null;
+   get_vars: function(opt, video_id){
+      var vars = null;
+      if (opt && opt.player){
          var params_arr = opt.player.params;
          if (params_arr){
             vars = {};
             var full_vid = function(vars){
                return vars.oid+'_'+vars.vid
             };
-            if (params_arr.length > 0 && full_vid(vars) != videoRaw){ //mvcur.videoRaw
+            if (params_arr.length > 0 && full_vid(vars) != video_id){ //mvcur.videoRaw
                vkopt.log('wrong video data. search other...');
                for (var i = 0; i < params_arr.length; i++){
-                  if (full_vid(params_arr[i]) == videoRaw){ // нашли данные о нужном видео
+                  if (full_vid(params_arr[i]) == video_id){ // нашли данные о нужном видео
                      vars = params_arr[i];
                      break;
                   }
@@ -5782,6 +5777,17 @@ vkopt['videoview'] = {
             }
 
          }
+      }
+      return vars;
+   },
+   check_show_args: function(args){
+      //args = [videoRaw, title, html, js, desc, serviceBtns, opt]
+      var videoRaw = args[0],
+          js = args[3],
+          opt = args[5],
+          rx = /(var\s*isInline)/;
+      if (opt && opt.player){// новый формат ответа, JSON с данными о плеере находится в 6-ом аргументе.
+         var vars = vkopt.videoview.get_vars(opt,videoRaw);
          vkopt.videoview.on_player_data(vars);
       }
       else if (js && rx.test(args[3])){ // старый формат ответа, vars находится в третьем аргументе.
