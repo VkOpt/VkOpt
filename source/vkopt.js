@@ -8718,7 +8718,7 @@ vkopt['profile'] = {
 
       var ids = [];
       for (var i = 0; i < COUNT; i++)
-         ids.push(cur.oid + '_' + (456239000 + i)+'_'+i);
+         ids.push(cur.oid + '_' + (456239000 + i));
       var step = function (ids_arr){
          var part = ids_arr || ids.splice(0,Math.min(ids.length, vkRandomRange(5,10)));
          ajax.post("al_audio.php", {
