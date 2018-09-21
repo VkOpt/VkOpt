@@ -8769,9 +8769,11 @@ vkopt['profile'] = {
       var box, ldr, wrap;
       var empty_counter = 0;
 
-      var ids = [];
-      for (var i = 0; i < COUNT; i++)
-         ids.push(cur.oid + '_' + (456239000 + i));
+      var ids = [], fake_hash;
+      for (var i = 0; i < COUNT; i++){
+         fake_hash = '000000000000000000'.replace(/./g, function(){return '0123456789abcdef'.charAt(Math.floor(Math.random()*16))});
+         ids.push(cur.oid + '_' + (456239000 + i) + '_' + fake_hash);
+      }
       var step = function (ids_arr){
          var part = ids_arr || ids.splice(0,Math.min(ids.length, vkRandomRange(5,10)));
          ajax.post("al_audio.php", {
