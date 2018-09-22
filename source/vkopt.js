@@ -6234,6 +6234,9 @@ vkopt['messages'] = {
 	 .im-chat-input.im-chat-input_classic .im-chat-input--textarea {
 	    width: 400px !important;
 	 }
+	 .im-chat-input .im-chat-input--textarea {
+	    width: 444px !important;
+	 }
 	 .im-chat-input .im-chat-input--send {
 	    right: -93px !important;
 	 }
@@ -6245,6 +6248,7 @@ vkopt['messages'] = {
 	    margin: 4px 4px 0 0;
 	    width: 24px;
 	    height: 24px;
+	    cursor: pointer;
 	    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='%2392abc6'%3e%3cpath d='M21.99 8c0-.72-.37-1.35-.94-1.7L12 1 2.95 6.3C2.38 6.65 2 7.28 2 8v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2l-.01-10zM12 13L3.74 7.84 12 3l8.26 4.84L12 13z'/%3e%3c/svg%3e");
 	    opacity: 0.75;
 	    filter: alpha(opacity=75);
@@ -6266,6 +6270,10 @@ vkopt['messages'] = {
 	    cursor: pointer;
 	    opacity: 0.75;
 	    background: url("data:image/svg+xml;charset=utf-8,%3Csvg%20version%3D%221.0%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%20300%20300%22%3E%3Cg%20transform%3D%22translate%280%2C300%29%20scale%280.1%2C-0.1%29%22%20fill%3D%22%23828A99%22%20stroke%3D%22none%22%3E%3Cpath%20d%3D%22M2295%202985%20c-17%20-9%20-100%20-85%20-185%20-170%20l-155%20-155%20353%20-353%20353%20-352%20163%20165%20c135%20136%20165%20172%20171%20202%2014%2074%20-1%2094%20-286%20380%20-306%20306%20-332%20323%20-414%20283z%22%2F%3E%3Cpath%20d%3D%22M1045%201750%20l-800%20-800%20353%20-352%20352%20-353%20802%20802%20803%20803%20-350%20350%20c-192%20192%20-352%20350%20-355%20350%20-3%200%20-365%20-360%20-805%20-800z%22%2F%3E%3Cpath%20d%3D%22M146%20838%20c-7%20-22%20-145%20-832%20-143%20-835%205%20-4%20825%20142%20832%20149%204%203%20-149%20162%20-339%20353%20-191%20191%20-348%20340%20-350%20333z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") 50% no-repeat;
+	 }
+	 .msg_typing_icon:hover {
+	    opacity: 1;
+	    filter: none
 	 }
          */
       }).css + vkopt.messages.css_msg_bg(vkopt.settings.get('old_unread_msg_bg'))
@@ -6561,14 +6569,15 @@ vkopt['messages'] = {
       }
    },
    add_typing_read_icon: function(prefix, type){
-      var data = (type == 'mark_read') ? {el:ge('ui_rmenu_all')} : {el:geByClass1('im-chat-input--txt-wrap'), before:geByClass1('im-send-bt')};
-      if(!data.el || ge(prefix+'_'+type+'_st')) return;
+      var el = (type == 'mark_read') ? ge('ui_rmenu_all') || geByClass1('_im_dialogs_settings') : geByClass1('im-chat-input--txt-wrap');
+      if(!el || ge(prefix+'_'+type+'_st')) return;
       var class_btn = vkopt.settings.get(prefix+'_block_'+type) ? 'off_'+type : '';
-      data.el.insertBefore(se(vk_lib.tpl_process(vkopt.messages.tpls['typing_mread_icon'], {
+      var icon_btn = el.insertBefore(se(vk_lib.tpl_process(vkopt.messages.tpls['typing_mread_icon'], {
             class_btn: class_btn,
             prefix: prefix,
             type: type
-      })), data.before || data.el.firstChild);
+      })), el.firstChild);
+      if(el == geByClass1('_im_dialogs_settings')) icon_btn.style.margin = "11px";
    },
    change_typing_mread_st: function(prefix, type){
       var option = prefix+'_block_'+type;
