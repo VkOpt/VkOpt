@@ -4156,6 +4156,7 @@ vkopt['audio'] =  {
       if (el.getAttribute('href') == ''){
          addClass(el,'dl_url_loading');
          var id = el.dataset["aid"];
+         var req_id = el.dataset["reqaid"];
          function wait_and_set_url(){
             var info = vkopt.audio.__full_audio_info_cache[id];
             if (info){
@@ -4182,10 +4183,10 @@ vkopt['audio'] =  {
             var info = vkopt.audio.__full_audio_info_cache[id];
             // если не в загруженной инфе и очередях загрузки
             var hq = vkopt.audio.__hover_load_queue;
-            if (!info && vkopt.audio.__loading_queue.indexOf(id) == -1 &&  vkopt.audio.__load_queue.indexOf(id) == -1){
-               var idx = hq.indexOf(id);
+            if (!info && vkopt.audio.__loading_queue.indexOf(req_id) == -1 &&  vkopt.audio.__load_queue.indexOf(req_id) == -1){
+               var idx = hq.indexOf(req_id);
                if (idx == -1){ // не знаю возможно ли, но лучше добавлю проверку.
-                  hq.push(id);
+                  hq.push(req_id);
                   idx = hq.length - 1;
                }
                var start = Math.max(0, idx - 2);
@@ -4335,7 +4336,6 @@ vkopt['audio'] =  {
       }
       if (!vkopt.settings.get('audio_size_info')) return;
 
-      var aid = id.split('_')[1];
       var size = vkopt.audio._sizes_cache[id];
       var rb = true;
       var WAIT_TIME = 4000;
@@ -4511,7 +4511,7 @@ vkopt['audio'] =  {
                return true;
             },
             '<div></div>',// button content
-            'data-aid="{vals.fullId}" id="vk_get_link_{vals.fullId}" href="" onmouseover="vkopt.audio.check_dl_url(this);"',//custom_attributes
+            'data-aid="{vals.fullId}" data-reqaid="{vals.fullId}_{vals.actionHash}" id="vk_get_link_{vals.fullId}" href="" onmouseover="vkopt.audio.check_dl_url(this);"',//custom_attributes
             'a'
          ]);
       }
