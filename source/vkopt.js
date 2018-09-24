@@ -9999,7 +9999,7 @@ vkopt['test_module'] =  {
 
 vkopt['im_form'] = {
    onSettings:{
-      vkInterface:{
+      Messages:{
          im_recent_emoji:{
             title: 'seRecentEmoji',
             class_toggler: true
