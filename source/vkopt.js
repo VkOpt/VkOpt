@@ -5839,13 +5839,13 @@ vkopt['videoview'] = {
 
       vkopt.videoview.update_dl_btn(html);
    },
-   on_iframe_player: function(url){
+   get_ext_links: function(url, title, cb){
       vkopt.log('External player:', url);
       if (isString(url)) {
          if (url.indexOf('ivi.ru') > -1){
             vkopt.videoview.get_ivi_links(url, function(links, vid){
                   var html = '';
-                  var filename = vkCleanFileName(unclean(mvcur.mvData.title));
+                  var filename = vkCleanFileName(title);
                   html += vk_lib.tpl_process(vkopt.videoview.tpls['ext_link'], {
                      url: 'http://www.ivi.ru/watch/' + vid,
                      source_name:'ivi.ru'
@@ -5858,13 +5858,13 @@ vkopt['videoview'] = {
                         caption: links[i].quality
                      })
                   }
-                  vkopt.videoview.update_dl_btn(html);
+                  cb && cb(html, links);
             })
-         }
+         } else
          if (url.indexOf('youtube.com') > -1){
             vkopt.videoview.yt.get_links(url, function(links, vid){
                   var html = '';
-                  var filename = vkCleanFileName(unclean(mvcur.mvData.title));
+                  var filename = vkCleanFileName(title);
                   html += vk_lib.tpl_process(vkopt.videoview.tpls['ext_link'], {
                      url: 'http://youtube.com/watch?v=' + vid,
                      source_name: 'YouTube'
@@ -5876,10 +5876,17 @@ vkopt['videoview'] = {
                         caption: links[i].quality
                      })
                   }
-                  vkopt.videoview.update_dl_btn(html);
+                  cb && cb(html, links);
             })
-         }
-      }
+         } else
+            cb && cb('', []);
+      } else
+         cb && cb('', []);
+   },
+   on_iframe_player: function(url){
+      vkopt.videoview.get_ext_links(url, unclean(mvcur.mvData.title), function(html, link){
+         vkopt.videoview.update_dl_btn(html);
+      });
    },
    get_size: function(el){
       if (!el || !el.href || hasClass(el,'size_loaded') || /\.m3u8/.test(el.href)) return;
@@ -6151,6 +6158,11 @@ vkopt['videos'] = {
          background-size: cover;
          background-position: 1px 3px;
       }
+      .video_thumb_actions>div.vk_video_thumb_action_link.vk_cant_get_link,
+      .video_thumb_actions>div.vk_video_thumb_action_link.vk_cant_get_link:hover {
+         opacity:0.2;
+         cursor: default;
+      }
 
       .video_thumb_actions>div.vk_video_thumb_action_link {
          display: inline-block;
@@ -6213,41 +6225,62 @@ vkopt['videos'] = {
          return false;
       addClass(el,'vk_links_loading');
 
+      var on_links_ready = function(html, links){
+         if (links.length){
+            removeClass(el,'vk_links_loading');
+            addClass(el,'vk_links_loaded');
+            el.dl_ett = new ElementTooltip(el,{
+               cls: "vk_mv_down_links_tt",
+               forceSide: "bottom",
+               elClassWhenTooltip: "vk_mv_down_links_shown",
+               content: html,
+               offset: [-3, 0],
+               setPos: function(){
+                  return  {
+                     left: 33,
+                     top: 34,
+                     arrowPosition: 21
+                  }
+               }
+            });
+         }
+      }
+      var failed = function(){
+         addClass(el, 'vk_cant_get_link')
+      }
+
       vkLdr.show();
       ajax.post('al_video.php', {act: "show", list: list, video: video}, {
          onDone: function(title, vid_box, js, html, data){
-            var vars = vkopt.videoview.get_vars(data, video);
-
-            var links = vkopt.videoview.get_video_links(vars);
-            var filename = vkCleanFileName(unclean(vars.md_title));
-            var html = '';
-            for (var i = 0; i < links.length; i++){
-               html += vk_lib.tpl_process(vkopt.videoview.tpls['dl_link'], {
-                  url: links[i].url + (links[i].ext ? '#FILENAME/' + vkEncodeFileName(filename + '_' + links[i].quality) + links[i].ext : ''),
-                  name: filename + '_' + links[i].quality + links[i].ext,
-                  caption: links[i].quality
-               })
-            }
             vkLdr.hide();
-            if (links.length){
-               removeClass(el,'vk_links_loading');
-               addClass(el,'vk_links_loaded');
-               el.dl_ett = new ElementTooltip(el,{
-                  cls: "vk_mv_down_links_tt",
-                  forceSide: "bottom",
-                  elClassWhenTooltip: "vk_mv_down_links_shown",
-                  content: html,
-                  offset: [-3, 0],
-                  setPos: function(){
-                     return  {
-                        left: 33,
-                        top: 34,
-                        arrowPosition: 21
-                     }
-                  }
-               });
-
+            if (vid_box && /<iframe/i.test(vid_box)){
+               var ifr, p = se(vid_box);
+               p && (ifr = geByTag1('iframe', p));
+               if (ifr && ifr.src){
+                   vkopt.videoview.get_ext_links(ifr.src, unclean(title), function(html, links){
+                     if (links.length)
+                        on_links_ready(html, links);
+                     else
+                        failed();
+                  });
+               } else
+                  failed();
+            } else {
+               var vars = vkopt.videoview.get_vars(data, video);
+               if (!vars) return failed();
+               var links = vkopt.videoview.get_video_links(vars);
+               var filename = vkCleanFileName(unclean(vars.md_title));
+               var html = '';
+               for (var i = 0; i < links.length; i++){
+                  html += vk_lib.tpl_process(vkopt.videoview.tpls['dl_link'], {
+                     url: links[i].url + (links[i].ext ? '#FILENAME/' + vkEncodeFileName(filename + '_' + links[i].quality) + links[i].ext : ''),
+                     name: filename + '_' + links[i].quality + links[i].ext,
+                     caption: links[i].quality
+                  })
+               }
+               on_links_ready(html, links);
             }
+
 
             //vkMsg(html, 5000);
             //vkopt.log('MV_DATA:', data);
