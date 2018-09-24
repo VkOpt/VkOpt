@@ -10,7 +10,7 @@
 // (c) All Rights Reserved. VkOpt.
 //
 /* VERSION INFO */
-var vVersion	= 306;
+var vVersion = 306;
 var vBuild = 180823;
 var vVersionRev = 3;
 var vPostfix = '';
@@ -73,6 +73,8 @@ var vkopt_defaults = {
       stealth_addons: true, // прикидываемся перед ТП, что у нас не стоит расширение для скачивания.
       im_block_typing: false,
       im_block_mark_read: false,
+      gim_block_typing: false,
+      gim_block_mark_read: false,
       accept_more_cats: true,
 
       lastfm_enable_scrobbling: false,
@@ -6356,8 +6358,60 @@ vkopt['messages'] = {
             margin-bottom: -5px;
          }
          #vk_restore_msg {
-             margin-top: 5px;
+            margin-top: 5px;
          }
+
+       .vk_block_typing_btn .im-chat-input .im-chat-input--textarea:not(.im-chat-input_open-keyboard):not(.im-chat-input_close-keyboard):not(.im-chat-input--textarea_show-templates) .im-chat-input--text{
+          padding-right: 106px;
+       }
+       .im-chat-input_close-keyboard .msg_typing_icon,
+       .im-chat-input_open-keyboard .msg_typing_icon{
+          display:none;
+       }
+       .msg_mark_read_icon.off_mark_read {
+          background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='%2392abc6'%3e%3cpath d='M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z'/%3e%3c/svg%3e") !important;
+       }
+       .msg_mark_read_icon {
+          float: right;
+          margin: 4px 4px 0 0;
+          width: 24px;
+          height: 24px;
+          cursor: pointer;
+          background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='%2392abc6'%3e%3cpath d='M21.99 8c0-.72-.37-1.35-.94-1.7L12 1 2.95 6.3C2.38 6.65 2 7.28 2 8v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2l-.01-10zM12 13L3.74 7.84 12 3l8.26 4.84L12 13z'/%3e%3c/svg%3e");
+          opacity: 0.75;
+          filter: alpha(opacity=75);
+       }
+       .msg_mark_read_icon:hover {
+          opacity: 1;
+          filter: none
+       }
+       .msg_typing_icon:before{
+          content: '';
+          display:block;
+          width:24px;
+          height:24px;
+          background: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20height%3D%2224%22%20width%3D%2224%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M-4.166-3.74h31.811v30.912h-31.81z%22%2F%3E%3Cpath%20d%3D%22M5.122%2015.59l2.632%202.556-.678.659-2.912.566c-.2.038-.343-.091-.302-.294l.583-2.83zM6.447%2014.3l10.21-9.92a1.357%201.357%200%200%201%201.881-.011l.761.74a1.26%201.26%200%200%201-.01%201.828l-10.21%209.92z%22%20fill%3D%22%23828a99%22%2F%3E%3C%2Fg%3E%3Cpath%20d%3D%22M7.006.624a10.345%2010.345%200%200%200-4.828%203.53A10.284%2010.284%200%200%200%20.094%209.745l.96.125a9.425%209.425%200%200%201%201.913-5.124A9.472%209.472%200%200%201%207.39%201.512zm.97%202.257c-1.381.48-2.572%201.259-3.53%202.384a8.28%208.28%200%200%200-.298.37c-1.014%201.337-1.502%202.902-1.613%204.42l.96.13c.102-1.37.54-2.768%201.44-3.956.907-1.198%202.04-1.981%203.422-2.463zM20.55%2012.943c-.086%201.456-.532%202.757-1.44%203.954-.9%201.188-2.13%201.99-3.427%202.46l.391.886c1.434-.522%202.81-1.417%203.824-2.754%201.005-1.328%201.518-2.815%201.613-4.425zm2.441.312a9.422%209.422%200%200%201-1.91%205.124%209.479%209.479%200%200%201-4.424%203.235l.383.888a10.345%2010.345%200%200%200%204.828-3.53%2010.292%2010.292%200%200%200%202.084-5.594z%22%20fill%3D%22%23828a99%22%2F%3E%3C%2Fsvg%3E") 50% no-repeat;
+          background-size: 24px 24px;
+       }
+       .msg_typing_icon.off_typing:before{
+         background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20height%3D%2224%22%20width%3D%2224%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M-4.166-3.74h31.811v30.912h-31.81z%22%2F%3E%3Cpath%20d%3D%22M5.122%2015.59l2.632%202.556-.678.659-2.912.566c-.2.038-.343-.091-.302-.294l.583-2.83zM6.447%2014.3l10.21-9.92a1.357%201.357%200%200%201%201.881-.011l.761.74a1.26%201.26%200%200%201-.01%201.828l-10.21%209.92z%22%20fill%3D%22%23828a99%22%2F%3E%3C%2Fg%3E%3Cpath%20d%3D%22M18.412%2012.968a.808.808%200%200%200-.56.236l-1.306%201.307-1.281-1.28a.808.808%200%200%200-1.141-.002l-.215.214a.808.808%200%200%200%200%201.143l1.28%201.281-1.285%201.286a.808.808%200%200%200%200%201.142l.214.213a.808.808%200%200%200%201.142%200l1.286-1.284%201.31%201.31a.808.808%200%200%200%201.142%200l.214-.214a.808.808%200%200%200%200-1.142l-1.31-1.31%201.307-1.307a.808.808%200%200%200%200-1.142l-.215-.215a.808.808%200%200%200-.583-.236z%22%20fill%3D%22%23828a99%22%2F%3E%3C%2Fsvg%3E");
+       }
+
+       .msg_typing_icon{
+          position: absolute;
+          border: none;
+          padding: 6px 7px 6px 5px;
+          margin: 0;
+          background: transparent;
+          right: 73px;
+          bottom: 0;
+          cursor: pointer;
+          opacity: .7;
+       }
+       .msg_typing_icon:hover {
+          opacity: 1;
+          filter: none
+       }
          */
       }).css + vkopt.messages.css_msg_bg(vkopt.settings.get('old_unread_msg_bg'))
    },
@@ -6387,21 +6441,33 @@ vkopt['messages'] = {
             title: 'seDialogsListToRight',
             class_toggler: true
          },
-		 old_unread_msg:{
-			title: 'seHLMail',
+         old_unread_msg:{
+            title: 'seHLMail',
+               class_toggler: true,
+            sub: {
+               old_unread_msg_bg:{
+                  title: ' ',
+                  color_picker: true
+               }
+            }
+         },
+         block_typing_btn: {
+            title: 'seShowBlockTypingButton',
             class_toggler: true,
-			sub: {
-				old_unread_msg_bg:{
-					title: ' ',
-					color_picker: true
-				}
-			}
-		 }
+            default_value: true
+         },
+         block_mark_read_btn: {
+            title: 'seShowBlockMarkAsReadButton',
+            class_toggler: true,
+            default_value: true
+         }
       },
       Extra: {
         im_hide_dialogs: { class_toggler: true },
         im_block_typing: {},
         im_block_mark_read: {},
+        gim_block_typing: {},
+        gim_block_mark_read: {},
         im_show_online_count: {
            default_value: true
         }
@@ -6548,11 +6614,20 @@ vkopt['messages'] = {
            </div>
          </div>
 	 */
+	 /*typing_mread_icon:
+	   <div id="{vals.prefix}_{vals.type}_st" class="msg_{vals.type}_icon {vals.class_btn}" onclick="vkopt.messages.change_typing_mread_st('{vals.prefix}','{vals.type}')" onmouseover="vkopt.messages.typing_mread_tip(this,'{vals.prefix}','{vals.type}')"></div>
+	 */
       });
    },
+   onCmd: function(data){
+       if(data.act == 'update_typing_mread_icon' && ge(data.el)) {
+           ge(data.el).classList.toggle('off_'+data.type);
+       }
+   },
    onRequestQuery: function(url, query, options) {
+       var prefix = (query.gid) ? 'gim' : 'im';
        if (url === 'al_im.php') {
-           if (query.act === 'a_typing' && vkopt.settings.get('im_block_typing')) {
+           if (query.act === 'a_typing' && vkopt.settings.get(prefix + '_block_typing')) {
                return false;
            }
            /* something interesting:
@@ -6560,7 +6635,7 @@ vkopt['messages'] = {
            a_mark
            a_restore_dialog
            */
-           if (query.act === 'a_mark_read' && vkopt.settings.get('im_block_mark_read')) {
+           if (query.act === 'a_mark_read' && vkopt.settings.get(prefix + '_block_mark_read')) {
                return false;
            }
         }
@@ -6585,6 +6660,10 @@ vkopt['messages'] = {
 
    },
    onLocation: function(nav_obj, cur_module_name){
+      if(nav.objLoc[0].substr(0,3) == 'gim') {
+         vkopt.messages.add_typing_read_icon('gim', 'mark_read');
+         vkopt.messages.add_typing_read_icon('gim', 'typing');
+      }
       if (nav.objLoc[0] != 'im'){
          clearInterval(vkopt.messages.timeout_online_count_users);
          return;
@@ -6596,6 +6675,12 @@ vkopt['messages'] = {
       } else {
          clearInterval(vkopt.messages.timeout_online_count_users);
       }
+
+      if (vkopt.settings.get('block_mark_read_btn'))
+         vkopt.messages.add_typing_read_icon('im', 'mark_read');
+
+      if (vkopt.settings.get('block_typing_btn'))
+         vkopt.messages.add_typing_read_icon('im', 'typing');
 
       vkopt.messages.info_icon();
       vkopt_core.timeout(vkopt.messages.acts_menu, 500);
@@ -6634,6 +6719,61 @@ vkopt['messages'] = {
          }));
          msg.parentNode.appendChild(dl_block);
       }
+   },
+   typing_mread_tip: function(el, prefix, type){
+      var lng_cfg = {
+         mark_read:{
+            on:  IDL('BlockMarkAsReadON'),
+            off: IDL('BlockMarkAsReadOFF'),
+         },
+         typing:{
+            on:  IDL('BlockTypingON'),
+            off: IDL('BlockTypingOFF')
+         }
+      };
+
+      var cl = 'off_'+type;
+
+
+      showTooltip(el, {
+         text: function(){
+            var state = hasClass(el, cl) ? 'on' : 'off';
+            return lng_cfg[type][state];
+         },
+         black: true,
+         shift: [4, 5]
+      });
+   },
+   add_typing_read_icon: function(prefix, type){
+      var el = (type == 'mark_read') ? ge('ui_rmenu_all') || geByClass1('_im_dialogs_settings') : geByClass1('im_chat-input--buttons');
+      if(!el || ge(prefix+'_'+type+'_st')) return;
+      var class_btn = vkopt.settings.get(prefix+'_block_'+type) ? 'off_'+type : '';
+      var icon_btn = el.insertBefore(se(vk_lib.tpl_process(vkopt.messages.tpls['typing_mread_icon'], {
+            class_btn: class_btn,
+            prefix: prefix,
+            type: type
+      })), el.firstChild);
+      if(el == geByClass1('_im_dialogs_settings')) icon_btn.style.margin = "11px";
+   },
+   change_typing_mread_st: function(prefix, type){
+      var option = prefix+'_block_'+type;
+      var el = prefix+'_'+type+'_st';
+      vkopt.settings.get(option) ? vkopt.settings.set(option, 0) : vkopt.settings.set(option, 1);
+
+      toggleClass(el, 'off_'+type)
+      //ge(el).classList.toggle('off_'+type);
+      vkopt.cmd({
+          act:'update_typing_mread_icon',
+          el:el,
+          type:type
+      });
+      el = ge(el);
+      if (el.tt){
+         el.tt.hide({fasthide:1});
+         el.tt.show();
+      }
+      //vkopt.messages.typing_mread_tip(el, prefix, type);
+      return false;
    },
    info_icon: function(){
       var p = geByClass1('_im_dialogs_settings');
