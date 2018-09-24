@@ -6401,6 +6401,14 @@ vkopt['messages'] = {
        .im-chat-input_open-keyboard .msg_typing_icon{
           display:none;
        }
+
+       .vk_block_typing_btn  .im-chat-input--textarea_show-templates .im-chat-input--text{
+          padding-right: 150px;
+       }
+       .vk_block_typing_btn  .im-chat-input--textarea_show-templates .msg_typing_icon{
+          right: 108px;
+       }
+
        .msg_mark_read_icon.off_mark_read {
           background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='%2392abc6'%3e%3cpath d='M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z'/%3e%3c/svg%3e") !important;
        }
@@ -6417,6 +6425,9 @@ vkopt['messages'] = {
        .msg_mark_read_icon:hover {
           opacity: 1;
           filter: none
+       }
+       ._im_dialogs_settings .msg_mark_read_icon {
+          margin: 11px;
        }
        .msg_typing_icon:before{
           content: '';
@@ -6690,12 +6701,12 @@ vkopt['messages'] = {
             vkopt.set_css(code, 'vk_unread_msg_preview');
          },200)
       }
-	   
+
       if(option_id == 'block_typing_btn' && (vkopt.settings.get('im_block_typing') ||  vkopt.settings.get('gim_block_typing'))){
          vkopt.settings.set('im_block_typing', 0);
          vkopt.settings.set('gim_block_typing', 0);
       }
-	  
+
       if(option_id == 'block_mark_read_btn' && (vkopt.settings.get('im_block_mark_read') || vkopt.settings.get('gim_block_mark_read'))){
          vkopt.settings.set('im_block_mark_read', 0);
          vkopt.settings.set('gim_block_mark_read', 0);
@@ -6704,7 +6715,7 @@ vkopt['messages'] = {
    },
    onLocation: function(nav_obj, cur_module_name){
       if(nav.objLoc[0].substr(0,3) == 'gim') {
-         if (vkopt.settings.get('block_mark_read_btn'))	
+         if (vkopt.settings.get('block_mark_read_btn'))
             vkopt.messages.add_typing_read_icon('gim', 'mark_read');
          if (vkopt.settings.get('block_typing_btn'))
             vkopt.messages.add_typing_read_icon('gim', 'typing');
@@ -6798,11 +6809,6 @@ vkopt['messages'] = {
             prefix: prefix,
             type: type
       })), el.firstChild);
-      if(el == geByClass1('_im_dialogs_settings')) icon_btn.style.margin = "11px";
-      else if(prefix+'_'+type == 'gim_typing'){
-         geByClass1('im_editable').style.paddingRight = "150px";
-         icon_btn.style.marginRight = "36px";
-      }
    },
    change_typing_mread_st: function(prefix, type){
       var option = prefix+'_block_'+type;
