@@ -10,7 +10,7 @@
 // (c) All Rights Reserved. VkOpt.
 //
 /* VERSION INFO */
-var vVersion	= 306;
+var vVersion = 306;
 var vBuild = 180823;
 var vVersionRev = 3;
 var vPostfix = '';
@@ -6360,50 +6360,58 @@ vkopt['messages'] = {
          #vk_restore_msg {
             margin-top: 5px;
          }
-	 .im-chat-input.im-chat-input_classic .im-chat-input--textarea {
-	    width: 400px !important;
-	 }
-	 .im-chat-input .im-chat-input--textarea {
-	    width: 444px !important;
-	 }
-	 .im-chat-input .im-chat-input--send {
-	    right: -93px !important;
-	 }
-	 .msg_mark_read_icon.off_mark_read {
-	    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='%2392abc6'%3e%3cpath d='M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z'/%3e%3c/svg%3e") !important; 
-	 }
-	 .msg_mark_read_icon {
-	    float: right;
-	    margin: 4px 4px 0 0;
-	    width: 24px;
-	    height: 24px;
-	    cursor: pointer;
-	    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='%2392abc6'%3e%3cpath d='M21.99 8c0-.72-.37-1.35-.94-1.7L12 1 2.95 6.3C2.38 6.65 2 7.28 2 8v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2l-.01-10zM12 13L3.74 7.84 12 3l8.26 4.84L12 13z'/%3e%3c/svg%3e");
-	    opacity: 0.75;
-	    filter: alpha(opacity=75);
-	 }
-	 .msg_mark_read_icon:hover {
-	    opacity: 1;
-	    filter: none
-	 }
-	 .msg_typing_icon.off_typing {
-	    background: url("data:image/svg+xml;charset=utf-8,%3Csvg%20version%3D%221.0%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%20300%20300%22%3E%3Cg%20transform%3D%22translate%280.000000%2C300.000000%29%20scale%280.100000%2C-0.100000%29%22%20fill%3D%22%23828A99%22%3E%3Cpath%20d%3D%22M2212%202921%20c-48%20-44%20-127%20-120%20-177%20-170%20l-90%20-91%20358%20-357%20357%20-358%2096%2095%20c53%2052%20129%20133%20170%20179%2067%2076%2074%2087%2074%20126%200%2030%20-8%2054%20-29%2085%20-38%2057%20-484%20503%20-540%20541%20-32%2021%20-56%2029%20-88%2029%20-40%200%20-50%20-6%20-131%20-79z%22%2F%3E%3Cpath%20d%3D%22M272%202567%20l-92%20-93%201046%20-1038%201046%20-1039%2091%2091%2091%2091%20-774%20772%20c-426%20424%20-897%20892%20-1045%201040%20l-271%20269%20-92%20-93z%22%2F%3E%3Cpath%20d%3D%22M1513%202228%20l-323%20-323%20357%20-358%20358%20-357%20330%20330%20330%20330%20-351%20350%20c-193%20193%20-357%20350%20-364%20350%20-8%200%20-159%20-145%20-337%20-322z%22%2F%3E%3Cpath%20d%3D%22M585%201300%20l-350%20-350%20358%20-357%20357%20-358%20353%20353%20352%20352%20-355%20355%20c-195%20195%20-358%20355%20-360%20355%20-3%200%20-163%20-158%20-355%20-350z%22%2F%3E%3Cpath%20d%3D%22M136%20813%20c-7%20-34%20-86%20-489%20-116%20-671%20-12%20-73%20-20%20-136%20-16%20-139%203%20-3%2076%207%20163%2022%20232%2039%20646%20115%20661%20120%208%203%2010%2010%205%2019%20-21%2038%20-665%20676%20-682%20676%20-5%200%20-12%20-12%20-15%20-27z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") 50% no-repeat;
-	 }
-	 .msg_typing_icon{
-	    position: absolute;
-	    bottom: -13px;
-	    width: 24px;
-	    height: 26px;
-	    margin: 19px 0px;
-	    right: -33px;
-	    cursor: pointer;
-	    opacity: 0.75;
-	    background: url("data:image/svg+xml;charset=utf-8,%3Csvg%20version%3D%221.0%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%20300%20300%22%3E%3Cg%20transform%3D%22translate%280%2C300%29%20scale%280.1%2C-0.1%29%22%20fill%3D%22%23828A99%22%20stroke%3D%22none%22%3E%3Cpath%20d%3D%22M2295%202985%20c-17%20-9%20-100%20-85%20-185%20-170%20l-155%20-155%20353%20-353%20353%20-352%20163%20165%20c135%20136%20165%20172%20171%20202%2014%2074%20-1%2094%20-286%20380%20-306%20306%20-332%20323%20-414%20283z%22%2F%3E%3Cpath%20d%3D%22M1045%201750%20l-800%20-800%20353%20-352%20352%20-353%20802%20802%20803%20803%20-350%20350%20c-192%20192%20-352%20350%20-355%20350%20-3%200%20-365%20-360%20-805%20-800z%22%2F%3E%3Cpath%20d%3D%22M146%20838%20c-7%20-22%20-145%20-832%20-143%20-835%205%20-4%20825%20142%20832%20149%204%203%20-149%20162%20-339%20353%20-191%20191%20-348%20340%20-350%20333z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") 50% no-repeat;
-	 }
-	 .msg_typing_icon:hover {
-	    opacity: 1;
-	    filter: none
-	 }
+
+       .vk_block_typing_btn .im-chat-input .im-chat-input--textarea:not(.im-chat-input_open-keyboard):not(.im-chat-input_close-keyboard):not(.im-chat-input--textarea_show-templates) .im-chat-input--text{
+          padding-right: 106px;
+       }
+       .im-chat-input_close-keyboard .msg_typing_icon,
+       .im-chat-input_open-keyboard .msg_typing_icon{
+          display:none;
+       }
+       .msg_mark_read_icon.off_mark_read {
+          background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='%2392abc6'%3e%3cpath d='M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z'/%3e%3c/svg%3e") !important;
+       }
+       .msg_mark_read_icon {
+          float: right;
+          margin: 4px 4px 0 0;
+          width: 24px;
+          height: 24px;
+          cursor: pointer;
+          background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='%2392abc6'%3e%3cpath d='M21.99 8c0-.72-.37-1.35-.94-1.7L12 1 2.95 6.3C2.38 6.65 2 7.28 2 8v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2l-.01-10zM12 13L3.74 7.84 12 3l8.26 4.84L12 13z'/%3e%3c/svg%3e");
+          opacity: 0.75;
+          filter: alpha(opacity=75);
+       }
+       .msg_mark_read_icon:hover {
+          opacity: 1;
+          filter: none
+       }
+       .msg_typing_icon:before{
+          content: '';
+          display:block;
+          width:24px;
+          height:24px;
+          background: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20height%3D%2224%22%20width%3D%2224%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M-4.166-3.74h31.811v30.912h-31.81z%22%2F%3E%3Cpath%20d%3D%22M5.122%2015.59l2.632%202.556-.678.659-2.912.566c-.2.038-.343-.091-.302-.294l.583-2.83zM6.447%2014.3l10.21-9.92a1.357%201.357%200%200%201%201.881-.011l.761.74a1.26%201.26%200%200%201-.01%201.828l-10.21%209.92z%22%20fill%3D%22%23828a99%22%2F%3E%3C%2Fg%3E%3Cpath%20d%3D%22M7.006.624a10.345%2010.345%200%200%200-4.828%203.53A10.284%2010.284%200%200%200%20.094%209.745l.96.125a9.425%209.425%200%200%201%201.913-5.124A9.472%209.472%200%200%201%207.39%201.512zm.97%202.257c-1.381.48-2.572%201.259-3.53%202.384a8.28%208.28%200%200%200-.298.37c-1.014%201.337-1.502%202.902-1.613%204.42l.96.13c.102-1.37.54-2.768%201.44-3.956.907-1.198%202.04-1.981%203.422-2.463zM20.55%2012.943c-.086%201.456-.532%202.757-1.44%203.954-.9%201.188-2.13%201.99-3.427%202.46l.391.886c1.434-.522%202.81-1.417%203.824-2.754%201.005-1.328%201.518-2.815%201.613-4.425zm2.441.312a9.422%209.422%200%200%201-1.91%205.124%209.479%209.479%200%200%201-4.424%203.235l.383.888a10.345%2010.345%200%200%200%204.828-3.53%2010.292%2010.292%200%200%200%202.084-5.594z%22%20fill%3D%22%23828a99%22%2F%3E%3C%2Fsvg%3E") 50% no-repeat;
+          background-size: 24px 24px;
+       }
+       .msg_typing_icon.off_typing:before{
+         background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20height%3D%2224%22%20width%3D%2224%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M-4.166-3.74h31.811v30.912h-31.81z%22%2F%3E%3Cpath%20d%3D%22M5.122%2015.59l2.632%202.556-.678.659-2.912.566c-.2.038-.343-.091-.302-.294l.583-2.83zM6.447%2014.3l10.21-9.92a1.357%201.357%200%200%201%201.881-.011l.761.74a1.26%201.26%200%200%201-.01%201.828l-10.21%209.92z%22%20fill%3D%22%23828a99%22%2F%3E%3C%2Fg%3E%3Cpath%20d%3D%22M18.412%2012.968a.808.808%200%200%200-.56.236l-1.306%201.307-1.281-1.28a.808.808%200%200%200-1.141-.002l-.215.214a.808.808%200%200%200%200%201.143l1.28%201.281-1.285%201.286a.808.808%200%200%200%200%201.142l.214.213a.808.808%200%200%200%201.142%200l1.286-1.284%201.31%201.31a.808.808%200%200%200%201.142%200l.214-.214a.808.808%200%200%200%200-1.142l-1.31-1.31%201.307-1.307a.808.808%200%200%200%200-1.142l-.215-.215a.808.808%200%200%200-.583-.236z%22%20fill%3D%22%23828a99%22%2F%3E%3C%2Fsvg%3E");
+       }
+
+       .msg_typing_icon{
+          position: absolute;
+          border: none;
+          padding: 6px 7px 6px 5px;
+          margin: 0;
+          background: transparent;
+          right: 73px;
+          bottom: 0;
+          cursor: pointer;
+          opacity: .7;
+       }
+       .msg_typing_icon:hover {
+          opacity: 1;
+          filter: none
+       }
          */
       }).css + vkopt.messages.css_msg_bg(vkopt.settings.get('old_unread_msg_bg'))
    },
@@ -6433,22 +6441,32 @@ vkopt['messages'] = {
             title: 'seDialogsListToRight',
             class_toggler: true
          },
-		 old_unread_msg:{
-			title: 'seHLMail',
+         old_unread_msg:{
+            title: 'seHLMail',
+               class_toggler: true,
+            sub: {
+               old_unread_msg_bg:{
+                  title: ' ',
+                  color_picker: true
+               }
+            }
+         },
+         block_typing_btn: {
+            title: 'seShowBlockTypingButton',
             class_toggler: true,
-			sub: {
-				old_unread_msg_bg:{
-					title: ' ',
-					color_picker: true
-				}
-			}
-		 }
+            default_value: true
+         },
+         block_mark_read_btn: {
+            title: 'seShowBlockMarkAsReadButton',
+            class_toggler: true,
+            default_value: true
+         }
       },
       Extra: {
         im_hide_dialogs: { class_toggler: true },
         im_block_typing: {},
         im_block_mark_read: {},
-	gim_block_typing: {},
+        gim_block_typing: {},
         gim_block_mark_read: {},
         im_show_online_count: {
            default_value: true
@@ -6597,7 +6615,7 @@ vkopt['messages'] = {
          </div>
 	 */
 	 /*typing_mread_icon:
-	   <div id="{vals.prefix}_{vals.type}_st" class="msg_{vals.type}_icon {vals.class_btn}" onclick="vkopt.messages.change_typing_mread_st('{vals.prefix}','{vals.type}')"></div>
+	   <div id="{vals.prefix}_{vals.type}_st" class="msg_{vals.type}_icon {vals.class_btn}" onclick="vkopt.messages.change_typing_mread_st('{vals.prefix}','{vals.type}')" onmouseover="vkopt.messages.typing_mread_tip(this,'{vals.prefix}','{vals.type}')"></div>
 	 */
       });
    },
@@ -6657,8 +6675,13 @@ vkopt['messages'] = {
       } else {
          clearInterval(vkopt.messages.timeout_online_count_users);
       }
-      vkopt.messages.add_typing_read_icon('im', 'mark_read');
-      vkopt.messages.add_typing_read_icon('im', 'typing');
+
+      if (vkopt.settings.get('block_mark_read_btn'))
+         vkopt.messages.add_typing_read_icon('im', 'mark_read');
+
+      if (vkopt.settings.get('block_typing_btn'))
+         vkopt.messages.add_typing_read_icon('im', 'typing');
+
       vkopt.messages.info_icon();
       vkopt_core.timeout(vkopt.messages.acts_menu, 500);
       if (vkopt.settings.get('im_hide_dialogs'))
@@ -6697,8 +6720,32 @@ vkopt['messages'] = {
          msg.parentNode.appendChild(dl_block);
       }
    },
+   typing_mread_tip: function(el, prefix, type){
+      var lng_cfg = {
+         mark_read:{
+            on:  IDL('BlockMarkAsReadON'),
+            off: IDL('BlockMarkAsReadOFF'),
+         },
+         typing:{
+            on:  IDL('BlockTypingON'),
+            off: IDL('BlockTypingOFF')
+         }
+      };
+
+      var cl = 'off_'+type;
+
+
+      showTooltip(el, {
+         text: function(){
+            var state = hasClass(el, cl) ? 'on' : 'off';
+            return lng_cfg[type][state];
+         },
+         black: true,
+         shift: [4, 5]
+      });
+   },
    add_typing_read_icon: function(prefix, type){
-      var el = (type == 'mark_read') ? ge('ui_rmenu_all') || geByClass1('_im_dialogs_settings') : geByClass1('im-chat-input--txt-wrap');
+      var el = (type == 'mark_read') ? ge('ui_rmenu_all') || geByClass1('_im_dialogs_settings') : geByClass1('im_chat-input--buttons');
       if(!el || ge(prefix+'_'+type+'_st')) return;
       var class_btn = vkopt.settings.get(prefix+'_block_'+type) ? 'off_'+type : '';
       var icon_btn = el.insertBefore(se(vk_lib.tpl_process(vkopt.messages.tpls['typing_mread_icon'], {
@@ -6712,13 +6759,21 @@ vkopt['messages'] = {
       var option = prefix+'_block_'+type;
       var el = prefix+'_'+type+'_st';
       vkopt.settings.get(option) ? vkopt.settings.set(option, 0) : vkopt.settings.set(option, 1);
-         ge(el).classList.toggle('off_'+type);
-         vkopt.cmd({
-             act:'update_typing_mread_icon', 
-             el:el,
-             type:type
-         });
-         return false;
+
+      toggleClass(el, 'off_'+type)
+      //ge(el).classList.toggle('off_'+type);
+      vkopt.cmd({
+          act:'update_typing_mread_icon',
+          el:el,
+          type:type
+      });
+      el = ge(el);
+      if (el.tt){
+         el.tt.hide({fasthide:1});
+         el.tt.show();
+      }
+      //vkopt.messages.typing_mread_tip(el, prefix, type);
+      return false;
    },
    info_icon: function(){
       var p = geByClass1('_im_dialogs_settings');
