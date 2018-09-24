@@ -6690,12 +6690,24 @@ vkopt['messages'] = {
             vkopt.set_css(code, 'vk_unread_msg_preview');
          },200)
       }
+	   
+      if(option_id == 'block_typing_btn' && (vkopt.settings.get('im_block_typing') ||  vkopt.settings.get('gim_block_typing'))){
+         vkopt.settings.set('im_block_typing', 0);
+         vkopt.settings.set('gim_block_typing', 0);
+      }
+	  
+      if(option_id == 'block_mark_read_btn' && (vkopt.settings.get('im_block_mark_read') || vkopt.settings.get('gim_block_mark_read'))){
+         vkopt.settings.set('im_block_mark_read', 0);
+         vkopt.settings.set('gim_block_mark_read', 0);
+      }
 
    },
    onLocation: function(nav_obj, cur_module_name){
       if(nav.objLoc[0].substr(0,3) == 'gim') {
-         vkopt.messages.add_typing_read_icon('gim', 'mark_read');
-         vkopt.messages.add_typing_read_icon('gim', 'typing');
+         if (vkopt.settings.get('block_mark_read_btn'))	
+            vkopt.messages.add_typing_read_icon('gim', 'mark_read');
+         if (vkopt.settings.get('block_typing_btn'))
+            vkopt.messages.add_typing_read_icon('gim', 'typing');
       }
       if (nav.objLoc[0] != 'im'){
          clearInterval(vkopt.messages.timeout_online_count_users);
@@ -6787,6 +6799,10 @@ vkopt['messages'] = {
             type: type
       })), el.firstChild);
       if(el == geByClass1('_im_dialogs_settings')) icon_btn.style.margin = "11px";
+      else if(prefix+'_'+type == 'gim_typing'){
+         geByClass1('im_editable').style.paddingRight = "150px";
+         icon_btn.style.marginRight = "36px";
+      }
    },
    change_typing_mread_st: function(prefix, type){
       var option = prefix+'_block_'+type;
