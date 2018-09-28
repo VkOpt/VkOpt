@@ -690,30 +690,38 @@ ext_api={
             ext_api.download(data.url,data.name,obj.win);
             break;
          case 'permissions_request':
-               chrome.permissions.request(data.permissions_query/*{
-                  permissions : [tabs],
-                  origins : ["*://*.vk-cdn.net/*"]
-               }*/, function (granted) {
-                  // The callback argument will be true if the user granted the permissions.
-                  // if it fails in Firefox then granted == undefined
-                  if (typeof granted == 'undefined'){
-                     ext_api.utils.chrome.update(data.permissions_query, function(already_granted){
-                        send_response({act: already_granted ? 'permission_granted' : 'permission_denied'});
-                     });
-                  } else if (granted) {
-                     send_response({act:'permission_granted'});
-                     ext_api.utils.chrome.update(); // обновим регистрацию обработчиков запросов
-                  } else {
-                     send_response({act:'permission_denied'});
-                  }
-               });
+               if (chrome.permissions && chrome.permissions.request){
+                  chrome.permissions.request(data.permissions_query/*{
+                     permissions : [tabs],
+                     origins : ["*://*.vk-cdn.net/*"]
+                  }*/, function (granted) {
+                     // The callback argument will be true if the user granted the permissions.
+                     // if it fails in Firefox then granted == undefined
+                     if (typeof granted == 'undefined'){
+                        ext_api.utils.chrome.update(data.permissions_query, function(already_granted){
+                           send_response({act: already_granted ? 'permission_granted' : 'permission_denied'});
+                        });
+                     } else if (granted) {
+                        send_response({act:'permission_granted'});
+                        ext_api.utils.chrome.update(); // обновим регистрацию обработчиков запросов
+                     } else {
+                        send_response({act:'permission_denied'});
+                     }
+                  });
+               } else {
+                  send_response({act:'permission_granted'});
+               }
             break;
          case 'permissions_get':
-               chrome.permissions.getAll(function(perms){
-                  if (perms && perms.origins)
-                     perms.origins = perms.origins.concat(ext_api.utils.chrome.permissions_sub_cache);
-                  send_response({permissions:perms});
-               })
+               if (chrome.permissions && chrome.permissions.getAll){
+                  chrome.permissions.getAll(function(perms){
+                     if (perms && perms.origins)
+                        perms.origins = perms.origins.concat(ext_api.utils.chrome.permissions_sub_cache);
+                     send_response({permissions:perms});
+                  })
+               } else {
+                  send_response({permissions:{origins:[]}});
+               }
             break;
 
          default: if (send_response) send_response({act:'extension bg default response',msg:data, __key:data.__key});
@@ -1019,55 +1027,58 @@ ext_api={
             return false;
          },
          update: function(permissions_query, callback){
-             chrome.permissions.getAll(function(perms){
-               var _this = ext_api.utils.chrome;
-               var full_origins = perms.origins;
+            if (chrome.permissions && chrome.permissions.getAll){
+               chrome.permissions.getAll(function(perms){
+                  var _this = ext_api.utils.chrome;
+                  var full_origins = perms.origins;
 
-               var origins = full_origins.filter(function(item, idx){
-                 if (!/:\/\/\*\//.test(item) && /:\/\/\*\./.test(item)) // исключаем маску *://*/* и маски без поддоменов
-                    return item;
-               });
+                  var origins = full_origins.filter(function(item, idx){
+                    if (!/:\/\/\*\//.test(item) && /:\/\/\*\./.test(item)) // исключаем маску *://*/* и маски без поддоменов
+                       return item;
+                  });
 
-               var cache = _this.permissions_sub_cache;
-               var granted = false;
-               if (permissions_query && permissions_query.origins){
-                  var check = _this.check_mask;
+                  var cache = _this.permissions_sub_cache;
+                  var granted = false;
+                  if (permissions_query && permissions_query.origins){
+                     var check = _this.check_mask;
 
-                  var query_masks = permissions_query.origins;
-                  for (var i in query_masks){
+                     var query_masks = permissions_query.origins;
+                     for (var i in query_masks){
 
-                     if (check(query_masks[i],origins) || check(query_masks[i],cache))
-                        granted = true;
+                        if (check(query_masks[i],origins) || check(query_masks[i],cache))
+                           granted = true;
 
-                     if (!check(query_masks[i],origins) && check(query_masks[i],full_origins) && cache.indexOf(query_masks[i]) < 0){
-                        granted = true;
-                        cache.push(query_masks[i]);
+                        if (!check(query_masks[i],origins) && check(query_masks[i],full_origins) && cache.indexOf(query_masks[i]) < 0){
+                           granted = true;
+                           cache.push(query_masks[i]);
+                        }
                      }
+
                   }
+                  callback && callback(granted);
+                  origins = origins.concat(cache);
 
-               }
-               callback && callback(granted);
-               origins = origins.concat(cache);
+                  console.log('Origins for mod requests:', origins);
+                  //["*://*.vk.me/*","*://*.userapi.com/*","*://*.vk-cdn.net/*"];
 
-               console.log('Origins for mod requests:', origins);
-               //["*://*.vk.me/*","*://*.userapi.com/*","*://*.vk-cdn.net/*"];
+                  if(chrome.webRequest.onBeforeRequest.hasListener(_this.on_before_req))
+                     chrome.webRequest.onBeforeRequest.removeListener(_this.on_before_req);
 
-               if(chrome.webRequest.onBeforeRequest.hasListener(_this.on_before_req))
-                  chrome.webRequest.onBeforeRequest.removeListener(_this.on_before_req);
+                  if(chrome.webRequest.onHeadersReceived.hasListener(_this.on_headers))
+                     chrome.webRequest.onHeadersReceived.removeListener(_this.on_headers);
 
-               if(chrome.webRequest.onHeadersReceived.hasListener(_this.on_headers))
-                  chrome.webRequest.onHeadersReceived.removeListener(_this.on_headers);
+                  chrome.webRequest.onBeforeRequest.addListener(
+                     _this.on_before_req,
+                     {urls: origins}, ["blocking"]
+                  );
 
-               chrome.webRequest.onBeforeRequest.addListener(
-                  _this.on_before_req,
-                  {urls: origins}, ["blocking"]
-               );
-
-               chrome.webRequest.onHeadersReceived.addListener(
-                  _this.on_headers,
-                  {urls: origins}, ["responseHeaders","blocking"]
-               );
-            })
+                  chrome.webRequest.onHeadersReceived.addListener(
+                     _this.on_headers,
+                     {urls: origins}, ["responseHeaders","blocking"]
+                  );
+               })
+            } else
+               callback && callback(true);
          },
          download_file_names: {},
          on_before_req: function(details){
