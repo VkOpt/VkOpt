@@ -11,7 +11,7 @@
 //
 /* VERSION INFO */
 var vVersion = 307;
-var vBuild = 180924;
+var vBuild = 180929;
 var vVersionRev = 0;
 var vPostfix = '';
 
@@ -6464,7 +6464,15 @@ vkopt['messages'] = {
           opacity: 1;
           filter: none
        }
-         */
+       .vk_block_mark_read_btn .vk_msg_info_icon,
+       .vk_block_mark_read_btn ._im_dialogs_settings .msg_mark_read_icon,
+       .vk_block_mark_read_btn .im-page .im-page--dialogs-settings{
+          margin: 14px 14px 14px 5px;
+        }
+        .vk_block_mark_read_btn ._im_dialogs_settings .msg_mark_read_icon{
+          margin-top:11px
+        }
+        */
       }).css + vkopt.messages.css_msg_bg(vkopt.settings.get('old_unread_msg_bg'))
    },
    css_msg_bg: function(color){
