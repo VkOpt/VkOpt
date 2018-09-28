@@ -6174,6 +6174,12 @@ vkopt['videos'] = {
          display: block;
          line-height: 14px;
       }
+      .video_thumb_actions>div.vk_video_thumb_action_link:active {
+         position: static;
+      }
+      .video_thumb_actions>div.vk_video_thumb_action_link.vk_links_loading .icon {
+          background: url(/images/upload_inv_mini.gif) 50% 50% no-repeat;
+      }
       */
       }).css
    },
@@ -6246,16 +6252,15 @@ vkopt['videos'] = {
                   }
                }
             });
+            el.dl_ett.show();
          }
       }
       var failed = function(){
          addClass(el, 'vk_cant_get_link')
       }
 
-      vkLdr.show();
       ajax.post('al_video.php', {act: "show", list: list, video: video}, {
          onDone: function(title, vid_box, js, html, data){
-            vkLdr.hide();
             if (vid_box && /<iframe/i.test(vid_box)){
                var ifr, p = se(vid_box);
                p && (ifr = geByTag1('iframe', p));
