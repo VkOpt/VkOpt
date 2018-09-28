@@ -2654,6 +2654,9 @@ vkopt['side_bar'] = {
          .vk_menu .body_im #side_bar.side_bar{
             overflow:visible;
          }
+         .vk_menu .body_im #side_bar.side_bar{
+            overflow-y: hidden;
+         }
          .vk_menu_block {
             position: absolute;
             z-index: 2000;
