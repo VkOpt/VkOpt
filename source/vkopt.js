@@ -2792,6 +2792,7 @@ vkopt['photoview'] =  {
          ph_download_with_name:{},
          ph_show_save_info:{default_value: true},
          ph_update_btn:{},
+         photo_copy_btn:{default_value: true},
          pv_editor_ignore_flash:{default_value: true}
       }
    },
@@ -2882,6 +2883,9 @@ vkopt['photoview'] =  {
             background-repeat: no-repeat;
             width: 16px;
             margin-top: -2px;
+         }
+         #pv_more_acts_tt .vk_pv_copy_act_item.pv_more_act_item:before{
+            background-position: 0 -79px;
          }
          #pv_more_acts_tt .vk_ph_sz_btn.pv_more_act_item{
             padding: 8px 12px;
@@ -3033,6 +3037,16 @@ vkopt['photoview'] =  {
          });
          append_menu(html);
       }
+
+      //Сохранить фото к себе с выбором альбома
+      if (vkopt.settings.get('photo_copy_btn')){
+         var html = vk_lib.tpl_process(vkopt.photoview.tpls['act_item'],{
+            class_name: 'vk_pv_copy_act_item',
+            onclick: 'vkopt.photoview.copy_and_move();',
+            text: getLang('photos_save_to_alb')
+         });
+         append_menu(html);
+      }
       ett._ttel && addClass(ett._ttel, 'vk_actions');
       ett.updatePosition();
 
@@ -3111,6 +3125,68 @@ vkopt['photoview'] =  {
             vkopt.log(Filters, arguments);
          }
       })
+   },
+   copy_and_move: function(oid, pid, cb){
+      if (!oid || !pid){
+         var
+            lid = cur.pvListId,
+            idx = cur.pvIndex,
+            pdata = cur.pvData[lid][idx],
+            m = pdata.id.split('_');
+         oid = m[0];
+         pid = m[1];
+      }
+      var saved_pid = 0;
+      var cur_uid = vk.id;
+
+      var on_saved = function(oid, pid){
+         showBox(
+            "al_photos.php",
+            {
+               act: "a_move_to_album_box",
+               photo_id: oid + "_" + pid,
+               owner_id: oid,
+               from: 'save_photo'
+            },
+            {
+               stat: ["page.js", "page.css", "wide_dd.js", "wide_dd.css"]
+            }
+         )
+      }
+
+
+      dApi.call('photos.copy',{owner_id: oid, photo_id: pid, access_key: pdata.pe_hash}, {
+         ok:function(resp, r, err){
+            if (!r)  return;
+            saved_pid = r;
+            (cb && cb(saved_pid)) || on_saved(cur_uid,saved_pid)
+         },
+         error: function(r, err){
+            if (pdata){
+               ajax.post("al_photos.php", {
+                  act: "save_me",
+                  photo: pdata.id,
+                  list: lid,
+                  hash: pdata.hash
+               },
+               {
+                  onDone: function(html){
+                     var id = (html || '').match(/Photoview\.moveToAlbumBox\(\s*-?\d+,\s*(\d+)/);
+                     if (!id){
+                        vkMsg(IDL('Error'));
+                        cb && cb(null);
+                        return;
+                     }
+                     saved_pid =  id[1];
+                     (cb && cb(saved_pid)) || on_saved(cur_uid,saved_pid)
+                  }
+               });
+            } else {
+               vkMsg(IDL('Error')+ (err?'<br>'+err.error_msg:''));
+               cb && cb(null);
+            }
+         }
+      });
    },
    move_comments_block:{
       inj: function(){
