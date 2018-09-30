@@ -2793,6 +2793,14 @@ vkopt['photoview'] =  {
          ph_show_save_info:{default_value: true},
          ph_update_btn:{},
          photo_copy_btn:{default_value: true},
+         pv_hide_comments_btn: {
+            default_value: true,
+            class_toggler: true
+         },
+         pv_hide_comments: {
+            default_value: false,
+            class_toggler: true
+         },
          pv_editor_ignore_flash:{default_value: true}
       }
    },
@@ -2913,6 +2921,30 @@ vkopt['photoview'] =  {
             padding-right: 28px;
             background-position: 100% 50%;
          }
+         .vk_pv_comms:before {
+            content: '';
+            display: inline-block;
+            width: 17px;
+            height: 15px;
+            background: url(/images/icons/like_icons_bl.png) 0 -30px;
+            margin-bottom: -3px;
+            opacity: 0.6;
+            cursor:pointer;
+         }
+         .vk_pv_comms:hover:before{
+            opacity:1;
+         }
+         .vk_pv_comms {
+            color: #CCC;
+            display: none;
+            padding: 0 5px;
+         }
+         .vk_pv_comm_move_down .vk_pv_comms{
+            display: inline-block;
+         }
+         .vk_pv_comm_move_down.vk_pv_hide_comments_btn.vk_pv_hide_comments #pv_box .pv_narrow_column_wrap{
+            display:none;
+         }
          */
       }).css;
    },
@@ -2927,6 +2959,7 @@ vkopt['photoview'] =  {
          Inj.Start('Photoview.afterShow', function(){
             vkopt.photoview.scroll_view();
             cur.pvBox && vkopt_core.plugins.process_node(cur.pvBox);
+            vkopt.photoview.toogle_comments_btn();
          });
          vkopt.photoview.move_comments_block.inj();
       }
@@ -2964,6 +2997,9 @@ vkopt['photoview'] =  {
             <div id="vk_ph_links_list" class="clear" style="display:none;">{vals.links}</div>
             <div class="clear"></div>
          </div>
+         */
+         /*comm_btn:
+         <span class="vk_pv_comms" onclick="vkopt.photoview.toogle_comments();"></span>
          */
       });
    },
@@ -3051,7 +3087,6 @@ vkopt['photoview'] =  {
       ett.updatePosition();
 
    },
-
    onResponseAnswer: function(answer, url, q) {
       if (url == '/al_photos.php' && q.act == 'save_me' && answer[0]){
          if (!vkopt.settings.get('ph_show_save_info')) return;
@@ -3187,6 +3222,23 @@ vkopt['photoview'] =  {
             }
          }
       });
+   },
+   toogle_comments_btn: function(){
+      var viewer = cur.pvBox;
+      if (!viewer || !vkopt.settings.get('pv_hide_comments_btn')) return;
+      var ref = geByClass1('pv_bottom_info_left', viewer);
+      if (!ref) return;
+      var btn = geByClass1('vk_pv_comms', ref);
+      if (!btn){
+         btn = se(vk_lib.tpl_process(vkopt.photoview.tpls['comm_btn'],{}));
+         ref.appendChild(btn);
+      }
+      val(btn, (cur.pvCurPhoto && cur.pvCurPhoto.commcount ? cur.pvCurPhoto.commcount : ''));
+   },
+   toogle_comments: function(show){
+      var hide_comments = vkopt.settings.get('pv_hide_comments');
+      hide_comments = !hide_comments;
+      vkopt.settings.set('pv_hide_comments',hide_comments);
    },
    move_comments_block:{
       inj: function(){
