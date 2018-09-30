@@ -6541,9 +6541,11 @@ vkopt['messages'] = {
           filter: none
        }
        .vk_block_mark_read_btn .vk_msg_info_icon,
-       .vk_block_mark_read_btn ._im_dialogs_settings .msg_mark_read_icon,
-       .vk_block_mark_read_btn .im-page .im-page--dialogs-settings{
+       .vk_block_mark_read_btn ._im_dialogs_settings .msg_mark_read_icon{
           margin: 14px 14px 14px 5px;
+        }
+        .vk_block_mark_read_btn .im-page .im-page--dialogs-settings{
+
         }
         .vk_block_mark_read_btn ._im_dialogs_settings .msg_mark_read_icon{
           margin-top:11px
