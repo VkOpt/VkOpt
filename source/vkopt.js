@@ -8577,6 +8577,9 @@ vkopt['face'] =  {
       if (fn == 'videoplayer.js')
          vkopt.face.ad_block.videoplayer();
    },
+   onLocation: function(){
+      vkopt.face.user_online_status();
+   },
    ad_block: {
       video: function(vars){
          if (vkopt.settings.get('ad_block')){
