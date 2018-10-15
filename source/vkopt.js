@@ -4364,7 +4364,7 @@ vkopt['audio'] =  {
                info_obj = cache[info_obj.fullId];
             else {
                var queue = vkopt.settings.get('audio_wait_hover') ? vkopt.audio.__hover_load_queue : vkopt.audio.__load_queue;
-               var full_id_req = info_obj.fullId  + "_" + info_obj.actionHash;
+               var full_id_req = info_obj.fullId  + "_" + info_obj.actionHash + "_" + info_obj.urlHash;
                if (queue.indexOf(full_id_req) == -1 && vkopt.audio.__loading_queue.indexOf(full_id_req) == -1)
                   queue.push(full_id_req);
             }
@@ -4642,7 +4642,7 @@ vkopt['audio'] =  {
                return true;
             },
             '<div></div>',// button content
-            'data-aid="{vals.fullId}" data-reqaid="{vals.fullId}_{vals.actionHash}" id="vk_get_link_{vals.fullId}" href="" onmouseover="vkopt.audio.check_dl_url(this);"',//custom_attributes
+            'data-aid="{vals.fullId}" data-reqaid="{vals.fullId}_{vals.actionHash}_{vals.urlHash}" id="vk_get_link_{vals.fullId}" href="" onmouseover="vkopt.audio.check_dl_url(this);"',//custom_attributes
             'a'
          ]);
       }
