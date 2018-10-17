@@ -8851,11 +8851,7 @@ vkopt['profile'] = {
          }
       },
       Extra: {
-         zodiak_ophiuchus:{},
-         scan_hidden_audios: {
-            class_toggler: true,
-            default_value: true
-         }
+         zodiak_ophiuchus:{}
       }
    },
 
@@ -8864,20 +8860,6 @@ vkopt['profile'] = {
          vkopt.profile.css_common_group(vkopt.settings.get('common_group_color'))+
          vk_lib.get_block_comments(function(){
          /*css:
-            .vk_scan_audio_btn .count{
-               height: 20px;
-               background: url(/images/svg_icons/ic_head_loupe.svg) no-repeat 50% 0%;
-            }
-            .counts_module.vk_scan_audio .page_counter{
-               padding-left: 8px;
-               padding-right: 8px;
-            }
-            .vk_scan_hidden_audios .counts_module{
-               max-height: none;
-            }
-            .vk_scan_audio_rows{
-               padding:10px;
-            }
             .vk_box_content_loading{
                text-align:center
             }
@@ -8912,14 +8894,6 @@ vkopt['profile'] = {
            </div>
          </div>
          */
-         /*scan_audio_loader:
-         <div class="vk_box_content_loading"><div class="round_spinner_big"></div></div>
-         */
-         /*scan_audio_ui_search:
-         <div class="ui_search">
-               <input type="text" class="ui_search_field" id="scan_audio_filter_text" onkeyup="vkopt.profile.scan_audio_filter()" placeholder="Поиск..">
-         </div>
-         */
 	 /*date_reg:
 	 <div class="clear_fix profile_info_row ">
 	   <div class="label fl_l">{lng.RegDate}:</div>
@@ -8946,15 +8920,6 @@ vkopt['profile'] = {
 
       if(vkopt.settings.get('show_reg_date') && cur.module == 'profile' && cur.oid && ge('profile_short') && !geByClass1('labeled_date_reg'))
          vkopt.profile.date_reg();
-
-      if (cur.module == 'profile' && vkopt.settings.get('scan_hidden_audios') && !ge('profile_audios')){
-         var p = geByClass1('counts_module');
-         if (p && !hasClass(p,'vk_scan_audio')){
-            addClass(p, 'vk_scan_audio');
-            var btn = se('<a class="page_counter vk_scan_audio_btn" href="#" onclick="return vkopt.profile.scan_audio()"><div class="count"></div><div class="label">'+IDL('audio').toLowerCase()+'</div></a>');
-            p.appendChild(btn);
-         }
-      }
 
       /*
       ge('profile_message_send') && dApi.call('messages.getHistory',{user_id: cur.oid, v:'5.85'}, function(r,result){
@@ -9106,86 +9071,6 @@ vkopt['profile'] = {
          info.push(zodiac);
       }
       return info;
-   },
-   scan_audio: function (){
-      var COUNT = 1000;
-      var STOP_AFTER_EMPTY_COUNT = 10; // не сканируем дальше, если такое количество запросов было с пустым ответом.
-      var box, ldr, wrap;
-      var empty_counter = 0;
-
-      var ids = [], fake_hash;
-      for (var i = 0; i < COUNT; i++){
-         fake_hash = '000000000000000000'.replace(/./g, function(){return '0123456789abcdef'.charAt(Math.floor(Math.random()*16))});
-         ids.push(cur.oid + '_' + (456239000 + i) + '_' + fake_hash);
-      }
-      var step = function (ids_arr){
-         var part = ids_arr || ids.splice(0,Math.min(ids.length, vkRandomRange(5,10)));
-         ajax.post("al_audio.php", {
-            act : "reload_audio",
-            ids :  part.join(",")
-         }, {
-            onDone : function (data) {
-               if (!data){ // вероятно косяк с детектом множества однотипных действий
-                  console.log('Load audio info failed:', part.join(","));
-                  setTimeout(function(){
-                     console.log('try load again');
-                     step();
-                  }, 10000);
-               } else {
-                  each(data, function (i, info) {
-                     if (!box){
-                        vkLdr.hide();
-                        box = showFastBox({
-                              title:IDL('audio'),
-                              bodyStyle: 'padding: 0px',
-                              width: 650
-                        },'');
-                        ldr = se(vkopt.profile.tpls['scan_audio_loader']);
-                        wrap = se('<div class="vk_scan_audio_rows"></div>');
-                        box.bodyNode.appendChild(se(vkopt.profile.tpls['scan_audio_ui_search']));
-                        box.bodyNode.appendChild(wrap);
-                        box.bodyNode.appendChild(ldr);
-                     }
-
-                     var row = se(AudioUtils.drawAudio(info));
-                     wrap.appendChild(row, ldr);
-                  });
-
-                  if (data.length < 1)
-                     empty_counter++;
-                  else
-                     empty_counter = 0;
-
-                  if (ids.length > 0 && empty_counter <= STOP_AFTER_EMPTY_COUNT) // если в очереди есть аудио - продолжаем грузить
-                     setTimeout(step, vkRandomRange(800,2000));
-                  else {
-
-                     if (!box){
-                        vkLdr.hide();
-                        showFastBox('',getLang('audio_user_no_recs'));
-                     } else {
-                        hide(ldr);
-                     }
-                  }
-               }
-            }
-         });
-      };
-      vkLdr.show();
-      step();
-      return false;
-   },
-   scan_audio_filter: function () {
-      var input = ge("scan_audio_filter_text");
-      var newText = input.value.toUpperCase().trim();
-      var wrap = geByClass1("box_body");
-      var rows = geByClass("audio_row", wrap);
-
-      for (var i = 0; i < rows.length; i++) {
-         var performer = geByClass1("audio_row__performers", rows[i]).innerText.toUpperCase();
-         var title = geByClass1("audio_row__title_inner", rows[i]).innerText.toUpperCase();
-         ((performer.indexOf(newText) > -1 || title.indexOf(newText) > -1) ? show : hide)(rows[i]);
-      }
    },
    search_age: function(uid,el){
       var _el=ge(el);
