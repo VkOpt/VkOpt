@@ -2539,7 +2539,7 @@ vkopt['side_bar'] = {
          menu: {
             title: 'seMenu',
             class_toggler: true,
-            default_value: true
+            default_value: false
          }
       }
    },
@@ -2633,6 +2633,7 @@ vkopt['side_bar'] = {
             ['/market?act=fav',IDL('favorites')],
             ['/market?act=my',IDL('MyProducts')]
          ],
+         /*
          'fave': [
             ["fave?section=users", IDL("mFaV")],
             ["fave?section=likes_photo", IDL("mFaP")],
@@ -2641,6 +2642,18 @@ vkopt['side_bar'] = {
             ["fave?section=likes_market", IDL("Products")],
             ["fave?section=links", IDL("mFaL")],
             ["fave?section=articles", IDL("Articles")],
+            ["cc", IDL("vk_cc")]
+         ],
+         */
+         'bookmarks': [
+            [["#", "return showWiki({w: 'bookmarks_pages'}, false, event); return false;"], IDL("mFaV")],
+            ['feed?section=likes', IDL("mNeLiked")],
+            ["bookmarks?type=post", IDL("mFaPO")],
+            ["bookmarks?type=article", IDL("Articles")],
+            ["bookmarks?type=video", IDL("mFaVI")],
+            ["bookmarks?type=link", IDL("mFaL")],
+            ["bookmarks?type=podcast", IDL("Podcasts")],
+            ["bookmarks?type=product", IDL("Products")],
             ["cc", IDL("vk_cc")]
          ],
          'docs': [],
@@ -2732,7 +2745,7 @@ vkopt['side_bar'] = {
          "l_vid": "video",
          "l_ap": "apps",
          "l_mk": "market",
-         "l_fav": "fave",
+         "l_fav": "bookmarks", //"fave",
          "l_doc": "docs",
          "l_apm": "apps_manage"
          //"l_mgid\d+": "club\d+"
