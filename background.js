@@ -1099,7 +1099,7 @@ ext_api={
             if (ext_api.utils.chrome.download_file_names['name'+details.requestId]){
                var found = false;
                var name = ext_api.utils.chrome.download_file_names['name'+details.requestId];
-               var header_val = 'attachment; filename*=UTF-8\'\''+encodeURIComponent(name.decoded); //RFC 5987.   //RFC 5987.  Firefox failed on cyrilic filename="'+name.decoded+'"';
+               var header_val = 'attachment; filename*=UTF-8\'\''+encodeURIComponent(name.decoded).replace(/[';=]/g,function(s){return escape(s)}); //RFC 5987.   //RFC 5987.  Firefox failed on cyrilic filename="'+name.decoded+'"';
                for (var i = 0; i < details.responseHeaders.length; ++i) {
                   if (details.responseHeaders[i].name === 'Content-Disposition') {
                      details.responseHeaders[i].value = header_val;
