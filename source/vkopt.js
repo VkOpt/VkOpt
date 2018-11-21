@@ -53,6 +53,7 @@ var vkopt_defaults = {
       common_group_color: '90ee90',
       dislikes_enabled: false,
       dislike_icon_index: 1,
+      reverse_comments: false,
 
       //disabled:
       im_store_h: false,
@@ -6830,7 +6831,7 @@ vkopt['messages'] = {
    onRequestQuery: function(url, query, options) {
        var prefix = (query.gid) ? 'gim' : 'im';
        if (url === 'al_im.php') {
-           if (query.act === 'a_typing' && vkopt.settings.get(prefix + '_block_typing')) {
+           if (query.type === 'typing'  && vkopt.settings.get(prefix + '_block_typing')) {
                return false;
            }
            /* something interesting:
@@ -8263,6 +8264,10 @@ vkopt['face'] =  {
          compact_like_btns: {
             title: 'seCompactLikeBtns',
             class_toggler: true
+         },
+         reverse_comments:{
+            title: 'seReverseComments',
+            class_toggler: true
          }
       },
 
@@ -8754,6 +8759,30 @@ vkopt['face'] =  {
          vkopt.face.user_online_status();
       vkopt.face.shift_page.btn();
    },
+   processNode: function(node, params){
+      if(!vkopt.settings.get('reverse_comments')) return;
+      var nodes = geByClass('replies_next_main', node);
+      if(!nodes) return;
+      for(var i=0; i<nodes.length; i++){
+         var more = nodes[i];
+         var post = more.href.match(/wall(.+)/i) || [];
+         var parentMore = more.parentNode;
+         var el = '<a onclick="return vkopt.face.show_rev_comments(this);" class="replies_next replies_next_main replies_prev" data-post="' + post[1] + '"data-offset="0" data-count="3">' + IDL('showLastComments') + '</a>';
+         parentMore.replaceChild(se(el), more);
+      }
+   }, 
+   show_rev_comments: function(el){
+      var post = domData(el, 'post')
+      var post_item = post.split('_'); 
+      dApi.call('wall.getComments',{ owner_id: post_item[0], post_id: post_item[1], count: 1, v:'5.92'}, function(res) {
+         if(res){
+            res = res.response;
+            domData(el, 'offset', res.current_level_count-3);
+            el.setAttribute('onclick', 'return wall.showNextReplies(this, \'' + post +'\', event);');
+            return wall.showNextReplies(el, post);
+         }
+      });
+   },
    anon_top_menu_item: function(){
       if (!vkopt.settings.get('anonimize_btn'))
          return;
@@ -8913,6 +8942,9 @@ vkopt['profile'] = {
 	   <div class="labeled labeled_date_reg">{vals.date_reg}</div>
 	 </div>
 	 */
+	 /*orig_avatar:
+	   <a id="avatar_orig" href="{vals.href}" target="_blank">{vals.el}</a>
+	 */
       });
    },
    onLocation: function(){
@@ -8933,6 +8965,9 @@ vkopt['profile'] = {
 
       if(vkopt.settings.get('show_reg_date') && cur.module == 'profile' && cur.oid && ge('profile_short') && !geByClass1('labeled_date_reg'))
          vkopt.profile.date_reg();
+
+      if(geByClass1('profile_closed_wall_dummy') &&  cur.module == 'profile')
+         vkopt.profile.orig_avatar();
 
       /*
       ge('profile_message_send') && dApi.call('messages.getHistory',{user_id: cur.oid, v:'5.85'}, function(r,result){
@@ -9052,6 +9087,16 @@ vkopt['profile'] = {
                vk_lib.tpl_process(vkopt.profile.tpls['date_reg'], {date_reg: date})
             ));
          return true;
+      });
+   },
+   orig_avatar: function(){
+      var el = ge('page_avatar');
+      if(!ge('avatar_orig') && !el) return;
+      var body_code = 'var info = API.users.get({"user_ids":' + cur.oid + ', fields:"crop_photo"});' +
+                      'if(info[0].crop_photo) return info@.crop_photo@.photo@.sizes@.pop();';
+      dApi.call('execute',{v:'5.85', code:body_code},function(r){
+         if (r.response)
+            el.innerHTML = vk_lib.tpl_process(vkopt.profile.tpls['orig_avatar'], {href: r.response[0].url, el:el.innerHTML});
       });
    },
    bday_info: function(day,month,year){
