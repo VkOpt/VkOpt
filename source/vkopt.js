@@ -8277,6 +8277,12 @@ vkopt['face'] =  {
          }
       },
       Extra:{
+         invert_btn: {
+            class_toggler: true
+         },
+         invert:{
+            class_toggler: true
+         },
          anonimize_btn: {
             class_toggler: true
          },
@@ -8692,6 +8698,88 @@ vkopt['face'] =  {
             padding: 4px 0;
          }
 
+
+         .vk_invert #page_layout,
+         .vk_invert #ts_cont_wrap,
+         .vk_invert #top_profile_menu.shown,
+         .vk_invert .pv_narrow_column_wrap,
+         .vk_invert #box_layer,
+         .vk_invert #wk_layer,
+         .vk_invert #top_audio_layer_place,
+         .vk_invert #chat_onl_wrap,
+         .vk_invert .ap_layer{
+             filter: invert(100);
+         }
+
+         .vk_invert body,
+         .vk_invert .top_nav_link.active {
+             background: #171717;
+         }
+         .vk_invert img,
+         .vk_invert canvas,
+         .vk_invert svg,
+         .vk_invert .emoji,
+         .vk_invert .thumb,
+         .vk_invert #pv_photo,
+         .vk_invert .ow_ava,
+         .vk_invert .audio_row__cover,
+         .vk_invert .audio_page_player__cover,
+         .vk_invert .ts_contact_img,
+         .vk_invert .friends_photo_img,
+         .vk_invert .page_avatar_img,
+         .vk_invert .page_square_photo,
+         .vk_invert .poster__image,
+         .vk_invert .page_post_thumb_wrap,
+         .vk_invert .image_cover,
+         .vk_invert .crisp_image,
+         .vk_invert .photos_row,
+         .vk_invert .page_post_thumb_unsized,
+         .vk_invert .video,
+         .vk_invert .mv_info,
+         .vk_invert .mv_recom_item_thumb,
+         .vk_invert .apps_recent_row,
+         .vk_invert .apps_featured_slides,
+         .vk_invert .inline_video_wrap,
+         .vk_invert .stories_feed_preview_item,
+         .vk_invert .page_media_link_thumb,
+         .vk_invert .page_doc_photo,
+         .vk_invert .page_gif_preview,
+         .vk_invert .page_gif_play_icon,
+         .vk_invert .article_snippet__image,
+         .vk_invert .feed_video_item,
+         .vk_invert .wall_card__photo,
+         .vk_invert .media_voting_bg_photo,
+         .vk_invert .media_voting_bg_gradient,
+         .vk_invert .audio_pl__cover,
+         .vk_invert .audio_artist_block__cover,
+         .vk_invert .audio_row__cover_back {
+             filter: invert(100);
+         }
+         .vk_invert .top_profile_img,
+         .vk_invert .like_tt_image,
+         .vk_invert .media_voting_bg_photo img,
+         .vk_invert .media_voting_bg_gradient img,
+         .vk_invert img.notifier_image,
+         .vk_invert .ap_layer canvas{
+             filter: invert(0);
+         }
+         .vk_invert .photos_container .photos_row{
+             border-color:#000;
+         }
+
+         .vk_invert #page_header_cont .back {
+             background: #040404;
+             border-color: #404040;
+         }
+         .vk_invert .top_notify_count{
+             background: #404040;
+             border-color: #000;
+         }
+
+         .vk_invert input.text.ts_input{
+             background-color:#333;
+         }
+
          */
       });
       var progress_bar = vk_lib.get_block_comments(vkProgressBar).css;
@@ -8743,6 +8831,7 @@ vkopt['face'] =  {
    onInit: function() {
       vkopt.face.user_online_status();
       vkopt.face.anon_top_menu_item();
+      vkopt.face.inv_top_menu_item();
       if (vkopt.settings.get('shift_page_type') != 0)
          vkopt.face.shift_page.shift(vkopt.settings.get('shift_page_type'));
    },
@@ -8754,6 +8843,15 @@ vkopt['face'] =  {
       if (option_id == 'show_online_status')
          vkopt.face.user_online_status();
       vkopt.face.shift_page.btn();
+   },
+   inv_top_menu_item: function(){
+      if (!vkopt.settings.get('invert_btn'))
+         return;
+      var ref = ge('top_support_link');
+      var item = se('<a class="top_profile_mrow" id="top_invert_link" href="#" onclick="return vkopt.settings.set(\'invert\', !vkopt.settings.get(\'invert\'));">Night mode</a>');
+      if (ref && !ge('top_invert_link')){
+         ref.parentNode.insertBefore(item, ref);
+      }
    },
    anon_top_menu_item: function(){
       if (!vkopt.settings.get('anonimize_btn'))
