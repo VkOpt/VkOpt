@@ -8705,7 +8705,7 @@ vkopt['face'] =  {
          .vk_invert .pv_narrow_column_wrap,
          .vk_invert #box_layer,
          .vk_invert #wk_layer,
-         .vk_invert #top_audio_layer_place,
+         .vk_invert .head_nav_btns,
          .vk_invert #chat_onl_wrap,
          .vk_invert .ap_layer{
              filter: invert(100);
