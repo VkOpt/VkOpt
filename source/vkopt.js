@@ -8536,7 +8536,8 @@ vkopt['face'] =  {
             display: none;
          }
          .vk_hide_recommendations #friends_possible_block,
-         .vk_hide_recommendations #groups_filters_wrap>.page_block{
+         .vk_hide_recommendations #groups_filters_wrap>.page_block,
+         .vk_hide_recommendations .page_block.feed_friends_recomm {
             display: none;
          }
          .vk_hide_stories #stories_feed_wrap {
