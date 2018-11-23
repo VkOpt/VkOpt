@@ -10170,10 +10170,10 @@ vkopt['im_form'] = {
             height: auto;
          }
          .vk_im_store_h .im-chat-input .im-chat-input--smile-wrap .emoji_smile {
-            padding: 6px 3px;
+            _padding: 6px 3px;
          }
          .vk_im_store_h .emoji_smile_wrap {
-            right: 11px;
+            _right: 11px;
          }
 
          .vk_im_store_h ._im_media_selector,
