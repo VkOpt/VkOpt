@@ -11,8 +11,8 @@
 //
 /* VERSION INFO */
 var vVersion = 307;
-var vBuild = 181018;
-var vVersionRev = 1;
+var vBuild = 181220;
+var vVersionRev = 2;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -389,7 +389,7 @@ var vk_glue = {
             }
 
             if (wait.length)
-               __stm._waiters.push([wait, vk_glue.inj_handler(files)]);
+               stManager._waiters.push([wait, vk_glue.inj_handler(files)]);
          });
 
          // следующая строка не факт что нужна (а может оптимизированней будет, если её убрать), т.к она срабатывает только если у нас нет списка ожидания,
