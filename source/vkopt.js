@@ -8710,6 +8710,7 @@ vkopt['face'] =  {
          .vk_invert .pv_narrow_column_wrap,
          .vk_invert #box_layer,
          .vk_invert #wk_layer,
+         .vk_invert .article_layer _article_layer,
          .vk_invert .head_nav_btns,
          .vk_invert #chat_onl_wrap,
          .vk_invert .ap_layer{
@@ -8723,6 +8724,7 @@ vkopt['face'] =  {
          .vk_invert img,
          .vk_invert canvas,
          .vk_invert svg,
+         .vk_invert .vk_lang_icon,
          .vk_invert .emoji,
          .vk_invert .thumb,
          .vk_invert #pv_photo,
