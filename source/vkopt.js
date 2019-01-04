@@ -187,7 +187,7 @@ var vkopt_core = {
       vkopt.settings.init_defaults();
       for (var key in StaticFiles)
          if (StaticFiles[key].t == 'js' && StaticFiles[key].l)
-            vk_glue.inj_to_file(key);
+            vk_glue.inj_to_file(key.split('/').pop(), key);
       vkopt_core.plugins.on_init();
       vk_glue.nav_handler();
       window.vkopt_core_ready = true;
@@ -276,9 +276,9 @@ var vkopt_core = {
          if (!css) return '';
          return (Object.prototype.toString.call(css) === '[object Function]')?css():css;
       },
-      on_js_file: function(file){
+      on_js_file: function(file, full_file_name){
          //console.log('on *.js: '+file);
-         vkopt_core.plugins.call_modules('onLibFiles', file);
+         vkopt_core.plugins.call_modules('onLibFiles', file, full_file_name);
       },
       on_location: function(){
          //console.log('on nav: ', cur.module, ' obj: ', JSON.stringify(nav.objLoc));
@@ -352,11 +352,11 @@ var vk_glue = {
          if (!isArray(files)) files = [files];
          for (var i in files){
             if (files[i].indexOf('.js') != -1)
-               vk_glue.inj_to_file(files[i]);
+               vk_glue.inj_to_file(files[i].split('/').pop(), files[i]);
          }
       }
    },
-   inj_to_file: function(file_name){
+   inj_to_file: function(file_name, full_file_name){
       switch (file_name){
          case 'common.js':
          case 'common_web.js':
@@ -367,7 +367,7 @@ var vk_glue = {
          case 'datepicker.js':  vk_glue.inj.datepicker();  break;
          case 'notifier.js':  vk_glue.inj.notifier();  break;
       }
-      vkopt_core.plugins.on_js_file(file_name);
+      vkopt_core.plugins.on_js_file(file_name, full_file_name);
    },
    inj: {
       common: function(){
@@ -547,7 +547,7 @@ var vk_glue = {
       id: 'vkopt_any_plugin',
       // <core>
       onInit:                 function(){},                                // выполняется один раз после загрузки стрницы
-      onLibFiles:             function(file_name){},                       // место для инъекций = срабатывает при подключении нового js-файла движком контакта.
+      onLibFiles:             function(file_name, full_file_name){},       // место для инъекций = срабатывает при подключении нового js-файла движком контакта.
       onLocation:             function(nav_obj,cur_module_name){},         // вызывается при переходе между страницами
       onRequestQuery:         function(url, query, options){}              // вызывается перед выполнением ajax.post метода. Если функция вернёт false, то запрос выполнен не будет.
       onResponseAnswer:       function(answer,url,params){},               // answer - массив, изменять только его элементы
