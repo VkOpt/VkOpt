@@ -7816,8 +7816,6 @@ vkopt['messages'] = {
    }
 };
 
-
-//"UploadPngDocAsGraffiti": "Загрузить .PNG как граффити"
 vkopt['attacher'] = {
    tpls: null,
    css: function(){
@@ -8704,17 +8702,24 @@ vkopt['face'] =  {
          }
 
 
-         .vk_invert #page_layout,
-         .vk_invert #ts_cont_wrap,
-         .vk_invert #top_profile_menu.shown,
-         .vk_invert .pv_narrow_column_wrap,
-         .vk_invert #box_layer,
-         .vk_invert #wk_layer,
-         .vk_invert .article_layer _article_layer,
-         .vk_invert .head_nav_btns,
-         .vk_invert #chat_onl_wrap,
-         .vk_invert .ap_layer{
-             filter: invert(100);
+         html.vk_invert,
+         .vk_invert .top_home_logo,
+         .vk_invert _#ts_wrap,
+         .vk_invert .head_nav_item_player,
+         .vk_invert #top_profile_link,
+         .vk_invert #notifiers_wrap,
+         .vk_invert .top_nav_btn#top_notify_btn.active .top_nav_btn_icon,
+         .vk_invert #top_notify_count,
+         .vk_invert .like_tt,
+         .vk_invert #layer_bg.wk_dark,
+         .vk_invert #box_layer_bg,
+
+
+         .vk_invert #vk_online_status,
+         .vk_invert .vk_page_shift_left,
+         .vk_invert .vk_page_shift_right
+         {
+             filter: invert(1);
          }
 
          .vk_invert body,
@@ -8747,6 +8752,17 @@ vkopt['face'] =  {
          .vk_invert .apps_recent_row,
          .vk_invert .apps_featured_slides,
          .vk_invert .inline_video_wrap,
+
+         .vk_invert .online:after,
+         .vk_invert .fc_clist_online,
+
+         .vk_invert .post .podcast_snippet,
+         .vk_invert .wl_post .podcast_snippet,
+         .vk_invert .Button--negative,
+         .vk_invert .Button--positive,
+         .vk_invert .bookmark_unseen,
+
+         .vk_invert .fc_msgs_img,
          .vk_invert .stories_feed_preview_item,
          .vk_invert .page_media_link_thumb,
          .vk_invert .page_doc_photo,
@@ -8759,8 +8775,9 @@ vkopt['face'] =  {
          .vk_invert .media_voting_bg_gradient,
          .vk_invert .audio_pl__cover,
          .vk_invert .audio_artist_block__cover,
+         .vk_invert .page_album_title,
          .vk_invert .audio_row__cover_back {
-             filter: invert(100);
+             filter: invert(1);
          }
          .vk_invert .top_profile_img,
          .vk_invert .like_tt_image,
@@ -8775,8 +8792,8 @@ vkopt['face'] =  {
          }
 
          .vk_invert #page_header_cont .back {
-             background: #040404;
-             border-color: #404040;
+             background: #e7e7e7;
+             border-color: #cbcaca;
          }
          .vk_invert .top_notify_count{
              background: #404040;
@@ -8784,7 +8801,15 @@ vkopt['face'] =  {
          }
 
          .vk_invert input.text.ts_input{
-             background-color:#333;
+             background-color:#f8f8f8;
+         }
+         .vk_invert input.text.ts_input:focus{
+            background-color: #FFF;
+            color: #000;
+         }
+         .vk_invert .top_audio_player:hover,
+         .vk_invert .top_nav_link:hover {
+            background-color: #2f2f2f;
          }
 
          */
