@@ -8711,9 +8711,13 @@ vkopt['face'] =  {
          .vk_invert .top_nav_btn#top_notify_btn.active .top_nav_btn_icon,
          .vk_invert #top_notify_count,
          .vk_invert .like_tt,
-         .vk_invert #layer_bg.wk_dark,
          .vk_invert #box_layer_bg,
+         .vk_invert .ap_layer_bg_dark,
 
+         .vk_invert #mv_layer_wrap,
+         .vk_invert #layer_bg,
+         .vk_invert #pv_box,
+         .vk_invert .pv_narrow_column_wrap,
 
          .vk_invert #vk_online_status,
          .vk_invert .vk_page_shift_left,
@@ -8784,6 +8788,7 @@ vkopt['face'] =  {
          .vk_invert .media_voting_bg_photo img,
          .vk_invert .media_voting_bg_gradient img,
          .vk_invert img.notifier_image,
+         .vk_invert .thumb img.cell_img,
          .vk_invert .ap_layer canvas{
              filter: invert(0);
          }
