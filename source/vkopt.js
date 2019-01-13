@@ -317,6 +317,7 @@ var vkopt_core = {
       },
       process_node: function(node, params){
          node = node || ge('content');
+         if (!node) return;
          var nodes=node.getElementsByTagName('a');
          for (var i=0;i<nodes.length;i++)
             vkopt_core.plugins.process_links(nodes[i],params);
@@ -361,6 +362,7 @@ var vk_glue = {
          case 'common.js':
          case 'common_web.js':
          case 'cmodules/web/common_web.js':
+         case 'lite.js':
             vk_glue.inj.common();  break;
          case 'auto_list.js':    vk_glue.inj.auto_list();  break;
          case 'ui_controls.js':  vk_glue.inj.ui_controls();  break;
@@ -4164,7 +4166,7 @@ vkopt['audio'] =  {
       vkbrowser.mozilla && vkopt.permissions.update();
    },
    onLibFiles: function(fn){
-      if (fn = 'audioplayer.js'){
+      if (fn == 'audioplayer.js'){
          Inj.Start('AudioUtils.onRowOver', vkopt.audio.acts.buttons);
          Inj.End('AudioUtils.onRowLeave', function(){
             clearTimeout(vkopt.audio.__onrowover);
@@ -6322,15 +6324,34 @@ vkopt['videos'] = {
       .video_thumb_actions>div.vk_video_thumb_action_link.vk_links_loading .icon {
           background: url(/images/upload_inv_mini.gif) 50% 50% no-repeat;
       }
+      .videoplayer_settings_menu_sublist_item.vk_wg_dl_item{
+         justify-content: flex-start;
+      }
+      #vk_wg_dl_menu{
+         width: 160px;
+      }
+      .videoplayer_settings_menu_list_icon.vk_wg_dl_icon {
+         width: 18px;
+         height: 16px;
+         display: inline-block;
+         margin-right: 23px;
+         vertical-align: top;
+         background-image: url(/images/icons/pv_actions.png?3);
+         background-position: 0 0px;
+      }
       */
       }).css
    },
    onLibFiles: function(fn){
-      if (fn != 'video.js') return;
-      Inj.End('Video.buildVideoEl', function(){
-         if (this.result)
-            vkopt.videos.processNode(this.result);
-      })
+      if (fn == 'video.js'){
+         Inj.End('Video.buildVideoEl', function(){
+            if (this.result)
+               vkopt.videos.processNode(this.result);
+         })
+      }
+
+      if ((fn == 'videoplayer.js') && window.playerParams)
+         setTimeout(vkopt.videos.widget_player, 10);
    },
    onInit: function(){
       vkopt.videos.tpls = vk_lib.get_block_comments(function(){
@@ -6338,6 +6359,27 @@ vkopt['videos'] = {
          <div class="vk_video_thumb_action_link" onclick="return vkopt.videos.show_links(event, this, '{vals.video}','{vals.list=}');">
             <div class="icon"></div>
          </div>
+         */
+         /*wg_show_dl:
+         <div class="videoplayer_settings_menu_list_item" role="menuitemradio" tabindex="0" onclick="toggle('vk_wg_dl_menu')">
+            <div class="videoplayer_settings_menu_list_icon vk_wg_dl_icon"></div>
+            <div class="videoplayer_settings_menu_list_title">{lng.download}</div>
+         </div>
+         */
+         /*wg_sub_menu:
+         <div class="videoplayer_settings_menu_sublist" id="vk_wg_dl_menu" style="display:none">
+            <div class="videoplayer_settings_menu_sublist_header" onclick="hide('vk_wg_dl_menu')">{lng.download}</div>
+            <div class="videoplayer_settings_menu_sublist_divider"></div>
+            <div class="videoplayer_settings_menu_sublist_items">
+               {vals.content}
+            </div>
+         </div>
+         */
+         /*wg_dl_item:
+         <a class="videoplayer_settings_menu_sublist_item vk_wg_dl_item" role="menuitemradio" tabindex="0" href="{vals.url}" download="{vals.name}" onclick="return vkopt.videoview.download_file(this)" onmouseover="vkopt.videoview.get_size(this)">
+            {vals.caption}
+            <span class="vk_vid_size_info"></span>
+         </a>
          */
       });
    },
@@ -6369,6 +6411,34 @@ vkopt['videos'] = {
             )
          );
       }
+   },
+   widget_player: function(){
+      if (!vkopt.settings.get('vid_dl')) return;
+      var
+         vars = vkopt.videoview.get_vars({player:playerParams},nav.objLoc.oid+'_'+nav.objLoc.id),
+         menu = geByClass1('videoplayer_settings_menu_list');
+      if (!vars || !menu) return;
+
+
+      var links = vkopt.videoview.get_video_links(vars);
+      var filename = vkCleanFileName(unclean(vars.md_title));
+      var html = '';
+      for (var i = 0; i < links.length; i++){
+         html += vk_lib.tpl_process(vkopt.videos.tpls['wg_dl_item'], {
+            url: links[i].url + (links[i].ext ? '#FILENAME/' + vkEncodeFileName(filename + '_' + links[i].quality) + links[i].ext : ''),
+            name: filename + '_' + links[i].quality + links[i].ext,
+            caption: links[i].quality
+         })
+      }
+
+      var dl_menu = se(
+         vk_lib.tpl_process(vkopt.videos.tpls['wg_sub_menu'], {
+            content: html
+         })
+      );
+      menu.parentNode.appendChild(dl_menu);
+      menu.insertBefore(se(vk_lib.tpl_process(vkopt.videos.tpls['wg_show_dl'],{})),menu.firstChild)
+
    },
    show_links: function(ev, el, video, list){
       cancelEvent(ev);
@@ -8709,6 +8779,7 @@ vkopt['face'] =  {
          .vk_invert #top_profile_link,
          .vk_invert #notifiers_wrap,
          .vk_invert .top_nav_btn#top_notify_btn.active .top_nav_btn_icon,
+         .vk_invert .top_nav_btn#top_notify_btn.has_notify .top_nav_btn_icon,
          .vk_invert #top_notify_count,
          .vk_invert .like_tt,
          .vk_invert #box_layer_bg,
@@ -8718,6 +8789,9 @@ vkopt['face'] =  {
          .vk_invert #layer_bg,
          .vk_invert #pv_box,
          .vk_invert .pv_narrow_column_wrap,
+         _.vk_invert .videoplayer_thumb,
+
+         .vk_invert .widget_body,
 
          .vk_invert #vk_online_status,
          .vk_invert .vk_page_shift_left,
@@ -8789,7 +8863,13 @@ vkopt['face'] =  {
          .vk_invert .media_voting_bg_gradient img,
          .vk_invert img.notifier_image,
          .vk_invert .thumb img.cell_img,
-         .vk_invert .ap_layer canvas{
+         .vk_invert .ap_layer canvas,
+
+         .vk_invert .widget_body img,
+         .vk_invert .widget_body canvas,
+         .vk_invert .widget_body svg
+
+         {
              filter: invert(0);
          }
          .vk_invert .photos_container .photos_row{
@@ -8972,7 +9052,7 @@ vkopt['face'] =  {
    },
    shift_page: {
       btn: function(){
-         if (vkopt.settings.get('shift_page') && !geByClass('vk_page_shift_left')[0]){
+         if (vkopt.settings.get('shift_page') && ge('top_nav') && !geByClass('vk_page_shift_left')[0]){
             ge('top_nav').insertBefore(se('<a class="vk_page_shift_left head_nav_item fl_l" onclick="return vkopt.face.shift_page.shift(-1);"></a>'), ge('top_nav').firstChild);
             ge('top_nav').insertBefore(se('<a class="vk_page_shift_right head_nav_item fl_r" onclick="return vkopt.face.shift_page.shift(1);"></a>'),geByClass('fl_r', ge('top_nav'))[0]);
          }

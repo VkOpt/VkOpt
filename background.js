@@ -70,6 +70,18 @@ ex_loader = {
          "api_enabled":true
       },
       {
+         "in_frames":2,
+         "run_at":0,
+         "files":[
+            "vkopt.js",
+            "vk_lib.js",
+            "vklang.js"
+         ],
+         "domain":"vk.com\/video_ext\.php",
+         "exclude":"|notifier\\.php|im_frame\\.php|about:blank|i",
+         "api_enabled":true
+      },
+      {
          "files":["vk_lib.js"],
          "domain":"vkontakte\\.ru|vk\\.com|vk\\.me|userapi\\.com",
          "exclude":"|notifier\\.php|im_frame\\.php|about:blank|i"
