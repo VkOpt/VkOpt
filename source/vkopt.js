@@ -8784,6 +8784,11 @@ vkopt['face'] =  {
          .vk_invert .like_tt,
          .vk_invert #box_layer_bg,
          .vk_invert .ap_layer_bg_dark,
+         .vk_invert #stories_layers_background,
+         .vk_invert .stories_preview[style],
+         .vk_invert .stories_photo[style],
+         .vk_invert .stories_item_cont,
+         .vk_invert .stories_bottom_wrap,
 
          .vk_invert #mv_layer_wrap,
          .vk_invert #layer_bg,
@@ -8840,6 +8845,7 @@ vkopt['face'] =  {
          .vk_invert .Button--positive,
          .vk_invert .bookmark_unseen,
 
+         .vk_invert .group_friends_images,
          .vk_invert .fc_msgs_img,
          .vk_invert .stories_feed_preview_item,
          .vk_invert .page_media_link_thumb,
@@ -8880,6 +8886,7 @@ vkopt['face'] =  {
              background: #e7e7e7;
              border-color: #cbcaca;
          }
+         .vk_invert .group_friends_image,
          .vk_invert .top_notify_count{
              background: #404040;
              border-color: #000;
