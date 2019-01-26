@@ -4359,8 +4359,8 @@ vkopt['audio'] =  {
       if (/^https:.+\.vk-cdn\.net\//i.test(url))
          url = url.replace(/^https:/,'http:');
       */
-      ext =  /\.m3u8/.test(url) ? '.m3u8' : '.mp3';
-      return url + '#FILENAME/' + vkEncodeFileName(name) + '.mp3';
+      var ext =  /\.m3u8/.test(url) ? '.m3u8' : '.mp3';
+      return url + '#FILENAME/' + vkEncodeFileName(name) + ext;
    },
    processNode: function(node, params){
       if (!vkopt.settings.get('audio_dl')) return;
