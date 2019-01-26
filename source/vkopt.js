@@ -4171,6 +4171,11 @@ vkopt['audio'] =  {
          Inj.End('AudioUtils.onRowLeave', function(){
             clearTimeout(vkopt.audio.__onrowover);
          });
+         Inj.Start('AudioPlayerHTML5.prototype._isHlsUrl', function(url,obj){
+            if (obj && obj.get_url)
+               obj.url = url;
+         })
+
       }
    },
    remove_trash:function(s){
@@ -4354,6 +4359,7 @@ vkopt['audio'] =  {
       if (/^https:.+\.vk-cdn\.net\//i.test(url))
          url = url.replace(/^https:/,'http:');
       */
+      ext =  /\.m3u8/.test(url) ? '.m3u8' : '.mp3';
       return url + '#FILENAME/' + vkEncodeFileName(name) + '.mp3';
    },
    processNode: function(node, params){
@@ -4545,7 +4551,12 @@ vkopt['audio'] =  {
    __full_audio_info_cache: {},
    decode_url: function(url){
       var tmp = {};
-      AudioPlayerHTML5.prototype._setAudioNodeUrl(tmp, url);
+      var orig = RegExp.prototype.test;
+      RegExp.prototype.test = function(){return false}
+      try{
+         AudioPlayerHTML5.prototype._setAudioNodeUrl(tmp, url);
+      }catch(e){}
+      RegExp.prototype.test = orig;
       return tmp.src
    },
    load_audio_urls: function(){
