@@ -10314,43 +10314,38 @@ vkopt['support'] = {
    }
 };
 
-vkopt['test_module'] =  {
-   /*
-   onInit: function(){
-      vkopt.xxx.tpls = vk_lib.get_block_comments(function(){
-         /*tpl:
-
-         * /
-      });
-   },
-   onAudioRowMenuItems: function(info){
-       console.log(arguments);
-      return [
-         '<div>---</div>',
-         '<div>'+info.fullId+'</div>',
-         '<div>^^^</div>',
-      ];
-   },
-   onLibFiles:       function(file_name){
-      console.log('test onLibFiles:',file_name)
-   },
-   onLocation:       function(nav_obj,cur_module_name){
-      console.log('test onLocation:',nav_obj,cur_module_name)
-   },
-   onResponseAnswer: function(answer,url,params){
-      console.log('test onResponseAnswer:',url,params,answer[1], answer)
-   },
-   onStorage :       function(command_id,command_obj){
-      console.log('test onStorage:', command_id, command_obj)
-   },
-   processNode:      function(node, params){
-      //console.log('test processNode:',node, params)
-   },
-   processLinks:     function(link_el, params){
-      //console.log('test processLinks:',link_el, params)
-   },
-   //*/
-};
+/*
+ var VKOPT_LOG_SUPPRES_processNode = true;
+ var VKOPT_LOG_inline_args = true;
+ var VKOPT_LOG_styles = 'color: lime; font-style: italic;';
+ var VKOPT_LOG_label = 'VkOpt Test Module';
+ var handler = {
+ get(target, val, receiver) {
+ return (...args) => {
+ if (VKOPT_LOG_SUPPRES_processNode &&
+ (val === 'processLinks' || val === 'processNode')) return;
+ if (val === 'onSettings')
+ return {
+ [VKOPT_LOG_label]: { [VKOPT_LOG_label]:{} }
+ };
+ if (args.length) {
+ VKOPT_LOG_inline_args ?
+ console.error ('%c' + val + '%c (', VKOPT_LOG_styles, undefined, ...args, ')')
+ :
+ console.error ('%c' + val         , VKOPT_LOG_styles, args);
+ } else {
+ console.error ('%c' + val + ' %cwithout args', VKOPT_LOG_styles, 'color: grey;');
+ }
+ return VKOPT_LOG_label;
+ };
+ },
+ has(target, val, rece) {
+ console.log('has ', val)
+ return true;
+ }
+ };
+ vkopt['test_module'] = new Proxy({}, handler);
+ // */
 
 vkopt['im_form'] = {
    onSettings:{
