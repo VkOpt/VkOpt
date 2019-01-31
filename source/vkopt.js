@@ -4318,6 +4318,11 @@ vkopt['audio'] =  {
 
                var name = vkCleanFileName(name);
                var url = vkopt.audio.make_dl_url(info.url, name);
+
+               if (/\.m3u8/.test(info.url)){
+                  el.dataset["m3u8"] = info.url;
+               }
+
                el.setAttribute('download', name+'.mp3');
                el.setAttribute('href', url);
                el.setAttribute('url_ready','1');
@@ -4658,6 +4663,15 @@ vkopt['audio'] =  {
                var filename=vkCleanFileName(unclean(audioObject.performer+' - '+audioObject.title));
                var dl_btn = geByClass1('_audio_row__action_get_link', audioEl);
                if (dl_btn.hasAttribute('url_ready')){
+                  if (dl_btn.dataset["m3u8"]){
+                     vkopt.hls.download(
+                        dl_btn.dataset["m3u8"],
+                        dl_btn.getAttribute('download'),
+                        dl_btn.dataset["aid"]
+                     );
+                     return false;
+                  }
+
                   var dlnk = se('<a href="'+dl_btn.href+'" download="'+filename+'.mp3" url_ready=1></a>');
                   utilsNode.appendChild(dlnk);
                   if (vkopt.audio.download_file(dlnk))
@@ -4839,6 +4853,285 @@ vkopt['audio'] =  {
       }
    }
 };
+
+vkopt['hls'] = {
+   css: function(){
+      return vk_lib.get_block_comments(function(){
+      /*css:
+         .vk_grab_progress {
+             height: 3px;
+             background: #6b96cf;
+             position: absolute;
+             bottom: 0px;
+             width: 50%;
+         }
+
+         .vk_grab_progress:before {
+             content: attr(data-progress)'%';
+             position: absolute;
+             right: 0px;
+             font-size: 10px;
+             margin-top: -5px;
+             background: #6b96cf;
+             padding: 1px 4px;
+             color: #FFF;
+             font-weight: bold;
+             border-radius: 4px;
+         }
+      */
+      }).css
+   },
+   grab: function(m3u8, opts){
+      var
+         onSegmentReady = opts.onSegmentReady || null,
+         onDone = opts.onDone || null,
+         onProgress = opts.onProgress || null;
+
+      var url_create = window.URL.createObjectURL;
+      var url_revoke = window.URL.revokeObjectURL;
+      window.URL.createGrabObjectURL = function(ms) {
+         if (ms instanceof MediaGrabSource){
+            vkopt.log('coURL ', ms);
+            ms.emit('sourceopen'); //new
+            return 'test://';
+         } else
+            return url_create(ms);
+      };
+      window.URL.revokeGrabObjectURL = function(ms) {
+         if (ms instanceof MediaGrabSource){
+            vkopt.log('roURL ', ms);
+            return true;
+         } else
+            return url_revoke(ms);
+      };
+
+      function HTML5MediaElement(){}
+      HTML5MediaElement.prototype = Object.create(EventEmitter.prototype)
+      var mel = new HTML5MediaElement();
+      extend(mel,{
+         addEventListener: mel.addListener,
+         pause: function() {
+            vkopt.log('Paused');
+            mel.emit('pause');
+            mel.emit('play');
+            return false;
+         },
+         preload: 'auto',
+         buffered: {},
+         duration: 1,
+         seeking: false,
+         height: 1080,
+         width: 1920,
+         loop: false,
+         played: {},
+         removeAttribute: function(attr){},
+         load: function(l){vkopt.log('Load:',this)},
+         canPlayType: function(codec){vkopt.log('Got asked about:'+codec); return 'probably'},
+         nodeName: 'audio',
+         playbackQuality: {},
+         getVideoPlaybackQuality: function() {return mel.playbackQuality},
+         addTextTrack: function(tt){vkopt.log('Adding textTrack ',tt); return [{}]},
+         textTracks: {
+            addEventListener: function(e,cb) {
+               vkopt.log('** Adding eventListener: '+e);
+            }
+         }
+      })
+
+      function SourceGrabBuffer(mimetype){
+            EventEmitter.call(this);
+            this._mimetype = mimetype;
+            return this;
+      }
+      SourceGrabBuffer.prototype =  Object.create(EventEmitter.prototype);
+      var sgb = SourceGrabBuffer.prototype;
+      sgb.addEventListener = function(eventName, callback) {
+         this.addListener(eventName, callback);
+         //vkopt.log('sgb addEventListener '+eventName);
+      }
+      sgb.appendBuffer = function(data) {
+         //vkopt.log('append: ', data.length, 'bytes ', this._mimetype);
+         var that = this;
+         onSegmentReady && onSegmentReady(data, this._mimetype);
+         setTimeout(function(){
+            that.emit('onupdateend');
+            that.emit('updateend');
+         },5);
+      }
+      Object.defineProperty(sgb, "buffered", {
+          get: function buffered() {
+               return [];
+          }
+      });
+      Object.defineProperty(sgb, "mode", {
+          get: function mode() {
+               return '';
+          }
+      });
+      SourceGrabBuffer.prototype.constructor = SourceGrabBuffer;
+
+      function MediaGrabSource(){
+         EventEmitter.call(this);
+         this.readyState = 'closed';
+         this._sb = {};
+         return this;
+      }
+      MediaGrabSource.prototype =  Object.create(EventEmitter.prototype);
+      var mgs = MediaGrabSource.prototype;
+      extend(mgs,{
+         addEventListener: function(eventName,callback) {
+            //vkopt.log('MediaGrabSource addEventListener: '+eventName);
+            this.addListener(eventName,callback);
+            this.readyState = 'open';
+            //vkopt.log(Object.keys(this._sb).length);
+            if (eventName == 'sourceopen') {
+               vkopt.log('Fired: '+eventName);
+               //this.emit(eventName,this);
+            }
+         },
+         removeEventListener: function(eventName,b) {
+            this.removeListener(eventName,b);
+         },
+         addSourceBuffer: function(mimetype) {
+            vkopt.log('MediaGrabSource new buffer for '+mimetype);
+            var nb = new SourceGrabBuffer(mimetype);
+            this._sb[mimetype] = nb;
+            return nb;
+         },
+         endOfStream: function(error) {
+            vkopt.log('** End of stream: '+error);
+            mel.emit('ended');
+            // onDone();
+         },
+         isTypeSupported: function(codec){return true}
+      });
+      Object.defineProperty(mgs, "sourceBuffers", {
+          get: function sourceBuffers() {
+               var a = [];
+               for (var sb in this._sb) {
+                  a.push(this._sb[sb]);
+               }
+               return a;
+          }
+      });
+      MediaGrabSource.isTypeSupported = function(codec){return true}
+
+      var get_module=function(js){
+         var exports = {};
+          eval(js);
+          return exports;
+      }
+      var modify_hls = function(js){
+         js = js.replace(/window\.MediaSource/g,'MediaGrabSource')
+                .replace(/window\.SourceBuffer/g,'SourceGrabBuffer')
+                .replace(/\.createObjectURL/g,'.createGrabObjectURL')
+                .replace(/\.revokeObjectURL/g,'.revokeGrabObjectURL');
+         return js;
+      }
+
+      var Hls = {};
+
+      function downloadHls(url) {
+         var
+            startSN = 0,
+            endSN = 0;
+
+         var hls = new Hls({debug:false,autoStartLoad:true});
+         hls.on(Hls.Events.MEDIA_ATTACHED, function () {
+            vkopt.log("hls.js attached to grabber");
+            hls.loadSource(url);
+         });
+
+         hls.on(Hls.Events.BUFFER_EOS,function(event_name, info){
+            vkopt.log('GRABBER DONE: ',Hls.Events.FRAG_LOADED);
+            onDone && onDone();
+
+         });
+
+         hls.on(Hls.Events.FRAG_LOADED,function(event_name, info){
+            if (info && info.frag && info.frag.sn)
+               setTimeout(function(){
+                  onProgress && onProgress(info.frag.sn - startSN, endSN - startSN);
+               },30);
+         });
+
+         hls.on(Hls.Events.MANIFEST_PARSED,function(n,m) {
+            vkopt.log('manifest_parsed', m);
+            startSN = m.levels[0].details.startSN
+            endSN = m.levels[0].details.endSN
+            mel.paused = false;
+            mel.currentTime = 0;
+            mel.emit('pause');
+            mel.emit('playing');
+         });
+         hls.attachMedia(mel);
+      }
+
+      AjGet('/js/lib/hls.min.js', function(js){
+         Hls = get_module(modify_hls(js)).Hls;
+         downloadHls(m3u8);
+      });
+   },
+   download: function(url, file_name, aid){
+      var buff = {
+         type: '',
+         data:[]
+      };
+
+      var draw_progress = function(percent, aid){
+         //vkopt.log(percent,'%');
+         var els = geByClass('_audio_row_'+aid);
+         for (var i = 0; i < els.length; i++){
+            var bar = geByClass1('vk_grab_progress', els[i]);
+            if (!bar){
+               bar = se('<div class="vk_grab_progress"></div>');
+               els[i].insertBefore(bar, els[i].firstChild);
+            }
+            show(bar);
+            bar.dataset['progress'] = percent;
+            bar.style.width = percent+'%';
+         }
+      };
+      var hide_progress = function(aid){
+         var els = geByClass('_audio_row_'+aid);
+         for (var i = 0; i < els.length; i++){
+            var bar = geByClass1('vk_grab_progress', els[i]);
+            bar && re(bar);
+         }
+      };
+      vkopt.hls.grab(url, {
+         onSegmentReady: function(data, type){
+            buff.type = type;
+            buff.data.push(data);
+         },
+         onDone: function(){
+            setTimeout(function(){
+               hide_progress(aid);
+            },500);
+            var url_create = (window.URL || window.webkitURL || window.mozURL || window).createObjectURL;
+
+            var data = new Blob(buff.data,{type:buff.type});
+            var url = url_create(data)
+
+            var dlnk = document.createElement('a');
+            dlnk.href = url;
+            dlnk.download = file_name;
+            (window.utilsNode || document.body).appendChild(dlnk)
+            dlnk.click();
+            setTimeout(function(){
+               re(dlnk);
+               //url_revoke(url);
+            },200);
+         },
+         onProgress: function(cur, total){
+            if (total == 0) return;
+            var pc = Math.round(cur/total*100);
+            draw_progress(pc, aid);
+         }
+      });
+   }
+
+}
 
 // Scrobbling API documentation: http://users.last.fm/~tims/scrobbling/scrobbling2.html
 vkopt['scrobbler'] = {
