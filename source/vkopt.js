@@ -4495,6 +4495,7 @@ vkopt['audio'] =  {
       if (!vkopt.settings.get('audio_size_info')) return;
 
       var size = vkopt.audio._sizes_cache[id];
+      var custom_duration = 0;
       var rb = true;
       var WAIT_TIME = 4000;
       var els = geByClass('_audio_row_' + id);
@@ -4505,6 +4506,9 @@ vkopt['audio'] =  {
             var size_el = geByClass1('vk_audio_size', el);
             var kbps_el = geByClass1('vk_audio_kbps', el);
 
+            if (custom_duration){
+               size = size/custom_duration*info.duration
+            }
             var sz_info = vkopt.audio.size_to_bitrare(size, info.duration);
             val(size_el, sz_info.size);
             val(kbps_el, sz_info.kbps);
@@ -4525,11 +4529,7 @@ vkopt['audio'] =  {
             return sz_info.kbps_raw > 120;
          }
       };
-      var need_load = true;
-      if (size)
-         need_load = !set_size_info(size);
-
-      if (need_load && els.length){
+      var get_size = function(url){
          var reset=setTimeout(function(){
             vkopt.audio.info_thread_count--;
             rb = false;
@@ -4547,6 +4547,29 @@ vkopt['audio'] =  {
                // TODO: видать ссылка протухла. нужно подгрузить актуальный URL и снова запросить размер
             }
          }, true);
+
+      }
+
+      var need_load = true;
+      if (size)
+         need_load = !set_size_info(size);
+
+      if (need_load && els.length){
+         if (/\.m3u8/.test(url)){
+            AjGet(url, function(r){
+               var base = url.split('?')[0].match(/.+\//)[0];
+               var info = [];
+               r.replace(/#EXT-X-KEY:METHOD=([^\r\n]+)[\s\S]*?#EXTINF:(.+?),[\r\n]+(.+\.ts[^\r\n]+)/g,function(s,mtd,dur,lnk){
+                  if (mtd=="NONE")
+                     info.push({method:mtd, duration:dur, link:base+lnk})
+               });
+               var ts = info[Math.round(info.length/2)];
+               custom_duration = parseFloat(ts.duration);
+               get_size(ts.link);
+            })
+         } else {
+            get_size(url);
+         }
       }
    },
    __load_queue:[], // очередь загрузки инфы
@@ -9099,6 +9122,8 @@ vkopt['face'] =  {
          .vk_invert #pv_box,
          .vk_invert .pv_narrow_column_wrap,
          _.vk_invert .videoplayer_thumb,
+         .vk_invert .medadd_c_linkimg_container,
+         .vk_invert .app_widget_image,
 
          .vk_invert .widget_body,
 
