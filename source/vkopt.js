@@ -5250,20 +5250,24 @@ vkopt['scrobbler'] = {
    },
    onPlayerNotify: function(event_name, data, var1){
       /*
-      if (['buffered','progress'].indexOf(event_name) == -1)
-         console.log(event_name, data, var1);
+      if (['buffered','progress','freq'].indexOf(event_name) == -1)
+         vkopt.log('AP NOTIFY: ',event_name, data, var1);
       */
+      var fm=vkopt.scrobbler;
       var act = '';
       switch(event_name){
          case 'start':
-            data && vkopt.scrobbler.onPlayerState('load');
-            vkopt.scrobbler.onPlayerState('play');
+            (data || !fm.last_track.aid) && fm.onPlayerState('load');
+            fm.onPlayerState('play');
+            break;
+         case 'ended':
+            fm.last_track.aid = null;
             break;
          case 'pause':
-            vkopt.scrobbler.onPlayerState('pause');
+            fm.onPlayerState('pause');
             break;
          case 'stop': // происходит только при разлогивании
-            vkopt.scrobbler.onPlayerState('stop');
+            fm.onPlayerState('stop');
             break;
       }
    },
