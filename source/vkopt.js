@@ -9197,6 +9197,7 @@ vkopt['face'] =  {
              filter: invert(1);
          }
          .vk_invert .top_profile_img,
+         .vk_invert .notifier_add_image,
          .vk_invert .like_tt_image,
          .vk_invert .media_voting_bg_photo img,
          .vk_invert .media_voting_bg_gradient img,
