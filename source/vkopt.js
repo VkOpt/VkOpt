@@ -8615,6 +8615,9 @@ vkopt['face'] =  {
       },
 
       vkInterface:{
+         hold_menu: {
+            title:'seFixLeftMenu'
+         },
          ad_block:{
             title: 'seADRem',
             class_toggler: true
@@ -9266,6 +9269,10 @@ vkopt['face'] =  {
          vkopt.face.ad_block.audio();
       if (fn == 'videoplayer.js')
          vkopt.face.ad_block.videoplayer();
+      if (fn == 'page_layout.js')
+         vkopt.settings.get('hold_menu') && setTimeout(function(){
+            Inj.End('Object.getPrototypeOf(__leftMenu).handleScrollDown', vkopt.face.side_bar_holder)
+         }, 300);
    },
    onLocation: function(){
       vkopt.face.user_online_status();
@@ -9300,6 +9307,9 @@ vkopt['face'] =  {
    onOptionChanged: function(option_id, val, option_data){
       if (option_id == 'show_online_status')
          vkopt.face.user_online_status();
+
+      if (option_id == 'hold_menu')
+         window.__leftMenu && vkopt.face.onLibFiles('page_layout.js');
       vkopt.face.shift_page.btn();
    },
    processNode: function(node, params){
@@ -9390,6 +9400,15 @@ vkopt['face'] =  {
             }
        });
       }
+   },
+   side_bar_holder: function(t){
+      if (!vkopt.settings.get('hold_menu')) return;
+      var self = this.this_obj;
+      var dh = window.clientHeight() - self.menuEle.clientHeight;
+      self.firstScrollDown &&
+      bodyNode.getBoundingClientRect().bottom - window.clientHeight() > 0 &&
+      self.menuEle.getBoundingClientRect().bottom < window.clientHeight() &&
+      self.setPositionTop(t - self.menuEle.clientHeight + window.clientHeight() - Math.max(0,dh));
    },
    shift_page: {
       btn: function(){
@@ -10646,6 +10665,28 @@ vkopt['test_module'] =  {
          * /
       });
    },
+   stuff: function(){
+      TopNotifier.showTooltip('Hello!', Math.random());
+
+      var icon_types="live|vkpay|copy|mail_mention|interesting|friends|suggested_post_published|like|podcast|voting|comment|followers|invite|import|payment|reply|story_reply|tag|publish|private_post|gift|birthday_gift|app|mail_mention_unify|event_unify|message_request|comment_unify|discussions|mention|money|money_decline|declined|money_request|ads_ok|approved|ads_fail".split('|');
+      Notifier.pushEvent(JSON.stringify({
+            version: curNotifier.version,
+            type: 'vkopt',
+            title: 'Notify Title',
+            author_photo: "/images/camera_50.png",
+            author_link: "/vkopt_club",
+            text: "Notify Content Text",
+            add_photo: "/images/deactivated_100.png",
+            link: "", // ???
+            onclick: "", // клик по уведомлению в любом месте
+            add: "",
+            id: 'vk_'+Math.round(Math.random()*2e10),
+            author_id: "", // вроде бы для открытия чата
+            top_count: 0, // счётчик уведомлений в шапке
+            _eval: '',
+            icon_type: icon_types[Math.ceil(Math.random()*icon_types.length)]
+      }))
+   }
    onAudioRowMenuItems: function(info){
        console.log(arguments);
       return [
