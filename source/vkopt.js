@@ -7525,7 +7525,12 @@ vkopt['messages'] = {
    go_to_beginning: function(){
       var sel_id = nav.objLoc['sel'];
       var cur_loc = clone(nav.objLoc);
-      dApi.call('messages.getHistory',{user_id:cur.peer, count:1, rev:1, v:'5.73'},function(r,response){
+
+      var params = {peer_id:cur.peer, count:1, rev:1, v:'5.73'};
+      if (cur.gid)
+         params['group_id'] = cur.gid;
+
+      dApi.call('messages.getHistory',params,function(r,response){
          if (!(response && response.items && response.items[0]))
             return vkMsg(IDL('Error'));
          nav.go(extend(cur_loc, {sel:''}));
@@ -8035,8 +8040,8 @@ vkopt['messages'] = {
            vkopt.messages.export_data(data);
         })
    },
-   get_history:function(uid){
-      if (!uid) uid=cur.thread.id;
+   get_history:function(uid, callback){
+      if (!uid) uid=cur.peer;
       var PER_REQ=100;
       var offset=0;
       var messages = [];
@@ -8049,10 +8054,29 @@ vkopt['messages'] = {
 
          var code=[];
          for (var i=0; i<10; i++){
-            code.push('API.messages.getHistory({user_id:'+uid+', count:'+PER_REQ+', offset:'+offset+', rev:1}).items');//
+
+            var params = {
+               peer_id: uid,
+               offset: offset,
+               count: PER_REQ,
+               rev:1
+            };
+            if (cur.gid)
+               params['group_id'] = cur.gid
+
+            code.push('API.messages.getHistory('+JSON.stringify(params)+').items');//
             offset+=PER_REQ;
          }
-         dApi.call('execute',{code:'return {count:API.messages.getHistory({user_id:'+uid+', count:0, offset:0}).count, items:'+code.join('+')+'};',v:'5.73'},function(r){
+
+         var params = {
+            peer_id: uid,
+            offset: 0,
+            count: 0
+         };
+         if (cur.gid)
+            params['group_id'] = cur.gid
+
+         dApi.call('execute',{code:'return {count:API.messages.getHistory('+JSON.stringify(params)+').count, items:'+code.join('+')+'};',v:'5.73'},function(r){
             var msgs = r.response.items;
             var count = r.response.count;
             ge('saveldr').innerHTML=vkProgressBar(offset,count,w);
@@ -8061,7 +8085,7 @@ vkopt['messages'] = {
             if (msgs.length>0){
                setTimeout(scan,350);
             } else {
-               vkopt.messages.export_data(messages);
+               callback ? callback(messages) : vkopt.messages.export_data(messages);
             }
          });
       };
