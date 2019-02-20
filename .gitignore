@@ -31,3 +31,10 @@ builds/vkopt_opera.oex
 builds/vkopt_maxthon.mxaddon
 
 local.diff
+builds/*.txt
+builds/*.crx
+builds/*.zip
+builds/*.xpi
+builds/*.mxaddon
+builds/*.oex
+builds/*.safariextz

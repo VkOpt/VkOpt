@@ -11,8 +11,8 @@
 //
 /* VERSION INFO */
 var vVersion = 307;
-var vBuild = 190131;
-var vVersionRev = 5;
+var vBuild = 190219;
+var vVersionRev = 6;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -91,7 +91,8 @@ var vkopt_defaults = {
       MAX_CACHE_AUDIO_SIZE_ITEMS: 10000 // максимальное количество запомненных размеров аудио в локальном хранилище
    },
    popular: [
-      'dislikes_enabled',
+      'hold_menu',
+      //'dislikes_enabled',
       'scroll_to_next',
       'pv_comm_move_down',
       'disable_border_radius'
