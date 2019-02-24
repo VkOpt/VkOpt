@@ -4090,6 +4090,22 @@ vkopt['audio'] =  {
       .vk_audio_mod_info_visible .audios_module .audio_row__info._audio_row__info {
          display: block !important;
       }
+
+      .vk_play_next_btn {
+         display: inline-block;
+         cursor: pointer;
+         outline: none;
+         height: 24px;
+         width: 24px;
+         margin: 0 2px;
+         background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2248%22%20height%3D%2224%22%20viewBox%3D%220%200%2048%2024%22%3E%0A%20%20%20%20%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%20%20%20%20%3Cg%20transform%3D%22translate(24)%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Crect%20width%3D%2224%22%20height%3D%2224%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M5%2C11.5046844%20C5%2C11.2259549%205.22765279%2C11%205.50964952%2C11%20L15%2C11%20L15%2C13%20L5.50964952%2C13%20C5.22817786%2C13%205%2C12.785965%205%2C12.4953156%20L5%2C11.5046844%20Z%20M5%2C7.50468445%20C5%2C7.22595492%205.22563934%2C7%205.49374104%2C7%20L17.506259%2C7%20C17.7789446%2C7%2018%2C7.21403503%2018%2C7.50468445%20L18%2C8.49531555%20C18%2C8.77404508%2017.7743607%2C9%2017.506259%2C9%20L5.49374104%2C9%20C5.22105539%2C9%205%2C8.78596497%205%2C8.49531555%20L5%2C7.50468445%20Z%20M5%2C15.5046844%20C5%2C15.2259549%205.21505737%2C15%205.49047852%2C15%20L9%2C15%20L9%2C17%20L5.49047852%2C17%20C5.21959471%2C17%205%2C16.785965%205%2C16.4953156%20L5%2C15.5046844%20Z%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cpath%20fill%3D%22%23FFFFFF%22%20fill-rule%3D%22nonzero%22%20d%3D%22M12.7071068%2C15.2928932%20C12.3165825%2C14.9023689%2011.6834175%2C14.9023689%2011.2928932%2C15.2928932%20C10.9023689%2C15.6834175%2010.9023689%2C16.3165825%2011.2928932%2C16.7071068%20L13.2928932%2C18.7071068%20C13.6834175%2C19.0976311%2014.3165825%2C19.0976311%2014.7071068%2C18.7071068%20L21.7071068%2C11.7071068%20C22.0976311%2C11.3165825%2022.0976311%2C10.6834175%2021.7071068%2C10.2928932%20C21.3165825%2C9.90236893%2020.6834175%2C9.90236893%2020.2928932%2C10.2928932%20L14%2C16.5857864%20L12.7071068%2C15.2928932%20Z%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%20%20%20%20%3Crect%20width%3D%2224%22%20height%3D%2224%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M5%2C11.5046844%20C5%2C11.2259549%205.23290253%2C11%205.50342274%2C11%20L12%2C11%20L12%2C13%20L5.50342274%2C13%20C5.22539004%2C13%205%2C12.785965%205%2C12.4953156%20L5%2C11.5046844%20Z%20M5%2C7.50468445%20C5%2C7.22595492%205.22563934%2C7%205.49374104%2C7%20L17.506259%2C7%20C17.7789446%2C7%2018%2C7.21403503%2018%2C7.50468445%20L18%2C8.49531555%20C18%2C8.77404508%2017.7743607%2C9%2017.506259%2C9%20L5.49374104%2C9%20C5.22105539%2C9%205%2C8.78596497%205%2C8.49531555%20L5%2C7.50468445%20Z%20M5%2C15.5046844%20C5%2C15.2259549%205.23290253%2C15%205.50342274%2C15%20L12%2C15%20L12%2C17%20L5.50342274%2C17%20C5.22539004%2C17%205%2C16.785965%205%2C16.4953156%20L5%2C15.5046844%20Z%20M14.4145192%2C18.9225574%20C14.1855866%2C19.0785172%2014%2C18.9800332%2014%2C18.7041225%20L14%2C11.2969997%20C14%2C11.0204017%2014.1780482%2C10.9174696%2014.4145192%2C11.0785648%20L19.7570808%2C14.718171%20C19.9860135%2C14.8741308%2019.9935519%2C15.121856%2019.7570808%2C15.2829513%20L14.4145192%2C18.9225574%20Z%22%2F%3E%0A%20%20%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E");
+         transition: background-position 300ms ease, opacity 60ms linear;
+         opacity: 0.7;
+         padding: 0;
+      }
+      .vk_play_added_next_btn{
+         background-position: -24px 0
+      }
       */
       });
       return codes.dl;
@@ -4119,6 +4135,10 @@ vkopt['audio'] =  {
          audio_skip_button: {
             title: 'seAudioSkipButton',
             default_value: true
+         },
+         // заменяем кнопку расшаривания плейлиста на обложке на кнопку "воспроизвести следующим"
+         playlist_share_to_play_next:{
+            title: 'sePlsPlayNextBtn'
          }
       },
       Extra:{
@@ -4162,6 +4182,9 @@ vkopt['audio'] =  {
       <br>
       {vals:aid} -> club{vals:gid}
       */
+      /*pls_play_next:
+      <div class="audio_pl__actions_btn vk_play_next_btn" onclick="vkopt.audio.playlists.play_next(this, {vals.ownerId}, {vals.albumId}, '{vals.accessHash}', '{vals.source}'); return cancelEvent(event)"></div>
+      */
       });
       vkopt.audio.load_sizes_cache();
       vkbrowser.mozilla && vkopt.permissions.update();
@@ -4186,6 +4209,35 @@ vkopt['audio'] =  {
       s=s.replace(/[\u1806\u2010\u2011\u2012\u2013\u2014\u2015\u2212\u2043\u02D7\u2796\-]+/g,'\u2013').replace(/\u2013\s*\u2013/g,'\u2013');
       s=s.replace(/[\u1806\u2010\u2011\u2012\u2013\u2014\u2015\u2212\u2043\u02D7\u2796\-]+$/,'');// ^[\s\u1806\u2010\u2011\u2012\u2013\u2014\u2015\u2212\u2043\u02D7\u2796\-]+
       return s;
+   },
+   playlists: {
+      play_next: function(el, ownerId, albumId, accessHash, source){
+         el && addClass(el, 'vk_play_added_next_btn');
+         getAudioPlayer().playNextPlaylist(ownerId, albumId, accessHash, source);
+      },
+      replace_share: function(node){
+         if (!vkopt.settings.get('playlist_share_to_play_next')) return;
+         var nodes = geByClass('audio_pl__actions_share');
+
+         var rx = /\((-?\d+),\s*(\d+),\s*['"]([a-f0-9]*?)['"],\s*['"]([^'"<>]*?)['"].*?\)/i;
+
+         for (var i = 0; i < nodes.length; i++){
+            var el = nodes[i];
+            var p = gpeByClass('audio_pl__cover', el);
+            if (!p || geByClass1('vk_play_next_btn', p)) continue;
+            var info = p.getAttribute('onclick').match(rx);
+            if (!info) continue;
+            var play_next = se(vk_lib.tpl_process(vkopt.audio.tpls['pls_play_next'], {
+                   ownerId: info[1],
+                   albumId: info[2],
+                   accessHash: info[3],
+                   source: info[4]
+            }));
+            hide(el);
+            el.parentNode.insertBefore(play_next, el);
+         }
+
+      }
    },
    share: function(audio_fullId){
       showBox("like.php", {
@@ -4369,6 +4421,7 @@ vkopt['audio'] =  {
       return url + '#FILENAME/' + vkEncodeFileName(name) + ext;
    },
    processNode: function(node, params){
+      vkopt.audio.playlists.replace_share(node);
       if (!vkopt.settings.get('audio_dl')) return;
       if (!vkopt.audio.__full_audio_info_cache)
          vkopt.audio.__full_audio_info_cache = {};
