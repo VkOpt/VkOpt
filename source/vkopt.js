@@ -186,9 +186,15 @@ var vkopt_core = {
       // Под новый дизайн чуть другие функции работы с локализацией.
       vkopt.lang.override(); // TODO: убрать этот костыль при удалении скриптов для старого дизайна
       vkopt.settings.init_defaults();
-      for (var key in StaticFiles)
-         if (StaticFiles[key].t == 'js' && StaticFiles[key].l)
-            vk_glue.inj_to_file(key.split('/').pop(), key);
+
+      for (var key in StaticFiles){
+         if (StaticFiles[key].t == 'js'){
+            if (StaticFiles[key].l)
+               vk_glue.inj_to_file(key.split('/').pop(), key);
+            else
+               window.stManager && stManager._waiters.push([[key], vk_glue.inj_handler([key])]);
+         }
+      }
       vkopt_core.plugins.on_init();
       vk_glue.nav_handler();
       window.vkopt_core_ready = true;
