@@ -8919,6 +8919,16 @@ vkopt['face'] =  {
          .vk_compact_audio.vk_old_audio_btns .audio_pl_edit_box .ape_audio_item_wrap .ape_attach{
             margin-top: 3px;
          }
+         .vk_compact_audio.vk_old_audio_btns .audio_numeric .audio_row .audio_row__cover_icon{
+            height: 27px;
+         }
+         .vk_compact_audio.vk_old_audio_btns .audio_numeric .audio_row .audio_row__counter{
+            height: 23px;
+            padding: 5px 0;
+         }
+         .vk_compact_audio.vk_old_audio_btns .audio_pl_edit_box .ape_check {
+            padding: 1px 5px;
+         }
          .vk_audio_full_title.vk_old_audio_btns .audio_row .audio_title_wrap,
          .vk_audio_full_title.vk_old_audio_btns .audio_row .audio_performer{
             white-space: normal;
@@ -9279,6 +9289,7 @@ vkopt['face'] =  {
          .vk_invert .media_voting_bg_gradient,
          .vk_invert .audio_pl__cover,
          .vk_invert .audio_artist_block__cover,
+         .vk_invert .audio_pl_edit_box .ape_cover_thumb,
          .vk_invert .page_album_title,
          .vk_invert .audio_row__cover_back {
              filter: invert(1);
