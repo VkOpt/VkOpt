@@ -9302,6 +9302,7 @@ vkopt['face'] =  {
          .vk_invert img.notifier_image,
          .vk_invert .thumb img.cell_img,
          .vk_invert .ap_layer canvas,
+         .vk_invert #pv_box.photos_is_albums_view,
 
          .vk_invert .widget_body img,
          .vk_invert .widget_body canvas,
@@ -9567,7 +9568,8 @@ vkopt['profile'] = {
          }
       },
       Extra: {
-         zodiak_ophiuchus:{}
+         zodiak_ophiuchus:{},
+         nickname_field:{ default_value:true }
       }
    },
 
@@ -9918,13 +9920,26 @@ vkopt['profile'] = {
    },
    editor: {
       middle_name_field: function(){
+         if (!vkopt.settings.get('nickname_field')) return;
          if (!ge('pedit_middle_name')){
             var p=ge('pedit_maiden_row');
             if (!p) return;
             var field = se(vk_lib.tpl_process(vkopt.profile.tpls['middle_name_field'], {}));
             p.parentNode.insertBefore(field, p);
          }
+      },
+      middle_name_req:function(url, q, options) {
+         if (!vkopt.settings.get('nickname_field')) return;
+         if (url === 'al_profileEdit.php' && q.act=="a_save_general") {
+            if (q.nickname){
+               q.nick_name = q.nickname;
+               delete q.nickname
+            }
+         }
       }
+   },
+   onRequestQuery: function(url, q, options) {
+      vkopt.profile.editor.middle_name_req(url, q, options);
    },
    moveAudio: function(flag) {
       var audios = document.getElementById("profile_audios");
