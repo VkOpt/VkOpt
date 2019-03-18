@@ -31,7 +31,6 @@ var vkopt_defaults = {
       audio_size_info: false,
       audio_clean_titles: false,
       audio_album_info: true,
-      //size_info_on_ctrl: true,
       scrobbler: true,
       im_dialogs_right: false,
       dont_cut_bracket: false,
@@ -3952,108 +3951,7 @@ vkopt['albums'] = {
 vkopt['audio'] =  {
    css: function(){
       var codes = vk_lib.get_block_comments(function(){
-      /*dl:
-      .audio_row .audio_acts .audio_act.vk_audio_dl_btn{
-         display:block;
-      }
-      .audio_row__action_get_link{
-         float: right;
-      }
-      .audio_row .audio_acts .audio_act.vk_audio_dl_btn>div,
-      .audio_row__action_get_link div{
-         background-image: url(/images/blog/about_icons.png);
-         width: 12px;
-         height: 14px;
-         background-position: 0px -309px;
-      }
-
-      .audio_row .audio_acts .audio_act.vk_audio_acts>div {
-         margin: 6px 0 0 6px;
-      }
-      .audio_row .audio_acts .audio_act.vk_audio_dl_btn.dl_url_loading>div,
-      .audio_row__action_get_link.dl_url_loading div{
-         opacity:0.3;
-         background: url(/images/upload_inv_mini.gif) no-repeat 0% 50%;
-         width: 17px;
-         margin-left: -2px;
-      }
-      .audio_row__action_get_link div,
-      .audio_row__action_get_link.dl_url_loading div{
-         margin: 5px auto;
-      }
-
-      .vk_audio_icon_dots .audio_row .audio_acts .audio_act.vk_audio_acts{
-         display:block;
-      }
-      .vk_audio_icon_dots .audio_row .audio_acts .audio_act.vk_audio_acts>div {
-         background: url(/images/icons/profile_dots.png) no-repeat 0 5px;
-         height: 13px;
-         width: 18px;
-      }
-
-      .vk_audio_icon_dots .audio_row .audio_acts .audio_act.vk_audio_dl_btn.vk_audio_acts>div{
-         background: url(/images/icons/profile_dots.png) no-repeat 0 5px;
-         height: 13px;
-         width: 18px;
-         transition: none;
-      }
-      .vk_audio_icon_dots .audio_row .audio_acts .audio_act.vk_audio_dl_btn.vk_audio_acts:hover>div{
-         background-image: url(/images/blog/about_icons.png);
-         width: 12px;
-         height: 14px;
-         margin-left:3px;
-         margin-right:3px;
-         background-position: 0px -309px;
-      }
-      .audio_row .audio_acts .audio_act.vk_audio_dl_btn.dl_url_loading>div,
-      .audio_row .audio_acts .audio_act.vk_audio_dl_btn.dl_url_loading:hover>div{
-         opacity:0.3;
-         background: url(/images/upload_inv_mini.gif) no-repeat 0% 50%;
-         width: 18px;
-      }
-
-      .audio_duration_wrap.vk_with_au_info .audio_duration{
-         display: inline;
-      }
-
-      .audio_row.vk_info_loaded .vk_audio_size_info_wrap,
-      ._vk_size_info_on_ctrl .ctrl_key_pressed .audio_row.vk_info_loaded .vk_audio_size_info_wrap,
-      ._vk_size_info_on_ctrl .audio_hq_label_show .audio_row.vk_info_loaded .vk_audio_size_info_wrap{
-         display: table;
-      }
-
-      .vk_audio_size_info_wrap,
-      .narrow_column .audios_module .vk_audio_size_info_wrap,
-      .audio_row:hover .vk_audio_size_info_wrap,
-      ._vk_size_info_on_ctrl .audio_row .vk_audio_size_info_wrap,
-      ._vk_size_info_on_ctrl .audio_hq_label_show .audio_row:hover .vk_audio_size_info_wrap,
-      ._vk_size_info_on_ctrl .audio_row:hover .vk_audio_size_info_wrap
-      {
-         display: none;
-      }
-      .vk_audio_size_info_wrap span{
-         display: block;
-      }
-      .vk_audio_size_info_wrap{
-         line-height: 10px;
-         margin-right: 3px;
-         margin-top: 12px;
-         height: 18px;
-         float:right;
-         font-size: 10px;
-         color: #777;
-      }
-      .audio_w_covers .vk_audio_size_info_wrap{
-         margin-top: 15px;
-      }
-      .vk_audio_size_info{
-         display: table-cell;
-         vertical-align: middle;
-      }
-      .audio_row.vk_info_loaded .audio_row__info {margin-left: 30px;}
-      .wall_module .media_desc .vk_audio_size_info b {
-         background:none
-      }
+      /*css:
       .vk_audio_hq_label {
          display: inline-block;
          width: 15px;
@@ -4114,30 +4012,11 @@ vkopt['audio'] =  {
       }
       */
       });
-      return codes.dl;
+      return codes.css;
    },
    tpls: {},
    onSettings:{
       Media:{
-         audio_dl: {
-            title: 'seLinkAu',
-            info: 'infoUseNetTrafic'
-         },
-         audio_size_info: {
-            title: 'seAudioSizeAuto',
-            info: 'infoUseNetTrafic',
-            sub: {
-               audio_wait_hover:{
-                  title: 'seAudioSizeHover'
-               },
-               /*
-               size_info_on_ctrl: {
-                  title: 'seAudioSizeShowOnCtrl',
-                  class_toggler: true
-               }
-               */
-            }
-         },
          audio_skip_button: {
             title: 'seAudioSkipButton',
             default_value: true
@@ -4164,14 +4043,6 @@ vkopt['audio'] =  {
    },
    onInit: function(){
       vkopt.audio.tpls = vk_lib.get_block_comments(function(){
-      /*size_info:
-      <small class="vk_audio_size_info_wrap" id="vk_audio_size_info_{vals.id}">
-         <div class="vk_audio_size_info">
-            <span class="vk_audio_size">{vals.size}</span>
-            <span class="vk_audio_kbps">{vals.kbps}</span>
-         </div>
-      </small>
-      */
       /*wiki_code:
       <center>
          <input type="text" value="[[audio{vals.full_id}]]" readonly class="text" style="text-align: center;" onClick="this.focus();this.select();" size="30"/>
@@ -4192,8 +4063,6 @@ vkopt['audio'] =  {
       <div class="audio_pl__actions_btn vk_play_next_btn" onclick="vkopt.audio.playlists.play_next(this, {vals.ownerId}, {vals.albumId}, '{vals.accessHash}', '{vals.source}'); return cancelEvent(event)"></div>
       */
       });
-      vkopt.audio.load_sizes_cache();
-      vkbrowser.mozilla && vkopt.permissions.update();
    },
    onLibFiles: function(fn){
       if (fn == 'audioplayer.js'){
@@ -4201,20 +4070,10 @@ vkopt['audio'] =  {
          Inj.End('AudioUtils.onRowLeave', function(){
             clearTimeout(vkopt.audio.__onrowover);
          });
-         Inj.Start('AudioPlayerHTML5.prototype._isHlsUrl', function(url,obj){
-            if (obj && obj.get_url)
-               obj.url = url;
-         })
-
       }
    },
-   remove_trash:function(s){
-      s=vkRemoveTrash(s,'%'); // удаление символов не являющихся буквами/иероглифами/и т.д
-      // Удаление лишних дефисов в названиях и приведение их к одному виду
-      s=s.replace(/\[\s*\]|\(\s*\)|\{\s*\}/g,'');
-      s=s.replace(/[\u1806\u2010\u2011\u2012\u2013\u2014\u2015\u2212\u2043\u02D7\u2796\-]+/g,'\u2013').replace(/\u2013\s*\u2013/g,'\u2013');
-      s=s.replace(/[\u1806\u2010\u2011\u2012\u2013\u2014\u2015\u2212\u2043\u02D7\u2796\-]+$/,'');// ^[\s\u1806\u2010\u2011\u2012\u2013\u2014\u2015\u2212\u2043\u02D7\u2796\-]+
-      return s;
+   processNode: function(node, params){
+      vkopt.audio.playlists.replace_share(node);
    },
    playlists: {
       play_next: function(el, ownerId, albumId, accessHash, source){
@@ -4356,363 +4215,6 @@ vkopt['audio'] =  {
 
       return false;
    },
-   download_file: function(el){
-     var result = true;
-     if (el.hasAttribute('url_ready'))
-        result = vkopt.permissions.check_dl_url(el, el.href);
-     if (result) result = vkDownloadFile(el);
-     return result;
-   },
-   check_dl_url: function(el){   // если на странице не было ссылок на аудио, то при наведении на кнопку загрузки ждём их появления в кэше.
-      if (el.getAttribute('href') == ''){
-         addClass(el,'dl_url_loading');
-         var id = el.dataset["aid"];
-         var req_id = el.dataset["reqaid"];
-         function wait_and_set_url(){
-            var info = vkopt.audio.__full_audio_info_cache[id];
-            if (info){
-               var name = unclean(info.performer + ' - ' + info.title);
-               if (vkopt.settings.get('audio_clean_titles'))
-                  name = vkopt.audio.remove_trash(name);
-
-               var name = vkCleanFileName(name);
-               var url = vkopt.audio.make_dl_url(info.url, name);
-
-               if (/\.m3u8/.test(info.url)){
-                  el.dataset["m3u8"] = info.url;
-               }
-
-               el.setAttribute('download', name+'.mp3');
-               el.setAttribute('href', url);
-               el.setAttribute('url_ready','1');
-               removeClass(el,'dl_url_loading');
-               //vkopt.permissions.request_on_click(el, url, vkopt.log);
-               vkopt.audio.load_size_info(info.fullId, info.url);
-            } else {
-               setTimeout(function(){
-                  wait_and_set_url();
-               },300);
-            }
-         }
-         wait_and_set_url();
-         if (vkopt.settings.get('audio_wait_hover')){
-            var info = vkopt.audio.__full_audio_info_cache[id];
-            // если не в загруженной инфе и очередях загрузки
-            var hq = vkopt.audio.__hover_load_queue;
-            if (!info && vkopt.audio.__loading_queue.indexOf(req_id) == -1 &&  vkopt.audio.__load_queue.indexOf(req_id) == -1){
-               var idx = hq.indexOf(req_id);
-               if (idx == -1){ // не знаю возможно ли, но лучше добавлю проверку.
-                  hq.push(req_id);
-                  idx = hq.length - 1;
-               }
-               var start = Math.max(0, idx - 2);
-               var end = Math.min(start + 5, hq.length) - start;
-               var to_load = hq.splice(start, end);
-               vkopt.audio.__load_queue = vkopt.audio.__load_queue.concat(to_load);
-               vkopt.audio.load_audio_urls(); // запускаем процесс загрузки инфы об аудио из очереди
-            }
-         }
-      }
-   },
-   make_dl_url: function(url, name){
-      name = vkCleanFileName(name);
-      /*
-      // фикс-костыль, т.к для https://*.vk-cdn.net нет разрешений в манифесте.
-      // если исправить в манифесте, то после обновления расширения, оно отключится у всех пользователей хрома)
-      //url = vkopt.audio.decode_url(url);
-      if (/^https:.+\.vk-cdn\.net\//i.test(url))
-         url = url.replace(/^https:/,'http:');
-      */
-      var ext =  /\.m3u8/.test(url) ? '.m3u8' : '.mp3';
-      return url + '#FILENAME/' + vkEncodeFileName(name) + ext;
-   },
-   processNode: function(node, params){
-      vkopt.audio.playlists.replace_share(node);
-      if (!vkopt.settings.get('audio_dl')) return;
-      if (!vkopt.audio.__full_audio_info_cache)
-         vkopt.audio.__full_audio_info_cache = {};
-      var cache = vkopt.audio.__full_audio_info_cache;
-
-      var audios = geByClass('audio_row',node);
-      if (!audios.length && hasClass(node, 'audio_row')) // если вызов из AutoList.prototype._drawRows, то на входе уже элемент audio_row
-         audios = [node];
-
-      for (var i = 0; i < audios.length; i++){
-         var row = audios[i];
-         var dur = geByClass1('audio_row__info', row);
-         var info = null;
-         try {
-            info = JSON.parse(row.dataset["audio"]);
-         } catch(e) {}
-         if (!info) continue;
-         var info_obj = AudioUtils.asObject(info);
-         if (info_obj.url==""){                    // собираем очередь из аудио, которым требуется подгрузка инфы
-            if (cache[info_obj.fullId])
-               info_obj = cache[info_obj.fullId];
-            else {
-               var queue = vkopt.settings.get('audio_wait_hover') ? vkopt.audio.__hover_load_queue : vkopt.audio.__load_queue;
-               var full_id_req = info_obj.fullId  + "_" + info_obj.actionHash + "_" + info_obj.urlHash;
-               if (queue.indexOf(full_id_req) == -1 && vkopt.audio.__loading_queue.indexOf(full_id_req) == -1)
-                  queue.push(full_id_req);
-            }
-         }
-
-         if (info_obj.url)
-            info_obj.url = vkopt.audio.decode_url(info_obj.url);
-
-         //var name = unclean(info[4]+' - '+info[3]).replace(/<em>|<\/em>/g, ''); // зачищаем от тегов.
-         //name = vkCleanFileName(name);
-
-         var size = vkopt.audio._sizes_cache[info_obj.fullId];
-         var sz_labels = size ? vkopt.audio.size_to_bitrare(size, info_obj.duration) : {};
-         if (size){
-            row.dataset['kbps'] = sz_labels.kbps_raw;
-            row.dataset['filesize'] = size;
-            addClass(row, 'vk_info_loaded');
-         }
-
-         var sz_info = se(vk_lib.tpl_process(vkopt.audio.tpls['size_info'], {
-               id: info_obj.fullId,
-               url: info_obj.url || '',
-               size: sz_labels.size || '? Mb',
-               kbps: sz_labels.kbps || '? Kbps'
-            }));
-
-         // Инфа о размере/битрейте
-         if (vkopt.settings.get('audio_size_info')){
-            if (!vkopt.settings.get('audio_wait_hover') && info_obj.url)
-               vkopt_core.timeout( //setTimeout
-                  (function(id, url){
-                     return function(){
-                        vkopt.audio.load_size_info(id, url);
-                     }
-                  })(info_obj.fullId, info_obj.url),
-                  200
-               );
-
-            if (dur && !hasClass('vk_with_au_info',dur.parentNode)){
-               dur.parentNode.insertBefore(sz_info, dur);
-               addClass(dur.parentNode, 'vk_with_au_info');
-            }
-         }
-      }
-
-      // TODO: грузить инфу только при наведении на иконку меню/скачивания
-      if (!vkopt.settings.get('audio_wait_hover') && (vkopt.settings.get('audio_size_info') || vkopt.settings.get('audio_dl'))) // URL'ы нужны только для этих опций
-         vkopt.audio.load_audio_urls(); // запускаем процесс загрузки инфы об аудио из очереди
-   },
-   _sizes_cache: {}, // надо бы его загонять в локальное хранилище, но например кэш размеров со списка в ~500 аудио занимает около 10кб. т.е его нужно будет как-то по умному чистить.
-   info_thread_count: 0,
-   save_sizes_cache:function(){
-      clearTimeout(vkopt.audio._save_size_cache);
-      vkopt.audio._save_size_cache = setTimeout(function(){
-         var cache = vkopt.audio._sizes_cache;
-         var len = 0;
-         var max_items = vkopt_defaults.config.MAX_CACHE_AUDIO_SIZE_ITEMS;
-         for (var key in cache) len++;
-         if (len > max_items){
-            var new_cache = {};
-            var i = 0;
-            for (var key in cache){
-               i++;
-               if (i > len - max_items)
-                  new_cache[key] = cache[key];
-            }
-            cache = new_cache;
-         }
-         localStorage['vkopt_audio_sizes_cache'] = JSON.stringify(cache);
-      },1500);
-   },
-   load_sizes_cache:function(){
-      var sz_cache = {};
-      try{
-         sz_cache = JSON.parse(localStorage['vkopt_audio_sizes_cache'] || '{}');
-      } catch(e){}
-      vkopt.audio._sizes_cache = sz_cache;
-   },
-   clear_sizes_cache:function(){
-      localStorage['vkopt_audio_sizes_cache'] = '{}';
-   },
-   size_to_bitrare: function(size, duration){
-      var kbit = size / 128;
-      var kbps = Math.ceil(Math.round(kbit/duration)/16)*16;
-      return {
-         size: vkFileSize(size, 1).replace(/([\d\.]+)/,'<b>$1</b>'),
-         kbps: (kbps > 0 ? '<b>' + kbps + '</b> Kbps' : ''),
-         kbps_raw: kbps
-      }
-   },
-   load_size_info: function(id, url){
-      if (vkopt.audio.info_thread_count >= vkopt_defaults.config.AUDIO_INFO_LOAD_THREADS_COUNT){
-         var t = setInterval(function(){
-            if (vkopt.audio.info_thread_count < vkopt_defaults.config.AUDIO_INFO_LOAD_THREADS_COUNT){
-               clearInterval(t);
-               vkopt.audio.load_size_info(id, url);
-            }
-         },50);
-         return;
-      }
-      if (!vkopt.settings.get('audio_size_info')) return;
-
-      var size = vkopt.audio._sizes_cache[id];
-      var custom_duration = 0;
-      var rb = true;
-      var WAIT_TIME = 4000;
-      var els = geByClass('_audio_row_' + id);
-      var set_size_info = function(size){
-         for (var i = 0; i < els.length; i++){
-            var el = els[i];
-            var info = AudioUtils.asObject(AudioUtils.getAudioFromEl(el));
-            var size_el = geByClass1('vk_audio_size', el);
-            var kbps_el = geByClass1('vk_audio_kbps', el);
-
-            if (custom_duration){
-               size = size/custom_duration*info.duration
-            }
-            var sz_info = vkopt.audio.size_to_bitrare(size, info.duration);
-            val(size_el, sz_info.size);
-            val(kbps_el, sz_info.kbps);
-
-            el.dataset['kbps'] = sz_info.kbps_raw;
-            el.dataset['filesize'] = size;
-            addClass(el, 'vk_info_loaded');
-
-            if (!vkopt.audio._sizes_cache[id]){
-               if (sz_info.kbps_raw > 120){
-                  vkopt.audio._sizes_cache[id] = size;
-                  vkopt.audio.save_sizes_cache();
-               } else {
-                  vkopt.audio._sizes_cache[id] = false;
-                  vkopt.audio.save_sizes_cache();
-               }
-            }
-            return sz_info.kbps_raw > 120;
-         }
-      };
-      var get_size = function(url){
-         var reset=setTimeout(function(){
-            vkopt.audio.info_thread_count--;
-            rb = false;
-         }, WAIT_TIME);
-         vkopt.audio.info_thread_count++;
-         XFR.post(url, {}, function(h, size){
-            clearTimeout(reset);
-            vkopt.log('get_size response:', id, size, h);
-            if (rb){
-               vkopt.audio.info_thread_count--;
-            }
-            if (size > 0){
-               set_size_info(size);
-            } else {
-               // TODO: видать ссылка протухла. нужно подгрузить актуальный URL и снова запросить размер
-            }
-         }, true);
-
-      }
-
-      var need_load = true;
-      if (size)
-         need_load = !set_size_info(size);
-
-      if (need_load && els.length){
-         if (/\.m3u8/.test(url)){
-            AjGet(url, function(r){
-               var base = url.split('?')[0].match(/.+\//)[0];
-               var info = [];
-               r.replace(/#EXT-X-KEY:METHOD=([^\r\n]+)[\s\S]*?#EXTINF:(.+?),[\r\n]+(.+\.ts[^\r\n]+)/g,function(s,mtd,dur,lnk){
-                  if (mtd=="NONE")
-                     info.push({method:mtd, duration:dur, link:base+lnk})
-               });
-               var ts = info[Math.round(info.length/2)];
-               custom_duration = parseFloat(ts.duration);
-               get_size(ts.link);
-            })
-         } else {
-            get_size(url);
-         }
-      }
-   },
-   __load_queue:[], // очередь загрузки инфы
-   __hover_load_queue:[], // очередь, из которой будут аудио перемещаться в __load_queue, при наведении на иконку загрузки.
-   __loading_queue:[], // очередь текущих аудио, по которым в данный момент грузится инфа
-   __load_req_num: 1,
-   __full_audio_info_cache: {},
-   decode_url: function(url){
-      var tmp = {};
-      var orig = RegExp.prototype.test;
-      RegExp.prototype.test = function(){return false}
-      try{
-         AudioPlayerHTML5.prototype._setAudioNodeUrl(tmp, url);
-      }catch(e){}
-      RegExp.prototype.test = orig;
-      return tmp.src
-   },
-   load_audio_urls: function(){
-      if (vkopt.audio.__load_queue.length == 0 || vkopt.audio.__loading_queue.length > 0) // если нет списка на подгрузку, или что-то уже грузится - игнорим вызов
-         return;
-
-      vkopt.audio.__loading_queue = vkopt.audio.__load_queue.splice(0,Math.min(vkopt.audio.__load_queue.length, vkRandomRange(5,10))); // больше 10 аудио не принимает.
-      var load_info = function(){
-         //TODO: удаление из __load_queue отсутствущих на странице аудио
-
-         ajax.post("al_audio.php", {
-            act : "reload_audio",
-            ids :  vkopt.audio.__loading_queue.join(",")
-         }, {
-            onDone : function (data) {
-               if (!data){ // вероятно косяк с детектом множества однотипных действий
-                  console.log('Load audio info failed:', vkopt.audio.__load_req_num, vkopt.audio.__loading_queue.join(","));
-                  setTimeout(function(){
-                     console.log('try load again');
-                     load_info();
-                  }, 10000);
-               } else {
-                  //console.log('on done:', vkopt.audio.__load_req_num, data);
-                  vkopt.audio.__loading_queue = [];
-                  each(data, function (i, info) {
-
-                     info = AudioUtils.asObject(info);
-                     if (info.url)
-                        info.url = vkopt.audio.decode_url(info.url);
-
-                     vkopt.audio.__full_audio_info_cache[info.fullId] = info;
-                     if (info.url)
-                        vkopt.audio.load_size_info(info.fullId, info.url);
-                  });
-                  if (vkopt.audio.__load_queue.length > 0) // если в очереди есть аудио - продолжаем грузить
-                     vkopt.audio.load_audio_urls();
-               }
-            }
-         });
-         vkopt.audio.__load_req_num++;
-      };
-
-      clearTimeout(vkopt.audio.__load_delay); // за короткий промежуток времени аудио могло появиться в разных местах. чуть ждём пока устаканится список.
-      vkopt.audio.__load_delay = setTimeout(
-         function(){
-            load_info();
-         },
-         vkopt.audio.__load_req_num %20 == 0 ? 3500 : 350 // попытка избежать тетекта однотипных действий
-      );
-   },
-   load_all: function(callback){ // пока не используется. добавлено чтоб не забыть о таком способе получения ссылок (в новом вк нет упоминаний об этом методе).
-      var query = {
-         act : 'load_audios_silent',
-         id : (cur.allAudiosIndex == 'all' ? cur.id : cur.audioFriend),
-         gid : cur.gid,
-         claim : nav.objLoc.claim,  // Для silent-подгрузки похоже не работает ни на старой, ни на новой версии вк.
-                                    // На старой версии по URL https://vk.com/audio?claim=1 показываются только те заблоченные, что попадают в видимый без подгрузки список.
-         please_dont_ddos : 2
-      };
-      if (cur.club)
-         query.club = cur.club;
-
-      ajax.post('/al_audio.php', query, {
-         onDone : (function (data, opts) {
-            callback(data)
-         })
-      });
-   },
    onAudioRowItems: function(audioEl, audioObject, audio){
       var ap = getAudioPlayer();
       var items = {
@@ -4737,38 +4239,6 @@ vkopt['audio'] =  {
                ''//custom_attributes
             ]
          ]
-      }
-      if (vkopt.settings.get('audio_dl')){
-         items.actions.push([
-            'get_link',
-            function(audioEl, audioObject, audio){
-               vkopt.log(arguments);
-               var filename=vkCleanFileName(unclean(audioObject.performer+' - '+audioObject.title));
-               var dl_btn = geByClass1('_audio_row__action_get_link', audioEl);
-               if (dl_btn.hasAttribute('url_ready')){
-                  if (dl_btn.dataset["m3u8"]){
-                     vkopt.hls.download(
-                        dl_btn.dataset["m3u8"],
-                        dl_btn.getAttribute('download'),
-                        dl_btn.dataset["aid"]
-                     );
-                     return false;
-                  }
-
-                  var dlnk = se('<a href="'+dl_btn.href+'" download="'+filename+'.mp3" url_ready=1></a>');
-                  utilsNode.appendChild(dlnk);
-                  if (vkopt.audio.download_file(dlnk))
-                     dlnk.click();
-                  setTimeout(function(){
-                     re(dlnk);
-                  },200);
-               }
-               return true;
-            },
-            '<div></div>',// button content
-            'data-aid="{vals.fullId}" data-reqaid="{vals.fullId}_{vals.actionHash}_{vals.urlHash}" id="vk_get_link_{vals.fullId}" href="" onmouseover="vkopt.audio.check_dl_url(this);"',//custom_attributes
-            'a'
-         ]);
       }
       if (vkopt.settings.get('audio_skip_button') && gpeByClass('audio_section__current', audioEl)){ // для текущего плейлиста кнопку "воспроизветси следующей" зажали.
          // исправляем это поведение
@@ -4936,6 +4406,545 @@ vkopt['audio'] =  {
       }
    }
 };
+
+vkopt['audl'] = {
+   css: function(){
+      var codes = vk_lib.get_block_comments(function(){
+      /*dl:
+      .audio_row .audio_acts .audio_act.vk_audio_dl_btn{
+         display:block;
+      }
+      .audio_row__action_get_link{
+         float: right;
+      }
+      .audio_row .audio_acts .audio_act.vk_audio_dl_btn>div,
+      .audio_row__action_get_link div{
+         background-image: url(/images/blog/about_icons.png);
+         width: 12px;
+         height: 14px;
+         background-position: 0px -309px;
+      }
+
+      .audio_row .audio_acts .audio_act.vk_audio_acts>div {
+         margin: 6px 0 0 6px;
+      }
+      .audio_row .audio_acts .audio_act.vk_audio_dl_btn.dl_url_loading>div,
+      .audio_row__action_get_link.dl_url_loading div{
+         opacity:0.3;
+         background: url(/images/upload_inv_mini.gif) no-repeat 0% 50%;
+         width: 17px;
+         margin-left: -2px;
+      }
+      .audio_row__action_get_link div,
+      .audio_row__action_get_link.dl_url_loading div{
+         margin: 5px auto;
+      }
+
+      .vk_audio_icon_dots .audio_row .audio_acts .audio_act.vk_audio_acts{
+         display:block;
+      }
+      .vk_audio_icon_dots .audio_row .audio_acts .audio_act.vk_audio_acts>div {
+         background: url(/images/icons/profile_dots.png) no-repeat 0 5px;
+         height: 13px;
+         width: 18px;
+      }
+
+      .vk_audio_icon_dots .audio_row .audio_acts .audio_act.vk_audio_dl_btn.vk_audio_acts>div{
+         background: url(/images/icons/profile_dots.png) no-repeat 0 5px;
+         height: 13px;
+         width: 18px;
+         transition: none;
+      }
+      .vk_audio_icon_dots .audio_row .audio_acts .audio_act.vk_audio_dl_btn.vk_audio_acts:hover>div{
+         background-image: url(/images/blog/about_icons.png);
+         width: 12px;
+         height: 14px;
+         margin-left:3px;
+         margin-right:3px;
+         background-position: 0px -309px;
+      }
+      .audio_row .audio_acts .audio_act.vk_audio_dl_btn.dl_url_loading>div,
+      .audio_row .audio_acts .audio_act.vk_audio_dl_btn.dl_url_loading:hover>div{
+         opacity:0.3;
+         background: url(/images/upload_inv_mini.gif) no-repeat 0% 50%;
+         width: 18px;
+      }
+
+      .audio_duration_wrap.vk_with_au_info .audio_duration{
+         display: inline;
+      }
+
+      .audio_row.vk_info_loaded .vk_audio_size_info_wrap{
+         display: table;
+      }
+
+      .vk_audio_size_info_wrap,
+      .narrow_column .audios_module .vk_audio_size_info_wrap,
+      .audio_row:hover .vk_audio_size_info_wrap
+      {
+         display: none;
+      }
+      .vk_audio_size_info_wrap span{
+         display: block;
+      }
+      .vk_audio_size_info_wrap{
+         line-height: 10px;
+         margin-right: 3px;
+         margin-top: 12px;
+         height: 18px;
+         float:right;
+         font-size: 10px;
+         color: #777;
+      }
+      .audio_w_covers .vk_audio_size_info_wrap{
+         margin-top: 15px;
+      }
+      .vk_audio_size_info{
+         display: table-cell;
+         vertical-align: middle;
+      }
+      .audio_row.vk_info_loaded .audio_row__info {margin-left: 30px;}
+      .wall_module .media_desc .vk_audio_size_info b {
+         background:none
+      }
+      */
+      });
+      return codes.dl;
+   },
+   tpls: {},
+   onSettings:{
+      Media:{
+         audio_dl: {
+            title: 'seLinkAu',
+            info: 'infoUseNetTrafic'
+         },
+         audio_size_info: {
+            title: 'seAudioSizeAuto',
+            info: 'infoUseNetTrafic',
+            sub: {
+               audio_wait_hover:{
+                  title: 'seAudioSizeHover'
+               }
+            }
+         }
+      }
+   },
+   onInit: function(){
+      vkopt.audl.tpls = vk_lib.get_block_comments(function(){
+      /*size_info:
+      <small class="vk_audio_size_info_wrap" id="vk_audio_size_info_{vals.id}">
+         <div class="vk_audio_size_info">
+            <span class="vk_audio_size">{vals.size}</span>
+            <span class="vk_audio_kbps">{vals.kbps}</span>
+         </div>
+      </small>
+      */
+      });
+      vkopt.audl.load_sizes_cache();
+      vkbrowser.mozilla && vkopt.permissions.update();
+   },
+   onLibFiles: function(fn){
+      if (fn == 'audioplayer.js'){
+         Inj.Start('AudioPlayerHTML5.prototype._isHlsUrl', function(url,obj){
+            if (obj && obj.get_url)
+               obj.url = url;
+         })
+      }
+   },
+   onAudioRowItems: function(audioEl, audioObject, audio){
+      var items = {actions:[]};
+      if (vkopt.settings.get('audio_dl')){
+         items.actions.push([
+            'get_link',
+            function(audioEl, audioObject, audio){
+               vkopt.log(arguments);
+               var filename=vkCleanFileName(unclean(audioObject.performer+' - '+audioObject.title));
+               var dl_btn = geByClass1('_audio_row__action_get_link', audioEl);
+               if (dl_btn.hasAttribute('url_ready')){
+                  if (dl_btn.dataset["m3u8"]){
+                     vkopt.hls.download(
+                        dl_btn.dataset["m3u8"],
+                        dl_btn.getAttribute('download'),
+                        dl_btn.dataset["aid"]
+                     );
+                     return false;
+                  }
+
+                  var dlnk = se('<a href="'+dl_btn.href+'" download="'+filename+'.mp3" url_ready=1></a>');
+                  utilsNode.appendChild(dlnk);
+                  if (vkopt.audl.download_file(dlnk))
+                     dlnk.click();
+                  setTimeout(function(){
+                     re(dlnk);
+                  },200);
+               }
+               return true;
+            },
+            '<div></div>',// button content
+            'data-aid="{vals.fullId}" data-reqaid="{vals.fullId}_{vals.actionHash}_{vals.urlHash}" id="vk_get_link_{vals.fullId}" href="" onmouseover="vkopt.audl.check_dl_url(this);"',//custom_attributes
+            'a'
+         ]);
+      }
+      return items;
+   },
+   processNode: function(node, params){
+      if (!vkopt.settings.get('audio_dl')) return;
+      if (!vkopt.audl.__full_audio_info_cache)
+         vkopt.audl.__full_audio_info_cache = {};
+      var cache = vkopt.audl.__full_audio_info_cache;
+
+      var audios = geByClass('audio_row',node);
+      if (!audios.length && hasClass(node, 'audio_row')) // если вызов из AutoList.prototype._drawRows, то на входе уже элемент audio_row
+         audios = [node];
+
+      for (var i = 0; i < audios.length; i++){
+         var row = audios[i];
+         var dur = geByClass1('audio_row__info', row);
+         var info = null;
+         try {
+            info = JSON.parse(row.dataset["audio"]);
+         } catch(e) {}
+         if (!info) continue;
+         var info_obj = AudioUtils.asObject(info);
+         if (info_obj.url==""){                    // собираем очередь из аудио, которым требуется подгрузка инфы
+            if (cache[info_obj.fullId])
+               info_obj = cache[info_obj.fullId];
+            else {
+               var queue = vkopt.settings.get('audio_wait_hover') ? vkopt.audl.__hover_load_queue : vkopt.audl.__load_queue;
+               var full_id_req = info_obj.fullId  + "_" + info_obj.actionHash + "_" + info_obj.urlHash;
+               if (queue.indexOf(full_id_req) == -1 && vkopt.audl.__loading_queue.indexOf(full_id_req) == -1)
+                  queue.push(full_id_req);
+            }
+         }
+
+         if (info_obj.url)
+            info_obj.url = vkopt.audl.decode_url(info_obj.url);
+
+         //var name = unclean(info[4]+' - '+info[3]).replace(/<em>|<\/em>/g, ''); // зачищаем от тегов.
+         //name = vkCleanFileName(name);
+
+         var size = vkopt.audl._sizes_cache[info_obj.fullId];
+         var sz_labels = size ? vkopt.audl.size_to_bitrare(size, info_obj.duration) : {};
+         if (size){
+            row.dataset['kbps'] = sz_labels.kbps_raw;
+            row.dataset['filesize'] = size;
+            addClass(row, 'vk_info_loaded');
+         }
+
+         var sz_info = se(vk_lib.tpl_process(vkopt.audl.tpls['size_info'], {
+               id: info_obj.fullId,
+               url: info_obj.url || '',
+               size: sz_labels.size || '? Mb',
+               kbps: sz_labels.kbps || '? Kbps'
+            }));
+
+         // Инфа о размере/битрейте
+         if (vkopt.settings.get('audio_size_info')){
+            if (!vkopt.settings.get('audio_wait_hover') && info_obj.url)
+               vkopt_core.timeout( //setTimeout
+                  (function(id, url){
+                     return function(){
+                        vkopt.audl.load_size_info(id, url);
+                     }
+                  })(info_obj.fullId, info_obj.url),
+                  200
+               );
+
+            if (dur && !hasClass('vk_with_au_info',dur.parentNode)){
+               dur.parentNode.insertBefore(sz_info, dur);
+               addClass(dur.parentNode, 'vk_with_au_info');
+            }
+         }
+      }
+
+      // TODO: грузить инфу только при наведении на иконку меню/скачивания
+      if (!vkopt.settings.get('audio_wait_hover') && (vkopt.settings.get('audio_size_info') || vkopt.settings.get('audio_dl'))) // URL'ы нужны только для этих опций
+         vkopt.audl.load_audio_urls(); // запускаем процесс загрузки инфы об аудио из очереди
+   },
+
+   download_file: function(el){
+     var result = true;
+     if (el.hasAttribute('url_ready'))
+        result = vkopt.permissions.check_dl_url(el, el.href);
+     if (result) result = vkDownloadFile(el);
+     return result;
+   },
+   check_dl_url: function(el){   // если на странице не было ссылок на аудио, то при наведении на кнопку загрузки ждём их появления в кэше.
+      if (el.getAttribute('href') == ''){
+         addClass(el,'dl_url_loading');
+         var id = el.dataset["aid"];
+         var req_id = el.dataset["reqaid"];
+         function wait_and_set_url(){
+            var info = vkopt.audl.__full_audio_info_cache[id];
+            if (info){
+               var name = unclean(info.performer + ' - ' + info.title);
+               if (vkopt.settings.get('audio_clean_titles'))
+                  name = vkopt.audio_clean_titles.remove_trash(name);
+
+               var name = vkCleanFileName(name);
+               var url = vkopt.audl.make_dl_url(info.url, name);
+
+               if (/\.m3u8/.test(info.url)){
+                  el.dataset["m3u8"] = info.url;
+               }
+
+               el.setAttribute('download', name+'.mp3');
+               el.setAttribute('href', url);
+               el.setAttribute('url_ready','1');
+               removeClass(el,'dl_url_loading');
+               //vkopt.permissions.request_on_click(el, url, vkopt.log);
+               vkopt.audl.load_size_info(info.fullId, info.url);
+            } else {
+               setTimeout(function(){
+                  wait_and_set_url();
+               },300);
+            }
+         }
+         wait_and_set_url();
+         if (vkopt.settings.get('audio_wait_hover')){
+            var info = vkopt.audl.__full_audio_info_cache[id];
+            // если не в загруженной инфе и очередях загрузки
+            var hq = vkopt.audl.__hover_load_queue;
+            if (!info && vkopt.audl.__loading_queue.indexOf(req_id) == -1 &&  vkopt.audl.__load_queue.indexOf(req_id) == -1){
+               var idx = hq.indexOf(req_id);
+               if (idx == -1){ // не знаю возможно ли, но лучше добавлю проверку.
+                  hq.push(req_id);
+                  idx = hq.length - 1;
+               }
+               var start = Math.max(0, idx - 2);
+               var end = Math.min(start + 5, hq.length) - start;
+               var to_load = hq.splice(start, end);
+               vkopt.audl.__load_queue = vkopt.audl.__load_queue.concat(to_load);
+               vkopt.audl.load_audio_urls(); // запускаем процесс загрузки инфы об аудио из очереди
+            }
+         }
+      }
+   },
+   make_dl_url: function(url, name){
+      name = vkCleanFileName(name);
+      /*
+      // фикс-костыль, т.к для https://*.vk-cdn.net нет разрешений в манифесте.
+      // если исправить в манифесте, то после обновления расширения, оно отключится у всех пользователей хрома)
+      //url = vkopt.audl.decode_url(url);
+      if (/^https:.+\.vk-cdn\.net\//i.test(url))
+         url = url.replace(/^https:/,'http:');
+      */
+      var ext =  /\.m3u8/.test(url) ? '.m3u8' : '.mp3';
+      return url + '#FILENAME/' + vkEncodeFileName(name) + ext;
+   },
+   _sizes_cache: {}, // надо бы его загонять в локальное хранилище, но например кэш размеров со списка в ~500 аудио занимает около 10кб. т.е его нужно будет как-то по умному чистить.
+   info_thread_count: 0,
+   save_sizes_cache:function(){
+      clearTimeout(vkopt.audl._save_size_cache);
+      vkopt.audl._save_size_cache = setTimeout(function(){
+         var cache = vkopt.audl._sizes_cache;
+         var len = 0;
+         var max_items = vkopt_defaults.config.MAX_CACHE_AUDIO_SIZE_ITEMS;
+         for (var key in cache) len++;
+         if (len > max_items){
+            var new_cache = {};
+            var i = 0;
+            for (var key in cache){
+               i++;
+               if (i > len - max_items)
+                  new_cache[key] = cache[key];
+            }
+            cache = new_cache;
+         }
+         localStorage['vkopt_audio_sizes_cache'] = JSON.stringify(cache);
+      },1500);
+   },
+   load_sizes_cache:function(){
+      var sz_cache = {};
+      try{
+         sz_cache = JSON.parse(localStorage['vkopt_audio_sizes_cache'] || '{}');
+      } catch(e){}
+      vkopt.audl._sizes_cache = sz_cache;
+   },
+   clear_sizes_cache:function(){
+      localStorage['vkopt_audio_sizes_cache'] = '{}';
+   },
+   size_to_bitrare: function(size, duration){
+      var kbit = size / 128;
+      var kbps = Math.ceil(Math.round(kbit/duration)/16)*16;
+      return {
+         size: vkFileSize(size, 1).replace(/([\d\.]+)/,'<b>$1</b>'),
+         kbps: (kbps > 0 ? '<b>' + kbps + '</b> Kbps' : ''),
+         kbps_raw: kbps
+      }
+   },
+   load_size_info: function(id, url){
+      if (vkopt.audl.info_thread_count >= vkopt_defaults.config.AUDIO_INFO_LOAD_THREADS_COUNT){
+         var t = setInterval(function(){
+            if (vkopt.audl.info_thread_count < vkopt_defaults.config.AUDIO_INFO_LOAD_THREADS_COUNT){
+               clearInterval(t);
+               vkopt.audl.load_size_info(id, url);
+            }
+         },50);
+         return;
+      }
+      if (!vkopt.settings.get('audio_size_info')) return;
+
+      var size = vkopt.audl._sizes_cache[id];
+      var custom_duration = 0;
+      var rb = true;
+      var WAIT_TIME = 4000;
+      var els = geByClass('_audio_row_' + id);
+      var set_size_info = function(size){
+         for (var i = 0; i < els.length; i++){
+            var el = els[i];
+            var info = AudioUtils.asObject(AudioUtils.getAudioFromEl(el));
+            var size_el = geByClass1('vk_audio_size', el);
+            var kbps_el = geByClass1('vk_audio_kbps', el);
+
+            if (custom_duration){
+               size = size/custom_duration*info.duration
+            }
+            var sz_info = vkopt.audl.size_to_bitrare(size, info.duration);
+            val(size_el, sz_info.size);
+            val(kbps_el, sz_info.kbps);
+
+            el.dataset['kbps'] = sz_info.kbps_raw;
+            el.dataset['filesize'] = size;
+            addClass(el, 'vk_info_loaded');
+
+            if (!vkopt.audl._sizes_cache[id]){
+               if (sz_info.kbps_raw > 120){
+                  vkopt.audl._sizes_cache[id] = size;
+                  vkopt.audl.save_sizes_cache();
+               } else {
+                  vkopt.audl._sizes_cache[id] = false;
+                  vkopt.audl.save_sizes_cache();
+               }
+            }
+            return sz_info.kbps_raw > 120;
+         }
+      };
+      var get_size = function(url){
+         var reset=setTimeout(function(){
+            vkopt.audl.info_thread_count--;
+            rb = false;
+         }, WAIT_TIME);
+         vkopt.audl.info_thread_count++;
+         XFR.post(url, {}, function(h, size){
+            clearTimeout(reset);
+            vkopt.log('get_size response:', id, size, h);
+            if (rb){
+               vkopt.audl.info_thread_count--;
+            }
+            if (size > 0){
+               set_size_info(size);
+            } else {
+               // TODO: видать ссылка протухла. нужно подгрузить актуальный URL и снова запросить размер
+            }
+         }, true);
+
+      }
+
+      var need_load = true;
+      if (size)
+         need_load = !set_size_info(size);
+
+      if (need_load && els.length){
+         if (/\.m3u8/.test(url)){
+            AjGet(url, function(r){
+               var base = url.split('?')[0].match(/.+\//)[0];
+               var info = [];
+               r.replace(/#EXT-X-KEY:METHOD=([^\r\n]+)[\s\S]*?#EXTINF:(.+?),[\r\n]+(.+\.ts[^\r\n]+)/g,function(s,mtd,dur,lnk){
+                  if (mtd=="NONE")
+                     info.push({method:mtd, duration:dur, link:base+lnk})
+               });
+               var ts = info[Math.round(info.length/2)];
+               custom_duration = parseFloat(ts.duration);
+               get_size(ts.link);
+            })
+         } else {
+            get_size(url);
+         }
+      }
+   },
+   __load_queue:[], // очередь загрузки инфы
+   __hover_load_queue:[], // очередь, из которой будут аудио перемещаться в __load_queue, при наведении на иконку загрузки.
+   __loading_queue:[], // очередь текущих аудио, по которым в данный момент грузится инфа
+   __load_req_num: 1,
+   __full_audio_info_cache: {},
+   decode_url: function(url){
+      var tmp = {};
+      var orig = RegExp.prototype.test;
+      RegExp.prototype.test = function(){return false}
+      try{
+         AudioPlayerHTML5.prototype._setAudioNodeUrl(tmp, url);
+      }catch(e){}
+      RegExp.prototype.test = orig;
+      return tmp.src
+   },
+   load_audio_urls: function(){
+      if (vkopt.audl.__load_queue.length == 0 || vkopt.audl.__loading_queue.length > 0) // если нет списка на подгрузку, или что-то уже грузится - игнорим вызов
+         return;
+
+      vkopt.audl.__loading_queue = vkopt.audl.__load_queue.splice(0,Math.min(vkopt.audl.__load_queue.length, vkRandomRange(5,10))); // больше 10 аудио не принимает.
+      var load_info = function(){
+         //TODO: удаление из __load_queue отсутствущих на странице аудио
+
+         ajax.post("al_audio.php", {
+            act : "reload_audio",
+            ids :  vkopt.audl.__loading_queue.join(",")
+         }, {
+            onDone : function (data) {
+               if (!data){ // вероятно косяк с детектом множества однотипных действий
+                  console.log('Load audio info failed:', vkopt.audl.__load_req_num, vkopt.audl.__loading_queue.join(","));
+                  setTimeout(function(){
+                     console.log('try load again');
+                     load_info();
+                  }, 10000);
+               } else {
+                  //console.log('on done:', vkopt.audl.__load_req_num, data);
+                  vkopt.audl.__loading_queue = [];
+                  each(data, function (i, info) {
+
+                     info = AudioUtils.asObject(info);
+                     if (info.url)
+                        info.url = vkopt.audl.decode_url(info.url);
+
+                     vkopt.audl.__full_audio_info_cache[info.fullId] = info;
+                     if (info.url)
+                        vkopt.audl.load_size_info(info.fullId, info.url);
+                  });
+                  if (vkopt.audl.__load_queue.length > 0) // если в очереди есть аудио - продолжаем грузить
+                     vkopt.audl.load_audio_urls();
+               }
+            }
+         });
+         vkopt.audl.__load_req_num++;
+      };
+
+      clearTimeout(vkopt.audl.__load_delay); // за короткий промежуток времени аудио могло появиться в разных местах. чуть ждём пока устаканится список.
+      vkopt.audl.__load_delay = setTimeout(
+         function(){
+            load_info();
+         },
+         vkopt.audl.__load_req_num %20 == 0 ? 3500 : 350 // попытка избежать тетекта однотипных действий
+      );
+   },
+   load_all: function(callback){ // пока не используется. добавлено чтоб не забыть о таком способе получения ссылок (в новом вк нет упоминаний об этом методе).
+      var query = {
+         act : 'load_audios_silent',
+         id : (cur.allAudiosIndex == 'all' ? cur.id : cur.audioFriend),
+         gid : cur.gid,
+         claim : nav.objLoc.claim,  // Для silent-подгрузки похоже не работает ни на старой, ни на новой версии вк.
+                                    // На старой версии по URL https://vk.com/audio?claim=1 показываются только те заблоченные, что попадают в видимый без подгрузки список.
+         please_dont_ddos : 2
+      };
+      if (cur.club)
+         query.club = cur.club;
+
+      ajax.post('/al_audio.php', query, {
+         onDone : (function (data, opts) {
+            callback(data)
+         })
+      });
+   }
+}
 
 vkopt['hls'] = {
    css: function(){
@@ -5853,7 +5862,6 @@ vkopt['scrobbler'] = {
                if (fm.last_track.aid == info.aid) return;
                fm.set_love_icon(true);
                fm.last_track=info;
-               vkopt.audio_info.view(info.artist,info.title);
                if (fm.s_timer) fm.s_timer.pause();
                fm.scrobled=false;
                fm.scrobble_timer(info);
@@ -5861,7 +5869,6 @@ vkopt['scrobbler'] = {
                fm.set_icon(info,'playing');        // add scrobbler icon track
             break;
          case 'play':    //if (fm.last_track.aid!=info.aid){ } else { }
-             vkopt.audio_info.view(info.artist,info.title);
              if (!fm.scrobled){
                 if (!fm.s_timer)
                    fm.scrobble_timer(info);
@@ -5887,247 +5894,6 @@ vkopt['scrobbler'] = {
             break;
       }
    }
-};
-
-vkopt['audio_info'] = {
-   onSettings:{
-      Media:{
-         /*
-         audio_album_info: {
-            title: 'seLoadAudioAlbumInfo'
-         }
-         */
-      }
-   },
-   css: function(){
-      return vk_lib.get_block_comments(function(){
-      /*css:
-      #vk_album_info {display:none;}
-      .audio_layout #vk_album_info {display:block;}
-      #vk_album_info h4{cursor:pointer; min-height:30px; padding:3px 10px; border: 0px;}
-      #vk_album_info h4:hover{background-color: rgba(219, 227, 235, 0.5);}
-      #vk_album_info h4 img.small{max-width:30px;max-height:30px; margin-right:3px;}
-      #vk_album_info h4 img:hover{box-shadow: 0px 0px 4px #717171;}
-      #vk_album_info h4 img.big{max-width:155px;max-height:170px; margin:0 auto; margin-bottom:4px; display:none;}
-      #vk_album_info.view_big .small{display:none;}
-      #vk_album_info.view_big .big{display:block;}
-      #vk_album_info h4 .fix_btn{opacity:0;}
-      #vk_album_info h4:hover .fix_btn{opacity:0.4;}
-      #vk_album_info h4 .fix_btn:hover{opacity:0.7;}
-      #vk_album_info.fixed_album h4 .fix_btn,#vk_album_info.fixed_album h4 .fix_btn:hover{opacity:1;}
-      #vk_album_info .bio{padding:4px;}
-      .vk_album_thumb{padding:3px;}
-      .vk_album_tracks ul{list-style-type: disc; margin:0px; padding:0px; padding-left:4px; margin-left: 17px; color:#AAA;}
-      .vk_album_tracks .vk_tracks_search_btn{padding:3px 10px;}
-      .vk_audio_icon{ padding-left:12px; background: url(/images/icons/mono_iconset.gif) no-repeat 0 -221px; line-height: 11px; }
-      */
-      }).css;
-   },
-   preview_album_info_tpl: '\
-                          <h4 onclick="slideToggle(\'vk_album_full_info\');">\
-                              <img onclick="vkopt.audio_info.toggle_thumb(event);" class="big" src="%IMG2%">\
-                              <img onclick="vkopt.audio_info.toggle_thumb(event);" class="small fl_l" src="%IMG%"><span class="divide_">\
-                              <div class="fl_r fix_btn" onclick="vkopt.audio_info.pin(event)" onmouseover="vkopt.audio_info.pin(this,true)"><span class="vk_audio_icon"></span></div>\
-                              <b>%ARTIST%</b><br>%NAME%</span>\
-                          </h4>\
-                          <div id="vk_album_full_info" style="display:none;">\
-                             <!--<img class="fl_r vk_album_thumb" src="%IMG%">-->\
-                             <div class="vk_album_tracks">%TRACKS%</div>\
-                          </div>\
-   ',
-
-   alb_last_track: '',
-   current_album_info: null,
-   current_album_full_thumb: false,
-
-   pin: function(e,over){
-      if (over){
-         showTooltip(e, {text: IDL('FixAlbumInfo'), showdt: 0, black: 1, shift: [11, 0, 0]});
-         return;
-      }
-      cancelEvent(e);
-      toggleClass('vk_album_info','fixed_album');
-   },
-   toggle_thumb: function(ev){//vkViewAlbumThumb
-      cancelEvent(ev);
-      toggleClass('vk_album_info','view_big');
-      vkopt.audio_info.current_album_full_thumb=hasClass('vk_album_info','view_big');
-      vkopt.settings.set('vk_album_info_thumb',vkopt.audio_info.current_album_full_thumb?1:0);
-   },
-   view: function(artist,track){
-      if (!vkopt.settings.get('audio_album_info')) return;
-      var p = geByClass1('ui_rmenu');
-      if (!p) return;
-      if (!ge('vk_album_info')){
-         var div=se('<div id="vk_album_info" class="page_block ui_rmenu">');
-         insertAfter(div,p);
-         vkopt.audio_info.current_album_full_thumb=parseInt(vkopt.settings.get('vk_album_info_thumb') || '0') || false;
-      } else if (vkopt.audio_info.alb_last_track==artist+'-'+track && ge('vk_album_info').innerHTML!=''){
-         return;
-      }
-      if (hasClass('vk_album_info','fixed_album')) return;
-      ge('vk_album_info').innerHTML='';
-      vkopt.audio_info.alb_last_track=artist+'-'+track;
-      vkopt.audio_info.current_album_info=null;
-      vkopt.audio_info.get_info(artist,track,function(data,tracks){
-         if (!ge('vk_album_info')) return;
-         if (vkopt.audio_info.current_album_full_thumb)
-            addClass('vk_album_info','view_big');
-         if (vk_DEBUG) console.log(data);
-         var html='';
-         /*
-         console.log(
-            data.artist,
-            data.name,
-            data.releasedate,
-            data.image[1]['#text'],
-            tracks
-         );
-         */
-         if (tracks){
-            vkopt.audio_info.current_album_info=data;
-            for (var i=0; i<tracks.length;i++){
-               var track_artist = data.artist || data.name;
-               var track_name = (track_artist == 'Various Artists' ? '' : track_artist + ' - ') + tracks[i];
-               html+='<li><a href="/search?c[q]='+encodeURIComponent(track_name)+'&c[section]=audio" '+
-                  'onclick="if (checkEvent(event)) { event.cancelBubble = true; return}; '+
-                     'vkopt.audio.search_track(event, this, \''+track_name.replace(/'/,'\\\'')+'\'); return false">'+tracks[i]+'</a></li>';
-            }
-            html='<ul>'+html+'</ul>';//'<div class="vk_tracks_search_btn"><div class="button_blue button_wide"><button onclick="vkAlbumCollectPlaylist()">'+IDL('SearchAlbumTracks')+'</button></div></div>';
-         }
-         if (data.act!='artist_info'){
-            var year=(new Date(data.releasedate)).getFullYear();
-            html=vkopt.audio_info.preview_album_info_tpl.replace(/%ALBUM%/g,IDL('Album'))
-                                       .replace(/%NAME%/g,'<a href="'+data.url+'" target="_blank">'+data.name+(year?' ('+year+')':'')+'</a>')
-                                       .replace(/%ARTIST%/g,data.artist)
-                                       .replace(/%IMG%/g,data.image[1]['#text'] || '/images/question_c.gif')
-                                       .replace(/%IMG2%/g,data.image[2]['#text'] || '/images/question_c.gif')
-                                       .replace(/%TRACKS%/g,html);
-         } else {
-            html=vkopt.audio_info.preview_album_info_tpl.replace(/%ALBUM%/g,IDL('Album'))
-                                       .replace(/%NAME%/g,'')
-                                       .replace(/%ARTIST%/g,'<a href="'+data.url+'" target="_blank">'+data.name+'</a>')
-                                       .replace(/%IMG%/g,data.image[1]['#text'] || '/images/question_c.gif')
-                                       .replace(/%IMG2%/g,data.image[2]['#text'] || '/images/question_c.gif')
-                                       .replace(/%TRACKS%/g,html || (data.bio.summary?'<div class="bio">'+data.bio.summary+'</div>':''));
-         }
-         ge('vk_album_info').innerHTML=html;
-
-      });
-   },
-   album_info_cache:[],
-   get_info: function(artist,track,callback){
-      var in_cache=function(artist,track){
-         for (var i=0; i<vkopt.audio_info.album_info_cache.length;i++){
-            var c=vkopt.audio_info.album_info_cache[i];
-            if (c.artist==artist && c.track==track)
-               return c.data;
-         }
-         return false;
-      };
-      var x=in_cache(artist,track);
-      if (x){
-         if (vk_DEBUG) console.log('in cache',x);
-         setTimeout(function(){callback(x,x.tracks)},2);
-      } else
-         vkopt.scrobbler.lastfm.track.getInfo({
-               artist: artist,
-               track: track,
-               //username:LastFM_UserName,
-               autocorrect: 1
-            }, {
-               success: function(data) {
-                     if (vk_DEBUG) console.log(data);
-                     if (data.track.album) {
-                        var params={
-                           mbid: data.track.album.mbid
-                        };
-                        if (!data.track.album.mbid || data.track.album.mbid=="")
-                           params={
-                              artist: data.track.album.artist,
-                              album:data.track.album.title
-                           };
-                        vkopt.scrobbler.lastfm.album.getInfo(params, {
-                           success: function(data) {
-                              data=data.album;
-                              var tracks=[];
-                              for (var i=0; i<data.tracks.track.length;i++){
-                                 var t=data.tracks.track[i];
-                                 if (data.artist == 'Various Artists')
-                                     tracks.push(t.artist.name + ' - ' + t.name);
-                                 else
-                                     tracks.push(t.name);
-                                 if (!in_cache(artist,t.name)){
-                                    vkopt.audio_info.album_info_cache.push({
-                                       artist: artist,
-                                       track: t.name,
-                                       data:data
-                                    });
-                                 }
-                              }
-                              vkopt.audio_info.album_info_cache.push({
-                                 artist: artist,
-                                 track: track,
-                                 data:data
-                              });
-                              data.tracks=tracks;
-                              callback(data,tracks);
-                           }
-                        });
-                     } else if (data.track.artist && (data.track.artist.mbid || data.track.artist.name)){//data.track.artist.name
-                        if (vk_DEBUG) console.log('no album info... load artist info');
-                        var params={lang:'ru'};
-                        if (data.track.artist.mbid)
-                           params['mbid']=data.track.artist.mbid;
-                        else
-                           params['artist']=data.track.artist.name;
-                        //*
-                        // GET ARTIST INFO
-                        vkopt.scrobbler.lastfm.artist.getInfo(params, {
-                           success: function(a_data) {
-                             a_data=a_data.artist;
-                             a_data.act='artist_info';
-                             if (vk_DEBUG) console.log(a_data);
-
-                             // GET TOP TRACKS INFO
-                             params['limit']=100;
-                              vkopt.scrobbler.lastfm.artist.getTopTracks(params, {
-                                 success: function(data) {
-                                    data=data.toptracks;
-                                    data.act='top_tracks';
-                                    var tracks=[];
-                                    for (var i=0; i<data.track.length;i++){
-                                       var t=data.track[i];
-                                       tracks.push(t.name);
-                                    }
-                                    vkopt.audio_info.album_info_cache.push({
-                                       artist: artist,
-                                       track: track,
-                                       data:a_data
-                                    });
-                                    a_data.tracks=tracks;
-                                    callback(a_data,tracks);
-                                 },
-                                 error: function(code, message) {
-                                    if (vk_DEBUG) console.log(code, message);
-                                    callback(a_data,null);
-                                 }
-                              });
-                           }
-                        });
-
-
-
-                     }
-                     else if (vk_DEBUG) console.log('no info')
-                  },
-               error: function(code, message) {
-                     if (vk_DEBUG) console.log(code, message)
-                  }
-            }
-         );
-   }
-
 };
 
 vkopt['audioplayer'] = {
@@ -11207,6 +10973,14 @@ vkopt['audio_clean_titles'] = {
 				title: 'seAudioUntrashTitle'
 			}}
 	},
+   remove_trash:function(s){
+      s=vkRemoveTrash(s,'%'); // удаление символов не являющихся буквами/иероглифами/и т.д
+      // Удаление лишних дефисов в названиях и приведение их к одному виду
+      s=s.replace(/\[\s*\]|\(\s*\)|\{\s*\}/g,'');
+      s=s.replace(/[\u1806\u2010\u2011\u2012\u2013\u2014\u2015\u2212\u2043\u02D7\u2796\-]+/g,'\u2013').replace(/\u2013\s*\u2013/g,'\u2013');
+      s=s.replace(/[\u1806\u2010\u2011\u2012\u2013\u2014\u2015\u2212\u2043\u02D7\u2796\-]+$/,'');// ^[\s\u1806\u2010\u2011\u2012\u2013\u2014\u2015\u2212\u2043\u02D7\u2796\-]+
+      return s;
+   },
 	processNode: function (node, params) {
 		if (vkopt.settings.get('audio_clean_titles')){ // clean titles
 			var nodes=domQuery('.audio_row__performer_title, .audio_title_wrap', node);
@@ -11214,7 +10988,7 @@ vkopt['audio_clean_titles'] = {
 				FindAndProcessTextNodes(nodes[i],function(mainNode,childItem){
 					var el = mainNode.childNodes[childItem];
 					if (el.nodeValue && !/^[\u2013\s]+$/.test(el.nodeValue)){
-						el.nodeValue=vkopt.audio.remove_trash(el.nodeValue);
+						el.nodeValue=vkopt.audio_clean_titles.remove_trash(el.nodeValue);
 					}
 					return childItem;
 				});
