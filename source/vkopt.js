@@ -533,7 +533,7 @@ var vk_glue = {
       return vkopt_core.mod_str_as_node(html, vkopt_core.plugins.process_node);
    },
    process_on_post: function(url, query, options){
-      return vkopt_core.plugins.on_ajax_post(url, query, options);
+      return vkopt_core.plugins.on_ajax_post(url, query || {}, options);
    },
    response_handler: function(answer,url,q){
       // try{
