@@ -4545,10 +4545,13 @@ vkopt['audl'] = {
    },
    onLibFiles: function(fn){
       if (fn == 'audioplayer.js'){
-         Inj.Start('AudioPlayerHTML5.prototype._isHlsUrl', function(url,obj){
+         var pl = window.getAudioPlayer && getAudioPlayer();
+         if (pl && pl._impl && Object.getPrototypeOf(pl._impl)._isHlsUrl)
+         Inj.Start('Object.getPrototypeOf(getAudioPlayer()._impl)._isHlsUrl', function(url,obj){
             if (obj && obj.get_url)
                obj.url = url;
          })
+
       }
    },
    onAudioRowItems: function(audioEl, audioObject, audio){
@@ -4873,7 +4876,8 @@ vkopt['audl'] = {
       var orig = RegExp.prototype.test;
       RegExp.prototype.test = function(){return false}
       try{
-         AudioPlayerHTML5.prototype._setAudioNodeUrl(tmp, url);
+         var h5proto = Object.getPrototypeOf(getAudioPlayer()._impl);
+         h5proto._setAudioNodeUrl(tmp, url);
       }catch(e){}
       RegExp.prototype.test = orig;
       return tmp.src
@@ -5892,58 +5896,6 @@ vkopt['scrobbler'] = {
             fm.set_icon(info,'hide');              // remove icons
             fm.last_track = {};
             break;
-      }
-   }
-};
-
-vkopt['audioplayer'] = {
-   onSettings:{
-      Extra:{
-         audio_force_flash: {}
-      }
-   },
-   audioObjToArr: function(obj){
-      if (isObject(obj)){
-         var arr = ["", "", "", "", "", 0, 0, 0, "", 0, 0, "", "[]"];
-         arr[AudioUtils.AUDIO_ITEM_INDEX_ID] = obj.id;
-         arr[AudioUtils.AUDIO_ITEM_INDEX_OWNER_ID] = obj.ownerId;
-         arr[AudioUtils.AUDIO_ITEM_INDEX_TITLE] = obj.title;
-         arr[AudioUtils.AUDIO_ITEM_INDEX_PERFORMER] = obj.performer;
-         arr[AudioUtils.AUDIO_ITEM_INDEX_DURATION] = obj.duration;
-         arr[AudioUtils.AUDIO_ITEM_INDEX_URL] = obj.url;
-         arr[AudioUtils.AUDIO_ITEM_INDEX_FLAGS] = obj.flags;
-         arr[AudioUtils.AUDIO_ITEM_INDEX_CONTEXT] = obj.context;
-         arr[AudioUtils.AUDIO_ITEM_INDEX_EXTRA] = obj.extra;
-         return arr;
-      } else {
-         return obj;
-      }
-   },
-   onLibFiles: function(file_name){
-
-      if (file_name != 'audioplayer.js')
-         return;
-
-      // У меня HTML5 плеер аудио глючит, вызывая артефакты со случайными перескакиваниями проигрываемой позиции по хронометражу.
-      if (vkopt.settings.get('audio_force_flash')){
-         Inj.Start('AudioPlayerHTML5.isSupported','if (vkopt.settings.get("audio_force_flash")) return false;');
-         Inj.Start('AudioPlayer.prototype.play','vkopt.audioplayer.init_flash_impl();');
-      }
-   },
-   init_flash_impl: function(){
-      if (!vkopt.settings.get('audio_force_flash'))
-         return;
-      var cur_pl = getAudioPlayer();
-      if (cur_pl && cur_pl._impl.type != 'flash'){
-         cur_pl._impl = new AudioPlayerFlash();
-         cur_pl._initImpl();
-         cur_pl._initEvents();
-         cur_pl._restoreVolumeState();
-         setTimeout(function() {
-            cur_pl.restoreState();
-            AudioUtils.toggleAudioHQBodyClass();
-            cur_pl.updateCurrentPlaying();
-         }, 0)
       }
    }
 };
@@ -9057,6 +9009,8 @@ vkopt['face'] =  {
          .vk_invert .audio_artist_block__cover,
          .vk_invert .audio_pl_edit_box .ape_cover_thumb,
          .vk_invert .page_album_title,
+         .vk_invert .videoplayer_end_info_author_photo,
+         .vk_invert .audio_promo__link
          .vk_invert .audio_row__cover_back {
              filter: invert(1);
          }
