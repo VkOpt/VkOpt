@@ -6459,8 +6459,11 @@ vkopt['videos'] = {
          })
       }
 
-      if ((fn == 'videoplayer.js') && window.playerParams)
-         setTimeout(vkopt.videos.widget_player, 10);
+      if ((fn == 'videoplayer.js') && nav.objLoc[0]=="video_ext.php"){
+         var params = document.body.innerHTML.match(/playerParams\s*=\s*(\{[\s\S]+\}\]\});/);
+         params = params && JSON.parse(params[1]);
+         params && setTimeout(function(){vkopt.videos.widget_player(params)}, 10);
+      }
    },
    onInit: function(){
       vkopt.videos.tpls = vk_lib.get_block_comments(function(){
@@ -6521,10 +6524,10 @@ vkopt['videos'] = {
          );
       }
    },
-   widget_player: function(){
+   widget_player: function(params){
       if (!vkopt.settings.get('vid_dl')) return;
       var
-         vars = vkopt.videoview.get_vars({player:playerParams},nav.objLoc.oid+'_'+nav.objLoc.id),
+         vars = vkopt.videoview.get_vars({player:params},nav.objLoc.oid+'_'+nav.objLoc.id),
          menu = geByClass1('videoplayer_settings_menu_list');
       if (!vars || !menu) return;
 
