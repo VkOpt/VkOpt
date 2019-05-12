@@ -5990,7 +5990,7 @@ vkopt['videoview'] = {
          </div>
          */
          /*dl_link:
-         <a href="{vals.url}" download="{vals.name}" onclick="return vkopt.videoview.download_file(this)" onmouseover="vkopt.videoview.get_size(this)">{vals.caption}<span class="vk_vid_size_info"></span></a>
+         <a href="{vals.url}" download="{vals.name}" onclick="return vkopt.videoview.download_file(this)" onmouseover="vkopt.videoview.get_size(this, event)">{vals.caption}<span class="vk_vid_size_info"></span></a>
          */
          /*ext_link:
          <a class="vk_vid_external_view" href="{vals.url}">{vals.source_name}</a>
@@ -6165,7 +6165,10 @@ vkopt['videoview'] = {
          vkopt.videoview.update_dl_btn(html);
       });
    },
-   get_size: function(el){
+   get_size: function(el,ev){
+      if (ev && (ev.metaKey || ev.ctrlKey)){
+         el.href = el.href.split('#')[0];
+      }
       if (!el || !el.href || hasClass(el,'size_loaded') || /\.m3u8/.test(el.href)) return;
       var WAIT_TIME = 4000;
       var szel = geByTag1('span', el);
@@ -6509,7 +6512,7 @@ vkopt['videos'] = {
          </div>
          */
          /*wg_dl_item:
-         <a class="videoplayer_settings_menu_sublist_item vk_wg_dl_item" role="menuitemradio" tabindex="0" href="{vals.url}" download="{vals.name}" onclick="return vkopt.videoview.download_file(this)" onmouseover="vkopt.videoview.get_size(this)">
+         <a class="videoplayer_settings_menu_sublist_item vk_wg_dl_item" role="menuitemradio" tabindex="0" href="{vals.url}" download="{vals.name}" onclick="return vkopt.videoview.download_file(this)" onmouseover="vkopt.videoview.get_size(this, event)">
             {vals.caption}
             <span class="vk_vid_size_info"></span>
          </a>
@@ -6647,6 +6650,9 @@ vkopt['stories'] = {
    css: function(){
       return vk_lib.get_block_comments(function(){
       /*css:
+      .unread_story_state{
+         cursor: pointer;
+      }
       .unread_story_state:before {
          content: '';
          display: block;
