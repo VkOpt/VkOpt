@@ -52,7 +52,6 @@ var vkopt_defaults = {
       common_group_color: '90ee90',
       dislikes_enabled: false,
       dislike_icon_index: 1,
-      reverse_comments: false,
 
       //disabled:
       im_store_h: false,
@@ -6711,6 +6710,20 @@ vkopt['stories'] = {
          */
       });
    },
+   onLibFiles: function(fn){
+	  if (fn == 'ui_common.js') {
+        Inj.End('uiActionsMenu.show', function (el) {
+            if (gpeByClass('stories_story_bottom_controls', el)) {
+                if (geByClass1('dl_story', el)) return;
+                el = geByClass1('ui_actions_menu', el);
+                var data = cur.storyLayer.activeStory.story.data;
+                if (!data || !el) return;
+                var link = (data.type == 'photo') ? data.photo_url + '#FILENAME/vk_story.jpg' : data.video_url + '#FILENAME/vk_story.mp4';
+                el.appendChild(se('<a class="ui_actions_menu_item dl_story" download="" href="'+link+'" onclick="return vkDownloadFile(this);">'+IDL('download')+'</a>'));
+            }
+        })
+      }
+   },
    onRequestQuery: function(url, query, options) {
       if (url == 'al_stories.php' && query.act == 'read_stories' && vkopt.settings.get('unread_story')) {
          return false;
@@ -8595,10 +8608,6 @@ vkopt['face'] =  {
          compact_like_btns: {
             title: 'seCompactLikeBtns',
             class_toggler: true
-         },
-         reverse_comments:{
-            title: 'seReverseComments',
-            class_toggler: true
          }
       },
 
@@ -9261,31 +9270,6 @@ vkopt['face'] =  {
       if (option_id == 'hold_menu')
          window.__leftMenu && vkopt.face.onLibFiles('page_layout.js');
       vkopt.face.shift_page.btn();
-   },
-   processNode: function(node, params){
-      if(!vkopt.settings.get('reverse_comments')) return;
-      var nodes = geByClass('replies_next_main', node);
-      if(!nodes) return;
-      for(var i=0; i<nodes.length; i++){
-         var more = nodes[i];
-         var post = more.href.match(/wall(.+)/i) || [];
-         var parentMore = more.parentNode;
-         var el = '<a onclick="return vkopt.face.show_rev_comments(this);" class="replies_next replies_next_main replies_prev" data-post="' + post[1] + '"data-offset="0" data-count="3">' + IDL('showLastComments') + '</a>';
-         //parentMore.replaceChild(se(el), more);
-         parentMore.appendChild(se(el));
-      }
-   },
-   show_rev_comments: function(el){
-      var post = domData(el, 'post')
-      var post_item = post.split('_');
-      dApi.call('wall.getComments',{ owner_id: post_item[0], post_id: post_item[1], count: 1, v:'5.92'}, function(res) {
-         if(res){
-            res = res.response;
-            domData(el, 'offset', res.current_level_count-3);
-            el.setAttribute('onclick', 'return wall.showNextReplies(this, \'' + post +'\', event);');
-            return wall.showNextReplies(el, post);
-         }
-      });
    },
    inv_top_menu_item: function(){
       if (!vkopt.settings.get('invert_btn'))
