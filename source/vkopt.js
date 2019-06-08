@@ -4057,7 +4057,7 @@ vkopt['audio'] =  {
          <a href="/audio?id=-{vals.gid}&audio_id={vals.id}">{vals.id} ({vals.performer} - {vals.title})</a>
       </b>
       <br>
-      {vals:aid} -> club{vals:gid}
+      {vals.aid} -> club{vals.gid}
       */
       /*pls_play_next:
       <div class="audio_pl__actions_btn vk_play_next_btn" onclick="vkopt.audio.playlists.play_next(this, {vals.ownerId}, {vals.albumId}, '{vals.accessHash}', '{vals.source}'); return cancelEvent(event)"></div>
@@ -4176,8 +4176,9 @@ vkopt['audio'] =  {
             </div><br>';
             html+='<h4>'+IDL('SelectGroup')+'</h4>';
             for (var i=0; i<vkopt.audio._adm_gr.length;i++){
-               html+='<a href="/'+vkopt.audio._adm_gr[i].screen_name+'" onclick="return vkopt.audio.add_to_group('+oid+','+aid+','+vkopt.audio._adm_gr[i].gid+');">'+vkopt.audio._adm_gr[i].name+'</a><br>';
+               html+='<a href="/'+vkopt.audio._adm_gr[i].screen_name+'" onclick="return vkopt.audio.add_to_group('+oid+','+aid+','+vkopt.audio._adm_gr[i].id+');">'+vkopt.audio._adm_gr[i].name+'</a><br>';
             }
+
             vkopt.audio._add_box=vkAlertBox(IDL('Add'),html);
             var btn=ge('aidtogroup');
             var old_val=localStorage['vk_aid_to_group'];
@@ -4203,10 +4204,10 @@ vkopt['audio'] =  {
          };
 
          if (vkopt.audio._adm_gr==null){
-         dApi.call('groups.get',{extended:1,filter:'admin'},function(r){
+         dApi.call('groups.get',{extended:1,filter:'editor'},function(r){
             //console.log(r)
-            r.response.shift();
-            vkopt.audio._adm_gr=r.response;
+            //r.response.shift();
+            vkopt.audio._adm_gr=r.response.items;
             show_box();
             });
          } else {
@@ -8104,11 +8105,11 @@ vkopt['messages'] = {
       };
       var run=function(){
             collect(function(t){
-               dApi.call('getProfiles',{uids:users_ids.join(',')/*remixmid()+','+uid*/},function(r){
+               dApi.call('users.get',{user_ids:users_ids.join(',')/*remixmid()+','+uid*/},function(r){
                   var file_name=[];
                   for (var i=0;i<r.response.length;i++){
                      var u=r.response[i];
-                     users['%'+u.uid+'%']=u.first_name+" "+u.last_name;
+                     users['%'+u.id+'%']=u.first_name+" "+u.last_name;
 
                   }
                   for (var key in users){
@@ -9340,7 +9341,7 @@ vkopt['face'] =  {
       if (status!=null){
          show_status(status);
       } else {
-         dApi.call("getProfiles",{ uid: remixmid(), fields:'online'},function(res) {
+         dApi.call("users.get",{ user_ids: remixmid(), fields:'online'},function(res) {
             if (res.response){
                var p=res.response[0];
                var st={
