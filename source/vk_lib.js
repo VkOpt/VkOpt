@@ -1872,15 +1872,15 @@ function vk_oauth_api(app_id,scope){
          }
 
          var params = {
-            v: '3.0',
+            v: '5.95',
             format:'json'
-         };// "v": "4.6"
+         };
          if (inputParams) for (var i in inputParams) params[i] = inputParams[i];
          params['access_token']=api.access_token;
 
          var onDoneRequest = function(text){
             if (text=='') text='{}';
-            var response = {error:{error_code:666,error_msg:'VK API EpicFail'}};
+            var response = {error:{error_code:'o_O',error_msg:'VK API EpicFail'}};
             try{
                response = eval("("+text+")");
             } catch (e) { }
@@ -2084,17 +2084,28 @@ vkApis={
                           album_id: aid,
                           offset: i * PER_REQ,
                           count: PER_REQ,
-                          v: '4.1'};
+                          photo_sizes: 1,
+                          v: '5.95'};
             dApi.call('photos.get', params, function (r) {
-                total = r.response[0];
-                for (var j = 1; j < r.response.length; j++)
-                    result.push({pid: r.response[j].pid,
-                          src: r.response[j].src_xxxbig
-                            || r.response[j].src_xxbig
-                            || r.response[j].src_xbig
-                            || r.response[j].src_big
-                            || r.response[j].src
-                            || r.response[j].src_small});
+                total = r.response.count;
+                for (var j = 1; j < r.response.items.length; j++){
+                    var ph = r.response.items[j];
+                    var sizes = ph.sizes;
+                    var src = {};
+                    for (var p in sizes)
+                      if (sizes[p].type)
+                        src[sizes[p].type] = sizes[p].url;
+
+                    var hq_src = '';
+                    var q = ["w","z","y","x","r","q","p","o","m","s"];
+                    for (var sz in q)
+                      if (src[q[sz]]){
+                        hq_src = src[q[sz]];
+                        break;
+                      }
+
+                    result.push({pid: ph.id, src: hq_src});
+                }
                 if (++i * PER_REQ < total)  //Условие продолжения рекурсии - количество обработанных записей меньше общего количества
                     run(i);
                 else
@@ -2195,20 +2206,20 @@ vkApis={
             if (i == data.length)   // условие окончания рекурсии
                 callback(result);
             else if (data[i].size > 0) {
-                switch (data[i].aid) {  // замена отрицательных айдишников системных альбомов на пригодные к скачиванию.
-                    case -6:    data[i].aid = 'profile'; break;
-                    case -7:    data[i].aid = 'wall'; break;
-                    case -15:   data[i].aid = 'saved'; break;
+                switch (data[i].id) {  // замена отрицательных айдишников системных альбомов на пригодные к скачиванию.
+                    case -6:    data[i].id = 'profile'; break;
+                    case -7:    data[i].id = 'wall'; break;
+                    case -15:   data[i].id = 'saved'; break;
                 }
-                vkApis.photos(oid, data[i].aid, function (_list) {
+                vkApis.photos(oid, data[i].id, function (_list) {
                     result.push({title: data[i].title, list: _list});
                     run(++i);   // продолжение рекурсии. рекурсия здесь используется для превращения асинхронного цикла в синхронный.
                 }, progress_photos);
             } else run(++i);
         };
 
-        dApi.call('photos.getAlbums', {oid: oid, need_system: 1}, function (r) {
-            data = r.response;
+        dApi.call('photos.getAlbums', {owner_id: oid, need_system: 1}, function (r) { ////TODO: upgrade version
+            data = r.response.items;
             if (data) run(0);   // запуск рекурсии с первого альбома.
             else callback(result);
         });

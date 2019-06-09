@@ -11,8 +11,8 @@
 //
 /* VERSION INFO */
 var vVersion = 307;
-var vBuild = 190318;
-var vVersionRev = 7;
+var vBuild = 190609;
+var vVersionRev = 11;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -4057,7 +4057,7 @@ vkopt['audio'] =  {
          <a href="/audio?id=-{vals.gid}&audio_id={vals.id}">{vals.id} ({vals.performer} - {vals.title})</a>
       </b>
       <br>
-      {vals:aid} -> club{vals:gid}
+      {vals.aid} -> club{vals.gid}
       */
       /*pls_play_next:
       <div class="audio_pl__actions_btn vk_play_next_btn" onclick="vkopt.audio.playlists.play_next(this, {vals.ownerId}, {vals.albumId}, '{vals.accessHash}', '{vals.source}'); return cancelEvent(event)"></div>
@@ -4176,8 +4176,9 @@ vkopt['audio'] =  {
             </div><br>';
             html+='<h4>'+IDL('SelectGroup')+'</h4>';
             for (var i=0; i<vkopt.audio._adm_gr.length;i++){
-               html+='<a href="/'+vkopt.audio._adm_gr[i].screen_name+'" onclick="return vkopt.audio.add_to_group('+oid+','+aid+','+vkopt.audio._adm_gr[i].gid+');">'+vkopt.audio._adm_gr[i].name+'</a><br>';
+               html+='<a href="/'+vkopt.audio._adm_gr[i].screen_name+'" onclick="return vkopt.audio.add_to_group('+oid+','+aid+','+vkopt.audio._adm_gr[i].id+');">'+vkopt.audio._adm_gr[i].name+'</a><br>';
             }
+
             vkopt.audio._add_box=vkAlertBox(IDL('Add'),html);
             var btn=ge('aidtogroup');
             var old_val=localStorage['vk_aid_to_group'];
@@ -4203,10 +4204,10 @@ vkopt['audio'] =  {
          };
 
          if (vkopt.audio._adm_gr==null){
-         dApi.call('groups.get',{extended:1,filter:'admin'},function(r){
+         dApi.call('groups.get',{extended:1,filter:'editor'},function(r){
             //console.log(r)
-            r.response.shift();
-            vkopt.audio._adm_gr=r.response;
+            //r.response.shift();
+            vkopt.audio._adm_gr=r.response.items;
             show_box();
             });
          } else {
@@ -4406,6 +4407,8 @@ vkopt['audio'] =  {
       }
    }
 };
+
+
 
 
 // Scrobbling API documentation: http://users.last.fm/~tims/scrobbling/scrobbling2.html
@@ -5079,58 +5082,113 @@ vkopt['scrobbler'] = {
    }
 };
 
-vkopt['audioplayer'] = {
+
+vkopt['stories'] = {
+   css: function(){
+      return vk_lib.get_block_comments(function(){
+      /*css:
+      .unread_story_state{
+         cursor: pointer;
+      }
+      .unread_story_state:before {
+         content: '';
+         display: block;
+         width: 30px;
+         height: 15px;
+         background: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%221%202%2025%2012%22%20height%3D%2212%22%20width%3D%2225%22%20fill%3D%22%23828a99%22%3E%3Cpath%20d%3D%22M13.542%2012.763c-4.2%200-7-4-7-5s2.8-5%207-5%207%204%207%205-2.8%205-7%205zm0-1.5c1.9%200%203.5-1.6%203.5-3.5s-1.6-3.5-3.5-3.5-3.5%201.6-3.5%203.5%201.6%203.5%203.5%203.5zm0-1.9c-.9%200-1.6-.7-1.6-1.6%200-.9.7-1.6%201.6-1.6.9%200%201.6.7%201.6%201.6%200%20.9-.7%201.6-1.6%201.6zM24.124%202.147a10.345%2010.345%200%200%201%201.723%205.727%2010.283%2010.283%200%200%201-1.71%205.718l-.842-.479a9.425%209.425%200%200%200%201.564-5.241%209.472%209.472%200%200%200-1.576-5.247zM21.99%203.362c.813%201.216%201.293%202.555%201.379%204.032.009.156.014.314.014.474.002%201.678-.552%203.22-1.379%204.498l-.845-.474c.746-1.155%201.24-2.535%201.238-4.025-.001-1.503-.433-2.811-1.244-4.028zm-16.098.444c-.81%201.213-1.238%202.52-1.237%204.022.002%201.49.5%202.871%201.25%204.03l-.845.47c-.83-1.281-1.387-2.825-1.389-4.503-.002-1.665.486-3.16%201.382-4.502zM3.756%202.582a9.422%209.422%200%200%200-1.567%205.24%209.479%209.479%200%200%200%201.578%205.249l-.84.477A10.345%2010.345%200%200%201%201.202%207.82%2010.292%2010.292%200%200%201%202.915%202.1z%22%2F%3E%3C%2Fsvg%3E") no-repeat 50% / contain;
+         margin-right: 6px;
+         opacity: 0.5
+      }
+      .vk_unread_story .unread_story_state:before {
+         background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%221%202%2025%2012%22%20height%3D%2212%22%20width%3D%2225%22%20fill%3D%22%23828a99%22%3E%3Cpath%20d%3D%22M13.542%2012.757c-4.146%200-6.91-3.984-6.91-4.98%200-.997%202.764-4.98%206.91-4.98%204.146%200%206.91%203.983%206.91%204.98%200%20.996-2.764%204.98-6.91%204.98zm0-1.494c1.876%200%203.455-1.594%203.455-3.487%200-1.892-1.58-3.486-3.455-3.486s-3.455%201.594-3.455%203.486c0%201.893%201.58%203.487%203.455%203.487z%22%20fill%3D%22%23939393%22%2F%3E%3Cpath%20fill%3D%22%23939393%22%20stroke%3D%22%23939393%22%20stroke-width%3D%22.992%22%20d%3D%22M7.441%2012.284l12.476-9.07%22%2F%3E%3C%2Fsvg%3E");
+      }
+
+      .page_story_photo_cont .unread_story_state:before{
+         background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%221%202%2025%2012%22%20height%3D%2212%22%20width%3D%2225%22%20fill%3D%22%23ffffff%22%3E%3Cpath%20d%3D%22M13.542%2012.763c-4.2%200-7-4-7-5s2.8-5%207-5%207%204%207%205-2.8%205-7%205zm0-1.5c1.9%200%203.5-1.6%203.5-3.5s-1.6-3.5-3.5-3.5-3.5%201.6-3.5%203.5%201.6%203.5%203.5%203.5zm0-1.9c-.9%200-1.6-.7-1.6-1.6%200-.9.7-1.6%201.6-1.6.9%200%201.6.7%201.6%201.6%200%20.9-.7%201.6-1.6%201.6zM24.124%202.147a10.345%2010.345%200%200%201%201.723%205.727%2010.283%2010.283%200%200%201-1.71%205.718l-.842-.479a9.425%209.425%200%200%200%201.564-5.241%209.472%209.472%200%200%200-1.576-5.247zM21.99%203.362c.813%201.216%201.293%202.555%201.379%204.032.009.156.014.314.014.474.002%201.678-.552%203.22-1.379%204.498l-.845-.474c.746-1.155%201.24-2.535%201.238-4.025-.001-1.503-.433-2.811-1.244-4.028zm-16.098.444c-.81%201.213-1.238%202.52-1.237%204.022.002%201.49.5%202.871%201.25%204.03l-.845.47c-.83-1.281-1.387-2.825-1.389-4.503-.002-1.665.486-3.16%201.382-4.502zM3.756%202.582a9.422%209.422%200%200%200-1.567%205.24%209.479%209.479%200%200%200%201.578%205.249l-.84.477A10.345%2010.345%200%200%201%201.202%207.82%2010.292%2010.292%200%200%201%202.915%202.1z%22%2F%3E%3C%2Fsvg%3E");
+         margin: 6px auto 0 auto;
+
+      }
+      .vk_unread_story .page_story_photo_cont .unread_story_state:before {
+         background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%221%202%2025%2012%22%20height%3D%2212%22%20width%3D%2225%22%20fill%3D%22%23ffffff%22%3E%3Cpath%20d%3D%22M13.542%2012.757c-4.146%200-6.91-3.984-6.91-4.98%200-.997%202.764-4.98%206.91-4.98%204.146%200%206.91%203.983%206.91%204.98%200%20.996-2.764%204.98-6.91%204.98zm0-1.494c1.876%200%203.455-1.594%203.455-3.487%200-1.892-1.58-3.486-3.455-3.486s-3.455%201.594-3.455%203.486c0%201.893%201.58%203.487%203.455%203.487z%22%2F%3E%3Cpath%20stroke%3D%22%23ffffff%22%20stroke-width%3D%22.992%22%20d%3D%22M7.441%2012.284l12.476-9.07%22%2F%3E%3C%2Fsvg%3E");
+      }
+      .stories_feed_title .unread_story_state{
+         float: right;
+         opacity: 0;
+         transition: opacity 100ms ease-in-out;
+      }
+      .stories_feed_cont:hover .stories_feed_title  .unread_story_state{
+         opacity: 1;
+      }
+      .stories_groups_block_stories_info .unread_story_state {
+         position: absolute;
+         right: -42px;
+         bottom: -2px;
+      }
+      .stories_groups_block_stories_info {
+         position: relative;
+      }
+      .page_story_photo_cont .tt_black .tt_text{
+         white-space: normal;
+      }
+      .page_story_photo_cont .tt_w.tt_black.tt_down:after{
+         left: 58px;
+      }
+      */
+      }).css
+   },
    onSettings:{
-      Extra:{
-         audio_force_flash: {}
+      Extra: {
+         unread_story: {
+            class_toggler: true
+         },
+         unread_toggle_btn: {
+            default_value: true
+         }
       }
    },
-   audioObjToArr: function(obj){
-      if (isObject(obj)){
-         var arr = ["", "", "", "", "", 0, 0, 0, "", 0, 0, "", "[]"];
-         arr[AudioUtils.AUDIO_ITEM_INDEX_ID] = obj.id;
-         arr[AudioUtils.AUDIO_ITEM_INDEX_OWNER_ID] = obj.ownerId;
-         arr[AudioUtils.AUDIO_ITEM_INDEX_TITLE] = obj.title;
-         arr[AudioUtils.AUDIO_ITEM_INDEX_PERFORMER] = obj.performer;
-         arr[AudioUtils.AUDIO_ITEM_INDEX_DURATION] = obj.duration;
-         arr[AudioUtils.AUDIO_ITEM_INDEX_URL] = obj.url;
-         arr[AudioUtils.AUDIO_ITEM_INDEX_FLAGS] = obj.flags;
-         arr[AudioUtils.AUDIO_ITEM_INDEX_CONTEXT] = obj.context;
-         arr[AudioUtils.AUDIO_ITEM_INDEX_EXTRA] = obj.extra;
-         return arr;
-      } else {
-         return obj;
+   onInit: function(){
+      vkopt.stories.tpls = vk_lib.get_block_comments(function(){
+         /*change_state:
+         <div class="unread_story_state" onclick="return vkopt.stories.unread_state_toggle(this, event);" onmouseover="vkopt.stories.unread_state_tip(this);" >
+         </div>
+         */
+      });
+   },
+   onRequestQuery: function(url, query, options) {
+      if (url == 'al_stories.php' && query.act == 'read_stories' && vkopt.settings.get('unread_story')) {
+         return false;
       }
    },
-   onLibFiles: function(file_name){
-
-      if (file_name != 'audioplayer.js')
-         return;
-
-      // У меня HTML5 плеер аудио глючит, вызывая артефакты со случайными перескакиваниями проигрываемой позиции по хронометражу.
-      if (vkopt.settings.get('audio_force_flash')){
-         Inj.Start('AudioPlayerHTML5.isSupported','if (vkopt.settings.get("audio_force_flash")) return false;');
-         Inj.Start('AudioPlayer.prototype.play','vkopt.audioplayer.init_flash_impl();');
-      }
+   processNode: function(node){
+      if (!vkopt.settings.get('unread_toggle_btn')) return;
+      var ref = geByClass1('stories_feed_title', node) || geByClass1('stories_groups_block_stories_info', node) || geByClass1('page_story_photo_cont', node);
+      ref && ref.appendChild(se(vk_lib.tpl_process(vkopt.stories.tpls['change_state'], {})));
    },
-   init_flash_impl: function(){
-      if (!vkopt.settings.get('audio_force_flash'))
-         return;
-      var cur_pl = getAudioPlayer();
-      if (cur_pl && cur_pl._impl.type != 'flash'){
-         cur_pl._impl = new AudioPlayerFlash();
-         cur_pl._initImpl();
-         cur_pl._initEvents();
-         cur_pl._restoreVolumeState();
-         setTimeout(function() {
-            cur_pl.restoreState();
-            AudioUtils.toggleAudioHQBodyClass();
-            cur_pl.updateCurrentPlaying();
-         }, 0)
+   unread_state_toggle: function(el, ev){
+      cancelEvent(ev);
+      if (el.tt){
+         el.tt.hide({fasthide:true});
+         el.tt.show();
       }
-   }
-};
-
+      vkopt.settings.set('unread_story',!vkopt.settings.get('unread_story'));
+      vkopt.stories.unread_state_tip(el);
+      return false;
+   },
+   unread_state_tip: function(el){
+      var opts = {
+         text: function(){
+            return vkopt.settings.get('unread_story') ? IDL('StoryReadReportDisabled') : IDL('StoryReadReportEnabled');
+         },
+         black: true,
+         shift: [4, 5]
+      }
+      if (hasClass(el.parentNode, 'page_story_photo_cont')){
+         opts.width = 117;
+         opts.shift = [-3, 8];
+      }
+      showTooltip(el, opts);
+   },
+}
 vkopt['messages'] = {
    css: function(){
       return vk_lib.get_block_comments(function(){
@@ -6483,11 +6541,11 @@ vkopt['messages'] = {
       };
       var run=function(){
             collect(function(t){
-               dApi.call('getProfiles',{uids:users_ids.join(',')/*remixmid()+','+uid*/},function(r){
+               dApi.call('users.get',{user_ids:users_ids.join(',')/*remixmid()+','+uid*/},function(r){
                   var file_name=[];
                   for (var i=0;i<r.response.length;i++){
                      var u=r.response[i];
-                     users['%'+u.uid+'%']=u.first_name+" "+u.last_name;
+                     users['%'+u.id+'%']=u.first_name+" "+u.last_name;
 
                   }
                   for (var key in users){
@@ -7521,6 +7579,8 @@ vkopt['face'] =  {
          .vk_invert .audio_artist_block__cover,
          .vk_invert .audio_pl_edit_box .ape_cover_thumb,
          .vk_invert .page_album_title,
+         .vk_invert .videoplayer_end_info_author_photo,
+         .vk_invert .audio_promo__link
          .vk_invert .audio_row__cover_back {
              filter: invert(1);
          }
@@ -7717,7 +7777,7 @@ vkopt['face'] =  {
       if (status!=null){
          show_status(status);
       } else {
-         dApi.call("getProfiles",{ uid: remixmid(), fields:'online'},function(res) {
+         dApi.call("users.get",{ user_ids: remixmid(), fields:'online'},function(res) {
             if (res.response){
                var p=res.response[0];
                var st={
@@ -9284,6 +9344,7 @@ vkopt['im_form'] = {
       }
       if (option_id == 'im_store_h') {
          vkopt.im_form.debounce(function() {
+            if (!geByClass1('im-chat-input--text')) return;
             if (val) {
                var h = vkopt.settings.get('im_form_h');
                //if (h) vkopt.set_css('.vk_im_store_h .im-chat-input--text{height:'+h+';}','im_form_h');
