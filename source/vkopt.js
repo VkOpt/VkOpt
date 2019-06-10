@@ -392,7 +392,7 @@ var vk_glue = {
                if (f.indexOf('?') != -1)
                   f = f.split('?')[0];
 
-               if (!StaticFiles[f].l)
+               if (StaticFiles[f] && !StaticFiles[f].l)
                   wait.push(f);
             }
 
