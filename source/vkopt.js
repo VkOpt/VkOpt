@@ -11,8 +11,8 @@
 //
 /* VERSION INFO */
 var vVersion = 307;
-var vBuild = 190609;
-var vVersionRev = 11;
+var vBuild = 190610;
+var vVersionRev = 13;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -392,7 +392,7 @@ var vk_glue = {
                if (f.indexOf('?') != -1)
                   f = f.split('?')[0];
 
-               if (!StaticFiles[f].l)
+               if (StaticFiles[f] && !StaticFiles[f].l)
                   wait.push(f);
             }
 
