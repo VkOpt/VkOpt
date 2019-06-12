@@ -189,7 +189,7 @@ var vkopt_core = {
       for (var key in StaticFiles){
          if (StaticFiles[key].t == 'js'){
             if (StaticFiles[key].l)
-               vk_glue.inj_to_file(key.split('/').pop(), key);
+               vk_glue.inj_handler([key])();
             else
                window.stManager && stManager._waiters.push([[key], vk_glue.inj_handler([key])]);
          }
@@ -352,14 +352,32 @@ var vkopt_core = {
 
 var vk_glue = {
    inj_handler: function(files){ // call from stManager.add(files, callback, async)  ->   vk_glue.inj_handler(files)
+      /*
+      // узнаем имя JS-файла, для которой file_name является одной из зависимостей
+      var depOf = function(file_name){
+         if (window.stDeps)
+            for (var js in stDeps)
+               if (stDeps[js].indexOf(file_name) > -1)
+                  return js;
+         return null;
+      }
+      */
       return function(no_pending){
          if (no_pending)
             console.log('no need inject?', files);
 
          if (!isArray(files)) files = [files];
+         /*
+         // добавляем в колбек имена файлов, которые зависят от подгруженных зависимостей
+         for (var i = 0; i < files.length; i++){
+            var dep = depOf(files[i]);
+            if (dep && files.indexOf(dep) > -1)
+               files.push(dep);
+         }
+         */
          for (var i in files){
             if (files[i].indexOf('.js') != -1)
-               vk_glue.inj_to_file(files[i].split('/').pop(), files[i]);
+               vk_glue.inj_to_file(files[i].split('/').pop().replace(/\.[a-f0-9]{20}/,''), files[i]);
          }
       }
    },
