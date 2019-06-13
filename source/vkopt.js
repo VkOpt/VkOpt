@@ -9717,9 +9717,16 @@ vkopt['profile'] = {
       if (a && a.tt) a.tt.hide();
       addClass(_el,'fl_r');
       vkopt.profile.find_age(uid,function(age){
-         var txt=age?langNumeric(age, vk_lang["vk_year"]):'N/A';
-         removeClass(_el,'fl_r');
-         _el.innerHTML=txt;
+         if (age){
+            removeClass(_el,'fl_r');
+            _el.innerHTML=langNumeric(age, vk_lang["vk_year"]);
+         } else {
+            var nel = se(vk_lib.tpl_process(vkopt.profile.tpls['calc_age_el'], {
+               oid: uid,
+               year_text: langNumeric('?', vk_lang["vk_year"])
+            }));
+            _el.parentNode.replaceChild(nel, _el);
+         }
       },{el:el,width:50});
       return false;
    },
@@ -9771,7 +9778,7 @@ vkopt['profile'] = {
       dApi.call('friends.get',{
             user_id: target_uid,
             fields: 'first_name',
-            count: 20, //надеемся, что среди первых 20 будет хоть один незаблокированный акк
+            count: 100, //надеемся, что среди первых 100 будет хоть один незаблокированный акк
             v:'5.53'
          }, function(r){
             if (!r.response || !r.response.count){
@@ -9779,13 +9786,14 @@ vkopt['profile'] = {
                if (!ops.el) box.hide();
                return;
             }
-            var fid = 0;
+            var fids = [];
             // игнорим DELETED друзей, т.к невозможно использовать их список друзей
             for (var i in r.response.items)
                if (!r.response.items[i].deactivated){
-                  fid = r.response.items[i].id;
-                  break;
+                  fids.push(r.response.items[i].id);
                }
+            // рендомно выбираем друга, через которого будет искать возраст
+            var fid = fids[Math.floor(Math.random()*fids.length)];
             vkopt.log('fid',fid);
             scan(fid);
       });
