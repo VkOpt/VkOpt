@@ -11,8 +11,8 @@
 //
 /* VERSION INFO */
 var vVersion = 307;
-var vBuild = 190610;
-var vVersionRev = 13;
+var vBuild = 190617;
+var vVersionRev = 14;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -189,7 +189,7 @@ var vkopt_core = {
       for (var key in StaticFiles){
          if (StaticFiles[key].t == 'js'){
             if (StaticFiles[key].l)
-               vk_glue.inj_to_file(key.split('/').pop(), key);
+               vk_glue.inj_handler([key])();
             else
                window.stManager && stManager._waiters.push([[key], vk_glue.inj_handler([key])]);
          }
@@ -352,14 +352,32 @@ var vkopt_core = {
 
 var vk_glue = {
    inj_handler: function(files){ // call from stManager.add(files, callback, async)  ->   vk_glue.inj_handler(files)
+      /*
+      // узнаем имя JS-файла, для которой file_name является одной из зависимостей
+      var depOf = function(file_name){
+         if (window.stDeps)
+            for (var js in stDeps)
+               if (stDeps[js].indexOf(file_name) > -1)
+                  return js;
+         return null;
+      }
+      */
       return function(no_pending){
          if (no_pending)
             console.log('no need inject?', files);
 
          if (!isArray(files)) files = [files];
+         /*
+         // добавляем в колбек имена файлов, которые зависят от подгруженных зависимостей
+         for (var i = 0; i < files.length; i++){
+            var dep = depOf(files[i]);
+            if (dep && files.indexOf(dep) > -1)
+               files.push(dep);
+         }
+         */
          for (var i in files){
             if (files[i].indexOf('.js') != -1)
-               vk_glue.inj_to_file(files[i].split('/').pop(), files[i]);
+               vk_glue.inj_to_file(files[i].split('/').pop().replace(/\.[a-f0-9]{20}/,''), files[i]);
          }
       }
    },
@@ -5490,11 +5508,13 @@ vkopt['messages'] = {
          <div id="saveldr" style="display:none; padding:8px; padding-top: 14px; text-align:center; width:360px;"><img src="/images/upload.gif"></div>
          <div id="save_btn_text" style="text-align:center">
             <div class="button_blue"><button onclick="vkopt.messages.get_history({vals.peer}); return false;">{lng.SaveHistory} *.html</button></div><br>
+            <!--
             <div class="button_gray"><button onclick="toggle('msg_save_more'); return false;">(*.txt)</button></div>
             <div id="msg_save_more" style="display:none;">
             <div class="button_gray"><button onclick="vkopt.messages.get_history_txt({vals.peer}); return false;">{lng.SaveHistory}</button></div>
             <div class="button_gray"><button onclick="vkopt.messages.get_history_txt({vals.peer},true); return false;">{lng.SaveHistoryCfg}</button></div>
             </div>
+            -->
          </div>
          */
          /*msg_exp_txt_cfg:
@@ -6073,6 +6093,7 @@ vkopt['messages'] = {
          peer: peer
       });
       vkAlertBox(IDL('SaveHistory'), html, null, null, true);
+      vkopt.messages.get_history(peer);
       return false;
    },
    make_html: function(msg,user){
@@ -6370,6 +6391,7 @@ vkopt['messages'] = {
             });
          ldr && (ldr.innerHTML=vkProgressBar(100,100,w,'Export data... %'));
          show('save_btn_text');
+         val('save_btn_text', IDL('Done'));
          hide('saveldr');
 
          var file_name=[];
@@ -8135,9 +8157,16 @@ vkopt['profile'] = {
       if (a && a.tt) a.tt.hide();
       addClass(_el,'fl_r');
       vkopt.profile.find_age(uid,function(age){
-         var txt=age?langNumeric(age, vk_lang["vk_year"]):'N/A';
-         removeClass(_el,'fl_r');
-         _el.innerHTML=txt;
+         if (age){
+            removeClass(_el,'fl_r');
+            _el.innerHTML=langNumeric(age, vk_lang["vk_year"]);
+         } else {
+            var nel = se(vk_lib.tpl_process(vkopt.profile.tpls['calc_age_el'], {
+               oid: uid,
+               year_text: langNumeric('?', vk_lang["vk_year"])
+            }));
+            _el.parentNode.replaceChild(nel, _el);
+         }
       },{el:el,width:50});
       return false;
    },
@@ -8189,7 +8218,7 @@ vkopt['profile'] = {
       dApi.call('friends.get',{
             user_id: target_uid,
             fields: 'first_name',
-            count: 20, //надеемся, что среди первых 20 будет хоть один незаблокированный акк
+            count: 100, //надеемся, что среди первых 100 будет хоть один незаблокированный акк
             v:'5.53'
          }, function(r){
             if (!r.response || !r.response.count){
@@ -8197,13 +8226,14 @@ vkopt['profile'] = {
                if (!ops.el) box.hide();
                return;
             }
-            var fid = 0;
+            var fids = [];
             // игнорим DELETED друзей, т.к невозможно использовать их список друзей
             for (var i in r.response.items)
                if (!r.response.items[i].deactivated){
-                  fid = r.response.items[i].id;
-                  break;
+                  fids.push(r.response.items[i].id);
                }
+            // рендомно выбираем друга, через которого будет искать возраст
+            var fid = fids[Math.floor(Math.random()*fids.length)];
             vkopt.log('fid',fid);
             scan(fid);
       });

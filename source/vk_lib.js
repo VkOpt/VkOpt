@@ -750,7 +750,7 @@ var vkMozExtension = {
 	}
 	/* Injection to JsFunctions Lib  */
 	Inj = { // KiberInfinity's JS_InjToFunc_Lib v2.1
-		FRegEx : /function[^\(]*\(\s*([^\)]*?)\s*\)[^\{]*\{([\s\S]+)\}/i,
+		FRegEx : /(?:function|[A-Za-z0-9_]+?)[^\(]*\(\s*([^\)]*?)\s*\)[^\{]*\{([\s\S]+)\}/i,
 		DisableHistrory : false,
 		History : {},
 		InitStringifier: function(){
@@ -811,32 +811,35 @@ var vkMozExtension = {
 			return false;
 		},
       GetFunc: function(func){
-         return isFunction(func) ? func : eval('window.' + func);
+         try {
+            return isFunction(func) ? func : eval('window.' + func);
+         } catch(e) {}
       },
-		Parse : function (func) {
-			// определение распарсить переданную функцию или же найти по имени функции.
-			var fn = Inj.GetFunc(func);
+      Parse : function (func) {
+         // определение распарсить переданную функцию или же найти по имени функции.
+         var fn = Inj.GetFunc(func);
 
-			if (!fn)
-				vkopt.log('Inj_Error: "' + func + '" not found', 1);
-
+         if (!fn){
+            vkopt.log('Inj Parse Error: "' + func + '" not found', 1);
+            return;
+         }
          var wrp = Inj.Wrap(func);
          fn = wrp.inj_func_main;
 
-			var res = fn ? String(fn).match(Inj.FRegEx) : ['', '', ''];
-			if (Inj.need_porno()) {
-				res[2] = res[2].replace(/\r?\n/g, " ");
-			}
-			return {
-				func_name : func, // для последующего использования в Make, функция должна быть передана в Parse по строковому имени, либо обязательно переопредление этого параметра на нужное строковое имя.
-				func: fn,
+         var res = (fn ? String(fn).match(Inj.FRegEx) : null) || ['', '', ''];
+         if (Inj.need_porno()) {
+            res[2] = res[2].replace(/\r?\n/g, " ");
+         }
+         return {
+            func_name : func, // для последующего использования в Make, функция должна быть передана в Parse по строковому имени, либо обязательно переопредление этого параметра на нужное строковое имя.
+            func: fn,
             wrapper: wrp,
             full : res[0],
-				args : res[1],
-				code : res[2],
-				args_names : res[1].split(/\s*,\s*/) // используется для макрозамены обозначенных аргументов в коде
-			}
-		},
+            args : res[1],
+            code : res[2],
+            args_names : res[1].split(/\s*,\s*/) // используется для макрозамены обозначенных аргументов в коде
+         }
+      },
 		Make : function (parsed_func, code, args) {
 			var h = Array.prototype.join.call(args, '#_#');
 			var hs = h.replace(/[^A-Za-z0-9]+/g, ""); // генерим "хеш" инъекции. не идеально, но так быстрее, чем crc/md5 и и.д считать.
@@ -886,6 +889,12 @@ var vkMozExtension = {
       },
       Wrap : function(func){
          var src_func = Inj.GetFunc(func);
+         if (!src_func){
+				vkopt.log('Inj Wrap Error: "' + func + '" not found', 1);
+            return;
+         }
+
+
          var fn_path = ('window.'+func).match(/(.+)\.([^\.]+)/);
 
          if (Inj.Wrapped(src_func))
@@ -966,6 +975,7 @@ var vkMozExtension = {
       },
 		Start : function (func, inj_code) {
          var new_func = Inj.Wrap(func);
+         if (!new_func) return;
 
          if (isFunction(inj_code))
             new_func.add_before(inj_code)
@@ -984,6 +994,7 @@ var vkMozExtension = {
 		},
 		End : function (func, inj_code) {
          var new_func = Inj.Wrap(func);
+         if (!new_func) return;
 
          if (isFunction(inj_code))
             new_func.add_after(inj_code)
@@ -996,6 +1007,8 @@ var vkMozExtension = {
 		},
 		Before : function (func, before_str, inj_code) {
 			var s = Inj.Parse(func);
+         if (!s) return;
+
 			before_str = Inj.toRE(before_str);
 
 			if (isFunction(inj_code))
@@ -1010,6 +1023,8 @@ var vkMozExtension = {
 		},
 		After : function (func, after_str, inj_code) {
 			var s = Inj.Parse(func);
+         if (!s) return;
+
 			after_str = Inj.toRE(after_str);
 
          if (isFunction(inj_code))
@@ -1025,6 +1040,7 @@ var vkMozExtension = {
 
 		BeforeR : function (func, before_rx, inj_code) {
 			var s = Inj.Parse(func);
+         if (!s) return;
 
          if (isFunction(inj_code))
 				inj_code = Inj.Parse(inj_code).code;
@@ -1036,6 +1052,7 @@ var vkMozExtension = {
 		},
 		AfterR : function (func, before_rx, inj_code) {
 			var s = Inj.Parse(func);
+         if (!s) return;
 
          if (isFunction(inj_code))
 				inj_code = Inj.Parse(inj_code).code;
@@ -1048,6 +1065,8 @@ var vkMozExtension = {
 
 		Replace : function (func, rep_str, inj_code) {
 			var s = Inj.Parse(func);
+         if (!s) return;
+
 			s.code = s.code.replace(rep_str, inj_code); //split(rep_str).join(inj_code);
 			return Inj.Make(s, s.code, arguments);
 		}
