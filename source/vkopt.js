@@ -7072,11 +7072,13 @@ vkopt['messages'] = {
          <div id="saveldr" style="display:none; padding:8px; padding-top: 14px; text-align:center; width:360px;"><img src="/images/upload.gif"></div>
          <div id="save_btn_text" style="text-align:center">
             <div class="button_blue"><button onclick="vkopt.messages.get_history({vals.peer}); return false;">{lng.SaveHistory} *.html</button></div><br>
+            <!--
             <div class="button_gray"><button onclick="toggle('msg_save_more'); return false;">(*.txt)</button></div>
             <div id="msg_save_more" style="display:none;">
             <div class="button_gray"><button onclick="vkopt.messages.get_history_txt({vals.peer}); return false;">{lng.SaveHistory}</button></div>
             <div class="button_gray"><button onclick="vkopt.messages.get_history_txt({vals.peer},true); return false;">{lng.SaveHistoryCfg}</button></div>
             </div>
+            -->
          </div>
          */
          /*msg_exp_txt_cfg:
@@ -7655,6 +7657,7 @@ vkopt['messages'] = {
          peer: peer
       });
       vkAlertBox(IDL('SaveHistory'), html, null, null, true);
+      vkopt.messages.get_history(peer);
       return false;
    },
    make_html: function(msg,user){
@@ -7952,6 +7955,7 @@ vkopt['messages'] = {
             });
          ldr && (ldr.innerHTML=vkProgressBar(100,100,w,'Export data... %'));
          show('save_btn_text');
+         val('save_btn_text', IDL('Done'));
          hide('saveldr');
 
          var file_name=[];
