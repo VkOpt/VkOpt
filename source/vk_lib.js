@@ -1,20 +1,12 @@
-// ==UserScript==
-// @name          VKOpt 2.x Lib
-// @author        KiberInfinity( /id13391307 )
-// @namespace     http://vkopt.net/
-// @description   Vkontakte Optimizer 2.x
-// @include       *vkontakte.ru*
-// @include       *vk.com*
-// @include       *userapi.com*
-// @include       *vk.me*
-// @include       *vkadre.ru*
-// @include       *durov.ru*
-// @include       *youtube.com*
-// @include       *vimeo.com*
-// ==/UserScript==
-//*
+///////////////////////////////////////////////////
+///////////////////  vk_lib.js  ///////////////////
+///////////////////////////////////////////////////
+//   VKOpt 3.x (Vkontakte Optimizer)             //
+//   Author:   KiberInfinity( /id13391307 )      //
+//   Web:      http://vkopt.net/                 //
+//   (c) All Rights Reserved. VkOpt.             //
+///////////////////////////////////////////////////
 
-//*/
 
 
 var vk_DEBUG = false,
@@ -3073,7 +3065,7 @@ function vkDragOutFile(el) {
     },false);
 }
 function vkDownloadFile(el,ignore) {
-   if (!vkbrowser.mozilla || vk_ext_api.browsers.webext || ignore) return true;
+   if (!(vkbrowser.mozilla || vk_ext_api.browsers.gm) || vk_ext_api.browsers.webext || ignore) return true;
    //if (getSet(1) == 'n') return true;
    var a = el.getAttribute("href");
    var d = el.getAttribute("download");

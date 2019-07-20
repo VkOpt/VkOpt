@@ -1,12 +1,11 @@
-﻿// ==UserScript==
-// @description   VkOpt Languages
-// @include       *vkontakte.ru*
-// @include       *vkadre.ru*
-// @include       *vk.com*
-// ==/UserScript==
-//
-// (c) All Rights Reserved. VkOpt.
-//
+﻿///////////////////////////////////////////////////
+///////////////////  vklang.js  ///////////////////
+///////////////////////////////////////////////////
+//   VKOpt 3.x (Vkontakte Optimizer)             //
+//   Author:   KiberInfinity( /id13391307 )      //
+//   Web:      http://vkopt.net/                 //
+//   (c) All Rights Reserved. VkOpt.             //
+///////////////////////////////////////////////////
 
 
 vk_lang_ru={

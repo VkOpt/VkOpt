@@ -1,14 +1,12 @@
-﻿// ==UserScript==
-// @name          VKOpt 3.x
-// @author        KiberInfinity( /id13391307 )
-// @namespace     http://vkopt.net/
-// @description   Vkontakte Optimizer 3.x
-// @include       *vkontakte.ru*
-// @include       *vk.com*
-// ==/UserScript==
-//
-// (c) All Rights Reserved. VkOpt.
-//
+﻿//////////////////////////////////////////////////
+///////////////////  vkopt.js  ///////////////////
+//////////////////////////////////////////////////
+//  VKOpt 3.x (Vkontakte Optimizer)             //
+//  Author:   KiberInfinity( /id13391307 )      //
+//  Web:      http://vkopt.net/                 //
+//  (c) All Rights Reserved. VkOpt.             //
+//////////////////////////////////////////////////
+
 /* VERSION INFO */
 var vVersion = 307;
 var vBuild = 190617;
@@ -130,7 +128,7 @@ var vkopt_core = {
    dom_ready: function(fn, ctx){
       var ready, timer;
       var onChange = function (e) {
-         if (!window.IDL || !window.VK_LANGS) return; // Ждём vk_lib.js и vklang.js
+         if ((typeof IDL == "undefined") || (typeof VK_LANGS == "undefined")) return; // Ждём vk_lib.js и vklang.js
          if (document.getElementById('footer') || document.getElementById('footer_wrap')) {
             fireDOMReady();
          } else if (e && e.type == "DOMContentLoaded") {
@@ -1388,7 +1386,7 @@ vkopt.permissions = { // for chromium
       });
    },
    check_dl_url: function(el, url){
-      if (!(vkbrowser.chrome || vk_ext_api.browsers.webext) || vk_ext_api.browsers.maxthon || vkopt.permissions.check_url(url, vkopt.permissions.origins_cache)){
+      if (vk_ext_api.browsers.gm || !(vkbrowser.chrome || vk_ext_api.browsers.webext) || vk_ext_api.browsers.maxthon || vkopt.permissions.check_url(url, vkopt.permissions.origins_cache)){
          return true;
       } else {
          show(boxLayerBG);
