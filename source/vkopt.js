@@ -1386,7 +1386,7 @@ vkopt.permissions = { // for chromium
       });
    },
    check_dl_url: function(el, url){
-      if (vk_ext_api.browsers.gm || !(vkbrowser.chrome || vk_ext_api.browsers.webext) || vk_ext_api.browsers.maxthon || vkopt.permissions.check_url(url, vkopt.permissions.origins_cache)){
+      if ((vk_ext_api.browsers.gm || {}).download || !(vkbrowser.chrome || vk_ext_api.browsers.webext) || vk_ext_api.browsers.maxthon || vkopt.permissions.check_url(url, vkopt.permissions.origins_cache)){
          return true;
       } else {
          show(boxLayerBG);

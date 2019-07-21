@@ -3065,7 +3065,7 @@ function vkDragOutFile(el) {
     },false);
 }
 function vkDownloadFile(el,ignore) {
-   if (!(vkbrowser.mozilla || vk_ext_api.browsers.gm) || vk_ext_api.browsers.webext || ignore) return true;
+   if (!(vkbrowser.mozilla || (vk_ext_api.browsers.gm || {}).download) || vk_ext_api.browsers.webext || ignore) return true;
    //if (getSet(1) == 'n') return true;
    var a = el.getAttribute("href");
    var d = el.getAttribute("download");
