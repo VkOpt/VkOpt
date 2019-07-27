@@ -8062,8 +8062,8 @@ vkopt['messages'] = {
                   switch(attach.type){
                      case  "photo":
                         var a=attach.photo;
-                        var src=a.src_xxxbig || a.src_xxbig || a.src_xbig || a.src_big || a.src || a.src_small;
-                        var link="vk.com/photo"+a.owner_id+'_'+a.pid;
+                        var src=a.sizes.sort((a, b) => b.width - a.width)[0].url;
+                        var link="vk.com/photo"+a.owner_id+'_'+a.id;
                         attach_text+=link+" : "+src+"\r\n"+(a.text?a.text+"\r\n":"");
                         break;
                      case  "video":
