@@ -3126,7 +3126,7 @@ vkopt['photoview'] =  {
 
    },
    onResponseAnswer: function(answer, url, q) {
-      if (url == '/al_photos.php' && q.act == 'save_me' && answer[0]){
+      if (url == 'al_photos.php' && q.act == 'save_me' && answer[0]){
          if (!vkopt.settings.get('ph_show_save_info')) return;
          if (window.cur && cur.pvData){
 			var idx = cur.pvIndex,
@@ -3384,7 +3384,7 @@ vkopt['photos'] =  {
       }
    },
    onResponseAnswer: function(answer,url,q){
-      if (url == '/al_photos.php' && q.act == 'edit_photo' && (vkopt.settings.get('photo_replacer'))){
+      if (url == 'al_photos.php' && q.act == 'edit_photo' && (vkopt.settings.get('photo_replacer'))){
          answer[1] = vkopt_core.mod_str_as_node(answer[1], vkopt.photos.update_photo_btn, {source:'process_edit_photo_response', url:url, q:q});
       }
    },
@@ -8343,6 +8343,7 @@ vkopt['attacher'] = {
    onResponseAnswer: function(answer, url, q){
       if (!vkopt.settings.get('attach_media_by_id'))
             return;
+      //TODO: repair
       if (url == '/audio' && q.act == 'a_choose_audio_box' && !q.q && answer[2] && answer[2].replace){
          if (answer[2].indexOf('vkopt.attacher.audio.check_query') == -1)
             answer[2] = answer[2].replace(/(cur\.onChangeAudioQuery\s*=\s*function[^\{]+\{([\r\n\s]*))/,'$1vkopt.attacher.audio.check_query(arguments[0]);$2');
@@ -9227,13 +9228,14 @@ vkopt['face'] =  {
    },
    onResponseAnswer: function(answer, url, q){
       // запихиваем свой обработчик в момент получения данных о видео.
-      if (url == '/al_video.php' && q.act == 'show'){
+      if (url == 'al_video.php' && q.act == 'show'){
          if (answer[2])
             answer[2] = answer[2].replace(/(var\s*isInline)/,'\n   vkopt.face.ad_block.video(vars);\n $1');
-         if (answer[5] && answer[5].mvData && vkopt.settings.get('ad_block')){
-            answer[5]['no_ads'] = 1;
-            answer[5].player && answer[5].player.params && each(
-               answer[5].player.params,
+         var obj = answer[4] && answer[4].mvData ? answer[4] : answer[5];
+         if (obj && obj.mvData && vkopt.settings.get('ad_block')){
+            obj['no_ads'] = 1;
+            obj.player && obj.player.params && each(
+               obj.player.params,
                function(i,item){
                   item['no_ads'] = 1;
                }
@@ -10601,7 +10603,7 @@ vkopt['friends'] = {
       if (
          window.cur && cur.userLists &&
          vkopt.settings.get('accept_more_cats') &&
-         url == '/al_friends.php' && q.act == 'add' &&
+         url == 'al_friends.php' && q.act == 'add' &&
          q.request == 1 && q.select_list == 1 && answer[0]
       ){
          answer[0] = vkopt.friends.accept_more_cats(answer[0], q.mid);
