@@ -3160,9 +3160,9 @@ vkopt['photoview'] =  {
             )) {
    			if (!cur.pvTagger && !boxQueue.count() && !document.activeElement.focused ) { //&& (!cur.pvComment || !cur.pvComment.focused)
    				if (is_next) {
-   					photoview.show(cur.pvListId, cur.pvIndex + 1);
+   					Photoview.show(cur.pvListId, cur.pvIndex + 1);
    				} else {
-   					photoview.show(cur.pvListId, cur.pvIndex - 1);
+   					Photoview.show(cur.pvListId, cur.pvIndex - 1);
    				}
    			}
    			vkopt.photoview.allow_scroll_view = false;
