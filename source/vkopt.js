@@ -3281,8 +3281,16 @@ vkopt['photoview'] =  {
    move_comments_block:{
       inj: function(){
          if (vkopt.settings.get('pv_comm_move_down') && typeof Photoview != 'undefined'){
-            Inj.Replace('Photoview.updateVerticalPosition', /Math\.round/g, 'vkopt.photoview.move_comments_block.mod');
-            Inj.Replace('Photoview.doShow', /new uiScroll\(/i, "(vkopt.settings.get('pv_comm_move_down') ? function(){} : new uiScroll)("); // вырубаем подмену скролла для блока комментов
+            Inj.End('Photoview.updateVerticalPosition', function(){
+               if (cur.pvCont && vkopt.settings.get('pv_comm_move_down')) {
+                  var m = parseInt(getStyle(layer, "margin-top"));
+                  setStyle(layer, "margin-top", vkopt.photoview.move_comments_block.mod(m))
+               }
+            });
+            Inj.End('Photoview.doShow', function(){  // вырубаем подмену скролла для блока комментов
+               if (cur.pvNarrowScrollbar)
+                  cur.pvNarrowScrollbar.destroy();
+            });
             if (!vkopt.photoview._SIDE_COLUMN_WIDTH_BKP && Photoview.SIDE_COLUMN_WIDTH)
                vkopt.photoview._SIDE_COLUMN_WIDTH_BKP = Photoview.SIDE_COLUMN_WIDTH;
             Photoview.SIDE_COLUMN_WIDTH = 0;
