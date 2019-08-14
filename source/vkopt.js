@@ -433,7 +433,7 @@ var vk_glue = {
          })
 
          // Перехватываем результат ajax-запросов с возможностью модификации перед колбеком
-         Inj.Start('ajax._post',
+         Inj.Start('ajax.post',
          // ARG0 - url; ARG1 - query object; ARG2 - options
          function(url, query, options){
              // Mod callback:
