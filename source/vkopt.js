@@ -11227,7 +11227,7 @@ vkopt['vk_dislike'] = {
          var params={
             //oauth:1,
             //method:'users.get',
-            uids:ids.join(','),
+            user_ids:ids.join(','),
             fields:'first_name,last_name,photo_100'
          };
          if (ids.length>0)
@@ -11659,7 +11659,7 @@ vkopt['vk_dislike'] = {
          var users=info.users || [];
          for (var i=0; i<users.length;i++){
             html+=item_tpl.replace(/%NAME%/g,users[i].first_name+' '+users[i].last_name)
-                          .replace(/%UID%/g,users[i].uid)
+                          .replace(/%UID%/g,users[i].id)
                           .replace(/%AVA%/g,users[i].photo_100);
          }
          val(ge('dislike_table_'+post), html);
@@ -11816,7 +11816,7 @@ vkopt['vk_dislike'] = {
          var users=info.users;
          for (var i=0; i<users.length;i++){
             html+=item_tpl.replace(/%NAME%/g,users[i].first_name)
-                          .replace(/%UID%/g,users[i].uid)
+                          .replace(/%UID%/g,users[i].id)
                           .replace(/%AVA%/g,users[i].photo_100);
             html+=((i+1)%IN_ROW==0)?'</tr><tr>':'';
          }

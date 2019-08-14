@@ -3364,8 +3364,8 @@ function vk_tag_api(section,url,app_id){
          var url=t.page_url+t.section+'/'+obj_id;
          var code='\
          var like=API.likes.getList({type:"sitepage",page_url:"'+url+'",owner_id:"'+t.app+'",count:'+count+',offset:'+offset+'});\
-         var users=API.users.get({uids:like.users,fields:"photo_rec"});\
-         return {count:like.count,users:users,uids:like.users};\
+         var users=API.users.get({user_ids:like.items,fields:"photo_rec"});\
+         return {count:like.count,users:users,uids:like.items};\
          ';
          //api_for_dislikes
          api4dislike.call('execute',{code:code},function(r){
@@ -3399,7 +3399,7 @@ function vk_tag_api(section,url,app_id){
                         if (!raw[key]) continue;
                         data[key] = {
                            count: raw[key].count,
-                           my: raw[key].users[0]==vk.id
+                           my: raw[key].items[0]==vk.id
                         };
                      }
                      if (callback) callback(data);
