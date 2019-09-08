@@ -9270,12 +9270,12 @@ vkopt['face'] =  {
       },
       audio: function(){
          if (vkopt.settings.get('ad_block'))
-            Inj.Start('AudioPlayer.prototype._adsIsAllowed',function(){
+            Inj.Start('Object.getPrototypeOf(getAudioPlayer().ads)._isAllowed',function(){
                if (!vkopt.settings.get("ad_block")) return;
                this.prevent = true;
                this.prevent_all = true;
                this.return_result = {
-                  type: AudioPlayer.ADS_ALLOW_DISABLED
+                  type: 1//AudioPlayer.ADS_ALLOW_DISABLED
                }
             });
       }
