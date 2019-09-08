@@ -9668,7 +9668,7 @@ vkopt['profile'] = {
                pv_sz[el.type+'_'] = [el.url,el.width,el.height];
                pv_sz[el.type+'_src'] = el.url;
          })
-         stManager.add(["photoview.js", "photoview.css"],function(){
+         stManager.add([jsc("web/photoview.js"), "photoview.css"],function(){
             extend(cur, {
                pvCancelLoad: function() {},
                pvData: cur.pvData || {},
