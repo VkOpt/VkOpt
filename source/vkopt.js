@@ -9886,11 +9886,8 @@ vkopt['extra_online'] = {
             extra = se('<span class="vk_extra_online_info" title="'+(new Date(info.last_seen.time*1000)).format('HH:MM dd.mm.yyyy')+'">('+info.last_seen.platform_title+')</span>');
 
          var p = geByClass1('profile_online');
-         if (p && hasClass(p, 'is_online'))
-            p = geByClass1('profile_online_lv');
-         else
-            p = geByClass1('profile_time_lv');
 
+         if (p) p = geByClass1('profile_online_lv') || geByClass1('profile_time_lv');
          if (p){
             if (p.childNodes.length < 1 && !info.online && info.last_seen) // no last seen info
                p.innerHTML = (new Date(info.last_seen.time*1000)).format('HH:MM dd.mm.yyyy');
