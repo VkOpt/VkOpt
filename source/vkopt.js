@@ -3540,6 +3540,9 @@ vkopt['albums'] = {
             vertical-align: top;
             margin-right: 10px;
          }
+         .vk_bottom_arrow {
+            background: url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20fill%3D%22%23828A99%22%20d%3D%22M5%2014c1.1%200%202-.9%202-2s-.9-2-2-2-2%20.9-2%202%20.9%202%202%202zm7%200c1.1%200%202-.9%202-2s-.9-2-2-2-2%20.9-2%202%20.9%202%202%202zm7%200c1.1%200%202-.9%202-2s-.9-2-2-2-2%20.9-2%202%20.9%202%202%202z%22%2F%3E%3C%2Fsvg%3E') 50% 31px no-repeat;
+         }
          */
       }).css
    },
@@ -3606,6 +3609,34 @@ vkopt['albums'] = {
          });
       }
       return items;
+   },
+   onResponseAnswer: function(answer, url, q){
+      if (
+         url == 'wkview.php' && q.act == 'show' &&
+         answer && answer[1] &&
+         !q.offset && q.w &&
+         /history.+_photo/.test(q.w)
+      ){
+         var listId = (answer[1].match(/showPhoto\([^,]+,\s*'(mail\d+)',/) || [])[1];
+         if (listId)
+            answer[1] = vkopt_core.mod_str_as_node(answer[1], function(node){
+               var item = geByClass1('ui_tab_sel', node);
+               item.setAttribute('onmouseover', "vkopt.albums.mail_photos_menu(this,'"+listId+"');");
+               addClass(item, 'vk_bottom_arrow');
+            });
+      }
+   },
+   mail_photos_menu: function(node, listId){
+      var opts = {
+         appendToParent : true,
+         defaultSide : "bottom",
+         content: vk_lib.tpl_process(vkopt.photos.tpls['more_acts_item'], {
+                     onclick:    "return vkopt.albums.download(null,'"+listId+"');",
+                     text:       IDL('download')
+                  }),
+         autoShow : !0
+      };
+      new ElementTooltip(node, opts);
    },
    download: function(aid, oid){
       var album_name = (aid=='tag' || aid=='photos') ?  aid+oid : "album"+oid+"_"+aid;
