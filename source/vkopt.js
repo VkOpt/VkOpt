@@ -8363,7 +8363,7 @@ vkopt['attacher'] = {
             answer[2] = answer[2].replace(/(box\.hideCloseProgress\(\);)/,'$1\n   vkopt.attacher.audio.check_query(cur.chooseAudioQuery);');
       }
 
-      if (url == '/docs.php' && q.act == 'a_choose_doc_box' && !q.switch_tab && isString(answer[1])){
+      if (url == 'docs.php' && q.act == 'a_choose_doc_box' && !q.switch_tab && isString(answer[1])){
          // answer:
          // [0] - box title content
          // [1] - box body content
