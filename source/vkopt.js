@@ -12909,8 +12909,8 @@ vkopt['attachments_and_link'] = {
     template: function () {
         return vk_lib.get_block_comments(function () {/*menu_button:
          <li>
-         <div class="ui_tab my_link_repost" onclick="vkopt['{vals.module_id}'].clickMenu(cur.peer)">
-         {lng.LinksAndRepost}
+         <div class="ui_tab my_link_repost" onclick="vkopt['{vals.module_id}'].clickMenu(cur.peer)" title="{lng.LinksAndRepost}">
+         {lng.Repost}
          </div>
          </li>
          */

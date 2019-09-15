@@ -772,6 +772,7 @@ vk_lang_ru={
    ,"seAudioSkipButton":"\u041a\u043d\u043e\u043f\u043a\u0430 \u00ab\u041f\u0440\u043e\u043f\u0443\u0441\u0442\u0438\u0442\u044c\u00bb \u0432 \u043f\u043b\u0435\u0435\u0440\u0435 \u0438\u0437 \u0448\u0430\u043f\u043a\u0438"
    ,"seStoreHeightImTxt":"\u0417\u0430\u043f\u043e\u043c\u0438\u043d\u0430\u0442\u044c \u0432\u044b\u0441\u043e\u0442\u0443 \u043f\u043e\u043b\u044f \u0432\u0432\u043e\u0434\u0430 \u0432 \u0434\u0438\u0430\u043b\u043e\u0433\u0430\u0445"
    ,'seDislikeEnable': '\u0412\u043A\u043B\u044E\u0447\u0438\u0442\u044C \u0434\u0438\u0437\u043B\u0430\u0439\u043A\u0438'
+   ,"Repost": "\u0420\u0435\u043f\u043e\u0441\u0442\u044b"
    ,"LinksAndRepost": "\u0421\u0441\u044B\u043B\u043A\u0438  \u0438  \u0440\u0435\u043F\u043E\u0441\u0442\u044B"
    ,"LinksAndRepost_all": "\u0412\u0441\u0435"
    ,"LinksAndRepost_forward": "\u0424\u043E\u0440\u0432\u0430\u0440\u0434\u044B"
@@ -1751,6 +1752,7 @@ vk_lang_en={//by Hzy
   ,"seRecentEmoji":"Block with recent Emoji in dialogs"
   ,"Skip_pl":"Skip"
   ,"seAudioSkipButton":"«Skip» button in topplayer"
+  ,"Repost": "Repost"
   ,"LinksAndRepost": "Links and repost"
   ,"LinksAndRepost_all": "All"
   ,"LinksAndRepost_forward": "Forward"
@@ -2729,6 +2731,7 @@ vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
    "seStoreHeightImTxt": "\u0417\u0430\u043f\u0430\u043c'\u044f\u0442\u043e\u0432\u0443\u0432\u0430\u0442\u0438 \u0432\u0438\u0441\u043e\u0442\u0443 \u043f\u043e\u043b\u044f \u0432\u0432\u043e\u0434\u0443 \u0432 \u0434\u0456\u0430\u043b\u043e\u0433\u0430\u0445",
    "seAudioSkipButton": "\u041a\u043d\u043e\u043f\u043a\u0430 \u00ab\u041f\u0440\u043e\u043f\u0443\u0441\u0442\u0438\u0442\u0438\u00bb \u0432 \u043f\u043b\u0435\u0454\u0440\u0456 \u0437 \u0448\u0430\u043f\u043a\u0438",
    "seDislikeEnable": "\u0423\u0432\u0456\u043c\u043a\u043d\u0443\u0442\u0438 \u0434\u0438\u0437\u043b\u0430\u0439\u043a\u0438",
+   "Repost": "\u0420\u0435\u043f\u043e\u0441\u0442\u0438",
    "LinksAndRepost": "\u041f\u043e\u0441\u0438\u043b\u0430\u043d\u043d\u044f \u0456 \u0440\u0435\u043f\u043e\u0441\u0442\u0438",
    "LinksAndRepost_all": "\u0412\u0441\u0456",
    "LinksAndRepost_forward": "\u0424\u043e\u0440\u0432\u0430\u0440\u0434\u0438",
@@ -5323,6 +5326,7 @@ vk_lang_md={
     "seAudioSkipButton": "Butonul \u00abTreci peste\u00bb \u00een player-ul din antetul paginii",
     "seStoreHeightImTxt": "Memoreaz\u0103 \u00een\u0103l\u021bimea spa\u021biului de scriere \u00een dialoguri",
     "seDislikeEnable": "Acvtiveaz\u0103 Nu Place",
+    "Repost": "Repost\u0103ri",
     "LinksAndRepost": "Link-uri \u0219i Repost\u0103ri",
     "LinksAndRepost_all": "Toate",
     "LinksAndRepost_forward": "Forward",
@@ -5489,6 +5493,7 @@ vk_lang_lv = {
    "seAudioSkipButton": "Izlaist pogu \u00abAtska\u0146ot\u0101j\u0101\u00bb no galvenes",
    "seStoreHeightImTxt": "Atcerieties ievades lauka augstumu dialogos",
    "seDislikeEnable": "Iesl\u0113gt \u00abMan nepat\u012bk\u00bb",
+   "Repost": "Reposts",
    "LinksAndRepost": "Atsauces un reposts",
    "LinksAndRepost_all": "Viss",
    "LinksAndRepost_forward": "Forvards",
