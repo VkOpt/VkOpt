@@ -3392,11 +3392,12 @@ vkopt['photos'] =  {
       stManager.add(['upload.js','filters.js'],function(){
          var photo=photo_id;
          if (/photo-?\d+_\d+/.test(photo)) photo=photo.match(/photo(-?\d+_\d+)/)[1];
-         AjPost('/al_photos.php',{'act':'edit_photo', 'al': 1, 'photo': photo},function(t){
-               var upload_url=t.match(/"upload_url":"(.*)"/);
+
+         var makeUploader = function(t){
+               var upload_url=t.match(/"upload_url":"(.*?)"/);
                var hash=t.match(/', '([a-f0-9]{18})'\)/);
                var aid=t.match(/selectedItems:\s*\[(-?\d+)\]/)[1];
-               upload_url = upload_url[1].replace(/\\\//g, '/').split('"')[0];
+               upload_url = upload_url[1].replace(/[\\]+/g, '').split('"')[0];
                if (vk_DEBUG) console.log('url',upload_url);
                Upload.init('vk_upd_photo', upload_url, {}, {
                   file_name: 'photo',
@@ -3434,6 +3435,7 @@ vkopt['photos'] =  {
                            box.hide();
                            vkMsg(IDL('Done'),2000);
                            if (photoObj && thumb) {
+                              cur.filterPhoto = photo_id;
                               if (typeof FiltersPE != 'undefined'){
                                  FiltersPE.changeThumbs(thumb);
                               }
@@ -3448,6 +3450,13 @@ vkopt['photos'] =  {
                   },
                   lang: { "button_browse":IDL("Browse",1) }
                });
+         }
+
+
+         ajax.post('/al_photos.php', {act:'edit_photo', /*cors: 1, webgl: 1,*/ photo: photo}, {
+            onDone: function(s, html, js, noname) {
+               makeUploader(js);
+            }
          });
       });
       return false;
