@@ -3388,11 +3388,24 @@ vkopt['photos'] =  {
       }
    },
    update_photo: function(photo_id){
-      var box=vkAlertBox(IDL('Upload'),'<center><div id="vk_upd_photo"></div><div id="vk_upd_photo_progress"></div></center>');
+      var
+         box=vkAlertBox(IDL('Upload'),'<center><div id="vk_upd_info"></div><div id="vk_upd_photo"></div><div id="vk_upd_photo_progress"></div></center>'),
+         source_size = null,
+         new_size = null;
+
       stManager.add(['upload.js','filters.js'],function(){
          var photo=photo_id;
          if (/photo-?\d+_\d+/.test(photo)) photo=photo.match(/photo(-?\d+_\d+)/)[1];
-
+         dApi.call('photos.getById',{photos:photo, photo_sizes: 1, v:"5.101"}, function(r,items){
+            var photo = items.shift()
+            if (!photo)
+               return;
+            var sz = photo.sizes.sort(function(a,b){return a.width>b.width ? 1 : -1}).pop();
+            if (!sz.width)
+               return;
+            source_size = sz;
+            val('vk_upd_info', IDL('SourceSize')+ ' ' + sz.width + 'x' + sz.height + 'px');
+         })
          var makeUploader = function(t){
                var upload_url=t.match(/"upload_url":"(.*?)"/);
                var hash=t.match(/', '([a-f0-9]{18})'\)/);
@@ -3408,14 +3421,35 @@ vkopt['photos'] =  {
                      ge('vk_upd_photo_progress').innerHTML = vkopt.res.img.ldr_big;
                      //lockButton
                   },
+                  filterCallback: function(uploader, files){
+                     var img = vkImage();
+                     img.onload = function(){
+                        if (img.width && img.height)
+                           new_size = {
+                              width: img.width,
+                              height: img.height
+                           }
+                     }
+                     img.src = URL.createObjectURL(files[0]);
+                     return files;
+                  },
                   onUploadComplete: function(u,res){
                      var data = {};
                      try{
                         data = JSON.parse(res);
                      }catch(e){ }
+
+                     var msg =  '';
+                     if (source_size.width > new_size.width || source_size.height > new_size.height){
+                        msg += '<b>' + IDL('SourceSize') + ' > ' + IDL('NewSize') + '</b><br>' +
+                               IDL('SourceSize')+ ': ' + source_size.width + 'x' + source_size.height + 'px<br>' +
+                               IDL('NewSize')+ ': ' + new_size.width + 'x' + new_size.height + 'px<br><br>';
+                     }
+
                      if (data.error){
                         box.hide();
-                        vkAlertBox(IDL('Error'), data.error);
+                        msg += getLang('global_error_occured') + ':<br>' + data.error;
+                        vkAlertBox(getLang('global_box_error_title'), msg);
                         return;
                      }
                      var params = {
@@ -3434,6 +3468,9 @@ vkopt['photos'] =  {
                         onDone: function(text, album, photoObj, thumb) {
                            box.hide();
                            vkMsg(IDL('Done'),2000);
+                           if (msg)
+                              vkAlertBox(getLang('global_warning'), IDL('Done') + '<br>' + msg);
+
                            if (photoObj && thumb) {
                               cur.filterPhoto = photo_id;
                               if (typeof FiltersPE != 'undefined'){
