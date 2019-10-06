@@ -9034,7 +9034,7 @@ vkopt['face'] =  {
          .vk_anonimize .im-mess-stack--lnk,
          .vk_anonimize ._im_ui_peers_list .im-right-menu--text,
          .vk_anonimize .im-page--peer,
-	 .vk_anonimize .im-page-pinned--name{
+         .vk_anonimize .im-page-pinned--name{
             -webkit-filter: blur(4px);
             filter: blur(4px);
          }
