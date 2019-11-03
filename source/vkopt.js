@@ -3063,7 +3063,7 @@ vkopt['photoview'] =  {
          if (cur.pvCurPhoto && cur.pvCurPhoto.id){
             var html = vk_lib.tpl_process(vkopt.photoview.tpls['act_item'],{
                class_name: 'vk_pv_more_act_item',
-               onclick: 'vkopt.photos.update_photo(cur.pvCurPhoto.id);',
+               onclick: 'vkopt.photos.update_photo(cur.pvCurPhoto.id, cur.pvCurPhoto.pe_hash);',
                text: IDL('Update')
             });
             append_menu(html);
@@ -3311,6 +3311,9 @@ vkopt['photos'] =  {
       #vk_ph_upd_btn:hover{
          opacity:1
       }
+      #vk_upd_type .radiobtn{
+         padding-right: 20px;
+      }
 
       .vk_photos_album_more_btn {
           margin: 10px 0px 0px 10px;
@@ -3356,6 +3359,19 @@ vkopt['photos'] =  {
       /*more_acts_item_sep:
       <div class="ui_actions_menu_sep"></div>
       */
+      /*upd_methods:
+      <div id="vk_upd_type">
+         <div id="updmethod1" class="fl_l radiobtn on" data-val="1" onclick="radiobtn(this, '1', 'updmethod');">Method #1</div>
+         <div id="updmethod2" class="fl_l radiobtn"    data-val="2" onclick="radiobtn(this, '2', 'updmethod');">Method #2</div>
+      </div>
+      */
+      /*update_box:
+      <center>
+         <div id="vk_upd_info"></div>
+         <div id="vk_upd_photo"></div>
+         <div id="vk_upd_photo_progress"></div>
+      </center>
+      */
       });
    },
    onPhotoAlbumItems: function(aid, oid){
@@ -3387,11 +3403,23 @@ vkopt['photos'] =  {
          answer[1] = vkopt_core.mod_str_as_node(answer[1], vkopt.photos.update_photo_btn, {source:'process_edit_photo_response', url:url, q:q});
       }
    },
-   update_photo: function(photo_id){
+   update_photo: function(photo_id, pe_hash){
       var
-         box=vkAlertBox(IDL('Upload'),'<center><div id="vk_upd_info"></div><div id="vk_upd_photo"></div><div id="vk_upd_photo_progress"></div></center>'),
+         box=vkAlertBox(IDL('Upload'), vk_lib.tpl_process(vkopt.photos.tpls['update_box'], {})),
          source_size = null,
          new_size = null;
+
+      box.setControlsText(vk_lib.tpl_process(vkopt.photos.tpls['upd_methods'], {}));
+      radioBtns.updmethod = {
+         els : Array.prototype.slice.apply(geByClass("radiobtn", ge("vk_upd_type"))),
+         val : 1
+      };
+
+
+      if (!photo_id){
+         photo_id = cur.pvCurPhoto.id;
+         pe_hash = cur.pvCurPhoto.pe_hash;
+      }
 
       stManager.add(['upload.js','filters.js'],function(){
          var photo=photo_id;
@@ -3406,102 +3434,169 @@ vkopt['photos'] =  {
             source_size = sz;
             val('vk_upd_info', IDL('SourceSize')+ ' ' + sz.width + 'x' + sz.height + 'px');
          })
-         var makeUploader = function(t){
-               var upload_url=t.match(/"upload_url":"(.*?)"/);
-               var hash=t.match(/', '([a-f0-9]{18})'\)/);
-               var aid=t.match(/selectedItems:\s*\[(-?\d+)\]/)[1];
-               upload_url = upload_url[1].replace(/[\\]+/g, '').split('"')[0];
-               if (vk_DEBUG) console.log('url',upload_url);
-               Upload.init('vk_upd_photo', upload_url, {}, {
-                  file_name: 'photo',
-                  file_size_limit: 1024 * 1024 * 5,
-                  file_types_description: 'Image files (*.jpg, *.jpeg, *.png, *.gif)',
-                  file_types: '*.jpg;*.JPG;*.jpeg;*.JPEG;*.png;*.PNG;*.gif;*.GIF',
-                  onUploadStart:function(){
-                     ge('vk_upd_photo_progress').innerHTML = vkopt.res.img.ldr_big;
-                     //lockButton
-                  },
-                  filterCallback: function(uploader, files){
-                     var img = vkImage();
-                     img.onload = function(){
-                        if (img.width && img.height)
-                           new_size = {
-                              width: img.width,
-                              height: img.height
-                           }
-                     }
-                     img.src = URL.createObjectURL(files[0]);
-                     return files;
-                  },
-                  onUploadComplete: function(u,res){
-                     var data = {};
-                     try{
-                        data = JSON.parse(res);
-                     }catch(e){ }
+         var saveDone = function(msg){
+            box.hide();
+            vkMsg(IDL('Done'),2000);
+            if (msg)
+               vkAlertBox(getLang('global_warning'), IDL('Done') + '<br>' + msg);
 
-                     var msg =  '';
-                     if (source_size.width > new_size.width || source_size.height > new_size.height){
-                        msg += '<b>' + IDL('SourceSize') + ' > ' + IDL('NewSize') + '</b><br>' +
-                               IDL('SourceSize')+ ': ' + source_size.width + 'x' + source_size.height + 'px<br>' +
-                               IDL('NewSize')+ ': ' + new_size.width + 'x' + new_size.height + 'px<br><br>';
-                     }
+         }
+         var uploadDone = function(callback){
+            return function (u,_query){
+               var data = {};
+               try{
+                  data = JSON.parse(_query);
+               }catch(e){ }
 
-                     if (data.error){
-                        box.hide();
-                        msg += getLang('global_error_occured') + ':<br>' + data.error;
-                        vkAlertBox(getLang('global_box_error_title'), msg);
-                        return;
-                     }
-                     var params = {
-                        '_query' 	 : res,
-                        'act' 	 	 : 'save_desc',
-                        'aid' 	 	 : aid,
-                        'al' 	 	    : 1,
-                        'conf' 	 	 : '///',
-                        'cover'  	 : '',
-                        'filter_num' : 0,
-                        'hash' 		 : hash[1],
-                        'photo'		 : photo,
-                        'text' 		 :''
-                     };
-                     ajax.post('/al_photos.php', params,{
-                        onDone: function(text, album, photoObj, thumb) {
-                           box.hide();
-                           vkMsg(IDL('Done'),2000);
-                           if (msg)
-                              vkAlertBox(getLang('global_warning'), IDL('Done') + '<br>' + msg);
+               var msg =  '';
+               if (source_size.width > new_size.width || source_size.height > new_size.height){
+                  msg += '<b>' + IDL('SourceSize') + ' > ' + IDL('NewSize') + '</b><br>' +
+                         IDL('SourceSize')+ ': ' + source_size.width + 'x' + source_size.height + 'px<br>' +
+                         IDL('NewSize')+ ': ' + new_size.width + 'x' + new_size.height + 'px<br><br>';
+               }
 
-                           if (photoObj && thumb) {
-                              cur.filterPhoto = photo_id;
-                              if (typeof FiltersPE != 'undefined'){
-                                 FiltersPE.changeThumbs(thumb);
-                              }
-                              if (typeof Filters != 'undefined'){
-                                 Filters.changeThumbs(thumb);
-                              }
+               if (data.error){
+                  box.hide();
+                  msg += getLang('global_error_occured') + ':<br>' + data.error;
+                  vkAlertBox(getLang('global_box_error_title'), msg);
+                  return;
+               }
 
-
-                           }
-                        }
-                     });
-                  },
-                  lang: { "button_browse":IDL("Browse",1) }
-               });
+               callback(_query, msg);
+            }
          }
 
-
-         ajax.post('/al_photos.php', {act:'edit_photo', /*cors: 1, webgl: 1,*/ photo: photo}, {
-            onDone: function(s, html, js, noname) {
-               makeUploader(js);
+         var baseParams = {
+            file_size_limit: 1024 * 1024 * 5,
+            file_types_description: 'Image files (*.jpg, *.jpeg, *.png, *.gif)',
+            file_types: '*.jpg;*.JPG;*.jpeg;*.JPEG;*.png;*.PNG;*.gif;*.GIF',
+            onUploadStart: function(){
+               ge('vk_upd_photo_progress').innerHTML = vkopt.res.img.ldr_big;
+            },
+            filterCallback: function(uploader, files){
+               var img = vkImage();
+               img.onload = function(){
+                  if (img.width && img.height)
+                     new_size = {
+                        width: img.width,
+                        height: img.height
+                     }
+               }
+               img.src = URL.createObjectURL(files[0]);
+               return files;
             }
+         };
+         var curUpload = null;
+         var makeUploader = function(upload_url, options){
+            if (curUpload !== null){
+               Upload.deinit(curUpload);
+               curUpload = null;
+            }
+            curUpload = Upload.init('vk_upd_photo', upload_url, {}, extend(options, baseParams));
+         }
+
+         var filtersEditor = function(){
+            ajax.post('/al_photos.php', {act:'edit_photo', /*cors: 1, webgl: 1,*/ photo: photo}, {
+               onDone: function(s, html, js, noname) {
+                  var upload_url = js.match(/"upload_url":"(.*?)"/);
+                  var hash = js.match(/', '([a-f0-9]{18})'\)/);
+                  var aid = js.match(/selectedItems:\s*\[(-?\d+)\]/)[1];
+                  upload_url = upload_url[1].replace(/[\\]+/g, '').split('"')[0];
+
+                  var uploadParams = {
+                     file_name: 'photo',
+                     lang: { "button_browse":IDL("Browse",1)+' #1' },
+                     onUploadComplete: uploadDone(function(_query, msg){
+                        var params = {
+                           '_query' 	 : _query,
+                           'act' 	 	 : 'save_desc',
+                           'aid' 	 	 : aid,
+                           'al' 	 	    : 1,
+                           'conf' 	 	 : '///',
+                           'cover'  	 : '',
+                           'filter_num' : 0,
+                           'hash' 		 : hash[1],
+                           'photo'		 : photo,
+                           'text' 		 :''
+                        };
+                        ajax.post('/al_photos.php', params,{
+                           onDone: function(text, album, photoObj, thumb) {
+                              saveDone(msg)
+
+                              if (photoObj && thumb) {
+                                 cur.filterPhoto = photo_id;
+                                 if (typeof FiltersPE != 'undefined'){
+                                    FiltersPE.changeThumbs(thumb);
+                                 }
+                                 if (typeof Filters != 'undefined'){
+                                    Filters.changeThumbs(thumb);
+                                 }
+
+
+                              }
+                           }
+                        });
+                     })
+                  }
+                  makeUploader(upload_url, uploadParams);
+               }
+            });
+         }
+
+         var stickersEditor = function(){
+            ajax.post("al_photos.php", {
+               act: "get_editor",
+               photo_id: photo_id,
+               hash: pe_hash
+            }, {
+               onDone: function(html, opts){
+                  var uploadParams = {
+                     file_name: 'file0',
+                     lang: { "button_browse":IDL("Browse",1)+' #2' },
+                     onUploadComplete: uploadDone(function(_query, msg){
+                        ajax.post("al_photos.php", {
+                           act: "pe_save",
+                           photo: photo_id,
+                           hash: pe_hash,
+                           _query: _query,
+                           //stickers: null,
+                           //need_copy: b.need_copy,
+                           texts: ""
+                        }, {
+                           onDone: function(album_link_html, photoData, src, sizes, temp) {
+                              saveDone(msg);
+                           }
+                        })
+                     })
+                  }
+                  makeUploader(opts.upload.url, uploadParams);
+               }
+            });
+         }
+
+         each(geByClass("radiobtn", ge("vk_upd_type")), function(i,el){
+            addEvent(el, 'click', function(e){
+               switch(radioBtns.updmethod.val){
+                  case '1': {
+                     filtersEditor();
+                     break;
+                  }
+                  case '2': {
+                     stickersEditor();
+                     break;
+                  }
+               }
+            });
          });
+
+         filtersEditor();
       });
       return false;
    },
    update_photo_btn:function(node){
       var p = geByClass('pe_filter_buttons',node)[0] ? geByClass('pe_filter_buttons',node)[0] : geByClass('pv_filter_buttons',node)[0];
       if (!p) return;
-      var btn = se('<div class="button_gray fl_r" id="vk_ph_upd_btn"><button onclick=" vkopt.photos.update_photo(cur.filterPhoto);">'+IDL('Update',2)+'</button></div>');
+      var btn = se('<div class="button_gray fl_r" id="vk_ph_upd_btn"><button onclick=" vkopt.photos.update_photo(cur.filterPhoto, (cur.pvCurPhoto || {}).pe_hash);">'+IDL('Update',2)+'</button></div>');
       p.appendChild(btn);
    },
    album_actions: function(aid, oid){ // добавляем кнопку на обзор комментариев к фото, если она отсутствует
