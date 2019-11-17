@@ -10027,7 +10027,7 @@ vkopt['extra_online'] = {
    onLocation: function(){
       if (cur.module == "profile"){
          vkopt.extra_online.update_online_info();
-         cur.onPeerStatusChanged && Inj.End('cur.onPeerStatusChanged', vkopt.extra_online.update_online_info);
+         cur.onPeerStatusChanged && Inj.End('cur.onPeerStatusChanged', debounce(vkopt.extra_online.update_online_info,600));
       }
    },
    update_online_info: function(){
