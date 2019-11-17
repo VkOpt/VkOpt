@@ -9,8 +9,8 @@
 
 /* VERSION INFO */
 var vVersion = 307;
-var vBuild = 190929;
-var vVersionRev = 16;
+var vBuild = 191117;
+var vVersionRev = 17;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -11339,6 +11339,9 @@ vkopt['vk_dislike'] = {
       console.log('vk_dk status :' + (vkopt.vk_dislike.is_enabled()?'1':'0'));
       if (!vkopt.vk_dislike.is_enabled()) return;
       vkopt.vk_dislike.storage=new vk_tag_api('dislike','http://vk.dislike.server/',3429306);
+
+      vkopt.vk_dislike.get_dislikes_debounced = debounce(vkopt.vk_dislike.get_dislikes, 700);
+      addEvent(document, 'mouseover', vkopt.vk_dislike.mouseover);
    },
    auth:function(callback){
       var auth_data=localStorage[vkopt.vk_dislike.ls_val] || '{}';
@@ -11488,6 +11491,34 @@ vkopt['vk_dislike'] = {
          vkopt.vk_dislike.timeout=setTimeout(function(){vkopt.vk_dislike.load_dislikes_info();},300);
       }
    },
+   mouseover: function(e){
+      var load = vkopt.vk_dislike.get_dislikes_debounced;
+      var pathLength = function (el, p, limit){
+         var i = 0;
+         while ((el = el.parentNode) && el != p)
+            i++;
+         return i;
+      }
+      var getDislikeId = function (parent){
+         var el = domQuery1('*[dislike_id]', parent);
+         return el ? [ el.getAttribute('dislike_id') ] : [];
+      }
+
+      var el = e.target;
+
+      var rx = /dislike_wrap|mv_dislike_wrap|wk_dislike_wrap|pv_dislike_wrap|post_dislike|has_dislike/
+      if (rx.test(el.className || '')) {
+         load(getDislikeId(el.parentNode));
+      }
+
+      if (el.parentNode && rx.test(el.parentNode.className || '')){
+         load(getDislikeId(el.parentNode.parentNode));
+      }
+      var els = geByClass('has_dislike', el);
+      if (els.length == 1 && pathLength(els[0], el) < 4){
+         load(getDislikeId(el));
+      }
+   },
    in_cache:function(obj_id){
       if (vkopt.vk_dislike.cache[obj_id]){
          var ts=Math.round(new Date().getTime());
@@ -11577,7 +11608,7 @@ vkopt['vk_dislike'] = {
             </button>');
          case 'photo':
             return se('\
-            <div class="pv_like _like_wrap '+(my_dislike?' '+'pv_disliked':'')+' no_dislikes" dislike_id="'+obj_id+'" onclick="vkopt.vk_dislike.dislike(this.getAttribute(\'dislike_id\')); return false;" onmouseover="vkopt.vk_dislike.dislike_over(this.getAttribute(\'dislike_id\'));" id="post_dislike'+obj_id+'">\
+            <div class="pv_like _like_wrap '+(my_dislike?' '+'pv_disliked':'')+' pv_dislike_wrap no_dislikes" dislike_id="'+obj_id+'" onclick="vkopt.vk_dislike.dislike(this.getAttribute(\'dislike_id\')); return false;" onmouseover="vkopt.vk_dislike.dislike_over(this.getAttribute(\'dislike_id\'));" id="post_dislike'+obj_id+'">\
                <i class="pv_dislike_icon no_dislikes" id="dislike_icon'+obj_id+'"></i>\
                <span class="pv_like_link" id="dislike_link'+obj_id+'">'+IDL('dislike')+'</span>\
                <span class="pv_like_count fl_l" id="dislike_count'+obj_id+'">'+(count|| '')+'</span>\
@@ -11644,7 +11675,7 @@ vkopt['vk_dislike'] = {
                if (ids[i]=='post_dislike') _el.setAttribute('dislike_id',dislike_id);
                if (_el) _el.id=ids[i]+dislike_id;
            }
-           vkopt.vk_dislike.get_dislikes([dislike_id]);
+           //vkopt.vk_dislike.get_dislikes([dislike_id]);
          },400)
       } else {
          //obj_id=(geByTag('i',el)[0] || {}).id;
@@ -11724,8 +11755,8 @@ vkopt['vk_dislike'] = {
       /*if (node.innerHTML.indexOf('mv_like_count')>-1 && ge('mv_like_count'))
          vkopt.vk_dislike.add(ge('mv_like_count').parentNode.parentNode,'video');*/
 
-      if (vkopt.vk_dislike.obj_ids.length>0)
-         vkopt.vk_dislike.get_dislikes(vkopt.vk_dislike.obj_ids);
+      // if (vkopt.vk_dislike.obj_ids.length>0)
+      //    vkopt.vk_dislike.get_dislikes(vkopt.vk_dislike.obj_ids);
    },
    dislike:function(obj_id){
       var pid=obj_id.match(/wall(-?\d+_\d+)/);
