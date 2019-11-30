@@ -183,14 +183,26 @@ var vkopt_core = {
       vkopt.lang.override(); // TODO: убрать этот костыль при удалении скриптов для старого дизайна
       vkopt.settings.init_defaults();
 
-      for (var key in StaticFiles){
+      var wait = [];
+      for (var key in StaticFiles)
          if (StaticFiles[key].t == 'js'){
             if (StaticFiles[key].l)
                vk_glue.inj_handler([key])();
             else
-               window.stManager && stManager._waiters.push([[key], vk_glue.inj_handler([key])]);
+               wait.push(key); // добавляем в список недозагруженных скриптов
          }
+
+      if (window.stManager && wait.length){
+         vkopt.log('Wait ' + wait.length + ' scripts');
+         // чтоб узнать когда дозагрузятся подключенные скрипты,
+         // просто ещё раз запросим их подключение у stManager
+         // и получим колбек по завершению загрузки.
+         stManager.add(wait, function(){
+            vkopt.log('Loaded ' + wait.length + ' scripts');
+            vk_glue.inj_handler(wait)();
+         });
       }
+
       vkopt_core.plugins.on_init();
       vk_glue.nav_handler();
       window.vkopt_core_ready = true;
@@ -395,8 +407,7 @@ var vk_glue = {
    inj: {
       common: function(){
          // перехватываем момент подключения скриптов:
-         //Inj.BeforeR("stManager.add",/__stm._waiters.push\(\[([^,]+)/,"__stm._waiters.push([$1, vk_glue.inj_handler(#ARG0#)]);");
-         Inj.End("stManager.add",function(files, callback, asyn){
+         Inj.Start('stManager.add', function(files, cb){
             var f, wait = [];
             if (!isArray(files))
                files = [files];
@@ -411,13 +422,13 @@ var vk_glue = {
                   wait.push(f);
             }
 
-            if (wait.length)
-               stManager._waiters.push([wait, vk_glue.inj_handler(files)]);
+            var newCallback = function(f){
+               if (wait.length)
+                  vk_glue.inj_handler(files)();
+               cb && cb.apply(this, arguments);
+            }
+            this.args[1] = newCallback;
          });
-
-         // следующая строка не факт что нужна (а может оптимизированней будет, если её убрать), т.к она срабатывает только если у нас нет списка ожидания,
-         // т.е скрипты были ранее уже подгружены на страницу, и инъекции вероятно остались на месте.
-         //Inj.BeforeR("stManager.add",/(if\s*\(![a-zA-z_]+.length\))/,"$1{vk_glue.inj_handler(#ARG0#)(true);}"); //"_matched_{vk_glue.inj...
 
          // перехват события об аякс загрузке новой страницы / смене URL'а
          Inj.End('nav.setLoc',function(){
