@@ -3074,7 +3074,7 @@ vkopt['photoview'] =  {
          if (cur.pvCurPhoto && cur.pvCurPhoto.id){
             var html = vk_lib.tpl_process(vkopt.photoview.tpls['act_item'],{
                class_name: 'vk_pv_more_act_item',
-               onclick: 'vkopt.photos.update_photo(cur.pvCurPhoto.id, cur.pvCurPhoto.pe_hash);',
+               onclick: 'vkopt.photos.update_photo(cur.pvCurPhoto.id, cur.pvCurPhoto.peHash);',
                text: IDL('Update')
             });
             append_menu(html);
@@ -3238,7 +3238,7 @@ vkopt['photoview'] =  {
       }
 
 
-      dApi.call('photos.copy',{owner_id: oid, photo_id: pid, access_key: pdata.pe_hash}, {
+      dApi.call('photos.copy',{owner_id: oid, photo_id: pid, access_key: pdata.peHash}, {
          ok:function(resp, r, err){
             if (!r)  return;
             saved_pid = r;
@@ -3429,7 +3429,7 @@ vkopt['photos'] =  {
 
       if (!photo_id){
          photo_id = cur.pvCurPhoto.id;
-         pe_hash = cur.pvCurPhoto.pe_hash;
+         pe_hash = cur.pvCurPhoto.peHash;
       }
 
       stManager.add(['upload.js','filters.js'],function(){
@@ -3560,7 +3560,7 @@ vkopt['photos'] =  {
                photo_id: photo_id,
                hash: pe_hash
             }, {
-               onDone: function(html, opts){
+               onDone: function(opts){
                   var uploadParams = {
                      file_name: 'file0',
                      lang: { "button_browse":IDL("Browse",1)+' #2' },
@@ -3580,7 +3580,7 @@ vkopt['photos'] =  {
                         })
                      })
                   }
-                  makeUploader(opts.upload.url, uploadParams);
+                  makeUploader(opts.uploadUrl, uploadParams);
                }
             });
          }
@@ -3607,7 +3607,7 @@ vkopt['photos'] =  {
    update_photo_btn:function(node){
       var p = geByClass('pe_filter_buttons',node)[0] ? geByClass('pe_filter_buttons',node)[0] : geByClass('pv_filter_buttons',node)[0];
       if (!p) return;
-      var btn = se('<div class="button_gray fl_r" id="vk_ph_upd_btn"><button onclick=" vkopt.photos.update_photo(cur.filterPhoto, (cur.pvCurPhoto || {}).pe_hash);">'+IDL('Update',2)+'</button></div>');
+      var btn = se('<div class="button_gray fl_r" id="vk_ph_upd_btn"><button onclick=" vkopt.photos.update_photo(cur.filterPhoto, (cur.pvCurPhoto || {}).peHash);">'+IDL('Update',2)+'</button></div>');
       p.appendChild(btn);
    },
    album_actions: function(aid, oid){ // добавляем кнопку на обзор комментариев к фото, если она отсутствует
