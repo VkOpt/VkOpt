@@ -1130,6 +1130,25 @@ var vkMozExtension = {
       return crc32(str);
    }
 
+   vk_lib.api = {
+      photo: {
+         // vk_lib.api.photo.max_size
+         max_size: function(photo){
+            if (!photo || !photo.sizes)
+               return;
+            var src = {};
+            for (var p in photo.sizes)
+               if (photo.sizes[p].type)
+                  src[photo.sizes[p].type] = photo.sizes[p].url;
+
+            var hq_src = '';
+            var q = ["w", "z", "y", "x", "r", "q", "p", "o", "m", "s"];
+            for (var sz in q)
+               if (src[q[sz]])
+                  return src[q[sz]];
+            }
+      }
+   }
 
 	function TwoWayMap (map) {
 		this.map = map;

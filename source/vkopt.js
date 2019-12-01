@@ -7274,6 +7274,13 @@ vkopt['messages'] = {
          <div id="saveldr" style="display:none; padding:8px; padding-top: 14px; text-align:center; width:360px;"><img src="/images/upload.gif"></div>
          <div id="save_btn_text" style="text-align:center">
             <div class="button_blue"><button onclick="vkopt.messages.get_history({vals.peer}); return false;">{lng.SaveHistory} *.html</button></div><br>
+
+            <div class="button_gray"><button onclick="toggle('msg_save_more'); return false;">(*.txt.zip)</button></div>
+            <div id="msg_save_more" style="display:none;">
+            <div class="button_gray"><button onclick="vkopt.messages.zip.txt({vals.peer}); return false;">{lng.SaveHistory}</button></div>
+            <div class="button_gray"><button onclick="vkopt.messages.zip.txt({vals.peer},true); return false;">{lng.SaveHistoryCfg}</button></div>
+            </div>
+
             <!--
             <div class="button_gray"><button onclick="toggle('msg_save_more'); return false;">(*.txt)</button></div>
             <div id="msg_save_more" style="display:none;">
@@ -7859,7 +7866,7 @@ vkopt['messages'] = {
          peer: peer
       });
       vkAlertBox(IDL('SaveHistory'), html, null, null, true);
-      vkopt.messages.get_history(peer);
+      //vkopt.messages.get_history(peer);
       return false;
    },
    make_html: function(msg,user){
@@ -8176,11 +8183,25 @@ vkopt['messages'] = {
            vkopt.messages.export_data(data);
         })
    },
-   get_history:function(uid, callback){
+   get_history:function(uid, callback, partial_callback){
       if (!uid) uid=cur.peer;
       var PER_REQ=100;
       var offset=0;
       var messages = [];
+      var concat = function(arr, prefix){
+         prefix = prefix || '';
+         var r = {};
+         for (var i = 0; i < arr.length; i++)
+            if (arr[i])
+               for (var j = 0; j < arr[i].length; j++)
+                  if (!r[prefix + arr[i][j].id])
+                     r[prefix + arr[i][j].id] = arr[i][j];
+         return r;
+      }
+
+      var continue_scan = function(){
+         setTimeout(scan,350);
+      }
       var scan=function(){
          hide('save_btn_text');
          show('saveldr');
@@ -8188,19 +8209,29 @@ vkopt['messages'] = {
          var w = getSize(ge('saveldr'),true)[0];
          if (offset==0) ge('saveldr').innerHTML=vkProgressBar(offset,10,w);
 
-         var code=[];
+         var code={
+            vars:[],
+            items:[],
+            profiles:[],
+            groups:[]
+         };
          for (var i=0; i<10; i++){
 
             var params = {
                peer_id: uid,
                offset: offset,
                count: PER_REQ,
+               extended: 1,
                rev:1
             };
             if (cur.gid)
                params['group_id'] = cur.gid
 
-            code.push('API.messages.getHistory('+JSON.stringify(params)+').items');//
+            var vname = 'part' + code.vars.length;
+            code.vars.push('var '+vname+' = API.messages.getHistory('+JSON.stringify(params)+')');
+            code.items.push(vname+'.items');
+            code.profiles.push(vname+'.profiles');
+            code.groups.push(vname+'.groups');
             offset+=PER_REQ;
          }
 
@@ -8212,20 +8243,300 @@ vkopt['messages'] = {
          if (cur.gid)
             params['group_id'] = cur.gid
 
-         dApi.call('execute',{code:'return {count:API.messages.getHistory('+JSON.stringify(params)+').count, items:'+code.join('+')+'};',v:'5.73'},function(r){
+         dApi.call('execute',{
+               code: code.vars.join(';') + ';'+
+                     'return {'+
+                        'count:API.messages.getHistory('+JSON.stringify(params)+').count,'+
+                        'items:'+code.items.join('+')+','+
+                        'profiles:['+code.profiles.join(',')+'],'+
+                        'groups:['+code.groups.join(',')+']'+
+                     '};',
+               v:'5.95'
+            },
+            function(r){
             var msgs = r.response.items;
             var count = r.response.count;
             ge('saveldr').innerHTML=vkProgressBar(offset,count,w);
 
-            messages = messages.concat(msgs);
+            if (partial_callback)
+               partial_callback({
+                  count: r.response.count,
+                  messages: r.response.items,
+                  authors: extend(concat(r.response.profiles), concat(r.response.groups,'-'))
+               });
+            else
+               messages = messages.concat(msgs);
+
             if (msgs.length>0){
-               setTimeout(scan,350);
+               !partial_callback && continue_scan();
             } else {
-               callback ? callback(messages) : vkopt.messages.export_data(messages);
+               if (partial_callback){
+                  partial_callback(null);
+               } else {
+                  callback ? callback(messages) : vkopt.messages.export_data(messages);
+               }
             }
          });
       };
       scan();
+      return continue_scan;
+   },
+   zip: {
+      txt: function(peer_id, show_format){
+         if (!peer_id)
+            peer_id=cur.thread.id;
+         var msg_pattern = vkopt.settings.get('msg_exp_pattern')  ||  vkopt_defaults.config.SAVE_MSG_HISTORY_PATTERN;
+         var date_fmt = vkopt.settings.get('msg_exp_date_fmt') || vkopt_defaults.config.SAVE_MSG_HISTORY_DATE_FORMAT;
+         msg_pattern=msg_pattern.replace(/\r?\n/g,'\r\n');
+         date_fmt=date_fmt.replace(/\r?\n/g,'\r\n');
+//00000
+         var continue_scan = function(){vkopt.log('something went wrong')};
+         var zipname = "messages_" + peer_id + ".txts.zip";
+         var zip = null;
+         var cnt = 0;
+         var total = 0;
+         var zip_item = function(item, cb){
+
+            var num = ('0000000000'+(cnt++)).substr(-String(Math.ceil(total/1000)).length);
+            var name = '#' + num + ' ' +
+                       (new Date(item.start)).format('dd.mm.yyyy_HH:MM') + ' - ' +
+                       (new Date(item.end)).format('dd.mm.yyyy_HH:MM') +  '.txt';
+            vkopt.log('Zip messages part ' + name + ' (size: '+ item.content.length +')');
+            zip.addFile(name, new Blob([item.content], {type:'plain/text'}), function(){
+               delete item.content;
+               cb && cb();
+            });
+         }
+
+
+         var queue = [];
+         var busy = false;
+         var finished = false;
+         var tick_inteval;
+         var tick = function(){
+            if (!busy && queue.length){
+               busy = true;
+               zip_item(queue.shift(), function(){
+                  busy = false;
+                  continue_scan();
+               })
+            }
+            if (!queue.length && finished){
+               clearInterval(tick_inteval);
+               done();
+            }
+         }
+         tick_inteval = setInterval(tick,10);
+         var getName = function(cb){
+            dApi.call('messages.getConversationsById',{peer_ids: peer_id, extended:1, v:'5.103'},function(resp, r){
+               var items, item;
+               if (r && (items = r.items) && (item = items[0])){
+                  if (item.chat_settings){
+                     cb({
+                        filename: vkCleanFileName(items[0].chat_settings.title).substr(0,250)
+                     })
+                  } else {
+                     var file_name=[],
+                         names = {};
+                     var pr  = r.profiles;
+                     var gr = r.groups;
+                     if (pr)
+                        for (var i = 0; i < pr.length; i++){
+                           var u = pr[i];
+                           names['_'+u.id] = u.first_name+" "+u.last_name;
+                        }
+                     if (gr)
+                        for (var i = 0; i < gr.length; i++){
+                           var g = gr[i];
+                           names['_'+g.id] = g.name;
+                        }
+                     for (var key in names){
+                        var id = parseInt((key || '_0').substr(1));
+                        if (!(window.vk && id == vk.id))
+                           file_name.push(names[key]+'('+id+')');
+                     }
+
+                     cb({
+                        filename: vkCleanFileName(file_name.join(',')).substr(0,250)
+                     })
+                  }
+               } else {
+                  cb({
+                     filename: 'unknown_'+peer_id
+                  })
+               }
+            });
+         }
+
+         var done=function(){
+            vkopt.log('Download messages .txt.zip');
+            //TODO: export zip
+            zip.download();
+            val('saveldr', IDL('Done'));
+         };
+         var part_ready = function(data){
+            // data = { count, messages, authors}
+            if (!data || !data.messages.length){
+               finished = true;
+               return;
+            }
+            total = data.count;
+
+            var tab='\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t';
+            var join_info = function(arr, level){
+               var sp = tab.substr(0,level);
+               return sp + (arr.filter(function(i){return !!i}).join('\r\n' + sp)) ;
+            }
+            var getUserInfo = function(id, obj){
+               var u = data.authors[id];
+               if (!data.authors[id])
+                  return (id > 0 ? 'id' : 'club') + id + ' DELETED'
+               if (u)
+                  return (u.name || (u.first_name + ' ' + u.last_name)) + ' [' + u.screen_name + ']' ;
+            }
+            var make_msg = function(msg,level){
+               level=level || 0;
+               var from_id= msg.from_id;
+               /*
+               if (!data.authors[from_id])
+                  data.authors[from_id] = (from_id > 0 ? 'id' : 'club') + from_id + ' DELETED';
+               */
+               var attach_text="";
+               for (var j=0; msg.attachments && j<msg.attachments.length;j++){
+                  var attach=msg.attachments[j];
+                  var a = attach[attach.type];
+                  var link;
+                  switch(attach.type){
+                     case  "photo":
+                        link = "vk.com/photo"+a.owner_id+'_'+a.id;
+                        var album = "vk.com/album"+a.owner_id+'_'+a.album_id;
+                        attach_text += link+" : "+vk_lib.api.photo.max_size(a)+"\r\n"+
+                                    join_info(['From: '+album, a.text],1)
+                        break;
+                     case  "video":
+                        link = "vk.com/video"+a.owner_id+'_'+a.id;
+                        attach_text += link+" : "+"\r\n"+
+                                    join_info([a.title, a.description,a.platform, a.player],1);
+                        break;
+                     case  "audio":
+                        link = "vk.com/audio?id="+a.owner_id+'&audio_id='+a.aid;
+                        attach_text += link+" : "+(a.performer || "")+" - "+(a.title || "");
+                        break;
+                     case  "doc":
+                        attach_text += a.url+" : "+a.title;
+                        break;
+                     case  "link":
+                        attach_text += a.url+" : "+a.title+"\r\n"+
+                                     join_info([a.caption, a.description, vk_lib.api.photo.max_size(a.photo)],1);
+                        break;
+                     case  "market":
+                        link = "vk.com/market?w=product"+a.owner_id+"_"+a.id;
+                        attach_text += link+" : "+join_info([a.title, a.description,(a.price || {}).text, a.player, a.thumb_photo],1);
+                        break;
+                     case  "market_album":
+                        link = "vk.com/market"+a.owner_id+"?section=album_"+a.id;
+                        attach_text += link+" : "+a.title + "\r\n" + vk_lib.api.photo.max_size(a.photo);
+                        break;
+                     case  "wall":
+                        attach_text += "vk.com/wall" + (a.owner_id || a.to_id) + "_" + a.id;
+                        break;
+                     case  "wall_reply":
+                        attach_text += "vk.com/wall" + a.owner_id + "_" + a.post_id + "?reply=" + a.id +
+                                       (a.parents_stack ? "&thread=" + a.parents_stack[0] : "");
+                        break;
+                     case  "sticker":
+                        attach_text += "Sticker #" + a.sticker_id + ": " +
+                                       ((a.images || [])[0] || {}).url;
+                        break;
+                     case  "gift":
+                        attach_text += "Gift [" + a.id + "]: " + a.thumb_256;
+                        break;
+
+                     default:
+                       attach_text+=JSON.stringify(attach);
+
+                  }
+                  attach_text+='\r\n'
+
+               }
+
+               if (msg.geo)
+                  attach_text += (msg.geo['place'] || {'title':'---'})['title'] + ': https://www.google.com/maps/@'+msg.geo['coordinates'].join(',');
+
+               var date=(new Date(msg.date*1000)).format(date_fmt);
+               var user=getUserInfo(from_id);//(msg.from_id==mid?user2:user1);
+               var msgBody = msg.text.replace(/<br>/g, '\r\n');
+               if (msg.reply_message)
+                  msgBody = make_msg(msg.reply_message,level+1) + msgBody;
+
+               if (msg.action){
+                  var act_info = [];
+
+                  if (msg.action.type)
+                     act_info.push(msg.action.type);
+
+                  if (msg.action.member_id)
+                     act_info.push(getUserInfo(msg.action.member_id));
+
+                  msg.action.text && act_info.push(msg.action.text);
+                  msg.action.email && act_info.push(msg.action.email);
+                  msg.action.photo && act_info.push(msg.action.photo.photo_200);
+
+                  msgBody += '\r\n' + act_info.join(' | ') + '\r\n';
+               }
+
+               var ret=msg_pattern
+                    .replace(/%username%/g,user) //msg.from_id
+                    .replace(/%date%/g,    date)
+                    .replace(/%message%/g, msgBody)
+                    .replace(/%attachments%/g, (attach_text!=""?"Attachments:[\r\n"+attach_text+"]":""));
+
+               ret=ret.replace(/^.+$/mg,tab.substr(0,level)+"$&");
+               if (msg.fwd_messages)
+               for (var i=0; i<msg.fwd_messages.length; i++)
+                  ret+=make_msg(msg.fwd_messages[i],level+1);
+               return ret;
+            };
+            var res = '';
+            for (var i = 0; i < data.messages.length; i++){
+               res += make_msg(data.messages[i]);
+            }
+
+            queue.push({
+               start: (data.messages.shift() || {}).date*1000,
+               end: (data.messages.pop() || {}).date*1000,
+               content:res
+            })
+         }
+         var run = function(){
+            getName(function(info){
+               zip = vkopt.zip(info.filename + '.zip');
+               continue_scan = vkopt.messages.get_history(peer_id, done, part_ready);
+            })
+         }
+         if (show_format){
+            var aBox = new MessageBox({title: IDL('SaveHistoryCfg')});
+            aBox.removeButtons();
+            aBox.addButton(IDL('Hide'), aBox.hide, 'no');
+            aBox.addButton(IDL('OK'),function(){
+               msg_pattern=ge('vk_msg_fmt').value;
+               date_fmt=ge('vk_msg_date_fmt').value;
+               msg_pattern=msg_pattern.replace(/\r?\n/g,'\r\n');
+               date_fmt=date_fmt.replace(/\r?\n/g,'\r\n');
+               vkopt.settings.set('msg_exp_pattern', msg_pattern);
+               vkopt.settings.set('msg_exp_date_fmt', date_fmt);
+               aBox.hide();
+               run();
+            },'yes');
+
+            var html = vk_lib.tpl_process(vkopt.messages.tpls['msg_exp_txt_cfg'],{
+               msg_pattern: msg_pattern,
+               date_fmt: date_fmt
+            })
+            aBox.content(html);
+            aBox.show();
+         } else run();
+      }
    },
    get_history_txt: function(uid,show_format){
       if (!uid) uid=cur.thread.id;
