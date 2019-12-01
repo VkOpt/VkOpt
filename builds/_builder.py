@@ -129,6 +129,7 @@ def MakeUserJS(ver, dirPath=None, ujsFilePath=None):
     if not ujsFilePath:
         ujsFilePath = dirPath + ".user.js"
     ujsFilePath2 =  os.path.join(os.path.dirname(os.path.abspath(ujsFilePath)),'vkopt_script.user.js');
+    metajsFilePath =  os.path.join(os.path.dirname(os.path.abspath(ujsFilePath)),'vkopt_script.meta.js');
     if not os.path.isdir(dirPath):
         raise OSError("dirPath argument must point to a directory. "
             "'%s' does not." % dirPath)
@@ -140,12 +141,20 @@ def MakeUserJS(ver, dirPath=None, ujsFilePath=None):
 
     tpl = ""
     script_content = ""
+    meta_content = ""
+    meta = True
     filePath = os.path.join(dirPath, '../script.user.js');
     inFile = open(filePath, 'r', encoding='utf-8-sig')
     for line in inFile:
         if line.find('{script_version}') > -1:
             line = line.format(script_version=ver)
         tpl += line
+
+        if meta:
+            meta_content += line;
+        if line.find('// ==/UserScript==') > -1:
+            meta = False
+
     tpl = tpl.split('{script_content}');
 
     fileNames = ['vkopt.js', 'vk_lib.js', 'vklang.js']
@@ -166,6 +175,11 @@ def MakeUserJS(ver, dirPath=None, ujsFilePath=None):
         outFile.write(script_content)
         outFile.write(tpl[1])
         outFile.close()
+
+    print("Write output meta to '%s'" % os.path.basename(metajsFilePath))
+    outFile = open(metajsFilePath, 'w', encoding='utf-8-sig')
+    outFile.write(meta_content)
+    outFile.close()
 
 
 
