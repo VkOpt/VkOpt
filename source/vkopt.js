@@ -385,7 +385,7 @@ var vk_glue = {
          }
          */
          for (var i in files){
-            if (files[i].indexOf('.js') != -1)
+            if (isString(files[i]) && files[i].indexOf('.js') != -1)
                vk_glue.inj_to_file(files[i].split('/').pop().replace(/\.[a-f0-9]{20}/,''), files[i]);
          }
       }
