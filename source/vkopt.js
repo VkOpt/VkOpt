@@ -5557,6 +5557,9 @@ vkopt['scrobbler'] = {
       var fm=vkopt.scrobbler;
       var act = '';
       switch(event_name){
+         case 'start_load':
+            fm.onPlayerState('load');
+            break;
          case 'start':
             (data || !fm.last_track.aid) && fm.onPlayerState('load');
             fm.onPlayerState('play');
