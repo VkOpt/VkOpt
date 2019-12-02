@@ -9,8 +9,8 @@
 
 /* VERSION INFO */
 var vVersion = 307;
-var vBuild = 191201;
-var vVersionRev = 18;
+var vBuild = 191202;
+var vVersionRev = 19;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};

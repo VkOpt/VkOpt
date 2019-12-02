@@ -1,6 +1,6 @@
 ﻿// ==UserScript==
 // @name          VKOpt
-// @version       3.0.7.18
+// @version       3.0.7.19
 // @author        KiberInfinity [id13391307]
 // @namespace     http://vkopt.net/
 // @description   Vkontakte Optimizer 3.x
@@ -389,7 +389,7 @@
       js.type = 'text/javascript';
       js.charset = 'UTF-8';
       js.innerHTML=script;
-      js.setAttribute(mark,"3.0.7.18");
+      js.setAttribute(mark,"3.0.7.19");
       doc.getElementsByTagName('head')[0].appendChild(js);
    }
    init();
@@ -406,8 +406,8 @@
 
 /* VERSION INFO */
 var vVersion = 307;
-var vBuild = 191201;
-var vVersionRev = 18;
+var vBuild = 191202;
+var vVersionRev = 19;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -782,7 +782,7 @@ var vk_glue = {
          }
          */
          for (var i in files){
-            if (files[i].indexOf('.js') != -1)
+            if (isString(files[i]) && files[i].indexOf('.js') != -1)
                vk_glue.inj_to_file(files[i].split('/').pop().replace(/\.[a-f0-9]{20}/,''), files[i]);
          }
       }
@@ -5954,6 +5954,9 @@ vkopt['scrobbler'] = {
       var fm=vkopt.scrobbler;
       var act = '';
       switch(event_name){
+         case 'start_load':
+            fm.onPlayerState('load');
+            break;
          case 'start':
             (data || !fm.last_track.aid) && fm.onPlayerState('load');
             fm.onPlayerState('play');
