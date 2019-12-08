@@ -7898,7 +7898,7 @@ vkopt['messages'] = {
           replacedText = replacedText.replace(replacePattern3,'$1<a href="http://$2" target="_blank">$2</a>');
 
          if (window.Emoji && Emoji.emojiToHTML)
-            replacedText = Emoji.emojiToHTML(replacedText,true).replace(/"\/images\//g,'"http://vk.com/images/') || replacedText;
+            replacedText = Emoji.emojiToHTML(replacedText,true).replace(/"\/(images|emoji)\//g,'"http://vk.com/$1/') || replacedText;
 
           return replacedText;
       };
