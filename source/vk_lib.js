@@ -746,6 +746,7 @@ var vkMozExtension = {
 		DisableHistrory : false,
 		History : {},
 		InitStringifier: function(){
+         if (!Function.prototype.toStringOriginal)
          Function.prototype.toStringOriginal = Function.prototype.toString;
          //var origFnToStr = Function.prototype.toString;
          Function.prototype.toString = function(){
