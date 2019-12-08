@@ -6976,6 +6976,7 @@ vkopt['stories'] = {
       showTooltip(el, opts);
    },
 }
+
 vkopt['messages'] = {
    css: function(){
       return vk_lib.get_block_comments(function(){
@@ -7717,7 +7718,7 @@ vkopt['messages'] = {
 
          var code = [];
          while(ids.length)
-            code.push('API.messages.getById({"message_ids":"'+ids.splice(0,PER_REQ).join(',')+'"}).items');
+            code.push('API.messages.getById({"message_ids":"'+ids.splice(0,PER_REQ).join(',')+'", "v":"5.73"}).items');
          code = 'return ' + code.join('+') + ';'
 
          ge('vk_scan_msg').innerHTML = vkProgressBar(last_msg - offset, last_msg, width, IDL('MessagesScan') + ' %'+(offset > 0 ? ' (id:' + offset + ')' : ''));
@@ -8186,7 +8187,8 @@ vkopt['messages'] = {
            vkopt.messages.export_data(data);
         })
    },
-   get_history:function(uid, callback, partial_callback){
+   get_history:function(uid, callback, partial_callback, ver){
+      ver = ver || '5.73';
       if (!uid) uid=cur.peer;
       var PER_REQ=100;
       var offset=0;
@@ -8225,7 +8227,8 @@ vkopt['messages'] = {
                offset: offset,
                count: PER_REQ,
                extended: 1,
-               rev:1
+               rev: 1,
+               v: ver
             };
             if (cur.gid)
                params['group_id'] = cur.gid
@@ -8241,7 +8244,8 @@ vkopt['messages'] = {
          var params = {
             peer_id: uid,
             offset: 0,
-            count: 0
+            count: 0,
+            v: ver
          };
          if (cur.gid)
             params['group_id'] = cur.gid
@@ -8292,7 +8296,7 @@ vkopt['messages'] = {
          var date_fmt = vkopt.settings.get('msg_exp_date_fmt') || vkopt_defaults.config.SAVE_MSG_HISTORY_DATE_FORMAT;
          msg_pattern=msg_pattern.replace(/\r?\n/g,'\r\n');
          date_fmt=date_fmt.replace(/\r?\n/g,'\r\n');
-//00000
+
          var continue_scan = function(){vkopt.log('something went wrong')};
          var zipname = "messages_" + peer_id + ".txts.zip";
          var zip = null;
@@ -8331,7 +8335,7 @@ vkopt['messages'] = {
          }
          tick_inteval = setInterval(tick,10);
          var getName = function(cb){
-            dApi.call('messages.getConversationsById',{peer_ids: peer_id, extended:1, v:'5.103'},function(resp, r){
+            dApi.call('messages.getConversationsById',{peer_ids: peer_id, group_id: cur.gid || undefined, extended:1, v:'5.103'},function(resp, r){
                var items, item;
                if (r && (items = r.items) && (item = items[0])){
                   if (item.chat_settings){
@@ -8360,7 +8364,7 @@ vkopt['messages'] = {
                      }
 
                      cb({
-                        filename: vkCleanFileName(file_name.join(',')).substr(0,250)
+                        filename: vkCleanFileName(file_name.join(',') || 'unknown_' + peer_id).substr(0,250)
                      })
                   }
                } else {
@@ -8514,7 +8518,7 @@ vkopt['messages'] = {
          var run = function(){
             getName(function(info){
                zip = vkopt.zip(info.filename + '.zip');
-               continue_scan = vkopt.messages.get_history(peer_id, done, part_ready);
+               continue_scan = vkopt.messages.get_history(peer_id, done, part_ready, '5.103');
             })
          }
          if (show_format){
