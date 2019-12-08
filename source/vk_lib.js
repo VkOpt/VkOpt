@@ -1905,7 +1905,10 @@ function vk_oauth_api(app_id,scope){
             v: '5.95',
             format:'json'
          };
-         if (inputParams) for (var i in inputParams) params[i] = inputParams[i];
+         if (inputParams)
+            for (var i in inputParams)
+               if (typeof inputParams[i] != "undefined")
+                  params[i] = inputParams[i];
          params['access_token']=api.access_token;
 
          var onDoneRequest = function(text){
@@ -1967,8 +1970,8 @@ function vk_oauth_api(app_id,scope){
                      "from":""
                   };
                   ajax.post("/activation.php", options, {onDone: function(title, html, js){
-                        csid =(js.match(/validationCsid:\s*['"]?([a-f0-9]+)['"]?/) || [])[1];
-                        cstrong = (js.match(/strongCode:\s*['"]?([a-f0-9]+)['"]?/) || [0,0])[1];
+                        csid =(js.match(/validationCsid(?:['"]\]\s*=\s*|:)\s*['"]?([a-f0-9]+)['"]?/) || [])[1];
+                        cstrong = (js.match(/strongCode(?:['"]\]\s*=\s*|:)\s*['"]?([a-f0-9]+)['"]?/) || [0,0])[1];
                         vkopt.log('API Activation captcha sid: ', csid, ' strong:', cstrong);
                         api.captcha_visible=true;
                         api._captchaBox = showCaptchaBox(csid, cstrong, api._captchaBox, {
