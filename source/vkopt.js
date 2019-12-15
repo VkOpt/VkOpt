@@ -8306,8 +8306,8 @@ vkopt['messages'] = {
 
             var num = ('0000000000'+(cnt++)).substr(-String(Math.ceil(total/1000)).length);
             var name = '#' + num + ' ' +
-                       (new Date(item.start)).format('dd.mm.yyyy_HH.MM') + ' - ' +
-                       (new Date(item.end)).format('dd.mm.yyyy_HH.MM') +  '.txt';
+                       (item.start ? (new Date(item.start)).format('dd.mm.yyyy_HH.MM') + ' - ' : '') +
+                       (item.end ? (new Date(item.end)).format('dd.mm.yyyy_HH.MM') : '') +  '.txt';
             vkopt.log('Zip messages part ' + name + ' (size: '+ item.content.length +')');
             zip.addFile(name, new Blob([item.content], {type:'plain/text'}), function(){
                delete item.content;
