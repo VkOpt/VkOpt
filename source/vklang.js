@@ -830,7 +830,8 @@ vk_lang_ru={
    "StoryReadReportDisabled": "\u041e\u0442\u0447\u0451\u0442 \u043e \u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440\u0435: \u0412\u042b\u041a\u041b.",
    "StoryReadReportEnabled": "\u041e\u0442\u0447\u0451\u0442 \u043e \u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440\u0435: \u0412\u041a\u041b.",
    "SourceSize": "\u0418\u0441\u0445\u043e\u0434\u043d\u044b\u0439 \u0440\u0430\u0437\u043c\u0435\u0440",
-   "NewSize": "\u041d\u043e\u0432\u044b\u0439 \u0440\u0430\u0437\u043c\u0435\u0440"
+   "NewSize": "\u041d\u043e\u0432\u044b\u0439 \u0440\u0430\u0437\u043c\u0435\u0440",
+   "seRnLabelCommunities":"\u041f\u0435\u0440\u0435\u0438\u043c\u0435\u043d\u043e\u0432\u0430\u0442\u044c \u00ab\u0421\u043e\u043e\u0431\u0449\u0435\u0441\u0442\u0432\u0430\u00bb \u0432 \u00ab\u0413\u0440\u0443\u043f\u043f\u044b\u00bb"
 };
 
 vk_lang_en={//by Hzy
@@ -1814,7 +1815,8 @@ vk_lang_en={//by Hzy
    "StoryReadReportDisabled": "View report: OFF",
    "StoryReadReportEnabled": "View report: ON",
    "SourceSize": "Source size",
-   "NewSize": "New size"
+   "NewSize": "New size",
+   "seRnLabelCommunities":"Rename «Communities» to «Groups»"
 };
 
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
