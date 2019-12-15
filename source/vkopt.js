@@ -40,6 +40,7 @@ var vkopt_defaults = {
       old_unread_msg_bg: 'c5d9e7',
       im_recent_emoji: false,
       ru_vk_logo: false,
+      rn_label_communities: false,
       //hide_big_like: false,
       hide_left_set: false,
       hide_recommendations: false,
@@ -9114,6 +9115,10 @@ vkopt['face'] =  {
             title: 'seVkontakteLogo',
             class_toggler: true
          },
+         rn_label_communities:{
+            title: 'seRnLabelCommunities',
+            class_toggler: true
+         },
          /*
          hide_big_like:{
             title: 'seHideBigLike',
@@ -9729,12 +9734,17 @@ vkopt['face'] =  {
          .vk_invert .top_nav_link:hover {
             background-color: #2f2f2f;
          }
+		 
+         .vk_rn_label_communities #l_gr .left_label{
+            visibility: hidden;
+         } 
 
          */
       });
       var progress_bar = vk_lib.get_block_comments(vkProgressBar).css;
-
-      return codes.main + progress_bar;
+      var lable_communities = '.vk_rn_label_communities #l_gr .left_label:before{visibility: visible; content: "'+ IDL('Groups') +'";}';
+	  
+      return codes.main + progress_bar + lable_communities;
    },
    onResponseAnswer: function(answer, url, q){
       // запихиваем свой обработчик в момент получения данных о видео.
@@ -9755,6 +9765,10 @@ vkopt['face'] =  {
       }
    },
    onLibFiles: function(fn){
+      if (fn == 'common.js')
+         Inj.End('setDocumentTitle', function(){
+            if (nav.objLoc[0] == "groups" && vkopt.settings.get('rn_label_communities')) return window.document.title = IDL("Groups");
+         });
       if (fn == 'audioplayer.js')
          vkopt.face.ad_block.audio();
       if (fn == 'videoplayer.js')
