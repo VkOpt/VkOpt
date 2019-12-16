@@ -3518,6 +3518,8 @@ vkopt['photos'] =  {
                }catch(e){ }
 
                var msg =  '';
+               new_size = new_size || {};
+               source_size = source_size || {};
                if (source_size.width > new_size.width || source_size.height > new_size.height){
                   msg += '<b>' + IDL('SourceSize') + ' > ' + IDL('NewSize') + '</b><br>' +
                          IDL('SourceSize')+ ': ' + source_size.width + 'x' + source_size.height + 'px<br>' +
