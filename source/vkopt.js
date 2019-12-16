@@ -14,6 +14,14 @@ var vVersionRev = 19;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
+vkopt.versions = vkopt.versions || [];
+vkopt.versions.push({
+   version: vVersion,
+   build: vBuild,
+   rev: vVersionRev,
+   postfix: vPostfix,
+   base: window._vkopt_loader_browser
+})
 
 var vkopt_defaults = {
    config: {
@@ -168,6 +176,9 @@ var vkopt_core = {
    },
    init: function(){
       if (vkopt_core.disallow_location.test(document.location.href)) return;
+      var run = vkopt_core.run;
+      var check = vkopt_core.conflicts;
+      var lng = vkopt.lang.lng;
       //TODO: тут ещё бы дождаться подгрузки vk_lib.js
       vkopt_core.dom_ready(function(){
          // if (!isNewVk()) return;
@@ -175,14 +186,60 @@ var vkopt_core = {
             console.log('avoid vkopt init');
          } else {
             console.log('init vkopt 3.x');
-            vkopt_core.run();
+            run(function(){
+               check(lng);
+            });
          }
       });
    },
-   run: function(){
+   conflicts: function(IDL){
+      debugger;
+      var content;
+      if (vkopt.versions.length > 1){
+         var vers = [];
+         each(vkopt.versions, function(i,info){
+            var types = [];
+            var lbr = window._vkopt_loader_browser;
+            for (var type in lbr)
+               lbr[type] && types.push(type);
+
+            var ver = vk_lib.format(
+               '<div>%1<sup><i>%2</i></sup> (build %3) [%4]</div>',
+               String(info.version).split('').join('.'),
+               info.postfix,
+               info.build,
+               types.join(' & ')
+            );
+            vers.push(ver);
+         });
+         content = IDL('VkoptDupFound') + '<h3>' + IDL('Found') + '</h3>' + vers.join('\n');
+      } else {
+         try{
+            MessageBox.toString();
+         } catch(e) {
+            content = IDL('VkoptDupFound');
+         }
+      }
+
+      if (!content) return;
+
+      try {
+         showFastBox(
+            getLang('global_box_error_title'),
+            content
+         ).setControlsText(
+            '<a href="/vkopt_club?w=page-16925304_54555865">' + IDL('Help') + '</a> | ' +
+            '<a href="http://vkopt.net/" target="_blank">vkopt.net</a>'
+         );
+      } catch(e) {
+         alert(content.replace(/<\/?[^>]+>/,''));
+      }
+   },
+   run: function(check){
       // Под новый дизайн чуть другие функции работы с локализацией.
       vkopt.lang.override(); // TODO: убрать этот костыль при удалении скриптов для старого дизайна
       vkopt.settings.init_defaults();
+      check && check();
 
       var wait = [];
       for (var key in StaticFiles)
@@ -2392,7 +2449,7 @@ vkopt['lang'] = {
    lng: function(id,options){ // if options is [Object] - apply macro replacing to lang string; else if  options = 2 - remove [], other  - add []
       vkopt.lang.get();
       var str = vkopt.lang.str_by_name(id);
-      if (isObject(options)) {
+      if ("[object Object]" === Object.prototype.toString.call(options)) {
          str = str.replace(/\{([a-z_\-\.]+)(?:\|([^\{\}]*?))?\}/g, function(s,key, val){
             if (options[key]){
                return val ? options[key].replace(/%s/g, val) : options[key]
@@ -9735,16 +9792,16 @@ vkopt['face'] =  {
          .vk_invert .top_nav_link:hover {
             background-color: #2f2f2f;
          }
-		 
+
          .vk_rn_label_communities #l_gr .left_label{
             visibility: hidden;
-         } 
+         }
 
          */
       });
       var progress_bar = vk_lib.get_block_comments(vkProgressBar).css;
       var lable_communities = '.vk_rn_label_communities #l_gr .left_label:before{visibility: visible; content: "'+ IDL('Groups') +'";}';
-	  
+
       return codes.main + progress_bar + lable_communities;
    },
    onResponseAnswer: function(answer, url, q){
