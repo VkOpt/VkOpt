@@ -1,6 +1,6 @@
 ﻿// ==UserScript==
 // @name          VKOpt
-// @version       3.0.7.19
+// @version       3.0.7.20
 // @author        KiberInfinity [id13391307]
 // @namespace     http://vkopt.net/
 // @description   Vkontakte Optimizer 3.x
@@ -389,7 +389,7 @@
       js.type = 'text/javascript';
       js.charset = 'UTF-8';
       js.innerHTML=script;
-      js.setAttribute(mark,"3.0.7.19");
+      js.setAttribute(mark,"3.0.7.20");
       doc.getElementsByTagName('head')[0].appendChild(js);
    }
    init();
@@ -406,11 +406,19 @@
 
 /* VERSION INFO */
 var vVersion = 307;
-var vBuild = 191202;
-var vVersionRev = 19;
+var vBuild = 191215;
+var vVersionRev = 20;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
+vkopt.versions = vkopt.versions || [];
+vkopt.versions.push({
+   version: vVersion,
+   build: vBuild,
+   rev: vVersionRev,
+   postfix: vPostfix,
+   base: window._vkopt_loader_browser
+})
 
 var vkopt_defaults = {
    config: {
@@ -437,6 +445,7 @@ var vkopt_defaults = {
       old_unread_msg_bg: 'c5d9e7',
       im_recent_emoji: false,
       ru_vk_logo: false,
+      rn_label_communities: false,
       //hide_big_like: false,
       hide_left_set: false,
       hide_recommendations: false,
@@ -564,6 +573,9 @@ var vkopt_core = {
    },
    init: function(){
       if (vkopt_core.disallow_location.test(document.location.href)) return;
+      var run = vkopt_core.run;
+      var check = vkopt_core.conflicts;
+      var lng = vkopt.lang.lng;
       //TODO: тут ещё бы дождаться подгрузки vk_lib.js
       vkopt_core.dom_ready(function(){
          // if (!isNewVk()) return;
@@ -571,14 +583,60 @@ var vkopt_core = {
             console.log('avoid vkopt init');
          } else {
             console.log('init vkopt 3.x');
-            vkopt_core.run();
+            run(function(){
+               check(lng);
+            });
          }
       });
    },
-   run: function(){
+   conflicts: function(IDL){
+      debugger;
+      var content;
+      if (vkopt.versions.length > 1){
+         var vers = [];
+         each(vkopt.versions, function(i,info){
+            var types = [];
+            var lbr = window._vkopt_loader_browser;
+            for (var type in lbr)
+               lbr[type] && types.push(type);
+
+            var ver = vk_lib.format(
+               '<div>%1<sup><i>%2</i></sup> (build %3) [%4]</div>',
+               String(info.version).split('').join('.'),
+               info.postfix,
+               info.build,
+               types.join(' & ')
+            );
+            vers.push(ver);
+         });
+         content = IDL('VkoptDupFound') + '<h3>' + IDL('Found') + '</h3>' + vers.join('\n');
+      } else {
+         try{
+            MessageBox.toString();
+         } catch(e) {
+            content = IDL('VkoptDupFound');
+         }
+      }
+
+      if (!content) return;
+
+      try {
+         showFastBox(
+            getLang('global_box_error_title'),
+            content
+         ).setControlsText(
+            '<a href="/vkopt_club?w=page-16925304_54555865">' + IDL('Help') + '</a> | ' +
+            '<a href="http://vkopt.net/" target="_blank">vkopt.net</a>'
+         );
+      } catch(e) {
+         alert(content.replace(/<\/?[^>]+>/,''));
+      }
+   },
+   run: function(check){
       // Под новый дизайн чуть другие функции работы с локализацией.
       vkopt.lang.override(); // TODO: убрать этот костыль при удалении скриптов для старого дизайна
       vkopt.settings.init_defaults();
+      check && check();
 
       var wait = [];
       for (var key in StaticFiles)
@@ -2788,7 +2846,7 @@ vkopt['lang'] = {
    lng: function(id,options){ // if options is [Object] - apply macro replacing to lang string; else if  options = 2 - remove [], other  - add []
       vkopt.lang.get();
       var str = vkopt.lang.str_by_name(id);
-      if (isObject(options)) {
+      if ("[object Object]" === Object.prototype.toString.call(options)) {
          str = str.replace(/\{([a-z_\-\.]+)(?:\|([^\{\}]*?))?\}/g, function(s,key, val){
             if (options[key]){
                return val ? options[key].replace(/%s/g, val) : options[key]
@@ -7373,6 +7431,7 @@ vkopt['stories'] = {
       showTooltip(el, opts);
    },
 }
+
 vkopt['messages'] = {
    css: function(){
       return vk_lib.get_block_comments(function(){
@@ -8114,7 +8173,7 @@ vkopt['messages'] = {
 
          var code = [];
          while(ids.length)
-            code.push('API.messages.getById({"message_ids":"'+ids.splice(0,PER_REQ).join(',')+'"}).items');
+            code.push('API.messages.getById({"message_ids":"'+ids.splice(0,PER_REQ).join(',')+'", "v":"5.73"}).items');
          code = 'return ' + code.join('+') + ';'
 
          ge('vk_scan_msg').innerHTML = vkProgressBar(last_msg - offset, last_msg, width, IDL('MessagesScan') + ' %'+(offset > 0 ? ' (id:' + offset + ')' : ''));
@@ -8294,7 +8353,7 @@ vkopt['messages'] = {
           replacedText = replacedText.replace(replacePattern3,'$1<a href="http://$2" target="_blank">$2</a>');
 
          if (window.Emoji && Emoji.emojiToHTML)
-            replacedText = Emoji.emojiToHTML(replacedText,true).replace(/"\/images\//g,'"http://vk.com/images/') || replacedText;
+            replacedText = Emoji.emojiToHTML(replacedText,true).replace(/"\/(images|emoji)\//g,'"http://vk.com/$1/') || replacedText;
 
           return replacedText;
       };
@@ -8583,7 +8642,8 @@ vkopt['messages'] = {
            vkopt.messages.export_data(data);
         })
    },
-   get_history:function(uid, callback, partial_callback){
+   get_history:function(uid, callback, partial_callback, ver){
+      ver = ver || '5.73';
       if (!uid) uid=cur.peer;
       var PER_REQ=100;
       var offset=0;
@@ -8622,7 +8682,8 @@ vkopt['messages'] = {
                offset: offset,
                count: PER_REQ,
                extended: 1,
-               rev:1
+               rev: 1,
+               v: ver
             };
             if (cur.gid)
                params['group_id'] = cur.gid
@@ -8638,7 +8699,8 @@ vkopt['messages'] = {
          var params = {
             peer_id: uid,
             offset: 0,
-            count: 0
+            count: 0,
+            v: ver
          };
          if (cur.gid)
             params['group_id'] = cur.gid
@@ -8689,7 +8751,7 @@ vkopt['messages'] = {
          var date_fmt = vkopt.settings.get('msg_exp_date_fmt') || vkopt_defaults.config.SAVE_MSG_HISTORY_DATE_FORMAT;
          msg_pattern=msg_pattern.replace(/\r?\n/g,'\r\n');
          date_fmt=date_fmt.replace(/\r?\n/g,'\r\n');
-//00000
+
          var continue_scan = function(){vkopt.log('something went wrong')};
          var zipname = "messages_" + peer_id + ".txts.zip";
          var zip = null;
@@ -8699,8 +8761,8 @@ vkopt['messages'] = {
 
             var num = ('0000000000'+(cnt++)).substr(-String(Math.ceil(total/1000)).length);
             var name = '#' + num + ' ' +
-                       (new Date(item.start)).format('dd.mm.yyyy_HH.MM') + ' - ' +
-                       (new Date(item.end)).format('dd.mm.yyyy_HH.MM') +  '.txt';
+                       (item.start ? (new Date(item.start)).format('dd.mm.yyyy_HH.MM') + ' - ' : '') +
+                       (item.end ? (new Date(item.end)).format('dd.mm.yyyy_HH.MM') : '') +  '.txt';
             vkopt.log('Zip messages part ' + name + ' (size: '+ item.content.length +')');
             zip.addFile(name, new Blob([item.content], {type:'plain/text'}), function(){
                delete item.content;
@@ -8728,7 +8790,7 @@ vkopt['messages'] = {
          }
          tick_inteval = setInterval(tick,10);
          var getName = function(cb){
-            dApi.call('messages.getConversationsById',{peer_ids: peer_id, extended:1, v:'5.103'},function(resp, r){
+            dApi.call('messages.getConversationsById',{peer_ids: peer_id, group_id: cur.gid || undefined, extended:1, v:'5.103'},function(resp, r){
                var items, item;
                if (r && (items = r.items) && (item = items[0])){
                   if (item.chat_settings){
@@ -8757,7 +8819,7 @@ vkopt['messages'] = {
                      }
 
                      cb({
-                        filename: vkCleanFileName(file_name.join(',')).substr(0,250)
+                        filename: vkCleanFileName(file_name.join(',') || 'unknown_' + peer_id).substr(0,250)
                      })
                   }
                } else {
@@ -8911,7 +8973,7 @@ vkopt['messages'] = {
          var run = function(){
             getName(function(info){
                zip = vkopt.zip(info.filename + '.zip');
-               continue_scan = vkopt.messages.get_history(peer_id, done, part_ready);
+               continue_scan = vkopt.messages.get_history(peer_id, done, part_ready, '5.103');
             })
          }
          if (show_format){
@@ -9507,6 +9569,10 @@ vkopt['face'] =  {
             title: 'seVkontakteLogo',
             class_toggler: true
          },
+         rn_label_communities:{
+            title: 'seRnLabelCommunities',
+            class_toggler: true
+         },
          /*
          hide_big_like:{
             title: 'seHideBigLike',
@@ -9896,7 +9962,8 @@ vkopt['face'] =  {
          .vk_anonimize .fc_contact_name,
          .vk_anonimize .im-mess-stack--lnk,
          .vk_anonimize ._im_ui_peers_list .im-right-menu--text,
-         .vk_anonimize .im-page--peer{
+         .vk_anonimize .im-page--peer,
+         .vk_anonimize .im-page-pinned--name{
             -webkit-filter: blur(4px);
             filter: blur(4px);
          }
@@ -10123,11 +10190,16 @@ vkopt['face'] =  {
             background-color: #2f2f2f;
          }
 
+         .vk_rn_label_communities #l_gr .left_label{
+            visibility: hidden;
+         }
+
          */
       });
       var progress_bar = vk_lib.get_block_comments(vkProgressBar).css;
+      var lable_communities = '.vk_rn_label_communities #l_gr .left_label:before{visibility: visible; content: "'+ IDL('Groups') +'";}';
 
-      return codes.main + progress_bar;
+      return codes.main + progress_bar + lable_communities;
    },
    onResponseAnswer: function(answer, url, q){
       // запихиваем свой обработчик в момент получения данных о видео.
@@ -10148,6 +10220,10 @@ vkopt['face'] =  {
       }
    },
    onLibFiles: function(fn){
+      if (fn == 'common.js')
+         Inj.End('setDocumentTitle', function(){
+            if (nav.objLoc[0] == "groups" && vkopt.settings.get('rn_label_communities')) return window.document.title = IDL("Groups");
+         });
       if (fn == 'audioplayer.js')
          vkopt.face.ad_block.audio();
       if (fn == 'videoplayer.js')
@@ -14749,6 +14825,7 @@ var vkMozExtension = {
 		DisableHistrory : false,
 		History : {},
 		InitStringifier: function(){
+         if (Function.prototype.toStringOriginal) return;
          Function.prototype.toStringOriginal = Function.prototype.toString;
          //var origFnToStr = Function.prototype.toString;
          Function.prototype.toString = function(){
@@ -15908,7 +15985,10 @@ function vk_oauth_api(app_id,scope){
             v: '5.95',
             format:'json'
          };
-         if (inputParams) for (var i in inputParams) params[i] = inputParams[i];
+         if (inputParams)
+            for (var i in inputParams)
+               if (typeof inputParams[i] != "undefined")
+                  params[i] = inputParams[i];
          params['access_token']=api.access_token;
 
          var onDoneRequest = function(text){
@@ -15970,8 +16050,8 @@ function vk_oauth_api(app_id,scope){
                      "from":""
                   };
                   ajax.post("/activation.php", options, {onDone: function(title, html, js){
-                        csid =(js.match(/validationCsid:\s*['"]?([a-f0-9]+)['"]?/) || [])[1];
-                        cstrong = (js.match(/strongCode:\s*['"]?([a-f0-9]+)['"]?/) || [0,0])[1];
+                        csid =(js.match(/validationCsid(?:['"]\]\s*=\s*|:)\s*['"]?([a-f0-9]+)['"]?/) || [])[1];
+                        cstrong = (js.match(/strongCode(?:['"]\]\s*=\s*|:)\s*['"]?([a-f0-9]+)['"]?/) || [0,0])[1];
                         vkopt.log('API Activation captcha sid: ', csid, ' strong:', cstrong);
                         api.captcha_visible=true;
                         api._captchaBox = showCaptchaBox(csid, cstrong, api._captchaBox, {
@@ -18317,7 +18397,8 @@ vk_lang_ru={
    "StoryReadReportDisabled": "\u041e\u0442\u0447\u0451\u0442 \u043e \u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440\u0435: \u0412\u042b\u041a\u041b.",
    "StoryReadReportEnabled": "\u041e\u0442\u0447\u0451\u0442 \u043e \u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440\u0435: \u0412\u041a\u041b.",
    "SourceSize": "\u0418\u0441\u0445\u043e\u0434\u043d\u044b\u0439 \u0440\u0430\u0437\u043c\u0435\u0440",
-   "NewSize": "\u041d\u043e\u0432\u044b\u0439 \u0440\u0430\u0437\u043c\u0435\u0440"
+   "NewSize": "\u041d\u043e\u0432\u044b\u0439 \u0440\u0430\u0437\u043c\u0435\u0440",
+   "seRnLabelCommunities":"\u041f\u0435\u0440\u0435\u0438\u043c\u0435\u043d\u043e\u0432\u0430\u0442\u044c \u00ab\u0421\u043e\u043e\u0431\u0449\u0435\u0441\u0442\u0432\u0430\u00bb \u0432 \u00ab\u0413\u0440\u0443\u043f\u043f\u044b\u00bb"
 };
 
 vk_lang_en={//by Hzy
@@ -19301,7 +19382,8 @@ vk_lang_en={//by Hzy
    "StoryReadReportDisabled": "View report: OFF",
    "StoryReadReportEnabled": "View report: ON",
    "SourceSize": "Source size",
-   "NewSize": "New size"
+   "NewSize": "New size",
+   "seRnLabelCommunities":"Rename «Communities» to «Groups»"
 };
 
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
