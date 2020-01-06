@@ -3446,7 +3446,7 @@ vkopt['photos'] =  {
    onPhotoAlbumItems: function(aid, oid){
       var items = [];
       var loc = nav.objLoc[0];
-      if (!nav.objLoc['act']){
+      if (!nav.objLoc['act'] && aid != '0000000' ){
          items.push({
             text: 'mPhC',
             href: '/'+nav.objLoc[0]+'?act=comments'
@@ -3670,9 +3670,9 @@ vkopt['photos'] =  {
       var btn = se('<div class="button_gray fl_r" id="vk_ph_upd_btn"><button onclick=" vkopt.photos.update_photo(cur.filterPhoto, (cur.pvCurPhoto || {}).peHash);">'+IDL('Update',2)+'</button></div>');
       p.appendChild(btn);
    },
-   album_actions: function(aid, oid){ // добавляем кнопку на обзор комментариев к фото, если она отсутствует
+   album_actions: function(aid, oid, h){ // добавляем кнопку на обзор комментариев к фото, если она отсутствует
       var cnt = 0, btn, p = ge('photos_all_block');// || ge('photos_container_photos');
-      var h = geByClass1('page_block_header_extra', p);
+      h = h || geByClass1('page_block_header_extra', p);
       if (!h || geByClass1('vk_photos_album_more_btn', h)) return;
 
       btn = se(vk_lib.tpl_process(vkopt.photos.tpls['more_acts'], {}));
@@ -3755,6 +3755,10 @@ vkopt['albums'] = {
          .vk_bottom_arrow {
             background: url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20fill%3D%22%23828A99%22%20d%3D%22M5%2014c1.1%200%202-.9%202-2s-.9-2-2-2-2%20.9-2%202%20.9%202%202%202zm7%200c1.1%200%202-.9%202-2s-.9-2-2-2-2%20.9-2%202%20.9%202%202%202zm7%200c1.1%200%202-.9%202-2s-.9-2-2-2-2%20.9-2%202%20.9%202%202%202z%22%2F%3E%3C%2Fsvg%3E') 50% 31px no-repeat;
          }
+         .vk_pa_actions_wrp {
+            position: absolute;
+            margin-left: -40px;
+         }
          */
       }).css
    },
@@ -3836,6 +3840,16 @@ vkopt['albums'] = {
                item.setAttribute('onmouseover', "vkopt.albums.mail_photos_menu(this,'"+listId+"');");
                addClass(item, 'vk_bottom_arrow');
             });
+      }
+
+      if (
+         url == 'al_photos.php' && q.act == 'show_album' &&
+         q.album && !q.offset && answer && answer[3] && answer[3].summary
+      ){
+         var tmp = q.album.split('_');
+         answer[3].summary = vkopt_core.mod_str_as_node(answer[3].summary + '<div class="fl_r vk_pa_actions"><div class="vk_pa_actions_wrp"></div></div>', function(node){
+            vkopt.photos.album_actions(tmp[1], tmp[0], geByClass1('vk_pa_actions_wrp', node));
+         });
       }
    },
    mail_photos_menu: function(node, listId){
