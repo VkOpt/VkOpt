@@ -193,7 +193,6 @@ var vkopt_core = {
       });
    },
    conflicts: function(IDL){
-      debugger;
       var content;
       if (vkopt.versions.length > 1){
          var vers = [];
@@ -2744,6 +2743,7 @@ vkopt['side_bar'] = {
             ["bookmarks?type=post", IDL("mFaPO")],
             ["bookmarks?type=article", IDL("Articles")],
             ["bookmarks?type=video", IDL("mFaVI")],
+            [["#", "return nav.change({z: 'album"+vkmid+"_0000000'}, event)"], IDL("mFaP")],
             ["bookmarks?type=link", IDL("mFaL")],
             ["bookmarks?type=podcast", IDL("Podcasts")],
             ["bookmarks?type=product", IDL("Products")],
