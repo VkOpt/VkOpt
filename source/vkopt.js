@@ -4825,7 +4825,7 @@ vkopt['audl'] = {
       */
       });
       vkopt.audl.load_sizes_cache();
-      vkbrowser.mozilla && vkopt.permissions.update();
+      vk_ext_api.browsers && vk_ext_api.browsers.webext && vkopt.permissions.update();
    },
    onLibFiles: function(fn){
       if (fn == 'audioplayer.js'){
