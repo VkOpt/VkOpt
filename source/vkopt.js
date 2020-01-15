@@ -49,6 +49,7 @@ var vkopt_defaults = {
       im_recent_emoji: false,
       ru_vk_logo: false,
       rn_label_communities: false,
+      old_icon_verify: false,
       //hide_big_like: false,
       hide_left_set: false,
       hide_recommendations: false,
@@ -7227,6 +7228,29 @@ vkopt['messages'] = {
         .vk_block_mark_read_btn ._im_dialogs_settings .msg_mark_read_icon{
           margin-top:11px
         }
+
+        .share_pm{
+          position: absolute;
+          right: 120px;
+        }
+
+        .nim-dialog.nim-dialog_classic .nim-dialog--chat-info {
+          margin-bottom: 0px !important;
+        }
+        .nim-dialog--id-chat{
+          position: absolute;
+          color:#939393;
+          margin-left: 5px;
+          font-size: 12px;
+        }
+        .nim-dialog--chat-null-info{
+          overflow: hidden;
+          color: #939393;
+          padding: 30px 50px;
+          font-size: 14px;
+          text-align: center;
+          line-height: 22px;
+        }
         */
       }).css + vkopt.messages.css_msg_bg(vkopt.settings.get('old_unread_msg_bg'))
    },
@@ -7441,6 +7465,34 @@ vkopt['messages'] = {
 	 /*typing_mread_icon:
 	   <div id="{vals.prefix}_{vals.type}_st" class="msg_{vals.type}_icon {vals.class_btn}" onclick="vkopt.messages.change_typing_mread_st('{vals.prefix}','{vals.type}')" onmouseover="vkopt.messages.typing_mread_tip(this,'{vals.prefix}','{vals.type}')"></div>
 	 */
+	 /*radiobtn_share_pm:
+	 <div class="like_share_row share_pm">
+	   <div class="radiobtn" onclick="vkopt.messages.send_to_pm(this)" id="like_share_pm" aria-checked="false" tabindex="-1" role="radio">{lng.sendToPM}</div>
+	 </div>
+	 */
+	 /*search_chats_item:
+	   <a class="ui_actions_menu_item _im_settings_action im-action vk_acts_item_icon" id="vk_search_chats_item" onclick="vkopt.messages.search_chats();">{lng.searchChats}</a>
+	 */
+	 /*chats_item:
+	 <div class="nim-dialog nim-dialog_classic">
+	   <div class="nim-dialog--photo">
+	     <div class="nim-peer">
+	       <div class="nim-peer--photo">
+              <a href="/im?sel=c{vals.id}" target="_blank"><div class="im_grid"><img alt="" src="{vals.photo}"></div></a>
+	       </div>
+	     </div>
+	   </div>
+	   <a class="nim-dialog--content" href="/im?sel=c{vals.id}">
+	     <div class="nim-dialog--cw">
+	       <div class="nim-dialog--name nim-dialog--chat-info">
+              <span class="nim-dialog--name-w" aria-hidden="true">{vals.title}</span>
+              <span class="nim-dialog--id-chat">#{vals.id}</span>
+	       </div>
+	       {vals.info}
+	     </div>
+	   </a>
+	 </div>
+	 */
       });
    },
    onCmd: function(data){
@@ -7535,8 +7587,17 @@ vkopt['messages'] = {
             if (el && /im-page--dialogs-settings/.test(el.className||''))
                vkopt.messages.dialogs_menu();
          })
+      if (fn == 'sharebox.js')
+         Inj.Start('ShareBox.rbChanged', function(){
+            if(!radioBtns.like_share.check) return;
+            radioBtns.like_share.check = false;
+            cur.wdd.like_mail_dd.selected = {};
+            cur.wdd.like_mail_dd.selCount = 0;
+         })
    },
    processNode: function(node, params){
+      if (params && params.q &&  params.q.act == 'publish_box')
+         geByClass1('like_share_radio', node).insertBefore(se(vk_lib.tpl_process(vkopt.messages.tpls['radiobtn_share_pm'])), geByClass('like_share_row', node)[3]);
       if (!vkopt.settings.get('audio_dl') || !node || (params && params.source == "getTemplate" && params.tpl_name!="im_msg_row")) return;
       var amsg = geByClass('audio-msg-track', node);
       for (var i = 0; i < amsg.length; i++){
@@ -7703,10 +7764,27 @@ vkopt['messages'] = {
          });
       });
    },
+   send_to_pm: function (el){
+      ShareBox.rbChanged(el, ShareBox.radioBtnOptions.IM);
+      var dd = cur.wdd.like_mail_dd;
+      for (var i in dd.selected)
+          WideDropdown.deselect('like_mail_dd', i.replace(/_$/, ''));
+      each(geByClass('_like_share_about_select', curBox().bodyNode), function() {
+          hide(this);
+      });
+      var ofs = radioBtns.like_share.els.push(ge('like_share_pm'));
+      radioBtns.like_share.check = true;
+      radiobtn(el, ofs, 'like_share');
+	  hide('like_share_add_media');
+	  radioBtns.like_share.val = ShareBox.radioBtnOptions.IM;
+      dd.selected = {[vk.id+'_']:[]};
+      dd.selCount = 1;
+   },
    dialogs_menu: function(){
       var menu = geByClass1('_im_settings_popup');
       if (!menu) return;
       !ge('vk_search_deleted_item') && menu.appendChild(se(vk_lib.tpl_process(vkopt.messages.tpls['search_deleted_item'])));
+      !ge('vk_search_chats_item') && menu.appendChild(se(vk_lib.tpl_process(vkopt.messages.tpls['search_chats_item'])));
    },
    acts_menu: function(){
       if (ge('vk_im_acts_sep')) return;
@@ -7911,6 +7989,70 @@ vkopt['messages'] = {
             done = true;
             val('vk_restore_info',vk_lib.tpl_process(vkopt.messages.tpls['search_deleted_done'],{}));
          })
+      });
+   },
+   search_chats: function(offset, box){
+      vkLdr.show();
+      getChats = function(cb){
+         offset = offset || 1;
+         var chat_ids = '';
+         for(var i = offset; i <= offset+199; i++)
+            chat_ids += i+',';
+         dApi.call('messages.getChat',{chat_ids: chat_ids}, {
+            ok:function(r, res){
+                  return (!res) ? cb(false) : cb(res, true);
+            },
+            error: function(r, err){
+               var last_chat = err.error_msg.match(/\d+/)-1;
+               if(last_chat < 1) return cb(false);
+               chat_ids = '';
+               for(var i = offset; i <= last_chat; i++)
+                  chat_ids += i+',';
+               dApi.call('messages.getChat',{chat_ids: chat_ids}, function(r, res){
+                  return (!res) ? cb(false) : cb(res);
+               });
+            }
+         });
+      }
+      getChats(function(chats, next){
+         var content = '';
+         if(!chats) content = '<div class="nim-dialog--chat-null-info">' + IDL('searchEmptyChats') + '</div>';
+         else{
+            Array.prototype.sort.call(chats, function(a, b) {
+               return a.id < b.id ? 1 : a.id > b.id ? -1 : 0;
+            });
+            for(var i= 0; i < chats.length; i++){
+               var chat = chats[i];
+               if(chat.is_group_channel) continue;
+               var info = IDL('clGu')+ ': ' + chat.members_count;
+               if(chat.admin_id == vk.id) info += ', ' + IDL('uAreCreator');
+               if(chat.kicked) info +=  ', ' + IDL('kickedChat');
+               if(chat.left) info += ', ' + IDL('leftChat');
+               content += vk_lib.tpl_process(vkopt.messages.tpls['chats_item'], {
+                  title:chat.title,
+                  photo:(chat.photo_50 || '/images/icons/im_multichat_50.png'),
+                  id:chat.id,
+                  info: '<div class="nim-dialog--preview">' + info + '</div>'
+               });
+            }
+         }
+         box = box || new MessageBox({
+         title : IDL('titleChats'),
+         closeButton : true,
+            width : '560px'
+         });
+         box.removeButtons()
+         box.content(content);
+         box.addButton(lang.box_close, function (r) {
+            abort = true;
+            box.hide();
+         });
+         if(next) box.addButton(IDL('ShowMore'), function (r) {
+            vkopt.messages.search_chats(offset+200, box);
+            box.hide();
+         }, 'gray');
+         vkLdr.hide();
+         box.show();
       });
    },
    get: function(out, offset, count, onDone) {
@@ -9192,6 +9334,10 @@ vkopt['face'] =  {
             title: 'seRnLabelCommunities',
             class_toggler: true
          },
+         old_icon_verify:{
+            title: 'seChIconVerify',
+            class_toggler: true
+         },
          /*
          hide_big_like:{
             title: 'seHideBigLike',
@@ -9811,6 +9957,23 @@ vkopt['face'] =  {
 
          .vk_rn_label_communities #l_gr .left_label{
             visibility: hidden;
+         }
+
+         .vk_old_icon_verify .page_verified{
+            background: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%3E%0A%20%20%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%3Cpath%20fill%3D%22%2374A2D6%22%20d%3D%22M5.82331983%2C14.8223666%20L4.54259486%2C15.0281417%20C4.15718795%2C15.0900653%203.78122933%2C14.8730055%203.64215331%2C14.5082715%20L3.17999726%2C13.2962436%20C3.09635683%2C13.0768923%202.92310766%2C12.9036432%202.70375635%2C12.8200027%20L1.49172846%2C12.3578467%20C1.12699447%2C12.2187707%200.909934662%2C11.842812%200.971858288%2C11.4574051%20L1.17763336%2C10.1766802%20C1.21487428%2C9.94489615%201.15146068%2C9.70823338%201.00331709%2C9.52612299%20L0.184748166%2C8.51987017%20C-0.0615827221%2C8.21705981%20-0.0615827221%2C7.78294019%200.184748166%2C7.48012983%20L1.00331709%2C6.47387701%20C1.15146068%2C6.29176662%201.21487428%2C6.05510385%201.17763336%2C5.82331983%20L0.971858288%2C4.54259486%20C0.909934662%2C4.15718795%201.12699447%2C3.78122933%201.49172846%2C3.64215331%20L2.70375635%2C3.17999726%20C2.92310766%2C3.09635683%203.09635683%2C2.92310766%203.17999726%2C2.70375635%20L3.64215331%2C1.49172846%20C3.78122933%2C1.12699447%204.15718795%2C0.909934662%204.54259486%2C0.971858288%20L5.82331983%2C1.17763336%20C6.05510385%2C1.21487428%206.29176662%2C1.15146068%206.47387701%2C1.00331709%20L7.48012983%2C0.184748166%20C7.78294019%2C-0.0615827221%208.21705981%2C-0.0615827221%208.51987017%2C0.184748166%20L9.52612299%2C1.00331709%20C9.70823338%2C1.15146068%209.94489615%2C1.21487428%2010.1766802%2C1.17763336%20L11.4574051%2C0.971858288%20C11.842812%2C0.909934662%2012.2187707%2C1.12699447%2012.3578467%2C1.49172846%20L12.8200027%2C2.70375635%20C12.9036432%2C2.92310766%2013.0768923%2C3.09635683%2013.2962436%2C3.17999726%20L14.5082715%2C3.64215331%20C14.8730055%2C3.78122933%2015.0900653%2C4.15718795%2015.0281417%2C4.54259486%20L14.8223666%2C5.82331983%20C14.7851257%2C6.05510385%2014.8485393%2C6.29176662%2014.9966829%2C6.47387701%20L15.8152518%2C7.48012983%20C16.0615827%2C7.78294019%2016.0615827%2C8.21705981%2015.8152518%2C8.51987017%20L14.9966829%2C9.52612299%20C14.8485393%2C9.70823338%2014.7851257%2C9.94489615%2014.8223666%2C10.1766802%20L15.0281417%2C11.4574051%20C15.0900653%2C11.842812%2014.8730055%2C12.2187707%2014.5082715%2C12.3578467%20L13.2962436%2C12.8200027%20C13.0768923%2C12.9036432%2012.9036432%2C13.0768923%2012.8200027%2C13.2962436%20L12.3578467%2C14.5082715%20C12.2187707%2C14.8730055%2011.842812%2C15.0900653%2011.4574051%2C15.0281417%20L10.1766802%2C14.8223666%20C9.94489615%2C14.7851257%209.70823338%2C14.8485393%209.52612299%2C14.9966829%20L8.51987017%2C15.8152518%20C8.21705981%2C16.0615827%207.78294019%2C16.0615827%207.48012983%2C15.8152518%20L6.47387701%2C14.9966829%20C6.29176662%2C14.8485393%206.05510385%2C14.7851257%205.82331983%2C14.8223666%20L5.82331983%2C14.8223666%20Z%22%2F%3E%0A%20%20%20%20%3Cpolyline%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%221.6%22%20points%3D%224.755%208.252%207%2010.5%2011.495%206.005%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%0A%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E") no-repeat 0;
+         }
+         .vk_old_icon_verify .feed_notifications .page_verified, .vk_old_icon_verify .post_author .page_verified, .vk_old_icon_verify .reply_author .page_verified, .vk_old_icon_verify .top_notify_cont .page_verified, .vk_old_icon_verify .top_tt_important .page_verified, .vk_old_icon_verify .ts_cont_wrap .page_verified, .vk_old_icon_verify .nim-dialog.nim-dialog_verified .nim-dialog--verfifed, .vk_old_icon_verify .im-page--chat-header_verified .im-page--title-main-verified, .vk_old_icon_verify .stories_author .page_verified {
+            background: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2214%22%20height%3D%2214%22%20viewBox%3D%220%200%2014%2014%22%3E%0A%20%20%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%3Cpath%20fill%3D%22%2374A2D6%22%20d%3D%22M5.09540485%2C12.9695708%20L3.9747705%2C13.149624%20C3.63753946%2C13.2038072%203.30857566%2C13.0138798%203.18688414%2C12.6947376%20L2.78249761%2C11.6342132%20C2.70931223%2C11.4422808%202.55771921%2C11.2906878%202.36578681%2C11.2175024%20L1.3052624%2C10.8131159%20C0.986120165%2C10.6914243%200.796192829%2C10.3624605%200.850376002%2C10.0252295%20L1.03042919%2C8.90459515%20C1.06301499%2C8.70178413%201.0075281%2C8.49470421%200.877902454%2C8.33535762%20L0.161654645%2C7.4548864%20C-0.0538848818%2C7.18992734%20-0.0538848818%2C6.81007266%200.161654645%2C6.5451136%20L0.877902454%2C5.66464238%20C1.0075281%2C5.50529579%201.06301499%2C5.29821587%201.03042919%2C5.09540485%20L0.850376002%2C3.9747705%20C0.796192829%2C3.63753946%200.986120165%2C3.30857566%201.3052624%2C3.18688414%20L2.36578681%2C2.78249761%20C2.55771921%2C2.70931223%202.70931223%2C2.55771921%202.78249761%2C2.36578681%20L3.18688414%2C1.3052624%20C3.30857566%2C0.986120165%203.63753946%2C0.796192829%203.9747705%2C0.850376002%20L5.09540485%2C1.03042919%20C5.29821587%2C1.06301499%205.50529579%2C1.0075281%205.66464238%2C0.877902454%20L6.5451136%2C0.161654645%20C6.81007266%2C-0.0538848818%207.18992734%2C-0.0538848818%207.4548864%2C0.161654645%20L8.33535762%2C0.877902454%20C8.49470421%2C1.0075281%208.70178413%2C1.06301499%208.90459515%2C1.03042919%20L10.0252295%2C0.850376002%20C10.3624605%2C0.796192829%2010.6914243%2C0.986120165%2010.8131159%2C1.3052624%20L11.2175024%2C2.36578681%20C11.2906878%2C2.55771921%2011.4422808%2C2.70931223%2011.6342132%2C2.78249761%20L12.6947376%2C3.18688414%20C13.0138798%2C3.30857566%2013.2038072%2C3.63753946%2013.149624%2C3.9747705%20L12.9695708%2C5.09540485%20C12.936985%2C5.29821587%2012.9924719%2C5.50529579%2013.1220975%2C5.66464238%20L13.8383454%2C6.5451136%20C14.0538849%2C6.81007266%2014.0538849%2C7.18992734%2013.8383454%2C7.4548864%20L13.1220975%2C8.33535762%20C12.9924719%2C8.49470421%2012.936985%2C8.70178413%2012.9695708%2C8.90459515%20L13.149624%2C10.0252295%20C13.2038072%2C10.3624605%2013.0138798%2C10.6914243%2012.6947376%2C10.8131159%20L11.6342132%2C11.2175024%20C11.4422808%2C11.2906878%2011.2906878%2C11.4422808%2011.2175024%2C11.6342132%20L10.8131159%2C12.6947376%20C10.6914243%2C13.0138798%2010.3624605%2C13.2038072%2010.0252295%2C13.149624%20L8.90459515%2C12.9695708%20C8.70178413%2C12.936985%208.49470421%2C12.9924719%208.33535762%2C13.1220975%20L7.4548864%2C13.8383454%20C7.18992734%2C14.0538849%206.81007266%2C14.0538849%206.5451136%2C13.8383454%20L5.66464238%2C13.1220975%20C5.50529579%2C12.9924719%205.29821587%2C12.936985%205.09540485%2C12.9695708%20L5.09540485%2C12.9695708%20Z%22%2F%3E%0A%20%20%20%20%3Cpolyline%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%221.5%22%20points%3D%224.25%207.25%206%209%209.75%205.25%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%0A%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E") no-repeat 0;
+         }
+         .vk_old_icon_verify .page_top_author, .vk_old_icon_verify .page_verified{
+            padding: 2px 16px 2px 0;
+         }
+         .vk_old_icon_verify .feed_notifications .page_top_author, .vk_old_icon_verify .feed_notifications .page_verified, .vk_old_icon_verify .post_author .page_top_author, .vk_old_icon_verify .post_author .page_verified, .vk_old_icon_verify .reply_author .page_top_author, .vk_old_icon_verify .reply_author .page_verified, .vk_old_icon_verify .top_notify_cont .page_top_author, .vk_old_icon_verify .top_notify_cont .page_verified, .vk_old_icon_verify .top_tt_important .page_top_author, .vk_old_icon_verify .top_tt_important .page_verified, .vk_old_icon_verify .ts_cont_wrap .page_top_author, .vk_old_icon_verify .ts_cont_wrap .page_verified {
+            padding: 7px 14px 7px 0;
+         }
+         .vk_old_icon_verify .nim-dialog.nim-dialog_verified .nim-dialog--verfifed, .vk_old_icon_verify .im-page--chat-header_verified .im-page--title-main-verified, .vk_old_icon_verify .stories_author .page_top_author, .vk_old_icon_verify .stories_author .page_verified {
+            width:14px !important;
+            height:14px !important;
          }
 
          */
@@ -10472,6 +10635,11 @@ vkopt['extra_online'] = {
 }
 
 vkopt['groups'] = {
+   onSettings:{
+      Extra:{
+         load_live_covers:{default_value:true}
+      }
+   },
    tpls:null,
    css: function(){
       return vk_lib.get_block_comments(function(){
@@ -10526,6 +10694,23 @@ vkopt['groups'] = {
          .vk_wiki_list_table i.vk_edit_icon:hover {
             opacity:1;
          }
+         .gr_live_covers {
+            position: absolute;
+            padding: 9px;
+            background: rgba(31,31,31,.6);
+            border-radius: 0 3px 3px 0;
+            float: right;
+            cursor: pointer;
+            margin-top: 15px;
+         }
+         .gr_live_covers:before {
+            content: '';
+            display: block;
+            width: 19px;
+            height: 19px;
+            background: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='iso-8859-1'%3F%3E%3Csvg version='1.1' id='svg_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' fill='%23fff' viewBox='0 0 469.333 469.333' style='enable-background:new 0 0 469.333 469.333;' xml:space='preserve'%3E%3Cg%3E%3Cg%3E%3Cg%3E%3Cpolygon points='319.253,198.08 260.587,273.6 218.667,223.253 160,298.667 394.667,298.667 '/%3E%3Cpath d='M42.667,85.333H0v341.333c0,23.573,19.093,42.667,42.667,42.667H384v-42.667H42.667V85.333z'/%3E%3Cpath d='M426.667,0H128c-23.573,0-42.667,19.093-42.667,42.667v298.667C85.333,364.907,104.427,384,128,384h298.667 c23.573,0,42.667-19.093,42.667-42.667V42.667C469.333,19.093,450.24,0,426.667,0z M426.667,341.333H128V42.667h298.667V341.333z '/%3E%3C/g%3E%3C/g%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3C/svg%3E") 50% no-repeat;
+            opacity: 0.6;
+		 }
          */
       }).css
    },
@@ -10593,8 +10778,12 @@ vkopt['groups'] = {
       }
 
       // На странице группы добавляем кнопку
-      if (ge('group') || ge('public'))
+      if (ge('group') || ge('public')){
          vkopt.groups.actions_items();
+
+         if(vkopt.settings.get('load_live_covers'))
+            vkopt.groups.live_covers();
+      }
    },
    onGroupActionItems: function(oid, gid){
       if (ge('vk_wiki_links'))
@@ -10654,6 +10843,29 @@ vkopt['groups'] = {
       if (!wrap) return false;
       wrap.appendChild(btn);
       return true;
+   },
+   live_covers: function (){
+      dApi.call('groups.getById',{group_id: -cur.oid, fields: 'live_covers', v: '5.103'},function(r,res){
+         if(!res || !res[0].live_covers.story_ids) return;
+         var getCovers = function(cb){
+            var id = res[0].live_covers.story_ids.shift();
+            ajax.post("al_stories.php", {
+               act: "get_list",
+               list: id,
+               story_raw: id
+            }, {
+               onDone(e) {
+                  e.list[0].items[0].can_comment = false;
+                  (cur['stories_list_group_live_covers']) ? cur.stories_list_group_live_covers[0].items.push(e.list[0].items[0]) : cur.stories_list_group_live_covers = e.list;
+                  (!res[0].live_covers.story_ids[0]) ? cb() : getCovers(cb);
+               }
+            });
+         };
+         getCovers(function(){
+            var el = se('<div class="gr_live_covers" onclick="showStory(\'' + (-cur.oid) + '/group_live_covers\', { fromEl: this}); return false;"><div>');
+            (geByClass1('page_cover')) ? geByClass1('page_cover').appendChild(el) : ge('page_avatar').insertBefore(el, ge('page_avatar').firstChild);
+         });
+      });
    },
    wiki_list:{
       owner_pages_btn:function(){
@@ -11010,7 +11222,7 @@ vkopt['wall'] = {
       }
    },
    processNode: function(node, params) {
-      var els=geByClass('post_media_voting',node);
+      var els=geByClass('post_media_voting',node).concat(geByClass('im_msg_media_poll', node));
       for (var i=0; i<els.length; i++){
          vkopt.wall.poll_btns(els[i]);
       }
@@ -11090,7 +11302,7 @@ vkopt['wall'] = {
 
 
       var code = 'return {posts: API.wall.getById({posts:"'+full_post_id+'", copy_history_depth: 2}), poll: API.polls.getById({owner_id:'+owner_id+',poll_id:'+poll_id+'})};'
-      if (!post_id && owner_id && poll_id){
+      if ((!post_id || post_id == "null") && owner_id && poll_id){
          dApi.call('polls.getById',{owner_id:owner_id, poll_id:poll_id, v: '5.59'},function(r){
             var data=r.response;
             view(data);
