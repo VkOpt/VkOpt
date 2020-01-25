@@ -5172,7 +5172,12 @@ vkopt['audl'] = {
    __load_req_num: 1,
    __full_audio_info_cache: {},
    decode_url: function(url){
-      var tmp = {};
+      var n = function(){};
+      var tmp = {
+         removeAttribute: n,
+         setAttribute: n,
+         getAttribute: n
+      };
       var orig = RegExp.prototype.test;
       RegExp.prototype.test = function(){return false}
       try{
