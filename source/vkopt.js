@@ -4834,8 +4834,15 @@ vkopt['audl'] = {
          Inj.Start('Object.getPrototypeOf(getAudioPlayer()._impl)._isHlsUrl', function(url,obj){
             if (obj && obj.get_url)
                obj.url = url;
-         })
+         });
 
+         Inj.End('AudioUtils.drawAudio', function(state){
+           var obj = this;
+           if (obj.result) {
+              obj.return_result = vkopt_core.mod_str_as_node(obj.result, vkopt_core.plugins.process_node, {source:"drawAudio", state: state});
+              obj.prevent_all = true;
+           }
+         })
       }
    },
    onAudioRowItems: function(audioEl, audioObject, audio){
