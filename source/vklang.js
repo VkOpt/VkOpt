@@ -831,7 +831,15 @@ vk_lang_ru={
    "StoryReadReportEnabled": "\u041e\u0442\u0447\u0451\u0442 \u043e \u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440\u0435: \u0412\u041a\u041b.",
    "SourceSize": "\u0418\u0441\u0445\u043e\u0434\u043d\u044b\u0439 \u0440\u0430\u0437\u043c\u0435\u0440",
    "NewSize": "\u041d\u043e\u0432\u044b\u0439 \u0440\u0430\u0437\u043c\u0435\u0440",
-   "seRnLabelCommunities":"\u041f\u0435\u0440\u0435\u0438\u043c\u0435\u043d\u043e\u0432\u0430\u0442\u044c \u00ab\u0421\u043e\u043e\u0431\u0449\u0435\u0441\u0442\u0432\u0430\u00bb \u0432 \u00ab\u0413\u0440\u0443\u043f\u043f\u044b\u00bb"
+   "seRnLabelCommunities":"\u041f\u0435\u0440\u0435\u0438\u043c\u0435\u043d\u043e\u0432\u0430\u0442\u044c \u00ab\u0421\u043e\u043e\u0431\u0449\u0435\u0441\u0442\u0432\u0430\u00bb \u0432 \u00ab\u0413\u0440\u0443\u043f\u043f\u044b\u00bb",
+   "seChIconVerify":"\u0421\u0442\u0430\u0440\u0430\u044F \u0438\u043A\u043E\u043D\u043A\u0430 \u0432\u0435\u0440\u0438\u0444\u0438\u043A\u0430\u0446\u0438\u0438",
+   "sendToPM":"\u0421\u0435\u0431\u0435 \u0432 \u043B\u0438\u0447\u043A\u0443",
+   "searchChats":"\u041D\u0430\u0439\u0442\u0438 \u0432\u0441\u0435 \u0431\u0435\u0441\u0435\u0434\u044B",
+   "titleChats":"\u0411\u0435\u0441\u0435\u0434\u044B",
+   "searchEmptyChats":"\u0411\u0435\u0441\u0435\u0434\u044B \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D\u044B",
+   "uAreCreator":"\u0432\u044B \u0441\u043E\u0437\u0434\u0430\u0442\u0435\u043B\u044C",
+   "kickedChat":"\u0438\u0441\u043A\u043B\u044E\u0447\u0435\u043D\u044B \u0438\u0437 \u0431\u0435\u0441\u0435\u0434\u044B",
+   "leftChat":"\u043F\u043E\u043A\u0438\u043D\u0443\u043B\u0438 \u0431\u0435\u0441\u0435\u0434\u0443"
 };
 
 vk_lang_en={//by Hzy
@@ -1816,7 +1824,15 @@ vk_lang_en={//by Hzy
    "StoryReadReportEnabled": "View report: ON",
    "SourceSize": "Source size",
    "NewSize": "New size",
-   "seRnLabelCommunities":"Rename «Communities» to «Groups»"
+   "seRnLabelCommunities":"Rename «Communities» to «Groups»",
+   "seChIconVerify":"Old verify icon",
+   "sendToPM":"Send to PM",
+   "searchChats":"Find all Chats",
+   "titleChats":"Chats",
+   "searchEmptyChats":"Chats not found",
+   "uAreCreator":"you're the creator",
+   "kickedChat":"kicked from the chat",
+   "leftChat":"left the chat"
 };
 
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
