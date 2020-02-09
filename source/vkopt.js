@@ -7609,7 +7609,11 @@ vkopt['messages'] = {
    },
    processNode: function(node, params){
       if (params && params.q &&  params.q.act == 'publish_box')
-         geByClass1('like_share_radio', node).insertBefore(se(vk_lib.tpl_process(vkopt.messages.tpls['radiobtn_share_pm'])), geByClass('like_share_row', node)[3]);
+         try {
+            geByClass1('like_share_radio', node).insertBefore(se(vk_lib.tpl_process(vkopt.messages.tpls['radiobtn_share_pm'])), geByClass('like_share_row', node)[3]);
+         } catch(e) {
+            console.warn('VkOpt: Add share_pm failed');
+         }
       if (!vkopt.settings.get('audio_dl') || !node || (params && params.source == "getTemplate" && params.tpl_name!="im_msg_row")) return;
       var amsg = geByClass('audio-msg-track', node);
       for (var i = 0; i < amsg.length; i++){
