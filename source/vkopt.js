@@ -8212,7 +8212,7 @@ vkopt['messages'] = {
       };
 		var make_geo=function(m){
 			var html='';
-         html+='<div class="attacment"> <div class="att_ico att_geo"></div> <a href="https://maps.google.ru/maps?q='+m.geo['coordinates']+'" target="_blank">'+IDL('HistMsgGeoAttach')+' '+(m.geo['place'] || {'title':'---'})['title']+'</a></div>';
+         html+='<div class="attacment"> <div class="att_ico att_geo"></div> <a href="https://www.google.ru/maps/@'+m.geo['coordinates'].replace(/\s+/, ',')+',17z" target="_blank">'+IDL('HistMsgGeoAttach')+' '+(m.geo['place'] || {'title':'---'})['title']+'</a></div>';
 			return html;
 		};
 
@@ -8696,7 +8696,7 @@ vkopt['messages'] = {
                }
 
                if (msg.geo)
-                  attach_text += (msg.geo['place'] || {'title':'---'})['title'] + ': https://www.google.com/maps/@'+msg.geo['coordinates'].join(',');
+                  attach_text += (msg.geo['place'] || {'title':'---'})['title'] + ': https://www.google.com/maps/@'+Object.values(msg.geo['coordinates']).join(',')+',17z';
 
                var date=(new Date(msg.date*1000)).format(date_fmt);
                var user=getUserInfo(from_id);//(msg.from_id==mid?user2:user1);
