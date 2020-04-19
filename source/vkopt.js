@@ -1172,7 +1172,7 @@ var vk_glue = {
          if (typeof requestFileSystem != "undefined")
             creationMethod = 'File';
          else
-         if (typeof IDBMutableFile != "undefined")
+         if (typeof IDBMutableFile != "undefined" && (IDBMutableFile.prototype || {}).getFile) // not support in Firefox 74
             creationMethod = 'MutableFile';
 
       function createTempFile(file_name, callback) {
