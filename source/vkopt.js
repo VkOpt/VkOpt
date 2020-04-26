@@ -3491,7 +3491,7 @@ vkopt['photos'] =  {
          pe_hash = cur.pvCurPhoto.peHash;
       }
 
-      stManager.add(['upload.js','filters.js'],function(){
+      stManager.add(['cmodules/web/upload.js','cmodules/web/filters.js'],function(){
          var photo=photo_id;
          if (/photo-?\d+_\d+/.test(photo)) photo=photo.match(/photo(-?\d+_\d+)/)[1];
          dApi.call('photos.getById',{photos:photo, photo_sizes: 1, v:"5.101"}, function(r,items){
