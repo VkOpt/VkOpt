@@ -9411,6 +9411,9 @@ vkopt['face'] =  {
          anonimize: {
             class_toggler: true
          },
+         skip_phone_validation: {
+            description: "Auto skip phone validations box and show captcha immediately"
+         },
          shift_page_type:{
             default_value: 0
          }
@@ -10015,6 +10018,15 @@ vkopt['face'] =  {
             );
          }
 
+      }
+
+      if (
+         vkopt.settings.get('skip_phone_validation')
+         && url == "activation.php"
+         && q && q.act == "validate_box"
+         && answer && /validationShowCaptcha/.test(answer[2])
+      ){
+         answer[2] += ";setTimeout(cur.validationShowCaptcha, 50);"
       }
    },
    onLibFiles: function(fn){
