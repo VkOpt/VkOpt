@@ -4876,7 +4876,7 @@ vkopt['audl'] = {
                return true;
             },
             '<div></div>',// button content
-            'data-aid="{vals.fullId}" data-reqaid="{vals.fullId}_{vals.actionHash}_{vals.urlHash}" id="vk_get_link_{vals.fullId}" href="" onmouseover="vkopt.audl.check_dl_url(this);"',//custom_attributes
+            'data-aid="{vals.fullId}" data-urlhash="{vals.urlHash}" data-reqaid="{vals.fullId}_{vals.actionHash}_{vals.urlHash}" id="vk_get_link_{vals.fullId}" href="" onmouseover="vkopt.audl.check_dl_url(this);"',//custom_attributes
             'a'
          ]);
       }
@@ -4915,7 +4915,7 @@ vkopt['audl'] = {
             else {
                var queue = vkopt.settings.get('audio_wait_hover') ? vkopt.audl.__hover_load_queue : vkopt.audl.__load_queue;
                var full_id_req = info_obj.fullId  + "_" + info_obj.actionHash + "_" + info_obj.urlHash;
-               if (queue.indexOf(full_id_req) == -1 && vkopt.audl.__loading_queue.indexOf(full_id_req) == -1)
+               if (info_obj.urlHash && queue.indexOf(full_id_req) == -1 && vkopt.audl.__loading_queue.indexOf(full_id_req) == -1)
                   queue.push(full_id_req);
             }
          }
@@ -4968,7 +4968,7 @@ vkopt['audl'] = {
      return result;
    },
    check_dl_url: function(el){   // если на странице не было ссылок на аудио, то при наведении на кнопку загрузки ждём их появления в кэше.
-      if (el.getAttribute('href') == ''){
+      if (el.getAttribute('href') == '' && el.dataset["urlhash"]){
          addClass(el,'dl_url_loading');
          var id = el.dataset["aid"];
          var req_id = el.dataset["reqaid"];
