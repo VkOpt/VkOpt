@@ -6314,9 +6314,12 @@ vkopt['videoview'] = {
      re('vk_mv_down_icon'); // убиваем кнопку, т.к не выходит убить тултип таким образом: data(ge('vk_mv_down_icon'), 'ett').destroy();
      if (!html)
         return null;
-      if (!ge('vk_mv_down_icon') && ge('mv_top_controls')){
-         var btn = se(vk_lib.tpl_process(vkopt.videoview.tpls['dl_btn'], {}));
-         ge('mv_top_controls').appendChild(btn);
+      var btn;
+      if (!ge('vk_mv_down_icon') && ge('VideoLayerInfo__topControls')){
+         btn = se(vk_lib.tpl_process(vkopt.videoview.tpls['dl_btn'], {}));
+         ge('VideoLayerInfo__topControls').appendChild(btn);
+      } else {
+         return;
       }
       // создаём новое тултип-меню
       vkopt.videoview._links_tt = new ElementTooltip(btn,{
