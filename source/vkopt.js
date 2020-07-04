@@ -9419,6 +9419,10 @@ vkopt['face'] =  {
          },
          shift_page_type:{
             default_value: 0
+         },
+         hide_connect_box: {
+            default_value: true,
+            class_toggler: true
          }
       }
    },
@@ -10031,6 +10035,8 @@ vkopt['face'] =  {
       ){
          answer[2] += ";setTimeout(cur.validationShowCaptcha, 50);"
       }
+
+      setTimeout(vkopt.face.deconnect, 50);
    },
    onLibFiles: function(fn){
       if (fn == 'common.js')
@@ -10048,6 +10054,7 @@ vkopt['face'] =  {
    },
    onLocation: function(){
       vkopt.face.user_online_status();
+      setTimeout(vkopt.face.deconnect, 50);
    },
    ad_block: {
       video: function(vars){
@@ -10078,6 +10085,7 @@ vkopt['face'] =  {
       vkopt.face.inv_top_menu_item();
       if (vkopt.settings.get('shift_page_type') != 0)
          vkopt.face.shift_page.shift(vkopt.settings.get('shift_page_type'));
+      setTimeout(vkopt.face.deconnect, 50);
    },
    onCmd: function(data){
       if (data.act == 'user_online_status')
@@ -10090,6 +10098,14 @@ vkopt['face'] =  {
       if (option_id == 'hold_menu')
          window.__leftMenu && vkopt.face.onLibFiles('page_layout.js');
       vkopt.face.shift_page.btn();
+   },
+   deconnect: function(){
+      if (window._message_boxes && vkopt.settings.get('hide_connect_box')) each(_message_boxes, function(i, mb){
+         if (mb && mb.getOptions && (mb.getOptions() || {}).containerClass == "vk_connect_policy") {
+            mb.setOptions({onHideAttempt: false, preventHideLastWithCheck: false});
+            mb.hide();
+         }
+      });
    },
    inv_top_menu_item: function(){
       if (!vkopt.settings.get('invert_btn'))
