@@ -9436,7 +9436,9 @@ vkopt['face'] =  {
          .vk_ad_block .feed_row .post[data-ad]{
             display: none;
          }
-         .vk_disable_border_radius body *{
+         .vk_disable_border_radius body *,
+         .vk_disable_border_radius body *::after,
+         .vk_disable_border_radius body *::before{
             border-radius: 0px !important;
          }
 
