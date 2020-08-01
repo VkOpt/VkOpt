@@ -1509,9 +1509,16 @@ vkopt['settings'] =  {
          .vk_setts_wrap{
             padding: 0 25px;
          }
-         .settings_labeled_text.vk_settings_block {
+         .settings_labeled_text.vk_settings_block,
+         [dir] .settings_labeled_text.vk_settings_block
+         {
              margin-left: 0px;
              width: 293px;
+         }
+         .settings_label.vk_setts_cat_header,
+         [dir] .settings_label.vk_setts_cat_header {
+             display: block;
+             float: none;
          }
          .wide_column .settings_labeled_text.vk_settings_block {
              width: 248px;
@@ -1530,7 +1537,8 @@ vkopt['settings'] =  {
              border-right: 1px solid #e7e8ec;
              padding-right: 5px;
          }
-         .vk_settings_block.vk_settings_block_right {
+         .vk_settings_block.vk_settings_block_right,
+         [dir] .vk_settings_block.vk_settings_block_right {
              padding-left: 5px;
              border-left: 1px solid #e7e8ec;
              margin-left: -1px;
@@ -1548,7 +1556,9 @@ vkopt['settings'] =  {
          .vk_settings_block .checkbox .vk_checkbox_caption{
             padding-left:20px;
          }
-         .vk_settings_block #dev_colorpicker{
+         .vk_settings_block #dev_colorpicker,
+         [dir] .vk_settings_block #dev_colorpicker
+         {
             margin-left: 107px;
          }
          .vk_settings_block .dev_labeled{
