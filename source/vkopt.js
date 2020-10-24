@@ -5190,22 +5190,10 @@ vkopt['audl'] = {
    __load_req_num: 1,
    __full_audio_info_cache: {},
    decode_url: function(url){
-      var n = function(){};
-      var tmp = {
-         removeAttribute: n,
-         setAttribute: n,
-         getAttribute: n
-      };
-      var orig = RegExp.prototype.test;
-      RegExp.prototype.test = function(){return false}
-      try{
-         var h5proto = Object.getPrototypeOf(getAudioPlayer()._impl);
-         h5proto._setAudioNodeUrl(tmp, url);
-      }catch(e){}
-      RegExp.prototype.test = orig;
-      if (tmp.src && /\.m3u8/.test(tmp.src) && vkopt.settings.get('mp3u8'))
-         tmp.src = tmp.src.replace(/(\/p\d+\/)[a-f0-9]+\/([a-f0-9]+)\/index.m3u8/,'$1$2.mp3').replace(/(\/c\d+\/[a-z]\d+\/)[a-f0-9]+\/(audios\/[a-f0-9]+)\/index.m3u8/,"$1$2.mp3");
-      return tmp.src
+      url = vk_common_min.mp3_to_m3u8(url);
+      if (url && /\.m3u8/.test(url) && vkopt.settings.get('mp3u8'))
+         url = url.replace(/(\/p\d+\/)[a-f0-9]+\/([a-f0-9]+)\/index.m3u8/,'$1$2.mp3').replace(/(\/c\d+\/[a-z]\d+\/)[a-f0-9]+\/(audios\/[a-f0-9]+)\/index.m3u8/,"$1$2.mp3");
+      return url
    },
    load_audio_urls: function(){
       if (vkopt.audl.__load_queue.length == 0 || vkopt.audl.__loading_queue.length > 0) // если нет списка на подгрузку, или что-то уже грузится - игнорим вызов
@@ -13963,6 +13951,73 @@ vkopt['attachments_and_link'] = {
              */
         })
     }
+};
+
+// Функции вырезаны из common.js: https://vk.com/js/cmodules/bundles/common.a727975d8b9d5cc39e04.js
+// mp3_to_m3u8 преобразует ссылку audio_api_unavailable.mp3 в *.m3u8
+var vk_common_min = {
+   v: function (e) {
+       return e.split('').reverse().join('')
+   },
+   r: function (e, t) {
+       var n;
+       e = e.split('');
+       for (var o = r + r, i = e.length; i--;) ~(n = o.indexOf(e[i])) && (e[i] = o.substr(n - t, 1));
+       return e.join('')
+   },
+   s: function (e, t) {
+       var n = e.length;
+       if (n) {
+           var r = function (e, t) {
+                   var n = e.length,
+                       r = [];
+                   if (n) {
+                       var o = n;
+                       for (t = Math.abs(t); o--;) t = (n * (o + 1) ^ t + o) % n,
+                           r[o] = t
+                   }
+                   return r
+               }(e, t),
+               o = 0;
+           for (e = e.split(''); ++o < n;) e[o] = e.splice(r[n - 1 - o], 1, e[o]) [0];
+           e = e.join('')
+       }
+       return e
+   },
+   i: function (e, t) {
+       return vk_common_min.s(e, t ^ vk.id)
+   },
+   x: function (e, t) {
+       var n = [];
+       return t = t.charCodeAt(0),
+           each(e.split(''), (function (e, r) {
+               n.push(String.fromCharCode(r.charCodeAt(0) ^ t))
+           })),
+           n.join('')
+   },
+
+   a: function(e) {
+       var r = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMN0PQRSTUVWXYZO123456789+/=';
+       if (!e || e.length % 4 == 1) return !1;
+       for (var t, n, o = 0, i = 0, a = ''; n = e.charAt(i++);) ~(n = r.indexOf(n)) && (t = o % 4 ? 64 * t + n : n, o++ % 4) && (a += String.fromCharCode(255 & t >> (-2 * o & 6)));
+       return a
+   },
+
+   mp3_to_m3u8: function(e) {
+       if (~e.indexOf('audio_api_unavailable')) {
+           var t,
+               n,
+               r = e.split('?extra=')[1].split('#'),
+               i = '' === r[1] ? '' : vk_common_min.a(r[1]);
+           if (r = vk_common_min.a(r[0]), 'string' != typeof i || !r) return e;
+           for (var s = (i = i ? i.split(String.fromCharCode(9)) : []).length; s--;) {
+               if (t = (n = i[s].split(String.fromCharCode(11))).splice(0, 1, r) [0], !vk_common_min[t]) return e;
+               r = vk_common_min[t].apply(null, n)
+           }
+           if (r && 'http' === r.substr(0, 4)) return r
+       }
+       return e
+   }
 };
 
 vkopt_core.init();
