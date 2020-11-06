@@ -5194,13 +5194,20 @@ vkopt['audl'] = {
       var tmp = {
          removeAttribute: n,
          setAttribute: n,
-         getAttribute: n
+         getAttribute: n,
+         setUrl: function(u) { 
+            tmp.src = u; 
+            return {than: n}; 
+         }
       };
       var orig = RegExp.prototype.test;
       RegExp.prototype.test = function(){return false}
       try{
          var h5proto = Object.getPrototypeOf(getAudioPlayer()._impl);
-         h5proto._setAudioNodeUrl(tmp, url);
+         var _currentAudioEl = h5proto._currentAudioEl;
+         h5proto._currentAudioEl = tmp;
+         h5proto.setUrl(url);
+         h5proto._currentAudioEl = _currentAudioEl;
       }catch(e){}
       RegExp.prototype.test = orig;
       if (tmp.src && /\.m3u8/.test(tmp.src) && vkopt.settings.get('mp3u8'))
