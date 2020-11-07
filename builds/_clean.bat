@@ -29,3 +29,4 @@ if %18 == 8%1 del /Q webext\scripts\vk*
 del /Q vkopt_chrome.zip vkopt_firefox_jetpack.xpi vkopt_firefox.xpi vkopt_firefox_webext.xpi vkopt_opera.oex vkopt_maxthon.mxaddon
 
 echo Done.
+pause
