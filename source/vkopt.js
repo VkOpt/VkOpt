@@ -3493,8 +3493,8 @@ vkopt['photos'] =  {
       }
    },
    onResponseAnswer: function(answer,url,q){
-      if (url == 'al_photos.php' && q.act == 'edit_photo' && (vkopt.settings.get('photo_replacer'))){
-         answer[1] = vkopt_core.mod_str_as_node(answer[1], vkopt.photos.update_photo_btn, {source:'process_edit_photo_response', url:url, q:q});
+      if (url == 'al_photos.php' && q.act == 'get_editor_data' && (vkopt.settings.get('photo_replacer'))){
+         setTimeout(vkopt.photos.update_photo_btn, 100);
       }
    },
    update_photo: function(photo_id, pe_hash){
@@ -3691,6 +3691,7 @@ vkopt['photos'] =  {
    },
    update_photo_btn:function(node){
       var p = geByClass('pe_filter_buttons',node)[0] ? geByClass('pe_filter_buttons',node)[0] : geByClass('pv_filter_buttons',node)[0];
+      if (!p) p = geByClass1('StatusPanel__inner');
       if (!p) return;
       var btn = se('<div class="button_gray fl_r" id="vk_ph_upd_btn"><button onclick=" vkopt.photos.update_photo(cur.filterPhoto, (cur.pvCurPhoto || {}).peHash);">'+IDL('Update',2)+'</button></div>');
       p.appendChild(btn);
