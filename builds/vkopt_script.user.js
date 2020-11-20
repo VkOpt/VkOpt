@@ -1,11 +1,11 @@
 ﻿// ==UserScript==
 // @name          VKOpt
-// @version       3.0.7.20
+// @version       3.0.7.22
 // @author        KiberInfinity [id13391307]
 // @namespace     http://vkopt.net/
 // @description   Vkontakte Optimizer 3.x
-// @downloadUrl   https://raw.githubusercontent.com/VkOpt/VkOpt/master/builds/vkopt_script.user.js
-// @updateUrl     https://raw.githubusercontent.com/VkOpt/VkOpt/master/builds/vkopt_script.meta.js
+// @downloadUrl   https://raw.githubusercontent.com/m4x3r/VkOpt/master/builds/vkopt_script.user.js
+// @updateUrl     https://raw.githubusercontent.com/m4x3r/VkOpt/master/builds/vkopt_script.meta.js
 // @match       *://vkontakte.ru/*
 // @match       *://*.vkontakte.ru/*
 // @match       *://vk.com/*
@@ -389,7 +389,7 @@
       js.type = 'text/javascript';
       js.charset = 'UTF-8';
       js.innerHTML=script;
-      js.setAttribute(mark,"3.0.7.20");
+      js.setAttribute(mark,"3.0.7.22");
       doc.getElementsByTagName('head')[0].appendChild(js);
    }
    init();
@@ -406,8 +406,8 @@
 
 /* VERSION INFO */
 var vVersion = 307;
-var vBuild = 191215;
-var vVersionRev = 20;
+var vBuild = 191218;
+var vVersionRev = 22;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -446,6 +446,7 @@ var vkopt_defaults = {
       im_recent_emoji: false,
       ru_vk_logo: false,
       rn_label_communities: false,
+      old_icon_verify: false,
       //hide_big_like: false,
       hide_left_set: false,
       hide_recommendations: false,
@@ -590,7 +591,6 @@ var vkopt_core = {
       });
    },
    conflicts: function(IDL){
-      debugger;
       var content;
       if (vkopt.versions.length > 1){
          var vers = [];
@@ -1569,7 +1569,7 @@ var vk_glue = {
          if (typeof requestFileSystem != "undefined")
             creationMethod = 'File';
          else
-         if (typeof IDBMutableFile != "undefined")
+         if (typeof IDBMutableFile != "undefined" && (IDBMutableFile.prototype || {}).getFile) // not support in Firefox 74
             creationMethod = 'MutableFile';
 
       function createTempFile(file_name, callback) {
@@ -1906,9 +1906,16 @@ vkopt['settings'] =  {
          .vk_setts_wrap{
             padding: 0 25px;
          }
-         .settings_labeled_text.vk_settings_block {
+         .settings_labeled_text.vk_settings_block,
+         [dir] .settings_labeled_text.vk_settings_block
+         {
              margin-left: 0px;
              width: 293px;
+         }
+         .settings_label.vk_setts_cat_header,
+         [dir] .settings_label.vk_setts_cat_header {
+             display: block;
+             float: none;
          }
          .wide_column .settings_labeled_text.vk_settings_block {
              width: 248px;
@@ -1927,7 +1934,8 @@ vkopt['settings'] =  {
              border-right: 1px solid #e7e8ec;
              padding-right: 5px;
          }
-         .vk_settings_block.vk_settings_block_right {
+         .vk_settings_block.vk_settings_block_right,
+         [dir] .vk_settings_block.vk_settings_block_right {
              padding-left: 5px;
              border-left: 1px solid #e7e8ec;
              margin-left: -1px;
@@ -1945,7 +1953,9 @@ vkopt['settings'] =  {
          .vk_settings_block .checkbox .vk_checkbox_caption{
             padding-left:20px;
          }
-         .vk_settings_block #dev_colorpicker{
+         .vk_settings_block #dev_colorpicker,
+         [dir] .vk_settings_block #dev_colorpicker
+         {
             margin-left: 107px;
          }
          .vk_settings_block .dev_labeled{
@@ -3141,6 +3151,7 @@ vkopt['side_bar'] = {
             ["bookmarks?type=post", IDL("mFaPO")],
             ["bookmarks?type=article", IDL("Articles")],
             ["bookmarks?type=video", IDL("mFaVI")],
+            [["#", "return nav.change({z: 'album"+vkmid+"_0000000'}, event)"], IDL("mFaP")],
             ["bookmarks?type=link", IDL("mFaL")],
             ["bookmarks?type=podcast", IDL("Podcasts")],
             ["bookmarks?type=product", IDL("Products")],
@@ -3362,7 +3373,7 @@ vkopt['photoview'] =  {
          .vk_pv_comm_move_down .pe_main_wrap {
             padding-bottom: 50px;
          }
-         #pv_more_acts_tt .vk_ph_copy_search.pv_more_act_item{
+         [dir] #pv_more_acts_tt .vk_ph_copy_search.pv_more_act_item{
             padding: 8px 5px;
          }
          #pv_more_acts_tt .vk_ph_copy_search.pv_more_act_item:before{
@@ -3374,11 +3385,11 @@ vkopt['photoview'] =  {
          .vk_ph_copy_search_links{
             padding-left:6px;
          }
-         #pv_more_acts_tt .pv_more_act_item.vk_ph_sz_link{
+         [dir] #pv_more_acts_tt .pv_more_act_item.vk_ph_sz_link{
             float:left;
             padding: 8px 6px;
          }
-         #pv_more_acts_tt .pv_more_act_item.vk_ph_sz_hdlink {
+         [dir] #pv_more_acts_tt .pv_more_act_item.vk_ph_sz_hdlink {
              float: right;
              padding: 8px 6px;
          }
@@ -3386,16 +3397,16 @@ vkopt['photoview'] =  {
          #pv_more_acts_tt .vk_ph_sz_hdlink.pv_more_act_item:before{
             display: none;
          }
-         #pv_more_acts_tt .vk_ph_sz_btn.pv_more_act_item:before,
-         #pv_more_acts_tt .vk_ph_copy_search_label.pv_more_act_item:before,
-         #pv_more_acts_tt .vk_pv_more_act_item.pv_more_act_item:before{
+         [dir] #pv_more_acts_tt .vk_ph_sz_btn.pv_more_act_item:before,
+         [dir] #pv_more_acts_tt .vk_ph_copy_search_label.pv_more_act_item:before,
+         [dir] #pv_more_acts_tt .vk_pv_more_act_item.pv_more_act_item:before{
             background-image: url("data:image/svg+xml,%3Csvg%20version%3D%221.1%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2216%22%20height%3D%2216%22%09%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20fill%3D%22%23FFFFFF%22%20d%3D%22M204.1%2C66l-25.3%2C30.4c-14.1-25-44.3-37.6-72.7-28.5%09c-32.5%2C10.4-50.5%2C45.2-40%2C77.8c6.2%2C19.4%2C21.2%2C33.6%2C39.1%2C39.7c7.4%2C14%2C15.4%2C31.9%2C21.1%2C46c-7.5%2C7.8-12.1%2C19.6-12.1%2C19.6l-30.9-6.7%09l3.5-26.3c-4.8-2-9.5-4.4-13.9-7.2L53.6%2C229l-23.4-21.3l16.2-21c-3.1-4.1-6-8.5-8.5-13.2l-25.8%2C6l-9.7-30.1l24.5-10.1%09c-0.7-5.3-0.9-10.5-0.8-15.7L0.8%2C116l6.7-30.9l26.3%2C3.5c2-4.8%2C4.4-9.5%2C7.2-13.9L22.8%2C55.3l21.3-23.4l21%2C16.2c4.1-3.1%2C8.5-6%2C13.2-8.5%09l-6-25.8l30.1-9.7l10.1%2C24.5c5.3-0.7%2C10.5-0.9%2C15.7-0.8l7.7-25.4l30.9%2C6.7l-3.5%2C26.3c4.8%2C2%2C9.5%2C4.4%2C13.9%2C7.2l19.3-18.2l23.4%2C21.3%09l-15.4%2C20L204.1%2C66z%20M79%2C106.3l49.8-18.1l44.6%2C87.8l31.7-95.6l50%2C18.1c-11%2C24.1-21%2C48.8-30.1%2C74c-9.1%2C25.2-17.2%2C50.9-24.4%2C77h-50.9%09c-9.5-22.9-20.2-46.3-32-70.2C105.8%2C155.3%2C92.9%2C131%2C79%2C106.3z%22/%3E%3C/svg%3E");
             background-position: 0 0;
             background-repeat: no-repeat;
             width: 16px;
             margin-top: -2px;
          }
-         #pv_more_acts_tt .vk_pv_copy_act_item.pv_more_act_item:before{
+         [dir] #pv_more_acts_tt .vk_pv_copy_act_item.pv_more_act_item:before{
             background-position: 0 -79px;
          }
          #pv_more_acts_tt .vk_ph_sz_btn.pv_more_act_item{
@@ -3448,6 +3459,20 @@ vkopt['photoview'] =  {
          .vk_pv_comm_move_down.vk_pv_hide_comments_btn.vk_pv_hide_comments #pv_box .pv_narrow_column_wrap{
             display:none;
          }
+         .vk_pv_comm_move_down .StickersPanel__content,
+         .vk_pv_comm_move_down .FiltersPanel__inner{
+            text-align: center;
+         }
+         .vk_pv_comm_move_down .PhotoEditor__tabs {
+            width: 100%;
+         }
+         .vk_pv_comm_move_down .StickersPanel__row {
+            display: inline-block;
+         }
+         .vk_pv_comm_move_down .FiltersItem {
+            display: inline-block;
+            width: auto;
+         }
          */
       }).css;
    },
@@ -3484,7 +3509,7 @@ vkopt['photoview'] =  {
             <div class="vk_ph_copy_search_links">
             <a target="_blank" class="pv_more_act_item fl_l vk_ph_copy_search" href="https://www.google.com/searchbyimage?image_url={vals.src}">Google</a>
             <a target="_blank" class="pv_more_act_item fl_l vk_ph_copy_search" href="http://www.tineye.com/search?url={vals.src}">TinEye</a>
-            <a target="_blank" class="pv_more_act_item fl_l vk_ph_copy_search" href="http://yandex.ru/images/search?img_url={vals.src}&rpt=imageview">Yandex</a>
+            <a target="_blank" class="pv_more_act_item fl_l vk_ph_copy_search" href="http://yandex.ru/images/search?url={vals.src}&rpt=imageview">Yandex</a>
             <a target="_blank" class="pv_more_act_item fl_l vk_ph_copy_search" href="https://iqdb.org/?url={vals.src}">IQDB</a>
             <a target="_blank" class="pv_more_act_item fl_l vk_ph_copy_search" href="/feed?section=photos_search&q=copy%3Aphoto{vals.photo_id}">VK</a>
             <div class="clear"></div>
@@ -3843,7 +3868,7 @@ vkopt['photos'] =  {
    onPhotoAlbumItems: function(aid, oid){
       var items = [];
       var loc = nav.objLoc[0];
-      if (!nav.objLoc['act']){
+      if (!nav.objLoc['act'] && aid != '0000000' ){
          items.push({
             text: 'mPhC',
             href: '/'+nav.objLoc[0]+'?act=comments'
@@ -3865,8 +3890,8 @@ vkopt['photos'] =  {
       }
    },
    onResponseAnswer: function(answer,url,q){
-      if (url == 'al_photos.php' && q.act == 'edit_photo' && (vkopt.settings.get('photo_replacer'))){
-         answer[1] = vkopt_core.mod_str_as_node(answer[1], vkopt.photos.update_photo_btn, {source:'process_edit_photo_response', url:url, q:q});
+      if (url == 'al_photos.php' && q.act == 'get_editor_data' && (vkopt.settings.get('photo_replacer'))){
+         setTimeout(vkopt.photos.update_photo_btn, 100);
       }
    },
    update_photo: function(photo_id, pe_hash){
@@ -3887,7 +3912,7 @@ vkopt['photos'] =  {
          pe_hash = cur.pvCurPhoto.peHash;
       }
 
-      stManager.add(['upload.js','filters.js'],function(){
+      stManager.add(['cmodules/web/upload.js','cmodules/web/filters.js'],function(){
          var photo=photo_id;
          if (/photo-?\d+_\d+/.test(photo)) photo=photo.match(/photo(-?\d+_\d+)/)[1];
          dApi.call('photos.getById',{photos:photo, photo_sizes: 1, v:"5.101"}, function(r,items){
@@ -3915,6 +3940,8 @@ vkopt['photos'] =  {
                }catch(e){ }
 
                var msg =  '';
+               new_size = new_size || {};
+               source_size = source_size || {};
                if (source_size.width > new_size.width || source_size.height > new_size.height){
                   msg += '<b>' + IDL('SourceSize') + ' > ' + IDL('NewSize') + '</b><br>' +
                          IDL('SourceSize')+ ': ' + source_size.width + 'x' + source_size.height + 'px<br>' +
@@ -4061,13 +4088,14 @@ vkopt['photos'] =  {
    },
    update_photo_btn:function(node){
       var p = geByClass('pe_filter_buttons',node)[0] ? geByClass('pe_filter_buttons',node)[0] : geByClass('pv_filter_buttons',node)[0];
+      if (!p) p = geByClass1('StatusPanel__inner');
       if (!p) return;
       var btn = se('<div class="button_gray fl_r" id="vk_ph_upd_btn"><button onclick=" vkopt.photos.update_photo(cur.filterPhoto, (cur.pvCurPhoto || {}).peHash);">'+IDL('Update',2)+'</button></div>');
       p.appendChild(btn);
    },
-   album_actions: function(aid, oid){ // добавляем кнопку на обзор комментариев к фото, если она отсутствует
+   album_actions: function(aid, oid, h){ // добавляем кнопку на обзор комментариев к фото, если она отсутствует
       var cnt = 0, btn, p = ge('photos_all_block');// || ge('photos_container_photos');
-      var h = geByClass1('page_block_header_extra', p);
+      h = h || geByClass1('page_block_header_extra', p);
       if (!h || geByClass1('vk_photos_album_more_btn', h)) return;
 
       btn = se(vk_lib.tpl_process(vkopt.photos.tpls['more_acts'], {}));
@@ -4150,6 +4178,10 @@ vkopt['albums'] = {
          .vk_bottom_arrow {
             background: url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20fill%3D%22%23828A99%22%20d%3D%22M5%2014c1.1%200%202-.9%202-2s-.9-2-2-2-2%20.9-2%202%20.9%202%202%202zm7%200c1.1%200%202-.9%202-2s-.9-2-2-2-2%20.9-2%202%20.9%202%202%202zm7%200c1.1%200%202-.9%202-2s-.9-2-2-2-2%20.9-2%202%20.9%202%202%202z%22%2F%3E%3C%2Fsvg%3E') 50% 31px no-repeat;
          }
+         .vk_pa_actions_wrp {
+            position: absolute;
+            margin-left: -40px;
+         }
          */
       }).css
    },
@@ -4231,6 +4263,16 @@ vkopt['albums'] = {
                item.setAttribute('onmouseover', "vkopt.albums.mail_photos_menu(this,'"+listId+"');");
                addClass(item, 'vk_bottom_arrow');
             });
+      }
+
+      if (
+         url == 'al_photos.php' && q.act == 'show_album' &&
+         q.album && !q.offset && answer && answer[3] && answer[3].summary
+      ){
+         var tmp = q.album.split('_');
+         answer[3].summary = vkopt_core.mod_str_as_node(answer[3].summary + '<div class="fl_r vk_pa_actions"><div class="vk_pa_actions_wrp"></div></div>', function(node){
+            vkopt.photos.album_actions(tmp[1], tmp[0], geByClass1('vk_pa_actions_wrp', node));
+         });
       }
    },
    mail_photos_menu: function(node, listId){
@@ -5206,7 +5248,7 @@ vkopt['audl'] = {
       */
       });
       vkopt.audl.load_sizes_cache();
-      vkbrowser.mozilla && vkopt.permissions.update();
+      vk_ext_api.browsers && vk_ext_api.browsers.webext && vkopt.permissions.update();
    },
    onLibFiles: function(fn){
       if (fn == 'audioplayer.js'){
@@ -5215,8 +5257,15 @@ vkopt['audl'] = {
          Inj.Start('Object.getPrototypeOf(getAudioPlayer()._impl)._isHlsUrl', function(url,obj){
             if (obj && obj.get_url)
                obj.url = url;
-         })
+         });
 
+         Inj.End('AudioUtils.drawAudio', function(state){
+           var obj = this;
+           if (obj.result) {
+              obj.return_result = vkopt_core.mod_str_as_node(obj.result, vkopt_core.plugins.process_node, {source:"drawAudio", state: state});
+              obj.prevent_all = true;
+           }
+         })
       }
    },
    onAudioRowItems: function(audioEl, audioObject, audio){
@@ -5249,7 +5298,7 @@ vkopt['audl'] = {
                return true;
             },
             '<div></div>',// button content
-            'data-aid="{vals.fullId}" data-reqaid="{vals.fullId}_{vals.actionHash}_{vals.urlHash}" id="vk_get_link_{vals.fullId}" href="" onmouseover="vkopt.audl.check_dl_url(this);"',//custom_attributes
+            'data-aid="{vals.fullId}" data-urlhash="{vals.urlHash}" data-reqaid="{vals.fullId}_{vals.actionHash}_{vals.urlHash}" id="vk_get_link_{vals.fullId}" href="" onmouseover="vkopt.audl.check_dl_url(this);"',//custom_attributes
             'a'
          ]);
       }
@@ -5288,7 +5337,7 @@ vkopt['audl'] = {
             else {
                var queue = vkopt.settings.get('audio_wait_hover') ? vkopt.audl.__hover_load_queue : vkopt.audl.__load_queue;
                var full_id_req = info_obj.fullId  + "_" + info_obj.actionHash + "_" + info_obj.urlHash;
-               if (queue.indexOf(full_id_req) == -1 && vkopt.audl.__loading_queue.indexOf(full_id_req) == -1)
+               if (info_obj.urlHash && queue.indexOf(full_id_req) == -1 && vkopt.audl.__loading_queue.indexOf(full_id_req) == -1)
                   queue.push(full_id_req);
             }
          }
@@ -5341,7 +5390,7 @@ vkopt['audl'] = {
      return result;
    },
    check_dl_url: function(el){   // если на странице не было ссылок на аудио, то при наведении на кнопку загрузки ждём их появления в кэше.
-      if (el.getAttribute('href') == ''){
+      if (el.getAttribute('href') == '' && el.dataset["urlhash"]){
          addClass(el,'dl_url_loading');
          var id = el.dataset["aid"];
          var req_id = el.dataset["reqaid"];
@@ -5553,12 +5602,24 @@ vkopt['audl'] = {
    __load_req_num: 1,
    __full_audio_info_cache: {},
    decode_url: function(url){
-      var tmp = {};
+      var n = function(){};
+      var tmp = {
+         removeAttribute: n,
+         setAttribute: n,
+         getAttribute: n,
+         setUrl: function(u) { 
+            tmp.src = u; 
+            return {than: n}; 
+         }
+      };
       var orig = RegExp.prototype.test;
       RegExp.prototype.test = function(){return false}
       try{
          var h5proto = Object.getPrototypeOf(getAudioPlayer()._impl);
-         h5proto._setAudioNodeUrl(tmp, url);
+         var _currentAudioEl = h5proto._currentAudioEl;
+         h5proto._currentAudioEl = tmp;
+         h5proto.setUrl(url);
+         h5proto._currentAudioEl = _currentAudioEl;
       }catch(e){}
       RegExp.prototype.test = orig;
       if (tmp.src && /\.m3u8/.test(tmp.src) && vkopt.settings.get('mp3u8'))
@@ -6682,9 +6743,12 @@ vkopt['videoview'] = {
      re('vk_mv_down_icon'); // убиваем кнопку, т.к не выходит убить тултип таким образом: data(ge('vk_mv_down_icon'), 'ett').destroy();
      if (!html)
         return null;
-      if (!ge('vk_mv_down_icon') && ge('mv_top_controls')){
-         var btn = se(vk_lib.tpl_process(vkopt.videoview.tpls['dl_btn'], {}));
-         ge('mv_top_controls').appendChild(btn);
+      var btn;
+      if (!ge('vk_mv_down_icon') && ge('VideoLayerInfo__topControls')){
+         btn = se(vk_lib.tpl_process(vkopt.videoview.tpls['dl_btn'], {}));
+         ge('VideoLayerInfo__topControls').appendChild(btn);
+      } else {
+         return;
       }
       // создаём новое тултип-меню
       vkopt.videoview._links_tt = new ElementTooltip(btn,{
@@ -7493,9 +7557,9 @@ vkopt['messages'] = {
             margin-top: -3px;
             margin-right: 0;
          }
-         .ui_actions_menu_item.vk_acts_item_icon:before,
-         .vk_acts_item_icon:before,
-         .vk_acts_item_ricon:after{
+         [dir] .ui_actions_menu_item.vk_acts_item_icon:before,
+         [dir] .vk_acts_item_icon:before,
+         [dir] .vk_acts_item_ricon:after{
             background: url("data:image/svg+xml,%3Csvg%20version%3D%221.1%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2216%22%20height%3D%2216%22%09%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20fill%3D%22%237D9AB7%22%20d%3D%22M204.1%2C66l-25.3%2C30.4c-14.1-25-44.3-37.6-72.7-28.5%09c-32.5%2C10.4-50.5%2C45.2-40%2C77.8c6.2%2C19.4%2C21.2%2C33.6%2C39.1%2C39.7c7.4%2C14%2C15.4%2C31.9%2C21.1%2C46c-7.5%2C7.8-12.1%2C19.6-12.1%2C19.6l-30.9-6.7%09l3.5-26.3c-4.8-2-9.5-4.4-13.9-7.2L53.6%2C229l-23.4-21.3l16.2-21c-3.1-4.1-6-8.5-8.5-13.2l-25.8%2C6l-9.7-30.1l24.5-10.1%09c-0.7-5.3-0.9-10.5-0.8-15.7L0.8%2C116l6.7-30.9l26.3%2C3.5c2-4.8%2C4.4-9.5%2C7.2-13.9L22.8%2C55.3l21.3-23.4l21%2C16.2c4.1-3.1%2C8.5-6%2C13.2-8.5%09l-6-25.8l30.1-9.7l10.1%2C24.5c5.3-0.7%2C10.5-0.9%2C15.7-0.8l7.7-25.4l30.9%2C6.7l-3.5%2C26.3c4.8%2C2%2C9.5%2C4.4%2C13.9%2C7.2l19.3-18.2l23.4%2C21.3%09l-15.4%2C20L204.1%2C66z%20M79%2C106.3l49.8-18.1l44.6%2C87.8l31.7-95.6l50%2C18.1c-11%2C24.1-21%2C48.8-30.1%2C74c-9.1%2C25.2-17.2%2C50.9-24.4%2C77h-50.9%09c-9.5-22.9-20.2-46.3-32-70.2C105.8%2C155.3%2C92.9%2C131%2C79%2C106.3z%22/%3E%3C/svg%3E") 9px 0px no-repeat;
             height: 17px;
          }
@@ -7607,6 +7671,29 @@ vkopt['messages'] = {
         }
         .vk_block_mark_read_btn ._im_dialogs_settings .msg_mark_read_icon{
           margin-top:11px
+        }
+
+        .share_pm{
+          position: absolute;
+          right: 120px;
+        }
+
+        .nim-dialog.nim-dialog_classic .nim-dialog--chat-info {
+          margin-bottom: 0px !important;
+        }
+        .nim-dialog--id-chat{
+          position: absolute;
+          color:#939393;
+          margin-left: 5px;
+          font-size: 12px;
+        }
+        .nim-dialog--chat-null-info{
+          overflow: hidden;
+          color: #939393;
+          padding: 30px 50px;
+          font-size: 14px;
+          text-align: center;
+          line-height: 22px;
         }
         */
       }).css + vkopt.messages.css_msg_bg(vkopt.settings.get('old_unread_msg_bg'))
@@ -7822,6 +7909,34 @@ vkopt['messages'] = {
 	 /*typing_mread_icon:
 	   <div id="{vals.prefix}_{vals.type}_st" class="msg_{vals.type}_icon {vals.class_btn}" onclick="vkopt.messages.change_typing_mread_st('{vals.prefix}','{vals.type}')" onmouseover="vkopt.messages.typing_mread_tip(this,'{vals.prefix}','{vals.type}')"></div>
 	 */
+	 /*radiobtn_share_pm:
+	 <div class="like_share_row share_pm">
+	   <div class="radiobtn" onclick="vkopt.messages.send_to_pm(this)" id="like_share_pm" aria-checked="false" tabindex="-1" role="radio">{lng.sendToPM}</div>
+	 </div>
+	 */
+	 /*search_chats_item:
+	   <a class="ui_actions_menu_item _im_settings_action im-action vk_acts_item_icon" id="vk_search_chats_item" onclick="vkopt.messages.search_chats();">{lng.searchChats}</a>
+	 */
+	 /*chats_item:
+	 <div class="nim-dialog nim-dialog_classic">
+	   <div class="nim-dialog--photo">
+	     <div class="nim-peer">
+	       <div class="nim-peer--photo">
+              <a href="/im?sel=c{vals.id}" target="_blank"><div class="im_grid"><img alt="" src="{vals.photo}"></div></a>
+	       </div>
+	     </div>
+	   </div>
+	   <a class="nim-dialog--content" href="/im?sel=c{vals.id}">
+	     <div class="nim-dialog--cw">
+	       <div class="nim-dialog--name nim-dialog--chat-info">
+              <span class="nim-dialog--name-w" aria-hidden="true">{vals.title}</span>
+              <span class="nim-dialog--id-chat">#{vals.id}</span>
+	       </div>
+	       {vals.info}
+	     </div>
+	   </a>
+	 </div>
+	 */
       });
    },
    onCmd: function(data){
@@ -7916,8 +8031,21 @@ vkopt['messages'] = {
             if (el && /im-page--dialogs-settings/.test(el.className||''))
                vkopt.messages.dialogs_menu();
          })
+      if (fn == 'sharebox.js')
+         Inj.Start('ShareBox.rbChanged', function(){
+            if(!radioBtns.like_share.check) return;
+            radioBtns.like_share.check = false;
+            cur.wdd.like_mail_dd.selected = {};
+            cur.wdd.like_mail_dd.selCount = 0;
+         })
    },
    processNode: function(node, params){
+      if (params && params.q &&  params.q.act == 'publish_box')
+         try {
+            geByClass1('like_share_radio', node).insertBefore(se(vk_lib.tpl_process(vkopt.messages.tpls['radiobtn_share_pm'])), geByClass('like_share_row', node)[3]);
+         } catch(e) {
+            console.warn('VkOpt: Add share_pm failed');
+         }
       if (!vkopt.settings.get('audio_dl') || !node || (params && params.source == "getTemplate" && params.tpl_name!="im_msg_row")) return;
       var amsg = geByClass('audio-msg-track', node);
       for (var i = 0; i < amsg.length; i++){
@@ -8084,10 +8212,27 @@ vkopt['messages'] = {
          });
       });
    },
+   send_to_pm: function (el){
+      ShareBox.rbChanged(el, ShareBox.radioBtnOptions.IM);
+      var dd = cur.wdd.like_mail_dd;
+      for (var i in dd.selected)
+          WideDropdown.deselect('like_mail_dd', i.replace(/_$/, ''));
+      each(geByClass('_like_share_about_select', curBox().bodyNode), function() {
+          hide(this);
+      });
+      var ofs = radioBtns.like_share.els.push(ge('like_share_pm'));
+      radioBtns.like_share.check = true;
+      radiobtn(el, ofs, 'like_share');
+	  hide('like_share_add_media');
+	  radioBtns.like_share.val = ShareBox.radioBtnOptions.IM;
+      dd.selected = {[vk.id+'_']:[]};
+      dd.selCount = 1;
+   },
    dialogs_menu: function(){
       var menu = geByClass1('_im_settings_popup');
       if (!menu) return;
       !ge('vk_search_deleted_item') && menu.appendChild(se(vk_lib.tpl_process(vkopt.messages.tpls['search_deleted_item'])));
+      !ge('vk_search_chats_item') && menu.appendChild(se(vk_lib.tpl_process(vkopt.messages.tpls['search_chats_item'])));
    },
    acts_menu: function(){
       if (ge('vk_im_acts_sep')) return;
@@ -8294,6 +8439,70 @@ vkopt['messages'] = {
          })
       });
    },
+   search_chats: function(offset, box){
+      vkLdr.show();
+      getChats = function(cb){
+         offset = offset || 1;
+         var chat_ids = '';
+         for(var i = offset; i <= offset+199; i++)
+            chat_ids += i+',';
+         dApi.call('messages.getChat',{chat_ids: chat_ids}, {
+            ok:function(r, res){
+                  return (!res) ? cb(false) : cb(res, true);
+            },
+            error: function(r, err){
+               var last_chat = err.error_msg.match(/\d+/)-1;
+               if(last_chat < 1) return cb(false);
+               chat_ids = '';
+               for(var i = offset; i <= last_chat; i++)
+                  chat_ids += i+',';
+               dApi.call('messages.getChat',{chat_ids: chat_ids}, function(r, res){
+                  return (!res) ? cb(false) : cb(res);
+               });
+            }
+         });
+      }
+      getChats(function(chats, next){
+         var content = '';
+         if(!chats) content = '<div class="nim-dialog--chat-null-info">' + IDL('searchEmptyChats') + '</div>';
+         else{
+            Array.prototype.sort.call(chats, function(a, b) {
+               return a.id < b.id ? 1 : a.id > b.id ? -1 : 0;
+            });
+            for(var i= 0; i < chats.length; i++){
+               var chat = chats[i];
+               if(chat.is_group_channel) continue;
+               var info = IDL('clGu')+ ': ' + chat.members_count;
+               if(chat.admin_id == vk.id) info += ', ' + IDL('uAreCreator');
+               if(chat.kicked) info +=  ', ' + IDL('kickedChat');
+               if(chat.left) info += ', ' + IDL('leftChat');
+               content += vk_lib.tpl_process(vkopt.messages.tpls['chats_item'], {
+                  title:chat.title,
+                  photo:(chat.photo_50 || '/images/icons/im_multichat_50.png'),
+                  id:chat.id,
+                  info: '<div class="nim-dialog--preview">' + info + '</div>'
+               });
+            }
+         }
+         box = box || new MessageBox({
+         title : IDL('titleChats'),
+         closeButton : true,
+            width : '560px'
+         });
+         box.removeButtons()
+         box.content(content);
+         box.addButton(lang.box_close, function (r) {
+            abort = true;
+            box.hide();
+         });
+         if(next) box.addButton(IDL('ShowMore'), function (r) {
+            vkopt.messages.search_chats(offset+200, box);
+            box.hide();
+         }, 'gray');
+         vkLdr.hide();
+         box.show();
+      });
+   },
    get: function(out, offset, count, onDone) {
 		var code_body='';
 		var code_r=[];
@@ -8439,7 +8648,7 @@ vkopt['messages'] = {
       };
 		var make_geo=function(m){
 			var html='';
-         html+='<div class="attacment"> <div class="att_ico att_geo"></div> <a href="https://maps.google.ru/maps?q='+m.geo['coordinates']+'" target="_blank">'+IDL('HistMsgGeoAttach')+' '+(m.geo['place'] || {'title':'---'})['title']+'</a></div>';
+         html+='<div class="attacment"> <div class="att_ico att_geo"></div> <a href="https://www.google.ru/maps/@'+m.geo['coordinates'].replace(/\s+/, ',')+',17z" target="_blank">'+IDL('HistMsgGeoAttach')+' '+(m.geo['place'] || {'title':'---'})['title']+'</a></div>';
 			return html;
 		};
 
@@ -8923,7 +9132,7 @@ vkopt['messages'] = {
                }
 
                if (msg.geo)
-                  attach_text += (msg.geo['place'] || {'title':'---'})['title'] + ': https://www.google.com/maps/@'+msg.geo['coordinates'].join(',');
+                  attach_text += (msg.geo['place'] || {'title':'---'})['title'] + ': https://www.google.com/maps/@'+Object.values(msg.geo['coordinates']).join(',')+',17z';
 
                var date=(new Date(msg.date*1000)).format(date_fmt);
                var user=getUserInfo(from_id);//(msg.from_id==mid?user2:user1);
@@ -9573,6 +9782,10 @@ vkopt['face'] =  {
             title: 'seRnLabelCommunities',
             class_toggler: true
          },
+         old_icon_verify:{
+            title: 'seChIconVerify',
+            class_toggler: true
+         },
          /*
          hide_big_like:{
             title: 'seHideBigLike',
@@ -9630,8 +9843,15 @@ vkopt['face'] =  {
          anonimize: {
             class_toggler: true
          },
+         skip_phone_validation: {
+            description: "Auto skip phone validations box and show captcha immediately"
+         },
          shift_page_type:{
             default_value: 0
+         },
+         hide_connect_box: {
+            default_value: true,
+            class_toggler: true
          }
       }
    },
@@ -9645,8 +9865,14 @@ vkopt['face'] =  {
          .vk_ad_block .feed_row .post[data-ad]{
             display: none;
          }
-         .vk_disable_border_radius body *{
+         .vk_disable_border_radius body *,
+         .vk_disable_border_radius body *::after,
+         .vk_disable_border_radius body *::before{
             border-radius: 0px !important;
+         }
+         .vk_disable_border_radius[dir] .audio_row .audio_row__play_btn {
+            background-image: url(data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20fill%3D%22%23FFF%22%20d%3D%22M9.846%2016.86c-.467.303-.846.097-.846-.45V7.588c0-.551.38-.752.846-.45l6.91%204.48c.324.21.327.549%200%20.761l-6.91%204.48z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E);
+            background-color: #5181B8;
          }
 
          .vk_old_audio_btns .audio_row {
@@ -10194,6 +10420,23 @@ vkopt['face'] =  {
             visibility: hidden;
          }
 
+         .vk_old_icon_verify .page_verified{
+            background: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%3E%0A%20%20%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%3Cpath%20fill%3D%22%2374A2D6%22%20d%3D%22M5.82331983%2C14.8223666%20L4.54259486%2C15.0281417%20C4.15718795%2C15.0900653%203.78122933%2C14.8730055%203.64215331%2C14.5082715%20L3.17999726%2C13.2962436%20C3.09635683%2C13.0768923%202.92310766%2C12.9036432%202.70375635%2C12.8200027%20L1.49172846%2C12.3578467%20C1.12699447%2C12.2187707%200.909934662%2C11.842812%200.971858288%2C11.4574051%20L1.17763336%2C10.1766802%20C1.21487428%2C9.94489615%201.15146068%2C9.70823338%201.00331709%2C9.52612299%20L0.184748166%2C8.51987017%20C-0.0615827221%2C8.21705981%20-0.0615827221%2C7.78294019%200.184748166%2C7.48012983%20L1.00331709%2C6.47387701%20C1.15146068%2C6.29176662%201.21487428%2C6.05510385%201.17763336%2C5.82331983%20L0.971858288%2C4.54259486%20C0.909934662%2C4.15718795%201.12699447%2C3.78122933%201.49172846%2C3.64215331%20L2.70375635%2C3.17999726%20C2.92310766%2C3.09635683%203.09635683%2C2.92310766%203.17999726%2C2.70375635%20L3.64215331%2C1.49172846%20C3.78122933%2C1.12699447%204.15718795%2C0.909934662%204.54259486%2C0.971858288%20L5.82331983%2C1.17763336%20C6.05510385%2C1.21487428%206.29176662%2C1.15146068%206.47387701%2C1.00331709%20L7.48012983%2C0.184748166%20C7.78294019%2C-0.0615827221%208.21705981%2C-0.0615827221%208.51987017%2C0.184748166%20L9.52612299%2C1.00331709%20C9.70823338%2C1.15146068%209.94489615%2C1.21487428%2010.1766802%2C1.17763336%20L11.4574051%2C0.971858288%20C11.842812%2C0.909934662%2012.2187707%2C1.12699447%2012.3578467%2C1.49172846%20L12.8200027%2C2.70375635%20C12.9036432%2C2.92310766%2013.0768923%2C3.09635683%2013.2962436%2C3.17999726%20L14.5082715%2C3.64215331%20C14.8730055%2C3.78122933%2015.0900653%2C4.15718795%2015.0281417%2C4.54259486%20L14.8223666%2C5.82331983%20C14.7851257%2C6.05510385%2014.8485393%2C6.29176662%2014.9966829%2C6.47387701%20L15.8152518%2C7.48012983%20C16.0615827%2C7.78294019%2016.0615827%2C8.21705981%2015.8152518%2C8.51987017%20L14.9966829%2C9.52612299%20C14.8485393%2C9.70823338%2014.7851257%2C9.94489615%2014.8223666%2C10.1766802%20L15.0281417%2C11.4574051%20C15.0900653%2C11.842812%2014.8730055%2C12.2187707%2014.5082715%2C12.3578467%20L13.2962436%2C12.8200027%20C13.0768923%2C12.9036432%2012.9036432%2C13.0768923%2012.8200027%2C13.2962436%20L12.3578467%2C14.5082715%20C12.2187707%2C14.8730055%2011.842812%2C15.0900653%2011.4574051%2C15.0281417%20L10.1766802%2C14.8223666%20C9.94489615%2C14.7851257%209.70823338%2C14.8485393%209.52612299%2C14.9966829%20L8.51987017%2C15.8152518%20C8.21705981%2C16.0615827%207.78294019%2C16.0615827%207.48012983%2C15.8152518%20L6.47387701%2C14.9966829%20C6.29176662%2C14.8485393%206.05510385%2C14.7851257%205.82331983%2C14.8223666%20L5.82331983%2C14.8223666%20Z%22%2F%3E%0A%20%20%20%20%3Cpolyline%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%221.6%22%20points%3D%224.755%208.252%207%2010.5%2011.495%206.005%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%0A%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E") no-repeat 0;
+         }
+         .vk_old_icon_verify .feed_notifications .page_verified, .vk_old_icon_verify .post_author .page_verified, .vk_old_icon_verify .reply_author .page_verified, .vk_old_icon_verify .top_notify_cont .page_verified, .vk_old_icon_verify .top_tt_important .page_verified, .vk_old_icon_verify .ts_cont_wrap .page_verified, .vk_old_icon_verify .nim-dialog.nim-dialog_verified .nim-dialog--verfifed, .vk_old_icon_verify .im-page--chat-header_verified .im-page--title-main-verified, .vk_old_icon_verify .stories_author .page_verified {
+            background: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2214%22%20height%3D%2214%22%20viewBox%3D%220%200%2014%2014%22%3E%0A%20%20%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%3Cpath%20fill%3D%22%2374A2D6%22%20d%3D%22M5.09540485%2C12.9695708%20L3.9747705%2C13.149624%20C3.63753946%2C13.2038072%203.30857566%2C13.0138798%203.18688414%2C12.6947376%20L2.78249761%2C11.6342132%20C2.70931223%2C11.4422808%202.55771921%2C11.2906878%202.36578681%2C11.2175024%20L1.3052624%2C10.8131159%20C0.986120165%2C10.6914243%200.796192829%2C10.3624605%200.850376002%2C10.0252295%20L1.03042919%2C8.90459515%20C1.06301499%2C8.70178413%201.0075281%2C8.49470421%200.877902454%2C8.33535762%20L0.161654645%2C7.4548864%20C-0.0538848818%2C7.18992734%20-0.0538848818%2C6.81007266%200.161654645%2C6.5451136%20L0.877902454%2C5.66464238%20C1.0075281%2C5.50529579%201.06301499%2C5.29821587%201.03042919%2C5.09540485%20L0.850376002%2C3.9747705%20C0.796192829%2C3.63753946%200.986120165%2C3.30857566%201.3052624%2C3.18688414%20L2.36578681%2C2.78249761%20C2.55771921%2C2.70931223%202.70931223%2C2.55771921%202.78249761%2C2.36578681%20L3.18688414%2C1.3052624%20C3.30857566%2C0.986120165%203.63753946%2C0.796192829%203.9747705%2C0.850376002%20L5.09540485%2C1.03042919%20C5.29821587%2C1.06301499%205.50529579%2C1.0075281%205.66464238%2C0.877902454%20L6.5451136%2C0.161654645%20C6.81007266%2C-0.0538848818%207.18992734%2C-0.0538848818%207.4548864%2C0.161654645%20L8.33535762%2C0.877902454%20C8.49470421%2C1.0075281%208.70178413%2C1.06301499%208.90459515%2C1.03042919%20L10.0252295%2C0.850376002%20C10.3624605%2C0.796192829%2010.6914243%2C0.986120165%2010.8131159%2C1.3052624%20L11.2175024%2C2.36578681%20C11.2906878%2C2.55771921%2011.4422808%2C2.70931223%2011.6342132%2C2.78249761%20L12.6947376%2C3.18688414%20C13.0138798%2C3.30857566%2013.2038072%2C3.63753946%2013.149624%2C3.9747705%20L12.9695708%2C5.09540485%20C12.936985%2C5.29821587%2012.9924719%2C5.50529579%2013.1220975%2C5.66464238%20L13.8383454%2C6.5451136%20C14.0538849%2C6.81007266%2014.0538849%2C7.18992734%2013.8383454%2C7.4548864%20L13.1220975%2C8.33535762%20C12.9924719%2C8.49470421%2012.936985%2C8.70178413%2012.9695708%2C8.90459515%20L13.149624%2C10.0252295%20C13.2038072%2C10.3624605%2013.0138798%2C10.6914243%2012.6947376%2C10.8131159%20L11.6342132%2C11.2175024%20C11.4422808%2C11.2906878%2011.2906878%2C11.4422808%2011.2175024%2C11.6342132%20L10.8131159%2C12.6947376%20C10.6914243%2C13.0138798%2010.3624605%2C13.2038072%2010.0252295%2C13.149624%20L8.90459515%2C12.9695708%20C8.70178413%2C12.936985%208.49470421%2C12.9924719%208.33535762%2C13.1220975%20L7.4548864%2C13.8383454%20C7.18992734%2C14.0538849%206.81007266%2C14.0538849%206.5451136%2C13.8383454%20L5.66464238%2C13.1220975%20C5.50529579%2C12.9924719%205.29821587%2C12.936985%205.09540485%2C12.9695708%20L5.09540485%2C12.9695708%20Z%22%2F%3E%0A%20%20%20%20%3Cpolyline%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%221.5%22%20points%3D%224.25%207.25%206%209%209.75%205.25%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%0A%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E") no-repeat 0;
+         }
+         .vk_old_icon_verify .page_top_author, .vk_old_icon_verify .page_verified{
+            padding: 2px 16px 2px 0;
+         }
+         .vk_old_icon_verify .feed_notifications .page_top_author, .vk_old_icon_verify .feed_notifications .page_verified, .vk_old_icon_verify .post_author .page_top_author, .vk_old_icon_verify .post_author .page_verified, .vk_old_icon_verify .reply_author .page_top_author, .vk_old_icon_verify .reply_author .page_verified, .vk_old_icon_verify .top_notify_cont .page_top_author, .vk_old_icon_verify .top_notify_cont .page_verified, .vk_old_icon_verify .top_tt_important .page_top_author, .vk_old_icon_verify .top_tt_important .page_verified, .vk_old_icon_verify .ts_cont_wrap .page_top_author, .vk_old_icon_verify .ts_cont_wrap .page_verified {
+            padding: 7px 14px 7px 0;
+         }
+         .vk_old_icon_verify .nim-dialog.nim-dialog_verified .nim-dialog--verfifed, .vk_old_icon_verify .im-page--chat-header_verified .im-page--title-main-verified, .vk_old_icon_verify .stories_author .page_top_author, .vk_old_icon_verify .stories_author .page_verified {
+            width:14px !important;
+            height:14px !important;
+         }
+
          */
       });
       var progress_bar = vk_lib.get_block_comments(vkProgressBar).css;
@@ -10218,6 +10461,17 @@ vkopt['face'] =  {
          }
 
       }
+
+      if (
+         vkopt.settings.get('skip_phone_validation')
+         && url == "activation.php"
+         && q && q.act == "validate_box"
+         && answer && /validationShowCaptcha/.test(answer[2])
+      ){
+         answer[2] += ";setTimeout(cur.validationShowCaptcha, 50);"
+      }
+
+      setTimeout(vkopt.face.deconnect, 50);
    },
    onLibFiles: function(fn){
       if (fn == 'common.js')
@@ -10235,6 +10489,7 @@ vkopt['face'] =  {
    },
    onLocation: function(){
       vkopt.face.user_online_status();
+      setTimeout(vkopt.face.deconnect, 50);
    },
    ad_block: {
       video: function(vars){
@@ -10265,6 +10520,7 @@ vkopt['face'] =  {
       vkopt.face.inv_top_menu_item();
       if (vkopt.settings.get('shift_page_type') != 0)
          vkopt.face.shift_page.shift(vkopt.settings.get('shift_page_type'));
+      setTimeout(vkopt.face.deconnect, 50);
    },
    onCmd: function(data){
       if (data.act == 'user_online_status')
@@ -10277,6 +10533,14 @@ vkopt['face'] =  {
       if (option_id == 'hold_menu')
          window.__leftMenu && vkopt.face.onLibFiles('page_layout.js');
       vkopt.face.shift_page.btn();
+   },
+   deconnect: function(){
+      if (window._message_boxes && vkopt.settings.get('hide_connect_box')) each(_message_boxes, function(i, mb){
+         if (mb && mb.getOptions && (mb.getOptions() || {}).containerClass == "vk_connect_policy") {
+            mb.setOptions({onHideAttempt: false, preventHideLastWithCheck: false});
+            mb.hide();
+         }
+      });
    },
    inv_top_menu_item: function(){
       if (!vkopt.settings.get('invert_btn'))
@@ -10853,6 +11117,11 @@ vkopt['extra_online'] = {
 }
 
 vkopt['groups'] = {
+   onSettings:{
+      Extra:{
+         load_live_covers:{default_value:true}
+      }
+   },
    tpls:null,
    css: function(){
       return vk_lib.get_block_comments(function(){
@@ -10907,6 +11176,23 @@ vkopt['groups'] = {
          .vk_wiki_list_table i.vk_edit_icon:hover {
             opacity:1;
          }
+         .gr_live_covers {
+            position: absolute;
+            padding: 9px;
+            background: rgba(31,31,31,.6);
+            border-radius: 0 3px 3px 0;
+            float: right;
+            cursor: pointer;
+            margin-top: 15px;
+         }
+         .gr_live_covers:before {
+            content: '';
+            display: block;
+            width: 19px;
+            height: 19px;
+            background: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='iso-8859-1'%3F%3E%3Csvg version='1.1' id='svg_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' fill='%23fff' viewBox='0 0 469.333 469.333' style='enable-background:new 0 0 469.333 469.333;' xml:space='preserve'%3E%3Cg%3E%3Cg%3E%3Cg%3E%3Cpolygon points='319.253,198.08 260.587,273.6 218.667,223.253 160,298.667 394.667,298.667 '/%3E%3Cpath d='M42.667,85.333H0v341.333c0,23.573,19.093,42.667,42.667,42.667H384v-42.667H42.667V85.333z'/%3E%3Cpath d='M426.667,0H128c-23.573,0-42.667,19.093-42.667,42.667v298.667C85.333,364.907,104.427,384,128,384h298.667 c23.573,0,42.667-19.093,42.667-42.667V42.667C469.333,19.093,450.24,0,426.667,0z M426.667,341.333H128V42.667h298.667V341.333z '/%3E%3C/g%3E%3C/g%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3C/svg%3E") 50% no-repeat;
+            opacity: 0.6;
+		 }
          */
       }).css
    },
@@ -10974,8 +11260,12 @@ vkopt['groups'] = {
       }
 
       // На странице группы добавляем кнопку
-      if (ge('group') || ge('public'))
+      if (ge('group') || ge('public')){
          vkopt.groups.actions_items();
+
+         if(vkopt.settings.get('load_live_covers'))
+            vkopt.groups.live_covers();
+      }
    },
    onGroupActionItems: function(oid, gid){
       if (ge('vk_wiki_links'))
@@ -11035,6 +11325,29 @@ vkopt['groups'] = {
       if (!wrap) return false;
       wrap.appendChild(btn);
       return true;
+   },
+   live_covers: function (){
+      dApi.call('groups.getById',{group_id: -cur.oid, fields: 'live_covers', v: '5.103'},function(r,res){
+         if(!res || !res[0].live_covers.story_ids) return;
+         var getCovers = function(cb){
+            var id = res[0].live_covers.story_ids.shift();
+            ajax.post("al_stories.php", {
+               act: "get_list",
+               list: id,
+               story_raw: id
+            }, {
+               onDone(e) {
+                  e.list[0].items[0].can_comment = false;
+                  (cur['stories_list_group_live_covers']) ? cur.stories_list_group_live_covers[0].items.push(e.list[0].items[0]) : cur.stories_list_group_live_covers = e.list;
+                  (!res[0].live_covers.story_ids[0]) ? cb() : getCovers(cb);
+               }
+            });
+         };
+         getCovers(function(){
+            var el = se('<div class="gr_live_covers" onclick="showStory(\'' + (-cur.oid) + '/group_live_covers\', { fromEl: this}); return false;"><div>');
+            (geByClass1('page_cover')) ? geByClass1('page_cover').appendChild(el) : ge('page_avatar').insertBefore(el, ge('page_avatar').firstChild);
+         });
+      });
    },
    wiki_list:{
       owner_pages_btn:function(){
@@ -11391,7 +11704,7 @@ vkopt['wall'] = {
       }
    },
    processNode: function(node, params) {
-      var els=geByClass('post_media_voting',node);
+      var els=geByClass('post_media_voting',node).concat(geByClass('im_msg_media_poll', node));
       for (var i=0; i<els.length; i++){
          vkopt.wall.poll_btns(els[i]);
       }
@@ -11471,7 +11784,7 @@ vkopt['wall'] = {
 
 
       var code = 'return {posts: API.wall.getById({posts:"'+full_post_id+'", copy_history_depth: 2}), poll: API.polls.getById({owner_id:'+owner_id+',poll_id:'+poll_id+'})};'
-      if (!post_id && owner_id && poll_id){
+      if ((!post_id || post_id == "null") && owner_id && poll_id){
          dApi.call('polls.getById',{owner_id:owner_id, poll_id:poll_id, v: '5.59'},function(r){
             var data=r.response;
             view(data);
@@ -18398,7 +18711,15 @@ vk_lang_ru={
    "StoryReadReportEnabled": "\u041e\u0442\u0447\u0451\u0442 \u043e \u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440\u0435: \u0412\u041a\u041b.",
    "SourceSize": "\u0418\u0441\u0445\u043e\u0434\u043d\u044b\u0439 \u0440\u0430\u0437\u043c\u0435\u0440",
    "NewSize": "\u041d\u043e\u0432\u044b\u0439 \u0440\u0430\u0437\u043c\u0435\u0440",
-   "seRnLabelCommunities":"\u041f\u0435\u0440\u0435\u0438\u043c\u0435\u043d\u043e\u0432\u0430\u0442\u044c \u00ab\u0421\u043e\u043e\u0431\u0449\u0435\u0441\u0442\u0432\u0430\u00bb \u0432 \u00ab\u0413\u0440\u0443\u043f\u043f\u044b\u00bb"
+   "seRnLabelCommunities":"\u041f\u0435\u0440\u0435\u0438\u043c\u0435\u043d\u043e\u0432\u0430\u0442\u044c \u00ab\u0421\u043e\u043e\u0431\u0449\u0435\u0441\u0442\u0432\u0430\u00bb \u0432 \u00ab\u0413\u0440\u0443\u043f\u043f\u044b\u00bb",
+   "seChIconVerify":"\u0421\u0442\u0430\u0440\u0430\u044F \u0438\u043A\u043E\u043D\u043A\u0430 \u0432\u0435\u0440\u0438\u0444\u0438\u043A\u0430\u0446\u0438\u0438",
+   "sendToPM":"\u0421\u0435\u0431\u0435 \u0432 \u043B\u0438\u0447\u043A\u0443",
+   "searchChats":"\u041D\u0430\u0439\u0442\u0438 \u0432\u0441\u0435 \u0431\u0435\u0441\u0435\u0434\u044B",
+   "titleChats":"\u0411\u0435\u0441\u0435\u0434\u044B",
+   "searchEmptyChats":"\u0411\u0435\u0441\u0435\u0434\u044B \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D\u044B",
+   "uAreCreator":"\u0432\u044B \u0441\u043E\u0437\u0434\u0430\u0442\u0435\u043B\u044C",
+   "kickedChat":"\u0438\u0441\u043A\u043B\u044E\u0447\u0435\u043D\u044B \u0438\u0437 \u0431\u0435\u0441\u0435\u0434\u044B",
+   "leftChat":"\u043F\u043E\u043A\u0438\u043D\u0443\u043B\u0438 \u0431\u0435\u0441\u0435\u0434\u0443"
 };
 
 vk_lang_en={//by Hzy
@@ -19383,7 +19704,15 @@ vk_lang_en={//by Hzy
    "StoryReadReportEnabled": "View report: ON",
    "SourceSize": "Source size",
    "NewSize": "New size",
-   "seRnLabelCommunities":"Rename «Communities» to «Groups»"
+   "seRnLabelCommunities":"Rename «Communities» to «Groups»",
+   "seChIconVerify":"Old verify icon",
+   "sendToPM":"Send to PM",
+   "searchChats":"Find all Chats",
+   "titleChats":"Chats",
+   "searchEmptyChats":"Chats not found",
+   "uAreCreator":"you're the creator",
+   "kickedChat":"kicked from the chat",
+   "leftChat":"left the chat"
 };
 
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)

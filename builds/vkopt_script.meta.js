@@ -1,11 +1,11 @@
 ﻿// ==UserScript==
 // @name          VKOpt
-// @version       3.0.7.20
+// @version       3.0.7.22
 // @author        KiberInfinity [id13391307]
 // @namespace     http://vkopt.net/
 // @description   Vkontakte Optimizer 3.x
-// @downloadUrl   https://raw.githubusercontent.com/VkOpt/VkOpt/master/builds/vkopt_script.user.js
-// @updateUrl     https://raw.githubusercontent.com/VkOpt/VkOpt/master/builds/vkopt_script.meta.js
+// @downloadUrl   https://raw.githubusercontent.com/m4x3r/VkOpt/master/builds/vkopt_script.user.js
+// @updateUrl     https://raw.githubusercontent.com/m4x3r/VkOpt/master/builds/vkopt_script.meta.js
 // @match       *://vkontakte.ru/*
 // @match       *://*.vkontakte.ru/*
 // @match       *://vk.com/*
