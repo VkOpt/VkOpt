@@ -1,6 +1,6 @@
 ﻿// ==UserScript==
 // @name          VKOpt
-// @version       3.0.7.21
+// @version       3.0.7.20
 // @author        KiberInfinity [id13391307]
 // @namespace     http://vkopt.net/
 // @description   Vkontakte Optimizer 3.x

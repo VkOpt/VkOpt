@@ -33,4 +33,3 @@ if [%17] == [7%1] copy ..\content_script.js edge\
 if [%18] == [8%1] copy ..\content_script.js webext\
 
 echo Done.
-pause
