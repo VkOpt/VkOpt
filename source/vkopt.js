@@ -3110,10 +3110,10 @@ vkopt['photoview'] =  {
          <div class="vk_pv_acts">
             <div class="pv_counter vk_ph_copy_search_label pv_more_act_item">{lng.ImgCopySeacrh}</div>
             <div class="vk_ph_copy_search_links">
-            <a target="_blank" class="pv_more_act_item fl_l vk_ph_copy_search" href="https://www.google.com/searchbyimage?image_url={vals.src}">Google</a>
-            <a target="_blank" class="pv_more_act_item fl_l vk_ph_copy_search" href="http://www.tineye.com/search?url={vals.src}">TinEye</a>
-            <a target="_blank" class="pv_more_act_item fl_l vk_ph_copy_search" href="http://yandex.ru/images/search?url={vals.src}&rpt=imageview">Yandex</a>
-            <a target="_blank" class="pv_more_act_item fl_l vk_ph_copy_search" href="https://iqdb.org/?url={vals.src}">IQDB</a>
+            <a target="_blank" class="pv_more_act_item fl_l vk_ph_copy_search" href="https://www.google.com/searchbyimage?image_url={vals.qsrc}">Google</a>
+            <a target="_blank" class="pv_more_act_item fl_l vk_ph_copy_search" href="http://www.tineye.com/search?url={vals.qsrc}">TinEye</a>
+            <a target="_blank" class="pv_more_act_item fl_l vk_ph_copy_search" href="https://yandex.ru/images/search?rpt=imageview&url={vals.qsrc}">Yandex</a>
+            <a target="_blank" class="pv_more_act_item fl_l vk_ph_copy_search" href="https://iqdb.org/?url={vals.qsrc}">IQDB</a>
             <a target="_blank" class="pv_more_act_item fl_l vk_ph_copy_search" href="/feed?section=photos_search&q=copy%3Aphoto{vals.photo_id}">VK</a>
             <div class="clear"></div>
             </div>
@@ -3167,6 +3167,7 @@ vkopt['photoview'] =  {
       if (vkopt.settings.get('photo_search_copy')){
          var html = vk_lib.tpl_process(vkopt.photoview.tpls['acts_menu'],{
             src: cur.pvCurData.src,
+            qsrc: encodeURIComponent(cur.pvCurData.src),
             photo_id: cur.pvCurPhoto.id
          });
          append_menu(html);
