@@ -7424,7 +7424,7 @@ vkopt['messages'] = {
          <div id="saveldr" style="display:none; padding:8px; padding-top: 14px; text-align:center; width:360px;"><img src="/images/upload.gif"></div>
          <div id="save_btn_text" style="text-align:center">
             <div class="button_blue"><button onclick="vkopt.messages.get_history({vals.peer}); return false;">{lng.SaveHistory} *.html</button></div><br>
-
+            <div class="button_gray"><button onclick="vkopt.messages.get_history_json({vals.peer}); return false;">(*.json)</button></div><br>
             <div class="button_gray"><button onclick="toggle('msg_save_more'); return false;">(*.txt.zip)</button></div>
             <div id="msg_save_more" style="display:none;">
             <div class="button_gray"><button onclick="vkopt.messages.zip.txt({vals.peer}); return false;">{lng.SaveHistory}</button></div>
@@ -8454,6 +8454,18 @@ vkopt['messages'] = {
            var contents = JSON.parse(data);
            vkopt.messages.export_data(data);
         })
+   },
+   get_history_json(uid) {
+      var done = function(messages){
+         console.log(messages);
+         var json = JSON.stringify(messages, null, 2);
+         vkopt.save_file(json,"vk_messages_"+uid+".json");
+         show('save_btn_text');
+         val('save_btn_text', IDL('Done'));
+         hide('saveldr');
+      };
+
+      vkopt.messages.get_history(uid, done);
    },
    get_history:function(uid, callback, partial_callback, ver){
       ver = ver || '5.73';
