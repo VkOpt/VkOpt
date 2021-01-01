@@ -7600,7 +7600,7 @@ vkopt['messages'] = {
          if (vkopt.settings.get('block_typing_btn'))
             vkopt.messages.add_typing_read_icon('gim', 'typing');
       }
-      if (nav.objLoc[0] != 'im'){
+      if (!/^(g?im|al_im.php)/.test(nav.objLoc[0])){
          clearInterval(vkopt.messages.timeout_online_count_users);
          return;
       }
