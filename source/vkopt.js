@@ -475,7 +475,18 @@ var vk_glue = {
                if (!f) continue;
                if (f.indexOf('?') != -1)
                   f = f.split('?')[0];
-
+               
+               if (!StaticFiles[f] && window.stDeps) {
+                  var deps = [];
+                  for (var dep in stDeps)
+                     if (dep.indexOf(f) > -1)
+                        deps = deps.concat(stDeps[dep]);
+                  
+                  if (deps.length) each(deps, function(i, p) {
+                     wait.push(stManager._add(p));
+                  });
+               }
+               
                if (StaticFiles[f] && !StaticFiles[f].l)
                   wait.push(f);
             }
