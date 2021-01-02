@@ -6298,7 +6298,6 @@ vkopt['videoview'] = {
       .vk_mv_down_links_tt a {
          display: block;
          padding: 3px 10px;
-         color: #FFF;
          white-space: nowrap;
       }
       .vk_mv_down_links_tt a.size_loaded{
