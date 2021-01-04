@@ -479,7 +479,7 @@ var vk_glue = {
                if (!StaticFiles[f] && window.stDeps) {
                   var deps = [];
                   for (var dep in stDeps)
-                     if (dep.indexOf(f) > -1)
+                     if (dep.indexOf(f) > -1 && /.js$/.test(f))
                         deps = deps.concat(stDeps[dep]);
                   
                   if (deps.length) each(deps, function(i, p) {
