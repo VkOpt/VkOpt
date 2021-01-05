@@ -9,8 +9,8 @@
 
 /* VERSION INFO */
 var vVersion = 307;
-var vBuild = 191219;
-var vVersionRev = 23;
+var vBuild = 191220;
+var vVersionRev = 24;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -475,7 +475,18 @@ var vk_glue = {
                if (!f) continue;
                if (f.indexOf('?') != -1)
                   f = f.split('?')[0];
-
+               
+               if (!StaticFiles[f] && window.stDeps) {
+                  var deps = [];
+                  for (var dep in stDeps)
+                     if (dep.indexOf(f) > -1 && /.js$/.test(f))
+                        deps = deps.concat(stDeps[dep]);
+                  
+                  if (deps.length) each(deps, function(i, p) {
+                     wait.push(stManager._add(p));
+                  });
+               }
+               
                if (StaticFiles[f] && !StaticFiles[f].l)
                   wait.push(f);
             }
@@ -3167,6 +3178,7 @@ vkopt['photoview'] =  {
       if (vkopt.settings.get('photo_search_copy')){
          var html = vk_lib.tpl_process(vkopt.photoview.tpls['acts_menu'],{
             src: cur.pvCurData.src,
+            qsrc: encodeURIComponent(cur.pvCurData.src),
             photo_id: cur.pvCurPhoto.id
          });
          append_menu(html);
@@ -6286,7 +6298,6 @@ vkopt['videoview'] = {
       .vk_mv_down_links_tt a {
          display: block;
          padding: 3px 10px;
-         color: #FFF;
          white-space: nowrap;
       }
       .vk_mv_down_links_tt a.size_loaded{
@@ -7163,8 +7174,8 @@ vkopt['messages'] = {
          [dir] .ui_actions_menu_item.vk_acts_item_icon:before,
          [dir] .vk_acts_item_icon:before,
          [dir] .vk_acts_item_ricon:after{
-            background: url("data:image/svg+xml,%3Csvg%20version%3D%221.1%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2216%22%20height%3D%2216%22%09%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20fill%3D%22%237D9AB7%22%20d%3D%22M204.1%2C66l-25.3%2C30.4c-14.1-25-44.3-37.6-72.7-28.5%09c-32.5%2C10.4-50.5%2C45.2-40%2C77.8c6.2%2C19.4%2C21.2%2C33.6%2C39.1%2C39.7c7.4%2C14%2C15.4%2C31.9%2C21.1%2C46c-7.5%2C7.8-12.1%2C19.6-12.1%2C19.6l-30.9-6.7%09l3.5-26.3c-4.8-2-9.5-4.4-13.9-7.2L53.6%2C229l-23.4-21.3l16.2-21c-3.1-4.1-6-8.5-8.5-13.2l-25.8%2C6l-9.7-30.1l24.5-10.1%09c-0.7-5.3-0.9-10.5-0.8-15.7L0.8%2C116l6.7-30.9l26.3%2C3.5c2-4.8%2C4.4-9.5%2C7.2-13.9L22.8%2C55.3l21.3-23.4l21%2C16.2c4.1-3.1%2C8.5-6%2C13.2-8.5%09l-6-25.8l30.1-9.7l10.1%2C24.5c5.3-0.7%2C10.5-0.9%2C15.7-0.8l7.7-25.4l30.9%2C6.7l-3.5%2C26.3c4.8%2C2%2C9.5%2C4.4%2C13.9%2C7.2l19.3-18.2l23.4%2C21.3%09l-15.4%2C20L204.1%2C66z%20M79%2C106.3l49.8-18.1l44.6%2C87.8l31.7-95.6l50%2C18.1c-11%2C24.1-21%2C48.8-30.1%2C74c-9.1%2C25.2-17.2%2C50.9-24.4%2C77h-50.9%09c-9.5-22.9-20.2-46.3-32-70.2C105.8%2C155.3%2C92.9%2C131%2C79%2C106.3z%22/%3E%3C/svg%3E") 9px 0px no-repeat;
-            height: 17px;
+            background: url("data:image/svg+xml,%3Csvg%20version%3D%221.1%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2216%22%20height%3D%2216%22%09%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20fill%3D%22%237D9AB7%22%20d%3D%22M204.1%2C66l-25.3%2C30.4c-14.1-25-44.3-37.6-72.7-28.5%09c-32.5%2C10.4-50.5%2C45.2-40%2C77.8c6.2%2C19.4%2C21.2%2C33.6%2C39.1%2C39.7c7.4%2C14%2C15.4%2C31.9%2C21.1%2C46c-7.5%2C7.8-12.1%2C19.6-12.1%2C19.6l-30.9-6.7%09l3.5-26.3c-4.8-2-9.5-4.4-13.9-7.2L53.6%2C229l-23.4-21.3l16.2-21c-3.1-4.1-6-8.5-8.5-13.2l-25.8%2C6l-9.7-30.1l24.5-10.1%09c-0.7-5.3-0.9-10.5-0.8-15.7L0.8%2C116l6.7-30.9l26.3%2C3.5c2-4.8%2C4.4-9.5%2C7.2-13.9L22.8%2C55.3l21.3-23.4l21%2C16.2c4.1-3.1%2C8.5-6%2C13.2-8.5%09l-6-25.8l30.1-9.7l10.1%2C24.5c5.3-0.7%2C10.5-0.9%2C15.7-0.8l7.7-25.4l30.9%2C6.7l-3.5%2C26.3c4.8%2C2%2C9.5%2C4.4%2C13.9%2C7.2l19.3-18.2l23.4%2C21.3%09l-15.4%2C20L204.1%2C66z%20M79%2C106.3l49.8-18.1l44.6%2C87.8l31.7-95.6l50%2C18.1c-11%2C24.1-21%2C48.8-30.1%2C74c-9.1%2C25.2-17.2%2C50.9-24.4%2C77h-50.9%09c-9.5-22.9-20.2-46.3-32-70.2C105.8%2C155.3%2C92.9%2C131%2C79%2C106.3z%22/%3E%3C/svg%3E") 50% 50% no-repeat;
+            height: 30px;
          }
          .ui_actions_menu_item.vk_acts_item{
             padding-left: 0;
@@ -7423,7 +7434,7 @@ vkopt['messages'] = {
          <div id="saveldr" style="display:none; padding:8px; padding-top: 14px; text-align:center; width:360px;"><img src="/images/upload.gif"></div>
          <div id="save_btn_text" style="text-align:center">
             <div class="button_blue"><button onclick="vkopt.messages.get_history({vals.peer}); return false;">{lng.SaveHistory} *.html</button></div><br>
-
+            <div class="button_gray"><button onclick="vkopt.messages.get_history_json({vals.peer}); return false;">(*.json)</button></div><br>
             <div class="button_gray"><button onclick="toggle('msg_save_more'); return false;">(*.txt.zip)</button></div>
             <div id="msg_save_more" style="display:none;">
             <div class="button_gray"><button onclick="vkopt.messages.zip.txt({vals.peer}); return false;">{lng.SaveHistory}</button></div>
@@ -7599,7 +7610,7 @@ vkopt['messages'] = {
          if (vkopt.settings.get('block_typing_btn'))
             vkopt.messages.add_typing_read_icon('gim', 'typing');
       }
-      if (nav.objLoc[0] != 'im'){
+      if (!/^(g?im|al_im.php)/.test(nav.objLoc[0])){
          clearInterval(vkopt.messages.timeout_online_count_users);
          return;
       }
@@ -8453,6 +8464,18 @@ vkopt['messages'] = {
            var contents = JSON.parse(data);
            vkopt.messages.export_data(data);
         })
+   },
+   get_history_json(uid) {
+      var done = function(messages){
+         console.log(messages);
+         var json = JSON.stringify(messages, null, 2);
+         vkopt.save_file(json,"vk_messages_"+uid+".json");
+         show('save_btn_text');
+         val('save_btn_text', IDL('Done'));
+         hide('saveldr');
+      };
+
+      vkopt.messages.get_history(uid, done);
    },
    get_history:function(uid, callback, partial_callback, ver){
       ver = ver || '5.73';
