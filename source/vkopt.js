@@ -194,6 +194,21 @@ var vkopt_core = {
          }
       });
    },
+   observeMutations: function(){
+      if (!vkopt.mObserver && window.MutationObserver && window.ge) {
+         vkopt.mObserver = new MutationObserver(function(mutations) {
+            mutations.forEach(vkopt_core.plugins.on_mutation);
+         });
+         vkopt.mObserver.observe(document.body, {
+            childList: true,
+            subtree: true,
+         });
+      }
+   },
+   unobserveMutations: function() {
+      if (vkopt.mObserver) vkopt.mObserver.disconnect();
+      vkopt.mObserver = null;
+   },
    conflicts: function(IDL){
       var content;
       if (vkopt.versions.length > 1){
@@ -367,6 +382,11 @@ var vkopt_core = {
             if (res[i] === false)
                return false;
          return true;
+      },
+      on_mutation: function(mutation) {
+         // TODO: debounce && merge mutations 
+         if (mutation.addedNodes && mutation.addedNodes.length)
+            vkopt_core.plugins.call_modules('onAddedNodes', mutation.addedNodes);
       },
       process_response: function(answer, url, q){
          // answer - массив, элементы которого в последствии становятся аргументами вызываемых колбеков. можно править его элементы
@@ -650,7 +670,7 @@ var vk_glue = {
    var m = {
       id: 'vkopt_any_plugin',
       // <core>
-      onInit:                 function(){},                                // выполняется один раз после загрузки стрницы
+      onInit:                 function(){},                                // выполняется один раз после загрузки страницы
       onLibFiles:             function(file_name, full_file_name){},       // место для инъекций = срабатывает при подключении нового js-файла движком контакта.
       onLocation:             function(nav_obj,cur_module_name){},         // вызывается при переходе между страницами
       onRequestQuery:         function(url, query, options){}              // вызывается перед выполнением ajax.post метода. Если функция вернёт false, то запрос выполнен не будет.
@@ -658,6 +678,7 @@ var vk_glue = {
       onCmd:                  function(command_obj){},                     // слушает сообщения отосланные из других вкладок вк через vkopt.cmd(command_obj)
       processNode:            function(node, params){}                     // обработка элемента
       processLinks:           function(link, params){},                    // обработка ссылки
+      onAddedNodes:           function(addedNodes) {},                     // обработка NodeList'а добавленных элементов (MutationObserver). Должна быть активна хотя бы одна опция с флагом use_mutations: true
       onModuleDelayedInit:    function(plugin_id){},                       // реакция на подключение модуля, опоздавшего к загрузке страницы.
       onElementTooltipFirstTimeShow: function(ett, ett_options),           // реакция на первый показ ElementTooltip, при создании его контента. На момент вызова в элементе ett._ttel уже есть контент. По ett._opts.id можно определить к чему тултип относится.
       // UNAVAILABLE! onInlineDropdownCreate: function(el, options),       // реакция на создание контрола InlineDropdown. Можно использовать для добавления своих пунктов в options.items для меню элемента el
@@ -2016,7 +2037,7 @@ vkopt['settings'] =  {
       }
    },
    init_features: function(list, plug_id){
-
+      var use_mutations = false;
       var each_in_opts = function(list){
          for (var option_id in list){
             var option_data = list[option_id];
@@ -2025,6 +2046,7 @@ vkopt['settings'] =  {
                option_data.id = option_id;
             }
             vkopt.settings.set_feature(option_data, vkopt.settings.get(option_data.id));
+            use_mutations = (option_data.use_mutations && vkopt.settings.get(option_data.id)) || use_mutations;
 
             if (list[option_id].sub)              // обходим вложенные опции.
                each_in_opts(list[option_id].sub);
@@ -2034,6 +2056,7 @@ vkopt['settings'] =  {
       for (var cat in list){
          each_in_opts(list[cat]);
       }
+      if (use_mutations) vkopt_core.observeMutations();
    },
    top_menu_item: function(){
       var ref = ge('top_support_link');
@@ -7800,6 +7823,7 @@ vkopt['messages'] = {
                       'if(listUsers[i].online == 1) count=count+1; i=i+1;}'+
                       'return count;';
       dApi.call('execute',{v:'5.73', code:body_code},function(r){
+         if (!p || !p.parentNode) return;
          if (!ge('countUsers'))
            p.appendChild(se('<span id="countUsers" onmouseover="vkopt.messages.show_on_users(this)"></span>'));
          ge('countUsers').innerHTML = r.response > 0 ? ' ('+langNumeric(r.response, IDL('online_count'))+')' : '';
