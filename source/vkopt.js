@@ -7056,21 +7056,6 @@ vkopt['stories'] = {
       .page_story_photo_cont .tt_w.tt_black.tt_down:after{
          left: 58px;
       }
-      .btn_download_story{
-         position: absolute;
-         top: 0;
-         width: 72px;
-         height: 30px;
-         opacity: .5;
-         cursor: pointer;
-         left: 100%;
-         margin: 72px 0 0 31px;
-         background: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' fill='%23FFF' viewBox='0 0 24 24'%3e%3cpath d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'/%3e%3c/svg%3e") no-repeat;
-         background-position: center;
-      }
-      .btn_download_story:hover{
-         opacity: 1;
-      }
       */
       }).css
    },
@@ -7080,6 +7065,10 @@ vkopt['stories'] = {
             class_toggler: true
          },
          unread_toggle_btn: {
+            default_value: true
+         },
+         dl_story_item: {
+            use_mutations: true,
             default_value: true
          }
       }
@@ -7092,13 +7081,20 @@ vkopt['stories'] = {
          */
       });
    },
-   onLibFiles: function(fn){
-      if (fn == 'common_web.js') {
-         Inj.End('layerQueue.push', function () {
-            var el = geByClass1('stories_volume_control_container')                                                                                               
-            el && el.appendChild(se('<a class="btn_download_story" download="" href="" onclick="return vkopt.stories.download_story(this)"><a>'));
-         });
-      } 
+   onAddedNodes: function(addedNodes) {
+      if (vkopt.settings.get('dl_story_item'))
+         for (var i = 0; i < addedNodes.length; ++i) {
+            var el = addedNodes[i];
+            // if (el.nodeType !== 3) console.log("added: ", el); // dbg
+            if (el.className == "stories_story_bottom") {
+               if (geByClass1('dl_story', el)) return;
+               el = geByClass1('ui_actions_menu', el);
+               var data = cur.storyLayer.activeStory.story.data;
+               if (!data || !el) return;
+               var link = (data.type == 'photo') ? data.photo_url + '#FILENAME/vk_story.jpg' : data.video_url + '#FILENAME/vk_story.mp4';
+               el.appendChild(se('<a class="ui_actions_menu_item dl_story" download="" href="'+link+'" onclick="return vkDownloadFile(this);">'+IDL('download')+'</a>'));        
+            }
+         }
    },
    onRequestQuery: function(url, query, options) {
       if (url == 'al_stories.php' && query.act == 'read_stories' && vkopt.settings.get('unread_story')) {
