@@ -48,7 +48,8 @@ var vkopt_defaults = {
       old_unread_msg_bg: 'c5d9e7',
       im_recent_emoji: false,
       ru_vk_logo: false,
-      rn_label_communities: false,
+      rn_label_groups: false,
+      rn_label_im: false,
       old_icon_verify: false,
       //hide_big_like: false,
       hide_left_set: false,
@@ -383,7 +384,7 @@ var vkopt_core = {
             }
          }
          // для случаев, когда тело html'а передано не отдельным аргументом, а внутри какого-то JSON'а:
-         if (url === '/al_im.php' && q.act == 'a_start' && answer[0] && answer[0].history){ // открытие диалога
+         if (url === 'al_im.php' && q.act == 'a_start' && answer[0] && answer[0].history){ // открытие диалога
              answer[0].history = vkopt_core.mod_str_as_node(answer[0].history, vkopt_core.plugins.process_node, {source:'process_response_im_a_start', url:url, q:q});
          }
          vkopt_core.plugins.call_modules('onResponseAnswer', answer,url,q);
@@ -6280,24 +6281,17 @@ vkopt['videoview'] = {
          width: 20px;
          transform: rotate(90deg);
       }
-      .vk_mv_down_links_tt {
+      .mv_top_button .vk_mv_down_links_tt, .video_thumb_actions .vk_mv_down_links_tt {
          background: rgba(0,0,0,0.6);
          border: 1px solid rgba(255,255,255,0.4);
       }
-
-      .vk_mv_down_links_tt.eltt.eltt_bottom:before {
-         border-bottom-color: transparent;
-      }
-      .vk_mv_down_links_tt.eltt.eltt_bottom:after {
-         border-bottom-color: rgba(255, 255, 255, 0.4);
-         margin-bottom: 1px;
-      }
-      .vk_mv_down_links_tt.eltt.eltt_bottom .eltt_arrow{
-         border-bottom-color: #000;
+      .mv_top_button .vk_mv_down_links_tt .eltt_arrow, .video_thumb_actions .vk_mv_down_links_tt .eltt_arrow {
+         border-bottom: 7px solid rgba(0,0,0,0.91) !important;                    
       }
       .vk_mv_down_links_tt a {
          display: block;
          padding: 3px 10px;
+         color: #FFF;
          white-space: nowrap;
       }
       .vk_mv_down_links_tt a.size_loaded{
@@ -7039,6 +7033,21 @@ vkopt['stories'] = {
       .page_story_photo_cont .tt_w.tt_black.tt_down:after{
          left: 58px;
       }
+      .btn_download_story{
+         position: absolute;
+         top: 0;
+         width: 72px;
+         height: 30px;
+         opacity: .5;
+         cursor: pointer;
+         left: 100%;
+         margin: 72px 0 0 31px;
+         background: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' fill='%23FFF' viewBox='0 0 24 24'%3e%3cpath d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'/%3e%3c/svg%3e") no-repeat;
+         background-position: center;
+      }
+      .btn_download_story:hover{
+         opacity: 1;
+      }
       */
       }).css
    },
@@ -7061,18 +7070,12 @@ vkopt['stories'] = {
       });
    },
    onLibFiles: function(fn){
-	  if (fn == 'ui_common.js') {
-        Inj.End('uiActionsMenu.show', function (el) {
-            if (gpeByClass('stories_story_bottom_controls', el)) {
-                if (geByClass1('dl_story', el)) return;
-                el = geByClass1('ui_actions_menu', el);
-                var data = cur.storyLayer.activeStory.story.data;
-                if (!data || !el) return;
-                var link = (data.type == 'photo') ? data.photo_url + '#FILENAME/vk_story.jpg' : data.video_url + '#FILENAME/vk_story.mp4';
-                el.appendChild(se('<a class="ui_actions_menu_item dl_story" download="" href="'+link+'" onclick="return vkDownloadFile(this);">'+IDL('download')+'</a>'));
-            }
-        })
-      }
+      if (fn == 'common_web.js') {
+         Inj.End('layerQueue.push', function () {
+            var el = geByClass1('stories_volume_control_container')                                                                                               
+            el && el.appendChild(se('<a class="btn_download_story" download="" href="" onclick="return vkopt.stories.download_story(this)"><a>'));
+         });
+      } 
    },
    onRequestQuery: function(url, query, options) {
       if (url == 'al_stories.php' && query.act == 'read_stories' && vkopt.settings.get('unread_story')) {
@@ -7083,6 +7086,12 @@ vkopt['stories'] = {
       if (!vkopt.settings.get('unread_toggle_btn')) return;
       var ref = geByClass1('stories_feed_title', node) || geByClass1('stories_groups_block_stories_info', node) || geByClass1('page_story_photo_cont', node);
       ref && ref.appendChild(se(vk_lib.tpl_process(vkopt.stories.tpls['change_state'], {})));
+   },
+   download_story: function (el){
+      var data = cur.storyLayer.activeStory.story.data;
+      if (!data) return;
+      el.href = (data.type == 'photo') ? data.photo_url + '#FILENAME/vk_story.jpg' : data.video_url + '#FILENAME/vk_story.mp4';
+      return vkDownloadFile(el);
    },
    unread_state_toggle: function(el, ev){
       cancelEvent(ev);
@@ -7175,7 +7184,7 @@ vkopt['messages'] = {
          [dir] .vk_acts_item_icon:before,
          [dir] .vk_acts_item_ricon:after{
             background: url("data:image/svg+xml,%3Csvg%20version%3D%221.1%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2216%22%20height%3D%2216%22%09%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20fill%3D%22%237D9AB7%22%20d%3D%22M204.1%2C66l-25.3%2C30.4c-14.1-25-44.3-37.6-72.7-28.5%09c-32.5%2C10.4-50.5%2C45.2-40%2C77.8c6.2%2C19.4%2C21.2%2C33.6%2C39.1%2C39.7c7.4%2C14%2C15.4%2C31.9%2C21.1%2C46c-7.5%2C7.8-12.1%2C19.6-12.1%2C19.6l-30.9-6.7%09l3.5-26.3c-4.8-2-9.5-4.4-13.9-7.2L53.6%2C229l-23.4-21.3l16.2-21c-3.1-4.1-6-8.5-8.5-13.2l-25.8%2C6l-9.7-30.1l24.5-10.1%09c-0.7-5.3-0.9-10.5-0.8-15.7L0.8%2C116l6.7-30.9l26.3%2C3.5c2-4.8%2C4.4-9.5%2C7.2-13.9L22.8%2C55.3l21.3-23.4l21%2C16.2c4.1-3.1%2C8.5-6%2C13.2-8.5%09l-6-25.8l30.1-9.7l10.1%2C24.5c5.3-0.7%2C10.5-0.9%2C15.7-0.8l7.7-25.4l30.9%2C6.7l-3.5%2C26.3c4.8%2C2%2C9.5%2C4.4%2C13.9%2C7.2l19.3-18.2l23.4%2C21.3%09l-15.4%2C20L204.1%2C66z%20M79%2C106.3l49.8-18.1l44.6%2C87.8l31.7-95.6l50%2C18.1c-11%2C24.1-21%2C48.8-30.1%2C74c-9.1%2C25.2-17.2%2C50.9-24.4%2C77h-50.9%09c-9.5-22.9-20.2-46.3-32-70.2C105.8%2C155.3%2C92.9%2C131%2C79%2C106.3z%22/%3E%3C/svg%3E") 50% 50% no-repeat;
-            height: 30px;
+            height: 25px;
          }
          .ui_actions_menu_item.vk_acts_item{
             padding-left: 0;
@@ -7194,6 +7203,7 @@ vkopt['messages'] = {
          }
          .vk_audio_msg_btns{
             padding: 0px 10px;
+            margin-top: 5px;
          }
          .vk_au_msg_dl{
             font-size: 10px;
@@ -7210,12 +7220,44 @@ vkopt['messages'] = {
             margin-top: -5px;
             margin-bottom: -5px;
          }
+         .vk_au_msg_recognize{
+            float: left;
+            margin-right: 10px;
+            width: 32px;
+            height: 20px;
+            line-height: 20px;
+            color: #4a76a8;
+            background: #edecf1;
+            text-align: center;
+            text-decoration: none !important;
+            font-weight: 500;
+            border: 1px solid #dae5ef;
+            border-radius: 10px;
+         }
+         .vk_au_msg_recognize_txt{
+            position:relative;
+            margin-top: 10px;
+            padding: 3px 10px;
+            background: #edecf1;
+            border-radius: 10px;
+            display: none;
+         }
+         .vk_au_msg_recognize_txt:before{
+            position: absolute;
+            top: -10px;
+            content: '';
+            border: 6px solid transparent;
+            border-bottom: 6px solid #edecf1;
+         }
+         .vk_au_msg_recognize_txt.vk_show{
+            display:block;
+         } 
          #vk_restore_msg {
             margin-top: 5px;
          }
 
        .vk_block_typing_btn .im-chat-input .im-chat-input--textarea:not(.im-chat-input_open-keyboard):not(.im-chat-input_close-keyboard):not(.im-chat-input--textarea_show-templates) .im-chat-input--text{
-          padding-right: 106px;
+          padding-right: 110px;
        }
        .im-chat-input_close-keyboard .msg_typing_icon,
        .im-chat-input_open-keyboard .msg_typing_icon{
@@ -7473,6 +7515,7 @@ vkopt['messages'] = {
          */
          /*audio_msg_btns:
          <div class="vk_audio_msg_btns">
+           <a class="vk_au_msg_recognize" onclick="vkopt.messages.recognize_au_msg(this)">Aa</a>
            <a class="vk_au_msg_dl" href="{vals.url_mp3}"><div></div>mp3</a>
            <a class="vk_au_msg_dl" href="{vals.url_ogg}"><div></div>ogg</a>
          </div>
@@ -7841,6 +7884,38 @@ vkopt['messages'] = {
 	  radioBtns.like_share.val = ShareBox.radioBtnOptions.IM;
       dd.selected = {[vk.id+'_']:[]};
       dd.selCount = 1;
+   },
+   recognize_au_msg: function(el){
+      el = el.parentNode;
+      var au_msg_id = gpeByClass('im_msg_audiomsg', el).id;
+      var rcgn_txt = geByClass1('vk_au_msg_recognize_txt', el);
+      if (rcgn_txt)
+         toggleClass(rcgn_txt, 'vk_show')
+      else {
+         rcgn_txt = el.appendChild(se('<div class="vk_au_msg_recognize_txt vk_show"><img src="/images/upload_inv_mini.gif"></div>'));
+         var fwd = gpeByClass('im_fwd_log_wrap', el);
+         el = gpeByClass('_im_mess', el);
+         dApi.call('messages.getById', {v:'5.126', message_ids:domData(el, 'msgid'), group_id:cur.gid},function(r, res){
+            if(!res) {
+               rcgn_txt.innerHTML = '<div style="color:#e61111">'+lang.video_live_stream_create_unexpected_error+'</div>'
+               return;
+            }
+            res = res.items[0]
+            var txt = '';
+            if (fwd){
+               for (i = 0; i<res.fwd_messages.length; i++){
+                  for (j = 0; j<res.fwd_messages[i].attachments.length; j++){
+                  var data = res.fwd_messages[i].attachments[j];
+                  if (data.type == 'audio_message' && data['audio_message'].id == au_msg_id.split('_').pop())
+                     txt = data['audio_message'].transcript;
+                  }
+               }
+            }
+            else
+               txt = res.attachments[0]['audio_message'].transcript;
+            rcgn_txt.innerHTML = txt || '<div style="color:#e61111">'+lang.video_live_stream_create_unexpected_error+'</div>'
+         });
+      }
    },
    dialogs_menu: function(){
       var menu = geByClass1('_im_settings_popup');
@@ -9404,8 +9479,12 @@ vkopt['face'] =  {
             title: 'seVkontakteLogo',
             class_toggler: true
          },
-         rn_label_communities:{
+         rn_label_groups:{
             title: 'seRnLabelCommunities',
+            class_toggler: true
+         },
+         rn_label_im:{
+            title: 'seRnLabelMessenger',
             class_toggler: true
          },
          old_icon_verify:{
@@ -9753,7 +9832,7 @@ vkopt['face'] =  {
             display: none;
          }
          #vk_online_status > * {
-            margin-top: 15px;
+            margin-top: 19px;
             border-radius: 50%;
             border: 1px solid rgba(255,255,255,0.5);
             height: 8px;
@@ -10042,7 +10121,7 @@ vkopt['face'] =  {
             background-color: #2f2f2f;
          }
 
-         .vk_rn_label_communities #l_gr .left_label{
+         .vk_rn_label_groups #l_gr .left_label, .vk_rn_label_im #l_msg .left_label{
             visibility: hidden;
          }
 
@@ -10066,9 +10145,10 @@ vkopt['face'] =  {
          */
       });
       var progress_bar = vk_lib.get_block_comments(vkProgressBar).css;
-      var lable_communities = '.vk_rn_label_communities #l_gr .left_label:before{visibility: visible; content: "'+ IDL('Groups') +'";}';
+      var rename_labels = '.vk_rn_label_groups #l_gr .left_label:before{visibility: visible; content: "'+ IDL('Groups') +'";}'+
+                          '.vk_rn_label_im  #l_msg .left_label:before{visibility: visible; content: "'+ IDL('Messages') +'";}';
 
-      return codes.main + progress_bar + lable_communities;
+      return codes.main + progress_bar + rename_labels;
    },
    onResponseAnswer: function(answer, url, q){
       // запихиваем свой обработчик в момент получения данных о видео.
@@ -10102,7 +10182,9 @@ vkopt['face'] =  {
    onLibFiles: function(fn){
       if (fn == 'common.js')
          Inj.End('setDocumentTitle', function(){
-            if (nav.objLoc[0] == "groups" && vkopt.settings.get('rn_label_communities')) return window.document.title = IDL("Groups");
+            var label_id = ['groups', 'im'].indexOf(nav.objLoc[0]);
+            if (label_id > -1 && vkopt.settings.get('rn_label_'+nav.objLoc[0])) 
+            return window.document.title = IDL(['Groups', 'Messages'][label_id]);
          });
       if (fn == 'audioplayer.js')
          vkopt.face.ad_block.audio();
@@ -10963,8 +11045,8 @@ vkopt['groups'] = {
                story_raw: id
             }, {
                onDone(e) {
-                  e.list[0].items[0].can_comment = false;
-                  (cur['stories_list_group_live_covers']) ? cur.stories_list_group_live_covers[0].items.push(e.list[0].items[0]) : cur.stories_list_group_live_covers = e.list;
+                  e[0].items[0].can_comment = false;
+                  (cur['stories_list_group_live_covers']) ? cur.stories_list_group_live_covers[0].items.push(e[0].items[0]) : cur.stories_list_group_live_covers = e;
                   (!res[0].live_covers.story_ids[0]) ? cb() : getCovers(cb);
                }
             });
