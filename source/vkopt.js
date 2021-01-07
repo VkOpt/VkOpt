@@ -7666,12 +7666,6 @@ vkopt['messages'] = {
 
    },
    onLocation: function(nav_obj, cur_module_name){
-      if(nav.objLoc[0].substr(0,3) == 'gim') {
-         if (vkopt.settings.get('block_mark_read_btn'))
-            vkopt.messages.add_typing_read_icon('gim', 'mark_read');
-         if (vkopt.settings.get('block_typing_btn'))
-            vkopt.messages.add_typing_read_icon('gim', 'typing');
-      }
       if (!/^(g?im|al_im.php)/.test(nav.objLoc[0])){
          clearInterval(vkopt.messages.timeout_online_count_users);
          return;
@@ -7683,12 +7677,13 @@ vkopt['messages'] = {
       } else {
          clearInterval(vkopt.messages.timeout_online_count_users);
       }
-
+	  
+      var prefix = (nav.objLoc[0].substr(0,3) == 'gim') ? 'gim' : 'im';
       if (vkopt.settings.get('block_mark_read_btn'))
-         vkopt.messages.add_typing_read_icon('im', 'mark_read');
+         vkopt.messages.add_typing_read_icon(prefix, 'mark_read');
 
       if (vkopt.settings.get('block_typing_btn'))
-         vkopt.messages.add_typing_read_icon('im', 'typing');
+         vkopt.messages.add_typing_read_icon(prefix, 'typing');
 
       vkopt.messages.info_icon();
       vkopt_core.timeout(vkopt.messages.acts_menu, 500);
