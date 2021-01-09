@@ -2687,7 +2687,6 @@ vkopt['side_bar'] = {
       return {
          'profile': [
             ['wall' + vkmid, IDL('mWAllPosts')],
-            [['#', "showWiki({w: 'postbox'}, false, event, {queue: 1, stat: ['wkview.js' ,'wkview.css', 'postbox.js', 'postbox.css', 'wide_dd.js', 'wide_dd.css', 'page.js', 'page.css']}); return false;"], IDL('NewPost')],
             ['/notes', IDL("mNoM")],
             [['/gifts' + vkmid, "return !showBox('al_gifts.php',{act:'box',tab:'received',mid:"+vkmid+"},{cache:1,stat:['gifts.css','gifts.js']})"], IDL('clGi')],
             [['#', "return !showTabbedBox('al_page.php', {act: 'box', oid: "+vkmid+", tab: 'fans'}, {cache: 1}, event)"], IDL('clFans')],
