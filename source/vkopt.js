@@ -210,6 +210,27 @@ var vkopt_core = {
       vkopt.mObserver = null;
    },
    conflicts: function(IDL){
+      var tpls = vk_lib.get_block_comments(function(){
+         /*content:
+         <div class="hide_icon fl_r" onclick="topMsg('', 0.001)"></div>
+         <div class="ta_c subheader">{lng.VkoptDupFound}</div>
+         {vals.versions}
+         <div class="ta_r">
+            <a href="/vkopt_club?w=page-16925304_54555865" class="flat_button button_indent">{lng.Help}</a>
+            <a href="http://vkopt.net/" target="_blank" class="flat_button">vkopt.net</a>
+         </div>
+         */
+         /*wrap:
+         <div class="msg">
+            <h4>{lng.Found}</h4>
+            {vals.vers}
+         </div>         
+         */
+         /*ver:
+         <div>{vals.version}<sup><i>{vals.postfix}</i></sup> (build {vals.build}) [{vals.types}]</div>
+         */
+      });
+
       var content;
       if (vkopt.versions.length > 1){
          var vers = [];
@@ -219,34 +240,32 @@ var vkopt_core = {
             for (var type in lbr)
                lbr[type] && types.push(type);
 
-            var ver = vk_lib.format(
-               '<div>%1<sup><i>%2</i></sup> (build %3) [%4]</div>',
-               String(info.version).split('').join('.'),
-               info.postfix,
-               info.build,
-               types.join(' & ')
-            );
+            var ver = vk_lib.tpl_process(tpls.ver, {
+               version: String(info.version).split('').join('.'),
+               postfix: info.postfix,
+               build: info.build,
+               types: types.join(' & ')
+            });
             vers.push(ver);
          });
-         content = IDL('VkoptDupFound') + '<h3>' + IDL('Found') + '</h3>' + vers.join('\n');
+         content = vk_lib.tpl_process(tpls.content, {
+            versions: vk_lib.tpl_process(tpls.wrap, {
+               vers: vers.join('\n') 
+            })
+         });
       } else {
          try{
             MessageBox.toString();
          } catch(e) {
-            content = IDL('VkoptDupFound');
+            content = vk_lib.tpl_process(tpls.content, { versions: "" });
          }
       }
 
       if (!content) return;
 
       try {
-         showFastBox(
-            getLang('global_box_error_title'),
-            content
-         ).setControlsText(
-            '<a href="/vkopt_club?w=page-16925304_54555865">' + IDL('Help') + '</a> | ' +
-            '<a href="http://vkopt.net/" target="_blank">vkopt.net</a>'
-         );
+         ge("system_msg").style.visibility = "unset";
+         topMsg(content, 5);
       } catch(e) {
          alert(content.replace(/<\/?[^>]+>/,''));
       }
