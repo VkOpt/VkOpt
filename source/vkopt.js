@@ -278,7 +278,7 @@ var vkopt_core = {
 
       var wait = [];
       for (var key in StaticFiles)
-         if (StaticFiles[key].t == 'js'){
+         if (StaticFiles[key].t == 'js' || /\.js$/.test(key)){
             if (StaticFiles[key].l)
                vk_glue.inj_handler([key])();
             else
