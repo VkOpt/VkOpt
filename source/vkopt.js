@@ -6966,17 +6966,11 @@ vkopt['videos'] = {
             addClass(el,'vk_links_loaded');
             el.dl_ett = new ElementTooltip(el,{
                cls: "vk_mv_down_links_tt",
+               appendTo: gpeByClass("video_item", el),
                forceSide: "bottom",
                elClassWhenTooltip: "vk_mv_down_links_shown",
                content: html,
-               offset: [-3, 0],
-               setPos: function(){
-                  return  {
-                     left: 33,
-                     top: 34,
-                     arrowPosition: 21
-                  }
-               }
+               offset: [2, 0]
             });
             el.dl_ett.show();
          }
