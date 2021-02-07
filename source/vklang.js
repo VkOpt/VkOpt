@@ -1,12 +1,11 @@
-﻿// ==UserScript==
-// @description   VkOpt Languages
-// @include       *vkontakte.ru*
-// @include       *vkadre.ru*
-// @include       *vk.com*
-// ==/UserScript==
-//
-// (c) All Rights Reserved. VkOpt.
-//
+﻿///////////////////////////////////////////////////
+///////////////////  vklang.js  ///////////////////
+///////////////////////////////////////////////////
+//   VKOpt 3.x (Vkontakte Optimizer)             //
+//   Author:   KiberInfinity( /id13391307 )      //
+//   Web:      http://vkopt.net/                 //
+//   (c) All Rights Reserved. VkOpt.             //
+///////////////////////////////////////////////////
 
 
 vk_lang_ru={
@@ -773,6 +772,7 @@ vk_lang_ru={
    ,"seAudioSkipButton":"\u041a\u043d\u043e\u043f\u043a\u0430 \u00ab\u041f\u0440\u043e\u043f\u0443\u0441\u0442\u0438\u0442\u044c\u00bb \u0432 \u043f\u043b\u0435\u0435\u0440\u0435 \u0438\u0437 \u0448\u0430\u043f\u043a\u0438"
    ,"seStoreHeightImTxt":"\u0417\u0430\u043f\u043e\u043c\u0438\u043d\u0430\u0442\u044c \u0432\u044b\u0441\u043e\u0442\u0443 \u043f\u043e\u043b\u044f \u0432\u0432\u043e\u0434\u0430 \u0432 \u0434\u0438\u0430\u043b\u043e\u0433\u0430\u0445"
    ,'seDislikeEnable': '\u0412\u043A\u043B\u044E\u0447\u0438\u0442\u044C \u0434\u0438\u0437\u043B\u0430\u0439\u043A\u0438'
+   ,"Repost": "\u0420\u0435\u043f\u043e\u0441\u0442\u044b"
    ,"LinksAndRepost": "\u0421\u0441\u044B\u043B\u043A\u0438  \u0438  \u0440\u0435\u043F\u043E\u0441\u0442\u044B"
    ,"LinksAndRepost_all": "\u0412\u0441\u0435"
    ,"LinksAndRepost_forward": "\u0424\u043E\u0440\u0432\u0430\u0440\u0434\u044B"
@@ -828,7 +828,19 @@ vk_lang_ru={
    "seReverseComments": "\u041f\u043e\u043a\u0430\u0437\u044b\u0432\u0430\u0442\u044c \u043a\u043d\u043e\u043f\u043a\u0443 \u043f\u0435\u0440\u0435\u0445\u043e\u0434\u0430 \u043a \u043f\u043e\u0441\u043b\u0435\u0434\u043d\u0438\u043c \u043a\u043e\u043c\u043c\u0435\u043d\u0442\u0430\u0440\u0438\u044f\u043c",
    "sePlsPlayNextBtn":"\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u043a\u043d\u043e\u043f\u043a\u0443 \u00ab\u0412\u043e\u0441\u043f\u0440\u043e\u0438\u0437\u0432\u0435\u0441\u0442\u0438 \u0434\u0430\u043b\u0435\u0435\u00bb \u043d\u0430 \u043e\u0431\u043b\u043e\u0436\u043a\u0443 \u0430\u043b\u044c\u0431\u043e\u043c\u0430 \u0432\u043c\u0435\u0441\u0442\u043e \u043a\u043d\u043e\u043f\u043a\u0438 \u0440\u0430\u0441\u0448\u0430\u0440\u0438\u0432\u0430\u043d\u0438\u044f",
    "StoryReadReportDisabled": "\u041e\u0442\u0447\u0451\u0442 \u043e \u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440\u0435: \u0412\u042b\u041a\u041b.",
-   "StoryReadReportEnabled": "\u041e\u0442\u0447\u0451\u0442 \u043e \u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440\u0435: \u0412\u041a\u041b."
+   "StoryReadReportEnabled": "\u041e\u0442\u0447\u0451\u0442 \u043e \u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440\u0435: \u0412\u041a\u041b.",
+   "SourceSize": "\u0418\u0441\u0445\u043e\u0434\u043d\u044b\u0439 \u0440\u0430\u0437\u043c\u0435\u0440",
+   "NewSize": "\u041d\u043e\u0432\u044b\u0439 \u0440\u0430\u0437\u043c\u0435\u0440",
+   "seRnLabelCommunities":"\u041f\u0435\u0440\u0435\u0438\u043c\u0435\u043d\u043e\u0432\u0430\u0442\u044c \u00ab\u0421\u043e\u043e\u0431\u0449\u0435\u0441\u0442\u0432\u0430\u00bb \u0432 \u00ab\u0413\u0440\u0443\u043f\u043f\u044b\u00bb",
+   "seRnLabelMessenger":"\u041F\u0435\u0440\u0435\u0438\u043C\u0435\u043D\u043E\u0432\u0430\u0442\u044C \u00ab\u041C\u0435\u0441\u0441\u0435\u043D\u0434\u0436\u0435\u0440\u00bb \u0432 \u00ab\u0421\u043E\u043E\u0431\u0449\u0435\u043D\u0438\u044F\u00bb",
+   "seChIconVerify":"\u0421\u0442\u0430\u0440\u0430\u044F \u0438\u043A\u043E\u043D\u043A\u0430 \u0432\u0435\u0440\u0438\u0444\u0438\u043A\u0430\u0446\u0438\u0438",
+   "sendToPM":"\u0421\u0435\u0431\u0435 \u0432 \u043B\u0438\u0447\u043A\u0443",
+   "searchChats":"\u041D\u0430\u0439\u0442\u0438 \u0432\u0441\u0435 \u0431\u0435\u0441\u0435\u0434\u044B",
+   "titleChats":"\u0411\u0435\u0441\u0435\u0434\u044B",
+   "searchEmptyChats":"\u0411\u0435\u0441\u0435\u0434\u044B \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D\u044B",
+   "uAreCreator":"\u0432\u044B \u0441\u043E\u0437\u0434\u0430\u0442\u0435\u043B\u044C",
+   "kickedChat":"\u0438\u0441\u043A\u043B\u044E\u0447\u0435\u043D\u044B \u0438\u0437 \u0431\u0435\u0441\u0435\u0434\u044B",
+   "leftChat":"\u043F\u043E\u043A\u0438\u043D\u0443\u043B\u0438 \u0431\u0435\u0441\u0435\u0434\u0443"
 };
 
 vk_lang_en={//by Hzy
@@ -1752,6 +1764,7 @@ vk_lang_en={//by Hzy
   ,"seRecentEmoji":"Block with recent Emoji in dialogs"
   ,"Skip_pl":"Skip"
   ,"seAudioSkipButton":"«Skip» button in topplayer"
+  ,"Repost": "Repost"
   ,"LinksAndRepost": "Links and repost"
   ,"LinksAndRepost_all": "All"
   ,"LinksAndRepost_forward": "Forward"
@@ -1809,7 +1822,19 @@ vk_lang_en={//by Hzy
    "seReverseComments":"Display jump to last comments button",
    "sePlsPlayNextBtn": "Add «Play next» button to album cover (replace Share button)",
    "StoryReadReportDisabled": "View report: OFF",
-   "StoryReadReportEnabled": "View report: ON"
+   "StoryReadReportEnabled": "View report: ON",
+   "SourceSize": "Source size",
+   "NewSize": "New size",
+   "seRnLabelCommunities":"Rename «Communities» to «Groups»",
+   "seRnLabelMessenger":"Rename «Messenger» to «Messages»",
+   "seChIconVerify":"Old verify icon",
+   "sendToPM":"Send to PM",
+   "searchChats":"Find all Chats",
+   "titleChats":"Chats",
+   "searchEmptyChats":"Chats not found",
+   "uAreCreator":"you're the creator",
+   "kickedChat":"kicked from the chat",
+   "leftChat":"left the chat"
 };
 
 vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
@@ -2730,6 +2755,7 @@ vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
    "seStoreHeightImTxt": "\u0417\u0430\u043f\u0430\u043c'\u044f\u0442\u043e\u0432\u0443\u0432\u0430\u0442\u0438 \u0432\u0438\u0441\u043e\u0442\u0443 \u043f\u043e\u043b\u044f \u0432\u0432\u043e\u0434\u0443 \u0432 \u0434\u0456\u0430\u043b\u043e\u0433\u0430\u0445",
    "seAudioSkipButton": "\u041a\u043d\u043e\u043f\u043a\u0430 \u00ab\u041f\u0440\u043e\u043f\u0443\u0441\u0442\u0438\u0442\u0438\u00bb \u0432 \u043f\u043b\u0435\u0454\u0440\u0456 \u0437 \u0448\u0430\u043f\u043a\u0438",
    "seDislikeEnable": "\u0423\u0432\u0456\u043c\u043a\u043d\u0443\u0442\u0438 \u0434\u0438\u0437\u043b\u0430\u0439\u043a\u0438",
+   "Repost": "\u0420\u0435\u043f\u043e\u0441\u0442\u0438",
    "LinksAndRepost": "\u041f\u043e\u0441\u0438\u043b\u0430\u043d\u043d\u044f \u0456 \u0440\u0435\u043f\u043e\u0441\u0442\u0438",
    "LinksAndRepost_all": "\u0412\u0441\u0456",
    "LinksAndRepost_forward": "\u0424\u043e\u0440\u0432\u0430\u0440\u0434\u0438",
@@ -5324,6 +5350,7 @@ vk_lang_md={
     "seAudioSkipButton": "Butonul \u00abTreci peste\u00bb \u00een player-ul din antetul paginii",
     "seStoreHeightImTxt": "Memoreaz\u0103 \u00een\u0103l\u021bimea spa\u021biului de scriere \u00een dialoguri",
     "seDislikeEnable": "Acvtiveaz\u0103 Nu Place",
+    "Repost": "Repost\u0103ri",
     "LinksAndRepost": "Link-uri \u0219i Repost\u0103ri",
     "LinksAndRepost_all": "Toate",
     "LinksAndRepost_forward": "Forward",
@@ -5490,6 +5517,7 @@ vk_lang_lv = {
    "seAudioSkipButton": "Izlaist pogu \u00abAtska\u0146ot\u0101j\u0101\u00bb no galvenes",
    "seStoreHeightImTxt": "Atcerieties ievades lauka augstumu dialogos",
    "seDislikeEnable": "Iesl\u0113gt \u00abMan nepat\u012bk\u00bb",
+   "Repost": "Reposts",
    "LinksAndRepost": "Atsauces un reposts",
    "LinksAndRepost_all": "Viss",
    "LinksAndRepost_forward": "Forvards",

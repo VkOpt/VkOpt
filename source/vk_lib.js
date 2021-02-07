@@ -1,20 +1,12 @@
-// ==UserScript==
-// @name          VKOpt 2.x Lib
-// @author        KiberInfinity( /id13391307 )
-// @namespace     http://vkopt.net/
-// @description   Vkontakte Optimizer 2.x
-// @include       *vkontakte.ru*
-// @include       *vk.com*
-// @include       *userapi.com*
-// @include       *vk.me*
-// @include       *vkadre.ru*
-// @include       *durov.ru*
-// @include       *youtube.com*
-// @include       *vimeo.com*
-// ==/UserScript==
-//*
+///////////////////////////////////////////////////
+///////////////////  vk_lib.js  ///////////////////
+///////////////////////////////////////////////////
+//   VKOpt 3.x (Vkontakte Optimizer)             //
+//   Author:   KiberInfinity( /id13391307 )      //
+//   Web:      http://vkopt.net/                 //
+//   (c) All Rights Reserved. VkOpt.             //
+///////////////////////////////////////////////////
 
-//*/
 
 
 var vk_DEBUG = false,
@@ -754,6 +746,7 @@ var vkMozExtension = {
 		DisableHistrory : false,
 		History : {},
 		InitStringifier: function(){
+         if (Function.prototype.toStringOriginal) return;
          Function.prototype.toStringOriginal = Function.prototype.toString;
          //var origFnToStr = Function.prototype.toString;
          Function.prototype.toString = function(){
@@ -1138,6 +1131,25 @@ var vkMozExtension = {
       return crc32(str);
    }
 
+   vk_lib.api = {
+      photo: {
+         // vk_lib.api.photo.max_size
+         max_size: function(photo){
+            if (!photo || !photo.sizes)
+               return;
+            var src = {};
+            for (var p in photo.sizes)
+               if (photo.sizes[p].type)
+                  src[photo.sizes[p].type] = photo.sizes[p].url;
+
+            var hq_src = '';
+            var q = ["w", "z", "y", "x", "r", "q", "p", "o", "m", "s"];
+            for (var sz in q)
+               if (src[q[sz]])
+                  return src[q[sz]];
+            }
+      }
+   }
 
 	function TwoWayMap (map) {
 		this.map = map;
@@ -1894,7 +1906,10 @@ function vk_oauth_api(app_id,scope){
             v: '5.95',
             format:'json'
          };
-         if (inputParams) for (var i in inputParams) params[i] = inputParams[i];
+         if (inputParams)
+            for (var i in inputParams)
+               if (typeof inputParams[i] != "undefined")
+                  params[i] = inputParams[i];
          params['access_token']=api.access_token;
 
          var onDoneRequest = function(text){
@@ -1956,8 +1971,8 @@ function vk_oauth_api(app_id,scope){
                      "from":""
                   };
                   ajax.post("/activation.php", options, {onDone: function(title, html, js){
-                        csid =(js.match(/validationCsid:\s*['"]?([a-f0-9]+)['"]?/) || [])[1];
-                        cstrong = (js.match(/strongCode:\s*['"]?([a-f0-9]+)['"]?/) || [0,0])[1];
+                        csid =(js.match(/validationCsid(?:['"]\]\s*=\s*|:)\s*['"]?([a-f0-9]+)['"]?/) || [])[1];
+                        cstrong = (js.match(/strongCode(?:['"]\]\s*=\s*|:)\s*['"]?([a-f0-9]+)['"]?/) || [0,0])[1];
                         vkopt.log('API Activation captcha sid: ', csid, ' strong:', cstrong);
                         api.captcha_visible=true;
                         api._captchaBox = showCaptchaBox(csid, cstrong, api._captchaBox, {
@@ -3073,7 +3088,7 @@ function vkDragOutFile(el) {
     },false);
 }
 function vkDownloadFile(el,ignore) {
-   if (!vkbrowser.mozilla || vk_ext_api.browsers.webext || ignore) return true;
+   if (!(vkbrowser.mozilla || (vk_ext_api.browsers.gm || {}).download) || vk_ext_api.browsers.webext || ignore) return true;
    //if (getSet(1) == 'n') return true;
    var a = el.getAttribute("href");
    var d = el.getAttribute("download");
@@ -3372,8 +3387,8 @@ function vk_tag_api(section,url,app_id){
          var url=t.page_url+t.section+'/'+obj_id;
          var code='\
          var like=API.likes.getList({type:"sitepage",page_url:"'+url+'",owner_id:"'+t.app+'",count:'+count+',offset:'+offset+'});\
-         var users=API.users.get({uids:like.users,fields:"photo_rec"});\
-         return {count:like.count,users:users,uids:like.users};\
+         var users=API.users.get({user_ids:like.items,fields:"photo_rec"});\
+         return {count:like.count,users:users,uids:like.items};\
          ';
          //api_for_dislikes
          api4dislike.call('execute',{code:code},function(r){
@@ -3407,7 +3422,7 @@ function vk_tag_api(section,url,app_id){
                         if (!raw[key]) continue;
                         data[key] = {
                            count: raw[key].count,
-                           my: raw[key].users[0]==vk.id
+                           my: raw[key].items[0]==vk.id
                         };
                      }
                      if (callback) callback(data);
