@@ -8,9 +8,9 @@
 //////////////////////////////////////////////////
 
 /* VERSION INFO */
-var vVersion = 307;
-var vBuild = 191215;
-var vVersionRev = 20;
+var vVersion = 308;
+var vBuild = 210206;
+var vVersionRev = 1;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
