@@ -1,0 +1,23 @@
+{
+  "name": "vkopt_builder",
+  "version": "0.0.1",
+  "description": "vkopt build helper",
+  "main": "builder.js",
+  "scripts": {
+    "test": "_build",
+    "watch": "nodemon -w source -L --exec _build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VkOpt/VkOpt.git"
+  },
+  "author": "KiberInfinity",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/VkOpt/VkOpt/issues"
+  },
+  "homepage": "https://github.com/VkOpt/VkOpt#readme",
+  "dependencies": {
+    "nodemon": "^2.0.7"
+  }
+}
