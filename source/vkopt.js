@@ -7940,7 +7940,7 @@ vkopt['messages'] = {
             }
             else
                txt = res.attachments[0]['audio_message'].transcript;
-            rcgn_txt.innerHTML = txt || '<div style="color:#e61111">'+lang.video_live_stream_create_unexpected_error+'</div>'
+            rcgn_txt.innerHTML = clean(txt) || '<div style="color:#e61111">'+lang.video_live_stream_create_unexpected_error+'</div>'
          });
       }
    },
