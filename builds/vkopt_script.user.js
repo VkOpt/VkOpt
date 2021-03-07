@@ -1,6 +1,6 @@
 ﻿// ==UserScript==
 // @name          VKOpt
-// @version       3.0.8.1
+// @version       3.0.8.2
 // @author        KiberInfinity [id13391307]
 // @namespace     http://vkopt.net/
 // @description   Vkontakte Optimizer 3.x
@@ -389,7 +389,7 @@
       js.type = 'text/javascript';
       js.charset = 'UTF-8';
       js.innerHTML=script;
-      js.setAttribute(mark,"3.0.8.1");
+      js.setAttribute(mark,"3.0.8.2");
       doc.getElementsByTagName('head')[0].appendChild(js);
    }
    init();
@@ -406,8 +406,8 @@
 
 /* VERSION INFO */
 var vVersion = 308;
-var vBuild = 210206;
-var vVersionRev = 1;
+var vBuild = 210307;
+var vVersionRev = 2;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -8337,7 +8337,7 @@ vkopt['messages'] = {
             }
             else
                txt = res.attachments[0]['audio_message'].transcript;
-            rcgn_txt.innerHTML = txt || '<div style="color:#e61111">'+lang.video_live_stream_create_unexpected_error+'</div>'
+            rcgn_txt.innerHTML = clean(txt) || '<div style="color:#e61111">'+lang.video_live_stream_create_unexpected_error+'</div>'
          });
       }
    },
