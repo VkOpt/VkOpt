@@ -5788,7 +5788,7 @@ vkopt['scrobbler'] = {
    onInit:function(){
       var fm=vkopt.scrobbler;
       var md5=vkMD5;//from vk_lib.js
-      fm.token = vkopt.settings.get('lastfm_token');
+      fm.token = vkopt.settings.get('lastfm_token') || "unset";
       fm.username = vkopt.settings.get('lastfm_username');
       fm.session_key = vkopt.settings.get('lastfm_session_key');
       fm.enable_scrobbling = vkopt.settings.get('lastfm_enable_scrobbling');
@@ -5796,7 +5796,7 @@ vkopt['scrobbler'] = {
          var apiKey=options.apiKey||'';
          var apiSecret=options.apiSecret||'';
          // https://ws.audioscrobbler.com/2.0/
-         var apiUrl=options.apiUrl||'http://ws.audioscrobbler.com/2.0/';
+         var apiUrl=options.apiUrl||'https://ws.audioscrobbler.com/2.0/';
          var cache=options.cache||undefined;var debug=typeof(options.debug)=='undefined'?false:options.debug;this.setApiKey=function(_apiKey){apiKey=_apiKey};this.setApiSecret=function(_apiSecret){apiSecret=_apiSecret};this.setApiUrl=function(_apiUrl){apiUrl=_apiUrl};this.setCache=function(_cache){cache=_cache};
          //original of library method internalCall  with JSONP/iframe requests:
          //var internalCall=function(params,callbacks,requestMethod){if(requestMethod=='POST'){var html=document.getElementsByTagName('html')[0];var frameName='lastfmFrame_'+new Date().getTime();var iframe=document.createElement('iframe');html.appendChild(iframe);iframe.contentWindow.name=frameName;iframe.style.display="none";var formState='init';iframe.width=1;iframe.height=1;iframe.style.border='none';iframe.onload=function(){if(formState=='sent'){if(!debug){setTimeout(function(){html.removeChild(iframe);html.removeChild(form)},1500)}};formState='done';if(typeof(callbacks.success)!='undefined'){callbacks.success()}};var form=document.createElement('form');form.target=frameName;form.action=apiUrl;form.method="POST";form.acceptCharset="UTF-8";html.appendChild(form);for(var param in params){var input=document.createElement("input");input.type="hidden";input.name=param;input.value=params[param];form.appendChild(input)};formState='sent';form.submit()}else{var jsonp='jsonp'+new Date().getTime();var hash=auth.getApiSignature(params);if(typeof(cache)!='undefined'&&cache.contains(hash)&&!cache.isExpired(hash)){if(typeof(callbacks.success)!='undefined'){callbacks.success(cache.load(hash))}return}params.callback=jsonp;params.format='json';window[jsonp]=function(data){if(typeof(cache)!='undefined'){var expiration=cache.getExpirationTime(params);if(expiration>0){cache.store(hash,data,expiration)}}if(typeof(data.error)!='undefined'){if(typeof(callbacks.error)!='undefined'){callbacks.error(data.error,data.message)}}else if(typeof(callbacks.success)!='undefined'){callbacks.success(data)}window[jsonp]=undefined;try{delete window[jsonp]}catch(e){}if(head){head.removeChild(script)}};var head=document.getElementsByTagName("head")[0];var script=document.createElement("script");var array=[];for(var param in params){array.push(encodeURIComponent(param)+"="+encodeURIComponent(params[param]))}script.src=apiUrl+'?'+array.join('&').replace(/%20/g,'+');head.appendChild(script)}};
@@ -5897,7 +5897,7 @@ vkopt['scrobbler'] = {
          if (code == 4)// токен сдох
             if (!fm.connect_box || !fm.connect_box.isVisible()){
                fm.connect_box=vkAlertBox(IDL('AuthBoxTitle'), IDL('AuthBoxText'), function(){
-                  var url = 'http://www.last.fm/api/auth?api_key=' + fm.api_key + '&cb=' + encodeURIComponent(location.protocol+'//' + location.host + '/settings?act=vkscrobbler');
+                  var url = 'https://www.last.fm/api/auth?api_key=' + fm.api_key + '&cb=' + encodeURIComponent(location.protocol+'//' + location.host + '/settings?act=vkscrobbler');
                   window.open(url,'_blank','');
                   //location.href = url;
                }, function(){
