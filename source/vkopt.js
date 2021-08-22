@@ -12469,7 +12469,7 @@ vkopt['vk_dislike'] = {
                </a>');
             }
             return se('\
-            <a href="#" dislike_id="'+obj_id+'" class="like_btn post_dislike '+(my_dislike?' '+'pv_disliked':'')+' no_dislikes" onclick="vkopt.vk_dislike.dislike(this.getAttribute(\'dislike_id\')); return false;" onmouseover="vkopt.vk_dislike.dislike_over(this.getAttribute(\'dislike_id\'));" id="post_dislike'+obj_id+'">\
+            <a href="#" dislike_id="'+obj_id+'" class="PostBottomAction like_btn post_dislike '+(my_dislike?' '+'pv_disliked':'')+' no_dislikes" onclick="vkopt.vk_dislike.dislike(this.getAttribute(\'dislike_id\')); return false;" onmouseover="vkopt.vk_dislike.dislike_over(this.getAttribute(\'dislike_id\'));" id="post_dislike'+obj_id+'">\
                <i class="post_dislike_icon" id="dislike_icon'+obj_id+'"></i>\
                <span class="post_like_link" id="dislike_link'+obj_id+'">'+IDL('dislike')+'</span>\
                <span class="post_like_count fl_l" id="dislike_count'+obj_id+'">'+(count|| '')+'</span>\
@@ -12497,6 +12497,7 @@ vkopt['vk_dislike'] = {
       var attrs=['onclick','onmouseover','onmouseout'];
       var types=vkopt.vk_dislike.types;
 
+      if (!el) return;
       if (hasClass(el,'has_dislike')) return;
       addClass(el,'has_dislike');
 
@@ -12525,7 +12526,8 @@ vkopt['vk_dislike'] = {
          },400)
       } else {
          //obj_id=(geByTag('i',el)[0] || {}).id;
-         obj_id = el.outerHTML.split('(this, \'')[1].split('\'')[0];
+         obj_id = (el.outerHTML.split('(this, \'')[1] || "").split('\'')[0];
+         if (!obj_id) obj_id = ((el.querySelector("[data-reaction-target-object]") || {}).dataset || {}).reactionTargetObject;
          if (!obj_id) return;
          //obj_id=obj_id.split('like_icon')[1];
          vkopt.vk_dislike.obj_ids.push(obj_id);
@@ -12570,7 +12572,8 @@ vkopt['vk_dislike'] = {
 
       els=geByClass('like_btns',node);
       for (var i=0; i<els.length;i++){
-         vkopt.vk_dislike.add(geByClass1('like',els[i]));
+         // vkopt.vk_dislike.add(geByClass1('like',els[i]));
+         vkopt.vk_dislike.add(els[i].querySelector('.like, .PostButtonReactionsContainer'));
       }
 
       els=geByClass('fw_like_wrap',node);
