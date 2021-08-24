@@ -267,7 +267,7 @@ var vkopt_core = {
          ge("system_msg").style.visibility = "unset";
          topMsg(content, 5);
       } catch(e) {
-         alert(content.replace(/<\/?[^>]+>/,''));
+         vkopt.log(content.replace(/<\/?[^>]+>/,''));
       }
    },
    run: function(check){
