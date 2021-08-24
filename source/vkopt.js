@@ -2961,6 +2961,7 @@ vkopt['photoview'] =  {
          photo_search_copy:{},
          ph_download_with_name:{},
          ph_show_save_info:{default_value: true},
+         ph_allow_to_profile:{default_value: true},
          ph_update_btn:{},
          photo_copy_btn:{default_value: true},
          pv_hide_comments_btn: {
@@ -3273,6 +3274,19 @@ vkopt['photoview'] =  {
 
    },
    onResponseAnswer: function(answer, url, q) {
+      var LST_IDX = 3;
+      // Unlock set as profile photo
+      if (url == 'al_photos.php' && q.act == "show" && answer[LST_IDX] && answer[LST_IDX][0] && answer[LST_IDX][0].id){
+         if (!vkopt.settings.get('ph_allow_to_profile')) return;
+         var plist = answer[LST_IDX];
+         plist.forEach((item, idx) => {
+            if (item.actions && !item.actions.prof && item.id.split("_").shift() == vk.id) {
+               item.actions.prof = 1;
+               item.profile_data = {photo: item.id};
+               vkopt.log("Add profile_data and prof=1 for " + item.id);
+            }
+         });
+      }
       if (url == 'al_photos.php' && q.act == 'save_me' && answer[0]){
          if (!vkopt.settings.get('ph_show_save_info')) return;
          if (window.cur && cur.pvData){
