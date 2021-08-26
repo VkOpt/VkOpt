@@ -8971,10 +8971,10 @@ vkopt['messages'] = {
          dApi.call('messages.getHistory',{uid:uid,offset:offset,count:100},function(r){
             //console.log(r);
             //return;
-            ge('saveldr').innerHTML=vkProgressBar(offset,r.response[0],w);
+            ge('saveldr').innerHTML=vkProgressBar(offset,r.response['count'],w);
             var msgs=r.response;
-            var count=msgs.shift();
-            msgs.reverse();
+            var count=msgs.count;
+            msgs = msgs.items.reverse();
             var msg=null;
             var res='';
             var make_msg=function(msg,level){
@@ -8992,8 +8992,8 @@ vkopt['messages'] = {
                   switch(attach.type){
                      case  "photo":
                         var a=attach.photo;
-                        var src=a.src_xxxbig || a.src_xxbig || a.src_xbig || a.src_big || a.src || a.src_small;
-                        var link="vk.com/photo"+a.owner_id+'_'+a.pid;
+                        var src=a.sizes.sort((a, b) => b.width - a.width)[0].url;
+                        var link="vk.com/photo"+a.owner_id+'_'+a.id;
                         attach_text+=link+" : "+src+"\r\n"+(a.text?a.text+"\r\n":"");
                         break;
                      case  "video":
@@ -9023,7 +9023,7 @@ vkopt['messages'] = {
                //console.log(msg);
                var date=(new Date(msg.date*1000)).format(date_fmt);
                var user='%'+from_id+'%';//(msg.from_id==mid?user2:user1);
-               var msgBody = msg.body.replace(/<br>/g, '\r\n');
+               var msgBody = msg.text.replace(/<br>/g, '\r\n');
 
                var ret=msg_pattern
                     .replace(/%username%/g,user) //msg.from_id
