@@ -4162,7 +4162,7 @@ vkopt['albums'] = {
          }
          var check_add_info = function(cb){
             if (save_albums_descr){
-               dApi.call('photos.getAlbums', {owner_id:oid,album_ids:aids.join(','), v:'5.80'}, function(res, r, e){
+               dApi.call('photos.getAlbums', {owner_id:oid,album_ids:aids.join(','), v:'5.131'}, function(res, r, e){
                   if (r && r.items)
                      add_albums_info(r.items, cb);
                   else
@@ -7463,10 +7463,6 @@ vkopt['messages'] = {
             <a href="#" class="vk_msg_info_icon" id="vk_msg_info_btn" onmouseover="vkopt.messages.show_info(this);" onclick="return false;"></a>
          */
          /*info_content:
-         <!--
-         <div>{lng.mMaI}: {vals.in_count}</div>
-         <div>{lng.mMaO}: {vals.out_count}</div>
-         --!>
          <div>{lng.mDialogsMessages}: {vals.dialogs_count}</div>
          */
          /*menu_separator:
@@ -7556,7 +7552,7 @@ vkopt['messages'] = {
          <a tabindex="0" role="link" class="ui_actions_menu_item _im_action im-action vk_acts_item_icon" onclick="return vkopt.messages.export_box()">{lng.SaveHistory}</a>
          */
          /*acts_to_beginning_item:
-         <a tabindex="0" role="link" class="ui_actions_menu_item _im_action im-action vk_acts_item_icon" onclick="return vkopt.messages.go_to_beginning()">{lng.GoToBeginning}</a>
+         <a tabindex="0" role="link" class="ui_actions_menu_item _im_action im-action vk_acts_item_icon" onclick="window.dispatchEvent(Object.assign(new Event('im_goToMessage'), {sel:cur.peer, msgid:1}));">{lng.GoToBeginning}</a>
          */
          /*audio_msg_btns:
          <div class="vk_audio_msg_btns">
@@ -7839,7 +7835,7 @@ vkopt['messages'] = {
                       'while(listUsers[i]){'+
                       'if(listUsers[i].online == 1) count=count+1; i=i+1;}'+
                       'return count;';
-      dApi.call('execute',{v:'5.73', code:body_code},function(r){
+      dApi.call('execute',{v:'5.131', code:body_code},function(r){
          if (!p || !p.parentNode) return;
          if (!ge('countUsers'))
            p.appendChild(se('<span id="countUsers" onmouseover="vkopt.messages.show_on_users(this)"></span>'));
@@ -7851,7 +7847,7 @@ vkopt['messages'] = {
    show_on_users:  function(el){
       var chatId = cur.peer - 2000000000;
       var body_code = 'return API.messages.getChatUsers({"chat_id":'+chatId+',"fields":"photo_50,online,domain"});';
-      dApi.call('execute',{v:'5.75', code:body_code},function(r){
+      dApi.call('execute',{v:'5.131', code:body_code},function(r){
          var items='', mob='' , i=0, on = 0, u = {};
          while(r.response[i]){
             if(r.response[i]['online'] == 1){
@@ -7894,13 +7890,9 @@ vkopt['messages'] = {
       });
    },
    show_info: function(el){ // показываем количество сообщений и диалогов
-      var code_body = 'return {';
-      code_body += '"in_count": API.messages.get({"count":1,"offset":0,"out":0,"preview_length":2}).count,' +
-                   '"out_count": API.messages.get({"count":1,"offset":0,"out":1,"preview_length":2}).count,' +
-                   '"dialogs_count": API.messages.getDialogs({"count":0,"unread":0}).count';
-      code_body += '};';
+      var code_body = 'return {"dialogs_count": API.messages.getDialogs({"count":0,"unread":0}).count};';
 
-      dApi.call('execute',{v:'5.53', code:code_body},function(r){
+      dApi.call('execute',{v:'5.131', code:code_body},function(r){
          var html = vk_lib.tpl_process(vkopt.messages.tpls['info_content'], r.response);
          showTooltip(el, {
             text: html,
@@ -7997,23 +7989,6 @@ vkopt['messages'] = {
             toggle(dialogs)
       });
    },
-   go_to_beginning: function(){
-      var sel_id = nav.objLoc['sel'];
-      var cur_loc = clone(nav.objLoc);
-
-      var params = {peer_id:cur.peer, count:1, rev:1, v:'5.73'};
-      if (cur.gid)
-         params['group_id'] = cur.gid;
-
-      dApi.call('messages.getHistory',params,function(r,response){
-         if (!(response && response.items && response.items[0]))
-            return vkMsg(IDL('Error'));
-         nav.go(extend(cur_loc, {sel:''}));
-         setTimeout(function(){
-            nav.go(extend(cur_loc, {msgid: response.items[0].id,sel:sel_id}));
-         },300);
-      })
-   },
    search_deleted: function(){
       var get_last_msg_id = function(cb){
          var dt = (new Date()).format('HH:MM:ss dd.mm.yyyy');
@@ -8021,9 +7996,10 @@ vkopt['messages'] = {
             'var user = API.users.get({})[0];'+
             'return API.messages.send({'+
                'user_id:user.id, '+
+               'random_id:' + vkRand()+','+
                'message: user.first_name+", '+IDL('SearchDeletedMessagesStarted')+' ('+dt+')"'+
             '});';
-         dApi.call('execute',{code:code, v:'5.73'}, function(r){
+         dApi.call('execute',{code:code, v:'5.131'}, function(r){
             cb(r.response || 0);
          });
       }
@@ -8048,12 +8024,12 @@ vkopt['messages'] = {
 
          var code = [];
          while(ids.length)
-            code.push('API.messages.getById({"message_ids":"'+ids.splice(0,PER_REQ).join(',')+'", "v":"5.73"}).items');
+            code.push('API.messages.getById({"message_ids":"'+ids.splice(0,PER_REQ).join(',')+'", "v":"5.131"}).items');
          code = 'return ' + code.join('+') + ';'
 
          ge('vk_scan_msg').innerHTML = vkProgressBar(last_msg - offset, last_msg, width, IDL('MessagesScan') + ' %'+(offset > 0 ? ' (id:' + offset + ')' : ''));
 
-         dApi.call('execute', {code: code, v:'5.73'}, function(r){
+         dApi.call('execute', {code: code, v:'5.131'}, function(r){
             if (r && r.response){
                r.response.forEach(function(item, idx){
                   if (item.deleted){
@@ -8105,7 +8081,7 @@ vkopt['messages'] = {
             code.push('API.messages.restore({message_id:'+del_ids.shift()+'})');
          code = 'return [ ' + code.join(',') + ' ];'
 
-         dApi.call('execute', {code: code, v:'5.73'}, function(r){
+         dApi.call('execute', {code: code, v:'5.131'}, function(r){
              if (r && r.response){
                 total_try += r.response.length;
                 restored += r.response.filter(function(item){return item}).length;
@@ -8233,31 +8209,6 @@ vkopt['messages'] = {
          box.show();
       });
    },
-   get: function(out, offset, count, onDone) {
-		var code_body='';
-		var code_r=[];
-		var steps=Math.ceil(count/100);
-		for (var i=0; i<steps;i++){
-			var obj={count:count>100?100:count, offset:offset,out:out,preview_length:0};
-			code_body+='var x'+i+'=API.messages.get('+JSON.stringify(obj)+');\n';
-			code_r.push('x'+i);
-			count-=100;
-			offset+=100;
-		}
-		code_body+='\nreturn ['+code_r.join(',')+'];';
-		dApi.call('execute',{v:'5.53', code:code_body},function(r){
-			var res=[];
-         var count = 0;
-			var m=r.response;
-			for (var i=0;i<m.length;i++){
-				count = m[i].count || count;
-            if (m[i].items && m[i].items.length>0)
-					res = res.concat(m[i].items)
-			}
-			onDone({response:{count: count, items: res}});
-		});
-	},
-
    export_box: function(peer){
       peer = peer || cur.peer;
       var html = vk_lib.tpl_process(vkopt.messages.tpls['export_box'],{
@@ -8392,7 +8343,7 @@ vkopt['messages'] = {
 
       // build
       for(var i=0,j=msg.length;i<j;i++){
-         var from_id = msg[i].from_id || msg[i].user_id;
+         var from_id = msg[i].from_id;
          var u=(user[from_id] || {
                            id: from_id,
                            first_name: 'DELETED',
@@ -8403,13 +8354,13 @@ vkopt['messages'] = {
          html+='<div class="upic"><img src="'+u.photo_100+'" alt="[photo_100]"></div>';
          html+='<div class="from"> <b>'+u.name+'</b> <a href="'+make_ulink(from_id)+'" target="_blank">@'+u.domain+'</a> <a href="#msg'+msg[i].id+'">'+t2d(msg[i].date)+'</a></div>';
 
-         if(msg[i].body != ""){
-               html+='<div class="msg_body">'+t2m(msg[i].body)+'</div>';
+         if(msg[i].text != ""){
+               html+='<div class="msg_body">'+t2m(msg[i].text)+'</div>';
          }
          if(msg[i].action){
             html+=chatAction(msg[i].action);
          }
-         if(msg[i].attachments !== undefined){
+         if(msg[i].attachments.length){
             html+='<div class="attacments"> <b>'+IDL('HistMsgAttachments')+'</b> </div>';
             var l=msg[i].attachments.length;
             for(var k=0;k<l;k++){
@@ -8420,7 +8371,7 @@ vkopt['messages'] = {
          if(msg[i].geo !== undefined)
             html+=make_geo(msg[i]);
 
-         if(msg[i].fwd_messages !== undefined){
+         if(msg[i].fwd_messages.length){
             initfwd(msg[i].fwd_messages);
          }
          html+='</div>';
@@ -8431,8 +8382,8 @@ vkopt['messages'] = {
          html+='<div class="att_head"> <div class="att_ico att_fwd"></div> '+IDL('HistMsgFwd')+' </div>';
          html+='<div class="fwd">';
          for(var k=0,l=msgfwd.length;k<l;k++){
-            var u = (user[msgfwd[k].user_id] || {
-                           id: msgfwd[k].user_id,
+            var u = (user[msgfwd[k].from_id] || {
+                           id: msgfwd[k].from_id,
                            first_name: 'DELETED',
                            last_name: '',
                            photo_100: 'http://vk.com/images/deactivated_c.gif'
@@ -8441,9 +8392,9 @@ vkopt['messages'] = {
             html+='<div class="upic"><img src="'+
 			u.photo_100+
 			'" alt="[photo_100]"></div>';
-            html+='<div class="from"> <b>'+u.name+'</b> <a href="'+make_ulink(msgfwd[k].user_id)+'" target="_blank">@'+u.domain+'</a> '+t2d(msgfwd[k].date)+'</div>';
-            html+='<div class="msg_body"> '+t2m(msgfwd[k].body)+'</div>';
-            if(msgfwd[k].attachments !== undefined){
+            html+='<div class="from"> <b>'+u.name+'</b> <a href="'+make_ulink(msgfwd[k].from_id)+'" target="_blank">@'+u.domain+'</a> '+t2d(msgfwd[k].date)+'</div>';
+            html+='<div class="msg_body"> '+t2m(msgfwd[k].text)+'</div>';
+            if(msgfwd[k].attachments.length){
                html+='<div class="attacments"> <b>'+IDL('HistMsgAttachments')+'</b> </div>';
                var n=msgfwd[k].attachments.length;
                for(var m=0;m<n;m++){
@@ -8477,9 +8428,9 @@ vkopt['messages'] = {
             var msg=arr[i];
             //console.log(msg)
             if (msg.from_id) history_uids[msg.from_id]='1';
-            if (msg.user_id) history_uids[msg.user_id]='1';
+            if (msg.peer_id) history_uids[msg.peer_id]='1';
             add_ugid(msg.from_id);
-            add_ugid(msg.user_id);
+            add_ugid(msg.peer_id);
             if (msg.fwd_messages)
                collect_users(msg.fwd_messages);
                //for (var i=0; i<msg.fwd_messages.length; i++)
@@ -8489,7 +8440,7 @@ vkopt['messages'] = {
       var load_users_info = function(callback){
          var get_users = function(cb){
             if (users_ids.length){
-               dApi.call('users.get',{user_ids:users_ids.join(','),fields:'photo_100,screen_name',v:'5.73'},function(r){
+               dApi.call('users.get',{user_ids:users_ids.join(','),fields:'photo_100,screen_name',v:'5.131'},function(r){
                   ldr && (ldr.innerHTML = vkProgressBar(90,100,w,'Users data... %'));
                   var usrs=r.response;
 
@@ -8515,7 +8466,7 @@ vkopt['messages'] = {
 
          var get_groups = function(cb){
             if (groups_ids.length){
-               dApi.call('groups.getById',{group_ids:groups_ids.join(','),fields:'photo_100,screen_name',v:'5.73'},function(r){
+               dApi.call('groups.getById',{group_ids:groups_ids.join(','),fields:'photo_100,screen_name',v:'5.131'},function(r){
                   ldr && (ldr.innerHTML = vkProgressBar(95,100,w,'Groups data... %'));
                   var grps=r.response;
                   for (var i=0; i<grps.length; i++){
@@ -8594,7 +8545,7 @@ vkopt['messages'] = {
       vkopt.messages.get_history(uid, done);
    },
    get_history:function(uid, callback, partial_callback, ver){
-      ver = ver || '5.73';
+      ver = ver || '5.103';
       if (!uid) uid=cur.peer;
       var PER_REQ=100;
       var offset=0;
@@ -9315,7 +9266,7 @@ vkopt['attacher'] = {
             delete Upload.vars[cur.uplId].type
       },
       recent_graffiti: function(){
-         dApi.call('messages.getRecentGraffities',{limit:32, v:'5.74'},function(r, items){
+         dApi.call('messages.getRecentGraffities',{limit:32, v:'5.131'},function(r, items){
             if(!items || items.length < 1) return;
             var btn = geByClass1('doc_show_graffiti_btn');
             if (btn){
@@ -9377,7 +9328,7 @@ vkopt['attacher'] = {
          var doc_id = (doc_full_id.match(/-?\d+_(\d+)/) || [])[1];
          if (!doc_id) return;
          var box = showFastBox(getLang('global_box_confirm_title'), IDL('HideRecentGraffitiConfirm'), getLang('global_delete'),function(){
-            dApi.call('messages.hideRecentGraffiti',{doc_id:doc_id, v:'5.80'}, function(r, resp, err){
+            dApi.call('messages.hideRecentGraffiti',{doc_id:doc_id}, function(r, resp, err){
                if (resp){
                   box.hide();
                   setTimeout(function(){
@@ -10182,6 +10133,9 @@ vkopt['face'] =  {
             width:14px !important;
             height:14px !important;
          }
+         .nim-dialog--verfifed > svg{
+            display:none
+         }
 
          */
       });
@@ -10517,7 +10471,7 @@ vkopt['profile'] = {
       var store_key = 'user_groups_' + vk.id; // чтоб при входе на другой аккаунт не подсвечивались группы предыдущего.
       var stored_list = localStorage[store_key];
       if (!stored_list || update) {
-         dApi.call("groups.get",{ user_id: vk.id, extended: '1', filter: 'groups,publics,events', v: '5.59'},function(r) {
+         dApi.call("groups.get",{ user_id: vk.id, extended: '1', filter: 'groups,publics,events', v: '5.131'},function(r) {
             if (r.error) return;
             var groups = r.response.items;
             var cnt = groups.length;
@@ -10758,7 +10712,7 @@ vkopt['profile'] = {
             user_id: target_uid,
             fields: 'first_name',
             count: 100, //надеемся, что среди первых 100 будет хоть один незаблокированный акк
-            v:'5.53'
+            v:'5.131'
          }, function(r){
             if (!r.response || !r.response.count){
                alert('Sorry... Mission impossible...');
@@ -10844,7 +10798,7 @@ vkopt['extra_online'] = {
    update_online_info: function(){
       var code = 'var clients=["","m.vk.com","iPhone","iPad","Android","Windows Phone","Windows 10","vk.com","VK Mobile"];var u = API.users.get({user_ids:"%UID",fields:"online,last_seen"})[0];if (u.online_app){u.app_title=API.apps.get({app_id:u.online_app}).items[0].title;}if(u.last_seen)u.last_seen.platform_title=clients[u.last_seen.platform];return u;';
       code = code.replace(/%UID/g,cur.oid);
-      dApi.call('execute',{code: code, v:'5.75'},function(r,info){
+      dApi.call('execute',{code: code, v:'5.131'},function(r,info){
          re(geByClass1('vk_extra_online_info'));
          var extra = null;
          if (info.online_app)
@@ -11113,7 +11067,7 @@ vkopt['groups'] = {
          var gid=Math.abs(oid);
          //if (gid==1) gid=-1;
          stManager.add('wk.css');
-         var params = {v:'5.53'};
+         var params = {v:'5.131'};
          if (oid < 0)
             params.group_id = gid;
 
@@ -11171,13 +11125,17 @@ vkopt['groups'] = {
           anchor.innerHTML += ~descending ? '\u25BC' : '\u25B2';
       },
       view_code: function(pid,gid){
-         var params={owner_id: -gid, need_source:1, v:'5.53'};
+         var params={owner_id: -gid, need_source:1, v:'5.131'};
          if (/^\d+$/.test(pid+"")){
             params['page_id'] = pid;
          } else {
             params['title'] = pid;
          }
          dApi.call('pages.get', params, function(r){
+            if (r.error){
+               alert('You can not view source of this page...');
+               return;
+            }
             var data=r.response;
             if (!data.source) {
                alert('Nothing...');
@@ -11209,7 +11167,7 @@ vkopt['groups'] = {
                       owner_id: oid,
                       page_id: pid,
                       need_html: 1,
-                      v: '5.20'
+                      v: '5.131'
                   }, function (r, response) {
                       var el = vkCe('div', {}, response.html); // Запихиваем html-код в элемент, чтобы картинки начали грузиться
                       // обработка away-ссылок
@@ -11534,12 +11492,12 @@ vkopt['wall'] = {
 
       var code = 'return {posts: API.wall.getById({posts:"'+full_post_id+'", copy_history_depth: 2}), poll: API.polls.getById({owner_id:'+owner_id+',poll_id:'+poll_id+'})};'
       if ((!post_id || post_id == "null") && owner_id && poll_id){
-         dApi.call('polls.getById',{owner_id:owner_id, poll_id:poll_id, v: '5.59'},function(r){
+         dApi.call('polls.getById',{owner_id:owner_id, poll_id:poll_id, v: '5.131'},function(r){
             var data=r.response;
             view(data);
          });
       } else {
-         dApi.call('execute',{code:code, v: '5.59'},function(r){
+         dApi.call('execute',{code:code, v: '5.131'},function(r){
          var post = ((r.response || {}).posts || [])[0] || {};
             var scan = function(list){
                if (!list)
@@ -11570,7 +11528,7 @@ vkopt['wall'] = {
         var voters=API.polls.getVoters({owner_id:oid,poll_id:poll_id,answer_ids:poll.answers@.id,fields:"first_name,last_name,online,photo_rec",offset:0,count:9});\
         return {poll:poll,voters:voters,anwers_ids:poll.answers@.id};\
       ';
-      dApi.call('execute',{code:code, v: '5.59'},function(r){
+      dApi.call('execute',{code:code, v: '5.131'},function(r){
             var data=r.response;
             if (vk_DEBUG) console.log(data);
             if (data.voters){
@@ -13478,6 +13436,7 @@ vkopt['attachments_and_link'] = {
                         this.tplProcess(position == 'repost_link' ? this.template.content_link : this.template.content_link_no_photo, options));
                 break;
             case 'photo':
+				options[0]['photo_604'] = options[0].sizes[options[0].sizes.length-1].url;
             case 'gif':
             case 'doc':
             case 'audio':
@@ -13605,7 +13564,7 @@ vkopt['attachments_and_link'] = {
             fragment.appendChild(el);
             // content.appendChild(el);
 
-            self.pasteHTML(el, [{text_content: linkIt(item.body), time: self.TimeStamp(item.date)}], 'content');
+            self.pasteHTML(el, [{text_content: linkIt(item.text), time: self.TimeStamp(item.date)}], 'content');
 
 
             attNames.forEach(function (attName) {
@@ -13713,11 +13672,11 @@ vkopt['attachments_and_link'] = {
                 'user_id': self._uid,
                 'count': 1,
                 'offset': 0,
-                'v': '5.60'
-            }, function (r) {
+                'v': '5.131'
+            }, function (r, res) {
                 self.errorProcessing(r);
 
-                var idMax = Math.max(r.response.in_read, r.response.out_read),
+                var idMax = res.items[0].id,
                     status = self.local.firstid == 0 ? 'start' : self.local.firstid < idMax ? 'segment' : 'ok';
 
                 self.callEvent('getAttach', {
@@ -13757,7 +13716,7 @@ vkopt['attachments_and_link'] = {
         if (param.length) {
             dApi.call('messages.getById', {
                 'message_ids': param.join(','),
-                'v': '5.60'
+                'v': '5.131'
             }, function (r) {
                 self.errorProcessing(r);
                 if (r.response.items.length != param.length) console.log('API не вернул одно из сообщений? сообщение удалено?');
@@ -13792,7 +13751,7 @@ vkopt['attachments_and_link'] = {
 
         var correctType = function (val) {
             var type = 0;
-            if (/\w{2,6}?:\/\//ig.test(val.body)) type = type | 1;
+            if (/\w{2,6}?:\/\//ig.test(val.text)) type = type | 1;
             if (val.fwd_messages && val.fwd_messages.length) type = type | 2;
 
             if (val.attachments) {
@@ -13811,7 +13770,7 @@ vkopt['attachments_and_link'] = {
             'start_message_id': first,
             'count': count,
             'offset': last || self.start ? 0 : 1,
-            'v': '5.60'
+            'v': '5.131'
         };
         dApi.call('messages.getHistory', code, function (r) {
             self.errorProcessing(r);
@@ -13884,7 +13843,7 @@ vkopt['attachments_and_link'] = {
             }).join(',');
             if (param) code.push(' API.users.get({user_ids:"' + param + '",fields:"domain,name,photo_50"})'); // могут быть репосты от других пользователей
             if (code.length) {
-                dApi.call('execute', {code: 'return ' + code.join('+') + ';', v: '5.60'}, function (b) {
+                dApi.call('execute', {code: 'return ' + code.join('+') + ';', v: '5.131'}, function (b) {
                     self.errorProcessing(b);
                     b.response.forEach(function (value) {
                         /* if (value.type='users'){
@@ -13922,7 +13881,7 @@ vkopt['attachments_and_link'] = {
 
                 if (value.fwd_messages) {
                     value.fwd_messages.forEach(function (att) {
-                        att.sender = self.geId(response.senders, Math.abs(att.user_id));
+                        att.sender = self.geId(response.senders, Math.abs(att.from_id));
                         append(att);
                     });
 
@@ -13930,7 +13889,7 @@ vkopt['attachments_and_link'] = {
             }
 
             obj.forEach(function (value) {
-                value.user = self.geId(response.senders, value.out ? vk.id : value.user_id);
+                value.user = self.geId(response.senders, value.out ? vk.id : value.from_id);
                 append(value);
                 self.itemMessage[value.id] = value;
             });
