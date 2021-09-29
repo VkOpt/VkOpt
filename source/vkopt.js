@@ -7199,32 +7199,6 @@ vkopt['messages'] = {
          .vk_im_hide_dialogs .im-mess-stack .im-mess-stack--content .im-mess-stack--lnk{
             max-width: auto;
          }
-         .vk_msg_info_icon{
-            width: 18px;
-            height: 18px;
-            display: block;
-            float: right;
-            margin: 14px;
-         }
-         a.vk_msg_info_icon:hover{
-            text-decoration: none;
-         }
-         .vk_msg_info_icon:before {
-            content: '!';
-            font-weight: bold;
-            border: 2px solid #93a3bc;
-            color: #93a3bc;
-            width: 15px;
-            height: 15px;
-            line-height: 16px;
-            display: block;
-            text-align: center;
-            border-radius: 50%;
-         }
-         .im-page.im-page_classic .vk_msg_info_icon{
-            margin-top: -3px;
-            margin-right: 0;
-         }
          [dir] .ui_actions_menu_item.vk_acts_item_icon:before,
          [dir] .vk_acts_item_icon:before,
          [dir] .vk_acts_item_ricon:after{
@@ -7333,7 +7307,7 @@ vkopt['messages'] = {
           opacity: 1;
           filter: none
        }
-       ._im_dialogs_settings .msg_mark_read_icon {
+       ._im_dialogs_footer .msg_mark_read_icon {
           margin: 11px;
        }
        .msg_typing_icon:before{
@@ -7347,7 +7321,6 @@ vkopt['messages'] = {
        .msg_typing_icon.off_typing:before{
          background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20height%3D%2224%22%20width%3D%2224%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M-4.166-3.74h31.811v30.912h-31.81z%22%2F%3E%3Cpath%20d%3D%22M5.122%2015.59l2.632%202.556-.678.659-2.912.566c-.2.038-.343-.091-.302-.294l.583-2.83zM6.447%2014.3l10.21-9.92a1.357%201.357%200%200%201%201.881-.011l.761.74a1.26%201.26%200%200%201-.01%201.828l-10.21%209.92z%22%20fill%3D%22%23828a99%22%2F%3E%3C%2Fg%3E%3Cpath%20d%3D%22M18.412%2012.968a.808.808%200%200%200-.56.236l-1.306%201.307-1.281-1.28a.808.808%200%200%200-1.141-.002l-.215.214a.808.808%200%200%200%200%201.143l1.28%201.281-1.285%201.286a.808.808%200%200%200%200%201.142l.214.213a.808.808%200%200%200%201.142%200l1.286-1.284%201.31%201.31a.808.808%200%200%200%201.142%200l.214-.214a.808.808%200%200%200%200-1.142l-1.31-1.31%201.307-1.307a.808.808%200%200%200%200-1.142l-.215-.215a.808.808%200%200%200-.583-.236z%22%20fill%3D%22%23828a99%22%2F%3E%3C%2Fsvg%3E");
        }
-
        .msg_typing_icon{
           position: absolute;
           border: none;
@@ -7363,22 +7336,10 @@ vkopt['messages'] = {
           opacity: 1;
           filter: none
        }
-       .vk_block_mark_read_btn .vk_msg_info_icon,
-       .vk_block_mark_read_btn ._im_dialogs_settings .msg_mark_read_icon{
-          margin: 14px 14px 14px 5px;
-        }
-        .vk_block_mark_read_btn .im-page .im-page--dialogs-settings{
-
-        }
-        .vk_block_mark_read_btn ._im_dialogs_settings .msg_mark_read_icon{
-          margin-top:11px
-        }
-
         .share_pm{
           position: absolute;
           right: 120px;
         }
-
         .nim-dialog.nim-dialog_classic .nim-dialog--chat-info {
           margin-bottom: 0px !important;
         }
@@ -7459,12 +7420,6 @@ vkopt['messages'] = {
    },
    onInit: function(){
       vkopt.messages.tpls = vk_lib.get_block_comments(function(){
-         /*info_btn:
-            <a href="#" class="vk_msg_info_icon" id="vk_msg_info_btn" onmouseover="vkopt.messages.show_info(this);" onclick="return false;"></a>
-         */
-         /*info_content:
-         <div>{lng.mDialogsMessages}: {vals.dialogs_count}</div>
-         */
          /*menu_separator:
          <div class="ui_actions_menu_sep" id="vk_im_acts_sep"></div>
          */
@@ -7707,7 +7662,6 @@ vkopt['messages'] = {
       if (vkopt.settings.get('block_typing_btn'))
          vkopt.messages.add_typing_read_icon(prefix, 'typing');
 
-      vkopt.messages.info_icon();
       vkopt_core.timeout(vkopt.messages.acts_menu, 500);
       if (vkopt.settings.get('im_hide_dialogs'))
          vkopt.messages.dialogs_hide_init();
@@ -7783,7 +7737,7 @@ vkopt['messages'] = {
       });
    },
    add_typing_read_icon: function(prefix, type){
-      var el = (type == 'mark_read') ? ge('ui_rmenu_all') || geByClass1('_im_dialogs_settings') : geByClass1('im_chat-input--buttons');
+      var el = (type == 'mark_read') ? ge('ui_rmenu_all') || geByClass1('_im_dialogs_footer') : geByClass1('im_chat-input--buttons');
       if(!el || ge(prefix+'_'+type+'_st')) return;
       var class_btn = vkopt.settings.get(prefix+'_block_'+type) ? 'off_'+type : '';
       var icon_btn = el.insertBefore(se(vk_lib.tpl_process(vkopt.messages.tpls['typing_mread_icon'], {
@@ -7811,11 +7765,6 @@ vkopt['messages'] = {
       }
       //vkopt.messages.typing_mread_tip(el, prefix, type);
       return false;
-   },
-   info_icon: function(){
-      var p = geByClass1('_im_dialogs_settings');
-      if (!p || ge('vk_msg_info_btn')) return;
-      p.insertBefore(se(vkopt.messages.tpls['info_btn']), p.firstChild);
    },
    timeout_online_count_users: null,
    online_count_update_interval: 20000,
@@ -7887,19 +7836,6 @@ vkopt['messages'] = {
          });
          statusTT.show();
          statusTT.sb.update();
-      });
-   },
-   show_info: function(el){ // показываем количество сообщений и диалогов
-      var code_body = 'return {"dialogs_count": API.messages.getDialogs({"count":0,"unread":0}).count};';
-
-      dApi.call('execute',{v:'5.131', code:code_body},function(r){
-         var html = vk_lib.tpl_process(vkopt.messages.tpls['info_content'], r.response);
-         showTooltip(el, {
-            text: html,
-            black: 1,
-            zIndex: 1,
-            toup: true
-         });
       });
    },
    send_to_pm: function (el){
@@ -9559,7 +9495,9 @@ vkopt['face'] =  {
             position: absolute !important;
             left: -9500px !important;
          }
-         .vk_ad_block .feed_row .post[data-ad]{
+         .vk_ad_block .feed_row .post[data-ad],
+         .vk_ad_block .feed_blog_reminder, 
+         .vk_ad_block .apps_feedRightAppsBlock {
             display: none;
          }
          .vk_disable_border_radius body *,
@@ -9817,7 +9755,8 @@ vkopt['face'] =  {
          }
          .vk_hide_recommendations #friends_possible_block,
          .vk_hide_recommendations #groups_filters_wrap>.page_block,
-         .vk_hide_recommendations .page_block.feed_friends_recomm {
+         .vk_hide_recommendations .page_block.feed_friends_recomm,
+         .vk_hide_recommendations .profile_friends_recomm {
             display: none;
          }
          .vk_hide_stories #stories_feed_wrap {
