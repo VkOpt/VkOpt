@@ -40,3 +40,5 @@ builds/*.oex
 builds/*.safariextz
 node_modules/
 package-lock.json
+.DS_Store
+builds/_tools/__pycache__/mxpack.cpython-39.pyc
