@@ -8593,8 +8593,7 @@ vkopt['messages'] = {
 
       vkopt.messages.get_history(uid, done);
    },
-   get_history:function(uid, callback, partial_callback, ver){
-      ver = ver || '5.73';
+   get_history:function(uid, callback, partial_callback){
       if (!uid) uid=cur.peer;
       var PER_REQ=100;
       var offset=0;
@@ -8633,8 +8632,7 @@ vkopt['messages'] = {
                offset: offset,
                count: PER_REQ,
                extended: 1,
-               rev: 1,
-               v: ver
+               rev: 1
             };
             if (cur.gid)
                params['group_id'] = cur.gid
@@ -8650,8 +8648,7 @@ vkopt['messages'] = {
          var params = {
             peer_id: uid,
             offset: 0,
-            count: 0,
-            v: ver
+            count: 0
          };
          if (cur.gid)
             params['group_id'] = cur.gid
