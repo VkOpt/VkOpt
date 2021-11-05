@@ -66,42 +66,42 @@ def zipdir(dirPath=None, zipFilePath=None, includeDirInZip=True, regEx=None, exc
 
 def SetFirefoxVersion(file_name, new_version):
    print('Load install.RDF:\t\t'+file_name);
-   with open(file_name, 'r') as infile:
+   with open(file_name, 'r', encoding='utf-8-sig') as infile:
       data = infile.read()
       data = re.sub(r'(<em:version>)[\d\.]+(</em:version>)', '\g<1>%s\g<2>' % new_version, data)
       infile.close()
-   with open(file_name, 'w') as outfile:
+   with open(file_name, 'w', encoding='utf-8') as outfile:
       outfile.write(data)
       outfile.close()
 
 
 def SetJsonVersion(file_name, new_version):
    print('Load *.JSON :\t\t'+file_name);
-   with open(file_name, 'r') as infile:  #
+   with open(file_name, 'r', encoding='utf-8-sig') as infile:  #
       data = infile.read()
       data = re.sub(r'("version"\s*:\s*)"[\d\.]+"', '\g<1>"%s"' % new_version, data)
       infile.close()
-   with open(file_name, 'w') as outfile:
+   with open(file_name, 'w', encoding='utf-8') as outfile:
       outfile.write(data)
       outfile.close()
 
 def SetSafariVersion(file_name, new_version):
    print('Load info.plist :\t\t'+file_name);
-   with open(file_name, 'r') as infile:  #
+   with open(file_name, 'r', encoding='utf-8-sig') as infile:  #
       data = infile.read()
       data = re.sub(r'(<key>(?:CFBundleShortVersionString|CFBundleVersion)</key>[\s\r\n]+?<string>)(?:[\d\.]+?)(</string>)', '\g<1>%s\g<2>' % new_version, data)
       infile.close()
-   with open(file_name, 'w') as outfile:
+   with open(file_name, 'w', encoding='utf-8') as outfile:
       outfile.write(data)
       outfile.close()
 
 def SetOperaVersion(file_name, new_version):
    print('Load config.XML:\t\t'+file_name);
-   with open(file_name, 'r') as infile:  #
+   with open(file_name, 'r', encoding='utf-8-sig') as infile:  #
       data = infile.read()
       data = re.sub(r'(<widget[^<>]*?\sversion\s*=\s*)"[\d\.]+"', '\g<1>"%s"' % new_version, data)
       infile.close()
-   with open(file_name, 'w') as outfile:
+   with open(file_name, 'w', encoding='utf-8') as outfile:
       outfile.write(data)
       outfile.close()
 
