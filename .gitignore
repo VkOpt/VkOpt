@@ -38,3 +38,5 @@ builds/*.xpi
 builds/*.mxaddon
 builds/*.oex
 builds/*.safariextz
+node_modules/
+package-lock.json
