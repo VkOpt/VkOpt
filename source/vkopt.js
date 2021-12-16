@@ -9,8 +9,8 @@
 
 /* VERSION INFO */
 var vVersion = 308;
-var vBuild = 210307;
-var vVersionRev = 2;
+var vBuild = 210308;
+var vVersionRev = 3;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -7907,7 +7907,7 @@ vkopt['messages'] = {
                    '"dialogs_count": API.messages.getDialogs({"count":0,"unread":0}).count';
       code_body += '};';
 
-      dApi.call('execute',{v:'5.53', code:code_body},function(r){
+      dApi.call('execute',{v:'5.131', code:code_body},function(r){
          var html = vk_lib.tpl_process(vkopt.messages.tpls['info_content'], r.response);
          showTooltip(el, {
             text: html,
@@ -8252,7 +8252,7 @@ vkopt['messages'] = {
 			offset+=100;
 		}
 		code_body+='\nreturn ['+code_r.join(',')+'];';
-		dApi.call('execute',{v:'5.53', code:code_body},function(r){
+		dApi.call('execute',{v:'5.131', code:code_body},function(r){
 			var res=[];
          var count = 0;
 			var m=r.response;
@@ -10765,7 +10765,7 @@ vkopt['profile'] = {
             user_id: target_uid,
             fields: 'first_name',
             count: 100, //надеемся, что среди первых 100 будет хоть один незаблокированный акк
-            v:'5.53'
+            v:'5.131'
          }, function(r){
             if (!r.response || !r.response.count){
                alert('Sorry... Mission impossible...');
@@ -11120,7 +11120,7 @@ vkopt['groups'] = {
          var gid=Math.abs(oid);
          //if (gid==1) gid=-1;
          stManager.add('wk.css');
-         var params = {v:'5.53'};
+         var params = {v:'5.131'};
          if (oid < 0)
             params.group_id = gid;
 
@@ -11178,7 +11178,7 @@ vkopt['groups'] = {
           anchor.innerHTML += ~descending ? '\u25BC' : '\u25B2';
       },
       view_code: function(pid,gid){
-         var params={owner_id: -gid, need_source:1, v:'5.53'};
+         var params={owner_id: -gid, need_source:1, v:'5.131'};
          if (/^\d+$/.test(pid+"")){
             params['page_id'] = pid;
          } else {

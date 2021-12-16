@@ -1,6 +1,6 @@
 ﻿// ==UserScript==
 // @name          VKOpt
-// @version       3.0.8.2
+// @version       3.0.8.3
 // @author        KiberInfinity [id13391307]
 // @namespace     http://vkopt.net/
 // @description   Vkontakte Optimizer 3.x
@@ -389,7 +389,7 @@
       js.type = 'text/javascript';
       js.charset = 'UTF-8';
       js.innerHTML=script;
-      js.setAttribute(mark,"3.0.8.2");
+      js.setAttribute(mark,"3.0.8.3");
       doc.getElementsByTagName('head')[0].appendChild(js);
    }
    init();
@@ -406,8 +406,8 @@
 
 /* VERSION INFO */
 var vVersion = 308;
-var vBuild = 210307;
-var vVersionRev = 2;
+var vBuild = 210308;
+var vVersionRev = 3;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -664,7 +664,7 @@ var vkopt_core = {
          ge("system_msg").style.visibility = "unset";
          topMsg(content, 5);
       } catch(e) {
-         alert(content.replace(/<\/?[^>]+>/,''));
+         vkopt.log(content.replace(/<\/?[^>]+>/,''));
       }
    },
    run: function(check){
@@ -3358,6 +3358,7 @@ vkopt['photoview'] =  {
          photo_search_copy:{},
          ph_download_with_name:{},
          ph_show_save_info:{default_value: true},
+         ph_allow_to_profile:{default_value: true},
          ph_update_btn:{},
          photo_copy_btn:{default_value: true},
          pv_hide_comments_btn: {
@@ -3670,6 +3671,19 @@ vkopt['photoview'] =  {
 
    },
    onResponseAnswer: function(answer, url, q) {
+      var LST_IDX = 3;
+      // Unlock set as profile photo
+      if (url == 'al_photos.php' && q.act == "show" && answer[LST_IDX] && answer[LST_IDX][0] && answer[LST_IDX][0].id){
+         if (!vkopt.settings.get('ph_allow_to_profile')) return;
+         var plist = answer[LST_IDX];
+         plist.forEach((item, idx) => {
+            if (item.actions && !item.actions.prof && item.id.split("_").shift() == vk.id) {
+               item.actions.prof = 1;
+               item.profile_data = {photo: item.id};
+               vkopt.log("Add profile_data and prof=1 for " + item.id);
+            }
+         });
+      }
       if (url == 'al_photos.php' && q.act == 'save_me' && answer[0]){
          if (!vkopt.settings.get('ph_show_save_info')) return;
          if (window.cur && cur.pvData){
@@ -3966,7 +3980,7 @@ vkopt['photos'] =  {
          pe_hash = cur.pvCurPhoto.peHash;
       }
 
-      stManager.add(['cmodules/web/upload.js','cmodules/web/filters.js'],function(){
+      stManager.add([window.jsc("web/upload.js"), window.jsc('web/filters.js')],function(){
          var photo=photo_id;
          if (/photo-?\d+_\d+/.test(photo)) photo=photo.match(/photo(-?\d+_\d+)/)[1];
          dApi.call('photos.getById',{photos:photo, photo_sizes: 1, v:"5.101"}, function(r,items){
@@ -5656,6 +5670,12 @@ vkopt['audl'] = {
    __load_req_num: 1,
    __full_audio_info_cache: {},
    decode_url: function(url){
+<<<<<<< HEAD
+      url = vk_common_min.mp3_to_m3u8(url);
+      if (url && /\.m3u8/.test(url) && vkopt.settings.get('mp3u8'))
+         url = url.replace(/(\/p\d+\/)[a-f0-9]+\/([a-f0-9]+)\/index.m3u8/,'$1$2.mp3').replace(/(\/c\d+\/[a-z]\d+\/)[a-f0-9]+\/(audios\/[a-f0-9]+)\/index.m3u8/,"$1$2.mp3");
+      return url
+=======
       var n = function(){};
       var tmp = {
          removeAttribute: n,
@@ -5679,6 +5699,7 @@ vkopt['audl'] = {
       if (tmp.src && /\.m3u8/.test(tmp.src) && vkopt.settings.get('mp3u8'))
          tmp.src = tmp.src.replace(/(\/p\d+\/)[a-f0-9]+\/([a-f0-9]+)\/index.m3u8/,'$1$2.mp3').replace(/(\/c\d+\/[a-z]\d+\/)[a-f0-9]+\/(audios\/[a-f0-9]+)\/index.m3u8/,"$1$2.mp3");
       return tmp.src
+>>>>>>> upstream/master
    },
    load_audio_urls: function(){
       if (vkopt.audl.__load_queue.length == 0 || vkopt.audl.__loading_queue.length > 0) // если нет списка на подгрузку, или что-то уже грузится - игнорим вызов
@@ -6185,7 +6206,7 @@ vkopt['scrobbler'] = {
    onInit:function(){
       var fm=vkopt.scrobbler;
       var md5=vkMD5;//from vk_lib.js
-      fm.token = vkopt.settings.get('lastfm_token');
+      fm.token = vkopt.settings.get('lastfm_token') || "unset";
       fm.username = vkopt.settings.get('lastfm_username');
       fm.session_key = vkopt.settings.get('lastfm_session_key');
       fm.enable_scrobbling = vkopt.settings.get('lastfm_enable_scrobbling');
@@ -6193,7 +6214,7 @@ vkopt['scrobbler'] = {
          var apiKey=options.apiKey||'';
          var apiSecret=options.apiSecret||'';
          // https://ws.audioscrobbler.com/2.0/
-         var apiUrl=options.apiUrl||'http://ws.audioscrobbler.com/2.0/';
+         var apiUrl=options.apiUrl||'https://ws.audioscrobbler.com/2.0/';
          var cache=options.cache||undefined;var debug=typeof(options.debug)=='undefined'?false:options.debug;this.setApiKey=function(_apiKey){apiKey=_apiKey};this.setApiSecret=function(_apiSecret){apiSecret=_apiSecret};this.setApiUrl=function(_apiUrl){apiUrl=_apiUrl};this.setCache=function(_cache){cache=_cache};
          //original of library method internalCall  with JSONP/iframe requests:
          //var internalCall=function(params,callbacks,requestMethod){if(requestMethod=='POST'){var html=document.getElementsByTagName('html')[0];var frameName='lastfmFrame_'+new Date().getTime();var iframe=document.createElement('iframe');html.appendChild(iframe);iframe.contentWindow.name=frameName;iframe.style.display="none";var formState='init';iframe.width=1;iframe.height=1;iframe.style.border='none';iframe.onload=function(){if(formState=='sent'){if(!debug){setTimeout(function(){html.removeChild(iframe);html.removeChild(form)},1500)}};formState='done';if(typeof(callbacks.success)!='undefined'){callbacks.success()}};var form=document.createElement('form');form.target=frameName;form.action=apiUrl;form.method="POST";form.acceptCharset="UTF-8";html.appendChild(form);for(var param in params){var input=document.createElement("input");input.type="hidden";input.name=param;input.value=params[param];form.appendChild(input)};formState='sent';form.submit()}else{var jsonp='jsonp'+new Date().getTime();var hash=auth.getApiSignature(params);if(typeof(cache)!='undefined'&&cache.contains(hash)&&!cache.isExpired(hash)){if(typeof(callbacks.success)!='undefined'){callbacks.success(cache.load(hash))}return}params.callback=jsonp;params.format='json';window[jsonp]=function(data){if(typeof(cache)!='undefined'){var expiration=cache.getExpirationTime(params);if(expiration>0){cache.store(hash,data,expiration)}}if(typeof(data.error)!='undefined'){if(typeof(callbacks.error)!='undefined'){callbacks.error(data.error,data.message)}}else if(typeof(callbacks.success)!='undefined'){callbacks.success(data)}window[jsonp]=undefined;try{delete window[jsonp]}catch(e){}if(head){head.removeChild(script)}};var head=document.getElementsByTagName("head")[0];var script=document.createElement("script");var array=[];for(var param in params){array.push(encodeURIComponent(param)+"="+encodeURIComponent(params[param]))}script.src=apiUrl+'?'+array.join('&').replace(/%20/g,'+');head.appendChild(script)}};
@@ -6294,7 +6315,7 @@ vkopt['scrobbler'] = {
          if (code == 4)// токен сдох
             if (!fm.connect_box || !fm.connect_box.isVisible()){
                fm.connect_box=vkAlertBox(IDL('AuthBoxTitle'), IDL('AuthBoxText'), function(){
-                  var url = 'http://www.last.fm/api/auth?api_key=' + fm.api_key + '&cb=' + encodeURIComponent(location.protocol+'//' + location.host + '/settings?act=vkscrobbler');
+                  var url = 'https://www.last.fm/api/auth?api_key=' + fm.api_key + '&cb=' + encodeURIComponent(location.protocol+'//' + location.host + '/settings?act=vkscrobbler');
                   window.open(url,'_blank','');
                   //location.href = url;
                }, function(){
@@ -8283,7 +8304,7 @@ vkopt['messages'] = {
                    '"dialogs_count": API.messages.getDialogs({"count":0,"unread":0}).count';
       code_body += '};';
 
-      dApi.call('execute',{v:'5.53', code:code_body},function(r){
+      dApi.call('execute',{v:'5.131', code:code_body},function(r){
          var html = vk_lib.tpl_process(vkopt.messages.tpls['info_content'], r.response);
          showTooltip(el, {
             text: html,
@@ -8628,7 +8649,7 @@ vkopt['messages'] = {
 			offset+=100;
 		}
 		code_body+='\nreturn ['+code_r.join(',')+'];';
-		dApi.call('execute',{v:'5.53', code:code_body},function(r){
+		dApi.call('execute',{v:'5.131', code:code_body},function(r){
 			var res=[];
          var count = 0;
 			var m=r.response;
@@ -11141,7 +11162,7 @@ vkopt['profile'] = {
             user_id: target_uid,
             fields: 'first_name',
             count: 100, //надеемся, что среди первых 100 будет хоть один незаблокированный акк
-            v:'5.53'
+            v:'5.131'
          }, function(r){
             if (!r.response || !r.response.count){
                alert('Sorry... Mission impossible...');
@@ -11496,7 +11517,7 @@ vkopt['groups'] = {
          var gid=Math.abs(oid);
          //if (gid==1) gid=-1;
          stManager.add('wk.css');
-         var params = {v:'5.53'};
+         var params = {v:'5.131'};
          if (oid < 0)
             params.group_id = gid;
 
@@ -11554,7 +11575,7 @@ vkopt['groups'] = {
           anchor.innerHTML += ~descending ? '\u25BC' : '\u25B2';
       },
       view_code: function(pid,gid){
-         var params={owner_id: -gid, need_source:1, v:'5.53'};
+         var params={owner_id: -gid, need_source:1, v:'5.131'};
          if (/^\d+$/.test(pid+"")){
             params['page_id'] = pid;
          } else {
@@ -12866,7 +12887,7 @@ vkopt['vk_dislike'] = {
                </a>');
             }
             return se('\
-            <a href="#" dislike_id="'+obj_id+'" class="like_btn post_dislike '+(my_dislike?' '+'pv_disliked':'')+' no_dislikes" onclick="vkopt.vk_dislike.dislike(this.getAttribute(\'dislike_id\')); return false;" onmouseover="vkopt.vk_dislike.dislike_over(this.getAttribute(\'dislike_id\'));" id="post_dislike'+obj_id+'">\
+            <a href="#" dislike_id="'+obj_id+'" class="PostBottomAction like_btn post_dislike '+(my_dislike?' '+'pv_disliked':'')+' no_dislikes" onclick="vkopt.vk_dislike.dislike(this.getAttribute(\'dislike_id\')); return false;" onmouseover="vkopt.vk_dislike.dislike_over(this.getAttribute(\'dislike_id\'));" id="post_dislike'+obj_id+'">\
                <i class="post_dislike_icon" id="dislike_icon'+obj_id+'"></i>\
                <span class="post_like_link" id="dislike_link'+obj_id+'">'+IDL('dislike')+'</span>\
                <span class="post_like_count fl_l" id="dislike_count'+obj_id+'">'+(count|| '')+'</span>\
@@ -12894,6 +12915,7 @@ vkopt['vk_dislike'] = {
       var attrs=['onclick','onmouseover','onmouseout'];
       var types=vkopt.vk_dislike.types;
 
+      if (!el) return;
       if (hasClass(el,'has_dislike')) return;
       addClass(el,'has_dislike');
 
@@ -12922,7 +12944,8 @@ vkopt['vk_dislike'] = {
          },400)
       } else {
          //obj_id=(geByTag('i',el)[0] || {}).id;
-         obj_id = el.outerHTML.split('(this, \'')[1].split('\'')[0];
+         obj_id = (el.outerHTML.split('(this, \'')[1] || "").split('\'')[0];
+         if (!obj_id) obj_id = ((el.querySelector("[data-reaction-target-object]") || {}).dataset || {}).reactionTargetObject;
          if (!obj_id) return;
          //obj_id=obj_id.split('like_icon')[1];
          vkopt.vk_dislike.obj_ids.push(obj_id);
@@ -12967,7 +12990,8 @@ vkopt['vk_dislike'] = {
 
       els=geByClass('like_btns',node);
       for (var i=0; i<els.length;i++){
-         vkopt.vk_dislike.add(geByClass1('like',els[i]));
+         // vkopt.vk_dislike.add(geByClass1('like',els[i]));
+         vkopt.vk_dislike.add(els[i].querySelector('.like, .PostButtonReactionsContainer'));
       }
 
       els=geByClass('fw_like_wrap',node);
