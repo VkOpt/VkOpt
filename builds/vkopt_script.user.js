@@ -2151,7 +2151,7 @@ vkopt['settings'] =  {
    },
    onInit: function(){
       // <UI>
-      vkopt.settings.__full_title = vk_lib.format('Vkontakte Optimizer %1<sup><i>%2</i></sup> (build %3)', String(vVersion).split('').join('.'), vPostfix, vBuild);
+      vkopt.settings.__full_title = vk_lib.format('VKOpt Reloaded %1<sup><i>%2</i></sup> (build %3)', String(vVersion).split('').join('.'), vPostfix, vBuild);
       var values = {
          full_title: vkopt.settings.__full_title
       };
@@ -2474,7 +2474,7 @@ vkopt['settings'] =  {
    },
    top_menu_item: function(){
       var ref = ge('top_support_link');
-      var item = se('<a class="top_profile_mrow" id="top_vkopt_settings_link" href="/settings?act=vkopt" onclick="return vkopt.settings.show(this, true);">VkOpt</a>');
+      var item = se('<a class="top_profile_mrow" id="top_vkopt_settings_link" href="/settings?act=vkopt" onclick="return vkopt.settings.show(this, true);">VKOpt Reloaded</a>');
       if (ref && !ge('top_vkopt_settings_link')){
          ref.parentNode.insertBefore(item, ref);
       }
@@ -7702,12 +7702,13 @@ vkopt['messages'] = {
        }
        .msg_mark_read_icon {
           float: right;
-          margin: 4px 4px 0 0;
+          margin: auto;
+          margin-right: 4px;
           width: 24px;
           height: 24px;
           cursor: pointer;
           background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='%2392abc6'%3e%3cpath d='M21.99 8c0-.72-.37-1.35-.94-1.7L12 1 2.95 6.3C2.38 6.65 2 7.28 2 8v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2l-.01-10zM12 13L3.74 7.84 12 3l8.26 4.84L12 13z'/%3e%3c/svg%3e");
-          opacity: 0.75;
+          opacity: .7;
           filter: alpha(opacity=75);
        }
        .msg_mark_read_icon:hover {
@@ -8168,7 +8169,7 @@ vkopt['messages'] = {
       });
    },
    add_typing_read_icon: function(prefix, type){
-      var el = (type == 'mark_read') ? ge('ui_rmenu_all') || geByClass1('_im_dialogs_settings') : geByClass1('im_chat-input--buttons');
+      var el = (type == 'mark_read') ? ge('_im_dialogs_header_controls') || geByClass1('_im_dialogs_header_controls') : geByClass1('im_chat-input--buttons');
       if(!el || ge(prefix+'_'+type+'_st')) return;
       var class_btn = vkopt.settings.get(prefix+'_block_'+type) ? 'off_'+type : '';
       var icon_btn = el.insertBefore(se(vk_lib.tpl_process(vkopt.messages.tpls['typing_mread_icon'], {
