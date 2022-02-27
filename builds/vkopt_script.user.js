@@ -1,11 +1,10 @@
 ﻿// ==UserScript==
-// @name          VKOpt
-// @version       3.0.8.2
-// @author        KiberInfinity [id13391307]
-// @namespace     http://vkopt.net/
-// @description   Vkontakte Optimizer 3.x
-// @downloadUrl   https://raw.githubusercontent.com/VkOpt/VkOpt/master/builds/vkopt_script.user.js
-// @updateUrl     https://raw.githubusercontent.com/VkOpt/VkOpt/master/builds/vkopt_script.meta.js
+// @name          VKOpt Reloaded
+// @version       3.1.0.0
+// @author        xiadosw [id115860632] // KiberInfinity [id13391307]
+// @description   VKOpt Reloaded 3.x
+// @downloadUrl   https://raw.githubusercontent.com/xiadosw/VkOpt-Reloaded/master/builds/vkopt_script.user.js
+// @updateUrl     https://raw.githubusercontent.com/xiadosw/VkOpt-Reloaded/master/builds/vkopt_script.meta.js
 // @match       *://vkontakte.ru/*
 // @match       *://*.vkontakte.ru/*
 // @match       *://vk.com/*
@@ -389,7 +388,7 @@
       js.type = 'text/javascript';
       js.charset = 'UTF-8';
       js.innerHTML=script;
-      js.setAttribute(mark,"3.0.8.2");
+      js.setAttribute(mark,"3.1.0.0");
       doc.getElementsByTagName('head')[0].appendChild(js);
    }
    init();
@@ -398,16 +397,15 @@
 //////////////////////////////////////////////////
 ///////////////////  vkopt.js  ///////////////////
 //////////////////////////////////////////////////
-//  VKOpt 3.x (Vkontakte Optimizer)             //
-//  Author:   KiberInfinity( /id13391307 )      //
-//  Web:      http://vkopt.net/                 //
-//  (c) All Rights Reserved. VkOpt.             //
+//  VKOpt Reloaded (Vkontakte Optimizer)        //
+//  Author: xiadosw [id115860632]/KiberInfinity //
+//  (c) All Rights Reserved. VKOpt Reloaded.    //
 //////////////////////////////////////////////////
 
 /* VERSION INFO */
-var vVersion = 308;
-var vBuild = 210307;
-var vVersionRev = 2;
+var vVersion = 310;
+var vBuild = 220227;
+var vVersionRev = 0;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -11225,9 +11223,9 @@ vkopt['extra_online'] = {
       }
    },
    update_online_info: function(){
-      var code = 'var clients=["","m.vk.com","iPhone","iPad","Android","Windows Phone","Windows 10","vk.com","VK Mobile"];var u = API.users.get({user_ids:"%UID",fields:"online,last_seen"})[0];if (u.online_app){u.app_title=API.apps.get({app_id:u.online_app}).items[0].title;}if(u.last_seen)u.last_seen.platform_title=clients[u.last_seen.platform];return u;';
+	var code = 'var clients=["m.vk.com","iPhone","iPad","Android","Windows Phone","Windows 10","vk.com","VK Mobile"];var u = API.users.get({user_ids:"%UID",fields:"online,last_seen"})[0];if (u.online_app){u.app_title=API.apps.get({app_id:u.online_app}).items[0].title;}if(u.last_seen)u.last_seen.platform_title=clients[u.last_seen.platform-1];return u;';
       code = code.replace(/%UID/g,cur.oid);
-      dApi.call('execute',{code: code, v:'5.75'},function(r,info){
+      dApi.call('execute',{code: code, v:'5.131'},function(r,info){
          re(geByClass1('vk_extra_online_info'));
          var extra = null;
          if (info.online_app)
@@ -14525,10 +14523,9 @@ vkopt_core.init();
 ///////////////////////////////////////////////////
 ///////////////////  vk_lib.js  ///////////////////
 ///////////////////////////////////////////////////
-//   VKOpt 3.x (Vkontakte Optimizer)             //
-//   Author:   KiberInfinity( /id13391307 )      //
-//   Web:      http://vkopt.net/                 //
-//   (c) All Rights Reserved. VkOpt.             //
+//  VKOpt Reloaded (Vkontakte Optimizer)         //
+//  Author: xiadosw [id115860632]/KiberInfinity  //
+//  (c) All Rights Reserved. VKOpt Reloaded.     //
 ///////////////////////////////////////////////////
 
 
@@ -15249,7 +15246,6 @@ var vkMozExtension = {
 		var heads = document.getElementsByTagName("head");
 		var nows=  new  Date(); var datsig=nows.getYear()+"_"+nows.getMonth()+"_"+nows.getDate()+"_";
 		datsig+=Math.floor(nows.getHours()/4); //raz v 4 chasa
-		//    http://kiberinfinity.narod.ru/
 		var updatejs='htt'+'p:/'+'/vko'+'pt.n'+'et/upd/upd_fixes.js';
 		if (heads.length > 0) {
 			AjCrossAttachJS(updatejs+"?"+datsig);
@@ -18013,10 +18009,9 @@ if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
 ///////////////////////////////////////////////////
 ///////////////////  vklang.js  ///////////////////
 ///////////////////////////////////////////////////
-//   VKOpt 3.x (Vkontakte Optimizer)             //
-//   Author:   KiberInfinity( /id13391307 )      //
-//   Web:      http://vkopt.net/                 //
-//   (c) All Rights Reserved. VkOpt.             //
+//  VKOpt Reloaded (Vkontakte Optimizer)         //
+//  Author: xiadosw [id115860632]/KiberInfinity  //
+//  (c) All Rights Reserved. VKOpt Reloaded.     //
 ///////////////////////////////////////////////////
 
 

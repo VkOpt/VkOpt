@@ -1,16 +1,15 @@
 ﻿//////////////////////////////////////////////////
 ///////////////////  vkopt.js  ///////////////////
 //////////////////////////////////////////////////
-//  VKOpt 3.x (Vkontakte Optimizer)             //
-//  Author:   KiberInfinity( /id13391307 )      //
-//  Web:      http://vkopt.net/                 //
-//  (c) All Rights Reserved. VkOpt.             //
+//  VKOpt Reloaded (Vkontakte Optimizer)        //
+//  Author: xiadosw [id115860632]/KiberInfinity //
+//  (c) All Rights Reserved. VKOpt Reloaded.    //
 //////////////////////////////////////////////////
 
 /* VERSION INFO */
-var vVersion = 308;
-var vBuild = 210307;
-var vVersionRev = 2;
+var vVersion = 310;
+var vBuild = 220227;
+var vVersionRev = 0;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -10842,9 +10841,9 @@ vkopt['extra_online'] = {
       }
    },
    update_online_info: function(){
-      var code = 'var clients=["","m.vk.com","iPhone","iPad","Android","Windows Phone","Windows 10","vk.com","VK Mobile"];var u = API.users.get({user_ids:"%UID",fields:"online,last_seen"})[0];if (u.online_app){u.app_title=API.apps.get({app_id:u.online_app}).items[0].title;}if(u.last_seen)u.last_seen.platform_title=clients[u.last_seen.platform];return u;';
+      var code = 'var clients=["m.vk.com","iPhone","iPad","Android","Windows Phone","Windows 10","vk.com","VK Mobile"];var u = API.users.get({user_ids:"%UID",fields:"online,last_seen"})[0];if (u.online_app){u.app_title=API.apps.get({app_id:u.online_app}).items[0].title;}if(u.last_seen)u.last_seen.platform_title=clients[u.last_seen.platform-1];return u;';
       code = code.replace(/%UID/g,cur.oid);
-      dApi.call('execute',{code: code, v:'5.75'},function(r,info){
+      dApi.call('execute',{code: code, v:'5.131'},function(r,info){
          re(geByClass1('vk_extra_online_info'));
          var extra = null;
          if (info.online_app)

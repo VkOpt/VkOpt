@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/VkOpt/VkOpt.git"
+    "url": "git+https://github.com/xiadosw/VkOpt-Reloaded.git"
   },
   "author": "KiberInfinity",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/VkOpt/VkOpt/issues"
+    "url": "https://github.com/xiadosw/VkOpt-Reloaded/issues"
   },
-  "homepage": "https://github.com/VkOpt/VkOpt#readme",
+  "homepage": "https://github.com/xiadosw/VkOpt-Reloaded#readme",
   "dependencies": {
     "nodemon": "^2.0.7"
   }

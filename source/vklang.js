@@ -1,10 +1,9 @@
 ﻿///////////////////////////////////////////////////
 ///////////////////  vklang.js  ///////////////////
 ///////////////////////////////////////////////////
-//   VKOpt 3.x (Vkontakte Optimizer)             //
-//   Author:   KiberInfinity( /id13391307 )      //
-//   Web:      http://vkopt.net/                 //
-//   (c) All Rights Reserved. VkOpt.             //
+//  VKOpt Reloaded (Vkontakte Optimizer)         //
+//  Author: xiadosw [id115860632]/KiberInfinity  //
+//  (c) All Rights Reserved. VKOpt Reloaded.     //
 ///////////////////////////////////////////////////
 
 
