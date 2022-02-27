@@ -2024,7 +2024,7 @@ vkopt['settings'] =  {
                      b: '<b>%s</b>',
                      n: '<br />',
                      warn: '<span class="vk_welcome_warn">%s</span>',
-                     a_site:'<a href=\"http://vkopt.net/\" target=_blank><b>%s</b></a>',
+                     a_site:'<a href=\"https://github.com/xiadosw/VkOpt-Reloaded#readme\" target=_blank><b>%s</b></a>',
                      a_cfg:'<a href=\"/settings.php?act=vkopt\" target=_blank>%s</a>',
                      a_forum:'<a href=\"http://vkopt.net/forum/forumdisplay.php?f=4\" target=_blank>%s</a>',
                      a_faq:'<a href=\"http://vkopt.net/forum/forumdisplay.php?f=4\" target=_blank>%s</a>'
