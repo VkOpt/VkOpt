@@ -1,3 +1,4 @@
 > v3.1.0.0 (build 220227)
 * Fixed the display of the online app
 * The button to turn off the read message report in the new messenger interface has been returned
+* Fixed viewing the start of a conversation

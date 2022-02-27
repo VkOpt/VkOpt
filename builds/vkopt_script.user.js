@@ -8383,7 +8383,7 @@ vkopt['messages'] = {
       var sel_id = nav.objLoc['sel'];
       var cur_loc = clone(nav.objLoc);
 
-      var params = {peer_id:cur.peer, count:1, rev:1, v:'5.73'};
+      var params = {peer_id:cur.peer, count:1, rev:1, v:'5.131'};
       if (cur.gid)
          params['group_id'] = cur.gid;
 
