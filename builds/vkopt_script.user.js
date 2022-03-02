@@ -10890,7 +10890,7 @@ vkopt['profile'] = {
       var store_key = 'user_groups_' + vk.id; // чтоб при входе на другой аккаунт не подсвечивались группы предыдущего.
       var stored_list = localStorage[store_key];
       if (!stored_list || update) {
-         dApi.call("groups.get",{ user_id: vk.id, extended: '1', filter: 'groups,publics,events', v: '5.59'},function(r) {
+         dApi.call("groups.get",{ user_id: vk.id, extended: '1', filter: 'groups,publics,events', v: '5.131'},function(r) {
             if (r.error) return;
             var groups = r.response.items;
             var cnt = groups.length;
