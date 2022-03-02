@@ -7270,8 +7270,6 @@ vkopt['messages'] = {
             width: 32px;
             height: 20px;
             line-height: 20px;
-            color: #4a76a8;
-            background: #edecf1;
             text-align: center;
             text-decoration: none !important;
             font-weight: 500;
@@ -7282,16 +7280,9 @@ vkopt['messages'] = {
             position:relative;
             margin-top: 10px;
             padding: 3px 10px;
-            background: #edecf1;
             border-radius: 10px;
             display: none;
-         }
-         .vk_au_msg_recognize_txt:before{
-            position: absolute;
-            top: -10px;
-            content: '';
-            border: 6px solid transparent;
-            border-bottom: 6px solid #edecf1;
+            backdrop-filter: contrast(85%);
          }
          .vk_au_msg_recognize_txt.vk_show{
             display:block;
@@ -7327,7 +7318,7 @@ vkopt['messages'] = {
           cursor: pointer;
           background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='%2392abc6'%3e%3cpath d='M21.99 8c0-.72-.37-1.35-.94-1.7L12 1 2.95 6.3C2.38 6.65 2 7.28 2 8v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2l-.01-10zM12 13L3.74 7.84 12 3l8.26 4.84L12 13z'/%3e%3c/svg%3e");
           opacity: .7;
-          filter: alpha(opacity=75);
+          filter: alpha(opacity=70);
        }
        .msg_mark_read_icon:hover {
           opacity: 1;

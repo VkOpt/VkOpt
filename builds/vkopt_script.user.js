@@ -7652,8 +7652,6 @@ vkopt['messages'] = {
             width: 32px;
             height: 20px;
             line-height: 20px;
-            color: #4a76a8;
-            background: #edecf1;
             text-align: center;
             text-decoration: none !important;
             font-weight: 500;
@@ -7664,16 +7662,9 @@ vkopt['messages'] = {
             position:relative;
             margin-top: 10px;
             padding: 3px 10px;
-            background: #edecf1;
             border-radius: 10px;
             display: none;
-         }
-         .vk_au_msg_recognize_txt:before{
-            position: absolute;
-            top: -10px;
-            content: '';
-            border: 6px solid transparent;
-            border-bottom: 6px solid #edecf1;
+            backdrop-filter: contrast(85%);
          }
          .vk_au_msg_recognize_txt.vk_show{
             display:block;

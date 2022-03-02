@@ -2,3 +2,4 @@
 * Fixed the display of the online app
 * The button to turn off the read message report in the new messenger interface has been returned
 * Fixed viewing the start of a conversation
+* Fixed visual viewing of voice messages for extension users with a dark theme
