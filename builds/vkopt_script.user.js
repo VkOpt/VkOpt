@@ -8212,7 +8212,7 @@ vkopt['messages'] = {
                       'while(listUsers[i]){'+
                       'if(listUsers[i].online == 1) count=count+1; i=i+1;}'+
                       'return count;';
-      dApi.call('execute',{v:'5.73', code:body_code},function(r){
+      dApi.call('execute',{v:'5.131', code:body_code},function(r){
          if (!p || !p.parentNode) return;
          if (!ge('countUsers'))
            p.appendChild(se('<span id="countUsers" onmouseover="vkopt.messages.show_on_users(this)"></span>'));
@@ -8224,7 +8224,7 @@ vkopt['messages'] = {
    show_on_users:  function(el){
       var chatId = cur.peer - 2000000000;
       var body_code = 'return API.messages.getChatUsers({"chat_id":'+chatId+',"fields":"photo_50,online,domain"});';
-      dApi.call('execute',{v:'5.75', code:body_code},function(r){
+      dApi.call('execute',{v:'5.131', code:body_code},function(r){
          var items='', mob='' , i=0, on = 0, u = {};
          while(r.response[i]){
             if(r.response[i]['online'] == 1){
