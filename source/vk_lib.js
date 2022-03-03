@@ -2,7 +2,7 @@
 ///////////////////  vk_lib.js  ///////////////////
 ///////////////////////////////////////////////////
 //  VKOpt Reloaded (Vkontakte Optimizer)         //
-//  Author: xiadosw [id115860632]/KiberInfinity  //
+//  Developer: xiadosw [id115860632]             //
 //  (c) All Rights Reserved. VKOpt Reloaded.     //
 ///////////////////////////////////////////////////
 
