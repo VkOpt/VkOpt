@@ -1,6 +1,6 @@
 ﻿// ==UserScript==
 // @name          VKOpt Reloaded
-// @version       3.1.0.0
+// @version       3.1.1.0
 // @author        xiadosw [id115860632]
 // @description   VKOpt Reloaded 3.x
 // @downloadUrl   https://raw.githubusercontent.com/xiadosw/VkOpt-Reloaded/master/builds/vkopt_script.user.js
@@ -388,7 +388,7 @@
       js.type = 'text/javascript';
       js.charset = 'UTF-8';
       js.innerHTML=script;
-      js.setAttribute(mark,"3.1.0.0");
+      js.setAttribute(mark,"3.1.1.0");
       doc.getElementsByTagName('head')[0].appendChild(js);
    }
    init();
@@ -403,8 +403,8 @@
 //////////////////////////////////////////////////
 
 /* VERSION INFO */
-var vVersion = 310;
-var vBuild = 220227;
+var vVersion = 311;
+var vBuild = 220304;
 var vVersionRev = 0;
 var vPostfix = '';
 
@@ -662,7 +662,7 @@ var vkopt_core = {
          ge("system_msg").style.visibility = "unset";
          topMsg(content, 5);
       } catch(e) {
-         alert(content.replace(/<\/?[^>]+>/,''));
+         vkopt.log(content.replace(/<\/?[^>]+>/,''));
       }
    },
    run: function(check){
@@ -2474,7 +2474,7 @@ vkopt['settings'] =  {
    },
    top_menu_item: function(){
       var ref = ge('top_support_link');
-      var item = se('<a class="top_profile_mrow" id="top_vkopt_settings_link" href="/settings?act=vkopt" onclick="return vkopt.settings.show(this, true);">  <div class="menu_item_icon"><svg fill="none" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M10.6 2c.98.03 1.63.58 1.96 1.6l.06.18.04.15.06.2.04.13.03.01.06-.02.1-.04.13-.06c1.16-.53 2.05-.43 2.78.36l.1.12.67.83c.6.8.58 1.63 0 2.54l-.1.15-.1.14-.12.16-.05.1-.03.04v.02l.08.05.1.06.13.07c1.13.58 1.6 1.35 1.42 2.4l-.03.16-.2.87c-.13.56-.23.82-.63 1.19-.39.35-.83.5-1.42.55h-.18l-.16.01-.2.01-.15.02.01.12.01.08.03.14c.26 1.25-.03 2.1-.97 2.62l-.14.08-.96.47c-.9.4-1.72.2-2.48-.58l-.12-.13-.11-.13-.14-.15-.08-.08-.04-.04-.07.08-.09.08-.1.11c-.78.93-1.6 1.27-2.6.88L7 17.49l-.86-.42-.26-.13c-.39-.22-.6-.42-.82-.87a2.38 2.38 0 01-.13-1.54l.03-.19.04-.2L5 14 4.93 14l-.12-.01h-.15c-1.27-.03-2.03-.51-2.33-1.55l-.04-.15-.24-1.04c-.2-.97.2-1.72 1.11-2.28l.16-.1.15-.07.17-.1.13-.08v-.02l-.05-.08-.06-.1-.09-.12c-.76-1.02-.85-1.92-.22-2.8l.1-.12.67-.83c.64-.75 1.47-.9 2.48-.52l.17.07.15.06.18.08.11.04.03-.01.03-.08.04-.11.03-.14c.3-1.17.9-1.83 1.96-1.92L9.46 2zm-.05 1.47h-1.1l-.1.01c-.24.03-.4.16-.54.68l-.04.13-.04.17c-.09.29-.22.61-.39.93a4.8 4.8 0 00-.94.46 5.28 5.28 0 01-.95-.29l-.28-.13c-.2-.08-.36-.13-.48-.14h-.07a.45.45 0 00-.33.16l-.06.06-.64.8-.08.1c-.15.21-.17.4.16.88l.18.25c.18.26.35.57.5.9-.11.32-.19.65-.23.99a5.3 5.3 0 01-.83.6l-.28.14c-.5.28-.57.46-.53.72l.01.06.23 1 .04.13c.07.25.21.39.79.41l.32.02c.3.01.65.07 1 .16.18.29.4.55.63.8.02.43-.02.85-.1 1.18-.16.78 0 .9.32 1.06l.92.45c.1.05.19.07.28.07h.05c.15-.02.32-.13.55-.4l.21-.24c.21-.23.48-.47.78-.68l.24.01h.5l.24-.02c.3.22.57.46.78.69l.21.24c.27.3.44.4.6.4h.06c.05 0 .1-.02.14-.04l.08-.03.92-.45.12-.06c.24-.14.34-.32.2-1a5.07 5.07 0 01-.1-1.18c.24-.25.45-.51.64-.8.34-.1.7-.15 1-.16l.31-.02c.67-.03.75-.2.83-.54l.22-.93c.07-.33.07-.53-.5-.85l-.29-.15a5.26 5.26 0 01-.83-.59 4.87 4.87 0 00-.22-.98c.14-.34.32-.65.49-.9l.19-.26c.33-.48.3-.67.16-.88l-.04-.06-.65-.8c-.11-.13-.2-.23-.37-.26h-.06c-.13 0-.3.04-.54.14l-.3.13c-.27.11-.6.22-.94.28-.3-.18-.61-.33-.94-.45-.16-.3-.29-.62-.37-.9l-.1-.33c-.15-.56-.32-.66-.58-.68zM10 6.9a3.11 3.11 0 110 6.23 3.11 3.11 0 010-6.23zm0 1.48a1.64 1.64 0 100 3.27 1.64 1.64 0 000-3.27z" fill="currentColor"></path></svg></div><span>VKOpt Reloaded</span></a>');
+      var item = se('<a class="top_profile_mrow" id="top_vkopt_settings_link" href="/settings?act=vkopt" onclick="return vkopt.settings.show(this, true);">VKOpt Reloaded</a>');
       if (ref && !ge('top_vkopt_settings_link')){
          ref.parentNode.insertBefore(item, ref);
       }
@@ -3356,6 +3356,7 @@ vkopt['photoview'] =  {
          photo_search_copy:{},
          ph_download_with_name:{},
          ph_show_save_info:{default_value: true},
+         ph_allow_to_profile:{default_value: true},
          ph_update_btn:{},
          photo_copy_btn:{default_value: true},
          pv_hide_comments_btn: {
@@ -3668,6 +3669,19 @@ vkopt['photoview'] =  {
 
    },
    onResponseAnswer: function(answer, url, q) {
+      var LST_IDX = 3;
+      // Unlock set as profile photo
+      if (url == 'al_photos.php' && q.act == "show" && answer[LST_IDX] && answer[LST_IDX][0] && answer[LST_IDX][0].id){
+         if (!vkopt.settings.get('ph_allow_to_profile')) return;
+         var plist = answer[LST_IDX];
+         plist.forEach((item, idx) => {
+            if (item.actions && !item.actions.prof && item.id.split("_").shift() == vk.id) {
+               item.actions.prof = 1;
+               item.profile_data = {photo: item.id};
+               vkopt.log("Add profile_data and prof=1 for " + item.id);
+            }
+         });
+      }
       if (url == 'al_photos.php' && q.act == 'save_me' && answer[0]){
          if (!vkopt.settings.get('ph_show_save_info')) return;
          if (window.cur && cur.pvData){
@@ -3964,7 +3978,7 @@ vkopt['photos'] =  {
          pe_hash = cur.pvCurPhoto.peHash;
       }
 
-      stManager.add(['cmodules/web/upload.js','cmodules/web/filters.js'],function(){
+      stManager.add([window.jsc("web/upload.js"), window.jsc('web/filters.js')],function(){
          var photo=photo_id;
          if (/photo-?\d+_\d+/.test(photo)) photo=photo.match(/photo(-?\d+_\d+)/)[1];
          dApi.call('photos.getById',{photos:photo, photo_sizes: 1, v:"5.101"}, function(r,items){
@@ -6183,7 +6197,7 @@ vkopt['scrobbler'] = {
    onInit:function(){
       var fm=vkopt.scrobbler;
       var md5=vkMD5;//from vk_lib.js
-      fm.token = vkopt.settings.get('lastfm_token');
+      fm.token = vkopt.settings.get('lastfm_token') || "unset";
       fm.username = vkopt.settings.get('lastfm_username');
       fm.session_key = vkopt.settings.get('lastfm_session_key');
       fm.enable_scrobbling = vkopt.settings.get('lastfm_enable_scrobbling');
@@ -6191,7 +6205,7 @@ vkopt['scrobbler'] = {
          var apiKey=options.apiKey||'';
          var apiSecret=options.apiSecret||'';
          // https://ws.audioscrobbler.com/2.0/
-         var apiUrl=options.apiUrl||'http://ws.audioscrobbler.com/2.0/';
+         var apiUrl=options.apiUrl||'https://ws.audioscrobbler.com/2.0/';
          var cache=options.cache||undefined;var debug=typeof(options.debug)=='undefined'?false:options.debug;this.setApiKey=function(_apiKey){apiKey=_apiKey};this.setApiSecret=function(_apiSecret){apiSecret=_apiSecret};this.setApiUrl=function(_apiUrl){apiUrl=_apiUrl};this.setCache=function(_cache){cache=_cache};
          //original of library method internalCall  with JSONP/iframe requests:
          //var internalCall=function(params,callbacks,requestMethod){if(requestMethod=='POST'){var html=document.getElementsByTagName('html')[0];var frameName='lastfmFrame_'+new Date().getTime();var iframe=document.createElement('iframe');html.appendChild(iframe);iframe.contentWindow.name=frameName;iframe.style.display="none";var formState='init';iframe.width=1;iframe.height=1;iframe.style.border='none';iframe.onload=function(){if(formState=='sent'){if(!debug){setTimeout(function(){html.removeChild(iframe);html.removeChild(form)},1500)}};formState='done';if(typeof(callbacks.success)!='undefined'){callbacks.success()}};var form=document.createElement('form');form.target=frameName;form.action=apiUrl;form.method="POST";form.acceptCharset="UTF-8";html.appendChild(form);for(var param in params){var input=document.createElement("input");input.type="hidden";input.name=param;input.value=params[param];form.appendChild(input)};formState='sent';form.submit()}else{var jsonp='jsonp'+new Date().getTime();var hash=auth.getApiSignature(params);if(typeof(cache)!='undefined'&&cache.contains(hash)&&!cache.isExpired(hash)){if(typeof(callbacks.success)!='undefined'){callbacks.success(cache.load(hash))}return}params.callback=jsonp;params.format='json';window[jsonp]=function(data){if(typeof(cache)!='undefined'){var expiration=cache.getExpirationTime(params);if(expiration>0){cache.store(hash,data,expiration)}}if(typeof(data.error)!='undefined'){if(typeof(callbacks.error)!='undefined'){callbacks.error(data.error,data.message)}}else if(typeof(callbacks.success)!='undefined'){callbacks.success(data)}window[jsonp]=undefined;try{delete window[jsonp]}catch(e){}if(head){head.removeChild(script)}};var head=document.getElementsByTagName("head")[0];var script=document.createElement("script");var array=[];for(var param in params){array.push(encodeURIComponent(param)+"="+encodeURIComponent(params[param]))}script.src=apiUrl+'?'+array.join('&').replace(/%20/g,'+');head.appendChild(script)}};
@@ -6292,7 +6306,7 @@ vkopt['scrobbler'] = {
          if (code == 4)// токен сдох
             if (!fm.connect_box || !fm.connect_box.isVisible()){
                fm.connect_box=vkAlertBox(IDL('AuthBoxTitle'), IDL('AuthBoxText'), function(){
-                  var url = 'http://www.last.fm/api/auth?api_key=' + fm.api_key + '&cb=' + encodeURIComponent(location.protocol+'//' + location.host + '/settings?act=vkscrobbler');
+                  var url = 'https://www.last.fm/api/auth?api_key=' + fm.api_key + '&cb=' + encodeURIComponent(location.protocol+'//' + location.host + '/settings?act=vkscrobbler');
                   window.open(url,'_blank','');
                   //location.href = url;
                }, function(){
@@ -7700,7 +7714,7 @@ vkopt['messages'] = {
           cursor: pointer;
           background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='%2392abc6'%3e%3cpath d='M21.99 8c0-.72-.37-1.35-.94-1.7L12 1 2.95 6.3C2.38 6.65 2 7.28 2 8v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2l-.01-10zM12 13L3.74 7.84 12 3l8.26 4.84L12 13z'/%3e%3c/svg%3e");
           opacity: .7;
-          filter: alpha(opacity=75);
+          filter: alpha(opacity=70);
        }
        .msg_mark_read_icon:hover {
           opacity: 1;
@@ -10675,7 +10689,7 @@ vkopt['face'] =  {
       if (!vkopt.settings.get('invert_btn'))
          return;
       var ref = ge('top_support_link');
-      var item = se('<a class="top_profile_mrow" id="top_invert_link" href="#" onclick="return vkopt.settings.set(\'invert\', !vkopt.settings.get(\'invert\'));">Night mode</a>');
+      var item = se('<a class="top_profile_mrow" id="top_vkopt_settings_link" href="/settings?act=vkopt" onclick="return vkopt.settings.show(this, true);">  <div class="menu_item_icon"><svg fill="none" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M10.6 2c.98.03 1.63.58 1.96 1.6l.06.18.04.15.06.2.04.13.03.01.06-.02.1-.04.13-.06c1.16-.53 2.05-.43 2.78.36l.1.12.67.83c.6.8.58 1.63 0 2.54l-.1.15-.1.14-.12.16-.05.1-.03.04v.02l.08.05.1.06.13.07c1.13.58 1.6 1.35 1.42 2.4l-.03.16-.2.87c-.13.56-.23.82-.63 1.19-.39.35-.83.5-1.42.55h-.18l-.16.01-.2.01-.15.02.01.12.01.08.03.14c.26 1.25-.03 2.1-.97 2.62l-.14.08-.96.47c-.9.4-1.72.2-2.48-.58l-.12-.13-.11-.13-.14-.15-.08-.08-.04-.04-.07.08-.09.08-.1.11c-.78.93-1.6 1.27-2.6.88L7 17.49l-.86-.42-.26-.13c-.39-.22-.6-.42-.82-.87a2.38 2.38 0 01-.13-1.54l.03-.19.04-.2L5 14 4.93 14l-.12-.01h-.15c-1.27-.03-2.03-.51-2.33-1.55l-.04-.15-.24-1.04c-.2-.97.2-1.72 1.11-2.28l.16-.1.15-.07.17-.1.13-.08v-.02l-.05-.08-.06-.1-.09-.12c-.76-1.02-.85-1.92-.22-2.8l.1-.12.67-.83c.64-.75 1.47-.9 2.48-.52l.17.07.15.06.18.08.11.04.03-.01.03-.08.04-.11.03-.14c.3-1.17.9-1.83 1.96-1.92L9.46 2zm-.05 1.47h-1.1l-.1.01c-.24.03-.4.16-.54.68l-.04.13-.04.17c-.09.29-.22.61-.39.93a4.8 4.8 0 00-.94.46 5.28 5.28 0 01-.95-.29l-.28-.13c-.2-.08-.36-.13-.48-.14h-.07a.45.45 0 00-.33.16l-.06.06-.64.8-.08.1c-.15.21-.17.4.16.88l.18.25c.18.26.35.57.5.9-.11.32-.19.65-.23.99a5.3 5.3 0 01-.83.6l-.28.14c-.5.28-.57.46-.53.72l.01.06.23 1 .04.13c.07.25.21.39.79.41l.32.02c.3.01.65.07 1 .16.18.29.4.55.63.8.02.43-.02.85-.1 1.18-.16.78 0 .9.32 1.06l.92.45c.1.05.19.07.28.07h.05c.15-.02.32-.13.55-.4l.21-.24c.21-.23.48-.47.78-.68l.24.01h.5l.24-.02c.3.22.57.46.78.69l.21.24c.27.3.44.4.6.4h.06c.05 0 .1-.02.14-.04l.08-.03.92-.45.12-.06c.24-.14.34-.32.2-1a5.07 5.07 0 01-.1-1.18c.24-.25.45-.51.64-.8.34-.1.7-.15 1-.16l.31-.02c.67-.03.75-.2.83-.54l.22-.93c.07-.33.07-.53-.5-.85l-.29-.15a5.26 5.26 0 01-.83-.59 4.87 4.87 0 00-.22-.98c.14-.34.32-.65.49-.9l.19-.26c.33-.48.3-.67.16-.88l-.04-.06-.65-.8c-.11-.13-.2-.23-.37-.26h-.06c-.13 0-.3.04-.54.14l-.3.13c-.27.11-.6.22-.94.28-.3-.18-.61-.33-.94-.45-.16-.3-.29-.62-.37-.9l-.1-.33c-.15-.56-.32-.66-.58-.68zM10 6.9a3.11 3.11 0 110 6.23 3.11 3.11 0 010-6.23zm0 1.48a1.64 1.64 0 100 3.27 1.64 1.64 0 000-3.27z" fill="currentColor"></path></svg></div><span>VKOpt Reloaded</span></a>');
       if (ref && !ge('top_invert_link')){
          ref.parentNode.insertBefore(item, ref);
       }
@@ -11222,7 +11236,7 @@ vkopt['extra_online'] = {
       }
    },
    update_online_info: function(){
-	var code = 'var clients=["m.vk.com","iPhone","iPad","Android","Windows Phone","Windows 10","vk.com","VK Mobile"];var u = API.users.get({user_ids:"%UID",fields:"online,last_seen"})[0];if (u.online_app){u.app_title=API.apps.get({app_id:u.online_app}).items[0].title;}if(u.last_seen)u.last_seen.platform_title=clients[u.last_seen.platform-1];return u;';
+      var code = 'var clients=["m.vk.com","iPhone","iPad","Android","Windows Phone","Windows 10","vk.com","VK Mobile"];var u = API.users.get({user_ids:"%UID",fields:"online,last_seen"})[0];if (u.online_app){u.app_title=API.apps.get({app_id:u.online_app}).items[0].title;}if(u.last_seen)u.last_seen.platform_title=clients[u.last_seen.platform-1];return u;';
       code = code.replace(/%UID/g,cur.oid);
       dApi.call('execute',{code: code, v:'5.131'},function(r,info){
          re(geByClass1('vk_extra_online_info'));
@@ -12863,7 +12877,7 @@ vkopt['vk_dislike'] = {
                </a>');
             }
             return se('\
-            <a href="#" dislike_id="'+obj_id+'" class="like_btn post_dislike '+(my_dislike?' '+'pv_disliked':'')+' no_dislikes" onclick="vkopt.vk_dislike.dislike(this.getAttribute(\'dislike_id\')); return false;" onmouseover="vkopt.vk_dislike.dislike_over(this.getAttribute(\'dislike_id\'));" id="post_dislike'+obj_id+'">\
+            <a href="#" dislike_id="'+obj_id+'" class="PostBottomAction like_btn post_dislike '+(my_dislike?' '+'pv_disliked':'')+' no_dislikes" onclick="vkopt.vk_dislike.dislike(this.getAttribute(\'dislike_id\')); return false;" onmouseover="vkopt.vk_dislike.dislike_over(this.getAttribute(\'dislike_id\'));" id="post_dislike'+obj_id+'">\
                <i class="post_dislike_icon" id="dislike_icon'+obj_id+'"></i>\
                <span class="post_like_link" id="dislike_link'+obj_id+'">'+IDL('dislike')+'</span>\
                <span class="post_like_count fl_l" id="dislike_count'+obj_id+'">'+(count|| '')+'</span>\
@@ -12891,6 +12905,7 @@ vkopt['vk_dislike'] = {
       var attrs=['onclick','onmouseover','onmouseout'];
       var types=vkopt.vk_dislike.types;
 
+      if (!el) return;
       if (hasClass(el,'has_dislike')) return;
       addClass(el,'has_dislike');
 
@@ -12919,7 +12934,8 @@ vkopt['vk_dislike'] = {
          },400)
       } else {
          //obj_id=(geByTag('i',el)[0] || {}).id;
-         obj_id = el.outerHTML.split('(this, \'')[1].split('\'')[0];
+         obj_id = (el.outerHTML.split('(this, \'')[1] || "").split('\'')[0];
+         if (!obj_id) obj_id = ((el.querySelector("[data-reaction-target-object]") || {}).dataset || {}).reactionTargetObject;
          if (!obj_id) return;
          //obj_id=obj_id.split('like_icon')[1];
          vkopt.vk_dislike.obj_ids.push(obj_id);
@@ -12964,7 +12980,8 @@ vkopt['vk_dislike'] = {
 
       els=geByClass('like_btns',node);
       for (var i=0; i<els.length;i++){
-         vkopt.vk_dislike.add(geByClass1('like',els[i]));
+         // vkopt.vk_dislike.add(geByClass1('like',els[i]));
+         vkopt.vk_dislike.add(els[i].querySelector('.like, .PostButtonReactionsContainer'));
       }
 
       els=geByClass('fw_like_wrap',node);
@@ -18571,7 +18588,7 @@ vk_lang_ru={
    "seHideLeftFrendsBlock": "\u0421\u043a\u0440\u044b\u0442\u044c \u0431\u043b\u043e\u043a \u0432\u043e\u0437\u043c\u043e\u0436\u043d\u044b\u0445 \u0434\u0440\u0443\u0437\u0435\u0439",
    "seHideRecomendations": "\u0421\u043a\u0440\u044b\u0442\u044c \u0440\u0435\u043a\u043e\u043c\u0435\u043d\u0434\u0430\u0446\u0438\u0438 \u0434\u0440\u0443\u0437\u0435\u0439 \u0438 \u0433\u0440\u0443\u043f\u043f",
    "seHideStories": "\u0421\u043a\u0440\u044b\u0442\u044c \u0431\u043b\u043e\u043a \u0438\u0441\u0442\u043e\u0440\u0438\u0439",
-   "seHideMsgRecs": "Спрятать рекомендации в мессенджере",
+   "seHideMsgRecs": "Скрыть рекомендации в мессенджере",
    "seHideLeftSettings": "\u0421\u043a\u0440\u044b\u0442\u044c \u0448\u0435\u0441\u0442\u0435\u0440\u0435\u043d\u043a\u0443 \u0432 \u043b\u0435\u0432\u043e\u043c \u043c\u0435\u043d\u044e",
    "Typing": "\u041f\u0435\u0447\u0430\u0442\u0430\u0435\u0442 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435",
    "WikiPagesList": "[ \u0421\u043f\u0438\u0441\u043e\u043a Wiki-\u0441\u0442\u0440\u0430\u043d\u0438\u0446 ]",

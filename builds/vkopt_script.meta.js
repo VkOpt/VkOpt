@@ -1,8 +1,8 @@
 ﻿// ==UserScript==
 // @name          VKOpt Reloaded
-// @version       3.1.0.0
-// @author        xiadosw [id115860632] // KiberInfinity [id13391307]
-// @description   Vkontakte Optimizer 3.x
+// @version       3.1.1.0
+// @author        xiadosw [id115860632]
+// @description   VKOpt Reloaded 3.x
 // @downloadUrl   https://raw.githubusercontent.com/xiadosw/VkOpt-Reloaded/master/builds/vkopt_script.user.js
 // @updateUrl     https://raw.githubusercontent.com/xiadosw/VkOpt-Reloaded/master/builds/vkopt_script.meta.js
 // @match       *://vkontakte.ru/*
