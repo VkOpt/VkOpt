@@ -1536,7 +1536,30 @@ vkopt['res'] = {
       ldr_mono: '<img src="/images/upload_inv_mono.gif">',
       ldr_mini: '<img src="/images/upload_inv_mini.gif">',
       ldr_big: '<center><img src="/images/progress7.gif"></center>'
-   }
+   },
+   forceDownload: function(blob, filename) {
+      var a = document.createElement('a');
+      a.download = filename;
+      a.href = blob;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    },
+    downloadResource: function(url, filename) {
+      if (!filename) filename = url.split('\\').pop().split('/').pop();
+      fetch(url, {
+          headers: new Headers({
+            'Origin': location.origin
+          }),
+          mode: 'cors'
+        })
+        .then(response => response.blob())
+        .then(blob => {
+          let blobUrl = window.URL.createObjectURL(blob);
+          vkopt.res.forceDownload(blobUrl, filename);
+        })
+        .catch(e => console.error(e));
+    },
 };
 
 vkopt['settings'] =  {
@@ -7528,8 +7551,8 @@ vkopt['messages'] = {
          */
          /*audio_msg_btns:
          <div class="vk_audio_msg_btns">
-           <a class="vk_au_msg_dl" download="{vals.url_mp3}" href="#"><div></div>mp3</a>
-           <a class="vk_au_msg_dl" download="{vals.url_ogg}" href="#"><div></div>ogg</a>
+           <a class="vk_au_msg_dl" onclick="vkopt.res.downloadResource('{vals.url_mp3}')"><div></div>mp3</a>
+           <a class="vk_au_msg_dl" onclick="vkopt.res.downloadResource('{vals.url_ogg}')"><div></div>ogg</a>
          </div>
          */
          /*search_deleted_content:
