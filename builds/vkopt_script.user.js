@@ -1,6 +1,6 @@
 ﻿// ==UserScript==
 // @name          VKOpt Reloaded
-// @version       3.1.2.0
+// @version       3.1.2.1
 // @author        xiadosw [id115860632]
 // @description   VKOpt Reloaded 3.x
 // @downloadUrl   https://raw.githubusercontent.com/xiadosw/VkOpt-Reloaded/master/builds/vkopt_script.user.js
@@ -388,7 +388,7 @@
       js.type = 'text/javascript';
       js.charset = 'UTF-8';
       js.innerHTML=script;
-      js.setAttribute(mark,"3.1.2.0");
+      js.setAttribute(mark,"3.1.2.1");
       doc.getElementsByTagName('head')[0].appendChild(js);
    }
    init();
@@ -405,7 +405,7 @@
 /* VERSION INFO */
 var vVersion = 312;
 var vBuild = 220425;
-var vVersionRev = 0;
+var vVersionRev = 1;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -7924,8 +7924,8 @@ vkopt['messages'] = {
          */
          /*audio_msg_btns:
          <div class="vk_audio_msg_btns">
-           <a class="vk_au_msg_dl" href="{vals.url_mp3}"><div></div>mp3</a>
-           <a class="vk_au_msg_dl" href="{vals.url_ogg}"><div></div>ogg</a>
+           <a class="vk_au_msg_dl" download="{vals.url_mp3}" href="#"><div></div>mp3</a>
+           <a class="vk_au_msg_dl" download="{vals.url_ogg}" href="#"><div></div>ogg</a>
          </div>
          */
          /*search_deleted_content:
