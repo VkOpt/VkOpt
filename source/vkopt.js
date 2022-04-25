@@ -7,8 +7,8 @@
 //////////////////////////////////////////////////
 
 /* VERSION INFO */
-var vVersion = 311;
-var vBuild = 220304;
+var vVersion = 312;
+var vBuild = 220425;
 var vVersionRev = 0;
 var vPostfix = '';
 
@@ -7264,29 +7264,6 @@ vkopt['messages'] = {
             margin-top: -5px;
             margin-bottom: -5px;
          }
-         .vk_au_msg_recognize{
-            float: left;
-            margin-right: 10px;
-            width: 32px;
-            height: 20px;
-            line-height: 20px;
-            text-align: center;
-            text-decoration: none !important;
-            font-weight: 500;
-            border: 1px solid #dae5ef;
-            border-radius: 10px;
-         }
-         .vk_au_msg_recognize_txt{
-            position:relative;
-            margin-top: 10px;
-            padding: 3px 10px;
-            border-radius: 10px;
-            display: none;
-            backdrop-filter: contrast(85%);
-         }
-         .vk_au_msg_recognize_txt.vk_show{
-            display:block;
-         } 
          #vk_restore_msg {
             margin-top: 5px;
          }
@@ -7551,7 +7528,6 @@ vkopt['messages'] = {
          */
          /*audio_msg_btns:
          <div class="vk_audio_msg_btns">
-           <a class="vk_au_msg_recognize" onclick="vkopt.messages.recognize_au_msg(this)">Aa</a>
            <a class="vk_au_msg_dl" href="{vals.url_mp3}"><div></div>mp3</a>
            <a class="vk_au_msg_dl" href="{vals.url_ogg}"><div></div>ogg</a>
          </div>
@@ -7916,38 +7892,6 @@ vkopt['messages'] = {
 	  radioBtns.like_share.val = ShareBox.radioBtnOptions.IM;
       dd.selected = {[vk.id+'_']:[]};
       dd.selCount = 1;
-   },
-   recognize_au_msg: function(el){
-      el = el.parentNode;
-      var au_msg_id = gpeByClass('im_msg_audiomsg', el).id;
-      var rcgn_txt = geByClass1('vk_au_msg_recognize_txt', el);
-      if (rcgn_txt)
-         toggleClass(rcgn_txt, 'vk_show')
-      else {
-         rcgn_txt = el.appendChild(se('<div class="vk_au_msg_recognize_txt vk_show"><img src="/images/upload_inv_mini.gif"></div>'));
-         var fwd = gpeByClass('im_fwd_log_wrap', el);
-         el = gpeByClass('_im_mess', el);
-         dApi.call('messages.getById', {v:'5.126', message_ids:domData(el, 'msgid'), group_id:cur.gid},function(r, res){
-            if(!res) {
-               rcgn_txt.innerHTML = '<div style="color:#e61111">'+lang.video_live_stream_create_unexpected_error+'</div>'
-               return;
-            }
-            res = res.items[0]
-            var txt = '';
-            if (fwd){
-               for (i = 0; i<res.fwd_messages.length; i++){
-                  for (j = 0; j<res.fwd_messages[i].attachments.length; j++){
-                  var data = res.fwd_messages[i].attachments[j];
-                  if (data.type == 'audio_message' && data['audio_message'].id == au_msg_id.split('_').pop())
-                     txt = data['audio_message'].transcript;
-                  }
-               }
-            }
-            else
-               txt = res.attachments[0]['audio_message'].transcript;
-            rcgn_txt.innerHTML = clean(txt) || '<div style="color:#e61111">'+lang.video_live_stream_create_unexpected_error+'</div>'
-         });
-      }
    },
    dialogs_menu: function(){
       var menu = geByClass1('_im_settings_popup');
