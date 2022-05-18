@@ -8447,7 +8447,7 @@ vkopt['messages'] = {
       var load_users_info = function(callback){
          var get_users = function(cb){
             if (users_ids.length){
-               dApi.call('users.get',{user_ids:users_ids.join(','),fields:'photo_100,screen_name',v:'5.73'},function(r){
+               dApi.call('users.get',{user_ids:users_ids.join(','),fields:'photo_100,screen_name',v:'5.131'},function(r){
                   ldr && (ldr.innerHTML = vkProgressBar(90,100,w,'Users data... %'));
                   var usrs=r.response;
 
@@ -8473,7 +8473,7 @@ vkopt['messages'] = {
 
          var get_groups = function(cb){
             if (groups_ids.length){
-               dApi.call('groups.getById',{group_ids:groups_ids.join(','),fields:'photo_100,screen_name',v:'5.73'},function(r){
+               dApi.call('groups.getById',{group_ids:groups_ids.join(','),fields:'photo_100,screen_name',v:'5.131'},function(r){
                   ldr && (ldr.innerHTML = vkProgressBar(95,100,w,'Groups data... %'));
                   var grps=r.response;
                   for (var i=0; i<grps.length; i++){
@@ -8552,7 +8552,7 @@ vkopt['messages'] = {
       vkopt.messages.get_history(uid, done);
    },
    get_history:function(uid, callback, partial_callback, ver){
-      ver = ver || '5.73';
+      ver = ver || '5.131';
       if (!uid) uid=cur.peer;
       var PER_REQ=100;
       var offset=0;
@@ -8929,10 +8929,10 @@ vkopt['messages'] = {
          dApi.call('messages.getHistory',{uid:uid,offset:offset,count:100},function(r){
             //console.log(r);
             //return;
-            ge('saveldr').innerHTML=vkProgressBar(offset,r.response[0],w);
+            ge('saveldr').innerHTML=vkProgressBar(offset,r.response['count'],w);
             var msgs=r.response;
-            var count=msgs.shift();
-            msgs.reverse();
+            var count=msgs.count;
+            msgs = msgs.items.reverse();
             var msg=null;
             var res='';
             var make_msg=function(msg,level){
@@ -8950,8 +8950,8 @@ vkopt['messages'] = {
                   switch(attach.type){
                      case  "photo":
                         var a=attach.photo;
-                        var src=a.src_xxxbig || a.src_xxbig || a.src_xbig || a.src_big || a.src || a.src_small;
-                        var link="vk.com/photo"+a.owner_id+'_'+a.pid;
+                        var src=a.sizes.sort((a, b) => b.width - a.width)[0].url;
+                        var link="vk.com/photo"+a.owner_id+'_'+a.id;
                         attach_text+=link+" : "+src+"\r\n"+(a.text?a.text+"\r\n":"");
                         break;
                      case  "video":
@@ -8981,7 +8981,7 @@ vkopt['messages'] = {
                //console.log(msg);
                var date=(new Date(msg.date*1000)).format(date_fmt);
                var user='%'+from_id+'%';//(msg.from_id==mid?user2:user1);
-               var msgBody = msg.body.replace(/<br>/g, '\r\n');
+               var msgBody = msg.text.replace(/<br>/g, '\r\n');
 
                var ret=msg_pattern
                     .replace(/%username%/g,user) //msg.from_id
