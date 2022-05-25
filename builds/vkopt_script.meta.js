@@ -1,6 +1,6 @@
 ﻿// ==UserScript==
 // @name          VKOpt Reloaded
-// @version       3.1.2.1
+// @version       3.1.3.1
 // @author        xiadosw [id115860632]
 // @description   VKOpt Reloaded 3.x
 // @downloadUrl   https://raw.githubusercontent.com/xiadosw/VkOpt-Reloaded/master/builds/vkopt_script.user.js
