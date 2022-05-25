@@ -7,8 +7,8 @@
 //////////////////////////////////////////////////
 
 /* VERSION INFO */
-var vVersion = 312;
-var vBuild = 220425;
+var vVersion = 313;
+var vBuild = 220525;
 var vVersionRev = 1;
 var vPostfix = '';
 
@@ -10807,7 +10807,7 @@ vkopt['extra_online'] = {
       }
    },
    update_online_info: function(){
-      var code = 'var clients=["m.vk.com","iPhone","iPad","Android","Windows Phone","Windows 10","vk.com","VK Mobile"];var u = API.users.get({user_ids:"%UID",fields:"online,last_seen"})[0];if (u.online_app){u.app_title=API.apps.get({app_id:u.online_app}).items[0].title;}if(u.last_seen)u.last_seen.platform_title=clients[u.last_seen.platform-1];return u;';
+      var code = 'var clients=["m.vk.com","iPhone","iPad","Android","Windows Phone","Windows 10","vk.com","VK Mobile"];var u=API.users.get({user_ids:"%UID",fields:"online,last_seen"})[0];if(u.online_app){u.app_title=API.apps.get({app_id:u.online_app}).items[0].title;}if(u.last_seen)u.last_seen.platform_title=(u.last_seen.platform?clients[u.last_seen.platform-1]:"undefined");return u;';
       code = code.replace(/%UID/g,cur.oid);
       dApi.call('execute',{code: code, v:'5.131'},function(r,info){
          re(geByClass1('vk_extra_online_info'));
