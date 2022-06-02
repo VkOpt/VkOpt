@@ -8,8 +8,8 @@
 
 /* VERSION INFO */
 var vVersion = 313;
-var vBuild = 220525;
-var vVersionRev = 1;
+var vBuild = 220603;
+var vVersionRev = 2;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -7639,7 +7639,7 @@ vkopt['messages'] = {
    onRequestQuery: function(url, query, options) {
        var prefix = (query.gid) ? 'gim' : 'im';
        if (url === 'al_im.php') {
-           if (query.type === 'typing'  && vkopt.settings.get(prefix + '_block_typing')) {
+           if ((query.type === 'typing' || query.type === 'audiomessage') && vkopt.settings.get(prefix + '_block_typing')) {
                return false;
            }
            /* something interesting:

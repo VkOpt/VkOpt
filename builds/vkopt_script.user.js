@@ -1,6 +1,6 @@
 ﻿// ==UserScript==
 // @name          VKOpt Reloaded
-// @version       3.1.3.1
+// @version       3.1.3.2
 // @author        xiadosw [id115860632]
 // @description   VKOpt Reloaded 3.x
 // @downloadUrl   https://raw.githubusercontent.com/xiadosw/VkOpt-Reloaded/master/builds/vkopt_script.user.js
@@ -388,7 +388,7 @@
       js.type = 'text/javascript';
       js.charset = 'UTF-8';
       js.innerHTML=script;
-      js.setAttribute(mark,"3.1.3.1");
+      js.setAttribute(mark,"3.1.3.2");
       doc.getElementsByTagName('head')[0].appendChild(js);
    }
    init();
@@ -404,8 +404,8 @@
 
 /* VERSION INFO */
 var vVersion = 313;
-var vBuild = 220525;
-var vVersionRev = 1;
+var vBuild = 220603;
+var vVersionRev = 2;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -8035,7 +8035,7 @@ vkopt['messages'] = {
    onRequestQuery: function(url, query, options) {
        var prefix = (query.gid) ? 'gim' : 'im';
        if (url === 'al_im.php') {
-           if (query.type === 'typing'  && vkopt.settings.get(prefix + '_block_typing')) {
+           if ((query.type === 'typing' || query.type === 'audiomessage') && vkopt.settings.get(prefix + '_block_typing')) {
                return false;
            }
            /* something interesting:
