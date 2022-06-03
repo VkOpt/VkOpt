@@ -1903,7 +1903,7 @@ function vk_oauth_api(app_id,scope){
          }
 
          var params = {
-            v: '5.95',
+            v: '5.131',
             format:'json'
          };
          if (inputParams)
@@ -2119,7 +2119,7 @@ vkApis={
                           offset: i * PER_REQ,
                           count: PER_REQ,
                           photo_sizes: 1,
-                          v: '5.95'};
+                          v: '5.131'};
             dApi.call('photos.get', params, function (r) {
                 total = r.response.count;
                 for (var j = 1; j < r.response.items.length; j++){

@@ -3983,7 +3983,7 @@ vkopt['photos'] =  {
       stManager.add([window.jsc("web/upload.js"), window.jsc('web/filters.js')],function(){
          var photo=photo_id;
          if (/photo-?\d+_\d+/.test(photo)) photo=photo.match(/photo(-?\d+_\d+)/)[1];
-         dApi.call('photos.getById',{photos:photo, photo_sizes: 1, v:"5.101"}, function(r,items){
+         dApi.call('photos.getById',{photos:photo, photo_sizes: 1, v:"5.131"}, function(r,items){
             var photo = items.shift()
             if (!photo)
                return;
@@ -4371,7 +4371,7 @@ vkopt['albums'] = {
           save_albums_descr = vkopt.settings.get('album_dl_album_descr');
           save_albums_struct = vkopt.settings.get('album_dl_album_struct');
 
-//dApi.call('photos.getAlbums',{owner_id:-337, album_ids:249252152, v:'5.80'},vkopt.log)
+//dApi.call('photos.getAlbums',{owner_id:-337, album_ids:249252152, v:'5.131'},vkopt.log)
 
       var download_photo_list = function(list, name, ondone, on_progress){
          var modes = [
@@ -4559,7 +4559,7 @@ vkopt['albums'] = {
          }
          var check_add_info = function(cb){
             if (save_albums_descr){
-               dApi.call('photos.getAlbums', {owner_id:oid,album_ids:aids.join(','), v:'5.80'}, function(res, r, e){
+               dApi.call('photos.getAlbums', {owner_id:oid,album_ids:aids.join(','), v:'5.131'}, function(res, r, e){
                   if (r && r.items)
                      add_albums_info(r.items, cb);
                   else
@@ -8243,7 +8243,7 @@ vkopt['messages'] = {
                       'while(listUsers[i]){'+
                       'if(listUsers[i].online == 1) count=count+1; i=i+1;}'+
                       'return count;';
-      dApi.call('execute',{v:'5.73', code:body_code},function(r){
+      dApi.call('execute',{v:'5.131', code:body_code},function(r){
          if (!p || !p.parentNode) return;
          if (!ge('countUsers'))
            p.appendChild(se('<span id="countUsers" onmouseover="vkopt.messages.show_on_users(this)"></span>'));
@@ -8255,7 +8255,7 @@ vkopt['messages'] = {
    show_on_users:  function(el){
       var chatId = cur.peer - 2000000000;
       var body_code = 'return API.messages.getChatUsers({"chat_id":'+chatId+',"fields":"photo_50,online,domain"});';
-      dApi.call('execute',{v:'5.75', code:body_code},function(r){
+      dApi.call('execute',{v:'5.131', code:body_code},function(r){
          var items='', mob='' , i=0, on = 0, u = {};
          while(r.response[i]){
             if(r.response[i]['online'] == 1){
@@ -8340,7 +8340,7 @@ vkopt['messages'] = {
          rcgn_txt = el.appendChild(se('<div class="vk_au_msg_recognize_txt vk_show"><img src="/images/upload_inv_mini.gif"></div>'));
          var fwd = gpeByClass('im_fwd_log_wrap', el);
          el = gpeByClass('_im_mess', el);
-         dApi.call('messages.getById', {v:'5.126', message_ids:domData(el, 'msgid'), group_id:cur.gid},function(r, res){
+         dApi.call('messages.getById', {v:'5.131', message_ids:domData(el, 'msgid'), group_id:cur.gid},function(r, res){
             if(!res) {
                rcgn_txt.innerHTML = '<div style="color:#e61111">'+lang.video_live_stream_create_unexpected_error+'</div>'
                return;
@@ -8405,7 +8405,7 @@ vkopt['messages'] = {
       var sel_id = nav.objLoc['sel'];
       var cur_loc = clone(nav.objLoc);
 
-      var params = {peer_id:cur.peer, count:1, rev:1, v:'5.73'};
+      var params = {peer_id:cur.peer, count:1, rev:1, v:'5.131'};
       if (cur.gid)
          params['group_id'] = cur.gid;
 
@@ -8427,7 +8427,7 @@ vkopt['messages'] = {
                'user_id:user.id, '+
                'message: user.first_name+", '+IDL('SearchDeletedMessagesStarted')+' ('+dt+')"'+
             '});';
-         dApi.call('execute',{code:code, v:'5.73'}, function(r){
+         dApi.call('execute',{code:code, v:'5.131'}, function(r){
             cb(r.response || 0);
          });
       }
@@ -8452,12 +8452,12 @@ vkopt['messages'] = {
 
          var code = [];
          while(ids.length)
-            code.push('API.messages.getById({"message_ids":"'+ids.splice(0,PER_REQ).join(',')+'", "v":"5.73"}).items');
+            code.push('API.messages.getById({"message_ids":"'+ids.splice(0,PER_REQ).join(',')+'", "v":"5.131"}).items');
          code = 'return ' + code.join('+') + ';'
 
          ge('vk_scan_msg').innerHTML = vkProgressBar(last_msg - offset, last_msg, width, IDL('MessagesScan') + ' %'+(offset > 0 ? ' (id:' + offset + ')' : ''));
 
-         dApi.call('execute', {code: code, v:'5.73'}, function(r){
+         dApi.call('execute', {code: code, v:'5.131'}, function(r){
             if (r && r.response){
                r.response.forEach(function(item, idx){
                   if (item.deleted){
@@ -8509,7 +8509,7 @@ vkopt['messages'] = {
             code.push('API.messages.restore({message_id:'+del_ids.shift()+'})');
          code = 'return [ ' + code.join(',') + ' ];'
 
-         dApi.call('execute', {code: code, v:'5.73'}, function(r){
+         dApi.call('execute', {code: code, v:'5.131'}, function(r){
              if (r && r.response){
                 total_try += r.response.length;
                 restored += r.response.filter(function(item){return item}).length;
@@ -8893,7 +8893,7 @@ vkopt['messages'] = {
       var load_users_info = function(callback){
          var get_users = function(cb){
             if (users_ids.length){
-               dApi.call('users.get',{user_ids:users_ids.join(','),fields:'photo_100,screen_name',v:'5.73'},function(r){
+               dApi.call('users.get',{user_ids:users_ids.join(','),fields:'photo_100,screen_name',v:'5.131'},function(r){
                   ldr && (ldr.innerHTML = vkProgressBar(90,100,w,'Users data... %'));
                   var usrs=r.response;
 
@@ -8919,7 +8919,7 @@ vkopt['messages'] = {
 
          var get_groups = function(cb){
             if (groups_ids.length){
-               dApi.call('groups.getById',{group_ids:groups_ids.join(','),fields:'photo_100,screen_name',v:'5.73'},function(r){
+               dApi.call('groups.getById',{group_ids:groups_ids.join(','),fields:'photo_100,screen_name',v:'5.131'},function(r){
                   ldr && (ldr.innerHTML = vkProgressBar(95,100,w,'Groups data... %'));
                   var grps=r.response;
                   for (var i=0; i<grps.length; i++){
@@ -8998,7 +8998,7 @@ vkopt['messages'] = {
       vkopt.messages.get_history(uid, done);
    },
    get_history:function(uid, callback, partial_callback, ver){
-      ver = ver || '5.73';
+      ver = ver || '5.131';
       if (!uid) uid=cur.peer;
       var PER_REQ=100;
       var offset=0;
@@ -9068,7 +9068,7 @@ vkopt['messages'] = {
                         'profiles:['+code.profiles.join(',')+'],'+
                         'groups:['+code.groups.join(',')+']'+
                      '};',
-               v:'5.95'
+               v:'5.131'
             },
             function(r){
             var msgs = r.response.items;
@@ -9145,7 +9145,7 @@ vkopt['messages'] = {
          }
          tick_inteval = setInterval(tick,10);
          var getName = function(cb){
-            dApi.call('messages.getConversationsById',{peer_ids: peer_id, group_id: cur.gid || undefined, extended:1, v:'5.103'},function(resp, r){
+            dApi.call('messages.getConversationsById',{peer_ids: peer_id, group_id: cur.gid || undefined, extended:1, v:'5.131'},function(resp, r){
                var items, item;
                if (r && (items = r.items) && (item = items[0])){
                   if (item.chat_settings){
@@ -9328,7 +9328,7 @@ vkopt['messages'] = {
          var run = function(){
             getName(function(info){
                zip = vkopt.zip(info.filename + '.zip');
-               continue_scan = vkopt.messages.get_history(peer_id, done, part_ready, '5.103');
+               continue_scan = vkopt.messages.get_history(peer_id, done, part_ready, '5.131');
             })
          }
          if (show_format){
@@ -9719,7 +9719,7 @@ vkopt['attacher'] = {
             delete Upload.vars[cur.uplId].type
       },
       recent_graffiti: function(){
-         dApi.call('messages.getRecentGraffities',{limit:32, v:'5.74'},function(r, items){
+         dApi.call('messages.getRecentGraffities',{limit:32, v:'5.131'},function(r, items){
             if(!items || items.length < 1) return;
             var btn = geByClass1('doc_show_graffiti_btn');
             if (btn){
@@ -9781,7 +9781,7 @@ vkopt['attacher'] = {
          var doc_id = (doc_full_id.match(/-?\d+_(\d+)/) || [])[1];
          if (!doc_id) return;
          var box = showFastBox(getLang('global_box_confirm_title'), IDL('HideRecentGraffitiConfirm'), getLang('global_delete'),function(){
-            dApi.call('messages.hideRecentGraffiti',{doc_id:doc_id, v:'5.80'}, function(r, resp, err){
+            dApi.call('messages.hideRecentGraffiti',{doc_id:doc_id, v:'5.131'}, function(r, resp, err){
                if (resp){
                   box.hide();
                   setTimeout(function(){
@@ -10901,7 +10901,7 @@ vkopt['profile'] = {
          vkopt.profile.orig_avatar();
 
       /*
-      ge('profile_message_send') && dApi.call('messages.getHistory',{user_id: cur.oid, v:'5.85'}, function(r,result){
+      ge('profile_message_send') && dApi.call('messages.getHistory',{user_id: cur.oid, v:'5.131'}, function(r,result){
          if (result && result.count){
             geByClass1('flat_button', ge('profile_message_send')).appendChild(se('<span> ('+result.count+')</span>'))
          }
@@ -10921,7 +10921,7 @@ vkopt['profile'] = {
       var store_key = 'user_groups_' + vk.id; // чтоб при входе на другой аккаунт не подсвечивались группы предыдущего.
       var stored_list = localStorage[store_key];
       if (!stored_list || update) {
-         dApi.call("groups.get",{ user_id: vk.id, extended: '1', filter: 'groups,publics,events', v: '5.59'},function(r) {
+         dApi.call("groups.get",{ user_id: vk.id, extended: '1', filter: 'groups,publics,events', v: '5.131'},function(r) {
             if (r.error) return;
             var groups = r.response.items;
             var cnt = groups.length;
@@ -11025,13 +11025,13 @@ vkopt['profile'] = {
       if(!ge('avatar_orig') && !el) return;
       var body_code = 'var info = API.users.get({"user_ids":' + cur.oid + ', fields:"crop_photo"});' +
                       'if(info[0].crop_photo) return info@.crop_photo@.photo@.sizes@.pop();';
-      dApi.call('execute',{v:'5.85', code:body_code},function(r){
+      dApi.call('execute',{v:'5.131', code:body_code},function(r){
          if (r.response)
             el.innerHTML = vk_lib.tpl_process(vkopt.profile.tpls['orig_avatar'], {href: r.response[0].url, el:el.innerHTML});
       });
    },
    show_avatar: function(){
-      dApi.call('users.get',{user_ids: cur.oid, fields:'crop_photo', v:'5.85'},  function(r,resp){
+      dApi.call('users.get',{user_ids: cur.oid, fields:'crop_photo', v:'5.131'},  function(r,resp){
          var ph = resp[0].crop_photo.photo;
          var sz = ph.sizes;
          var pv_sz = {base:''};
@@ -11248,7 +11248,7 @@ vkopt['extra_online'] = {
    update_online_info: function(){
       var code = 'var clients=["","m.vk.com","iPhone","iPad","Android","Windows Phone","Windows 10","vk.com","VK Mobile"];var u = API.users.get({user_ids:"%UID",fields:"online,last_seen"})[0];if (u.online_app){u.app_title=API.apps.get({app_id:u.online_app}).items[0].title;}if(u.last_seen)u.last_seen.platform_title=clients[u.last_seen.platform];return u;';
       code = code.replace(/%UID/g,cur.oid);
-      dApi.call('execute',{code: code, v:'5.75'},function(r,info){
+      dApi.call('execute',{code: code, v:'5.131'},function(r,info){
          re(geByClass1('vk_extra_online_info'));
          var extra = null;
          if (info.online_app)
@@ -11480,7 +11480,7 @@ vkopt['groups'] = {
       return true;
    },
    live_covers: function (){
-      dApi.call('groups.getById',{group_id: -cur.oid, fields: 'live_covers', v: '5.103'},function(r,res){
+      dApi.call('groups.getById',{group_id: -cur.oid, fields: 'live_covers', v: '5.131'},function(r,res){
          if(!res || !res[0].live_covers.story_ids) return;
          var getCovers = function(cb){
             var id = res[0].live_covers.story_ids.shift();
@@ -11613,7 +11613,7 @@ vkopt['groups'] = {
                       owner_id: oid,
                       page_id: pid,
                       need_html: 1,
-                      v: '5.20'
+                      v: '5.131'
                   }, function (r, response) {
                       var el = vkCe('div', {}, response.html); // Запихиваем html-код в элемент, чтобы картинки начали грузиться
                       // обработка away-ссылок
@@ -11938,12 +11938,12 @@ vkopt['wall'] = {
 
       var code = 'return {posts: API.wall.getById({posts:"'+full_post_id+'", copy_history_depth: 2}), poll: API.polls.getById({owner_id:'+owner_id+',poll_id:'+poll_id+'})};'
       if ((!post_id || post_id == "null") && owner_id && poll_id){
-         dApi.call('polls.getById',{owner_id:owner_id, poll_id:poll_id, v: '5.59'},function(r){
+         dApi.call('polls.getById',{owner_id:owner_id, poll_id:poll_id, v: '5.131'},function(r){
             var data=r.response;
             view(data);
          });
       } else {
-         dApi.call('execute',{code:code, v: '5.59'},function(r){
+         dApi.call('execute',{code:code, v: '5.131'},function(r){
          var post = ((r.response || {}).posts || [])[0] || {};
             var scan = function(list){
                if (!list)
@@ -11974,7 +11974,7 @@ vkopt['wall'] = {
         var voters=API.polls.getVoters({owner_id:oid,poll_id:poll_id,answer_ids:poll.answers@.id,fields:"first_name,last_name,online,photo_rec",offset:0,count:9});\
         return {poll:poll,voters:voters,anwers_ids:poll.answers@.id};\
       ';
-      dApi.call('execute',{code:code, v: '5.59'},function(r){
+      dApi.call('execute',{code:code, v: '5.131'},function(r){
             var data=r.response;
             if (vk_DEBUG) console.log(data);
             if (data.voters){
@@ -14117,7 +14117,7 @@ vkopt['attachments_and_link'] = {
                 'user_id': self._uid,
                 'count': 1,
                 'offset': 0,
-                'v': '5.60'
+                'v': '5.131'
             }, function (r) {
                 self.errorProcessing(r);
 
@@ -14161,7 +14161,7 @@ vkopt['attachments_and_link'] = {
         if (param.length) {
             dApi.call('messages.getById', {
                 'message_ids': param.join(','),
-                'v': '5.60'
+                'v': '5.131'
             }, function (r) {
                 self.errorProcessing(r);
                 if (r.response.items.length != param.length) console.log('API не вернул одно из сообщений? сообщение удалено?');
@@ -14215,7 +14215,7 @@ vkopt['attachments_and_link'] = {
             'start_message_id': first,
             'count': count,
             'offset': last || self.start ? 0 : 1,
-            'v': '5.60'
+            'v': '5.131'
         };
         dApi.call('messages.getHistory', code, function (r) {
             self.errorProcessing(r);
@@ -14288,7 +14288,7 @@ vkopt['attachments_and_link'] = {
             }).join(',');
             if (param) code.push(' API.users.get({user_ids:"' + param + '",fields:"domain,name,photo_50"})'); // могут быть репосты от других пользователей
             if (code.length) {
-                dApi.call('execute', {code: 'return ' + code.join('+') + ';', v: '5.60'}, function (b) {
+                dApi.call('execute', {code: 'return ' + code.join('+') + ';', v: '5.131'}, function (b) {
                     self.errorProcessing(b);
                     b.response.forEach(function (value) {
                         /* if (value.type='users'){
@@ -16518,7 +16518,7 @@ function vk_oauth_api(app_id,scope){
          }
 
          var params = {
-            v: '5.95',
+            v: '5.131',
             format:'json'
          };
          if (inputParams)
@@ -16734,7 +16734,7 @@ vkApis={
                           offset: i * PER_REQ,
                           count: PER_REQ,
                           photo_sizes: 1,
-                          v: '5.95'};
+                          v: '5.131'};
             dApi.call('photos.get', params, function (r) {
                 total = r.response.count;
                 for (var j = 1; j < r.response.items.length; j++){
