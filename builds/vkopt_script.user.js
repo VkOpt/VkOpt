@@ -1,6 +1,6 @@
 ﻿// ==UserScript==
 // @name          VKOpt Reloaded
-// @version       3.1.3.2
+// @version       3.1.3.3
 // @author        xiadosw [id115860632]
 // @description   VKOpt Reloaded 3.x
 // @downloadUrl   https://raw.githubusercontent.com/xiadosw/VkOpt-Reloaded/master/builds/vkopt_script.user.js
@@ -388,7 +388,7 @@
       js.type = 'text/javascript';
       js.charset = 'UTF-8';
       js.innerHTML=script;
-      js.setAttribute(mark,"3.1.3.2");
+      js.setAttribute(mark,"3.1.3.3");
       doc.getElementsByTagName('head')[0].appendChild(js);
    }
    init();
@@ -404,8 +404,8 @@
 
 /* VERSION INFO */
 var vVersion = 313;
-var vBuild = 220603;
-var vVersionRev = 2;
+var vBuild = 220611;
+var vVersionRev = 3;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -9669,7 +9669,7 @@ vkopt['attacher'] = {
             delete Upload.vars[cur.uplId].type
       },
       recent_graffiti: function(){
-         dApi.call('messages.getRecentGraffities',{limit:32, v:'5.74'},function(r, items){
+         dApi.call('messages.getRecentGraffities',{limit:32, v:'5.131'},function(r, items){
             if(!items || items.length < 1) return;
             var btn = geByClass1('doc_show_graffiti_btn');
             if (btn){
@@ -11570,7 +11570,7 @@ vkopt['groups'] = {
                       owner_id: oid,
                       page_id: pid,
                       need_html: 1,
-                      v: '5.20'
+                      v: '5.131'
                   }, function (r, response) {
                       var el = vkCe('div', {}, response.html); // Запихиваем html-код в элемент, чтобы картинки начали грузиться
                       // обработка away-ссылок
@@ -11895,12 +11895,12 @@ vkopt['wall'] = {
 
       var code = 'return {posts: API.wall.getById({posts:"'+full_post_id+'", copy_history_depth: 2}), poll: API.polls.getById({owner_id:'+owner_id+',poll_id:'+poll_id+'})};'
       if ((!post_id || post_id == "null") && owner_id && poll_id){
-         dApi.call('polls.getById',{owner_id:owner_id, poll_id:poll_id, v: '5.59'},function(r){
+         dApi.call('polls.getById',{owner_id:owner_id, poll_id:poll_id, v: '5.131'},function(r){
             var data=r.response;
             view(data);
          });
       } else {
-         dApi.call('execute',{code:code, v: '5.59'},function(r){
+         dApi.call('execute',{code:code, v: '5.131'},function(r){
          var post = ((r.response || {}).posts || [])[0] || {};
             var scan = function(list){
                if (!list)
@@ -11931,7 +11931,7 @@ vkopt['wall'] = {
         var voters=API.polls.getVoters({owner_id:oid,poll_id:poll_id,answer_ids:poll.answers@.id,fields:"first_name,last_name,online,photo_rec",offset:0,count:9});\
         return {poll:poll,voters:voters,anwers_ids:poll.answers@.id};\
       ';
-      dApi.call('execute',{code:code, v: '5.59'},function(r){
+      dApi.call('execute',{code:code, v: '5.131'},function(r){
             var data=r.response;
             if (vk_DEBUG) console.log(data);
             if (data.voters){
@@ -14245,7 +14245,7 @@ vkopt['attachments_and_link'] = {
             }).join(',');
             if (param) code.push(' API.users.get({user_ids:"' + param + '",fields:"domain,name,photo_50"})'); // могут быть репосты от других пользователей
             if (code.length) {
-                dApi.call('execute', {code: 'return ' + code.join('+') + ';', v: '5.60'}, function (b) {
+                dApi.call('execute', {code: 'return ' + code.join('+') + ';', v: '5.131'}, function (b) {
                     self.errorProcessing(b);
                     b.response.forEach(function (value) {
                         /* if (value.type='users'){
