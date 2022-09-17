@@ -4545,7 +4545,7 @@ vkopt['audio'] =  {
             };
             ajax.post("al_audio.php", params, {
                onDone : function (t) {
-                  var data = AudioUtils.asObject(t);
+                  var data = AudioUtils.audioTupleToAudioObject(t);
                   vkMsg(vk_lib.tpl_process(vkopt.audio.tpls['added_to_group'], {
                      gid: to_gid,
                      aid: aid,
@@ -5023,7 +5023,7 @@ vkopt['audl'] = {
             info = JSON.parse(row.dataset["audio"]);
          } catch(e) {}
          if (!info) continue;
-         var info_obj = AudioUtils.asObject(info);
+         var info_obj = AudioUtils.audioTupleToAudioObject(info);
          if (info_obj.url==""){                    // собираем очередь из аудио, которым требуется подгрузка инфы
             if (cache[info_obj.fullId])
                info_obj = cache[info_obj.fullId];
@@ -5206,7 +5206,7 @@ vkopt['audl'] = {
       var set_size_info = function(size){
          for (var i = 0; i < els.length; i++){
             var el = els[i];
-            var info = AudioUtils.asObject(AudioUtils.getAudioFromEl(el));
+            var info = AudioUtils.audioTupleToAudioObject(AudioUtils.getAudioFromEl(el));
 
 
 
@@ -5343,7 +5343,7 @@ vkopt['audl'] = {
                   vkopt.audl.__loading_queue = [];
                   each(data, function (i, info) {
 
-                     info = AudioUtils.asObject(info);
+                     info = AudioUtils.audioTupleToAudioObject(info);
                      if (info.url)
                         info.url = vkopt.audl.decode_url(info.url);
 
@@ -6112,7 +6112,7 @@ vkopt['scrobbler'] = {
    audio_info:function(){
       var fm=vkopt.scrobbler;
       if (!(window.AudioUtils)) return {};
-      var cur_audio = AudioUtils.asObject(getAudioPlayer().getCurrentAudio());
+      var cur_audio = AudioUtils.audioTupleToAudioObject(getAudioPlayer().getCurrentAudio());
       var a = cur_audio || {title:'', performer: ''};
       return {
          title    :fm.clean(a.title),
@@ -9384,7 +9384,7 @@ vkopt['attacher'] = {
                      }, 10000);
                   } else {
                      each(data, function (i, info) {
-                        var info_obj = AudioUtils.asObject(info);
+                        var info_obj = AudioUtils.audioTupleToAudioObject(info);
                         vkopt.attacher.audio.cache[info_obj.fullId] = {arr: info, obj: info_obj};
                      });
                      vkopt.attacher.audio.render(full_aid);
