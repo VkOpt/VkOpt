@@ -8,8 +8,8 @@
 
 /* VERSION INFO */
 var vVersion = 313;
-var vBuild = 220611;
-var vVersionRev = 3;
+var vBuild = 220919;
+var vVersionRev = 4;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
