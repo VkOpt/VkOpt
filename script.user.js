@@ -24,12 +24,12 @@
 // @connect     vkuseraudio.net
 // @connect     vkuservideo.net
 // @connect     vkopt.net
-// @run-at       document-start
-// @grant        unsafeWindow
-// @grant        GM_xmlhttpRequest
-// @grant        GM_download
-// @grant        GM_setValue
-// @grant        GM_getValue
+// @run-at      document-start
+// @grant       unsafeWindow
+// @grant       GM_xmlhttpRequest
+// @grant       GM_download
+// @grant       GM_setValue
+// @grant       GM_getValue
 // ==/UserScript==
 
 

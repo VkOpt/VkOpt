@@ -1,6 +1,6 @@
 ﻿// ==UserScript==
 // @name          VKOpt
-// @version       3.0.8.3
+// @version       3.0.8.4
 // @author        KiberInfinity [id13391307]
 // @namespace     http://vkopt.net/
 // @description   Vkontakte Optimizer 3.x
@@ -24,10 +24,10 @@
 // @connect     vkuseraudio.net
 // @connect     vkuservideo.net
 // @connect     vkopt.net
-// @run-at       document-start
-// @grant        unsafeWindow
-// @grant        GM_xmlhttpRequest
-// @grant        GM_download
-// @grant        GM_setValue
-// @grant        GM_getValue
+// @run-at      document-start
+// @grant       unsafeWindow
+// @grant       GM_xmlhttpRequest
+// @grant       GM_download
+// @grant       GM_setValue
+// @grant       GM_getValue
 // ==/UserScript==

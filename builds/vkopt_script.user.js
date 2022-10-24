@@ -1,6 +1,6 @@
 ﻿// ==UserScript==
 // @name          VKOpt
-// @version       3.0.8.3
+// @version       3.0.8.4
 // @author        KiberInfinity [id13391307]
 // @namespace     http://vkopt.net/
 // @description   Vkontakte Optimizer 3.x
@@ -24,12 +24,12 @@
 // @connect     vkuseraudio.net
 // @connect     vkuservideo.net
 // @connect     vkopt.net
-// @run-at       document-start
-// @grant        unsafeWindow
-// @grant        GM_xmlhttpRequest
-// @grant        GM_download
-// @grant        GM_setValue
-// @grant        GM_getValue
+// @run-at      document-start
+// @grant       unsafeWindow
+// @grant       GM_xmlhttpRequest
+// @grant       GM_download
+// @grant       GM_setValue
+// @grant       GM_getValue
 // ==/UserScript==
 
 
@@ -389,7 +389,7 @@
       js.type = 'text/javascript';
       js.charset = 'UTF-8';
       js.innerHTML=script;
-      js.setAttribute(mark,"3.0.8.3");
+      js.setAttribute(mark,"3.0.8.4");
       doc.getElementsByTagName('head')[0].appendChild(js);
    }
    init();
@@ -406,8 +406,8 @@
 
 /* VERSION INFO */
 var vVersion = 308;
-var vBuild = 220611;
-var vVersionRev = 3;
+var vBuild = 220612;
+var vVersionRev = 4;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -4920,7 +4920,7 @@ vkopt['audio'] =  {
             };
             ajax.post("al_audio.php", params, {
                onDone : function (t) {
-                  var data = AudioUtils.asObject(t);
+                  var data = vk_common_min.asObject(t);
                   vkMsg(vk_lib.tpl_process(vkopt.audio.tpls['added_to_group'], {
                      gid: to_gid,
                      aid: aid,
@@ -5398,7 +5398,7 @@ vkopt['audl'] = {
             info = JSON.parse(row.dataset["audio"]);
          } catch(e) {}
          if (!info) continue;
-         var info_obj = AudioUtils.asObject(info);
+         var info_obj = vk_common_min.asObject(info);
          if (info_obj.url==""){                    // собираем очередь из аудио, которым требуется подгрузка инфы
             if (cache[info_obj.fullId])
                info_obj = cache[info_obj.fullId];
@@ -5581,7 +5581,7 @@ vkopt['audl'] = {
       var set_size_info = function(size){
          for (var i = 0; i < els.length; i++){
             var el = els[i];
-            var info = AudioUtils.asObject(AudioUtils.getAudioFromEl(el));
+            var info = vk_common_min.asObject(AudioUtils.getAudioFromEl(el));
 
 
 
@@ -5718,7 +5718,7 @@ vkopt['audl'] = {
                   vkopt.audl.__loading_queue = [];
                   each(data, function (i, info) {
 
-                     info = AudioUtils.asObject(info);
+                     info = vk_common_min.asObject(info);
                      if (info.url)
                         info.url = vkopt.audl.decode_url(info.url);
 
@@ -5937,8 +5937,6 @@ vkopt['hls'] = {
          return js;
       }
 
-      var Hls = {};
-
       function downloadHls(url) {
          var
             startSN = 0,
@@ -5975,10 +5973,14 @@ vkopt['hls'] = {
          hls.attachMedia(mel);
       }
 
-      AjGet('/js/lib/hls.min.js', function(js){
-         Hls = get_module(modify_hls(js)).Hls;
-         downloadHls(m3u8);
-      });
+      if (typeof window.Hls === 'undefined') {
+        AjGet('https://cdn.jsdelivr.net/npm/hls.js@latest', function(js){
+            window.Hls = get_module(modify_hls(js)).Hls;
+            downloadHls(m3u8);
+        });
+      } else {
+        downloadHls(m3u8);
+      }
    },
    download: function(url, file_name, aid){
       var buff = {
@@ -6487,7 +6489,7 @@ vkopt['scrobbler'] = {
    audio_info:function(){
       var fm=vkopt.scrobbler;
       if (!(window.AudioUtils)) return {};
-      var cur_audio = AudioUtils.asObject(getAudioPlayer().getCurrentAudio());
+      var cur_audio = vk_common_min.asObject(getAudioPlayer().getCurrentAudio());
       var a = cur_audio || {title:'', performer: ''};
       return {
          title    :fm.clean(a.title),
@@ -9823,7 +9825,7 @@ vkopt['attacher'] = {
                      }, 10000);
                   } else {
                      each(data, function (i, info) {
-                        var info_obj = AudioUtils.asObject(info);
+                        var info_obj = vk_common_min.asObject(info);
                         vkopt.attacher.audio.cache[info_obj.fullId] = {arr: info, obj: info_obj};
                      });
                      vkopt.attacher.audio.render(full_aid);
@@ -14534,6 +14536,82 @@ vkopt['attachments_and_link'] = {
              </div>
              */
         })
+    }
+};
+
+// Функции вырезаны из common.js
+// mp3_to_m3u8 преобразует ссылку audio_api_unavailable.mp3 в *.m3u8
+var vk_common_min = {
+    v: function (e) {
+        return e.split('').reverse().join('')
+    },
+    r: function (e, t) {
+        var n;
+        e = e.split('');
+        for (var o = r + r, i = e.length; i--;) ~(n = o.indexOf(e[i])) && (e[i] = o.substr(n - t, 1));
+        return e.join('')
+    },
+    s: function (e, t) {
+        var n = e.length;
+        if (n) {
+            var r = function (e, t) {
+                    var n = e.length,
+                        r = [];
+                    if (n) {
+                        var o = n;
+                        for (t = Math.abs(t); o--;) t = (n * (o + 1) ^ t + o) % n,
+                            r[o] = t
+                    }
+                    return r
+                }(e, t),
+                o = 0;
+            for (e = e.split(''); ++o < n;) e[o] = e.splice(r[n - 1 - o], 1, e[o]) [0];
+            e = e.join('')
+        }
+        return e
+    },
+    i: function (e, t) {
+        return vk_common_min.s(e, t ^ vk.id)
+    },
+    x: function (e, t) {
+        var n = [];
+        return t = t.charCodeAt(0),
+            each(e.split(''), (function (e, r) {
+                n.push(String.fromCharCode(r.charCodeAt(0) ^ t))
+            })),
+            n.join('')
+    },
+ 
+    a: function(e) {
+        var r = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMN0PQRSTUVWXYZO123456789+/=';
+        if (!e || e.length % 4 == 1) return !1;
+        for (var t, n, o = 0, i = 0, a = ''; n = e.charAt(i++);) ~(n = r.indexOf(n)) && (t = o % 4 ? 64 * t + n : n, o++ % 4) && (a += String.fromCharCode(255 & t >> (-2 * o & 6)));
+        return a
+    },
+ 
+    mp3_to_m3u8: function(e) {
+        if (~e.indexOf('audio_api_unavailable')) {
+            var t,
+                n,
+                r = e.split('?extra=')[1].split('#'),
+                i = '' === r[1] ? '' : vk_common_min.a(r[1]);
+            if (r = vk_common_min.a(r[0]), 'string' != typeof i || !r) return e;
+            for (var s = (i = i ? i.split(String.fromCharCode(9)) : []).length; s--;) {
+                if (t = (n = i[s].split(String.fromCharCode(11))).splice(0, 1, r) [0], !vk_common_min[t]) return e;
+                r = vk_common_min[t].apply(null, n)
+            }
+            if (r && 'http' === r.substr(0, 4)) return r
+        }
+        return e
+    },
+
+    asObject: (info) => {
+        return {
+            url: vk_common_min.mp3_to_m3u8(info[2]),
+            fullId: info[1] + '_' + info[0],
+            performer: info[4],
+            title: info[3]
+        };
     }
 };
 
