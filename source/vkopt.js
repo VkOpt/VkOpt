@@ -9,8 +9,8 @@
 
 /* VERSION INFO */
 var vVersion = 308;
-var vBuild = 220612;
-var vVersionRev = 4;
+var vBuild = 221123;
+var vVersionRev = 5;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -5398,151 +5398,18 @@ vkopt['hls'] = {
          onDone = opts.onDone || null,
          onProgress = opts.onProgress || null;
 
-      var url_create = window.URL.createObjectURL;
-      var url_revoke = window.URL.revokeObjectURL;
-      window.URL.createGrabObjectURL = function(ms) {
-         if (ms instanceof MediaGrabSource){
-            vkopt.log('coURL ', ms);
-            ms.emit('sourceopen'); //new
-            return 'test://';
-         } else
-            return url_create(ms);
-      };
-      window.URL.revokeGrabObjectURL = function(ms) {
-         if (ms instanceof MediaGrabSource){
-            vkopt.log('roURL ', ms);
-            return true;
-         } else
-            return url_revoke(ms);
-      };
-
-      function HTML5MediaElement(){}
-      HTML5MediaElement.prototype = Object.create(EventEmitter.prototype)
-      var mel = new HTML5MediaElement();
-      extend(mel,{
-         addEventListener: mel.addListener,
-         pause: function() {
-            vkopt.log('Paused');
-            mel.emit('pause');
-            mel.emit('play');
-            return false;
-         },
-         preload: 'auto',
-         buffered: {},
-         duration: 1,
-         seeking: false,
-         height: 1080,
-         width: 1920,
-         loop: false,
-         played: {},
-         removeAttribute: function(attr){},
-         load: function(l){vkopt.log('Load:',this)},
-         canPlayType: function(codec){vkopt.log('Got asked about:'+codec); return 'probably'},
-         nodeName: 'audio',
-         playbackQuality: {},
-         getVideoPlaybackQuality: function() {return mel.playbackQuality},
-         addTextTrack: function(tt){vkopt.log('Adding textTrack ',tt); return [{}]},
-         textTracks: {
-            addEventListener: function(e,cb) {
-               vkopt.log('** Adding eventListener: '+e);
-            }
-         }
-      })
-
-      function SourceGrabBuffer(mimetype){
-            EventEmitter.call(this);
-            this._mimetype = mimetype;
-            return this;
-      }
-      SourceGrabBuffer.prototype =  Object.create(EventEmitter.prototype);
-      var sgb = SourceGrabBuffer.prototype;
-      sgb.addEventListener = function(eventName, callback) {
-         this.addListener(eventName, callback);
-         //vkopt.log('sgb addEventListener '+eventName);
-      }
-      sgb.appendBuffer = function(data) {
-         //vkopt.log('append: ', data.length, 'bytes ', this._mimetype);
-         var that = this;
-         onSegmentReady && onSegmentReady(data, this._mimetype);
-         setTimeout(function(){
-            that.emit('onupdateend');
-            that.emit('updateend');
-         },5);
-      }
-      Object.defineProperty(sgb, "buffered", {
-          get: function buffered() {
-               return [];
-          }
-      });
-      Object.defineProperty(sgb, "mode", {
-          get: function mode() {
-               return '';
-          }
-      });
-      SourceGrabBuffer.prototype.constructor = SourceGrabBuffer;
-
-      function MediaGrabSource(){
-         EventEmitter.call(this);
-         this.readyState = 'closed';
-         this._sb = {};
-         return this;
-      }
-      MediaGrabSource.prototype =  Object.create(EventEmitter.prototype);
-      var mgs = MediaGrabSource.prototype;
-      extend(mgs,{
-         addEventListener: function(eventName,callback) {
-            //vkopt.log('MediaGrabSource addEventListener: '+eventName);
-            this.addListener(eventName,callback);
-            this.readyState = 'open';
-            //vkopt.log(Object.keys(this._sb).length);
-            if (eventName == 'sourceopen') {
-               vkopt.log('Fired: '+eventName);
-               //this.emit(eventName,this);
-            }
-         },
-         removeEventListener: function(eventName,b) {
-            this.removeListener(eventName,b);
-         },
-         addSourceBuffer: function(mimetype) {
-            vkopt.log('MediaGrabSource new buffer for '+mimetype);
-            var nb = new SourceGrabBuffer(mimetype);
-            this._sb[mimetype] = nb;
-            return nb;
-         },
-         endOfStream: function(error) {
-            vkopt.log('** End of stream: '+error);
-            mel.emit('ended');
-            // onDone();
-         },
-         isTypeSupported: function(codec){return true}
-      });
-      Object.defineProperty(mgs, "sourceBuffers", {
-          get: function sourceBuffers() {
-               var a = [];
-               for (var sb in this._sb) {
-                  a.push(this._sb[sb]);
-               }
-               return a;
-          }
-      });
-      MediaGrabSource.isTypeSupported = function(codec){return true}
+      var mel = document.createElement('audio');
 
       var get_module=function(js){
          var exports = {};
           eval(js);
           return exports;
       }
-      var modify_hls = function(js){
-         js = js.replace(/window\.MediaSource/g,'MediaGrabSource')
-                .replace(/window\.SourceBuffer/g,'SourceGrabBuffer')
-                .replace(/\.createObjectURL/g,'.createGrabObjectURL')
-                .replace(/\.revokeObjectURL/g,'.revokeGrabObjectURL');
-         return js;
-      }
 
       function downloadHls(url) {
          var
             startSN = 0,
+            SN = 0,
             endSN = 0;
 
          var hls = new Hls({debug:false,autoStartLoad:true});
@@ -5554,12 +5421,19 @@ vkopt['hls'] = {
          hls.on(Hls.Events.BUFFER_EOS,function(event_name, info){
             vkopt.log('GRABBER DONE: ',Hls.Events.FRAG_LOADED);
             onDone && onDone();
+            delete mel;
+         });
 
+         hls.on(Hls.Events.BUFFER_APPENDING,function(event_name, info){
+            var stepLen = mel.duration / (endSN - startSN);
+            mel.currentTime = Math.max(SN - startSN, 1) * stepLen;
+            onSegmentReady && onSegmentReady(info.data, 'audio/mpeg');
          });
 
          hls.on(Hls.Events.FRAG_LOADED,function(event_name, info){
             if (info && info.frag && info.frag.sn)
                setTimeout(function(){
+                  SN = info.frag.sn;
                   onProgress && onProgress(info.frag.sn - startSN, endSN - startSN);
                },30);
          });
@@ -5570,15 +5444,16 @@ vkopt['hls'] = {
             endSN = m.levels[0].details.endSN
             mel.paused = false;
             mel.currentTime = 0;
-            mel.emit('pause');
-            mel.emit('playing');
+            mel.volume = 0;
+            mel.pause();
+            mel.play();
          });
          hls.attachMedia(mel);
       }
 
       if (typeof window.Hls === 'undefined') {
         AjGet('https://cdn.jsdelivr.net/npm/hls.js@latest', function(js){
-            window.Hls = get_module(modify_hls(js)).Hls;
+            window.Hls = get_module(js).Hls;
             downloadHls(m3u8);
         });
       } else {
