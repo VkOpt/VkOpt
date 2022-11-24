@@ -9,8 +9,8 @@
 
 /* VERSION INFO */
 var vVersion = 308;
-var vBuild = 221123;
-var vVersionRev = 5;
+var vBuild = 221124;
+var vVersionRev = 6;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt = {};
@@ -5409,7 +5409,6 @@ vkopt['hls'] = {
         function downloadHls(url) {
             var
                 startSN = 0,
-                SN = 0,
                 endSN = 0;
 
             var hls = new Hls({ debug: false, autoStartLoad: true });
@@ -5426,8 +5425,8 @@ vkopt['hls'] = {
 
             hls.on(Hls.Events.BUFFER_APPENDING, function (event_name, info) {
                 var stepLen = mel.duration / (endSN - startSN);
-                mel.currentTime = Math.max(SN - startSN, 1) * stepLen;
-                onSegmentReady && onSegmentReady(info.data, 'audio/mpeg');
+                mel.currentTime = Math.max(info.frag.sn - startSN, 0) * stepLen;
+                onSegmentReady && onSegmentReady(info.data, 'audio/mpeg', info.frag.sn);
             });
 
             hls.on(Hls.Events.FRAG_LOADED, function (event_name, info) {
@@ -5440,21 +5439,24 @@ vkopt['hls'] = {
 
             hls.on(Hls.Events.MANIFEST_PARSED, function (n, m) {
                 vkopt.log('manifest_parsed', m);
-                startSN = m.levels[0].details.startSN
-                endSN = m.levels[0].details.endSN
-                mel.paused = false;
+                startSN = m.levels[0].details.startSN;
+                endSN = m.levels[0].details.endSN;
                 mel.currentTime = 0;
                 mel.volume = 0;
-                mel.pause();
-                mel.play();
             });
             hls.attachMedia(mel);
         }
 
         if (typeof window.Hls === 'undefined') {
             AjGet('https://cdn.jsdelivr.net/npm/hls.js@latest', function (js) {
-                window.Hls = get_module(js).Hls;
-                downloadHls(m3u8);
+                let s = document.createElement('script');
+                s.type = 'text/javascript';
+                s.innerHTML = js;
+                document.body.appendChild(s);
+
+                setTimeout(() => {
+                    downloadHls(m3u8);
+                }, 100);
             });
         } else {
             downloadHls(m3u8);
@@ -5488,9 +5490,10 @@ vkopt['hls'] = {
             }
         };
         vkopt.hls.grab(url, {
-            onSegmentReady: function (data, type) {
+            onSegmentReady: function (data, type, sn) {
                 buff.type = type;
-                buff.data.push(data);
+                // В firefox в начале кладется какой-то мусор, таким способом от него можно избавиться
+                buff.data[sn - 1] = data;
             },
             onDone: function () {
                 setTimeout(function () {
