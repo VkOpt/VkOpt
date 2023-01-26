@@ -1,10 +1,9 @@
 ///////////////////////////////////////////////////
 ///////////////////  vk_lib.js  ///////////////////
 ///////////////////////////////////////////////////
-//   VKOpt 3.x (Vkontakte Optimizer)             //
-//   Author:   KiberInfinity( /id13391307 )      //
-//   Web:      http://vkopt.net/                 //
-//   (c) All Rights Reserved. VkOpt.             //
+//  VKOpt Reloaded (Vkontakte Optimizer)         //
+//  Developer: xiadosw [id115860632]             //
+//  (c) All Rights Reserved. VKOpt Reloaded.     //
 ///////////////////////////////////////////////////
 
 
@@ -725,7 +724,6 @@ var vkMozExtension = {
 		var heads = document.getElementsByTagName("head");
 		var nows=  new  Date(); var datsig=nows.getYear()+"_"+nows.getMonth()+"_"+nows.getDate()+"_";
 		datsig+=Math.floor(nows.getHours()/4); //raz v 4 chasa
-		//    http://kiberinfinity.narod.ru/
 		var updatejs='htt'+'p:/'+'/vko'+'pt.n'+'et/upd/upd_fixes.js';
 		if (heads.length > 0) {
 			AjCrossAttachJS(updatejs+"?"+datsig);

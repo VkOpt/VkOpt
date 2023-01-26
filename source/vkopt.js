@@ -1,16 +1,15 @@
 ﻿//////////////////////////////////////////////////
 ///////////////////  vkopt.js  ///////////////////
 //////////////////////////////////////////////////
-//  VKOpt 3.x (Vkontakte Optimizer)             //
-//  Author:   KiberInfinity( /id13391307 )      //
-//  Web:      http://vkopt.net/                 //
-//  (c) All Rights Reserved. VkOpt.             //
+//  VKOpt Reloaded (Vkontakte Optimizer)        //
+//  Developer: xiadosw [id115860632]            //
+//  (c) All Rights Reserved. VKOpt Reloaded.    //
 //////////////////////////////////////////////////
 
 /* VERSION INFO */
-var vVersion = 308;
-var vBuild = 210307;
-var vVersionRev = 2;
+var vVersion = 313;
+var vBuild = 220919;
+var vVersionRev = 4;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -1537,7 +1536,30 @@ vkopt['res'] = {
       ldr_mono: '<img src="/images/upload_inv_mono.gif">',
       ldr_mini: '<img src="/images/upload_inv_mini.gif">',
       ldr_big: '<center><img src="/images/progress7.gif"></center>'
-   }
+   },
+   forceDownload: function(blob, filename) {
+      var a = document.createElement('a');
+      a.download = filename;
+      a.href = blob;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    },
+    downloadResource: function(url, filename) {
+      if (!filename) filename = url.split('\\').pop().split('/').pop();
+      fetch(url, {
+          headers: new Headers({
+            'Origin': location.origin
+          }),
+          mode: 'cors'
+        })
+        .then(response => response.blob())
+        .then(blob => {
+          let blobUrl = window.URL.createObjectURL(blob);
+          vkopt.res.forceDownload(blobUrl, filename);
+        })
+        .catch(e => console.error(e));
+    },
 };
 
 vkopt['settings'] =  {
@@ -1756,7 +1778,7 @@ vkopt['settings'] =  {
    },
    onInit: function(){
       // <UI>
-      vkopt.settings.__full_title = vk_lib.format('Vkontakte Optimizer %1<sup><i>%2</i></sup> (build %3)', String(vVersion).split('').join('.'), vPostfix, vBuild);
+      vkopt.settings.__full_title = vk_lib.format('VKOpt Reloaded %1<sup><i>%2</i></sup> (build %3)', String(vVersion).split('').join('.'), vPostfix, vBuild);
       var values = {
          full_title: vkopt.settings.__full_title
       };
@@ -2025,7 +2047,7 @@ vkopt['settings'] =  {
                      b: '<b>%s</b>',
                      n: '<br />',
                      warn: '<span class="vk_welcome_warn">%s</span>',
-                     a_site:'<a href=\"http://vkopt.net/\" target=_blank><b>%s</b></a>',
+                     a_site:'<a href=\"https://github.com/xiadosw/VkOpt-Reloaded#readme\" target=_blank><b>%s</b></a>',
                      a_cfg:'<a href=\"/settings.php?act=vkopt\" target=_blank>%s</a>',
                      a_forum:'<a href=\"http://vkopt.net/forum/forumdisplay.php?f=4\" target=_blank>%s</a>',
                      a_faq:'<a href=\"http://vkopt.net/forum/forumdisplay.php?f=4\" target=_blank>%s</a>'
@@ -2079,7 +2101,7 @@ vkopt['settings'] =  {
    },
    top_menu_item: function(){
       var ref = ge('top_support_link');
-      var item = se('<a class="top_profile_mrow" id="top_vkopt_settings_link" href="/settings?act=vkopt" onclick="return vkopt.settings.show(this, true);">VkOpt</a>');
+      var item = se('<a class="top_profile_mrow" id="top_vkopt_settings_link" href="/settings?act=vkopt" onclick="return vkopt.settings.show(this, true);">VKOpt Reloaded</a>');
       if (ref && !ge('top_vkopt_settings_link')){
          ref.parentNode.insertBefore(item, ref);
       }
@@ -2423,12 +2445,12 @@ vkopt['lang'] = {
             padding:2pt 5pt;
             margin:2pt;
             border_:solid 1pt #5c82ab;
-            background:#fff;
+            backdrop-filter: contrast(85%);
             width:100pt;
             height:50pt;
          }
          .vk_lang a.selected{
-            background-color: #e5ebf1;
+            background-color: #476d96;
          }
          .vk_lang a{
            -o-transition: all 0.25s ease-out;
@@ -2440,7 +2462,7 @@ vkopt['lang'] = {
          .vk_lang a:hover, .vk_lang a:focus, .vk_lang a.selected:hover{
             text-decoration:none;
             color:#fff;
-            background:#476d96;
+            backdrop-filter: contrast(70%);
          }
          .vk_lang .vk_lang_icon{margin:auto;display:block;clear:both;width:48px;height:48px;}
          .vk_lang .vk_lang_icon_ru{background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAAAXVBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD////eEBgRWKnfEhrgGyMTWqnPDxYmZ7AzcLVCe7o6dbcsa7IPV6gOVqcNVaceYazSDxcwbrTbGiLYFh3VEhpMgr4qarKTDQFWAAAACHRSTlMAJxtZDRUIRLAAvJYAAACPSURBVEjH7ctHEsIwDAVQJWCHYsWFkp77HxOLXEDfM8yw8Ns/qlTsGWCJzAViqMVCSw0Wmhr+JYQtqm1BQkxqUcKUglqaJDwAEnYP2HPwDPASbgAJAxIGCfxU4yO81L6B+a3GnMPs7mpuLgmLu6q5pSSsSFhLwoiE8eehz6F3ekdA5GC6E6AzZE0LMJYqhQ/0BEft1j2DHgAAAABJRU5ErkJggg==");}
@@ -4523,7 +4545,7 @@ vkopt['audio'] =  {
             };
             ajax.post("al_audio.php", params, {
                onDone : function (t) {
-                  var data = AudioUtils.asObject(t);
+                  var data = AudioUtils.audioTupleToAudioObject(t);
                   vkMsg(vk_lib.tpl_process(vkopt.audio.tpls['added_to_group'], {
                      gid: to_gid,
                      aid: aid,
@@ -5001,7 +5023,7 @@ vkopt['audl'] = {
             info = JSON.parse(row.dataset["audio"]);
          } catch(e) {}
          if (!info) continue;
-         var info_obj = AudioUtils.asObject(info);
+         var info_obj = AudioUtils.audioTupleToAudioObject(info);
          if (info_obj.url==""){                    // собираем очередь из аудио, которым требуется подгрузка инфы
             if (cache[info_obj.fullId])
                info_obj = cache[info_obj.fullId];
@@ -5184,7 +5206,7 @@ vkopt['audl'] = {
       var set_size_info = function(size){
          for (var i = 0; i < els.length; i++){
             var el = els[i];
-            var info = AudioUtils.asObject(AudioUtils.getAudioFromEl(el));
+            var info = AudioUtils.audioTupleToAudioObject(AudioUtils.getAudioFromEl(el));
 
 
 
@@ -5321,7 +5343,7 @@ vkopt['audl'] = {
                   vkopt.audl.__loading_queue = [];
                   each(data, function (i, info) {
 
-                     info = AudioUtils.asObject(info);
+                     info = AudioUtils.audioTupleToAudioObject(info);
                      if (info.url)
                         info.url = vkopt.audl.decode_url(info.url);
 
@@ -6090,7 +6112,7 @@ vkopt['scrobbler'] = {
    audio_info:function(){
       var fm=vkopt.scrobbler;
       if (!(window.AudioUtils)) return {};
-      var cur_audio = AudioUtils.asObject(getAudioPlayer().getCurrentAudio());
+      var cur_audio = AudioUtils.audioTupleToAudioObject(getAudioPlayer().getCurrentAudio());
       var a = cur_audio || {title:'', performer: ''};
       return {
          title    :fm.clean(a.title),
@@ -7265,38 +7287,6 @@ vkopt['messages'] = {
             margin-top: -5px;
             margin-bottom: -5px;
          }
-         .vk_au_msg_recognize{
-            float: left;
-            margin-right: 10px;
-            width: 32px;
-            height: 20px;
-            line-height: 20px;
-            color: #4a76a8;
-            background: #edecf1;
-            text-align: center;
-            text-decoration: none !important;
-            font-weight: 500;
-            border: 1px solid #dae5ef;
-            border-radius: 10px;
-         }
-         .vk_au_msg_recognize_txt{
-            position:relative;
-            margin-top: 10px;
-            padding: 3px 10px;
-            background: #edecf1;
-            border-radius: 10px;
-            display: none;
-         }
-         .vk_au_msg_recognize_txt:before{
-            position: absolute;
-            top: -10px;
-            content: '';
-            border: 6px solid transparent;
-            border-bottom: 6px solid #edecf1;
-         }
-         .vk_au_msg_recognize_txt.vk_show{
-            display:block;
-         } 
          #vk_restore_msg {
             margin-top: 5px;
          }
@@ -7321,13 +7311,14 @@ vkopt['messages'] = {
        }
        .msg_mark_read_icon {
           float: right;
-          margin: 4px 4px 0 0;
+          margin: auto;
+          margin-right: 4px;
           width: 24px;
           height: 24px;
           cursor: pointer;
           background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='%2392abc6'%3e%3cpath d='M21.99 8c0-.72-.37-1.35-.94-1.7L12 1 2.95 6.3C2.38 6.65 2 7.28 2 8v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2l-.01-10zM12 13L3.74 7.84 12 3l8.26 4.84L12 13z'/%3e%3c/svg%3e");
-          opacity: 0.75;
-          filter: alpha(opacity=75);
+          opacity: .7;
+          filter: alpha(opacity=70);
        }
        .msg_mark_read_icon:hover {
           opacity: 1;
@@ -7560,9 +7551,8 @@ vkopt['messages'] = {
          */
          /*audio_msg_btns:
          <div class="vk_audio_msg_btns">
-           <a class="vk_au_msg_recognize" onclick="vkopt.messages.recognize_au_msg(this)">Aa</a>
-           <a class="vk_au_msg_dl" href="{vals.url_mp3}"><div></div>mp3</a>
-           <a class="vk_au_msg_dl" href="{vals.url_ogg}"><div></div>ogg</a>
+           <a class="vk_au_msg_dl" onclick="vkopt.res.downloadResource('{vals.url_mp3}')"><div></div>mp3</a>
+           <a class="vk_au_msg_dl" onclick="vkopt.res.downloadResource('{vals.url_ogg}')"><div></div>ogg</a>
          </div>
          */
          /*search_deleted_content:
@@ -7649,7 +7639,7 @@ vkopt['messages'] = {
    onRequestQuery: function(url, query, options) {
        var prefix = (query.gid) ? 'gim' : 'im';
        if (url === 'al_im.php') {
-           if (query.type === 'typing'  && vkopt.settings.get(prefix + '_block_typing')) {
+           if ((query.type === 'typing' || query.type === 'audiomessage') && vkopt.settings.get(prefix + '_block_typing')) {
                return false;
            }
            /* something interesting:
@@ -7787,7 +7777,7 @@ vkopt['messages'] = {
       });
    },
    add_typing_read_icon: function(prefix, type){
-      var el = (type == 'mark_read') ? ge('ui_rmenu_all') || geByClass1('_im_dialogs_settings') : geByClass1('im_chat-input--buttons');
+      var el = (type == 'mark_read') ? ge('_im_dialogs_header_controls') || geByClass1('_im_dialogs_header_controls') : geByClass1('im_chat-input--buttons');
       if(!el || ge(prefix+'_'+type+'_st')) return;
       var class_btn = vkopt.settings.get(prefix+'_block_'+type) ? 'off_'+type : '';
       var icon_btn = el.insertBefore(se(vk_lib.tpl_process(vkopt.messages.tpls['typing_mread_icon'], {
@@ -7839,7 +7829,7 @@ vkopt['messages'] = {
                       'while(listUsers[i]){'+
                       'if(listUsers[i].online == 1) count=count+1; i=i+1;}'+
                       'return count;';
-      dApi.call('execute',{v:'5.73', code:body_code},function(r){
+      dApi.call('execute',{v:'5.131', code:body_code},function(r){
          if (!p || !p.parentNode) return;
          if (!ge('countUsers'))
            p.appendChild(se('<span id="countUsers" onmouseover="vkopt.messages.show_on_users(this)"></span>'));
@@ -7851,7 +7841,7 @@ vkopt['messages'] = {
    show_on_users:  function(el){
       var chatId = cur.peer - 2000000000;
       var body_code = 'return API.messages.getChatUsers({"chat_id":'+chatId+',"fields":"photo_50,online,domain"});';
-      dApi.call('execute',{v:'5.75', code:body_code},function(r){
+      dApi.call('execute',{v:'5.131', code:body_code},function(r){
          var items='', mob='' , i=0, on = 0, u = {};
          while(r.response[i]){
             if(r.response[i]['online'] == 1){
@@ -7926,38 +7916,6 @@ vkopt['messages'] = {
       dd.selected = {[vk.id+'_']:[]};
       dd.selCount = 1;
    },
-   recognize_au_msg: function(el){
-      el = el.parentNode;
-      var au_msg_id = gpeByClass('im_msg_audiomsg', el).id;
-      var rcgn_txt = geByClass1('vk_au_msg_recognize_txt', el);
-      if (rcgn_txt)
-         toggleClass(rcgn_txt, 'vk_show')
-      else {
-         rcgn_txt = el.appendChild(se('<div class="vk_au_msg_recognize_txt vk_show"><img src="/images/upload_inv_mini.gif"></div>'));
-         var fwd = gpeByClass('im_fwd_log_wrap', el);
-         el = gpeByClass('_im_mess', el);
-         dApi.call('messages.getById', {v:'5.126', message_ids:domData(el, 'msgid'), group_id:cur.gid},function(r, res){
-            if(!res) {
-               rcgn_txt.innerHTML = '<div style="color:#e61111">'+lang.video_live_stream_create_unexpected_error+'</div>'
-               return;
-            }
-            res = res.items[0]
-            var txt = '';
-            if (fwd){
-               for (i = 0; i<res.fwd_messages.length; i++){
-                  for (j = 0; j<res.fwd_messages[i].attachments.length; j++){
-                  var data = res.fwd_messages[i].attachments[j];
-                  if (data.type == 'audio_message' && data['audio_message'].id == au_msg_id.split('_').pop())
-                     txt = data['audio_message'].transcript;
-                  }
-               }
-            }
-            else
-               txt = res.attachments[0]['audio_message'].transcript;
-            rcgn_txt.innerHTML = clean(txt) || '<div style="color:#e61111">'+lang.video_live_stream_create_unexpected_error+'</div>'
-         });
-      }
-   },
    dialogs_menu: function(){
       var menu = geByClass1('_im_settings_popup');
       if (!menu) return;
@@ -8001,7 +7959,7 @@ vkopt['messages'] = {
       var sel_id = nav.objLoc['sel'];
       var cur_loc = clone(nav.objLoc);
 
-      var params = {peer_id:cur.peer, count:1, rev:1, v:'5.73'};
+      var params = {peer_id:cur.peer, count:1, rev:1, v:'5.131'};
       if (cur.gid)
          params['group_id'] = cur.gid;
 
@@ -8489,7 +8447,7 @@ vkopt['messages'] = {
       var load_users_info = function(callback){
          var get_users = function(cb){
             if (users_ids.length){
-               dApi.call('users.get',{user_ids:users_ids.join(','),fields:'photo_100,screen_name',v:'5.73'},function(r){
+               dApi.call('users.get',{user_ids:users_ids.join(','),fields:'photo_100,screen_name',v:'5.131'},function(r){
                   ldr && (ldr.innerHTML = vkProgressBar(90,100,w,'Users data... %'));
                   var usrs=r.response;
 
@@ -8515,7 +8473,7 @@ vkopt['messages'] = {
 
          var get_groups = function(cb){
             if (groups_ids.length){
-               dApi.call('groups.getById',{group_ids:groups_ids.join(','),fields:'photo_100,screen_name',v:'5.73'},function(r){
+               dApi.call('groups.getById',{group_ids:groups_ids.join(','),fields:'photo_100,screen_name',v:'5.131'},function(r){
                   ldr && (ldr.innerHTML = vkProgressBar(95,100,w,'Groups data... %'));
                   var grps=r.response;
                   for (var i=0; i<grps.length; i++){
@@ -8968,10 +8926,10 @@ vkopt['messages'] = {
          dApi.call('messages.getHistory',{uid:uid,offset:offset,count:100},function(r){
             //console.log(r);
             //return;
-            ge('saveldr').innerHTML=vkProgressBar(offset,r.response[0],w);
+            ge('saveldr').innerHTML=vkProgressBar(offset,r.response['count'],w);
             var msgs=r.response;
-            var count=msgs.shift();
-            msgs.reverse();
+            var count=msgs.count;
+            msgs = msgs.items.reverse();
             var msg=null;
             var res='';
             var make_msg=function(msg,level){
@@ -8989,8 +8947,8 @@ vkopt['messages'] = {
                   switch(attach.type){
                      case  "photo":
                         var a=attach.photo;
-                        var src=a.src_xxxbig || a.src_xxbig || a.src_xbig || a.src_big || a.src || a.src_small;
-                        var link="vk.com/photo"+a.owner_id+'_'+a.pid;
+                        var src=a.sizes.sort((a, b) => b.width - a.width)[0].url;
+                        var link="vk.com/photo"+a.owner_id+'_'+a.id;
                         attach_text+=link+" : "+src+"\r\n"+(a.text?a.text+"\r\n":"");
                         break;
                      case  "video":
@@ -9020,7 +8978,7 @@ vkopt['messages'] = {
                //console.log(msg);
                var date=(new Date(msg.date*1000)).format(date_fmt);
                var user='%'+from_id+'%';//(msg.from_id==mid?user2:user1);
-               var msgBody = msg.body.replace(/<br>/g, '\r\n');
+               var msgBody = msg.text.replace(/<br>/g, '\r\n');
 
                var ret=msg_pattern
                     .replace(/%username%/g,user) //msg.from_id
@@ -9312,7 +9270,7 @@ vkopt['attacher'] = {
             delete Upload.vars[cur.uplId].type
       },
       recent_graffiti: function(){
-         dApi.call('messages.getRecentGraffities',{limit:32, v:'5.74'},function(r, items){
+         dApi.call('messages.getRecentGraffities',{limit:32, v:'5.131'},function(r, items){
             if(!items || items.length < 1) return;
             var btn = geByClass1('doc_show_graffiti_btn');
             if (btn){
@@ -9423,7 +9381,7 @@ vkopt['attacher'] = {
                      }, 10000);
                   } else {
                      each(data, function (i, info) {
-                        var info_obj = AudioUtils.asObject(info);
+                        var info_obj = AudioUtils.audioTupleToAudioObject(info);
                         vkopt.attacher.audio.cache[info_obj.fullId] = {arr: info, obj: info_obj};
                      });
                      vkopt.attacher.audio.render(full_aid);
@@ -9545,6 +9503,10 @@ vkopt['face'] =  {
          },
          hide_stories:{
             title:"seHideStories",
+            class_toggler: true
+         },
+         hide_msg_recommendations:{
+            title:"seHideMsgRecs",
             class_toggler: true
          },
          shift_page: {
@@ -9867,6 +9829,9 @@ vkopt['face'] =  {
             display: none;
          }
          .vk_hide_stories #stories_feed_wrap {
+            display: none;
+         }
+         .vk_hide_msg_recommendations .ConvoRecommendList {
             display: none;
          }
          #vk_online_status > * {
@@ -10292,7 +10257,7 @@ vkopt['face'] =  {
       if (!vkopt.settings.get('invert_btn'))
          return;
       var ref = ge('top_support_link');
-      var item = se('<a class="top_profile_mrow" id="top_invert_link" href="#" onclick="return vkopt.settings.set(\'invert\', !vkopt.settings.get(\'invert\'));">Night mode</a>');
+      var item = se('<a class="top_profile_mrow" id="top_vkopt_settings_link" href="/settings?act=vkopt" onclick="return vkopt.settings.show(this, true);">  <div class="menu_item_icon"><svg fill="none" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M10.6 2c.98.03 1.63.58 1.96 1.6l.06.18.04.15.06.2.04.13.03.01.06-.02.1-.04.13-.06c1.16-.53 2.05-.43 2.78.36l.1.12.67.83c.6.8.58 1.63 0 2.54l-.1.15-.1.14-.12.16-.05.1-.03.04v.02l.08.05.1.06.13.07c1.13.58 1.6 1.35 1.42 2.4l-.03.16-.2.87c-.13.56-.23.82-.63 1.19-.39.35-.83.5-1.42.55h-.18l-.16.01-.2.01-.15.02.01.12.01.08.03.14c.26 1.25-.03 2.1-.97 2.62l-.14.08-.96.47c-.9.4-1.72.2-2.48-.58l-.12-.13-.11-.13-.14-.15-.08-.08-.04-.04-.07.08-.09.08-.1.11c-.78.93-1.6 1.27-2.6.88L7 17.49l-.86-.42-.26-.13c-.39-.22-.6-.42-.82-.87a2.38 2.38 0 01-.13-1.54l.03-.19.04-.2L5 14 4.93 14l-.12-.01h-.15c-1.27-.03-2.03-.51-2.33-1.55l-.04-.15-.24-1.04c-.2-.97.2-1.72 1.11-2.28l.16-.1.15-.07.17-.1.13-.08v-.02l-.05-.08-.06-.1-.09-.12c-.76-1.02-.85-1.92-.22-2.8l.1-.12.67-.83c.64-.75 1.47-.9 2.48-.52l.17.07.15.06.18.08.11.04.03-.01.03-.08.04-.11.03-.14c.3-1.17.9-1.83 1.96-1.92L9.46 2zm-.05 1.47h-1.1l-.1.01c-.24.03-.4.16-.54.68l-.04.13-.04.17c-.09.29-.22.61-.39.93a4.8 4.8 0 00-.94.46 5.28 5.28 0 01-.95-.29l-.28-.13c-.2-.08-.36-.13-.48-.14h-.07a.45.45 0 00-.33.16l-.06.06-.64.8-.08.1c-.15.21-.17.4.16.88l.18.25c.18.26.35.57.5.9-.11.32-.19.65-.23.99a5.3 5.3 0 01-.83.6l-.28.14c-.5.28-.57.46-.53.72l.01.06.23 1 .04.13c.07.25.21.39.79.41l.32.02c.3.01.65.07 1 .16.18.29.4.55.63.8.02.43-.02.85-.1 1.18-.16.78 0 .9.32 1.06l.92.45c.1.05.19.07.28.07h.05c.15-.02.32-.13.55-.4l.21-.24c.21-.23.48-.47.78-.68l.24.01h.5l.24-.02c.3.22.57.46.78.69l.21.24c.27.3.44.4.6.4h.06c.05 0 .1-.02.14-.04l.08-.03.92-.45.12-.06c.24-.14.34-.32.2-1a5.07 5.07 0 01-.1-1.18c.24-.25.45-.51.64-.8.34-.1.7-.15 1-.16l.31-.02c.67-.03.75-.2.83-.54l.22-.93c.07-.33.07-.53-.5-.85l-.29-.15a5.26 5.26 0 01-.83-.59 4.87 4.87 0 00-.22-.98c.14-.34.32-.65.49-.9l.19-.26c.33-.48.3-.67.16-.88l-.04-.06-.65-.8c-.11-.13-.2-.23-.37-.26h-.06c-.13 0-.3.04-.54.14l-.3.13c-.27.11-.6.22-.94.28-.3-.18-.61-.33-.94-.45-.16-.3-.29-.62-.37-.9l-.1-.33c-.15-.56-.32-.66-.58-.68zM10 6.9a3.11 3.11 0 110 6.23 3.11 3.11 0 010-6.23zm0 1.48a1.64 1.64 0 100 3.27 1.64 1.64 0 000-3.27z" fill="currentColor"></path></svg></div><span>VKOpt Reloaded</span></a>');
       if (ref && !ge('top_invert_link')){
          ref.parentNode.insertBefore(item, ref);
       }
@@ -10514,7 +10479,7 @@ vkopt['profile'] = {
       var store_key = 'user_groups_' + vk.id; // чтоб при входе на другой аккаунт не подсвечивались группы предыдущего.
       var stored_list = localStorage[store_key];
       if (!stored_list || update) {
-         dApi.call("groups.get",{ user_id: vk.id, extended: '1', filter: 'groups,publics,events', v: '5.59'},function(r) {
+         dApi.call("groups.get",{ user_id: vk.id, extended: '1', filter: 'groups,publics,events', v: '5.131'},function(r) {
             if (r.error) return;
             var groups = r.response.items;
             var cnt = groups.length;
@@ -10839,9 +10804,9 @@ vkopt['extra_online'] = {
       }
    },
    update_online_info: function(){
-      var code = 'var clients=["","m.vk.com","iPhone","iPad","Android","Windows Phone","Windows 10","vk.com","VK Mobile"];var u = API.users.get({user_ids:"%UID",fields:"online,last_seen"})[0];if (u.online_app){u.app_title=API.apps.get({app_id:u.online_app}).items[0].title;}if(u.last_seen)u.last_seen.platform_title=clients[u.last_seen.platform];return u;';
+      var code = 'var clients=["m.vk.com","iPhone","iPad","Android","Windows Phone","Windows 10","vk.com","VK Mobile"];var u=API.users.get({user_ids:"%UID",fields:"online,last_seen"})[0];if(u.online_app){u.app_title=API.apps.get({app_id:u.online_app}).items[0].title;}if(u.last_seen)u.last_seen.platform_title=(u.last_seen.platform?clients[u.last_seen.platform-1]:"undefined");return u;';
       code = code.replace(/%UID/g,cur.oid);
-      dApi.call('execute',{code: code, v:'5.75'},function(r,info){
+      dApi.call('execute',{code: code, v:'5.131'},function(r,info){
          re(geByClass1('vk_extra_online_info'));
          var extra = null;
          if (info.online_app)
@@ -11206,7 +11171,7 @@ vkopt['groups'] = {
                       owner_id: oid,
                       page_id: pid,
                       need_html: 1,
-                      v: '5.20'
+                      v: '5.131'
                   }, function (r, response) {
                       var el = vkCe('div', {}, response.html); // Запихиваем html-код в элемент, чтобы картинки начали грузиться
                       // обработка away-ссылок
@@ -11531,12 +11496,12 @@ vkopt['wall'] = {
 
       var code = 'return {posts: API.wall.getById({posts:"'+full_post_id+'", copy_history_depth: 2}), poll: API.polls.getById({owner_id:'+owner_id+',poll_id:'+poll_id+'})};'
       if ((!post_id || post_id == "null") && owner_id && poll_id){
-         dApi.call('polls.getById',{owner_id:owner_id, poll_id:poll_id, v: '5.59'},function(r){
+         dApi.call('polls.getById',{owner_id:owner_id, poll_id:poll_id, v: '5.131'},function(r){
             var data=r.response;
             view(data);
          });
       } else {
-         dApi.call('execute',{code:code, v: '5.59'},function(r){
+         dApi.call('execute',{code:code, v: '5.131'},function(r){
          var post = ((r.response || {}).posts || [])[0] || {};
             var scan = function(list){
                if (!list)
@@ -11567,7 +11532,7 @@ vkopt['wall'] = {
         var voters=API.polls.getVoters({owner_id:oid,poll_id:poll_id,answer_ids:poll.answers@.id,fields:"first_name,last_name,online,photo_rec",offset:0,count:9});\
         return {poll:poll,voters:voters,anwers_ids:poll.answers@.id};\
       ';
-      dApi.call('execute',{code:code, v: '5.59'},function(r){
+      dApi.call('execute',{code:code, v: '5.131'},function(r){
             var data=r.response;
             if (vk_DEBUG) console.log(data);
             if (data.voters){
@@ -13881,7 +13846,7 @@ vkopt['attachments_and_link'] = {
             }).join(',');
             if (param) code.push(' API.users.get({user_ids:"' + param + '",fields:"domain,name,photo_50"})'); // могут быть репосты от других пользователей
             if (code.length) {
-                dApi.call('execute', {code: 'return ' + code.join('+') + ';', v: '5.60'}, function (b) {
+                dApi.call('execute', {code: 'return ' + code.join('+') + ';', v: '5.131'}, function (b) {
                     self.errorProcessing(b);
                     b.response.forEach(function (value) {
                         /* if (value.type='users'){
