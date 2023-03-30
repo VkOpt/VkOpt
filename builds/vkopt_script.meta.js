@@ -1,11 +1,11 @@
 ﻿// ==UserScript==
 // @name          VKOpt
-// @version       3.0.8.2
+// @version       3.0.8.6
 // @author        KiberInfinity [id13391307]
 // @namespace     http://vkopt.net/
 // @description   Vkontakte Optimizer 3.x
-// @downloadUrl   https://raw.githubusercontent.com/VkOpt/VkOpt/master/builds/vkopt_script.user.js
-// @updateUrl     https://raw.githubusercontent.com/VkOpt/VkOpt/master/builds/vkopt_script.meta.js
+// @downloadUrl   https://raw.githubusercontent.com/BaHeK1994/VkOpt/master/builds/vkopt_script.user.js
+// @updateUrl     https://raw.githubusercontent.com/BaHeK1994/VkOpt/master/builds/vkopt_script.meta.js
 // @match       *://vkontakte.ru/*
 // @match       *://*.vkontakte.ru/*
 // @match       *://vk.com/*
@@ -24,10 +24,10 @@
 // @connect     vkuseraudio.net
 // @connect     vkuservideo.net
 // @connect     vkopt.net
-// @run-at       document-start
-// @grant        unsafeWindow
-// @grant        GM_xmlhttpRequest
-// @grant        GM_download
-// @grant        GM_setValue
-// @grant        GM_getValue
+// @run-at      document-start
+// @grant       unsafeWindow
+// @grant       GM_xmlhttpRequest
+// @grant       GM_download
+// @grant       GM_setValue
+// @grant       GM_getValue
 // ==/UserScript==

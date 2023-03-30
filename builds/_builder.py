@@ -37,7 +37,7 @@ def zipdir(dirPath=None, zipFilePath=None, includeDirInZip=True, regEx=None, exc
     outFile = zipfile.ZipFile(zipFilePath, "w",
         compression=zipfile.ZIP_DEFLATED)
     for (archiveDirPath, dirNames, fileNames) in os.walk(dirPath):
-        if archiveDirPath.find('\\.') != -1:
+        if archiveDirPath.find('/.') != -1:
             print("\tExcluded: "+archiveDirPath)
             continue
         print("\tPacking dir: "+archiveDirPath)
@@ -185,31 +185,31 @@ def MakeUserJS(ver, dirPath=None, ujsFilePath=None):
 
 
 # парсим номер версии из скрипта
-version = GetScriptsVersion('chrome\\scripts\\vkopt.js')
+version = GetScriptsVersion('chrome/scripts/vkopt.js')
 
 new_ver =  '%s.%s' % (version["ver"], version["rev"])
 new_ver_ff =  version["buildver"]
 full_ver = 'v%s_(%s)' % (version["ver"], version["build"])
 
 # вшиваем номер версии в манифесты
-SetJsonVersion('chrome\\manifest.json', new_ver);
-SetJsonVersion('webext\\manifest.json', new_ver);
-SetFirefoxVersion('firefoxJetpack\\install.rdf', new_ver)
-SetFirefoxVersion('firefox\\install.rdf', new_ver_ff)
-SetJsonVersion('maxthon\\def.json', new_ver)
-SetOperaVersion('opera.extension\\config.xml', new_ver)
-SetSafariVersion('vkopt.safariextension\\Info.plist', new_ver)
+SetJsonVersion('chrome/manifest.json', new_ver);
+SetJsonVersion('webext/manifest.json', new_ver);
+SetFirefoxVersion('firefoxJetpack/install.rdf', new_ver)
+SetFirefoxVersion('firefox/install.rdf', new_ver_ff)
+SetJsonVersion('maxthon/def.json', new_ver)
+SetOperaVersion('opera.extension/config.xml', new_ver)
+SetSafariVersion('vkopt.safariextension/Info.plist', new_ver)
 
 regex = None
 exclude_regex = "\.(orig|gitignore)$"
 
-zipdir("firefox", "vkopt_%s_firefox.xpi" % full_ver, False,regex,exclude_regex)
-zipdir("firefox", "vkopt_%s_palemoon.xpi" % full_ver, False,regex,exclude_regex)
-zipdir("opera.extension", "vkopt_%s_opera.oex" % full_ver, False,regex,exclude_regex)
-zipdir("chrome", "vkopt_%s_chrome.zip" % full_ver, False,regex,exclude_regex)
-zipdir("webext", "vkopt_%s_firefox.webext.xpi" % full_ver, False,regex,exclude_regex)
-MxAddonPack('maxthon/','vkopt_%s_maxthon.mxaddon' % full_ver)
-zipdir('../source/', 'vkopt_%s_opera.zip' % full_ver, False, "^vk(_|opt|lang).*\.(js|txt)$", exclude_regex)
+#zipdir("firefox", "vkopt_%s_firefox.xpi" % full_ver, False,regex,exclude_regex)
+#zipdir("firefox", "vkopt_%s_palemoon.xpi" % full_ver, False,regex,exclude_regex)
+#zipdir("opera.extension", "vkopt_%s_opera.oex" % full_ver, False,regex,exclude_regex)
+#zipdir("chrome", "vkopt_%s_chrome.zip" % full_ver, False,regex,exclude_regex)
+#zipdir("webext", "vkopt_%s_firefox.webext.xpi" % full_ver, False,regex,exclude_regex)
+#MxAddonPack('maxthon/','vkopt_%s_maxthon.mxaddon' % full_ver)
+#zipdir('../source/', 'vkopt_%s_opera.zip' % full_ver, False, "^vk(_|opt|lang).*\.(js|txt)$", exclude_regex)
 MakeUserJS(new_ver, '../source/','vkopt_%s_script.user.js' % full_ver)
 
 with open('vkopt_%s_!onserver.txt' % full_ver, 'w') as f:
