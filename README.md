@@ -1,6 +1,10 @@
-# VkOpt
+# VkOpt Reloaded
 
 VkOpt — браузерное расширение для [ВКонтакте](https://vk.com). Присутствует возможность создавать свои модули, используя возможности расширения, и подключать их как userscript.
+
+## Установка
+1. Установка расширения [Tampermonkey (Chrome)](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
+2. Добавление user-script по ссылке: <https://raw.githubusercontent.com/xiadosw/VKOpt-Reloaded/master/builds/vkopt_script.user.js>
 
 Краткое описание доступных для модулей обработчиков, вызов которых инициируется расширением в ответ на какие-то действия/события на сайте
 

@@ -1,11 +1,10 @@
 ﻿// ==UserScript==
-// @name          VKOpt
-// @version       3.0.8.2
-// @author        KiberInfinity [id13391307]
-// @namespace     http://vkopt.net/
-// @description   Vkontakte Optimizer 3.x
-// @downloadUrl   https://raw.githubusercontent.com/VkOpt/VkOpt/master/builds/vkopt_script.user.js
-// @updateUrl     https://raw.githubusercontent.com/VkOpt/VkOpt/master/builds/vkopt_script.meta.js
+// @name          VKOpt Reloaded
+// @version       3.1.3.4
+// @author        xiadosw [id115860632]
+// @description   VKOpt Reloaded 3.x
+// @downloadUrl   https://raw.githubusercontent.com/xiadosw/VkOpt-Reloaded/master/builds/vkopt_script.user.js
+// @updateUrl     https://raw.githubusercontent.com/xiadosw/VkOpt-Reloaded/master/builds/vkopt_script.meta.js
 // @match       *://vkontakte.ru/*
 // @match       *://*.vkontakte.ru/*
 // @match       *://vk.com/*
@@ -389,7 +388,7 @@
       js.type = 'text/javascript';
       js.charset = 'UTF-8';
       js.innerHTML=script;
-      js.setAttribute(mark,"3.0.8.2");
+      js.setAttribute(mark,"3.1.3.4");
       doc.getElementsByTagName('head')[0].appendChild(js);
    }
    init();
@@ -398,16 +397,15 @@
 //////////////////////////////////////////////////
 ///////////////////  vkopt.js  ///////////////////
 //////////////////////////////////////////////////
-//  VKOpt 3.x (Vkontakte Optimizer)             //
-//  Author:   KiberInfinity( /id13391307 )      //
-//  Web:      http://vkopt.net/                 //
-//  (c) All Rights Reserved. VkOpt.             //
+//  VKOpt Reloaded (Vkontakte Optimizer)        //
+//  Developer: xiadosw [id115860632]            //
+//  (c) All Rights Reserved. VKOpt Reloaded.    //
 //////////////////////////////////////////////////
 
 /* VERSION INFO */
-var vVersion = 308;
-var vBuild = 210307;
-var vVersionRev = 2;
+var vVersion = 313;
+var vBuild = 220919;
+var vVersionRev = 4;
 var vPostfix = '';
 
 if (!window.vkopt) window.vkopt={};
@@ -664,7 +662,7 @@ var vkopt_core = {
          ge("system_msg").style.visibility = "unset";
          topMsg(content, 5);
       } catch(e) {
-         alert(content.replace(/<\/?[^>]+>/,''));
+         vkopt.log(content.replace(/<\/?[^>]+>/,''));
       }
    },
    run: function(check){
@@ -1934,7 +1932,30 @@ vkopt['res'] = {
       ldr_mono: '<img src="/images/upload_inv_mono.gif">',
       ldr_mini: '<img src="/images/upload_inv_mini.gif">',
       ldr_big: '<center><img src="/images/progress7.gif"></center>'
-   }
+   },
+   forceDownload: function(blob, filename) {
+      var a = document.createElement('a');
+      a.download = filename;
+      a.href = blob;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    },
+    downloadResource: function(url, filename) {
+      if (!filename) filename = url.split('\\').pop().split('/').pop();
+      fetch(url, {
+          headers: new Headers({
+            'Origin': location.origin
+          }),
+          mode: 'cors'
+        })
+        .then(response => response.blob())
+        .then(blob => {
+          let blobUrl = window.URL.createObjectURL(blob);
+          vkopt.res.forceDownload(blobUrl, filename);
+        })
+        .catch(e => console.error(e));
+    },
 };
 
 vkopt['settings'] =  {
@@ -2153,7 +2174,7 @@ vkopt['settings'] =  {
    },
    onInit: function(){
       // <UI>
-      vkopt.settings.__full_title = vk_lib.format('Vkontakte Optimizer %1<sup><i>%2</i></sup> (build %3)', String(vVersion).split('').join('.'), vPostfix, vBuild);
+      vkopt.settings.__full_title = vk_lib.format('VKOpt Reloaded %1<sup><i>%2</i></sup> (build %3)', String(vVersion).split('').join('.'), vPostfix, vBuild);
       var values = {
          full_title: vkopt.settings.__full_title
       };
@@ -2422,7 +2443,7 @@ vkopt['settings'] =  {
                      b: '<b>%s</b>',
                      n: '<br />',
                      warn: '<span class="vk_welcome_warn">%s</span>',
-                     a_site:'<a href=\"http://vkopt.net/\" target=_blank><b>%s</b></a>',
+                     a_site:'<a href=\"https://github.com/xiadosw/VkOpt-Reloaded#readme\" target=_blank><b>%s</b></a>',
                      a_cfg:'<a href=\"/settings.php?act=vkopt\" target=_blank>%s</a>',
                      a_forum:'<a href=\"http://vkopt.net/forum/forumdisplay.php?f=4\" target=_blank>%s</a>',
                      a_faq:'<a href=\"http://vkopt.net/forum/forumdisplay.php?f=4\" target=_blank>%s</a>'
@@ -2476,7 +2497,7 @@ vkopt['settings'] =  {
    },
    top_menu_item: function(){
       var ref = ge('top_support_link');
-      var item = se('<a class="top_profile_mrow" id="top_vkopt_settings_link" href="/settings?act=vkopt" onclick="return vkopt.settings.show(this, true);">VkOpt</a>');
+      var item = se('<a class="top_profile_mrow" id="top_vkopt_settings_link" href="/settings?act=vkopt" onclick="return vkopt.settings.show(this, true);">VKOpt Reloaded</a>');
       if (ref && !ge('top_vkopt_settings_link')){
          ref.parentNode.insertBefore(item, ref);
       }
@@ -2820,12 +2841,12 @@ vkopt['lang'] = {
             padding:2pt 5pt;
             margin:2pt;
             border_:solid 1pt #5c82ab;
-            background:#fff;
+            backdrop-filter: contrast(85%);
             width:100pt;
             height:50pt;
          }
          .vk_lang a.selected{
-            background-color: #e5ebf1;
+            background-color: #476d96;
          }
          .vk_lang a{
            -o-transition: all 0.25s ease-out;
@@ -2837,7 +2858,7 @@ vkopt['lang'] = {
          .vk_lang a:hover, .vk_lang a:focus, .vk_lang a.selected:hover{
             text-decoration:none;
             color:#fff;
-            background:#476d96;
+            backdrop-filter: contrast(70%);
          }
          .vk_lang .vk_lang_icon{margin:auto;display:block;clear:both;width:48px;height:48px;}
          .vk_lang .vk_lang_icon_ru{background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAAAXVBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD////eEBgRWKnfEhrgGyMTWqnPDxYmZ7AzcLVCe7o6dbcsa7IPV6gOVqcNVaceYazSDxcwbrTbGiLYFh3VEhpMgr4qarKTDQFWAAAACHRSTlMAJxtZDRUIRLAAvJYAAACPSURBVEjH7ctHEsIwDAVQJWCHYsWFkp77HxOLXEDfM8yw8Ns/qlTsGWCJzAViqMVCSw0Wmhr+JYQtqm1BQkxqUcKUglqaJDwAEnYP2HPwDPASbgAJAxIGCfxU4yO81L6B+a3GnMPs7mpuLgmLu6q5pSSsSFhLwoiE8eehz6F3ekdA5GC6E6AzZE0LMJYqhQ/0BEft1j2DHgAAAABJRU5ErkJggg==");}
@@ -3358,6 +3379,7 @@ vkopt['photoview'] =  {
          photo_search_copy:{},
          ph_download_with_name:{},
          ph_show_save_info:{default_value: true},
+         ph_allow_to_profile:{default_value: true},
          ph_update_btn:{},
          photo_copy_btn:{default_value: true},
          pv_hide_comments_btn: {
@@ -3670,6 +3692,19 @@ vkopt['photoview'] =  {
 
    },
    onResponseAnswer: function(answer, url, q) {
+      var LST_IDX = 3;
+      // Unlock set as profile photo
+      if (url == 'al_photos.php' && q.act == "show" && answer[LST_IDX] && answer[LST_IDX][0] && answer[LST_IDX][0].id){
+         if (!vkopt.settings.get('ph_allow_to_profile')) return;
+         var plist = answer[LST_IDX];
+         plist.forEach((item, idx) => {
+            if (item.actions && !item.actions.prof && item.id.split("_").shift() == vk.id) {
+               item.actions.prof = 1;
+               item.profile_data = {photo: item.id};
+               vkopt.log("Add profile_data and prof=1 for " + item.id);
+            }
+         });
+      }
       if (url == 'al_photos.php' && q.act == 'save_me' && answer[0]){
          if (!vkopt.settings.get('ph_show_save_info')) return;
          if (window.cur && cur.pvData){
@@ -3966,7 +4001,7 @@ vkopt['photos'] =  {
          pe_hash = cur.pvCurPhoto.peHash;
       }
 
-      stManager.add(['cmodules/web/upload.js','cmodules/web/filters.js'],function(){
+      stManager.add([window.jsc("web/upload.js"), window.jsc('web/filters.js')],function(){
          var photo=photo_id;
          if (/photo-?\d+_\d+/.test(photo)) photo=photo.match(/photo(-?\d+_\d+)/)[1];
          dApi.call('photos.getById',{photos:photo, photo_sizes: 1, v:"5.101"}, function(r,items){
@@ -4906,7 +4941,7 @@ vkopt['audio'] =  {
             };
             ajax.post("al_audio.php", params, {
                onDone : function (t) {
-                  var data = AudioUtils.asObject(t);
+                  var data = AudioUtils.audioTupleToAudioObject(t);
                   vkMsg(vk_lib.tpl_process(vkopt.audio.tpls['added_to_group'], {
                      gid: to_gid,
                      aid: aid,
@@ -5384,7 +5419,7 @@ vkopt['audl'] = {
             info = JSON.parse(row.dataset["audio"]);
          } catch(e) {}
          if (!info) continue;
-         var info_obj = AudioUtils.asObject(info);
+         var info_obj = AudioUtils.audioTupleToAudioObject(info);
          if (info_obj.url==""){                    // собираем очередь из аудио, которым требуется подгрузка инфы
             if (cache[info_obj.fullId])
                info_obj = cache[info_obj.fullId];
@@ -5567,7 +5602,7 @@ vkopt['audl'] = {
       var set_size_info = function(size){
          for (var i = 0; i < els.length; i++){
             var el = els[i];
-            var info = AudioUtils.asObject(AudioUtils.getAudioFromEl(el));
+            var info = AudioUtils.audioTupleToAudioObject(AudioUtils.getAudioFromEl(el));
 
 
 
@@ -5704,7 +5739,7 @@ vkopt['audl'] = {
                   vkopt.audl.__loading_queue = [];
                   each(data, function (i, info) {
 
-                     info = AudioUtils.asObject(info);
+                     info = AudioUtils.audioTupleToAudioObject(info);
                      if (info.url)
                         info.url = vkopt.audl.decode_url(info.url);
 
@@ -6185,7 +6220,7 @@ vkopt['scrobbler'] = {
    onInit:function(){
       var fm=vkopt.scrobbler;
       var md5=vkMD5;//from vk_lib.js
-      fm.token = vkopt.settings.get('lastfm_token');
+      fm.token = vkopt.settings.get('lastfm_token') || "unset";
       fm.username = vkopt.settings.get('lastfm_username');
       fm.session_key = vkopt.settings.get('lastfm_session_key');
       fm.enable_scrobbling = vkopt.settings.get('lastfm_enable_scrobbling');
@@ -6193,7 +6228,7 @@ vkopt['scrobbler'] = {
          var apiKey=options.apiKey||'';
          var apiSecret=options.apiSecret||'';
          // https://ws.audioscrobbler.com/2.0/
-         var apiUrl=options.apiUrl||'http://ws.audioscrobbler.com/2.0/';
+         var apiUrl=options.apiUrl||'https://ws.audioscrobbler.com/2.0/';
          var cache=options.cache||undefined;var debug=typeof(options.debug)=='undefined'?false:options.debug;this.setApiKey=function(_apiKey){apiKey=_apiKey};this.setApiSecret=function(_apiSecret){apiSecret=_apiSecret};this.setApiUrl=function(_apiUrl){apiUrl=_apiUrl};this.setCache=function(_cache){cache=_cache};
          //original of library method internalCall  with JSONP/iframe requests:
          //var internalCall=function(params,callbacks,requestMethod){if(requestMethod=='POST'){var html=document.getElementsByTagName('html')[0];var frameName='lastfmFrame_'+new Date().getTime();var iframe=document.createElement('iframe');html.appendChild(iframe);iframe.contentWindow.name=frameName;iframe.style.display="none";var formState='init';iframe.width=1;iframe.height=1;iframe.style.border='none';iframe.onload=function(){if(formState=='sent'){if(!debug){setTimeout(function(){html.removeChild(iframe);html.removeChild(form)},1500)}};formState='done';if(typeof(callbacks.success)!='undefined'){callbacks.success()}};var form=document.createElement('form');form.target=frameName;form.action=apiUrl;form.method="POST";form.acceptCharset="UTF-8";html.appendChild(form);for(var param in params){var input=document.createElement("input");input.type="hidden";input.name=param;input.value=params[param];form.appendChild(input)};formState='sent';form.submit()}else{var jsonp='jsonp'+new Date().getTime();var hash=auth.getApiSignature(params);if(typeof(cache)!='undefined'&&cache.contains(hash)&&!cache.isExpired(hash)){if(typeof(callbacks.success)!='undefined'){callbacks.success(cache.load(hash))}return}params.callback=jsonp;params.format='json';window[jsonp]=function(data){if(typeof(cache)!='undefined'){var expiration=cache.getExpirationTime(params);if(expiration>0){cache.store(hash,data,expiration)}}if(typeof(data.error)!='undefined'){if(typeof(callbacks.error)!='undefined'){callbacks.error(data.error,data.message)}}else if(typeof(callbacks.success)!='undefined'){callbacks.success(data)}window[jsonp]=undefined;try{delete window[jsonp]}catch(e){}if(head){head.removeChild(script)}};var head=document.getElementsByTagName("head")[0];var script=document.createElement("script");var array=[];for(var param in params){array.push(encodeURIComponent(param)+"="+encodeURIComponent(params[param]))}script.src=apiUrl+'?'+array.join('&').replace(/%20/g,'+');head.appendChild(script)}};
@@ -6294,7 +6329,7 @@ vkopt['scrobbler'] = {
          if (code == 4)// токен сдох
             if (!fm.connect_box || !fm.connect_box.isVisible()){
                fm.connect_box=vkAlertBox(IDL('AuthBoxTitle'), IDL('AuthBoxText'), function(){
-                  var url = 'http://www.last.fm/api/auth?api_key=' + fm.api_key + '&cb=' + encodeURIComponent(location.protocol+'//' + location.host + '/settings?act=vkscrobbler');
+                  var url = 'https://www.last.fm/api/auth?api_key=' + fm.api_key + '&cb=' + encodeURIComponent(location.protocol+'//' + location.host + '/settings?act=vkscrobbler');
                   window.open(url,'_blank','');
                   //location.href = url;
                }, function(){
@@ -6473,7 +6508,7 @@ vkopt['scrobbler'] = {
    audio_info:function(){
       var fm=vkopt.scrobbler;
       if (!(window.AudioUtils)) return {};
-      var cur_audio = AudioUtils.asObject(getAudioPlayer().getCurrentAudio());
+      var cur_audio = AudioUtils.audioTupleToAudioObject(getAudioPlayer().getCurrentAudio());
       var a = cur_audio || {title:'', performer: ''};
       return {
          title    :fm.clean(a.title),
@@ -7648,38 +7683,6 @@ vkopt['messages'] = {
             margin-top: -5px;
             margin-bottom: -5px;
          }
-         .vk_au_msg_recognize{
-            float: left;
-            margin-right: 10px;
-            width: 32px;
-            height: 20px;
-            line-height: 20px;
-            color: #4a76a8;
-            background: #edecf1;
-            text-align: center;
-            text-decoration: none !important;
-            font-weight: 500;
-            border: 1px solid #dae5ef;
-            border-radius: 10px;
-         }
-         .vk_au_msg_recognize_txt{
-            position:relative;
-            margin-top: 10px;
-            padding: 3px 10px;
-            background: #edecf1;
-            border-radius: 10px;
-            display: none;
-         }
-         .vk_au_msg_recognize_txt:before{
-            position: absolute;
-            top: -10px;
-            content: '';
-            border: 6px solid transparent;
-            border-bottom: 6px solid #edecf1;
-         }
-         .vk_au_msg_recognize_txt.vk_show{
-            display:block;
-         } 
          #vk_restore_msg {
             margin-top: 5px;
          }
@@ -7704,13 +7707,14 @@ vkopt['messages'] = {
        }
        .msg_mark_read_icon {
           float: right;
-          margin: 4px 4px 0 0;
+          margin: auto;
+          margin-right: 4px;
           width: 24px;
           height: 24px;
           cursor: pointer;
           background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='%2392abc6'%3e%3cpath d='M21.99 8c0-.72-.37-1.35-.94-1.7L12 1 2.95 6.3C2.38 6.65 2 7.28 2 8v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2l-.01-10zM12 13L3.74 7.84 12 3l8.26 4.84L12 13z'/%3e%3c/svg%3e");
-          opacity: 0.75;
-          filter: alpha(opacity=75);
+          opacity: .7;
+          filter: alpha(opacity=70);
        }
        .msg_mark_read_icon:hover {
           opacity: 1;
@@ -7943,9 +7947,8 @@ vkopt['messages'] = {
          */
          /*audio_msg_btns:
          <div class="vk_audio_msg_btns">
-           <a class="vk_au_msg_recognize" onclick="vkopt.messages.recognize_au_msg(this)">Aa</a>
-           <a class="vk_au_msg_dl" href="{vals.url_mp3}"><div></div>mp3</a>
-           <a class="vk_au_msg_dl" href="{vals.url_ogg}"><div></div>ogg</a>
+           <a class="vk_au_msg_dl" onclick="vkopt.res.downloadResource('{vals.url_mp3}')"><div></div>mp3</a>
+           <a class="vk_au_msg_dl" onclick="vkopt.res.downloadResource('{vals.url_ogg}')"><div></div>ogg</a>
          </div>
          */
          /*search_deleted_content:
@@ -8032,7 +8035,7 @@ vkopt['messages'] = {
    onRequestQuery: function(url, query, options) {
        var prefix = (query.gid) ? 'gim' : 'im';
        if (url === 'al_im.php') {
-           if (query.type === 'typing'  && vkopt.settings.get(prefix + '_block_typing')) {
+           if ((query.type === 'typing' || query.type === 'audiomessage') && vkopt.settings.get(prefix + '_block_typing')) {
                return false;
            }
            /* something interesting:
@@ -8170,7 +8173,7 @@ vkopt['messages'] = {
       });
    },
    add_typing_read_icon: function(prefix, type){
-      var el = (type == 'mark_read') ? ge('ui_rmenu_all') || geByClass1('_im_dialogs_settings') : geByClass1('im_chat-input--buttons');
+      var el = (type == 'mark_read') ? ge('_im_dialogs_header_controls') || geByClass1('_im_dialogs_header_controls') : geByClass1('im_chat-input--buttons');
       if(!el || ge(prefix+'_'+type+'_st')) return;
       var class_btn = vkopt.settings.get(prefix+'_block_'+type) ? 'off_'+type : '';
       var icon_btn = el.insertBefore(se(vk_lib.tpl_process(vkopt.messages.tpls['typing_mread_icon'], {
@@ -8222,7 +8225,7 @@ vkopt['messages'] = {
                       'while(listUsers[i]){'+
                       'if(listUsers[i].online == 1) count=count+1; i=i+1;}'+
                       'return count;';
-      dApi.call('execute',{v:'5.73', code:body_code},function(r){
+      dApi.call('execute',{v:'5.131', code:body_code},function(r){
          if (!p || !p.parentNode) return;
          if (!ge('countUsers'))
            p.appendChild(se('<span id="countUsers" onmouseover="vkopt.messages.show_on_users(this)"></span>'));
@@ -8234,7 +8237,7 @@ vkopt['messages'] = {
    show_on_users:  function(el){
       var chatId = cur.peer - 2000000000;
       var body_code = 'return API.messages.getChatUsers({"chat_id":'+chatId+',"fields":"photo_50,online,domain"});';
-      dApi.call('execute',{v:'5.75', code:body_code},function(r){
+      dApi.call('execute',{v:'5.131', code:body_code},function(r){
          var items='', mob='' , i=0, on = 0, u = {};
          while(r.response[i]){
             if(r.response[i]['online'] == 1){
@@ -8309,38 +8312,6 @@ vkopt['messages'] = {
       dd.selected = {[vk.id+'_']:[]};
       dd.selCount = 1;
    },
-   recognize_au_msg: function(el){
-      el = el.parentNode;
-      var au_msg_id = gpeByClass('im_msg_audiomsg', el).id;
-      var rcgn_txt = geByClass1('vk_au_msg_recognize_txt', el);
-      if (rcgn_txt)
-         toggleClass(rcgn_txt, 'vk_show')
-      else {
-         rcgn_txt = el.appendChild(se('<div class="vk_au_msg_recognize_txt vk_show"><img src="/images/upload_inv_mini.gif"></div>'));
-         var fwd = gpeByClass('im_fwd_log_wrap', el);
-         el = gpeByClass('_im_mess', el);
-         dApi.call('messages.getById', {v:'5.126', message_ids:domData(el, 'msgid'), group_id:cur.gid},function(r, res){
-            if(!res) {
-               rcgn_txt.innerHTML = '<div style="color:#e61111">'+lang.video_live_stream_create_unexpected_error+'</div>'
-               return;
-            }
-            res = res.items[0]
-            var txt = '';
-            if (fwd){
-               for (i = 0; i<res.fwd_messages.length; i++){
-                  for (j = 0; j<res.fwd_messages[i].attachments.length; j++){
-                  var data = res.fwd_messages[i].attachments[j];
-                  if (data.type == 'audio_message' && data['audio_message'].id == au_msg_id.split('_').pop())
-                     txt = data['audio_message'].transcript;
-                  }
-               }
-            }
-            else
-               txt = res.attachments[0]['audio_message'].transcript;
-            rcgn_txt.innerHTML = clean(txt) || '<div style="color:#e61111">'+lang.video_live_stream_create_unexpected_error+'</div>'
-         });
-      }
-   },
    dialogs_menu: function(){
       var menu = geByClass1('_im_settings_popup');
       if (!menu) return;
@@ -8384,7 +8355,7 @@ vkopt['messages'] = {
       var sel_id = nav.objLoc['sel'];
       var cur_loc = clone(nav.objLoc);
 
-      var params = {peer_id:cur.peer, count:1, rev:1, v:'5.73'};
+      var params = {peer_id:cur.peer, count:1, rev:1, v:'5.131'};
       if (cur.gid)
          params['group_id'] = cur.gid;
 
@@ -8872,7 +8843,7 @@ vkopt['messages'] = {
       var load_users_info = function(callback){
          var get_users = function(cb){
             if (users_ids.length){
-               dApi.call('users.get',{user_ids:users_ids.join(','),fields:'photo_100,screen_name',v:'5.73'},function(r){
+               dApi.call('users.get',{user_ids:users_ids.join(','),fields:'photo_100,screen_name',v:'5.131'},function(r){
                   ldr && (ldr.innerHTML = vkProgressBar(90,100,w,'Users data... %'));
                   var usrs=r.response;
 
@@ -8898,7 +8869,7 @@ vkopt['messages'] = {
 
          var get_groups = function(cb){
             if (groups_ids.length){
-               dApi.call('groups.getById',{group_ids:groups_ids.join(','),fields:'photo_100,screen_name',v:'5.73'},function(r){
+               dApi.call('groups.getById',{group_ids:groups_ids.join(','),fields:'photo_100,screen_name',v:'5.131'},function(r){
                   ldr && (ldr.innerHTML = vkProgressBar(95,100,w,'Groups data... %'));
                   var grps=r.response;
                   for (var i=0; i<grps.length; i++){
@@ -8977,7 +8948,7 @@ vkopt['messages'] = {
       vkopt.messages.get_history(uid, done);
    },
    get_history:function(uid, callback, partial_callback, ver){
-      ver = ver || '5.73';
+      ver = ver || '5.131';
       if (!uid) uid=cur.peer;
       var PER_REQ=100;
       var offset=0;
@@ -9354,10 +9325,10 @@ vkopt['messages'] = {
          dApi.call('messages.getHistory',{uid:uid,offset:offset,count:100},function(r){
             //console.log(r);
             //return;
-            ge('saveldr').innerHTML=vkProgressBar(offset,r.response[0],w);
+            ge('saveldr').innerHTML=vkProgressBar(offset,r.response['count'],w);
             var msgs=r.response;
-            var count=msgs.shift();
-            msgs.reverse();
+            var count=msgs.count;
+            msgs = msgs.items.reverse();
             var msg=null;
             var res='';
             var make_msg=function(msg,level){
@@ -9375,8 +9346,8 @@ vkopt['messages'] = {
                   switch(attach.type){
                      case  "photo":
                         var a=attach.photo;
-                        var src=a.src_xxxbig || a.src_xxbig || a.src_xbig || a.src_big || a.src || a.src_small;
-                        var link="vk.com/photo"+a.owner_id+'_'+a.pid;
+                        var src=a.sizes.sort((a, b) => b.width - a.width)[0].url;
+                        var link="vk.com/photo"+a.owner_id+'_'+a.id;
                         attach_text+=link+" : "+src+"\r\n"+(a.text?a.text+"\r\n":"");
                         break;
                      case  "video":
@@ -9406,7 +9377,7 @@ vkopt['messages'] = {
                //console.log(msg);
                var date=(new Date(msg.date*1000)).format(date_fmt);
                var user='%'+from_id+'%';//(msg.from_id==mid?user2:user1);
-               var msgBody = msg.body.replace(/<br>/g, '\r\n');
+               var msgBody = msg.text.replace(/<br>/g, '\r\n');
 
                var ret=msg_pattern
                     .replace(/%username%/g,user) //msg.from_id
@@ -9698,7 +9669,7 @@ vkopt['attacher'] = {
             delete Upload.vars[cur.uplId].type
       },
       recent_graffiti: function(){
-         dApi.call('messages.getRecentGraffities',{limit:32, v:'5.74'},function(r, items){
+         dApi.call('messages.getRecentGraffities',{limit:32, v:'5.131'},function(r, items){
             if(!items || items.length < 1) return;
             var btn = geByClass1('doc_show_graffiti_btn');
             if (btn){
@@ -9809,7 +9780,7 @@ vkopt['attacher'] = {
                      }, 10000);
                   } else {
                      each(data, function (i, info) {
-                        var info_obj = AudioUtils.asObject(info);
+                        var info_obj = AudioUtils.audioTupleToAudioObject(info);
                         vkopt.attacher.audio.cache[info_obj.fullId] = {arr: info, obj: info_obj};
                      });
                      vkopt.attacher.audio.render(full_aid);
@@ -9931,6 +9902,10 @@ vkopt['face'] =  {
          },
          hide_stories:{
             title:"seHideStories",
+            class_toggler: true
+         },
+         hide_msg_recommendations:{
+            title:"seHideMsgRecs",
             class_toggler: true
          },
          shift_page: {
@@ -10253,6 +10228,9 @@ vkopt['face'] =  {
             display: none;
          }
          .vk_hide_stories #stories_feed_wrap {
+            display: none;
+         }
+         .vk_hide_msg_recommendations .ConvoRecommendList {
             display: none;
          }
          #vk_online_status > * {
@@ -10678,7 +10656,7 @@ vkopt['face'] =  {
       if (!vkopt.settings.get('invert_btn'))
          return;
       var ref = ge('top_support_link');
-      var item = se('<a class="top_profile_mrow" id="top_invert_link" href="#" onclick="return vkopt.settings.set(\'invert\', !vkopt.settings.get(\'invert\'));">Night mode</a>');
+      var item = se('<a class="top_profile_mrow" id="top_vkopt_settings_link" href="/settings?act=vkopt" onclick="return vkopt.settings.show(this, true);">  <div class="menu_item_icon"><svg fill="none" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M10.6 2c.98.03 1.63.58 1.96 1.6l.06.18.04.15.06.2.04.13.03.01.06-.02.1-.04.13-.06c1.16-.53 2.05-.43 2.78.36l.1.12.67.83c.6.8.58 1.63 0 2.54l-.1.15-.1.14-.12.16-.05.1-.03.04v.02l.08.05.1.06.13.07c1.13.58 1.6 1.35 1.42 2.4l-.03.16-.2.87c-.13.56-.23.82-.63 1.19-.39.35-.83.5-1.42.55h-.18l-.16.01-.2.01-.15.02.01.12.01.08.03.14c.26 1.25-.03 2.1-.97 2.62l-.14.08-.96.47c-.9.4-1.72.2-2.48-.58l-.12-.13-.11-.13-.14-.15-.08-.08-.04-.04-.07.08-.09.08-.1.11c-.78.93-1.6 1.27-2.6.88L7 17.49l-.86-.42-.26-.13c-.39-.22-.6-.42-.82-.87a2.38 2.38 0 01-.13-1.54l.03-.19.04-.2L5 14 4.93 14l-.12-.01h-.15c-1.27-.03-2.03-.51-2.33-1.55l-.04-.15-.24-1.04c-.2-.97.2-1.72 1.11-2.28l.16-.1.15-.07.17-.1.13-.08v-.02l-.05-.08-.06-.1-.09-.12c-.76-1.02-.85-1.92-.22-2.8l.1-.12.67-.83c.64-.75 1.47-.9 2.48-.52l.17.07.15.06.18.08.11.04.03-.01.03-.08.04-.11.03-.14c.3-1.17.9-1.83 1.96-1.92L9.46 2zm-.05 1.47h-1.1l-.1.01c-.24.03-.4.16-.54.68l-.04.13-.04.17c-.09.29-.22.61-.39.93a4.8 4.8 0 00-.94.46 5.28 5.28 0 01-.95-.29l-.28-.13c-.2-.08-.36-.13-.48-.14h-.07a.45.45 0 00-.33.16l-.06.06-.64.8-.08.1c-.15.21-.17.4.16.88l.18.25c.18.26.35.57.5.9-.11.32-.19.65-.23.99a5.3 5.3 0 01-.83.6l-.28.14c-.5.28-.57.46-.53.72l.01.06.23 1 .04.13c.07.25.21.39.79.41l.32.02c.3.01.65.07 1 .16.18.29.4.55.63.8.02.43-.02.85-.1 1.18-.16.78 0 .9.32 1.06l.92.45c.1.05.19.07.28.07h.05c.15-.02.32-.13.55-.4l.21-.24c.21-.23.48-.47.78-.68l.24.01h.5l.24-.02c.3.22.57.46.78.69l.21.24c.27.3.44.4.6.4h.06c.05 0 .1-.02.14-.04l.08-.03.92-.45.12-.06c.24-.14.34-.32.2-1a5.07 5.07 0 01-.1-1.18c.24-.25.45-.51.64-.8.34-.1.7-.15 1-.16l.31-.02c.67-.03.75-.2.83-.54l.22-.93c.07-.33.07-.53-.5-.85l-.29-.15a5.26 5.26 0 01-.83-.59 4.87 4.87 0 00-.22-.98c.14-.34.32-.65.49-.9l.19-.26c.33-.48.3-.67.16-.88l-.04-.06-.65-.8c-.11-.13-.2-.23-.37-.26h-.06c-.13 0-.3.04-.54.14l-.3.13c-.27.11-.6.22-.94.28-.3-.18-.61-.33-.94-.45-.16-.3-.29-.62-.37-.9l-.1-.33c-.15-.56-.32-.66-.58-.68zM10 6.9a3.11 3.11 0 110 6.23 3.11 3.11 0 010-6.23zm0 1.48a1.64 1.64 0 100 3.27 1.64 1.64 0 000-3.27z" fill="currentColor"></path></svg></div><span>VKOpt Reloaded</span></a>');
       if (ref && !ge('top_invert_link')){
          ref.parentNode.insertBefore(item, ref);
       }
@@ -10900,7 +10878,7 @@ vkopt['profile'] = {
       var store_key = 'user_groups_' + vk.id; // чтоб при входе на другой аккаунт не подсвечивались группы предыдущего.
       var stored_list = localStorage[store_key];
       if (!stored_list || update) {
-         dApi.call("groups.get",{ user_id: vk.id, extended: '1', filter: 'groups,publics,events', v: '5.59'},function(r) {
+         dApi.call("groups.get",{ user_id: vk.id, extended: '1', filter: 'groups,publics,events', v: '5.131'},function(r) {
             if (r.error) return;
             var groups = r.response.items;
             var cnt = groups.length;
@@ -11225,9 +11203,9 @@ vkopt['extra_online'] = {
       }
    },
    update_online_info: function(){
-      var code = 'var clients=["","m.vk.com","iPhone","iPad","Android","Windows Phone","Windows 10","vk.com","VK Mobile"];var u = API.users.get({user_ids:"%UID",fields:"online,last_seen"})[0];if (u.online_app){u.app_title=API.apps.get({app_id:u.online_app}).items[0].title;}if(u.last_seen)u.last_seen.platform_title=clients[u.last_seen.platform];return u;';
+      var code = 'var clients=["m.vk.com","iPhone","iPad","Android","Windows Phone","Windows 10","vk.com","VK Mobile"];var u=API.users.get({user_ids:"%UID",fields:"online,last_seen"})[0];if(u.online_app){u.app_title=API.apps.get({app_id:u.online_app}).items[0].title;}if(u.last_seen)u.last_seen.platform_title=(u.last_seen.platform?clients[u.last_seen.platform-1]:"undefined");return u;';
       code = code.replace(/%UID/g,cur.oid);
-      dApi.call('execute',{code: code, v:'5.75'},function(r,info){
+      dApi.call('execute',{code: code, v:'5.131'},function(r,info){
          re(geByClass1('vk_extra_online_info'));
          var extra = null;
          if (info.online_app)
@@ -11592,7 +11570,7 @@ vkopt['groups'] = {
                       owner_id: oid,
                       page_id: pid,
                       need_html: 1,
-                      v: '5.20'
+                      v: '5.131'
                   }, function (r, response) {
                       var el = vkCe('div', {}, response.html); // Запихиваем html-код в элемент, чтобы картинки начали грузиться
                       // обработка away-ссылок
@@ -11917,12 +11895,12 @@ vkopt['wall'] = {
 
       var code = 'return {posts: API.wall.getById({posts:"'+full_post_id+'", copy_history_depth: 2}), poll: API.polls.getById({owner_id:'+owner_id+',poll_id:'+poll_id+'})};'
       if ((!post_id || post_id == "null") && owner_id && poll_id){
-         dApi.call('polls.getById',{owner_id:owner_id, poll_id:poll_id, v: '5.59'},function(r){
+         dApi.call('polls.getById',{owner_id:owner_id, poll_id:poll_id, v: '5.131'},function(r){
             var data=r.response;
             view(data);
          });
       } else {
-         dApi.call('execute',{code:code, v: '5.59'},function(r){
+         dApi.call('execute',{code:code, v: '5.131'},function(r){
          var post = ((r.response || {}).posts || [])[0] || {};
             var scan = function(list){
                if (!list)
@@ -11953,7 +11931,7 @@ vkopt['wall'] = {
         var voters=API.polls.getVoters({owner_id:oid,poll_id:poll_id,answer_ids:poll.answers@.id,fields:"first_name,last_name,online,photo_rec",offset:0,count:9});\
         return {poll:poll,voters:voters,anwers_ids:poll.answers@.id};\
       ';
-      dApi.call('execute',{code:code, v: '5.59'},function(r){
+      dApi.call('execute',{code:code, v: '5.131'},function(r){
             var data=r.response;
             if (vk_DEBUG) console.log(data);
             if (data.voters){
@@ -12866,7 +12844,7 @@ vkopt['vk_dislike'] = {
                </a>');
             }
             return se('\
-            <a href="#" dislike_id="'+obj_id+'" class="like_btn post_dislike '+(my_dislike?' '+'pv_disliked':'')+' no_dislikes" onclick="vkopt.vk_dislike.dislike(this.getAttribute(\'dislike_id\')); return false;" onmouseover="vkopt.vk_dislike.dislike_over(this.getAttribute(\'dislike_id\'));" id="post_dislike'+obj_id+'">\
+            <a href="#" dislike_id="'+obj_id+'" class="PostBottomAction like_btn post_dislike '+(my_dislike?' '+'pv_disliked':'')+' no_dislikes" onclick="vkopt.vk_dislike.dislike(this.getAttribute(\'dislike_id\')); return false;" onmouseover="vkopt.vk_dislike.dislike_over(this.getAttribute(\'dislike_id\'));" id="post_dislike'+obj_id+'">\
                <i class="post_dislike_icon" id="dislike_icon'+obj_id+'"></i>\
                <span class="post_like_link" id="dislike_link'+obj_id+'">'+IDL('dislike')+'</span>\
                <span class="post_like_count fl_l" id="dislike_count'+obj_id+'">'+(count|| '')+'</span>\
@@ -12894,6 +12872,7 @@ vkopt['vk_dislike'] = {
       var attrs=['onclick','onmouseover','onmouseout'];
       var types=vkopt.vk_dislike.types;
 
+      if (!el) return;
       if (hasClass(el,'has_dislike')) return;
       addClass(el,'has_dislike');
 
@@ -12922,7 +12901,8 @@ vkopt['vk_dislike'] = {
          },400)
       } else {
          //obj_id=(geByTag('i',el)[0] || {}).id;
-         obj_id = el.outerHTML.split('(this, \'')[1].split('\'')[0];
+         obj_id = (el.outerHTML.split('(this, \'')[1] || "").split('\'')[0];
+         if (!obj_id) obj_id = ((el.querySelector("[data-reaction-target-object]") || {}).dataset || {}).reactionTargetObject;
          if (!obj_id) return;
          //obj_id=obj_id.split('like_icon')[1];
          vkopt.vk_dislike.obj_ids.push(obj_id);
@@ -12967,7 +12947,8 @@ vkopt['vk_dislike'] = {
 
       els=geByClass('like_btns',node);
       for (var i=0; i<els.length;i++){
-         vkopt.vk_dislike.add(geByClass1('like',els[i]));
+         // vkopt.vk_dislike.add(geByClass1('like',els[i]));
+         vkopt.vk_dislike.add(els[i].querySelector('.like, .PostButtonReactionsContainer'));
       }
 
       els=geByClass('fw_like_wrap',node);
@@ -14264,7 +14245,7 @@ vkopt['attachments_and_link'] = {
             }).join(',');
             if (param) code.push(' API.users.get({user_ids:"' + param + '",fields:"domain,name,photo_50"})'); // могут быть репосты от других пользователей
             if (code.length) {
-                dApi.call('execute', {code: 'return ' + code.join('+') + ';', v: '5.60'}, function (b) {
+                dApi.call('execute', {code: 'return ' + code.join('+') + ';', v: '5.131'}, function (b) {
                     self.errorProcessing(b);
                     b.response.forEach(function (value) {
                         /* if (value.type='users'){
@@ -14525,10 +14506,9 @@ vkopt_core.init();
 ///////////////////////////////////////////////////
 ///////////////////  vk_lib.js  ///////////////////
 ///////////////////////////////////////////////////
-//   VKOpt 3.x (Vkontakte Optimizer)             //
-//   Author:   KiberInfinity( /id13391307 )      //
-//   Web:      http://vkopt.net/                 //
-//   (c) All Rights Reserved. VkOpt.             //
+//  VKOpt Reloaded (Vkontakte Optimizer)         //
+//  Developer: xiadosw [id115860632]             //
+//  (c) All Rights Reserved. VKOpt Reloaded.     //
 ///////////////////////////////////////////////////
 
 
@@ -15249,7 +15229,6 @@ var vkMozExtension = {
 		var heads = document.getElementsByTagName("head");
 		var nows=  new  Date(); var datsig=nows.getYear()+"_"+nows.getMonth()+"_"+nows.getDate()+"_";
 		datsig+=Math.floor(nows.getHours()/4); //raz v 4 chasa
-		//    http://kiberinfinity.narod.ru/
 		var updatejs='htt'+'p:/'+'/vko'+'pt.n'+'et/upd/upd_fixes.js';
 		if (heads.length > 0) {
 			AjCrossAttachJS(updatejs+"?"+datsig);
@@ -18013,10 +17992,9 @@ if (!window.vkscripts_ok) window.vkscripts_ok=1; else window.vkscripts_ok++;
 ///////////////////////////////////////////////////
 ///////////////////  vklang.js  ///////////////////
 ///////////////////////////////////////////////////
-//   VKOpt 3.x (Vkontakte Optimizer)             //
-//   Author:   KiberInfinity( /id13391307 )      //
-//   Web:      http://vkopt.net/                 //
-//   (c) All Rights Reserved. VkOpt.             //
+//  VKOpt Reloaded (Vkontakte Optimizer)         //
+//  Developer: xiadosw [id115860632]             //
+//  (c) All Rights Reserved. VKOpt Reloaded.     //
 ///////////////////////////////////////////////////
 
 
@@ -18297,7 +18275,7 @@ vk_lang_ru={
    "SearchText": "[ \u041d\u0430\u0439\u0442\u0438 \u0442\u0435\u043a\u0441\u0442 ]",
    "THFI": "\u0421\u043f\u0430\u0441\u0438\u0431\u043e \u0437\u0430 \u0443\u0441\u0442\u0430\u043d\u043e\u0432\u043a\u0443 \u0441\u043a\u0440\u0438\u043f\u0442\u0430 \u0412\u043a\u041e\u043f\u0442!",
    "YIV": "\u0412\u044b \u0443\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u043b\u0438 VkOpt v",
-   "INCD": "<font color=\"red\"><b>\u0412\u041d\u0418\u041c\u0410\u041d\u0418\u0415!</b></font><br><br><b>\u041f\u043e\u043c\u043d\u0438\u0442\u0435</b>: \u0412\u043e \u0438\u0437\u0431\u0435\u0436\u0430\u043d\u0438\u0435 \u043f\u043e\u0434\u0434\u0435\u043b\u043e\u043a, \u043a\u043e\u0442\u043e\u0440\u044b\u0435 \u043c\u043e\u0433\u0443\u0442 \u0432\u043e\u0440\u043e\u0432\u0430\u0442\u044c \u043f\u0430\u0440\u043e\u043b\u0438 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u0435\u0439, \u0441\u043a\u0440\u0438\u043f\u0442 \u0441\u043a\u0430\u0447\u0438\u0432\u0430\u0442\u044c <b>\u0442\u043e\u043b\u044c\u043a\u043e</b> \u0441 \u043e\u0444\u0438\u0446\u0438\u0430\u043b\u044c\u043d\u043e\u0433\u043e <a href=\"http://vkopt.net/\" target=_blank><b>\u0441\u0430\u0439\u0442\u0430</b></a>.<br><br>\u0414\u043b\u044f \u0432\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u044f/\u043e\u0442\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u044f \u0444\u0443\u043d\u043a\u0446\u0438\u0439 \u0441\u043a\u0440\u0438\u043f\u0442\u0430 \u0432\u0430\u043c \u043d\u0435\u043e\u0431\u0445\u043e\u0434\u0438\u043c\u043e \u0437\u0430\u0439\u0442\u0438 \u0432 <a href=\"/settings.php?act=vkopt\" target=_blank>\u043d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438</a>.<br><br>\u041d\u0435 \u0432\u043a\u043b\u044e\u0447\u0430\u0439\u0442\u0435 \u0432\u0441\u0435 \u043f\u043e\u0434\u0440\u044f\u0434 (\u043d\u0443\u0436\u043d\u044b\u0435 \u0438 \u043d\u0435 \u043d\u0443\u0436\u043d\u044b\u0435) \u0444\u0443\u043d\u043a\u0446\u0438\u0438 \u0432\u043e \u0438\u0437\u0431\u0435\u0436\u0430\u043d\u0438\u0435 \u043f\u0440\u0438\u0442\u043e\u0440\u043c\u0430\u0436\u0438\u0432\u0430\u043d\u0438\u044f \u043f\u0440\u0438 \u0437\u0430\u0433\u0440\u0443\u0437\u043a\u0435 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u044b.<br><br><b>\u0421 \u0432\u043e\u043f\u0440\u043e\u0441\u0430\u043c\u0438</b> \u043f\u043e \u0438\u0441\u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u043d\u0438\u044e \u0441\u043a\u0440\u0438\u043f\u0442\u0430 \u043e\u0431\u0440\u0430\u0449\u0430\u0439\u0442\u0435\u0441\u044c \u043d\u0430 <a href=\"http://vkopt.net/forum/forumdisplay.php?f=4\"  target=_blank>\u0444\u043e\u0440\u0443\u043c</a><br><br>\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u043f\u0440\u0435\u0434\u043d\u0430\u0437\u043d\u0430\u0447\u0435\u043d\u0438\u0439 \u0444\u0443\u043d\u043a\u0446\u0438\u0439 Vkopt'\u0430 \u043c\u043e\u0436\u043d\u043e \u043f\u0440\u043e\u0447\u0438\u0442\u0430\u0442\u044c <a href=\"http://vkopt.net/forum/forumdisplay.php?f=4\"  target=_blank>\u0437\u0434\u0435\u0441\u044c</a><br><br>",
+   "INCD": "<font color=\"red\"><b>ВНИМАНИЕ!</b></font><br><br><b>Помните</b>: Во избежание подделок, которые могут воровать пароли пользователей, скрипт скачивать <b>только</b> с официального {a_site|<b>сайта</b>}.<br><br>Для включения/отключения функций скрипта вам необходимо зайти в <a href=\"/settings.php?act=vkopt\" target=_blank>настройки</a>.<br><br>Не включайте все подряд (нужные и не нужные) функции во избежание притормаживания при загрузке страницы.<br><br><b>С вопросами</b> по использованию скрипта обращайтесь на <a href=\"http://vkopt.net/forum/forumdisplay.php?f=4\"  target=_blank>форум</a><br><br>Описание предназначений функций Vkopt'а можно прочитать <a href=\"http://vkopt.net/forum/forumdisplay.php?f=4\"  target=_blank>здесь</a><br><br>",
    "FIS": "\u0414\u043b\u044f \u043e\u043a\u043e\u043d\u0447\u0430\u043d\u0438\u044f \u0443\u0441\u0442\u0430\u043d\u043e\u0432\u043a\u0438 \u043f\u0435\u0440\u0435\u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u0435 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0443.",
    "vk_year": ["", "%s \u0433\u043e\u0434", "%s \u0433\u043e\u0434\u0430", "%s \u043b\u0435\u0442"],
    "ParseFriends": "\u0420\u0430\u0437\u0431\u043e\u0440 \u0434\u0440\u0443\u0437\u0435\u0439",
@@ -18577,6 +18555,7 @@ vk_lang_ru={
    "seHideLeftFrendsBlock": "\u0421\u043a\u0440\u044b\u0442\u044c \u0431\u043b\u043e\u043a \u0432\u043e\u0437\u043c\u043e\u0436\u043d\u044b\u0445 \u0434\u0440\u0443\u0437\u0435\u0439",
    "seHideRecomendations": "\u0421\u043a\u0440\u044b\u0442\u044c \u0440\u0435\u043a\u043e\u043c\u0435\u043d\u0434\u0430\u0446\u0438\u0438 \u0434\u0440\u0443\u0437\u0435\u0439 \u0438 \u0433\u0440\u0443\u043f\u043f",
    "seHideStories": "\u0421\u043a\u0440\u044b\u0442\u044c \u0431\u043b\u043e\u043a \u0438\u0441\u0442\u043e\u0440\u0438\u0439",
+   "seHideMsgRecs": "Скрыть рекомендации в мессенджере",
    "seHideLeftSettings": "\u0421\u043a\u0440\u044b\u0442\u044c \u0448\u0435\u0441\u0442\u0435\u0440\u0435\u043d\u043a\u0443 \u0432 \u043b\u0435\u0432\u043e\u043c \u043c\u0435\u043d\u044e",
    "Typing": "\u041f\u0435\u0447\u0430\u0442\u0430\u0435\u0442 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435",
    "WikiPagesList": "[ \u0421\u043f\u0438\u0441\u043e\u043a Wiki-\u0441\u0442\u0440\u0430\u043d\u0438\u0446 ]",
@@ -18768,7 +18747,7 @@ vk_lang_ru={
    ,"seScrobbler": "Last.fm scrobbler"
    ,"seAudioSizeShowOnCtrl":"\u043f\u043e\u043a\u0430\u0437\u044b\u0432\u0430\u0442\u044c \u0442\u043e\u043b\u044c\u043a\u043e \u043f\u0440\u0438 \u0432\u043a\u043b\u044e\u0447\u0435\u043d\u043d\u043e\u043c \u043e\u0442\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u0438 \u043c\u0435\u0442\u043e\u043a <div class=\"vk_audio_hq_label\"></div>"
    ,"seDialogsListToRight":"\u0421\u043f\u0438\u0441\u043e\u043a \u0434\u0438\u0430\u043b\u043e\u0433\u043e\u0432 \u0441\u043f\u0440\u0430\u0432\u0430"
-   ,"FirstUpdateLaunch":"\u0412\u044b \u0443\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u043b\u0438 VkOpt <b>v{ver} (build {build})</b>{n}{n}{warn|\u0412\u041d\u0418\u041c\u0410\u041d\u0418\u0415!}{n}{n}{b|\u041f\u043e\u043c\u043d\u0438\u0442\u0435}: \u0412\u043e \u0438\u0437\u0431\u0435\u0436\u0430\u043d\u0438\u0435 \u043f\u043e\u0434\u0434\u0435\u043b\u043e\u043a, \u043a\u043e\u0442\u043e\u0440\u044b\u0435 \u043c\u043e\u0433\u0443\u0442 \u0432\u043e\u0440\u043e\u0432\u0430\u0442\u044c \u043f\u0430\u0440\u043e\u043b\u0438 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u0435\u0439, \u0441\u043a\u0440\u0438\u043f\u0442 \u0441\u043a\u0430\u0447\u0438\u0432\u0430\u0442\u044c {b|\u0442\u043e\u043b\u044c\u043a\u043e} \u0441 \u043e\u0444\u0438\u0446\u0438\u0430\u043b\u044c\u043d\u043e\u0433\u043e {a_site|\u0441\u0430\u0439\u0442\u0430}{n}{n}\u0414\u043b\u044f \u0432\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u044f/\u043e\u0442\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u044f \u0444\u0443\u043d\u043a\u0446\u0438\u0439 \u0441\u043a\u0440\u0438\u043f\u0442\u0430 \u0432\u0430\u043c \u043d\u0435\u043e\u0431\u0445\u043e\u0434\u0438\u043c\u043e \u0437\u0430\u0439\u0442\u0438 \u0432 {a_cfg|\u043d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438}.{n}{n}\u041d\u0435 \u0432\u043a\u043b\u044e\u0447\u0430\u0439\u0442\u0435 \u0432\u0441\u0435 \u043f\u043e\u0434\u0440\u044f\u0434 (\u043d\u0443\u0436\u043d\u044b\u0435 \u0438 \u043d\u0435 \u043d\u0443\u0436\u043d\u044b\u0435) \u0444\u0443\u043d\u043a\u0446\u0438\u0438 \u0432\u043e \u0438\u0437\u0431\u0435\u0436\u0430\u043d\u0438\u0435 \u043f\u0440\u0438\u0442\u043e\u0440\u043c\u0430\u0436\u0438\u0432\u0430\u043d\u0438\u044f \u043f\u0440\u0438 \u0437\u0430\u0433\u0440\u0443\u0437\u043a\u0435 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u044b.{n}{n}{b|\u0421 \u0432\u043e\u043f\u0440\u043e\u0441\u0430\u043c\u0438} \u043f\u043e \u0438\u0441\u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u043d\u0438\u044e \u0441\u043a\u0440\u0438\u043f\u0442\u0430 \u043e\u0431\u0440\u0430\u0449\u0430\u0439\u0442\u0435\u0441\u044c \u043d\u0430 {a_forum|\u0444\u043e\u0440\u0443\u043c}{n}{n}{n}\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u043f\u0440\u0435\u0434\u043d\u0430\u0437\u043d\u0430\u0447\u0435\u043d\u0438\u0439 \u0444\u0443\u043d\u043a\u0446\u0438\u0439 Vkopt'\u0430 \u043c\u043e\u0436\u043d\u043e \u043f\u0440\u043e\u0447\u0438\u0442\u0430\u0442\u044c {a_faq|\u0437\u0434\u0435\u0441\u044c}{n}{n}{b|\u0414\u043b\u044f \u043e\u043a\u043e\u043d\u0447\u0430\u043d\u0438\u044f \u0443\u0441\u0442\u0430\u043d\u043e\u0432\u043a\u0438 \u043f\u0435\u0440\u0435\u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u0435 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0443.}"
+   ,"FirstUpdateLaunch":"\u0412\u044b \u0443\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u043b\u0438 VKOpt Reloaded <b>v{ver} (build {build})</b>{n}{n}{warn|\u0412\u041d\u0418\u041c\u0410\u041d\u0418\u0415!}{n}{n}{b|\u041f\u043e\u043c\u043d\u0438\u0442\u0435}: \u0412\u043e \u0438\u0437\u0431\u0435\u0436\u0430\u043d\u0438\u0435 \u043f\u043e\u0434\u0434\u0435\u043b\u043e\u043a, \u043a\u043e\u0442\u043e\u0440\u044b\u0435 \u043c\u043e\u0433\u0443\u0442 \u0432\u043e\u0440\u043e\u0432\u0430\u0442\u044c \u043f\u0430\u0440\u043e\u043b\u0438 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u0435\u0439, \u0441\u043a\u0440\u0438\u043f\u0442 \u0441\u043a\u0430\u0447\u0438\u0432\u0430\u0442\u044c {b|\u0442\u043e\u043b\u044c\u043a\u043e} \u0441 \u043e\u0444\u0438\u0446\u0438\u0430\u043b\u044c\u043d\u043e\u0433\u043e {a_site|<b>\u0441\u0430\u0439\u0442\u0430</b>}{n}{n}\u0414\u043b\u044f \u0432\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u044f/\u043e\u0442\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u044f \u0444\u0443\u043d\u043a\u0446\u0438\u0439 \u0441\u043a\u0440\u0438\u043f\u0442\u0430 \u0432\u0430\u043c \u043d\u0435\u043e\u0431\u0445\u043e\u0434\u0438\u043c\u043e \u0437\u0430\u0439\u0442\u0438 \u0432 {a_cfg|\u043d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438}.{n}{n}\u041d\u0435 \u0432\u043a\u043b\u044e\u0447\u0430\u0439\u0442\u0435 \u0432\u0441\u0435 \u043f\u043e\u0434\u0440\u044f\u0434 (\u043d\u0443\u0436\u043d\u044b\u0435 \u0438 \u043d\u0435 \u043d\u0443\u0436\u043d\u044b\u0435) \u0444\u0443\u043d\u043a\u0446\u0438\u0438 \u0432\u043e \u0438\u0437\u0431\u0435\u0436\u0430\u043d\u0438\u0435 \u043f\u0440\u0438\u0442\u043e\u0440\u043c\u0430\u0436\u0438\u0432\u0430\u043d\u0438\u044f \u043f\u0440\u0438 \u0437\u0430\u0433\u0440\u0443\u0437\u043a\u0435 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u044b.{n}{n}{b|\u0421 \u0432\u043e\u043f\u0440\u043e\u0441\u0430\u043c\u0438} \u043f\u043e \u0438\u0441\u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u043d\u0438\u044e \u0441\u043a\u0440\u0438\u043f\u0442\u0430 \u043e\u0431\u0440\u0430\u0449\u0430\u0439\u0442\u0435\u0441\u044c \u043d\u0430 {a_forum|\u0444\u043e\u0440\u0443\u043c}{n}{n}{n}\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u043f\u0440\u0435\u0434\u043d\u0430\u0437\u043d\u0430\u0447\u0435\u043d\u0438\u0439 \u0444\u0443\u043d\u043a\u0446\u0438\u0439 Vkopt'\u0430 \u043c\u043e\u0436\u043d\u043e \u043f\u0440\u043e\u0447\u0438\u0442\u0430\u0442\u044c {a_faq|\u0437\u0434\u0435\u0441\u044c}{n}{n}{b|\u0414\u043b\u044f \u043e\u043a\u043e\u043d\u0447\u0430\u043d\u0438\u044f \u0443\u0441\u0442\u0430\u043d\u043e\u0432\u043a\u0438 \u043f\u0435\u0440\u0435\u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u0435 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0443.}"
    ,"sePostponeCustomInterval": "\u0417\u0430\u043f\u043e\u043c\u0438\u043d\u0430\u0442\u044c \u0438\u043d\u0442\u0435\u0440\u0432\u0430\u043b \u043f\u0440\u0438 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u0438 \u043e\u0442\u043b\u043e\u0436\u0435\u043d\u043d\u044b\u0445 \u043f\u043e\u0441\u0442\u043e\u0432"
    ,"sePvCommMoveDown":"\u041f\u0435\u0440\u0435\u043d\u0435\u0441\u0442\u0438 \u0431\u043b\u043e\u043a \u043a\u043e\u043c\u043c\u0435\u043d\u0442\u0430\u0440\u0438\u0435\u0432 \u043f\u043e\u0434 \u0444\u043e\u0442\u043e"
    ,"PopularOptions":"\u041f\u043e\u043f\u0443\u043b\u044f\u0440\u043d\u044b\u0435 \u043d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 \u0440\u0430\u0441\u0448\u0438\u0440\u0435\u043d\u0438\u044f"
@@ -19248,7 +19227,7 @@ vk_lang_en={//by Hzy
 'SearchText':'[ Find text ]',
 'THFI':'Thanks for installing VkOpt!',
 'YIV':'You have been installed VkOpt v',
-'INCD':'<font color="red"><b>ATTENTION!</b></font><br><br><b>Remember</b>: To avoid fakes, which can stole your password, download script <b>only</b> from official <a href="http://vkopt.net/" target=_blank><b>site</b></a>.<br><br>To turn on/off functions you have to go to <a href="/settings?act=vkopt" target=_blank>settings</a>.<br><br>Don\'t turn on all (necessary and unnecessary) functions to avoid lags during page loads.<br><br><b>With questions</b> of using script go to <a href="http://vkopt.net/forum/forumdisplay.php?f=4"  target=_blank>forum</a><br><br>Description of Vkopt\'s functions can be found <a href="http://vkopt.net/forum/forumdisplay.php?f=4"  target=_blank>here</a><br><br>',
+'INCD':'<font color="red"><b>ATTENTION!</b></font><br><br><b>Remember</b>: To avoid fakes, which can stole your password, download script <b>only</b> from official {a_site|<b>site</b>}.<br><br>To turn on/off functions you have to go to <a href="/settings?act=vkopt" target=_blank>settings</a>.<br><br>Don\'t turn on all (necessary and unnecessary) functions to avoid lags during page loads.<br><br><b>With questions</b> of using script go to <a href="http://vkopt.net/forum/forumdisplay.php?f=4"  target=_blank>forum</a><br><br>Description of Vkopt\'s functions can be found <a href="http://vkopt.net/forum/forumdisplay.php?f=4"  target=_blank>here</a><br><br>',
 'FIS':'To complete install refresh page.',
 
 //miXOniN
@@ -19762,7 +19741,7 @@ vk_lang_en={//by Hzy
   ,"seDisableBorderRadius":"Remove all round corners of elements"
   ,"seAudioSizeShowOnCtrl":"show only when icon <div class=\"vk_audio_hq_label\"></div> is visible"
   ,"seDialogsListToRight":"Move the dialogs list to right"
-  ,"FirstUpdateLaunch":"You have been installed <b>VkOpt v{ver} (build {build})</b>{n}{n}{warn|ATTENTION!}{n}{n}{b|Remember}: To avoid fakes, which can stole your password, download script {b|only} from official {a_site|site}.{n}{n}To turn on/off functions you have to go to {a_cfg|settings}.{n}{n}Don't turn on all (necessary and unnecessary) functions to avoid lags during page loads.{n}{n}{b|With questions} of using script go to {a_forum|forum}{n}{n}Description of Vkopt's functions can be found {a_faq|here}{n}{n}{b|To complete install refresh page.}"
+  ,"FirstUpdateLaunch":"You have been installed <b>VKOpt Reloaded v{ver} (build {build})</b>{n}{n}{warn|ATTENTION!}{n}{n}{b|Remember}: To avoid fakes, which can stole your password, download script {b|only} from official {a_site|<b>site</b>}.{n}{n}To turn on/off functions you have to go to {a_cfg|settings}.{n}{n}Don't turn on all (necessary and unnecessary) functions to avoid lags during page loads.{n}{n}{b|With questions} of using script go to {a_forum|forum}{n}{n}Description of Vkopt's functions can be found {a_faq|here}{n}{n}{b|To complete install refresh page.}"
   ,"sePostponeCustomInterval": "Remember the creation interval between postponed posts"
   ,"sePvCommMoveDown":"Move comments block under the photo"
   ,"PopularOptions":"Popular extension settings"
@@ -19804,6 +19783,7 @@ vk_lang_en={//by Hzy
   ,"DonateInfo":"If you liked VkOpt, then you can choose the convenient way for you to express your gratitude to us",
    "seHideRecomendations": "Hide friends and groups recommendations",
    "seHideStories": "Hide the stories block",
+   "seHideMsgRecs": "Hide recommendations in the messenger",
    "seHideLeftSettings": "Hide the gear icon in the left menu",
    "seScrobbler": "Last.fm scrobbler",
    "seStoreHeightImTxt": "Remember height of the input field in the dialogs",
@@ -20237,7 +20217,7 @@ vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
 'SearchText':'[ \u0417\u043d\u0430\u0439\u0442\u0438 \u0442\u0435\u043a\u0441\u0442 ]',
 'THFI':'\u0414\u044f\u043a\u0443\u0454\u043c\u043e \u0437\u0430 \u0443\u0441\u0442\u0430\u043d\u043e\u0432\u043a\u0443 \u0441\u043a\u0440\u0438\u043f\u0442\u0430 \u0412\u043a\u041e\u043f\u0442!',
 'YIV':'\u0412\u0438 \u0432\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u043b\u0438 VkOpt v',
-'INCD':'<font color="red"><b>\u0423\u0412\u0410\u0413\u0410!</b></font><br><br><b>\u041f\u0430\u043c\'\u044f\u0442\u0430\u0439\u0442\u0435</b>: \u0429\u043e\u0431 \u0443\u043d\u0438\u043a\u043d\u0443\u0442\u0438 \u043f\u0456\u0434\u0440\u043e\u0431\u043e\u043a, \u044f\u043a\u0456 \u043c\u043e\u0436\u0443\u0442\u044c \u043a\u0440\u0430\u0441\u0442\u0438 \u043f\u0430\u0440\u043e\u043b\u0456 \u043a\u043e\u0440\u0438\u0441\u0442\u0443\u0432\u0430\u0447\u0456\u0432 , \u0441\u043a\u0440\u0438\u043f\u0442 \u0437\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0443\u0432\u0430\u0442\u0438 <b>\u0442\u0456\u043b\u044c\u043a\u0438</b> \u0437 \u043e\u0444\u0456\u0446\u0456\u0439\u043d\u043e\u0433\u043e <a href="http://vkopt.net/" target=_blank><b>\u0441\u0430\u0439\u0442\u0443</b></a>.<br><br>\u0414\u043b\u044f \u0432\u043a\u043b\u044e\u0447\u0435\u043d\u043d\u044f/\u0432\u0456\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u043d\u044f \u0444\u0443\u043d\u043a\u0446\u0456\u0439 \u0441\u043a\u0440\u0438\u043f\u0442\u0430 \u0432\u0430\u043c \u043d\u0435\u043e\u0431\u0445\u0456\u0434\u043d\u043e \u0437\u0430\u0439\u0442\u0438 \u0432 <a href="/settings.php?act=vkopt" target=_blank>\u043d\u0430\u043b\u0430\u0448\u0442\u0443\u0432\u0430\u043d\u043d\u044f</a>.<br><br>\u041d\u0435 \u0432\u043c\u0438\u043a\u0430\u0439\u0442\u0435 \u0432\u0441\u0435 \u043f\u0456\u0434\u0440\u044f\u0434 (\u0456 \u043f\u043e\u0442\u0440\u0456\u0431\u043d\u0456, \u0456 \u043d\u0435 \u043f\u043e\u0442\u0440\u0456\u0431\u043d\u0456) \u0444\u0443\u043d\u043a\u0446\u0456\u0457, \u0449\u043e\u0431 \u0443\u043d\u0438\u043a\u043d\u0443\u0442\u0438 \u043f\u0440\u0438\u0433\u0430\u043b\u044c\u043c\u043e\u0432\u0443\u0432\u0430\u043d\u043d\u044f \u043f\u0440\u0438 \u0437\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0435\u043d\u043d\u0456 \u0441\u0442\u043e\u0440\u0456\u043d\u043a\u0438.<br><br><b>\u0417 \u043f\u0438\u0442\u0430\u043d\u043d\u044f\u043c\u0438</b> \u0437 \u0432\u0438\u043a\u043e\u0440\u0438\u0441\u0442\u0430\u043d\u043d\u044f \u0441\u043a\u0440\u0438\u043f\u0442\u0430 \u0437\u0432\u0435\u0440\u0442\u0430\u0439\u0442\u0435\u0441\u044f \u043d\u0430 <a href="http://vkopt.net/forum/forumdisplay.php?f=4"  target=_blank>\u0444\u043e\u0440\u0443\u043c</a><br><br>\u041e\u043f\u0438\u0441 \u043f\u0440\u0438\u0437\u043d\u0430\u0447\u0435\u043d\u044c \u0444\u0443\u043d\u043a\u0446\u0456\u0439 Vkopt\'\u0430 \u043c\u043e\u0436\u043d\u0430 \u043f\u0440\u043e\u0447\u0438\u0442\u0430\u0442\u0438 <a href="http://vkopt.net/forum/forumdisplay.php?f=4"  target=_blank>\u0442\u0443\u0442</a><br><br>',
+'INCD':'<font color="red"><b>УВАГА!</b></font><br><br><b>Пам\'ятайте</b>: Щоб уникнути підробок, які можуть красти паролі користувачів , скрипт завантажувати <b>тільки</b> з офіційного {a_site|<b>сайту</b>}.<br><br>Для включення/відключення функцій скрипта вам необхідно зайти в <a href="/settings.php?act=vkopt" target=_blank>налаштування</a>.<br><br>Не вмикайте все підряд (і потрібні, і не потрібні) функції, щоб уникнути пригальмовування при завантаженні сторінки.<br><br><b>З питаннями</b> з використання скрипта звертайтеся на <a href="http://vkopt.net/forum/forumdisplay.php?f=4"  target=_blank>форум</a><br><br>Опис призначень функцій Vkopt\'а можна прочитати <a href="http://vkopt.net/forum/forumdisplay.php?f=4"  target=_blank>тут</a><br><br>',
 'FIS':'\u0414\u043b\u044f \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043d\u043d\u044f \u0432\u0441\u0442\u0430\u043d\u043e\u0432\u043b\u0435\u043d\u043d\u044f \u043f\u0435\u0440\u0435\u0437\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0442\u0435 \u0441\u0442\u043e\u0440\u0456\u043d\u043a\u0443.',
 
 //miXOniN
@@ -20743,7 +20723,7 @@ vk_lang_ua={//by Vall (id3476823) and Vall_gorr (id119992149)
    ,"RegDate":"\u0414\u0430\u0442\u0430 \u0440\u0435\u0454\u0441\u0442\u0440\u0430\u0446\u0456\u0457"
    ,"seAutoplayOff":"\u0412\u0456\u0434\u043a\u043b\u044e\u0447\u0438\u0442\u0438 \u0430\u0432\u0442\u043e\u0432\u0456\u0434\u0442\u0432\u043e\u0440\u0435\u043d\u043d\u044f \u0437\u0430\u043a\u0440\u0456\u043f\u043b\u0435\u043d\u043e\u0433\u043e \u0432\u0456\u0434\u0435\u043e"
    ,"seVideoAnimThumbs": "\u041f\u043e\u043f\u0435\u0440\u0435\u0434\u043d\u0456\u0439 \u043f\u0435\u0440\u0435\u0433\u043b\u044f\u0434 \u0434\u0435\u044f\u043a\u0438\u0445 \u0432\u0456\u0434\u0435\u043e \u043d\u0430\u0432\u0435\u0434\u0435\u043d\u043d\u044f\u043c \u043d\u0430 \u043c\u0456\u043d\u0456\u0430\u0442\u044e\u0440\u0443"
-   ,"FirstUpdateLaunch":"\u0412\u0438 \u0432\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u043b\u0438 <b>VkOpt v{ver} (build {build})</b>{n}{n}{warn|\u0423\u0412\u0410\u0413\u0410!}{n}{n}{b|\u041f\u0430\u043c'\u044f\u0442\u0430\u0439\u0442\u0435}: \u0429\u043e\u0431 \u0443\u043d\u0438\u043a\u043d\u0443\u0442\u0438 \u043f\u0456\u0434\u0440\u043e\u0431\u043e\u043a, \u044f\u043a\u0456 \u043c\u043e\u0436\u0443\u0442\u044c \u043a\u0440\u0430\u0441\u0442\u0438 \u043f\u0430\u0440\u043e\u043b\u0456 \u043a\u043e\u0440\u0438\u0441\u0442\u0443\u0432\u0430\u0447\u0456\u0432 , \u0441\u043a\u0440\u0438\u043f\u0442 \u0437\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0443\u0432\u0430\u0442\u0438 {b|\u0442\u0456\u043b\u044c\u043a\u0438} \u0437 \u043e\u0444\u0456\u0446\u0456\u0439\u043d\u043e\u0433\u043e {a_site|\u0441\u0430\u0439\u0442\u0443}.{n}{n}\u0414\u043b\u044f \u0432\u043a\u043b\u044e\u0447\u0435\u043d\u043d\u044f/\u0432\u0456\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u043d\u044f \u0444\u0443\u043d\u043a\u0446\u0456\u0439 \u0441\u043a\u0440\u0438\u043f\u0442\u0430 \u0432\u0430\u043c \u043d\u0435\u043e\u0431\u0445\u0456\u0434\u043d\u043e \u0437\u0430\u0439\u0442\u0438 \u0432 {a_cfg|\u043d\u0430\u043b\u0430\u0448\u0442\u0443\u0432\u0430\u043d\u043d\u044f}.{n}{n}\u041d\u0435 \u0432\u043c\u0438\u043a\u0430\u0439\u0442\u0435 \u0432\u0441\u0435 \u043f\u0456\u0434\u0440\u044f\u0434 (\u0456 \u043f\u043e\u0442\u0440\u0456\u0431\u043d\u0456, \u0456 \u043d\u0435 \u043f\u043e\u0442\u0440\u0456\u0431\u043d\u0456) \u0444\u0443\u043d\u043a\u0446\u0456\u0457, \u0449\u043e\u0431 \u0443\u043d\u0438\u043a\u043d\u0443\u0442\u0438 \u043f\u0440\u0438\u0433\u0430\u043b\u044c\u043c\u043e\u0432\u0443\u0432\u0430\u043d\u043d\u044f \u043f\u0440\u0438 \u0437\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0435\u043d\u043d\u0456 \u0441\u0442\u043e\u0440\u0456\u043d\u043a\u0438.{n}{n}{b|\u0417 \u043f\u0438\u0442\u0430\u043d\u043d\u044f\u043c\u0438} \u0437 \u0432\u0438\u043a\u043e\u0440\u0438\u0441\u0442\u0430\u043d\u043d\u044f \u0441\u043a\u0440\u0438\u043f\u0442\u0430 \u0437\u0432\u0435\u0440\u0442\u0430\u0439\u0442\u0435\u0441\u044f \u043d\u0430 {a_forum|\u0444\u043e\u0440\u0443\u043c}{n}{n}\u041e\u043f\u0438\u0441 \u043f\u0440\u0438\u0437\u043d\u0430\u0447\u0435\u043d\u044c \u0444\u0443\u043d\u043a\u0446\u0456\u0439 Vkopt'\u0430 \u043c\u043e\u0436\u043d\u0430 \u043f\u0440\u043e\u0447\u0438\u0442\u0430\u0442\u0438 {a_faq|\u0442\u0443\u0442}{n}{n}{b|\u0414\u043b\u044f \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043d\u043d\u044f \u0432\u0441\u0442\u0430\u043d\u043e\u0432\u043b\u0435\u043d\u043d\u044f \u043f\u0435\u0440\u0435\u0437\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0442\u0435 \u0441\u0442\u043e\u0440\u0456\u043d\u043a\u0443.}"
+   ,"FirstUpdateLaunch":"\u0412\u0438 \u0432\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u043b\u0438 <b>VKOpt Reloaded v{ver} (build {build})</b>{n}{n}{warn|\u0423\u0412\u0410\u0413\u0410!}{n}{n}{b|\u041f\u0430\u043c'\u044f\u0442\u0430\u0439\u0442\u0435}: \u0429\u043e\u0431 \u0443\u043d\u0438\u043a\u043d\u0443\u0442\u0438 \u043f\u0456\u0434\u0440\u043e\u0431\u043e\u043a, \u044f\u043a\u0456 \u043c\u043e\u0436\u0443\u0442\u044c \u043a\u0440\u0430\u0441\u0442\u0438 \u043f\u0430\u0440\u043e\u043b\u0456 \u043a\u043e\u0440\u0438\u0441\u0442\u0443\u0432\u0430\u0447\u0456\u0432 , \u0441\u043a\u0440\u0438\u043f\u0442 \u0437\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0443\u0432\u0430\u0442\u0438 {b|\u0442\u0456\u043b\u044c\u043a\u0438} \u0437 \u043e\u0444\u0456\u0446\u0456\u0439\u043d\u043e\u0433\u043e {a_site|<b>\u0441\u0430\u0439\u0442\u0443</b>}.{n}{n}\u0414\u043b\u044f \u0432\u043a\u043b\u044e\u0447\u0435\u043d\u043d\u044f/\u0432\u0456\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u043d\u044f \u0444\u0443\u043d\u043a\u0446\u0456\u0439 \u0441\u043a\u0440\u0438\u043f\u0442\u0430 \u0432\u0430\u043c \u043d\u0435\u043e\u0431\u0445\u0456\u0434\u043d\u043e \u0437\u0430\u0439\u0442\u0438 \u0432 {a_cfg|\u043d\u0430\u043b\u0430\u0448\u0442\u0443\u0432\u0430\u043d\u043d\u044f}.{n}{n}\u041d\u0435 \u0432\u043c\u0438\u043a\u0430\u0439\u0442\u0435 \u0432\u0441\u0435 \u043f\u0456\u0434\u0440\u044f\u0434 (\u0456 \u043f\u043e\u0442\u0440\u0456\u0431\u043d\u0456, \u0456 \u043d\u0435 \u043f\u043e\u0442\u0440\u0456\u0431\u043d\u0456) \u0444\u0443\u043d\u043a\u0446\u0456\u0457, \u0449\u043e\u0431 \u0443\u043d\u0438\u043a\u043d\u0443\u0442\u0438 \u043f\u0440\u0438\u0433\u0430\u043b\u044c\u043c\u043e\u0432\u0443\u0432\u0430\u043d\u043d\u044f \u043f\u0440\u0438 \u0437\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0435\u043d\u043d\u0456 \u0441\u0442\u043e\u0440\u0456\u043d\u043a\u0438.{n}{n}{b|\u0417 \u043f\u0438\u0442\u0430\u043d\u043d\u044f\u043c\u0438} \u0437 \u0432\u0438\u043a\u043e\u0440\u0438\u0441\u0442\u0430\u043d\u043d\u044f \u0441\u043a\u0440\u0438\u043f\u0442\u0430 \u0437\u0432\u0435\u0440\u0442\u0430\u0439\u0442\u0435\u0441\u044f \u043d\u0430 {a_forum|\u0444\u043e\u0440\u0443\u043c}{n}{n}\u041e\u043f\u0438\u0441 \u043f\u0440\u0438\u0437\u043d\u0430\u0447\u0435\u043d\u044c \u0444\u0443\u043d\u043a\u0446\u0456\u0439 Vkopt'\u0430 \u043c\u043e\u0436\u043d\u0430 \u043f\u0440\u043e\u0447\u0438\u0442\u0430\u0442\u0438 {a_faq|\u0442\u0443\u0442}{n}{n}{b|\u0414\u043b\u044f \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043d\u043d\u044f \u0432\u0441\u0442\u0430\u043d\u043e\u0432\u043b\u0435\u043d\u043d\u044f \u043f\u0435\u0440\u0435\u0437\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0442\u0435 \u0441\u0442\u043e\u0440\u0456\u043d\u043a\u0443.}"
    ,"seDisableBorderRadius": "\u0417\u0430\u0431\u0440\u0430\u0442\u0438 \u0432\u0441\u0456 \u0437\u0430\u043e\u043a\u0440\u0443\u0433\u043b\u0435\u043d\u043d\u044f \u0435\u043b\u0435\u043c\u0435\u043d\u0442\u0456\u0432",
    "seScrobbler": "Last.fm scrobbler",
    "seAudioSizeShowOnCtrl": "\u043f\u043e\u043a\u0430\u0437\u0443\u0432\u0430\u0442\u0438 \u0442\u0456\u043b\u044c\u043a\u0438 \u043f\u0440\u0438 \u0443\u0432\u0456\u043c\u043a\u043d\u0435\u043d\u043e\u043c\u0443 \u0432\u0456\u0434\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u043d\u0456 \u043c\u0456\u0442\u043e\u043a <div class=\"vk_audio_hq_label\"></div>",
@@ -21192,7 +21172,7 @@ vk_lang_by={ //by Gavr id8610702
 'SearchText':'[ \u0417\u043d\u0430\u0439\u0441\u0446\u0456 \u0442\u044d\u043a\u0441\u0442 ]',
 'THFI':'\u0414\u0437\u044f\u043a\u0443\u0439 \u0437\u0430 \u045e\u0441\u0442\u0430\u043b\u0451\u045e\u043a\u0443 \u0441\u043a\u0440\u044b\u043f\u0442\u0443 \u0412\u043a\u041e\u043f\u0442!',
 'YIV':'\u0412\u044b \u045e\u0441\u0442\u0430\u043b\u044f\u0432\u0430\u043b\u0456 VkOpt v',
-'INCD':'<font color="red"><b>\u0423\u0412\u0410\u0413\u0410!</b></font><br><br><b>\u041f\u0430\u043c\u044f\u0442\u0430\u0439\u0446\u0435</b>: \u0423 \u043f\u0430\u0437\u0431\u044f\u0433\u0430\u043d\u043d\u0435 \u043f\u0430\u0434\u0440\u043e\u0431\u0430\u043a, \u044f\u043a\u0456\u044f \u043c\u043e\u0433\u0443\u0446\u044c \u043a\u0440\u0430\u0441\u0446\u0456 \u043f\u0430\u0440\u043e\u043b\u0456 \u043a\u0430\u0440\u044b\u0441\u0442\u0430\u0447\u043e\u045e, \u0441\u043a\u0440\u044b\u043f\u0442 \u043f\u0430\u0442\u0440\u044d\u0431\u043d\u0430 \u0441\u043f\u0430\u043c\u043f\u043e\u045e\u0432\u0430\u0446\u044c <b>\u0442\u043e\u043b\u044c\u043a\u0456</b> \u0437 \u0430\u0444\u0456\u0446\u044b\u0439\u043d\u0430\u0433\u0430 <a href="http://vkopt.net/" target=_blank><b>\u0441\u0430\u0439\u0442\u0430</b></a>.<br><br>\u0414\u043b\u044f \u045e\u043a\u043b\u044e\u0447\u044d\u043d\u043d\u044f/\u0430\u0434\u043a\u043b\u044e\u0447\u044d\u043d\u043d\u044f \u0444\u0443\u043d\u043a\u0446\u044b\u0439 \u0441\u043a\u0440\u044b\u043f\u0442\u0443 \u0432\u0430\u043c \u043d\u0435\u0430\u0431\u0445\u043e\u0434\u043d\u0430 \u0437\u0430\u0439\u0441\u0446\u0456 \u045e <a href="/settings.php?act=vkopt" target=_blank>\u043d\u0430\u043b\u0430\u0434\u044b</a>.<br><br>\u041d\u0435 \u045e\u043a\u043b\u044e\u0447\u0430\u0439\u0446\u0435 \u045e\u0441\u0435 \u0440\u0430\u0437\u0430\u043c (\u043f\u0430\u0442\u0440\u044d\u0431\u043d\u044b\u044f \u0456 \u043d\u0435 \u043f\u0430\u0442\u0440\u044d\u0431\u043d\u044b\u044f) \u0444\u0443\u043d\u043a\u0446\u044b\u0456, \u043a\u0430\u0431 \u043f\u0430\u0437\u0431\u0435\u0433\u043d\u0443\u0446\u044c \u0442\u0430\u0440\u043c\u0430\u0436\u044d\u043d\u044c\u043d\u044f \u043f\u0440\u044b \u0437\u0430\u0433\u0440\u0443\u0437\u0446\u044b \u0441\u0442\u0430\u0440\u043e\u043d\u043a\u0456.<br><br><b>\u0417 \u043f\u044b\u0442\u0430\u043d\u044c\u043d\u044f\u043c\u0456</b> \u043f\u0430 \u0432\u044b\u043a\u0430\u0440\u044b\u0441\u0442\u0430\u043d\u044c\u043d\u0456 \u0441\u043a\u0440\u044b\u043f\u0442\u0443 \u0437\u0432\u044f\u0440\u0442\u0430\u0439\u0446\u0435\u0441\u044f \u043d\u0430 <a href="http://vkopt.net/forum/forumdisplay.php?f=4"  target=_blank>\u0444\u043e\u0440\u0443\u043c</a><br><br>\u0410\u043f\u0456\u0441\u0430\u043d\u044c\u043d\u0435 \u043f\u0440\u044b\u0437\u043d\u0430\u0447\u044d\u043d\u043d\u044f\u045e \u0444\u0443\u043d\u043a\u0446\u044b\u0439 Vkopt\'\u0430 \u043c\u043e\u0436\u043d\u0430 \u043f\u0440\u0430\u0447\u044b\u0442\u0430\u0446\u044c <a href="http://vkopt.net/forum/forumdisplay.php?f=4"  target=_blank>\u0442\u0443\u0442</a><br><br>',
+'INCD':'<font color="red"><b>УВАГА!</b></font><br><br><b>Памятайце</b>: У пазбяганне падробак, якія могуць красці паролі карыстачоў, скрыпт патрэбна спампоўваць <b>толькі</b> з афіцыйнага {a_site|<b>сайта</b>}.<br><br>Для ўключэння/адключэння функцый скрыпту вам неабходна зайсці ў <a href="/settings.php?act=vkopt" target=_blank>налады</a>.<br><br>Не ўключайце ўсе разам (патрэбныя і не патрэбныя) функцыі, каб пазбегнуць тармажэньня пры загрузцы старонкі.<br><br><b>З пытаньнямі</b> па выкарыстаньні скрыпту звяртайцеся на <a href="http://vkopt.net/forum/forumdisplay.php?f=4"  target=_blank>форум</a><br><br>Апісаньне прызначэнняў функцый Vkopt\'а можна прачытаць <a href="http://vkopt.net/forum/forumdisplay.php?f=4"  target=_blank>тут</a><br><br>',
 'FIS':'\u0414\u043b\u044f \u0437\u0430\u043a\u0430\u043d\u0447\u044d\u043d\u044c\u043d\u044f \u045e\u0441\u0442\u0430\u043b\u0451\u045e\u043a\u0456 \u043f\u0435\u0440\u0430\u0437\u0430\u0433\u0440\u0443\u0437\u0456\u0446\u0435 \u0441\u0442\u0430\u0440\u043e\u043d\u043a\u0443.',
 
 //miXOniN
@@ -21497,7 +21477,7 @@ vk_lang_by={ //by Gavr id8610702
    'mGrAdmin':'\u0423\u043f\u0440\u0430\u045e\u043b\u0435\u043d\u043d\u0435',
    'zodiac_signs':['\u041a\u0430\u0437\u044f\u0440\u043e\u0433','\u0412\u0430\u0434\u0430\u043b\u0435\u0439','\u0420\u044b\u0431\u044b','\u0410\u0432\u0435\u043d','\u0426\u044f\u043b\u0435\u0446','\u0411\u043b\u0456\u0437\u043d\u044f\u0442\u044b','\u0420\u0430\u043a','\u041b\u0435\u045e','\u0414\u0437\u0435\u0432\u0430','\u0428\u0430\u043b\u0456','\u0421\u043a\u0430\u0440\u043f\u0456\u0451\u043d','\u0421\u0442\u0440\u0430\u043b\u0435\u0446'],
    'Stats':'\u0421\u0442\u0430\u0442\u044b\u0441\u0442\u044b\u043a\u0430',
-   "FirstUpdateLaunch":"\u0412\u044b \u045e\u0441\u0442\u0430\u043b\u044f\u0432\u0430\u043b\u0456 <b>VkOpt v{ver} (build {build})</b>{n}{n}{warn|\u0423\u0412\u0410\u0413\u0410!}{n}{n}{b|\u041f\u0430\u043c\u044f\u0442\u0430\u0439\u0446\u0435}: \u0423 \u043f\u0430\u0437\u0431\u044f\u0433\u0430\u043d\u043d\u0435 \u043f\u0430\u0434\u0440\u043e\u0431\u0430\u043a, \u044f\u043a\u0456\u044f \u043c\u043e\u0433\u0443\u0446\u044c \u043a\u0440\u0430\u0441\u0446\u0456 \u043f\u0430\u0440\u043e\u043b\u0456 \u043a\u0430\u0440\u044b\u0441\u0442\u0430\u0447\u043e\u045e, \u0441\u043a\u0440\u044b\u043f\u0442 \u043f\u0430\u0442\u0440\u044d\u0431\u043d\u0430 \u0441\u043f\u0430\u043c\u043f\u043e\u045e\u0432\u0430\u0446\u044c {b|\u0442\u043e\u043b\u044c\u043a\u0456} \u0437 \u0430\u0444\u0456\u0446\u044b\u0439\u043d\u0430\u0433\u0430 {a_site|\u0441\u0430\u0439\u0442\u0430}.{n}{n}\u0414\u043b\u044f \u045e\u043a\u043b\u044e\u0447\u044d\u043d\u043d\u044f/\u0430\u0434\u043a\u043b\u044e\u0447\u044d\u043d\u043d\u044f \u0444\u0443\u043d\u043a\u0446\u044b\u0439 \u0441\u043a\u0440\u044b\u043f\u0442\u0443 \u0432\u0430\u043c \u043d\u0435\u0430\u0431\u0445\u043e\u0434\u043d\u0430 \u0437\u0430\u0439\u0441\u0446\u0456 \u045e {a_cfg|\u043d\u0430\u043b\u0430\u0434\u044b}.{n}{n}\u041d\u0435 \u045e\u043a\u043b\u044e\u0447\u0430\u0439\u0446\u0435 \u045e\u0441\u0435 \u0440\u0430\u0437\u0430\u043c (\u043f\u0430\u0442\u0440\u044d\u0431\u043d\u044b\u044f \u0456 \u043d\u0435 \u043f\u0430\u0442\u0440\u044d\u0431\u043d\u044b\u044f) \u0444\u0443\u043d\u043a\u0446\u044b\u0456, \u043a\u0430\u0431 \u043f\u0430\u0437\u0431\u0435\u0433\u043d\u0443\u0446\u044c \u0442\u0430\u0440\u043c\u0430\u0436\u044d\u043d\u044c\u043d\u044f \u043f\u0440\u044b \u0437\u0430\u0433\u0440\u0443\u0437\u0446\u044b \u0441\u0442\u0430\u0440\u043e\u043d\u043a\u0456.{n}{n}{b|\u0417 \u043f\u044b\u0442\u0430\u043d\u044c\u043d\u044f\u043c\u0456} \u043f\u0430 \u0432\u044b\u043a\u0430\u0440\u044b\u0441\u0442\u0430\u043d\u044c\u043d\u0456 \u0441\u043a\u0440\u044b\u043f\u0442\u0443 \u0437\u0432\u044f\u0440\u0442\u0430\u0439\u0446\u0435\u0441\u044f \u043d\u0430 {a_forum|\u0444\u043e\u0440\u0443\u043c}{n}{n}\u0410\u043f\u0456\u0441\u0430\u043d\u044c\u043d\u0435 \u043f\u0440\u044b\u0437\u043d\u0430\u0447\u044d\u043d\u043d\u044f\u045e \u0444\u0443\u043d\u043a\u0446\u044b\u0439 Vkopt'\u0430 \u043c\u043e\u0436\u043d\u0430 \u043f\u0440\u0430\u0447\u044b\u0442\u0430\u0446\u044c {a_faq|\u0442\u0443\u0442}{n}{n}{b|\u0414\u043b\u044f \u0437\u0430\u043a\u0430\u043d\u0447\u044d\u043d\u044c\u043d\u044f \u045e\u0441\u0442\u0430\u043b\u0451\u045e\u043a\u0456 \u043f\u0435\u0440\u0430\u0437\u0430\u0433\u0440\u0443\u0437\u0456\u0446\u0435 \u0441\u0442\u0430\u0440\u043e\u043d\u043a\u0443.}"
+   "FirstUpdateLaunch":"\u0412\u044b \u045e\u0441\u0442\u0430\u043b\u044f\u0432\u0430\u043b\u0456 <b>VKOpt Reloaded v{ver} (build {build})</b>{n}{n}{warn|\u0423\u0412\u0410\u0413\u0410!}{n}{n}{b|\u041f\u0430\u043c\u044f\u0442\u0430\u0439\u0446\u0435}: \u0423 \u043f\u0430\u0437\u0431\u044f\u0433\u0430\u043d\u043d\u0435 \u043f\u0430\u0434\u0440\u043e\u0431\u0430\u043a, \u044f\u043a\u0456\u044f \u043c\u043e\u0433\u0443\u0446\u044c \u043a\u0440\u0430\u0441\u0446\u0456 \u043f\u0430\u0440\u043e\u043b\u0456 \u043a\u0430\u0440\u044b\u0441\u0442\u0430\u0447\u043e\u045e, \u0441\u043a\u0440\u044b\u043f\u0442 \u043f\u0430\u0442\u0440\u044d\u0431\u043d\u0430 \u0441\u043f\u0430\u043c\u043f\u043e\u045e\u0432\u0430\u0446\u044c {b|\u0442\u043e\u043b\u044c\u043a\u0456} \u0437 \u0430\u0444\u0456\u0446\u044b\u0439\u043d\u0430\u0433\u0430 {a_site|<b>\u0441\u0430\u0439\u0442\u0430</b>}.{n}{n}\u0414\u043b\u044f \u045e\u043a\u043b\u044e\u0447\u044d\u043d\u043d\u044f/\u0430\u0434\u043a\u043b\u044e\u0447\u044d\u043d\u043d\u044f \u0444\u0443\u043d\u043a\u0446\u044b\u0439 \u0441\u043a\u0440\u044b\u043f\u0442\u0443 \u0432\u0430\u043c \u043d\u0435\u0430\u0431\u0445\u043e\u0434\u043d\u0430 \u0437\u0430\u0439\u0441\u0446\u0456 \u045e {a_cfg|\u043d\u0430\u043b\u0430\u0434\u044b}.{n}{n}\u041d\u0435 \u045e\u043a\u043b\u044e\u0447\u0430\u0439\u0446\u0435 \u045e\u0441\u0435 \u0440\u0430\u0437\u0430\u043c (\u043f\u0430\u0442\u0440\u044d\u0431\u043d\u044b\u044f \u0456 \u043d\u0435 \u043f\u0430\u0442\u0440\u044d\u0431\u043d\u044b\u044f) \u0444\u0443\u043d\u043a\u0446\u044b\u0456, \u043a\u0430\u0431 \u043f\u0430\u0437\u0431\u0435\u0433\u043d\u0443\u0446\u044c \u0442\u0430\u0440\u043c\u0430\u0436\u044d\u043d\u044c\u043d\u044f \u043f\u0440\u044b \u0437\u0430\u0433\u0440\u0443\u0437\u0446\u044b \u0441\u0442\u0430\u0440\u043e\u043d\u043a\u0456.{n}{n}{b|\u0417 \u043f\u044b\u0442\u0430\u043d\u044c\u043d\u044f\u043c\u0456} \u043f\u0430 \u0432\u044b\u043a\u0430\u0440\u044b\u0441\u0442\u0430\u043d\u044c\u043d\u0456 \u0441\u043a\u0440\u044b\u043f\u0442\u0443 \u0437\u0432\u044f\u0440\u0442\u0430\u0439\u0446\u0435\u0441\u044f \u043d\u0430 {a_forum|\u0444\u043e\u0440\u0443\u043c}{n}{n}\u0410\u043f\u0456\u0441\u0430\u043d\u044c\u043d\u0435 \u043f\u0440\u044b\u0437\u043d\u0430\u0447\u044d\u043d\u043d\u044f\u045e \u0444\u0443\u043d\u043a\u0446\u044b\u0439 Vkopt'\u0430 \u043c\u043e\u0436\u043d\u0430 \u043f\u0440\u0430\u0447\u044b\u0442\u0430\u0446\u044c {a_faq|\u0442\u0443\u0442}{n}{n}{b|\u0414\u043b\u044f \u0437\u0430\u043a\u0430\u043d\u0447\u044d\u043d\u044c\u043d\u044f \u045e\u0441\u0442\u0430\u043b\u0451\u045e\u043a\u0456 \u043f\u0435\u0440\u0430\u0437\u0430\u0433\u0440\u0443\u0437\u0456\u0446\u0435 \u0441\u0442\u0430\u0440\u043e\u043d\u043a\u0443.}"
 };
 
 vk_lang_it={ //by Maybkot /id5027410 (mayboroda.com.ua)
@@ -22093,7 +22073,7 @@ vk_lang_it={ //by Maybkot /id5027410 (mayboroda.com.ua)
 'puChoiceAlbum':'Scegli un\'album da caricare',
 'puLoadingInfoWait':'L\'informazione si scarica',
 'ErrOldVkoptFound':'Ci sono ancora i file d\'una vecchia versione di VkOpt. Rimuovi i vecchi fili per evitare problemi possibili',
-"FirstUpdateLaunch":"Hai installato VkOpt versione <b>{ver} (build {build})</b>{n}{n}{warn|Attenzione!}{n}{n}{b|Ricorde}: {b|Sempre} installi VKopt originale del {a_site|sito officiale}.{n}{n}Per accendere/spegnere le funzioni deve andare agli {a_cfg|impostazioni}.{n}{n}Non usa tutte funzioni se non sa come una funzione funziona.{n}{n}{b|Fare una domanda} di VKopt{a_forum|forum}{n}{n}Descrizione di funzioni di Vkopt 'pu\u00f2 leggere {a_faq|qui}{n}{n}{b|Finendo installazione aggiorna la pagina.}"
+"FirstUpdateLaunch":"Hai installato VKOpt Reloaded versione <b>{ver} (build {build})</b>{n}{n}{warn|Attenzione!}{n}{n}{b|Ricorde}: {b|Sempre} installi VKopt originale del {a_site|<b>sito officiale</b>}.{n}{n}Per accendere/spegnere le funzioni deve andare agli {a_cfg|impostazioni}.{n}{n}Non usa tutte funzioni se non sa come una funzione funziona.{n}{n}{b|Fare una domanda} di VKopt{a_forum|forum}{n}{n}Descrizione di funzioni di Vkopt 'pu\u00f2 leggere {a_faq|qui}{n}{n}{b|Finendo installazione aggiorna la pagina.}"
 
 };
 
@@ -22464,7 +22444,7 @@ vk_lang_tat = {//by eurotat /id15202178
     SearchText: "[ \u0422\u0435\u043a\u0441\u0442\u043d\u044b \u044d\u0437\u043b\u04d9\u0440\u0433\u04d9 ]",
     THFI: "\u0412\u043a\u041e\u043f\u0442 \u0441\u043a\u0440\u0438\u043f\u0442\u044b\u043d \u043a\u0443\u044e\u044b\u0433\u044b\u0437 \u04e9\u0447\u0435\u043d \u0440\u04d9\u0445\u043c\u04d9\u0442!",
     YIV: "\u0421\u0435\u0437 VkOpt-\u043d\u044b \u043a\u0443\u0439\u0434\u044b\u0433\u044b\u0437 v",
-    INCD: '<font color="red"><b>\u0414\u0418\u041a\u041a\u0410\u0422\u042c!</b></font><br><br><b>\u0418\u0441\u0435\u0433\u0435\u0437\u0434? \u0442\u043e\u0442\u044b\u0433\u044b\u0437</b>: \u041f\u0430\u0440\u043e\u043b\u043b\u044c\u043b\u04d9\u0440\u0435\u0433\u0435\u0437\u043d\u0435 \u0443\u0440\u043b\u0430\u0443\u043d\u044b \u0447\u0438\u043a\u043b\u04d9\u04af \u04e9\u0447\u0435\u043d, \u0441\u043a\u0440\u0438\u043f\u0442\u043d\u044b \u043e\u0444\u0438\u0446\u0438\u0430\u043b\u044c <a href="http://vkopt.net/" target=_blank><b>\u0441\u0430\u0439\u0442\u0442\u0430\u043d \u0433\u044b\u043d\u0430 \u0430\u043b\u044b\u0433\u044b\u0437</b></a>.<br><br>\u0421\u043a\u0440\u0438\u043f\u0442\u043d\u044b\u04a3 \u0444\u0443\u043d\u043a\u0446\u0438\u044f\u043b\u04d9\u0440\u0435\u043d \u043a\u0430\u0431\u044b\u0437\u0443-\u0441\u04af\u043d\u0434\u0435\u0440\u04af \u04e9\u0447\u0435\u043d <a href="/settings.php?act=vkopt" target=_blank>\u0436\u0430\u0439\u043b\u0430\u043d\u043c\u0430\u043b\u0430\u0440 \u0431\u0438\u0442\u0435\u043d\u044d \u043a\u0435\u0440\u0435\u0433\u0435\u0437</a>.<br><br>\u04ae\u0437\u0435\u0433\u0435\u0437\u0433\u04d9 \u043a\u0438\u0440\u04d9\u043a \u0444\u0443\u043d\u043a\u0446\u0438\u044f\u043b\u04d9\u0440\u043d\u0435 \u0433\u0435\u043d\u04d9 \u043a\u0430\u0431\u044b\u0437\u044b\u0433\u044b\u0437.<br><br><b>\u0421\u043e\u0440\u0430\u0443\u043b\u0430\u0440\u044b\u0433\u044b\u0437 \u0431\u0435\u043b\u04d9\u043d</b> \u0444\u043e\u0440\u0443\u043c\u0433\u0430 \u043a\u0435\u0440\u0435\u0433\u0435\u0437<a href="http://vkopt.net/forum/forumdisplay.php?f=4"  target=_blank>\u0441\u044b\u043b\u0442\u0430\u043c\u0430</a><br><br>Vkopt \u0442\u0443\u0440\u044b\u043d\u0434\u0430 <a href="http://vkopt.net/forum/forumdisplay.php?f=4"  target=_blank>\u043c\u043e\u043d\u0434\u0430 \u0443\u043a\u044b\u0433\u044b\u0437</a><br><br>',
+    INCD: '<font color="red"><b>ДИККАТЬ!</b></font><br><br><b>Исегезд? тотыгыз</b>: Паролльләрегезне урлауны чикләү өчен, скриптны официаль {a_site|<b>сайттан гына алыгыз</b>}.<br><br>Скриптның функцияләрен кабызу-сүндерү өчен <a href="/settings.php?act=vkopt" target=_blank>жайланмалар битенэ керегез</a>.<br><br>Үзегезгә кирәк функцияләрне генә кабызыгыз.<br><br><b>Сорауларыгыз белән</b> форумга керегез<a href="http://vkopt.net/forum/forumdisplay.php?f=4"  target=_blank>сылтама</a><br><br>Vkopt турында <a href="http://vkopt.net/forum/forumdisplay.php?f=4"  target=_blank>монда укыгыз</a><br><br>',
     FIS: "\u041a\u0443\u044e\u043d\u044b \u0431\u0435\u0442\u0435\u0440\u04af \u04e9\u0447\u0435\u043d, \u0431\u0438\u0442\u043d\u0435 \u044f\u04a3\u0430\u0440\u0442\u044b\u0433\u044b\u0437 .",
     ShowHistoryStatuses: "[ \u0421\u0442\u0430\u0442\u0443\u0441\u043b\u0430\u0440 \u0442\u0430\u0440\u0438\u0445\u044b\u043d \u043a\u04af\u0440\u0441\u04d9\u0442\u0435\u0440\u0433\u04d9 ]",
     ErrorStatus3pageClosed: "-3 (\u0421\u0435\u0437\u0434\u04d9\u043d \u044f\u0431\u044b\u043b\u0433\u0430\u043d \u0431\u0438\u0442\u0442\u04d9\u043d \u0441\u0442\u0430\u0442\u0443\u0441\u043b\u0430\u0440\u043d\u044b \u0443\u043a\u044b\u043f \u0431\u0443\u043b\u043c\u044b\u0439!)",
@@ -22589,7 +22569,7 @@ vk_lang_tat = {//by eurotat /id15202178
    "profile_relation_f_5": "\u0411\u0430\u0440\u044b\u0441\u044b\u0434\u0430 \u0430\u0432\u044b\u0440",
    "profile_relation_f_6": "\u042d\u0437\u043b\u0438\u043c",
    "profile_relation_f_7": "\u042f\u0440\u0430\u0442\u0430\u043c",
-   "FirstUpdateLaunch":"\u0421\u0435\u0437 VkOpt-\u043d\u044b \u043a\u0443\u0439\u0434\u044b\u0433\u044b\u0437 <b>v{ver} (build {build})</b>{n}{n}{warn|\u0414\u0418\u041a\u041a\u0410\u0422\u042c!}{n}{n}{b|\u0418\u0441\u0435\u0433\u0435\u0437\u0434? \u0442\u043e\u0442\u044b\u0433\u044b\u0437}: \u041f\u0430\u0440\u043e\u043b\u043b\u044c\u043b\u04d9\u0440\u0435\u0433\u0435\u0437\u043d\u0435 \u0443\u0440\u043b\u0430\u0443\u043d\u044b \u0447\u0438\u043a\u043b\u04d9\u04af \u04e9\u0447\u0435\u043d, \u0441\u043a\u0440\u0438\u043f\u0442\u043d\u044b \u043e\u0444\u0438\u0446\u0438\u0430\u043b\u044c {a_site|\u0441\u0430\u0439\u0442\u0442\u0430\u043d \u0433\u044b\u043d\u0430 \u0430\u043b\u044b\u0433\u044b\u0437}.{n}{n}\u0421\u043a\u0440\u0438\u043f\u0442\u043d\u044b\u04a3 \u0444\u0443\u043d\u043a\u0446\u0438\u044f\u043b\u04d9\u0440\u0435\u043d \u043a\u0430\u0431\u044b\u0437\u0443-\u0441\u04af\u043d\u0434\u0435\u0440\u04af \u04e9\u0447\u0435\u043d {a_cfg|\u0436\u0430\u0439\u043b\u0430\u043d\u043c\u0430\u043b\u0430\u0440 \u0431\u0438\u0442\u0435\u043d\u044d \u043a\u0435\u0440\u0435\u0433\u0435\u0437}.{n}{n}\u04ae\u0437\u0435\u0433\u0435\u0437\u0433\u04d9 \u043a\u0438\u0440\u04d9\u043a \u0444\u0443\u043d\u043a\u0446\u0438\u044f\u043b\u04d9\u0440\u043d\u0435 \u0433\u0435\u043d\u04d9 \u043a\u0430\u0431\u044b\u0437\u044b\u0433\u044b\u0437.{n}{n}{b|\u0421\u043e\u0440\u0430\u0443\u043b\u0430\u0440\u044b\u0433\u044b\u0437 \u0431\u0435\u043b\u04d9\u043d} \u0444\u043e\u0440\u0443\u043c\u0433\u0430 \u043a\u0435\u0440\u0435\u0433\u0435\u0437 {a_forum|\u0441\u044b\u043b\u0442\u0430\u043c\u0430}{n}{n}Vkopt \u0442\u0443\u0440\u044b\u043d\u0434\u0430 {a_faq|\u043c\u043e\u043d\u0434\u0430 \u0443\u043a\u044b\u0433\u044b\u0437}{n}{n}{b|\u041a\u0443\u044e\u043d\u044b \u0431\u0435\u0442\u0435\u0440\u04af \u04e9\u0447\u0435\u043d, \u0431\u0438\u0442\u043d\u0435 \u044f\u04a3\u0430\u0440\u0442\u044b\u0433\u044b\u0437 .}"
+   "FirstUpdateLaunch":"\u0421\u0435\u0437 VKOpt Reloaded-\u043d\u044b \u043a\u0443\u0439\u0434\u044b\u0433\u044b\u0437 <b>v{ver} (build {build})</b>{n}{n}{warn|\u0414\u0418\u041a\u041a\u0410\u0422\u042c!}{n}{n}{b|\u0418\u0441\u0435\u0433\u0435\u0437\u0434? \u0442\u043e\u0442\u044b\u0433\u044b\u0437}: \u041f\u0430\u0440\u043e\u043b\u043b\u044c\u043b\u04d9\u0440\u0435\u0433\u0435\u0437\u043d\u0435 \u0443\u0440\u043b\u0430\u0443\u043d\u044b \u0447\u0438\u043a\u043b\u04d9\u04af \u04e9\u0447\u0435\u043d, \u0441\u043a\u0440\u0438\u043f\u0442\u043d\u044b \u043e\u0444\u0438\u0446\u0438\u0430\u043b\u044c {a_site|<b>\u0441\u0430\u0439\u0442\u0442\u0430\u043d \u0433\u044b\u043d\u0430 \u0430\u043b\u044b\u0433\u044b\u0437</b>}.{n}{n}\u0421\u043a\u0440\u0438\u043f\u0442\u043d\u044b\u04a3 \u0444\u0443\u043d\u043a\u0446\u0438\u044f\u043b\u04d9\u0440\u0435\u043d \u043a\u0430\u0431\u044b\u0437\u0443-\u0441\u04af\u043d\u0434\u0435\u0440\u04af \u04e9\u0447\u0435\u043d {a_cfg|\u0436\u0430\u0439\u043b\u0430\u043d\u043c\u0430\u043b\u0430\u0440 \u0431\u0438\u0442\u0435\u043d\u044d \u043a\u0435\u0440\u0435\u0433\u0435\u0437}.{n}{n}\u04ae\u0437\u0435\u0433\u0435\u0437\u0433\u04d9 \u043a\u0438\u0440\u04d9\u043a \u0444\u0443\u043d\u043a\u0446\u0438\u044f\u043b\u04d9\u0440\u043d\u0435 \u0433\u0435\u043d\u04d9 \u043a\u0430\u0431\u044b\u0437\u044b\u0433\u044b\u0437.{n}{n}{b|\u0421\u043e\u0440\u0430\u0443\u043b\u0430\u0440\u044b\u0433\u044b\u0437 \u0431\u0435\u043b\u04d9\u043d} \u0444\u043e\u0440\u0443\u043c\u0433\u0430 \u043a\u0435\u0440\u0435\u0433\u0435\u0437 {a_forum|\u0441\u044b\u043b\u0442\u0430\u043c\u0430}{n}{n}Vkopt \u0442\u0443\u0440\u044b\u043d\u0434\u0430 {a_faq|\u043c\u043e\u043d\u0434\u0430 \u0443\u043a\u044b\u0433\u044b\u0437}{n}{n}{b|\u041a\u0443\u044e\u043d\u044b \u0431\u0435\u0442\u0435\u0440\u04af \u04e9\u0447\u0435\u043d, \u0431\u0438\u0442\u043d\u0435 \u044f\u04a3\u0430\u0440\u0442\u044b\u0433\u044b\u0437 .}"
 };
 
 //Md_stabil_v_0.2.3
@@ -22874,7 +22854,7 @@ vk_lang_md={
    "SearchText": "[ C\u0103utare text ]",
    "THFI": "V\u0103 mul\u021bumim pentru instalarea script-ului VkOpt!",
    "YIV": "A\u021bi instalat VkOpt v",
-   "INCD": "<font color=\"red\"><b>ATEN\u021aIE!</b></font><br><br><b>Re\u021bine\u021bi</b>: Pentru a evita apari\u021bia falsific\u0103rilor, ce fur\u0103 parolele utilizatorilor, desc\u0103rca\u0163i scriptul <b>doar</b> de pe oficial <a href=\"http://vkopt.net/\" target=_blank><b>site-ul</b></a><br><br>. Pentru activarea/deactivarea func\u021biei scriptului intra\u021bi \u00een <a href=\"/settings.php?act=vkopt\" target=_blank>set\u0103ri</a>.<br><br>Nu activa\u021bi toate func\u021biile(utile \u0219i inutile) pentru evitarea \u00eencetinirii la \u00eenc\u0103rcarea paginii.<br><br><bLa apari\u021bia \u00eentreb\u0103rilor</b> asupra utiliz\u0103rii script-ului adresa\u021bi-v\u0103 pe <a href=\"http://vkopt.net/forum/forumdisplay.php?f=4\"  target=_blank>forum</a><br><br>Descrierea func\u021biilor VkOpt pute\u021bi citi <a href=\"http://vkopt.net/forum/forumdisplay.php?f=4\"  target=_blank>aici</a><br><br>",
+   "INCD": "<font color=\"red\"><b>ATEN\u021aIE!</b></font><br><br><b>Re\u021bine\u021bi</b>: Pentru a evita apari\u021bia falsific\u0103rilor, ce fur\u0103 parolele utilizatorilor, desc\u0103rca\u0163i scriptul <b>doar</b> de pe oficial {a_site|<b>site-ul</b>}<br><br>. Pentru activarea/deactivarea func\u021biei scriptului intra\u021bi \u00een <a href=\"/settings.php?act=vkopt\" target=_blank>set\u0103ri</a>.<br><br>Nu activa\u021bi toate func\u021biile(utile \u0219i inutile) pentru evitarea \u00eencetinirii la \u00eenc\u0103rcarea paginii.<br><br><bLa apari\u021bia \u00eentreb\u0103rilor</b> asupra utiliz\u0103rii script-ului adresa\u021bi-v\u0103 pe <a href=\"http://vkopt.net/forum/forumdisplay.php?f=4\"  target=_blank>forum</a><br><br>Descrierea func\u021biilor VkOpt pute\u021bi citi <a href=\"http://vkopt.net/forum/forumdisplay.php?f=4\"  target=_blank>aici</a><br><br>",
    "FIS": "Pentru a finaliza instalarea, reporni\u021bi pagina.",
    "vk_year": ["", "%s an", "%s anul", "%s ani"],
    "ParseFriends": "Analiza prietenilor",
@@ -23344,7 +23324,7 @@ vk_lang_md={
    ,"seScrobbler": "Last.fm scrobbler"
    ,"seAudioSizeShowOnCtrl":"afi\u0219eaz\u0103 numai dac\u0103 este activat\u0103 afi\u0219area marcajelor <div class=\"vk_audio_hq_label\"></div>"
    ,"seDialogsListToRight":"Lista de dialoguri \u00een dreapta"
-   ,"FirstUpdateLaunch":"A\u021bi instalat VkOpt <b>v{ver} (build {build})</b>{n}{n}{warn|ATEN\u021aIE!}{n}{n}{b|Re\u021bin\u021bi}: Pentru a evita apari\u021bia falsific\u0103rilor, ce fur\u0103 parolele utilizatorilor, desc\u0103rca\u0163i scriptul {b|doar} de pe {a_site|site-ul} oficial.{n}{n}Pentru activarea/dezactivarea func\u021biei scriptului intra\u021bi \u00een {a_cfg|set\u0103ri}.{<br/>}{<br/>}Nu activa\u021bi toate func\u021biile (utile \u0219i inutile) pentru evitarea \u00eencetinirii la \u00eenc\u0103rcarea paginii.{n}{n}{b|La apari\u021bia \u00eentreb\u0103rilor} asupra utiliz\u0103rii script-ului adresa\u021bi-v\u0103 pe {a_forum|forum}{n}{n}{n}. Descrierea func\u021biilor VkOpt pute\u021bi citi {a_faq|aici}. {n}{n}{b|Pentru a \u00eencheia instalarea, reporni\u021bi pagina.}"
+   ,"FirstUpdateLaunch":"A\u021bi instalat VKOpt Reloaded <b>v{ver} (build {build})</b>{n}{n}{warn|ATEN\u021aIE!}{n}{n}{b|Re\u021bin\u021bi}: Pentru a evita apari\u021bia falsific\u0103rilor, ce fur\u0103 parolele utilizatorilor, desc\u0103rca\u0163i scriptul {b|doar} de pe {a_site|<b>site-ul</b>} oficial.{n}{n}Pentru activarea/dezactivarea func\u021biei scriptului intra\u021bi \u00een {a_cfg|set\u0103ri}.{<br/>}{<br/>}Nu activa\u021bi toate func\u021biile (utile \u0219i inutile) pentru evitarea \u00eencetinirii la \u00eenc\u0103rcarea paginii.{n}{n}{b|La apari\u021bia \u00eentreb\u0103rilor} asupra utiliz\u0103rii script-ului adresa\u021bi-v\u0103 pe {a_forum|forum}{n}{n}{n}. Descrierea func\u021biilor VkOpt pute\u021bi citi {a_faq|aici}. {n}{n}{b|Pentru a \u00eencheia instalarea, reporni\u021bi pagina.}"
    ,"sePostponeCustomInterval": "Memorarea intervalului la crearea post\u0103rilor am\u00eenate"
    ,"sePvCommMoveDown":"Amplasarea blocului cu comentarii sub fotografii"
    ,"PopularOptions":"Set\u0103rile populare"
@@ -23514,7 +23494,7 @@ vk_lang_lv = {
    "seScrobbler": "Last.fm scrobbler",
    "seAudioSizeShowOnCtrl": "r\u0101d\u012bt tikai tad, ja tiek par\u0101d\u012bti mar\u0137ieri<div class=\"vk_audio_hq_label\"></div>",
    "seDialogsListToRight": "Dialogu saraksts labaj\u0101 pus\u0113",
-   "FirstUpdateLaunch": "J\u016bs esat instal\u0113jis VkOpt <b>v{ver} (build {build})</b>{n}{n}{warn|UZMAN\u012aBU!}{n}{n}{b|Atcerieties}: Lai izvair\u012btos no viltojumiem, kas var nozagt lietot\u0101ju paroles, skripta lejupiel\u0101de {b|tikai} no oficiala {a_site|vietne}{n}{n}Lai iesp\u0113jotu/atsp\u0113jotu skriptu funkcijas, jums ir j\u0101dodas uz{a_cfg|iestat\u012bjumi}.{n}{n}Neiek\u013caujiet visu (nepiecie\u0161am\u0101s un nevajadz\u012bg\u0101s) funkcijas, lai izvair\u012btos no pal\u0113nin\u0101\u0161an\u0101s, iel\u0101d\u0113jot lapun}{n}{b|Ar jaut\u0101jumiem} Lai izmantotu skriptu, l\u016bdzu, sazinieties ar {a_forum|\u0444\u043e\u0440\u0443\u043c}{n}{n}{n}Funkciju apraksts Vkopt j\u016bs varat las\u012bt {a_faq|\u0161eit}{n}{n}{b|Lai pabeigtu instal\u0113\u0161anu, iel\u0101d\u0113jiet lapu no jauna.}",
+   "FirstUpdateLaunch": "J\u016bs esat instal\u0113jis VKOpt Reloaded <b>v{ver} (build {build})</b>{n}{n}{warn|UZMAN\u012aBU!}{n}{n}{b|Atcerieties}: Lai izvair\u012btos no viltojumiem, kas var nozagt lietot\u0101ju paroles, skripta lejupiel\u0101de {b|tikai} no oficiala {a_site|<b>vietne</b>}{n}{n}Lai iesp\u0113jotu/atsp\u0113jotu skriptu funkcijas, jums ir j\u0101dodas uz{a_cfg|iestat\u012bjumi}.{n}{n}Neiek\u013caujiet visu (nepiecie\u0161am\u0101s un nevajadz\u012bg\u0101s) funkcijas, lai izvair\u012btos no pal\u0113nin\u0101\u0161an\u0101s, iel\u0101d\u0113jot lapun}{n}{b|Ar jaut\u0101jumiem} Lai izmantotu skriptu, l\u016bdzu, sazinieties ar {a_forum|\u0444\u043e\u0440\u0443\u043c}{n}{n}{n}Funkciju apraksts Vkopt j\u016bs varat las\u012bt {a_faq|\u0161eit}{n}{n}{b|Lai pabeigtu instal\u0113\u0161anu, iel\u0101d\u0113jiet lapu no jauna.}",
    "sePostponeCustomInterval": "Atcerieties interv\u0101lu, veidojot negaid\u012bt\u0101s zi\u0146as",
    "sePvCommMoveDown": "P\u0101rvietojiet koment\u0101ru bloku zem fotoatt\u0113la",
    "ShowAllOptions": "R\u0101d\u012bt visus iestat\u012bjumus",
